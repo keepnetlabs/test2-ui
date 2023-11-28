@@ -208,11 +208,9 @@ export default {
       }
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getSmishingCampaignManagerDeletePermissions:
-        'permissions/getSmishingCampaignManagerDeletePermissions'
+      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -376,8 +374,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      // TODO: Change permissions
-      if (this.getSmishingCampaignManagerDeletePermissions) {
+      if (this.getCallbackCampaignDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         CallbackService.deleteCallbackCampaign(item.resourceId)
           .then(() => {

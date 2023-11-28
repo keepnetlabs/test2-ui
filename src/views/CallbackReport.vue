@@ -53,63 +53,62 @@ export default {
       isLoading: false,
       tab: labels.Summary,
       apiResponse: {},
-      // TODO: Change permissions
       tabItems: [
         {
           name: labels.Summary,
           id: 'callback-report-summary-content',
           label: labels.Summary,
           component: CampaignManagerReportSummary,
-          isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSummaryPermissions']
         },
         // {
         //   name: labels.Users,
         //   id: 'smishing-report-users-content',
         //   label: labels.Users,
         //   component: SmishingReportUsers,
-        //   isVisible: this.$store.getters['permissions/getSmishingReportSummaryPermissions']
+        //   isVisible: this.$store.getters['permissions/getCallbackReportSummaryPermissions']
         // },
         {
           name: labels.Opened,
           id: 'callback-report-opened-content',
           label: labels.Opened,
           component: CampaignManagerReportOpened,
-          isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         },
         {
           name: `Called Back`,
           id: 'callback-report-called-back-content',
           label: `Called Back`,
           component: CallbackReportCalledBack,
-          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         },
         {
           name: `Entered Digits`,
           id: 'callback-report-entered-digits-content',
           label: `Entered Digits`,
           component: CallbackReportEnteredDigits,
-          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         },
         {
           name: `No Response`,
           id: 'callback-report-no-response-content',
           label: `No Response`,
           component: CampaignManagerReportNoResponse,
-          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         },
         {
           name: `Reporters`,
           id: 'callback-report-reporters-content',
           label: `Reporters`,
           component: CallbackReportReporters,
-          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         },
         {
           name: labels.SendingReport,
           id: 'callback-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: this.$store.getters['permissions/getCallbackReportSearchTypePermissions']
         }
       ],
       formDetails: null

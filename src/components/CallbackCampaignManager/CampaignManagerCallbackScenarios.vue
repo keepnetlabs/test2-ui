@@ -49,7 +49,7 @@
                 <div>
                   <v-select
                     v-model="axiosPayload.filter.FilterGroups[0].FilterItems[0].value"
-                    :items="getLanguageItems"
+                    :items="languages"
                     placeholder="Language"
                     item-disabled="disabled"
                     outlined
@@ -64,7 +64,6 @@
                   <v-select
                     v-model="axiosPayload.filter.FilterGroups[0].FilterItems[1].value"
                     :items="getVoiceItems"
-                    :disabled="!axiosPayload.filter.FilterGroups[0].FilterItems[0].value"
                     placeholder="Voice"
                     item-disabled="disabled"
                     outlined
@@ -152,17 +151,23 @@
                     </div>
                   </div>
 
-                  <div class="template-list--item">
+                  <div class="template-list--item ml-8">
                     {{ getItemDescription(item) }}
                   </div>
                   <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
                     <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
                     <div class="d-flex align-center">
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-voice</v-icon>
-                      <span class="template-list--item__language">{{ item.voice }}</span>
+                      <div class="template-list--item__narrator mr-2">
+                        <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                        <span class="template-list--item__language">{{ item.languageCode }}</span>
+                      </div>
+                      <div class="template-list--item__narrator">
+                        <v-icon :size="16" color="#757575" class="mr-1"
+                          >mdi-microphone-outline</v-icon
+                        >
+                        <span class="template-list--item__language">{{ item.voice }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -344,15 +349,11 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                {
-                  value: '',
-                  FieldName: 'language',
-                  Operator: 'Include'
-                },
+                { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
                 {
                   value: '',
                   FieldName: 'voice',
-                  Operator: 'Include'
+                  Operator: '='
                 },
                 { value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
@@ -407,15 +408,7 @@ export default {
       return this.languageItems?.map((language) => language.language)
     },
     getVoiceItems() {
-      if (this.getSelectedLanguage) {
-        const voiceItems = this.languageItems?.filter(
-          (language) => language.language === this.getSelectedLanguage
-        )
-        const voices = voiceItems.map((voice) => voice.name)
-        return voices
-      }
-
-      return []
+      return this.languageItems.map((language) => language.name)
     },
     getSelectedLanguage() {
       return this.axiosPayload.filter.FilterGroups[0].FilterItems[0].value

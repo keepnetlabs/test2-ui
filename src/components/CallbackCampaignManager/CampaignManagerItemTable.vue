@@ -177,13 +177,12 @@ export default {
           message: `You do not have any Campaign Instances`,
           id: 'btn-empty--campaign-manager-report'
         },
-        // TODO: Change Permissions
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackCampaignCreatePermissions']
         },
         rowActions: [
           {
@@ -192,14 +191,14 @@ export default {
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
             action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getSmishingCampaignJobStopPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackCampaignJobStopPermissions']
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getSmishingCampaignJobDeletePermissions']
+            disabled: !this.$store.getters['permissions/getCallbackCampaignJobDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
