@@ -153,7 +153,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
-      availablePhoneNumbers: [],
+      availablePhoneNumbers: 0,
       selectedNumberCount: 0,
       targetGroupCount: 0,
       METHOD_TYPES,
@@ -259,9 +259,7 @@ export default {
         'permissions/getSmishingCampaignManagerExportPermissions'
     }),
     canRenderAlertBox() {
-      return (
-        !this.isLoading && this.selectedNumberCount > 0 && this.availablePhoneNumbers.length === 0
-      )
+      return !this.isLoading && this.selectedNumberCount > 0 && this.availablePhoneNumbers === 0
     }
   },
   watch: {
@@ -287,10 +285,11 @@ export default {
   methods: {
     callForAvailableNumbers(params = {}) {
       this.setLoading(true)
-      CallbackService.getAvailableCallbackNumbers()
+      CallbackService.getUsedCallbackNumbers()
         .then((res) => {
-          this.availablePhoneNumbers = res?.data?.data
-          if (this.availablePhoneNumbers.length === 0) {
+          const { companyCount = 0, usedCount = 0 } = res.data.data
+          this.availablePhoneNumbers = companyCount - usedCount
+          if (this.availablePhoneNumbers === 0) {
             this.tableOptions.addButton.disabled = true
             this.tableOptions.addButton.tooltip =
               'You can’t create a new campaign unless you have an available Callback phone number'
