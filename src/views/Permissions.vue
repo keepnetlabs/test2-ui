@@ -363,6 +363,9 @@ export default {
             case 'Threat Intelligence':
               sortedPermissions[10] = item
               break
+            case 'Callback Simulator':
+              sortedPermissions[11] = item
+              break
             default:
               break
           }
