@@ -457,7 +457,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Callback Campaign Manager',
-            permissionStoreKey: 'permissions/getCallbackReportSearchPermissions'
+            permissionStoreKey: 'permissions/getCallbackReportSummaryPermissions'
           },
           props: true,
           params: true
