@@ -42,7 +42,7 @@
       @on-close="toggleShowPreviewDialog"
     />
     <DataTable
-      v-if="getPhishingScenariosSearchPermissions"
+      v-if="getCallbackScenariosSearchPermissions"
       id="scenarios-data-table"
       class="scenarios"
       ref="refScenariosList"
@@ -80,45 +80,36 @@
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
-          :id="tableOptions.rowActions[0].id"
-          :icon="tableOptions.rowActions[0].icon"
-          :text="tableOptions.rowActions[0].name"
+          :id="tableOptions.rowActions[1].id"
           :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
-          :checkIsOwnerProperty="false"
-          @on-click="handleFastLaunch(scope.row)"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[1].disabled"
+          :icon="tableOptions.rowActions[1].icon"
+          :text="tableOptions.rowActions[1].name"
+          @on-click="handlePreview(scope.row)"
         />
         <RowActionsMenu>
           <ScenariosRowActionsEditButton
-            :id="tableOptions.rowActions[1].id"
+            :id="tableOptions.rowActions[0].id"
             :scope="scope"
-            :name="tableOptions.rowActions[1].name"
-            :disabled="tableOptions.rowActions[1].disabled"
+            :name="tableOptions.rowActions[0].name"
+            :disabled="tableOptions.rowActions[0].disabled"
             @on-click="handleEdit(scope.row, false)"
           />
           <DefaultMenuRowAction
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
-            :check-is-owner-property="false"
             :disabled="tableOptions.rowActions[2].disabled"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
-            @on-click="handlePreview(scope.row)"
-          />
-          <DefaultMenuRowAction
-            :id="tableOptions.rowActions[3].id"
-            :scope="scope"
-            :disabled="tableOptions.rowActions[3].disabled"
-            :icon="tableOptions.rowActions[3].icon"
-            :text="tableOptions.rowActions[3].name"
             :check-is-owner-property="false"
             @on-click="handleEdit(scope.row, true)"
           />
           <ScenariosRowActionsDeleteButton
-            :id="tableOptions.rowActions[4].id"
+            :id="tableOptions.rowActions[3].id"
             :scope="scope"
-            :name="tableOptions.rowActions[4].name"
-            :disabled="tableOptions.rowActions[4].disabled"
+            :name="tableOptions.rowActions[3].name"
+            :disabled="tableOptions.rowActions[3].disabled"
             @on-click="handleActionDelete(scope.row)"
           />
         </RowActionsMenu>
@@ -319,21 +310,13 @@ export default {
           //   filterableType: 'text'
           // }
         ],
-        // TODO: Change permissions
         rowActions: [
-          {
-            name: labels.FastLaunch,
-            icon: 'mdi-send',
-            action: 'on-fast-launch',
-            id: 'btn-fast-launch--scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
-          },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
             id: 'btn-edit--scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackScenariosEditPermissions']
           },
           {
             name: labels.Preview,
@@ -352,13 +335,12 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--scenarios-row-actions',
-            disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
+            disabled: !this.$store.getters['permissions/getCallbackScenariosDeletePermissions']
           }
         ],
-        // TODO: Change permissions
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getPhishingScenariosExportPermissions']
+          disabled: !this.$store.getters['permissions/getCallbackScenariosExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -372,13 +354,12 @@ export default {
           icon: 'mdi-plus',
           id: 'btn-empty--scenarios'
         },
-        // TODO: Change permissions
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackScenariosCreatePermissions']
         }
       },
       modalStatus: false,
@@ -387,10 +368,9 @@ export default {
       selectedPhishingScenario: {}
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
+      getCallbackScenariosSearchPermissions: 'permissions/getCallbackScenariosSearchPermissions'
     })
   },
   created() {
@@ -476,7 +456,7 @@ export default {
     },
     callForData() {
       this.loading = true
-      if (this.getPhishingScenariosSearchPermissions) {
+      if (this.getCallbackScenariosSearchPermissions) {
         CallbackService.searchCallbackScenarios(this.axiosPayload)
           .then((response) => {
             const {

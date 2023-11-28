@@ -204,25 +204,24 @@ export default {
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
         ],
-        // TODO: Change permissions
         iEmpty: {
           message: labels.EmptyCampaignManager,
           btn: labels.New,
           action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackCampaignCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager',
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackCampaignCreatePermissions']
         },
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerExportPermissions']
+          disabled: !this.$store.getters['permissions/getCallbackCampaignExportPermissions']
         },
         rowActions: [
           {
@@ -242,9 +241,7 @@ export default {
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters[
-              'permissions/getSmishingCampaignManagerDeletePermissions'
-            ]
+            disabled: !this.$store.getters['permissions/getCallbackCampaignDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -253,10 +250,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getSmishingCampaignManagerSearchPermissions:
-        'permissions/getSmishingCampaignManagerSearchPermissions',
-      getSmishingCampaignManagerExportPermissions:
-        'permissions/getSmishingCampaignManagerExportPermissions'
+      getCallbackCampaignSearchPermissions: 'permissions/getCallbackCampaignSearchPermissions',
+      getCallbackCampaignExportPermissions: 'permissions/getCallbackCampaignExportPermissions'
     }),
     canRenderAlertBox() {
       return !this.isLoading && this.selectedNumberCount > 0 && this.availablePhoneNumbers === 0
@@ -317,7 +312,7 @@ export default {
       })
     },
     callForData(params = {}) {
-      if (this.getSmishingCampaignManagerSearchPermissions) {
+      if (this.getCallbackCampaignSearchPermissions) {
         if (!params.isInitial) {
           this.setLoading(true)
         }
@@ -377,7 +372,7 @@ export default {
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {
-      if (this.getSmishingCampaignManagerExportPermissions) {
+      if (this.getCallbackCampaignExportPermissions) {
         downloadTypes.exportTypes.forEach((item) => {
           let payload = {
             pageNumber: downloadTypes.pageNumber,

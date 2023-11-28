@@ -180,6 +180,10 @@ const getCallbackCampaignPreview = (resourceId) => {
   return testRequest.get(`/callback-simulator/campaign/preview/${resourceId}`)
 }
 
+const getDefaultCompanySmtpSetting = () => {
+  return testRequest.get('/callback-simulator/campaign/root-company-shared-smtp-resource-id')
+}
+
 const bulkDeleteCallbackCampaign = (payload) => {
   return testRequest.delete(`/callback-simulator/campaign/bulk-delete`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -219,7 +223,7 @@ const startCallbackCampaignJob = (resourceId, instanceGroup) => {
 }
 
 const stopCallbackCampaignJob = (resourceId, instanceGroup) => {
-  return testRequest.post(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
+  return testRequest.patch(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
 }
 
 const deleteCallbackJob = (resourceId, instanceGroup) => {
@@ -357,6 +361,7 @@ export default {
   searchCallbackCampaigns,
   exportCallbackCampaigns,
   getCallbackCampaignPreview,
+  getDefaultCompanySmtpSetting,
   bulkDeleteCallbackCampaign,
   calculateSendingInfo,
   calculateScheduleInfo,

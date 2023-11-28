@@ -161,7 +161,6 @@ export default {
         addButton: {
           show: false
         },
-        // TODO: Change permissions
         rowActions: [
           {
             name: labels.Stop,
@@ -169,14 +168,14 @@ export default {
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
             action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getSmishingCampaignJobStopPermissions']
+            disabled: !this.$store.getters['permissions/getCallbackCampaignJobStopPermissions']
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
             action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getSmishingCampaignJobDeletePermissions']
+            disabled: !this.$store.getters['permissions/getCallbackCampaignJobDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

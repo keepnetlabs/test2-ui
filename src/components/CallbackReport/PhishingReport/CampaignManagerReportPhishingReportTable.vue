@@ -108,7 +108,7 @@ export default {
             icon: '$custom-details',
             action: 'on-detail',
             disabled: !this.$store.getters[
-              'permissions/getCampaignReportsPhishingReporterDetailsPermissions'
+              'permissions/getCallbackReportReportedDetailsPermissions'
             ]
           }
         ]

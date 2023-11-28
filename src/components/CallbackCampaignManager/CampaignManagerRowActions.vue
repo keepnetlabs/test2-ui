@@ -5,7 +5,7 @@
         <v-btn
           v-on="on"
           :id="getId"
-          :disabled="!getCampaignManagerParentPreviewPermissions"
+          :disabled="!getCallbackCampaignPreviewPermissions"
           class="btn-hover"
           icon
           @click="handleItemClick({ action: 'on-preview' })"
@@ -66,17 +66,11 @@ export default {
       type: Array
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getCampaignManagerParentPreviewPermissions:
-        'permissions/getCampaignManagerParentPreviewPermissions',
-      getCampaignManagerParentCreatePermissions:
-        'permissions/getCampaignManagerParentCreatePermissions',
-      getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions',
-      getCampaignManagerParentUpdatePermissions:
-        'permissions/getCampaignManagerParentUpdatePermissions'
+      getCallbackCampaignPreviewPermissions: 'permissions/getCallbackCampaignPreviewPermissions',
+      getCallbackCampaignCreatePermissions: 'permissions/getCallbackCampaignCreatePermissions',
+      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getId() {
       return `btn-preview--row-action-${createRandomCryptStringNumber()}`
@@ -92,21 +86,21 @@ export default {
         id: 'btn-new-instance-item-row-actions-campaign-manager',
         icon: require('../../assets/img/icon_left.svg'),
         action: 'on-launch',
-        disabled: !this.getCampaignManagerParentCreatePermissions
+        disabled: !this.getCallbackCampaignCreatePermissions
       }
       const duplicateItem = {
         name: labels.Duplicate,
         id: 'btn-duplicate--row-actions-campaign-manager',
         icon: 'mdi-content-copy',
         action: 'on-duplicate'
-        // disabled: !this.getCampaignManagerParentCreatePermissions
+        // disabled: !this.getCallbackCampaignCreatePermissions
       }
       const deleteItem = {
         name: labels.Delete,
         id: 'btn-delete--row-actions-campaign-manager',
         icon: 'mdi-delete',
         action: 'on-delete',
-        disabled: !this.getCampaignManagerParentDeletePermissions
+        disabled: !this.getCallbackCampaignDeletePermissions
       }
 
       if (
