@@ -62,6 +62,7 @@
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
               :is-action-button-disabled.sync="isActionButtonDisabled"
+              isCallback
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
             />
           </v-stepper-content>
@@ -358,7 +359,10 @@ export default {
     },
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
-      if (!keys.length) return {}
+      if (!keys.length)
+        return {
+          duration: 30
+        }
       const { name, duration, excludeFromReports } = this.selectedRowFormData
       return {
         name,

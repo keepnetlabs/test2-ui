@@ -465,12 +465,6 @@ export default {
     }
   },
   watch: {
-    axiosPayload: {
-      deep: true,
-      handler(val) {
-        console.log('axiosPayload', val)
-      }
-    },
     defaultPhishingScenariosValuesMapped(val) {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
