@@ -8,6 +8,14 @@
       @on-close="toggleShowDeleteDialog"
       @on-delete="handleOnDelete"
     />
+    <AlertBox
+      v-if="canRenderAlertBox"
+      class="bg-aqua-light mb-4"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      text="You don’t have any remaining Callback phone numbers. Please wait until your active campaigns are completed. Also you can get in touch with us for purchasing more numbers."
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -34,7 +42,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @refreshAction="callForData"
+      @refreshAction="callForAvailableNumbers"
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
@@ -119,6 +127,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
+import AlertBox from '@/components/AlertBox'
+
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -132,7 +142,8 @@ export default {
     Badge,
     CampaignManagerItemDeleteDialog,
     CampaignManagerItemRowActions,
-    DataTable
+    DataTable,
+    AlertBox
   },
   props: {
     item: {
@@ -146,6 +157,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      availablePhoneNumbers: 0,
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
@@ -208,6 +220,9 @@ export default {
   computed: {
     getTableAllRecordsText() {
       return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+    },
+    canRenderAlertBox() {
+      return !this.isLoading && this.availablePhoneNumbers === 0
     }
   },
   watch: {
@@ -232,11 +247,27 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    this.callForAvailableNumbers()
   },
   methods: {
-    callForData() {
+    callForAvailableNumbers(params = {}) {
       this.setLoading(true)
+      CallbackService.getUsedCallbackNumbers()
+        .then((res) => {
+          const { companyCount = 0, usedCount = 0 } = res.data.data
+          this.availablePhoneNumbers = companyCount - usedCount
+          if (this.availablePhoneNumbers === 0) {
+            this.tableOptions.addButton.disabled = true
+            this.tableOptions.addButton.tooltip =
+              'You can’t create a new campaign unless you have an available Callback phone number'
+          }
+        })
+        .finally(() => this.callForData({ isInitial: params.isInitial }))
+    },
+    callForData(params = {}) {
+      if (!params.isInitial) {
+        this.setLoading(true)
+      }
       this.$nextTick(() => {
         CallbackService.searchCallbackJobs(this.item.resourceId, this.axiosPayload)
           .then((response) => {
