@@ -1,40 +1,38 @@
 <template>
-  <FormGroup has-hint class="mt-6" :title="title" :sub-title="subTitle">
-    <KSelect
-      :value="value"
-      outlined
-      dense
-      persistent-hint
-      hint="*Required"
-      placeholder="Select a phone number"
-      type="autocomplete"
-      chips
-      clearable
-      :item-text="itemText"
-      :item-value="itemValue"
-      multiple
-      small-chips
-      deletable-chips
-      required
-      :items="getPhoneNumberItems"
-      :slots="{ item: true, append: true }"
-      :rules="[(v) => Validations.required(v), ...rules]"
-      @input="handleInputChange"
-    >
-      <template #item="{ item }">
-        <div :class="['mail-configuration-select-sources__item-container']">
-          <div class="mail-configuration-select-sources__item">
-            <div class="mail-configuration-select-sources__item-left">
-              {{ getPhoneNumberFormatted(item[itemText]) }}
-            </div>
-            <div class="mail-configuration-select-sources__item-right-platform">
-              {{ getPhoneNumberCountry(item[itemText]) }}
-            </div>
+  <KSelect
+    :value="value"
+    outlined
+    dense
+    persistent-hint
+    hint="*Required"
+    placeholder="Select a phone number"
+    type="autocomplete"
+    chips
+    clearable
+    :item-text="itemText"
+    :item-value="itemValue"
+    multiple
+    small-chips
+    deletable-chips
+    required
+    :items="getPhoneNumberItems"
+    :slots="{ item: true, append: true }"
+    :rules="[(v) => Validations.required(v), ...rules]"
+    @input="handleInputChange"
+  >
+    <template #item="{ item }">
+      <div :class="['mail-configuration-select-sources__item-container']">
+        <div class="mail-configuration-select-sources__item">
+          <div class="mail-configuration-select-sources__item-left">
+            {{ getPhoneNumberFormatted(item[itemText]) }}
+          </div>
+          <div class="mail-configuration-select-sources__item-right-platform">
+            {{ getPhoneNumberCountry(item[itemText]) }}
           </div>
         </div>
-      </template>
-    </KSelect>
-  </FormGroup>
+      </div>
+    </template>
+  </KSelect>
 </template>
 
 <script>
@@ -47,19 +45,11 @@ import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 export default {
   name: 'InputCallerPhoneNumber',
-  components: { KSelect, FormGroup },
+  components: { KSelect },
   props: {
     value: {
       type: Array,
       default: () => []
-    },
-    title: {
-      type: String,
-      default: 'Caller Phone Number'
-    },
-    subTitle: {
-      type: String,
-      default: 'Select caller phone number for this campaign'
     },
     itemText: {
       type: String,

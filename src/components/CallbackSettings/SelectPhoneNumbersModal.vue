@@ -12,18 +12,19 @@
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
-      <InputPhoneNumberComboBox
-        style="margin-top: 0px !important;"
-        title="Callback Phone Numbers"
-        :subTitle="getSubtitle"
-        is-smishing
-        :defaultPhoneNumbers="phoneNumberItems"
-        itemText="number"
-        itemValue="providerNumberId"
-        :value="selectedPhoneNumbers"
-        :rules="getRules"
-        @input="handleSelectedPhoneNumberChange"
-      />
+      <FormGroup has-hint class="mt-6" title="Callback Phone Numbers" :sub-title="getSubtitle">
+        <InputPhoneNumberComboBox
+          ref="refComboBox"
+          style="margin-top: 0px !important;"
+          is-smishing
+          :defaultPhoneNumbers="phoneNumberItems"
+          itemText="number"
+          itemValue="providerNumberId"
+          :value="selectedPhoneNumbers"
+          :rules="getRules"
+          @input="handleSelectedPhoneNumberChange"
+        />
+      </FormGroup>
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
@@ -56,12 +57,13 @@ import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
 import InputPhoneNumberComboBox from '@/components/Common/Inputs/InputPhoneNumberComboBox'
 import CallbackService from '@/api/callback'
-
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'SelectPhoneNumbersModal',
   components: {
     AppDialog,
-    InputPhoneNumberComboBox
+    InputPhoneNumberComboBox,
+    FormGroup
   },
   props: {
     isLoading: {
@@ -86,16 +88,24 @@ export default {
   },
   computed: {
     isDoneDisabled() {
-      return this.isLoading || this.selectedPhoneNumbers.length === 0
+      return (
+        this.isLoading ||
+        this.selectedPhoneNumbers.length === 0 ||
+        this.selectedPhoneNumbers.length > this.selectablePhoneNumberCount
+      )
     },
     getSubtitle() {
-      return `Select up to ${this.selectablePhoneNumberCount} callback phone numbers. You can always change your numbers in the Settings page.`
+      return `Select up to ${this.selectablePhoneNumberCount} callback phone number${
+        this.selectablePhoneNumberCount > 1 ? 's' : ''
+      }. You can always change your numbers in the Settings page.`
     },
     getRules() {
       return [
         (v) =>
           v.length <= this.selectablePhoneNumberCount ||
-          `Based on your license settings, you can select maximum ${this.selectablePhoneNumberCount} callback phone numbers`
+          `Based on your license settings, you can select maximum ${
+            this.selectablePhoneNumberCount
+          } callback phone number${this.selectablePhoneNumberCount > 1 ? 's' : ''}`
       ]
     }
   },

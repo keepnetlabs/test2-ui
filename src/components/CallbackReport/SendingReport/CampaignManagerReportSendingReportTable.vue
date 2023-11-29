@@ -106,7 +106,7 @@ import CampaignManagerReportSendingReportEvent from '@/components/CallbackReport
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
-import { REPORT_TABS } from '../Opened/utils'
+import { REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -148,7 +148,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.PHONENUMBER,
+          COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
           COLUMNS.DATE_FIRST_SENT,
@@ -170,16 +170,13 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-sending-report',
             icon: '$custom-resend',
             action: 'on-resend'
+          },
+          {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-sending-report',
+            icon: '$custom-details',
+            action: 'on-detail'
           }
-          // {
-          //   name: labels.Details,
-          //   id: 'btn-details--row-actions-campaign-manager-report-sending-report',
-          //   icon: '$custom-details',
-          //   action: 'on-detail',
-          //   disabled: !this.$store.getters[
-          //     'permissions/getCampaignReportsSendingReportDetailsPermissions'
-          //   ]
-          // }
         ]
       },
       isShowExtendedView: false,

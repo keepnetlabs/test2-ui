@@ -112,7 +112,11 @@
           </template>
           <div class="callback-template-preview-steps__step-details-badges">
             <div
-              v-if="getSelectedStepObject && !!getSelectedStepObject.inputDigit"
+              v-if="
+                getSelectedStepObject &&
+                !!getSelectedStepObject.inputDigit &&
+                !isSelectedStepPhishingCodeStep
+              "
               class="callback-template-preview-steps__step-details-badge callback-template-preview-steps__step-details-badge--digits"
             >
               Required {{ getSelectedStepObject.inputDigit }} digit{{
@@ -131,6 +135,12 @@
               class="callback-template-preview-steps__step-badge"
             >
               Digit Entering Step
+            </div>
+            <div
+              v-if="isSelectedStepPhishingCodeStep"
+              class="callback-template-preview-steps__step-details-badge callback-template-preview-steps__step-details-badge--digits"
+            >
+              Required 6 digits input
             </div>
             <div
               v-if="isSelectedStepPhishingCodeStep"
@@ -245,9 +255,9 @@ export default {
     },
     hasAudioFile() {
       return (
-        this.template?.steps?.some((step) => step?.inputUrl) ||
-        this.template?.callGreeting?.inputUrl ||
-        this.template?.invalidDialingNotice?.inputUrl
+        this.template?.steps?.some((step) => step?.inputType === 'FileUpload') ||
+        this.template?.callGreeting?.inputType === 'FileUpload' ||
+        this.template?.invalidDialingNotice?.inputType === 'FileUpload'
       )
     },
     getSelectedInputType() {
