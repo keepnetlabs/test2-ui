@@ -59,13 +59,13 @@
       :formValues="getCallbackTemplateData"
       :isFetchingSummary="isFetchingCallbackTemplate || !getCallbackTemplateData"
     />
-    <CampaignManagerReportSummaryTraining
+    <!-- <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
       class="mt-6"
       call-training-preview-api
       :training-params="getTrainingInfo"
       :selected-row="getSelectedRowTrainingInfo"
-    />
+    /> -->
   </div>
 </template>
 
@@ -79,13 +79,13 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
-import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+// import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
-    CampaignManagerReportSummaryTraining,
+    // CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
@@ -152,10 +152,11 @@ export default {
       }
     },
     trainingInfos() {
-      return this.phishingScenarios.reduce((acc, pScenario) => {
-        if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
-        return acc
-      }, [])
+      return []
+      // return this.phishingScenarios.reduce((acc, pScenario) => {
+      //   if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
+      //   return acc
+      // }, [])
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
@@ -440,13 +441,13 @@ export default {
       if (scenarios.length) {
         scenarios.forEach((scenario) => {
           if (scenario.trainingInfo && scenario.enrollmentInfo) {
-            trainingReportDialogItems.push(
-              new TrainingReportDialogModel(
-                scenario.scenarioInfo.name,
-                scenario.trainingInfo.name,
-                scenario?.enrollmentInfo?.enrollmentId
-              )
-            )
+            // trainingReportDialogItems.push(
+            //   new TrainingReportDialogModel(
+            //     scenario.scenarioInfo.name,
+            //     scenario.trainingInfo.name,
+            //     scenario?.enrollmentInfo?.enrollmentId
+            //   )
+            // )
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
