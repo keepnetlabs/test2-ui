@@ -90,8 +90,8 @@ export default {
   computed: {
     hasAudioFile() {
       return (
-        this.formValues?.template?.steps?.some((step) => step.inputUrl) ||
-        this.formValues?.template?.invalidDialingNotice?.inputUrl
+        this.formValues?.template?.steps?.some((step) => step.inputType === 'FileUpload') ||
+        this.formValues?.template?.invalidDialingNotice?.inputType === 'FileUpload'
       )
     },
     isTextToSpeechCompatible() {
