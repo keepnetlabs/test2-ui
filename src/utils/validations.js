@@ -233,10 +233,10 @@ export function isDomainUrl(value, message = 'Invalid URL') {
     ) || message
   )
 }
-export function numberRangeRule(value, min = 0, max = 999) {
+export function numberRangeRule(value, min = 0, max = 999, message) {
   if (value == '' && value == null) return false
   if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
-  return `Enter a number between ${min} and ${max}`
+  return message || `Enter a number between ${min} and ${max}`
 }
 
 export function subdomainDash(value, message = 'Invalid Subdomain') {

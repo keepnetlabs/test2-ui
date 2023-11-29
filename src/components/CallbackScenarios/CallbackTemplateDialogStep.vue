@@ -135,7 +135,7 @@
           style="max-width: 603px;"
           labelClassName="callback-template-dialog-step__form-label"
           title="Text"
-          subTitle="Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags."
+          :subTitle="getTextToSpeechSubTitlte"
         >
           <InputMergeTag
             :value="value.inputText"
@@ -245,6 +245,12 @@ export default {
     }
   },
   computed: {
+    getTextToSpeechSubTitlte() {
+      if (this.isCallGreeting) {
+        return ` Enter your text to be voiced by AI.`
+      }
+      return ` Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags.`
+    },
     isPlayAudioDisabled() {
       return (!this.value?.inputUrl && !this.value?.content) || this.isPlayAudioClicked
     },
