@@ -50,15 +50,21 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportData"
-      @refreshAction="callForData"
+      @refreshAction="callForNumberUsage"
     >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="callback-settings-table__status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.isUsing)" :col="col" size="medium" />
+        </div>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
           :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
-          :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Use'"
-          :text="tableOptions.rowActions[0].name"
+          :disabled="tableOptions.rowActions[0].disabled || scope.row.isUsing === 'In Use'"
+          :text="scope.row.isUsing === 'In Use' ? 'Number in use' : 'Exchange'"
           :checkIsOwnerProperty="false"
           @on-click="handleExchange(scope.row)"
         />
@@ -84,6 +90,8 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import SelectPhoneNumbersModal from '@/components/CallbackSettings/SelectPhoneNumbersModal'
 import ExchangePhoneNumberModal from '@/components/CallbackSettings/ExchangePhoneNumberModal'
+import Badge from '@/components/Badge'
+
 export default {
   name: 'CallbackSettings',
   components: {
@@ -92,7 +100,8 @@ export default {
     CompanySettingsHeader,
     DefaultButtonRowAction,
     SelectPhoneNumbersModal,
-    ExchangePhoneNumberModal
+    ExchangePhoneNumberModal,
+    Badge
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
@@ -146,7 +155,7 @@ export default {
             fixed: false,
             hideSort: false,
             show: true,
-            type: 'status',
+            type: 'slot',
             width: 150,
             filterableType: 'select',
             filterableItems: ['Not In Use', 'In Use']
@@ -227,7 +236,6 @@ export default {
   },
   mounted() {
     this.callForNumberUsage()
-    this.callForData()
   },
   computed: {
     ...mapGetters({
@@ -235,13 +243,37 @@ export default {
     })
   },
   methods: {
+    getStatusBadgeProps(status) {
+      if (status === 'Not In Use')
+        return {
+          color: '#757575',
+          text: 'Not In Use'
+        }
+
+      if (status === 'In Use')
+        return {
+          color: '#1173C1',
+          text: 'In Use'
+        }
+    },
     callForNumberUsage() {
-      CallbackService.getUsedCallbackNumbers().then((res) => {
-        const { companyCount, usedCount } = res.data.data
-        if (companyCount === null) companyCount = 0
-        if (usedCount === null) usedCount = 0
-        this.selectablePhoneNumberCount = companyCount - usedCount
-      })
+      this.isLoading = true
+      CallbackService.getUsedCallbackNumbers()
+        .then((res) => {
+          const { companyCount, usedCount } = res.data.data
+          if (companyCount === null) companyCount = 0
+          if (usedCount === null) usedCount = 0
+          this.selectablePhoneNumberCount = companyCount - usedCount
+          if (!this.selectablePhoneNumberCount) {
+            this.tableOptions.addButton.disabled = true
+            this.tableOptions.iEmpty.disabled = true
+          }
+        })
+        .catch(() => {
+          this.tableOptions.addButton.disabled = true
+          this.tableOptions.iEmpty.disabled = true
+        })
+        .finally(this.callForData)
     },
     callForData() {
       this.isLoading = true
@@ -265,7 +297,6 @@ export default {
           this.tableData = []
         })
         .finally(() => {
-          this.callForNumberUsage()
           this.isLoading = false
         })
     },
