@@ -20,6 +20,14 @@
       @confirm="handleConfirmExchangePhoneNumber"
       @close="handleCloseExchangePhoneNumberModal"
     />
+    <AlertBox
+      v-if="canRenderAlertBox"
+      class="bg-aqua-light mb-4"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      :text="getAlertBoxText"
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <DataTable
       v-if="getCallbackSettingsSearchPermissions"
       ref="refCallbackSettings"
@@ -91,6 +99,7 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import SelectPhoneNumbersModal from '@/components/CallbackSettings/SelectPhoneNumbersModal'
 import ExchangePhoneNumberModal from '@/components/CallbackSettings/ExchangePhoneNumberModal'
 import Badge from '@/components/Badge'
+import AlertBox from '@/components/AlertBox'
 
 export default {
   name: 'CallbackSettings',
@@ -101,11 +110,13 @@ export default {
     DefaultButtonRowAction,
     SelectPhoneNumbersModal,
     ExchangePhoneNumberModal,
-    Badge
+    Badge,
+    AlertBox
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      licenseNumberLimit: 0,
       selectablePhoneNumberCount: 0,
       CONSTANTS: {
         id: 'CallbackSettingsSearchContainer',
@@ -240,7 +251,15 @@ export default {
   computed: {
     ...mapGetters({
       getCallbackSettingsSearchPermissions: 'permissions/getCallbackSettingsSearchPermissions'
-    })
+    }),
+    canRenderAlertBox() {
+      return this.selectablePhoneNumberCount === 0
+    },
+    getAlertBoxText() {
+      return `You can add a maximum of ${this.licenseNumberLimit} phone number${
+        this.licenseNumberLimit > 1 ? 's' : ''
+      } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
+    }
   },
   methods: {
     getStatusBadgeProps(status) {
@@ -264,9 +283,20 @@ export default {
           if (companyCount === null) companyCount = 0
           if (usedCount === null) usedCount = 0
           this.selectablePhoneNumberCount = companyCount - usedCount
+          this.licenseNumberLimit = companyCount
           if (!this.selectablePhoneNumberCount) {
             this.tableOptions.addButton.disabled = true
+            this.tableOptions.addButton.tooltip = `You can add a maximum of ${
+              this.licenseNumberLimit
+            } phone number${
+              this.licenseNumberLimit > 1 ? 's' : ''
+            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
             this.tableOptions.iEmpty.disabled = true
+            this.tableOptions.iEmpty.tooltip = `You can add a maximum of ${
+              this.licenseNumberLimit
+            } phone number${
+              this.licenseNumberLimit > 1 ? 's' : ''
+            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
           }
         })
         .catch(() => {
