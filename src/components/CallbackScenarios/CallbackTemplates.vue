@@ -121,7 +121,6 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-// TODO: Change endpoints
 import CallbackService from '@/api/callback'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteCallbackTemplateModal from '@/components/CallbackScenarios/DeleteCallbackTemplateModal'

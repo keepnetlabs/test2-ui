@@ -189,7 +189,7 @@ export default {
       formDetails: {},
       multipleSystemUserPayload: {},
       languages: [],
-      availableNumbers: [],
+      availableNumbers: 0,
       scenarioDetailsLookup: {
         difficultyTypes: [
           {

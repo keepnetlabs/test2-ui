@@ -26,10 +26,9 @@
 </template>
 
 <script>
-import AppDialog from '../AppDialog'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-// TODO: Change endpoint
-import { deleteEmailTemplate } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 export default {
   name: 'CallbackDeleteEmailTemplate',
   components: {
@@ -55,7 +54,7 @@ export default {
     },
     handleDelete() {
       this.isActionButtonDisabled = true
-      deleteEmailTemplate(this.selectedEmailTemplate.resourceId)
+      CallbackService.deleteEmailTemplate(this.selectedEmailTemplate.resourceId)
         .then(() => {
           this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
           this.closeModal()
