@@ -11,7 +11,7 @@
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"
     >
-      <template v-slot:overlay-body>
+      <template #overlay-body>
         <GrapesNewsletterModal
           v-if="showGrapesModal"
           ref="grapesJsPostIncident"
@@ -132,6 +132,11 @@
           ref="refPreview"
           :email-template-logo="emailTemplateLogo"
         />
+        <individual-print-out-template-default
+          v-else-if="templateType === 'individual-printout'"
+          ref="refPreview"
+          :email-template-logo="emailTemplateLogo"
+        />
         <email-template-default v-else ref="refPreview" :email-template-logo="emailTemplateLogo" />
       </template>
     </div>
@@ -152,9 +157,11 @@ import KEmailPreview from '@/components/KEmailPreview'
 import EmailTemplateDefault from '@/components/EmailTemplates/EmailTemplateDefault'
 import LandingPageTemplateDefault from '@/components/EmailTemplates/LandingPageTemplateDefault'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/IndividualPrintOutTemplateDefault.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    IndividualPrintOutTemplateDefault,
     EmailTemplateDefault,
     LandingPageTemplateDefault,
     KEmailPreview,

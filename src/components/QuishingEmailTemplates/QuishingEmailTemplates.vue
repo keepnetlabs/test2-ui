@@ -10,6 +10,16 @@
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
+    <NewQuishingIndividualPrintoutTemplatesModal
+      v-if="isShowIndividualPrintoutTemplateModal"
+      ref="newIndividualPrintoutTemplate"
+      :status="isShowIndividualPrintoutTemplateModal"
+      :is-duplicate="isDuplicate"
+      :is-edit="isEdit"
+      :email-template-id="getSelectedEmailTemplateId"
+      @changeNewIndividualPrintoutModalStatus="changeNewIndividualPrintoutModalStatus"
+      @showRenameAttachmentModal="onShowRenameAttachmentModal"
+    />
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowPreviewDialog"
       :type="SCENARIO_TYPES.QUISHING"
@@ -51,10 +61,12 @@ import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
 
 export default {
   name: 'QuishingEmailTemplates',
   components: {
+    NewQuishingIndividualPrintoutTemplatesModal,
     NewQuishingEmailTemplatesModal,
     CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
@@ -149,6 +161,10 @@ export default {
     changeNewEmailTemplateModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
       this.toggleNewEmailTemplateModal(null, false)
+    },
+    changeNewIndividualPrintoutModalStatus(status, restart) {
+      if (restart) this.$refs.refTable.callForData()
+      this.toggleIndividualPrintoutTemplateModal(null, false)
     },
     toggleIndividualPrintoutTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
