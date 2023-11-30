@@ -2,7 +2,7 @@
   <KContainer id="smishing-simulator">
     <el-tabs v-model="tab">
       <el-tab-pane
-        v-if="getSmishingScenariosSearchPermissions"
+        v-if="getCallbackScenariosSearchPermissions"
         label="Scenarios"
         name="scenarios"
         id="smishing-scenarios-content"
@@ -14,7 +14,7 @@
         />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getSmishingLandingPageTemplatesSearchPermissions"
+        v-if="getCallbackEmailTemplatesSearchPermissions"
         label="Email Templates"
         name="emailTemplates"
         id="email-templates-content"
@@ -22,7 +22,7 @@
         <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="getSmishingTextMessageTemplatesSearchPermissions"
+        v-if="getCallbackTemplatesSearchPermissions"
         label="Callback Templates"
         name="callbackTemplates"
         id="templates-content"
@@ -55,14 +55,12 @@ export default {
       tab: 'scenarios'
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions',
-      getSmishingTextMessageTemplatesSearchPermissions:
-        'permissions/getSmishingTextMessageTemplatesSearchPermissions',
-      getSmishingLandingPageTemplatesSearchPermissions:
-        'permissions/getSmishingLandingPageTemplatesSearchPermissions'
+      getCallbackScenariosSearchPermissions: 'permissions/getCallbackScenariosSearchPermissions',
+      getCallbackTemplatesSearchPermissions: 'permissions/getCallbackTemplatesSearchPermissions',
+      getCallbackEmailTemplatesSearchPermissions:
+        'permissions/getCallbackEmailTemplatesSearchPermissions'
     })
   },
   methods: {
@@ -93,15 +91,12 @@ export default {
   },
   created() {
     this.callForLanguages()
-    if (
-      !this.getSmishingScenariosSearchPermissions &&
-      this.getSmishingTextMessageTemplatesSearchPermissions
-    ) {
+    if (!this.getCallbackScenariosSearchPermissions && this.getCallbackTemplatesSearchPermissions) {
       this.tab = 'emailTemplates'
     } else if (
-      !this.getSmishingScenariosSearchPermissions &&
-      !this.getSmishingTextMessageTemplatesSearchPermissions &&
-      this.getSmishingLandingPageTemplatesSearchPermissions
+      !this.getCallbackScenariosSearchPermissions &&
+      !this.getCallbackTemplatesSearchPermissions &&
+      this.getCallbackEmailTemplatesSearchPermissions
     ) {
       this.tab = 'callbackTemplates'
     }

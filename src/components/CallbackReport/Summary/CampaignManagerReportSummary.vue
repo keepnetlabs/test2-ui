@@ -10,12 +10,7 @@
       :instance-group="instanceGroup"
       :training-report-dialog-items="trainingReportDialogItems"
     />
-    <CampaignManagerReportSummaryCards
-      :multiple-type="multipleType"
-      :method="getScenarioMethod"
-      :items="getCardsData"
-      :is-loading="isLoading || !getScenarioMethod"
-    />
+    <CampaignManagerReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo
         :items="getCampaignSummaryItems"
@@ -31,16 +26,13 @@
       />
     </div>
     <div class="my-6">
-      <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
+      <span class="campaign-manager-last-step__phishing-scenario-label">Callback Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
         <template #activator="{ on }">
           <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
             >Total {{ phishingScenarios.length }} Scenarios</span
           >
         </template>
-        <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
-          {{ methodWrapper.method }} ({{ methodWrapper.count }})
-        </div>
       </VTooltip>
     </div>
     <ElTabs
@@ -53,27 +45,27 @@
         v-for="(template, index) in phishingScenarios"
         :key="customKeys[index]"
         :name="customKeys[index]"
-        :label="template.scenarioInfo.name"
+        :label="template.name"
       />
     </ElTabs>
     <CampaignManagerReportSummaryEmail
       :difficulties="difficulties"
       :methods="methods"
       :form-data="getEmailTemplateData"
-      :isFetchingSummary="isLoading"
+      :isFetchingSummary="isLoading || !getEmailTemplateData"
     />
     <CallbackCampaignModalSummaryCallbackTemplate
       class="my-4"
       :formValues="getCallbackTemplateData"
-      :isFetchingSummary="isLoading"
+      :isFetchingSummary="isFetchingCallbackTemplate || !getCallbackTemplateData"
     />
-    <CampaignManagerReportSummaryTraining
+    <!-- <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
       class="mt-6"
       call-training-preview-api
       :training-params="getTrainingInfo"
       :selected-row="getSelectedRowTrainingInfo"
-    />
+    /> -->
   </div>
 </template>
 
@@ -82,25 +74,23 @@ import CampaignManagerReportSummaryHeader from '@/components/CallbackReport/Summ
 import CampaignManagerReportSummaryCards from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryCampaignInfo'
 import CampaignManagerReportSummaryEmail from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryEmail'
-// TODO: Change api endpoint
-import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
-import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+// import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
-    CampaignManagerReportSummaryTraining,
+    // CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader,
-    CallbackCampaignModalSummaryCallbackTemplate,
     CallbackCampaignModalSummaryCallbackTemplate
   },
   mixins: [useLoading],
@@ -114,11 +104,11 @@ export default {
     phishingScenarioName: {
       type: String
     },
-    multipleType: {
-      type: Array
-    },
     apiResponse: {
       type: Object
+    },
+    languageItems: {
+      type: Array
     }
   },
   data() {
@@ -128,7 +118,6 @@ export default {
       selectedScenarioTab: '',
       activeScenarioIndex: 0,
       campaignSummary: {},
-      interval: null,
       chartLabels: [
         'Opened email',
         'Clicked link',
@@ -137,43 +126,20 @@ export default {
         'Not delivered'
       ],
       customKeys: [],
+      emailTemplate: null,
+      callbackTemplate: null,
+      isFetchingCallbackTemplate: false,
+      isFetchingEmailTemplate: false,
       difficulties,
       methods
     }
   },
   computed: {
-    getMethodDetail() {
-      const mappedObj = this.phishingScenarios.reduce(
-        (acc, pScenario) => {
-          const method = methods[pScenario.scenarioInfo.methodTypeId - 1]?.text
-          acc[method] += 1
-          return acc
-        },
-        {
-          'Click-Only': 0,
-          'Data Submission': 0,
-          Attachment: 0
-        }
-      )
-      const mappedArr = []
-      Object.keys(mappedObj).forEach((key) => {
-        if (mappedObj[key] > 0) {
-          mappedArr.push({
-            method: key,
-            count: mappedObj[key]
-          })
-        }
-      })
-      return mappedArr
-    },
     phishingScenarios() {
       return this?.campaignSummary?.scenarios || []
     },
     getActiveScenario() {
       return this.phishingScenarios[this.activeScenarioIndex] || {}
-    },
-    getScenarioMethod() {
-      return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     getTrainingInfo() {
       return this?.getActiveScenario?.trainingInfo
@@ -186,13 +152,11 @@ export default {
       }
     },
     trainingInfos() {
-      return this.phishingScenarios.reduce((acc, pScenario) => {
-        if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
-        return acc
-      }, [])
-    },
-    isAttachment() {
-      return this.getScenarioMethod.toString() === '3' || false
+      return []
+      // return this.phishingScenarios.reduce((acc, pScenario) => {
+      //   if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
+      //   return acc
+      // }, [])
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
@@ -201,7 +165,7 @@ export default {
       }
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
-        languages.add(scenario.scenarioInfo.languageShortCode)
+        languages.add(scenario.languageShortCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
@@ -290,61 +254,57 @@ export default {
     getResendDialogItems() {
       const [
         openedEmail,
-        clickedEmail,
-        submittedEmail,
+        calledBack,
+        enteredDigits,
+        reportedEmail,
         noResponseEmail,
         notDelivered,
-        attachmentOpenedEmail,
-        reportedEmail,
-        mfa
+        failedToSend
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            clickedEmail,
+            openedEmail,
+            calledBack,
+            enteredDigits,
+            reportedEmail,
             noResponseEmail,
             notDelivered,
-            openedEmail,
-            submittedEmail,
-            attachmentOpenedEmail,
-            mfa
+            failedToSend
           }
         : {}
     },
     getChartData() {
       const defaultScenarioStatsObject = {
         scenarioStats: {
-          clickedEmail: 0,
+          openedEmail: 0,
+          calledBack: 0,
+          enteredDigits: 0,
+          reportedEmail: 0,
           noResponseEmail: 0,
           notDelivered: 0,
-          openedEmail: 0,
-          submittedEmail: 0,
-          attachmentOpenedEmail: 0,
-          reportedEmail: 0,
-          mfa: 0
+          failedToSend: 0
         }
       }
-      const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
+      const { stats = {} } = this.campaignSummary?.stats
         ? this.campaignSummary
         : defaultScenarioStatsObject
       const {
-        clickedEmail = 0,
+        openedEmail = 0,
+        calledBack = 0,
+        enteredDigits = 0,
+        reportedEmail = 0,
         noResponseEmail = 0,
         notDelivered = 0,
-        openedEmail = 0,
-        submittedEmail = 0,
-        attachmentOpenedEmail = 0,
-        reportedEmail = 0,
-        mfa = 0
-      } = scenarioStats
+        failedToSend = 0
+      } = stats
       const dataContainer = [
         openedEmail,
-        clickedEmail,
-        submittedEmail,
+        calledBack,
+        enteredDigits,
+        reportedEmail,
         noResponseEmail,
         notDelivered,
-        attachmentOpenedEmail,
-        reportedEmail,
-        mfa
+        failedToSend
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
@@ -352,13 +312,12 @@ export default {
       if (!this.getChartData.length) return {}
       const [
         openedEmail = 0,
-        clickedEmail = 0,
-        submittedEmail = 0,
+        calledBack = 0,
+        enteredDigits = 0,
+        reportedEmail = 0,
         noResponseEmail = 0,
         notDelivered = 0,
-        attachmentOpenedEmail = 0,
-        reportedEmail = 0,
-        mfa = 0
+        failedToSend = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -369,29 +328,25 @@ export default {
           userCount: openedEmail,
           userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
         },
-        attachmentOpenedEmail: {
-          userCount: attachmentOpenedEmail,
-          userPercent: ((attachmentOpenedEmail / this.getTotalUsers) * 100).toFixed()
+        calledBack: {
+          userCount: calledBack,
+          userPercent: ((calledBack / this.getTotalUsers) * 100).toFixed()
         },
-        clickedEmail: {
-          userCount: clickedEmail,
-          userPercent: ((clickedEmail / this.getTotalUsers) * 100).toFixed()
-        },
-        submittedEmail: {
-          userCount: submittedEmail,
-          userPercent: ((submittedEmail / this.getTotalUsers) * 100).toFixed()
-        },
-        notDelivered: {
-          userCount: notDelivered,
-          userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
+        enteredDigits: {
+          userCount: enteredDigits,
+          userPercent: ((enteredDigits / this.getTotalUsers) * 100).toFixed()
         },
         phishingReporter: {
           userCount: reportedEmail,
           userPercent: ((reportedEmail / this.getTotalUsers) * 100).toFixed()
         },
-        mfa: {
-          userCount: mfa,
-          userPercent: ((mfa / this.getTotalUsers) * 100).toFixed()
+        failedToSend: {
+          userCount: failedToSend,
+          userPercent: ((failedToSend / this.getTotalUsers) * 100).toFixed()
+        },
+        notDelivered: {
+          userCount: notDelivered,
+          userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
         }
       }
     },
@@ -400,90 +355,22 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
-        emailTemplateInfo: {}
+      if (!this.getActiveScenario || !Object.keys(this.getActiveScenario)?.length) {
+        return null
       }
-      if (!Object.keys(emailTemplateInfo)?.length) {
-        return {}
-      }
-      const { resourceId, phishingFileName } = emailTemplateInfo || {}
 
-      return Object.keys(emailTemplateInfo)?.length
-        ? {
-            resourceId,
-            languageShortCode: scenarioInfo?.languageShortCode,
-            attachment: phishingFileName
-              ? {
-                  name: phishingFileName
-                }
-              : null,
-            campaignResourceId: this.id,
-            instanceGroup: this.instanceGroup
-          }
-        : {}
+      return {
+        resourceId: this.getActiveScenario.emailTemplateResourceId,
+        languageShortCode: this.getActiveScenario.languageShortCode,
+        callbackNumber: this.getActiveScenario.callbackNumber,
+        campaignResourceId: this.id,
+        instanceGroup: this.instanceGroup
+      }
     },
     getCallbackTemplateData() {
-      // TODO: Change here with callback template data
+      if (!this.callbackTemplate || Object.keys(this.callbackTemplate).length === 0) return null
       return {
-        template: {
-          name: 'Template Name',
-          language: 'English',
-          voice: 'Female',
-          difficulty: 'Medium',
-          steps: [
-            {
-              inputType: 'TextToSpeech',
-              inputText:
-                'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-              inputDigit: 6,
-              duration: 0,
-              isVishingStep: true,
-              content: null,
-              inputUrl: null,
-              isExpanded: true
-            },
-            {
-              inputType: 'FileUpload',
-              inputText: '',
-              inputDigit: 5,
-              content: null,
-              duration: 0,
-              isVishingStep: false,
-              inputUrl: `https://keepnetlabsvishing.s3.eu-west-2.amazonaws.com/VishingTEST/X7AE3NtBgV1B-2.mp3`,
-              isExpanded: true
-            },
-            {
-              inputType: 'Pause',
-              inputText: '',
-              inputDigit: 0,
-              content: null,
-              duration: 3,
-              isVishingStep: false,
-              inputUrl: null,
-              isExpanded: true
-            }
-          ],
-          callGreeting: {
-            inputType: 'TextToSpeech',
-            inputText:
-              'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-            content: null,
-            duration: 0,
-            phishingCodeDigits: 6,
-            isVishingStep: false,
-            inputUrl: null
-          },
-          invalidDialingNotice: {
-            inputType: 'TextToSpeech',
-            inputText:
-              'Lorem ipsum dolor sit amet consectetur. Integer cras nisi fermentum ullamcorper cursus risus id risus consequat. Et sollicitudin est eu in. Consequat ultrices quis malesuada auctor etiam sagittis et amet. Purus sed suspendisse diam donec. Ornare odio tempor sollicitudin aliquet tempus facilisis arcu.',
-            inputDigit: 0,
-            content: null,
-            duration: 0,
-            isVishingStep: false,
-            inputUrl: null
-          }
-        }
+        template: this.callbackTemplate
       }
     }
   },
@@ -493,13 +380,34 @@ export default {
       setTimeout(() => {
         this.setLoading(false)
       }, 300)
+    },
+    getActiveScenario: {
+      deep: true,
+      handler(val) {
+        this.isFetchingCallbackTemplate = true
+        CallbackService.getCallbackTemplatePreview(val.callbackTemplateResourceId)
+          .then((res) => {
+            const languageIndex = this.languageItems.findIndex(
+              (language) => language.resourceId === res.data.data.vishingLanguageResourceId
+            )
+            this.callbackTemplate = {
+              ...res.data.data,
+              language: this.languageItems[languageIndex]?.language || '',
+              voice: this.languageItems[languageIndex]?.name || '',
+              difficulty: difficulties[val.difficultyTypeId - 1]?.text || ''
+            }
+            this.callbackTemplate.invalidDialingNotice = { ...this.callbackTemplate.steps[0] }
+            this.callbackTemplate.callGreeting = { ...this.callbackTemplate.steps[1] }
+            this.callbackTemplate.steps.splice(0, 2)
+          })
+          .finally(() => {
+            this.isFetchingCallbackTemplate = false
+          })
+      }
     }
   },
   created() {
     this.callForData()
-  },
-  beforeDestroy() {
-    clearInterval(this.interval)
   },
   methods: {
     callForData() {
@@ -508,15 +416,12 @@ export default {
         this.setLoading(true)
         this.callForTargetGroups()
       }
-      this.interval = setInterval(() => {
-        this.callApis()
-      }, 15000)
     },
     callApis(isUseLoading = false) {
       if (isUseLoading) {
         this.setLoading(true)
       }
-      getCampaignJobSummary(this.id, this.instanceGroup)
+      CallbackService.getCampaignSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.setCampaignSummary(response)
         })
@@ -536,13 +441,13 @@ export default {
       if (scenarios.length) {
         scenarios.forEach((scenario) => {
           if (scenario.trainingInfo && scenario.enrollmentInfo) {
-            trainingReportDialogItems.push(
-              new TrainingReportDialogModel(
-                scenario.scenarioInfo.name,
-                scenario.trainingInfo.name,
-                scenario?.enrollmentInfo?.enrollmentId
-              )
-            )
+            // trainingReportDialogItems.push(
+            //   new TrainingReportDialogModel(
+            //     scenario.scenarioInfo.name,
+            //     scenario.trainingInfo.name,
+            //     scenario?.enrollmentInfo?.enrollmentId
+            //   )
+            // )
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
@@ -560,13 +465,15 @@ export default {
       }
       this.$store.dispatch(
         'common/setActivePageRouterName',
-        this.campaignSummary?.phishingCampaignName || ''
+        this.campaignSummary?.campaignName || ''
       )
     },
     callForTargetGroups() {
-      getCampaignJobSummaryTargetGroups(this.id, this.instanceGroup).then((response) => {
-        this.targetGroups = response?.data?.data?.groups || []
-      })
+      CallbackService.getCampaignSummaryTargetGroups(this.id, this.instanceGroup).then(
+        (response) => {
+          this.targetGroups = response?.data?.data?.groups || []
+        }
+      )
     },
     setScenarioDetail(event = {}) {
       this.activeScenarioIndex = event.index

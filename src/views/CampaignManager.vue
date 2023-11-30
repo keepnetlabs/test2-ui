@@ -173,8 +173,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions'
+      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -382,7 +381,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      if (this.getCampaignManagerParentDeletePermissions) {
+      if (this.getCallbackCampaignDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(item.resourceId)
           .then(() => {

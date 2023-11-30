@@ -56,7 +56,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import { searchCampaignJobUserEmailReportedDetails } from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
@@ -111,7 +111,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailReportedDetails(this.axiosPayload, this.item?.resourceId)
+      CallbackService.getReportedUserDetails(this.item?.resourceId, this.axiosPayload)
         .then((response) => {
           const {
             data: {

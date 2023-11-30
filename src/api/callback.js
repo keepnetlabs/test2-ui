@@ -146,7 +146,7 @@ const getAvailableCallbackNumbers = () => {
   return testRequest.get(`/callback-simulator/settings/available-numbers`)
 }
 
-const getCallbackCampaignManagerFormDetails = () => {
+const getCampaignManagerFormDetails = () => {
   return testRequest.get('/callback-simulator/campaign/form-details')
 }
 
@@ -178,6 +178,10 @@ const exportCallbackCampaigns = (payload) => {
 
 const getCallbackCampaignPreview = (resourceId) => {
   return testRequest.get(`/callback-simulator/campaign/preview/${resourceId}`)
+}
+
+const getDefaultCompanySmtpSetting = () => {
+  return testRequest.get('/callback-simulator/campaign/root-company-shared-smtp-resource-id')
 }
 
 const bulkDeleteCallbackCampaign = (payload) => {
@@ -219,7 +223,7 @@ const startCallbackCampaignJob = (resourceId, instanceGroup) => {
 }
 
 const stopCallbackCampaignJob = (resourceId, instanceGroup) => {
-  return testRequest.post(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
+  return testRequest.patch(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
 }
 
 const deleteCallbackJob = (resourceId, instanceGroup) => {
@@ -238,7 +242,7 @@ const exportCallbackJobs = (resourceId, payload) => {
   })
 }
 
-const resendCampaignToUsersList = (payload) => {
+const resendCampaignToUsersList = (resourceId, instanceGroup, payload) => {
   return testRequest.post(
     `/callback-simulator/campaign-job/resend/${resourceId}/${instanceGroup}`,
     payload,
@@ -248,7 +252,7 @@ const resendCampaignToUsersList = (payload) => {
   )
 }
 
-const resendCampaignToUsers = (payload) => {
+const resendCampaignToUsers = (resourceId, instanceGroup, payload) => {
   return testRequest.post(
     `/callback-simulator/campaign-job/resend/users/${resourceId}/${instanceGroup}`,
     payload,
@@ -350,13 +354,14 @@ export default {
   mapCallbackNumbers,
   exchangeCallbackNumbers,
   getAvailableCallbackNumbers,
-  getCallbackCampaignManagerFormDetails,
+  getCampaignManagerFormDetails,
   createCallbackCampaign,
   deleteCallbackCampaign,
   getCallbackCampaign,
   searchCallbackCampaigns,
   exportCallbackCampaigns,
   getCallbackCampaignPreview,
+  getDefaultCompanySmtpSetting,
   bulkDeleteCallbackCampaign,
   calculateSendingInfo,
   calculateScheduleInfo,

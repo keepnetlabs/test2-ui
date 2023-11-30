@@ -40,7 +40,7 @@
           From: {{ fromName }}
         </div>
         <div class="campaign-manager-last-step__email-template-body-header-sub">
-          <span class="font-weight-bold">Phishing Callback Phone:</span> {{ phishingCallbackPhone }}
+          <span class="font-weight-bold">Phishing Callback Phone:</span> {{ callbackNumber }}
         </div>
         <div v-if="formData.attachment" class="attachment-wrapper mt-2" style="position: relative;">
           <div class="attachment blue-attach mb-0">
@@ -73,10 +73,9 @@ import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import { getDifficultyBadgeColor } from '@/utils/functions'
-
+import CallbackService from '@/api/callback'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
   components: {
@@ -113,7 +112,7 @@ export default {
       name: '',
       fromName: '',
       fromAddress: '',
-      phishingCallbackPhone: ''
+      callbackNumber: ''
     }
   },
   computed: {
@@ -134,16 +133,8 @@ export default {
   methods: {
     callForTemplate(showLoader = true) {
       if (showLoader) this.setLoading(true)
-      if (
-        this.formData?.resourceId &&
-        this.formData?.campaignResourceId &&
-        this.formData?.instanceGroup
-      )
-        getCampaignManagerEmailTemplatePreviewContent(
-          this.formData.resourceId,
-          this.formData.campaignResourceId,
-          this.formData.instanceGroup
-        )
+      if (this.formData?.resourceId)
+        CallbackService.getEmailTemplate(this.formData.resourceId)
           .then((response) => {
             const {
               data: { data }
@@ -156,7 +147,7 @@ export default {
             this.fromName = data.fromName
             this.fromAddress = data.fromAddress
             this.name = data.name
-            this.phishingCallbackPhone = data?.phishingCallbackPhone || '+90 555 222 44 44'
+            this.callbackNumber = this.formData.callbackNumber
           })
           .finally(() => {
             if (showLoader) this.setLoading()

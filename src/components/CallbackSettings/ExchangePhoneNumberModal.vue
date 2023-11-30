@@ -2,6 +2,7 @@
   <AppDialog
     v-if="status"
     class="exchange-phone-number-modal"
+    className="switch-dialog"
     :status="true"
     icon="mdi-swap-horizontal"
     title="Exchange Callback Phone Number"

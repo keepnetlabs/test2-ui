@@ -337,9 +337,8 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <!-- //TODO: Add permissions -->
           <v-list-group
-            v-if="getPhishingSimulatorLeftMenuPermissions"
+            v-if="getCallbackSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-callback-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getCallbackSimulatorClasses]"
@@ -351,9 +350,8 @@
                 <v-list-item-title>Callback Simulator</v-list-item-title>
               </v-list-item-content>
             </template>
-            <!-- //TODO: Add permissions -->
             <v-list-item
-              v-if="getPhishingScenarioLeftMenuPermissions"
+              v-if="getCallbackScenarioLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -365,9 +363,8 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <!-- //TODO: Add permissions -->
             <v-list-item
-              v-if="getCampaignManagerLeftMenuPermissions"
+              v-if="getCallbackCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -383,9 +380,8 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <!-- //TODO: Add permissions -->
             <v-list-item
-              v-if="getCampaignManagerLeftMenuPermissions"
+              v-if="getCallbackSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -1126,7 +1122,13 @@ export default {
       getQuishingCampaignManagerLeftMenuPermissions:
         'permissions/getQuishingCampaignManagerLeftMenuPermissions',
       getQuishingScenarioLeftMenuPermissions: 'permissions/getQuishingScenarioLeftMenuPermissions',
-      getQuishingSettingsLeftMenuPermissions: 'permissions/getQuishingSettingsLeftMenuPermissions'
+      getQuishingSettingsLeftMenuPermissions: 'permissions/getQuishingSettingsLeftMenuPermissions',
+      getCallbackSimulatorLeftMenuPermissions:
+        'permissions/getCallbackSimulatorLeftMenuPermissions',
+      getCallbackCampaignManagerLeftMenuPermissions:
+        'permissions/getCallbackCampaignManagerLeftMenuPermissions',
+      getCallbackScenarioLeftMenuPermissions: 'permissions/getCallbackScenarioLeftMenuPermissions',
+      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
