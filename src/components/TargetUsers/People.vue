@@ -146,7 +146,7 @@
           <span class="tooltip-span">Add users to a group</span>
         </v-tooltip>
       </template>
-      <template v-slot:addUsers>
+      <template #addUsers>
         <v-menu :offset-y="true" bottom left>
           <template v-slot:activator="{ on: menu }">
             <v-tooltip bottom opacity="1">
@@ -189,7 +189,7 @@
           EDIT FIELDS
         </div>
       </template>
-      <template v-slot:empty-table-inline>
+      <template #empty-table-inline>
         <div class="people__no-data">
           <p id="text--empty-table-title" class="people__no-data__header">
             {{ labels.EmptyTargetUsersPeople }}

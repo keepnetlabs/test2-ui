@@ -11,7 +11,7 @@
       </ElTabPane>
       <ElTabPane
         v-if="getEmailTemplatesSearchPermissions"
-        label="Email Templates"
+        label="Quishing Templates"
         name="email-templates"
         id="email-templates-content"
       >

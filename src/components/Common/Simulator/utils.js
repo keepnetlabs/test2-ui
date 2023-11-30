@@ -14,6 +14,22 @@ export const COMMON_SIMULATOR_COLUMNS = {
     width: 240,
     filterableType: 'text'
   },
+  QUISHING_TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.QuishingType,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 240,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual Printout' }
+    ]
+  },
   TEMPLATE_NAME: {
     property: PROPERTY_STORE.NAME,
     align: 'left',

@@ -68,6 +68,42 @@
           />
         </RowActionsMenu>
       </template>
+      <template #addUsers>
+        <v-menu :offset-y="true" bottom left>
+          <template v-slot:activator="{ on: menu }">
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn
+                  v-on="{ ...tooltip, ...menu }"
+                  :disabled="
+                    !$store.getters['permissions/getQuishingEmailTemplatesCreatePermissions']
+                  "
+                  id="btn-add--quishing-template"
+                  class="button-new"
+                  style="margin-right: 10px;"
+                  rounded
+                  color="#2196f3"
+                >
+                  <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+                  <span class="button-new__text">NEW</span>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Add a Template</span>
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="item in addQuishingItems"
+              :key="item.id"
+              :id="item.id"
+              :disabled="item.disabled"
+              @click="handleAddQuishingTemplate(item)"
+            >
+              <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
     </DataTable>
   </div>
 </template>
@@ -111,6 +147,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_EMAIL_TEMPLATES,
         columns: [
           COMMON_SIMULATOR_COLUMNS.TEMPLATE_NAME,
+          COMMON_SIMULATOR_COLUMNS.QUISHING_TYPE,
           COMMON_SIMULATOR_COLUMNS.QUISHING_CATEGORY_NAME,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
@@ -172,6 +209,13 @@ export default {
           disabled: !this.$store.getters['permissions/getQuishingEmailTemplatesCreatePermissions']
         }
       },
+      addQuishingItems: [
+        { text: 'Email Template', id: 'btn-add-quishing-template' },
+        {
+          text: 'Individual Printout Template',
+          id: 'btn-add-individual-printout-template'
+        }
+      ],
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
@@ -206,6 +250,14 @@ export default {
     },
     handleDelete(row = {}) {
       this.$emit('on-delete', row)
+    },
+    handleAddQuishingTemplate(item = { text: '' }) {
+      if (item.text === this.addQuishingItems[0].text) {
+        this.handleEmitEmailTemplateModal(null, false)
+      }
+      if (item.text === this.addQuishingItems[1].text) {
+        this.$emit('on-add-individual-printout-template', null, false)
+      }
     },
     exportQuishingEmailTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {

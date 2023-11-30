@@ -14,6 +14,7 @@
       v-if="isShowPreviewDialog"
       :type="SCENARIO_TYPES.QUISHING"
       :status="isShowPreviewDialog"
+      :is-individual-printout-template="isIndividualPrintoutTemplate"
       :selected-row="selectedEmailTemplate"
       :api-func="getEmailTemplatePreviewContent"
       @on-close="togglePreviewDialog"
@@ -37,6 +38,7 @@
       @on-edit-or-new="toggleNewEmailTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
+      @on-add-individual-printout-template="toggleIndividualPrintoutTemplateModal"
     />
   </div>
 </template>
@@ -48,6 +50,7 @@ import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { QUISHING_EMAIL_TYPES } from '@/components/QuishingEmailTemplates/utils'
 
 export default {
   name: 'QuishingEmailTemplates',
@@ -67,10 +70,14 @@ export default {
       selectedEmailTemplate: null,
       isDuplicate: false,
       isShowRenameAttachmentDialog: false,
+      isShowIndividualPrintoutTemplateModal: false,
       isEdit: false
     }
   },
   computed: {
+    isIndividualPrintoutTemplate() {
+      return this?.selectedEmailTemplate?.type === QUISHING_EMAIL_TYPES.INDIVIDUAL_PRINTOUT
+    },
     getSelectedEmailTemplateId() {
       return this.selectedEmailTemplate?.resourceId || ''
     }
@@ -142,6 +149,12 @@ export default {
     changeNewEmailTemplateModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
       this.toggleNewEmailTemplateModal(null, false)
+    },
+    toggleIndividualPrintoutTemplateModal(row = null, isDuplicate = false) {
+      this.selectedEmailTemplate = row
+      this.isDuplicate = isDuplicate
+      this.isEdit = !!row
+      this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
     }
   }
 }

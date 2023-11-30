@@ -6,7 +6,7 @@
     max-height
     max-height-size="900"
     icon="mdi-eye"
-    :title="title"
+    :title="getTitle"
     :subtitle="subtitle"
     @changeStatus="handleClose"
   >
@@ -94,6 +94,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isIndividualPrintoutTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,6 +108,11 @@ export default {
     }
   },
   computed: {
+    getTitle() {
+      return this?.isIndividualPrintoutTemplate
+        ? labels.IndividualPrintoutTemplatePreview
+        : this.title
+    },
     subtitle() {
       return this?.selectedRow?.name || ''
     }
