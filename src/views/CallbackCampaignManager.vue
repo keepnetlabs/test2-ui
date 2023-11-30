@@ -189,7 +189,7 @@ export default {
       formDetails: {},
       multipleSystemUserPayload: {},
       languages: [],
-      availableNumbers: [],
+      availableNumbers: 0,
       scenarioDetailsLookup: {
         difficultyTypes: [
           {
@@ -208,11 +208,9 @@ export default {
       }
     }
   },
-  // TODO: Change permissions
   computed: {
     ...mapGetters({
-      getSmishingCampaignManagerDeletePermissions:
-        'permissions/getSmishingCampaignManagerDeletePermissions'
+      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -249,8 +247,9 @@ export default {
   },
   methods: {
     callForAvailableNumbers() {
-      CallbackService.getAvailableCallbackNumbers().then((res) => {
-        this.availableNumbers = res?.data?.data || []
+      CallbackService.getUsedCallbackNumbers().then((res) => {
+        const { companyCount = 0, usedCount = 0 } = res.data.data
+        this.availableNumbers = companyCount - usedCount
       })
     },
     callForLanguages() {
@@ -268,7 +267,7 @@ export default {
       this.showNewInstanceModal()
     },
     callForFormDetails() {
-      CallbackService.getCallbackCampaignManagerFormDetails().then((response) => {
+      CallbackService.getCampaignManagerFormDetails().then((response) => {
         const {
           data: { data }
         } = response
@@ -375,8 +374,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      // TODO: Change permissions
-      if (this.getSmishingCampaignManagerDeletePermissions) {
+      if (this.getCallbackCampaignDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         CallbackService.deleteCallbackCampaign(item.resourceId)
           .then(() => {

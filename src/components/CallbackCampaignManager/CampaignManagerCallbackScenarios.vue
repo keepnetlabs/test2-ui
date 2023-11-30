@@ -48,8 +48,8 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[0].value"
-                    :items="getLanguageItems"
+                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[0].Value"
+                    :items="languages"
                     placeholder="Language"
                     item-disabled="disabled"
                     outlined
@@ -62,9 +62,8 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[1].value"
+                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[1].Value"
                     :items="getVoiceItems"
-                    :disabled="!axiosPayload.filter.FilterGroups[0].FilterItems[0].value"
                     placeholder="Voice"
                     item-disabled="disabled"
                     outlined
@@ -77,7 +76,7 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[2].value"
+                    v-model="axiosPayload.filter.FilterGroups[0].FilterItems[2].Value"
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -152,17 +151,23 @@
                     </div>
                   </div>
 
-                  <div class="template-list--item">
+                  <div class="template-list--item ml-8">
                     {{ getItemDescription(item) }}
                   </div>
                   <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
                     <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
                     <div class="d-flex align-center">
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-voice</v-icon>
-                      <span class="template-list--item__language">{{ item.voice }}</span>
+                      <div class="template-list--item__narrator mr-2">
+                        <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                        <span class="template-list--item__language">{{ item.languageCode }}</span>
+                      </div>
+                      <div class="template-list--item__narrator">
+                        <v-icon :size="16" color="#757575" class="mr-1"
+                          >mdi-microphone-outline</v-icon
+                        >
+                        <span class="template-list--item__language">{{ item.voice }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -229,7 +234,7 @@
                       :voiceResourceId="getVoiceResourceId"
                     />
                   </ElTabPane>
-                  <ElTabPane
+                  <!-- <ElTabPane
                     v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
                     :label="labels.Training"
                     name="training"
@@ -242,7 +247,7 @@
                       :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
-                  </ElTabPane>
+                  </ElTabPane> -->
                 </ElTabs>
               </div>
             </template>
@@ -279,18 +284,52 @@ import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
-import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
+// import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
-
+const defaultAxiosPayload = {
+  pageNumber: 1,
+  pageSize: 10,
+  orderBy: 'createTime',
+  ascending: false,
+  filter: {
+    Condition: 'AND',
+    FilterGroups: [
+      {
+        Condition: 'AND',
+        FilterItems: [
+          { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
+          {
+            Value: '',
+            FieldName: 'voice',
+            Operator: '='
+          },
+          { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+        ],
+        FilterGroups: []
+      },
+      {
+        Condition: 'OR',
+        FilterItems: [
+          { FieldName: 'name', Operator: 'Contains', Value: '' },
+          { FieldName: 'difficulty', Operator: 'Contains', Value: '' },
+          { FieldName: 'createdBy', Operator: 'Contains', Value: '' },
+          { FieldName: 'tags', Operator: 'Contains', Value: '' },
+          { FieldName: 'createTime', Operator: 'Contains', Value: '' }
+        ],
+        FilterGroups: []
+      }
+    ]
+  }
+}
 export default {
   name: 'CampaignManagerSmishingScenarios',
   components: {
     TrainingLibraryPreviewDialog,
-    CampaignManagerPhishingScenariosTrainingTab,
+    // CampaignManagerPhishingScenariosTrainingTab,
     AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
@@ -333,45 +372,7 @@ export default {
     return {
       SCENARIO_TYPES,
       tab: 'email',
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  value: '',
-                  FieldName: 'language',
-                  Operator: 'Include'
-                },
-                {
-                  value: '',
-                  FieldName: 'voice',
-                  Operator: 'Include'
-                },
-                { value: '', FieldName: 'difficulty', Operator: 'Include' }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                { FieldName: 'name', Operator: 'Contains', value: '' },
-                { FieldName: 'difficulty', Operator: 'Contains', value: '' },
-                { FieldName: 'createdBy', Operator: 'Contains', value: '' },
-                { FieldName: 'tags', Operator: 'Contains', value: '' },
-                { FieldName: 'createTime', Operator: 'Contains', value: '' }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: { ...defaultAxiosPayload },
       trainingTabModel: {},
       checkboxModel: {},
       labels,
@@ -407,18 +408,10 @@ export default {
       return this.languageItems?.map((language) => language.language)
     },
     getVoiceItems() {
-      if (this.getSelectedLanguage) {
-        const voiceItems = this.languageItems?.filter(
-          (language) => language.language === this.getSelectedLanguage
-        )
-        const voices = voiceItems.map((voice) => voice.name)
-        return voices
-      }
-
-      return []
+      return this.languageItems.map((language) => language.name)
     },
     getSelectedLanguage() {
-      return this.axiosPayload.filter.FilterGroups[0].FilterItems[0].value
+      return this.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value
     },
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -507,12 +500,11 @@ export default {
     search(val) {
       this.debounce(() => {
         this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-          { FieldName: 'Name', Operator: 'Contains', Value: val },
-          { FieldName: 'Description', Operator: 'Contains', Value: val },
-          { FieldName: 'Tags', Operator: 'Contains', Value: val },
-          { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
-          { FieldName: 'Language', Operator: 'Contains', Value: val },
-          { FieldName: 'Voice', Operator: 'Contains', Value: val }
+          { FieldName: 'name', Operator: 'Contains', Value: val },
+          { FieldName: 'difficulty', Operator: 'Contains', Value: val },
+          { FieldName: 'createdBy', Operator: 'Contains', Value: val },
+          { FieldName: 'tags', Operator: 'Contains', Value: val },
+          { FieldName: 'createTime', Operator: 'Contains', Value: val }
         ]
         this.callForPhishingScenarios()
         this.isShowSelectedScenarios = false
@@ -719,7 +711,7 @@ export default {
       this.difficulty = ''
       this.method = ''
       this.language = ''
-      this.axiosPayload = getDefaultAxiosPayload()
+      this.axiosPayload = { ...defaultAxiosPayload }
       this.callForPhishingScenarios(false)
     },
     handleTrainingPreviewButtonClick() {

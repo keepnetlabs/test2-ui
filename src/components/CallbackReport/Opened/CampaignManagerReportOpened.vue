@@ -35,7 +35,7 @@ import CampaignManagerReportHeader from '@/components/CallbackReport/CampaignMan
 import CampaignManagerReportOpenedTable from '@/components/CallbackReport/Opened/CampaignManagerReportOpenedTable'
 import CampaignManagerReportOpenedItemDetailDialog from '@/components/CallbackReport/Opened/CampaignManagerReportOpenedItemDetailDialog'
 import CampaignManagerReportResendDialog from '@/components/CallbackReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useCallbackResend'
 export default {
   name: 'CallbackReportOpened',
   components: {

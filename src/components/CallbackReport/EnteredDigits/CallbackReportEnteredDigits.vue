@@ -28,7 +28,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CallbackReport/CampaignManagerReportHeader'
 import CallbackReportEnteredDigitsTable from '@/components/CallbackReport/EnteredDigits/CallbackReportEnteredDigitsTable'
 import CampaignManagerReportResendDialog from '@/components/CallbackReport/CampaignManagerReportResendDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useCallbackResend'
 export default {
   name: 'CallbackReportCalledBack',
   components: {

@@ -27,7 +27,7 @@ import CampaignManagerReportHeader from '@/components/CallbackReport/CampaignMan
 import labels from '@/model/constants/labels'
 import CampaignManagerReportNoResponseTable from '@/components/CallbackReport/NoResponse/CampaignManagerReportNoResponseTable'
 import CampaignManagerReportResendDialog from '@/components/CallbackReport/CampaignManagerReportResendDialog'
-import { useSmishingResend } from '@/hooks/useSmishingResend'
+import { useResend } from '@/hooks/useCallbackResend'
 export default {
   name: 'CampaignManagerReportNoResponse',
   components: {
@@ -35,7 +35,7 @@ export default {
     CampaignManagerReportNoResponseTable,
     CampaignManagerReportHeader
   },
-  mixins: [useSmishingResend],
+  mixins: [useResend],
   props: {
     id: {
       type: String

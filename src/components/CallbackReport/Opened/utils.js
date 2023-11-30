@@ -26,8 +26,8 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
-  SMISHING_SCENARIO_NAME: {
-    property: 'smishingScenarioName',
+  SCENARIO_NAME: {
+    property: 'scenarioName',
     align: 'left',
     label: labels.ScenarioName,
     fixed: false,
@@ -78,7 +78,7 @@ export const COLUMNS = {
     property: 'lastSendingTime',
     align: 'left',
     editable: false,
-    label: 'Message Send Date',
+    label: 'Email Send Date',
     sortable: true,
     show: true,
     type: 'text',
@@ -169,7 +169,7 @@ export const COLUMNS = {
     filterableType: 'number'
   },
   TIMES_CALLED_BACK: {
-    property: 'calledBackCount',
+    property: 'calledCount',
     align: 'right',
     editable: false,
     label: `Times Called Back`,
@@ -180,7 +180,7 @@ export const COLUMNS = {
     filterableType: 'number'
   },
   TIMES_ENTERED_DIGITS: {
-    property: 'enteredDigitsCount',
+    property: 'enteredCount',
     align: 'right',
     editable: false,
     label: `Times Entered Digits`,
@@ -381,7 +381,7 @@ export const COLUMNS = {
     filterableItems: ['Human Activity', 'Sandbox Activity']
   },
   LAST_CALLER_ID: {
-    property: 'lastCallerId',
+    property: 'callbackNumber',
     align: 'left',
     label: `Last Caller ID`,
     fixed: false,
@@ -392,24 +392,24 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_CALLED_BACK: {
-    property: 'lastCalledBack',
+    property: 'lastCalledTime',
     align: 'left',
     label: `Last Called Back`,
     fixed: false,
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 225,
     filterableType: 'date'
   },
   LAST_ENTERED_DIGITS: {
-    property: 'lastEnteredDigits',
+    property: 'lastEnteredTime',
     align: 'left',
     label: `Last Entered Digits`,
     fixed: false,
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 225,
     filterableType: 'date'
   },
@@ -589,4 +589,14 @@ export function getStatusBadgeProps(status) {
 
 export const UNUSUAL_TYPES = {
   UNUSUAL_IP: 1
+}
+
+export const REPORT_TABS = {
+  ALL: 'All',
+  OPENED: 'Opened',
+  CALLBACK: 'Callback',
+  ENTERED_DIGITS: 'EnteredDigits',
+  NO_RESPONSE: 'NoResponse',
+  FAILED: 'NotDelivered',
+  REPORTED: 'Reported'
 }

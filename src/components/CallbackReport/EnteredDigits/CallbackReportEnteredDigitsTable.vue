@@ -34,17 +34,14 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { COLUMNS } from '@/components/CallbackReport/Opened/utils'
+import { COLUMNS, REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
-} from '@/api/phishingsimulator'
+import CallbackService from '@/api/callback'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -97,7 +94,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportOpened
+          message: `You do not have any users who entered digits`
         },
         rowActions: [
           {
@@ -131,7 +128,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
+      CallbackService.getCampaignTabUsers(
+        REPORT_TABS.ENTERED_DIGITS,
+        this.id,
+        this.instanceGroup,
+        this.axiosPayload
+      )
         .then((response) => {
           const {
             data: {
@@ -148,29 +150,6 @@ export default {
             })
             return { ...row, ...customFields }
           })
-
-          this.tableData = [
-            {
-              firstName: 'Bruce',
-              lastName: 'Wayne',
-              email: 'bruce@gmail.com',
-              department: 'Executives',
-              scenarioName: 'Amazon Login',
-              lastCallerId: '+905456789564',
-              lastEnteredDigits: '31.05.2021 16:31:33',
-              enteredDigitsCount: 1
-            },
-            {
-              firstName: 'Bruce',
-              lastName: 'Wayne',
-              email: 'bruce@gmail.com',
-              department: 'Executives',
-              scenarioName: 'Amazon Login',
-              lastCallerId: '+905456789564',
-              lastEnteredDigits: '31.05.2021 16:31:33',
-              enteredDigitsCount: 1
-            }
-          ]
         })
         .finally(this.setLoading)
     },
@@ -185,7 +164,12 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
+        CallbackService.exportCampaignTabUsers(
+          REPORT_TABS.ENTERED_DIGITS,
+          this.id,
+          this.instanceGroup,
+          payload
+        ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -198,7 +182,7 @@ export default {
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [1],
+        Types: [REPORT_TABS.ENTERED_DIGITS],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
