@@ -374,6 +374,7 @@ export default {
     })
   },
   created() {
+    this.callForLanguages('refScenariosList')
     this.callForData()
   },
   methods: {
