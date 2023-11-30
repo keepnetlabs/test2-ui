@@ -290,6 +290,11 @@ export default {
               'You can’t create a new campaign unless you have an available Callback phone number'
           }
         })
+        .catch(() => {
+          this.tableOptions.addButton.disabled = true
+          this.tableOptions.addButton.tooltip =
+            'You can’t create a new campaign unless you have an available Callback phone number'
+        })
         .finally(() => this.callForData({ isInitial: params.isInitial }))
     },
     callForNumbers() {

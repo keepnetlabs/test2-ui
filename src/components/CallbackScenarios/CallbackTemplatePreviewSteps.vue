@@ -166,8 +166,6 @@
 <script>
 import AudioPlayer from '@/components/AudioPlayer'
 import AlertBox from '@/components/AlertBox'
-// TODO: Change endpoint
-import { playTextToSpeech } from '@/api/vishing'
 import CallbackService from '@/api/callback'
 export default {
   name: 'CallbackTemplatePreviewSteps',
