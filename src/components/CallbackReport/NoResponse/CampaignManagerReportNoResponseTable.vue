@@ -80,7 +80,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.PHONENUMBER,
+          COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.SCENARIO_NAME,
           COLUMNS.EMAIL_SEND_DATE
