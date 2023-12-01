@@ -2516,7 +2516,9 @@ export default {
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
-        if (this.renderedColumns.find((property) => property === filterItem.property)) {
+        if (
+          this.renderedColumns.find((property) => filterItem && property === filterItem.property)
+        ) {
           acc.push({
             FieldName: filterItem['isCustomField']
               ? filterItem.property

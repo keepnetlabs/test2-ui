@@ -88,6 +88,7 @@
               </template>
             </AlertBox>
             <CampaignManagerCallbackScenarios
+              v-if="step === 2"
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
               :campaign-manager-resource-id="getCampaignResourceId"

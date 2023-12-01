@@ -48,6 +48,20 @@
                     "
                   />
                 </div>
+                <div v-if="isCallback" style="max-width: 140px;">
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
@@ -91,16 +105,21 @@
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
-                      {{ item['categoryName'] }}
+                      <template v-if="!isCallback">
+                        {{ item['categoryName'] }}
+                      </template>
                       <span class="template-list--item__sub-header--span"
-                        ><span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
+                        ><span v-if="!isCallback" style="font-size: 20px; vertical-align: sub;"
+                          >&bull;</span
+                        >
+                        by</span
                       >
                       {{ item['createdBy'] }}
                     </div>
                   </div>
                   <div
                     :class="[
-                      'template-list--item template-list--item__difficulty mr-8',
+                      'template-list--item template-list--item__difficulty',
                       getItemDifficultyClass(item['difficultyName'])
                     ]"
                   >
@@ -111,9 +130,15 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item mt-2">
+                <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
-                  <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                  <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                  <div class="d-flex align-center">
+                    <div class="template-list--item__narrator mr-2">
+                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div
@@ -232,6 +257,13 @@ export default {
         list: getEmailTemplatesList,
         content: getEmailTemplatePreviewContent
       })
+    },
+    languages: {
+      type: Array
+    },
+    isCallback: {
+      type: Boolean,
+      default: false
     }
   },
   directives: {
