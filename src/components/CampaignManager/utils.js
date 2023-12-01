@@ -196,6 +196,21 @@ export const COLUMNS = {
     ],
     width: 160
   },
+  QUISHING_TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    label: labels.QuishingType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual Printout' }
+    ],
+    width: 160
+  },
   QUISHING_METHOD: {
     property: PROPERTY_STORE.METHOD,
     align: 'left',

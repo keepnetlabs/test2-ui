@@ -59,6 +59,7 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
+      @on-add-individual-printout-campaign="toggleAddIndiviudalPrintoutCampaignModal"
     />
     <QuishingCampaignManagerItemTable
       v-if="selectedParentItem"
@@ -115,6 +116,7 @@ export default {
   data() {
     return {
       PREVIEW_DIALOG_TYPES,
+      isShowIndividualPrintoutTemplateModal: false,
       selectedParentItem: null,
       selectedInstanceItem: null,
       instanceResourceId: '',
@@ -318,6 +320,9 @@ export default {
     },
     toggleFrequencyTableShowing() {
       this.isFrequencyTableShowing = !this.isFrequencyTableShowing
+    },
+    toggleAddIndiviudalPrintoutCampaignModal() {
+      this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
     }
   }
 }
