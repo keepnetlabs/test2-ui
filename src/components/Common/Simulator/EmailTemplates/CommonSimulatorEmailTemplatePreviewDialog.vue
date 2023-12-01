@@ -14,21 +14,38 @@
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <div v-if="!isPreviewLoading" class="template-preview">
         <div class="template-preview__text" v-if="!!templateHTML">
-          <div>
-            <span class="template-preview__text--title">Template Name: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--title">From Name: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--title">From Email Address: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.fromAddress }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--subject">Subject: </span>
-            <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
+          <template v-if="!isQuishingTypeIndividualPrintOut">
+            <div>
+              <span class="template-preview__text--title">Template Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--title">From Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--title">From Email Address: </span>
+              <span class="template-preview__text--body">{{
+                emailTemplateParams.fromAddress
+              }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--subject">Subject: </span>
+              <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
+            </div>
+          </template>
+          <div v-else class="d-flex justify-space-between">
+            <div>Example Individual Printout</div>
+            <VBtn
+              id="btn-preview-indiviual-printout"
+              class="white--text btn-util btn-download-add-in"
+              color="#2196F3"
+              rounded
+              @click="handlePreviewIndividualPrintout"
+            >
+              <v-icon left>mdi-file-eye</v-icon>
+              {{ labels.PrintPreview }}
+            </VBtn>
           </div>
         </div>
         <div
@@ -64,6 +81,7 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
@@ -102,12 +120,24 @@ export default {
   },
   data() {
     return {
+      labels,
       isPreviewLoading: false,
       emailTemplateParams: {},
       templateHTML: null
     }
   },
   computed: {
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeEmail() {
+      if (!this.isQuishing) return false
+      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    },
     getTitle() {
       return this?.isIndividualPrintoutTemplate
         ? labels.IndividualPrintoutTemplatePreview
@@ -158,7 +188,8 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
-    }
+    },
+    handlePreviewIndividualPrintout() {}
   }
 }
 </script>

@@ -16,25 +16,44 @@
         <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
           <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
+              <div v-if="isQuishing">
+                <span class="template-preview__text--title">Quishing Type: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.type || 'Email'
+                }}</span>
+              </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeEmail">
                 <span class="template-preview__text--title">From: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeEmail">
                 <span class="template-preview__text--title">From Email Address: </span>
                 <span class="template-preview__text--body">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeEmail">
                 <span class="template-preview__text--subject">Subject: </span>
                 <span class="template-preview__text--subject">{{
                   emailTemplateParams.subject
                 }}</span>
+              </div>
+              <div v-if="isQuishingTypeIndividualPrintOut" class="d-flex justify-space-between">
+                <div>Example Individual Printout</div>
+                <VBtn
+                  id="btn-preview-indiviual-printout"
+                  class="white--text btn-util btn-download-add-in"
+                  color="#2196F3"
+                  rounded
+                  @click="handlePreviewIndividualPrintout"
+                >
+                  <v-icon left>mdi-file-eye</v-icon>
+                  {{ labels.PrintPreview }}
+                </VBtn>
               </div>
             </div>
             <div
@@ -84,8 +103,9 @@ import AppDialog from '@/components/AppDialog.vue'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
@@ -127,6 +147,17 @@ export default {
     }
   },
   computed: {
+    isQuishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+    },
+    isQuishingTypeEmail() {
+      if (!this.isQuishing) return false
+      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    },
     isAttachmentBasedScenario() {
       return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
     },
@@ -229,7 +260,8 @@ export default {
     },
     handleNextTemplate() {
       this.selectedLandingPageIndex++
-    }
+    },
+    handlePreviewIndividualPrintout() {}
   }
 }
 </script>

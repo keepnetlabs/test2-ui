@@ -135,7 +135,24 @@
                 "
                 class="pl-5 pt-5"
               >
-                You do not have Email Template
+                {{
+                  isQuishingTypeIndividualPrintOut
+                    ? 'You do not have any individual printout templates'
+                    : 'You do not have Email Template'
+                }}
+              </div>
+              <div
+                v-if="
+                  !loadingTemplates &&
+                  !loadingTemplatePreview &&
+                  !search &&
+                  !listData.length &&
+                  isQuishingTypeIndividualPrintOut
+                "
+                class="pl-5 pt-5"
+              >
+                Go to Quishing Simulator > Quishing Scenarios > Quishing Templates to create a new
+                individual printout template
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
@@ -215,8 +232,9 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -232,6 +250,10 @@ export default {
         list: getEmailTemplatesList,
         content: getEmailTemplatePreviewContent
       })
+    },
+    quishingType: {
+      type: String,
+      default: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
     }
   },
   directives: {
@@ -268,6 +290,19 @@ export default {
       loadingTemplates: false,
       selectedTemplateId: null,
       selectedPreviousIndex: 0
+    }
+  },
+  computed: {
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeEmail() {
+      if (!this.isQuishing) return false
+      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
     }
   },
   watch: {

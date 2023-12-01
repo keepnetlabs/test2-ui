@@ -235,7 +235,10 @@ export const SCENARIO_TYPES = {
   SMISHING: 'Smishing',
   CALLBACK: 'Callback'
 }
-
+export const quishingTypeItems = [
+  { text: 'Email', value: 'Email' },
+  { text: 'Individual Printout', value: 'Individual Printout' }
+]
 export const getDifficultyColor = (difficulty) => {
   if (difficulty === 'Easy') {
     return '#217124'

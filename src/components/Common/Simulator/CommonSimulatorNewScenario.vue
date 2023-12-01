@@ -56,6 +56,24 @@
                     :maxLength="300"
                   />
                 </FormGroup>
+                <FormGroup
+                  v-if="isQuishing"
+                  has-hint
+                  title="Quishing Type"
+                  sub-title="Select the quishing type for this scenario"
+                >
+                  <KSelect
+                    v-model.trim="quishingType"
+                    id="input--quishing-type-scenario"
+                    outlined
+                    dense
+                    persistent-hint
+                    placeholder="Select a quishing type"
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    :items="quishingTypeItems"
+                  />
+                </FormGroup>
                 <InputPhishingMethod
                   v-model.trim="formValues.methodTypeId"
                   item-text-key="text"
@@ -99,10 +117,7 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <div class="email-settings">
-              <ConfigureCompanyStepHeader
-                :title="labels.SelectEmailTemplate"
-                :subtitle="getStep2Subtitle"
-              />
+              <ConfigureCompanyStepHeader :title="getStep2Title" :subtitle="getStep2Subtitle" />
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <EmailTemplateListPreview
@@ -173,9 +188,13 @@
                     <div class="summary-header">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          mdi-email
+                          {{ isQuishingTypeIndividualPrintOut ? '$pdf-file' : 'mdi-email' }}
                         </v-icon>
-                        Email that will be sent to users
+                        {{
+                          isQuishingTypeIndividualPrintOut
+                            ? 'Individual printout that will be given to users'
+                            : 'Email that will be sent to users'
+                        }}
                       </div>
                       <div>
                         <v-btn
@@ -507,13 +526,20 @@ import {
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import AppModal from '@/components/AppModal'
-import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import {
+  getDifficultyColor,
+  quishingTypeItems,
+  SCENARIO_TYPES
+} from '@/components/Common/Simulator/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    KSelect,
     InputPhishingMethod,
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
@@ -559,6 +585,7 @@ export default {
   },
   data() {
     return {
+      quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
@@ -581,6 +608,7 @@ export default {
       step: 1,
       Validations,
       initialFormValues: {},
+      quishingType: '',
       formValues: {
         name: '',
         description: '',
@@ -610,6 +638,17 @@ export default {
     }
   },
   computed: {
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeEmail() {
+      if (!this.isQuishing) return false
+      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    },
     getEmailTemplateApiFuncs() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? {
@@ -693,11 +732,15 @@ export default {
       return this.formValues.methodTypeId === '4'
     },
     getScenarioInfoItems() {
-      return {
+      const obj = {
         Name: this.formValues.name,
         Method: this.getMethodText,
         Difficulty: this.getDifficultyType
       }
+      if (this.isQuishing) {
+        obj['Quishing Type'] = this.quishingType
+      }
+      return obj
     },
     getMfaSettingsItems() {
       return {
@@ -719,18 +762,26 @@ export default {
           : this.selectedEmailTemplate.categoryName
       } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
     },
+    getStep2Title() {
+      return this.isQuishingTypeIndividualPrintOut
+        ? labels.SelectIndividualPrintoutTemplate
+        : labels.SelectEmailTemplate
+    },
     getStep2Subtitle() {
+      const type = this.isQuishingTypeIndividualPrintOut
+        ? 'individual printout template'
+        : 'email template'
       const mTypeText =
         this.scenarioDetailsLookup?.methodTypes?.find(
           (mType) => mType.value === this.formValues.methodTypeId
         )?.text || ''
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
-        return 'Choose your click only type email template'
+        return `Choose your click only type ${type}`
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
-        return 'Choose your data submission type email template'
+        return `Choose your data submission type ${type}`
       else if (mTypeText === SCENARIO_METHOD_TYPES.ATTACHMENT)
-        return 'Choose your attachment type email template'
-      else return 'Choose your click only or data submission type email template'
+        return `Choose your attachment type ${type}`
+      else return `Choose your click only or data submission type ${type}`
     },
     getStep3Subtitle() {
       const mTypeText =

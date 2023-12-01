@@ -2,7 +2,7 @@
   <app-dialog
     v-if="status"
     :status="status"
-    title="Error Occurred"
+    :title="title"
     icon="mdi-alert"
     className="k-dialog-error"
     title-id="text--error-popup-title"
@@ -35,6 +35,10 @@ export default {
     },
     errorMessage: {
       type: String
+    },
+    title: {
+      type: String,
+      default: 'Error Occurred'
     }
   },
   methods: {

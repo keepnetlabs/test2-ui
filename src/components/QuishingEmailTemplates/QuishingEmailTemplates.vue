@@ -60,7 +60,7 @@ import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { QUISHING_EMAIL_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
 
 export default {
@@ -88,7 +88,7 @@ export default {
   },
   computed: {
     isIndividualPrintoutTemplate() {
-      return this?.selectedEmailTemplate?.type === QUISHING_EMAIL_TYPES.INDIVIDUAL_PRINTOUT
+      return this?.selectedEmailTemplate?.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
     },
     getSelectedEmailTemplateId() {
       return this.selectedEmailTemplate?.resourceId || ''

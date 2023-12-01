@@ -158,6 +158,8 @@ import EmailTemplateDefault from '@/components/EmailTemplates/EmailTemplateDefau
 import LandingPageTemplateDefault from '@/components/EmailTemplates/LandingPageTemplateDefault'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/IndividualPrintOutTemplateDefault.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -295,7 +297,13 @@ export default {
       this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
-      this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
+      const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      if (this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT) {
+        if (!template.includes(qrCodeString)) {
+          return this.$emit('showErrorDialog')
+        }
+      }
+      this.$emit('update:template', template)
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
