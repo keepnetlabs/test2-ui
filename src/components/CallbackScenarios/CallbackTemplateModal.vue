@@ -165,6 +165,7 @@
                       :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
                       :voiceResourceId="getVoiceResourceId"
                       @removeStep="onRemoveStep(index)"
+                      @vishingStepChange="onVishingStepChange"
                     />
                   </draggable>
                 </div>
@@ -640,6 +641,15 @@ export default {
     }
   },
   methods: {
+    onVishingStepChange(index) {
+      for (let i = 0; i < this.formValues.steps.length; i++) {
+        if (index === i) {
+          this.formValues.steps[i].isVishingStep = true
+        } else {
+          this.formValues.steps[i].isVishingStep = false
+        }
+      }
+    },
     onCallbackLanguageChange() {
       this.selectedCallbackVoice = ''
     },
