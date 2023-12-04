@@ -1370,13 +1370,14 @@ export default {
       {
         property: 'emailLastAction',
         align: 'left',
-        sortable: true,
-        hideSort: false,
+        sortable: false,
+        filterable: false,
+        hideFilter: true,
+        hideSort: true,
         label: 'Status',
         show: true,
         minWidth: 280,
-        type: 'slot',
-        filterableType: 'text'
+        type: 'slot'
       }
     ],
     columnsTargetUsers: [
