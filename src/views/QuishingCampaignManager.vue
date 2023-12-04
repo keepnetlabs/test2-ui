@@ -54,6 +54,7 @@
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       :form-details="formDetails"
+      :selected-row="selectedRow"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />

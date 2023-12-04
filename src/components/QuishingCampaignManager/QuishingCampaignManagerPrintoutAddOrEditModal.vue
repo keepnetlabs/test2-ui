@@ -49,7 +49,7 @@
               :title="labels.QuishingCampaignSettings"
               :subtitle="labels.PhishingCampaignSettingsSub"
             />
-            <CampaignManagerCampaignInfo
+            <CampaignManagerPrintoutCampaignInfo
               ref="refCampaignManagerCampaignInfo"
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
@@ -63,7 +63,7 @@
               :title="labels.QuishingScenarios"
               :subtitle="labels.CampaignManagerQuishingIndividualPrintoutScenariosSub"
             />
-            <CampaignManagerPhishingScenarios
+            <CampaignManagerPrintOutPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
               is-single
@@ -139,18 +139,17 @@
 import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { isDifferent } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
-import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
-import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import CampaignManagerPrintoutCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPrintoutCampaignInfo.vue'
+import CampaignManagerPrintOutPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPrintOutPhishingScenarios.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -158,12 +157,12 @@ const EMITS = {
 export default {
   name: 'QuishingCampaignManagerPrintoutAddOrEditModal',
   components: {
+    CampaignManagerPrintOutPhishingScenarios,
+    CampaignManagerPrintoutCampaignInfo,
     CampaignManagerTargetAudience,
     CustomError,
-    CampaignManagerPhishingScenarios,
     StepperFooter,
     CampaignManagerSummary,
-    CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
     AppModal
   },

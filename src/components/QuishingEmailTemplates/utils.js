@@ -1,4 +1,4 @@
 export const QUISHING_EMAIL_TEMPLATE_TYPES = {
-  EMAIL: 'email',
-  INDIVIDUAL_PRINTOUT: 'individual-printout'
+  EMAIL: 'Email',
+  INDIVIDUAL_PRINTOUT: 'Individual Printout'
 }

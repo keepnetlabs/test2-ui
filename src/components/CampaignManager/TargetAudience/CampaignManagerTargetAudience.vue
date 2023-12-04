@@ -32,7 +32,7 @@
       <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
         <div>
           <VCheckbox
-            v-if="!isVishing || !isQuishingPrintOut"
+            v-if="!isVishing && !isQuishingPrintOut"
             v-model="formData.sendOnlyActiveUsers"
             id="input--campaign-manager-advanced-settings-only-active-users"
             color="#2196f3"

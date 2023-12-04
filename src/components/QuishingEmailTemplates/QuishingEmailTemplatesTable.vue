@@ -50,6 +50,17 @@
             @on-click="handleEmitEmailTemplateModal(scope.row, false)"
           />
           <DefaultMenuRowAction
+            v-if="scope.row.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :check-is-owner-property="false"
+            :disabled="tableOptions.rowActions[4].disabled"
+            :icon="tableOptions.rowActions[4].icon"
+            :text="tableOptions.rowActions[4].name"
+            :checkIsOwnerProperty="false"
+            @on-click="handlePrintPreview(scope.row)"
+          />
+          <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[2].id"
             :check-is-owner-property="false"
@@ -127,6 +138,7 @@ import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActio
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 
 export default {
   name: 'QuishingEmailTemplatesTable',
@@ -141,6 +153,7 @@ export default {
   mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_EMAIL_TEMPLATES,
@@ -183,6 +196,12 @@ export default {
               'permissions/getQuishingEmailTemplatesDeletePermissions'
             ],
             id: 'btn-delete--email-templates-row-actions'
+          },
+          {
+            name: labels.PrintPreview,
+            icon: 'mdi-file-eye',
+            action: 'printPreviewAction',
+            id: 'btn-preview--email-templates-row-actions'
           }
         ],
         downloadButton: {
@@ -280,6 +299,9 @@ export default {
           link.click()
         })
       })
+    },
+    handlePrintPreview(row = {}) {
+      this.$emit('on-add-individual-printout-template', row, false)
     }
   }
 }

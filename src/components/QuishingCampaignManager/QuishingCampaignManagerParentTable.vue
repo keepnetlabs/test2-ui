@@ -120,6 +120,9 @@
       <CampaignManagerRowActions
         :scope="scope"
         :row-actions="tableOptions.rowActions"
+        :is-quishing-print-preview="
+          scope.row.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+        "
         @on-edit="handleEdit"
         @on-preview="handlePreview"
         @on-delete="handleDelete"
@@ -146,6 +149,7 @@ import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/function
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -173,6 +177,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       METHOD_TYPES,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
