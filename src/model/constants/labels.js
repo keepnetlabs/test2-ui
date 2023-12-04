@@ -12,6 +12,7 @@ export const labels = {
   IndividualPrintoutTemplatePreview: 'Individual Printout Template Preview',
   EnrollmentName: 'Enrollment Name',
   SelectIndividualPrintoutTemplate: 'Select Individual Printout Template',
+  CampaignManagerQuishingIndividualPrintoutScenariosSub: 'Select a scenario for your campaign',
   LimitRecipients: 'Limit Recipients',
   EnrollmentInfo: 'Enrollment Info',
   PrintPreview: 'Print Preview',

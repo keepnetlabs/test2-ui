@@ -37,6 +37,17 @@
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
+    <QuishingCampaignManagerPrintoutAddOrEditModal
+      v-if="isShowIndividualPrintoutTemplateModal"
+      ref="refPrintoutCampaignModal"
+      :status="isShowIndividualPrintoutTemplateModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      :form-details="formDetails"
+      :is-duplicate="isDuplicate"
+      @on-close="toggleAddIndiviudalPrintoutCampaignModal"
+      @on-submit="handleOnSubmit"
+    />
     <QuishingCampaignManagerNewInstanceModal
       v-if="isShowNewInstanceModal"
       ref="refCampaignNewInstance"
@@ -100,9 +111,11 @@ import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingCampaignManagerAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerAddOrEditModal.vue'
 import QuishingCampaignManagerNewInstanceModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerNewInstanceModal.vue'
 import { mapGetters } from 'vuex'
+import QuishingCampaignManagerPrintoutAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerPrintoutAddOrEditModal.vue'
 export default {
   name: 'QuishingCampaignManager',
   components: {
+    QuishingCampaignManagerPrintoutAddOrEditModal,
     QuishingCampaignManagerAddOrEditModal,
     CommonCampaignManagerPreviewDialog,
     QuishingCampaignManagerFrequencyTable,
