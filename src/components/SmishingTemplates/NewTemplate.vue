@@ -148,7 +148,7 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <form-group
                       class="mt-8"
-                      style="max-width: 591px;"
+                      style="max-width: 592px;"
                       title="Text Message"
                       sub-title="Text message to be sent to target users. Use the mandatory merge tag {PHISHINGURL} for the link to be added to the text message"
                     >
