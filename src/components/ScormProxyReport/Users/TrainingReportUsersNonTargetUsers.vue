@@ -61,6 +61,10 @@ export default {
   props: {
     formDetails: {
       type: Object
+    },
+    id: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -153,13 +157,14 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
+      AwarenessEducatorService.searchProxyTargetUsers(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
+          debugger
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber

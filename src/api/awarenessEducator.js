@@ -388,6 +388,13 @@ const getPhishedLandingPage = (resourceId = '') => {
   return testRequest.get(`/enrollments/${resourceId}/content`)
 }
 
+const searchProxyTargetUsers = (payload, id) => {
+  return testRequest.get(`/training-reports/anonymous/${id}`, payload)
+}
+const getProxyTargetUserById = (id) => {
+  return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -464,5 +471,7 @@ export default {
   resendTrainingToUserList,
   exportTrainingReport,
   getTrainingItems,
-  getPhishedLandingPage
+  getPhishedLandingPage,
+  searchProxyTargetUsers,
+  getProxyTargetUserById
 }

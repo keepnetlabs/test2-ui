@@ -70,7 +70,7 @@
           title="Non-Target Users"
           subtitle="All non-target users enrolled in this platform"
         />
-        <TrainingReportUsersNonTargetUsers :form-details="formDetails" />
+        <TrainingReportUsersNonTargetUsers :form-details="formDetails" :id="id" />
       </ElTabPane>
     </ElTabs>
   </div>
