@@ -53,7 +53,7 @@ import {
   createSystemUser,
   sendInformationEmail,
   updateSystemUser,
-  getSystemUsersRole
+  getAvailableSystemUsersRole
 } from '@/api/systemUsers'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import jwt_decode from 'jwt-decode'
@@ -110,7 +110,7 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     try {
-      const response = await getSystemUsersRole()
+      const response = await getAvailableSystemUsersRole()
       let allRoles = response.data.data
       let availableRoles = allRoles
       if (this.selectedRow) {

@@ -32,7 +32,7 @@
           </div>
           <div class="sub-header">Show / Hide Columns</div>
           <div
-            v-if="ind !== 0 && !col.hideOnSettingsPopup"
+            v-if="ind !== 0 && col && !col.hideOnSettingsPopup"
             v-for="(col, ind) of columns"
             :key="ind"
             class="popup-row"
@@ -105,6 +105,63 @@
             />
           </div>
           <div class="table-settings" v-if="options">
+            <slot name="addUsers">
+              <v-tooltip bottom opacity="1">
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="
+                      addButton &&
+                      addButton.show &&
+                      addButton.action &&
+                      getAddButtonType === 'primary'
+                    "
+                    v-on="on"
+                    :id="addButton.id"
+                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
+                    rounded
+                    color="#2196f3"
+                    style="order: 1; margin-right: 10px;"
+                    :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
+                  >
+                    <v-icon
+                      v-if="!!getAddButtonIcon"
+                      style="font-size: 20px; margin-top: 1px; color: #ffffff !important;"
+                      color="#ffffff"
+                      >{{ getAddButtonIcon }}</v-icon
+                    >
+                    <span class="button-new__text">{{ getAddButtonLabel }}</span>
+                  </v-btn>
+                  <v-btn
+                    v-if="
+                      addButton &&
+                      addButton.show &&
+                      addButton.action &&
+                      getAddButtonType === 'secondary'
+                    "
+                    v-on="on"
+                    :id="addButton.id"
+                    :class="[addButton && addButton.disabled && 'btn-add--disabled']"
+                    color="#757575"
+                    text
+                    plain
+                    style="order: 1; margin-right: 10px;"
+                    :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
+                  >
+                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
+                      getAddButtonIcon
+                    }}</v-icon>
+                    <span class="button-new__text button-new__text--secondary">{{
+                      getAddButtonLabel
+                    }}</span>
+                  </v-btn>
+                </template>
+                <span class="tooltip-span">{{
+                  (addButton && addButton.tooltip) || 'Add Users'
+                }}</span>
+              </v-tooltip>
+            </slot>
             <v-btn
               v-if="groupable"
               class="clust-btn btn-hover mr-1"
@@ -177,29 +234,6 @@
               </v-menu>
             </div>
 
-            <slot name="addUsers">
-              <v-tooltip bottom opacity="1">
-                <template #activator="{ on }">
-                  <v-btn
-                    v-if="addButton && addButton.show && addButton.action"
-                    v-on="on"
-                    :id="addButton.id"
-                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
-                    rounded
-                    color="#2196f3"
-                    style="order: 3; margin-right: 10px;"
-                    :disabled="addButton && addButton['disabled']"
-                    @click="addButtonFunction(addButton.action)"
-                  >
-                    <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
-                    <span class="button-new__text">NEW</span>
-                  </v-btn>
-                </template>
-                <span class="tooltip-span">{{
-                  (addButton && addButton.tooltip) || 'Add Users'
-                }}</span>
-              </v-tooltip>
-            </slot>
             <v-tooltip bottom opacity="1">
               <template #activator="{ on }">
                 <v-btn
@@ -427,7 +461,7 @@
             />
             <el-table-column
               v-for="(col, ind) of columns"
-              v-if="col.show"
+              v-if="col && col.show"
               :key="col.property + ind"
               :align="col.align"
               :fixed="col.fixed"
@@ -669,23 +703,25 @@
               v-if="rowActions && rowActions.length === 1"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom right>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      v-on="on"
-                      @click.native="rowAct(rowActions[0].action, scope.row, scope)"
-                      :id="`${rowActions[0].id}-${
-                        scope.$index
-                      }-${Math.random().toString().substring(2)}`"
-                      class="btn-hover"
-                      icon
-                      :disabled="rowActions[0].disabled"
-                    >
-                      <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[0].name }}</span>
-                </v-tooltip>
+                <slot name="datatable-row-actions" :scope="scope">
+                  <v-tooltip bottom right>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        v-on="on"
+                        @click.native="rowAct(rowActions[0].action, scope.row, scope)"
+                        :id="`${rowActions[0].id}-${
+                          scope.$index
+                        }-${Math.random().toString().substring(2)}`"
+                        class="btn-hover"
+                        icon
+                        :disabled="rowActions[0].disabled"
+                      >
+                        <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                </slot>
               </template>
             </el-table-column>
             <el-table-column
@@ -780,7 +816,11 @@
                 @click="onEmptyBtnClicked"
               >
                 <!-- empty action -->
-                <v-icon class="mr-1">{{ empty.icon }}</v-icon>
+                <v-icon
+                  class="mr-1"
+                  style="font-size: 20px; margin-top: 1px; color: #ffffff !important;"
+                  >{{ empty.icon }}</v-icon
+                >
                 <span>{{ empty.btn }} </span>
               </v-btn>
             </slot>
@@ -1279,6 +1319,17 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    getAddButtonLabel() {
+      return this.addButton?.label || 'NEW'
+    },
+    getAddButtonIcon() {
+      if (this.addButton?.icon === null) return null
+      return this.addButton?.icon || 'mdi-plus'
+    },
+    getAddButtonType() {
+      if (!this.addButton?.type) return 'primary'
+      return this.addButton?.type || 'primary'
+    },
     isColumnFilterActive() {
       if (this.manageColumnFilterStatusFromParent)
         return this?.manageColumnFilterStatusFromParent?.status
@@ -1597,7 +1648,7 @@ export default {
       deep: true,
       handler(val) {
         this.setRenderedColumns()
-        this.allHidden = !val.some((col) => col.show)
+        this.allHidden = !val.some((col) => col && col.show)
       }
     }
   },
@@ -1915,7 +1966,7 @@ export default {
      */
     columnStandardisation(columns) {
       columnStandards.forEach((x) => {
-        let index = columns.findIndex((col) => col.property === x.property)
+        let index = columns.findIndex((col) => col && col.property === x.property)
         if (index > -1) {
           if (!columns[index].overrideWidth) {
             columns[index] = { ...columns[index], ...x }
@@ -2059,7 +2110,9 @@ export default {
      * This function sets rendered columns on table
      */
     setRenderedColumns() {
-      this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)
+      this.renderedColumns = this.columns
+        .filter((item) => item && item.show)
+        .map((i) => i && i.property)
     },
     /**
      * This function fires when someone click download button on table and make selection
@@ -2782,6 +2835,10 @@ export default {
       this.calculateAllSelected()
     },
     onEmptyBtnClicked(e) {
+      if (this.empty?.action) {
+        this.$emit(this.empty.action)
+        return
+      }
       this.$emit('onEmptyBtnClicked', e)
     },
     downloadEvent(downloadTypes) {

@@ -10,6 +10,12 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />
+    <CampaignManagerReportTrainingReportsDialog
+      v-if="isShowTrainingReportsDialog"
+      :status="isShowTrainingReportsDialog"
+      :table-data="trainingReportDialogItems"
+      @on-close="toggleShowTrainingReportsDialog"
+    />
     <div class="campaign-manager-report-summary-header__left">
       <div class="campaign-manager-report-summary-header__title">
         {{ labels.CampaignSummary }}
@@ -37,6 +43,18 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
         @click="toggleShowResendDialog"
         >{{ labels.ResendCampaign }}</v-btn
       >
+      <VBtn
+        v-if="isShowTrainingReportButton"
+        id="btn-training-report--campaign-reports"
+        class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
+        rounded
+        color="#2196f3"
+        @click="handleTrainingReport"
+        >{{ getTrainingReportLabel }}
+        <VIcon v-if="!isMultipleTrainingReport" class="ml-2" style="font-size: 20px;"
+          >mdi-open-in-new</VIcon
+        >
+      </VBtn>
     </div>
   </div>
 </template>
@@ -46,10 +64,14 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/SmishingReport/Summary/CampaignManagerReportSummaryResendDialog'
 import SmishingService from '@/api/smishing'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import CampaignManagerReportTrainingReportsDialog from '@/components/CampaignManagerReport/CampaignManagerReportTrainingReportsDialog.vue'
 
 export default {
   name: 'CampaignManagerReportSummaryHeader',
-  components: { CampaignManagerReportSummaryResendDialog },
+  components: {
+    CampaignManagerReportTrainingReportsDialog,
+    CampaignManagerReportSummaryResendDialog
+  },
   props: {
     phishingScenarioName: {
       type: String
@@ -62,6 +84,22 @@ export default {
     },
     instanceGroup: {
       type: [String, Number]
+    },
+    isMultipleTrainingReport: {
+      type: Boolean,
+      default: false
+    },
+    isShowTrainingReportButton: {
+      type: Boolean,
+      default: true
+    },
+    trainingInfos: {
+      type: Array,
+      default: () => []
+    },
+    trainingReportDialogItems: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -69,7 +107,13 @@ export default {
       labels,
       isActionButtonDisabled: false,
       isShowResendDialog: false,
+      isShowTrainingReportsDialog: false,
       isDownloadReportDisabled: false
+    }
+  },
+  computed: {
+    getTrainingReportLabel() {
+      return this.isMultipleTrainingReport ? labels.TrainingReports : labels.TrainingReport
     }
   },
   methods: {
@@ -111,6 +155,16 @@ export default {
           }
         })
         .finally(() => (this.isDownloadReportDisabled = false))
+    },
+    handleTrainingReport() {
+      if (this.isMultipleTrainingReport) this.toggleShowTrainingReportsDialog()
+      else
+        window.open(
+          `/awareness-educator/enrollments/training-report/${this.trainingReportDialogItems[0].enrollmentId}`
+        )
+    },
+    toggleShowTrainingReportsDialog() {
+      this.isShowTrainingReportsDialog = !this.isShowTrainingReportsDialog
     }
   }
 }

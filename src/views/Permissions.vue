@@ -333,11 +333,14 @@ export default {
             case 'Threat Sharing':
               sortedPermissions[0] = item
               break
-            case 'Phishing Simulation':
+            case 'Phishing Simulator':
               sortedPermissions[1] = item
               break
-            case 'Smishing Simulation':
+            case 'Smishing Simulator':
               sortedPermissions[2] = item
+              break
+            case 'Quishing Simulator':
+              sortedPermissions[9] = item
               break
             case 'Awareness Educator':
               sortedPermissions[3] = item
@@ -354,8 +357,14 @@ export default {
             case 'Company':
               sortedPermissions[7] = item
               break
-            case 'Vishing':
+            case 'Vishing Simulator':
               sortedPermissions[8] = item
+              break
+            case 'Threat Intelligence':
+              sortedPermissions[10] = item
+              break
+            case 'Callback Simulator':
+              sortedPermissions[11] = item
               break
             default:
               break

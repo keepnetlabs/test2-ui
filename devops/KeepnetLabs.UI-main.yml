@@ -4,7 +4,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 schedules:
-- cron: "00 5,9,13 * * 1-5"
+- cron: "00 5,9,13 * 12 1-5"
   displayName: Daily build
   branches:
     include:

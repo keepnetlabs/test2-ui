@@ -99,6 +99,7 @@
               :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -236,6 +237,9 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
+    },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(

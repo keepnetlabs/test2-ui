@@ -15,6 +15,9 @@
       :is-valid="isTargetGroupsValid"
       :is-vishing="isVishing"
       :is-all-groups="isAllGroups"
+      :isMFAScenarioSelected="isMFAScenarioSelected"
+      :isSmishing="isSmishing"
+      :isCallback="isCallback"
       :last-column-name="lastColumnName"
       :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
       @handle-selection-change="handleTargetGroupSelectionChange"
@@ -143,6 +146,18 @@ export default {
     isCallApiWhenCreated: {
       type: Boolean,
       default: true
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isCallback: {
+      type: Boolean,
+      default: false
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

@@ -30,7 +30,7 @@
           </div>
         </v-list-item>
         <div
-          class="k-dialog__body"
+          :class="['k-dialog__body', dialogBodyClass]"
           :style="[
             {
               maxHeight: maxHeightSize ? maxHeightSize : '400px',
@@ -108,6 +108,9 @@ export default {
       default: false
     },
     maxHeightSize: {
+      type: String
+    },
+    dialogBodyClass: {
       type: String
     },
     size: {

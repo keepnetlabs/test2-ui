@@ -215,7 +215,9 @@ export const SCENARIO_DELETE_DIALOG_TYPES = {
 }
 export const SCENARIO_TYPES = {
   PHISHING: 'Phishing',
-  QUISHING: 'Quishing'
+  QUISHING: 'Quishing',
+  SMISHING: 'Smishing',
+  CALLBACK: 'Callback'
 }
 
 export const getDifficultyColor = (difficulty) => {

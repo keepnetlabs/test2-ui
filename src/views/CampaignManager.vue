@@ -7,6 +7,22 @@
       @on-close="toggleShowLaunchDialog"
       @on-confirm="handleConfirmLaunchDialog"
     />
+    <CommonCampaignManagerCancelCampaignDialog
+      v-if="isShowStopDialog"
+      :status="isShowStopDialog"
+      :is-action-button-disabled="isStopDialogActionButtonDisabled"
+      :item="startStopCampaignPayload"
+      @on-close="toggleStopCampaignDialog"
+      @on-confirm="handleStopCampaign"
+    />
+    <CommonCampaignManagerLaunchCampaignDialog
+      v-if="isShowStartDialog"
+      :status="isShowStartDialog"
+      :item="startStopCampaignPayload"
+      :is-action-button-disabled="isStartDialogActionButtonDisabled"
+      @on-close="toggleStartCampaignDialog"
+      @on-confirm="handleStartCampaign"
+    />
     <CommonCampaignManagerDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
@@ -41,6 +57,7 @@
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       :form-details="formDetails"
+      :selected-row="selectedRow"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
@@ -65,6 +82,8 @@
       :is-loading="isItemTableLoading"
       :item="selectedParentItem"
       :status-items="getStatusItems"
+      @on-stop="handleStop"
+      @on-start="handleStart"
       @on-launch="handleLaunch"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
@@ -77,6 +96,8 @@
       :item="selectedInstanceItem"
       :status-items="getStatusItems"
       :parent-resource-id="selectedParentItem.resourceId"
+      @on-stop="handleStop"
+      @on-start="handleStart"
       @on-launch="handleLaunch"
       @on-back-click="handleOnFrequencyBackClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
@@ -91,7 +112,9 @@ import CampaignManagerAddOrEditModal from '@/components/CampaignManager/Campaign
 import {
   bulkDeleteCampaignReports,
   deleteCampaignManager,
-  getCampaignManagerFormDetails
+  getCampaignManagerFormDetails,
+  launchPhishingCampaignInstanceGroup,
+  stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
@@ -100,10 +123,14 @@ import CampaignManagerFrequencyTable from '@/components/CampaignManager/Campaign
 import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
 import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
 import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
+import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
+import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
 
 export default {
   name: 'CampaignManager',
   components: {
+    CommonCampaignManagerCancelCampaignDialog,
+    CommonCampaignManagerLaunchCampaignDialog,
     CommonCampaignManagerPreviewDialog,
     CommonCampaignManagerCreateNewInstanceDialog,
     CommonCampaignManagerDeleteDialog,
@@ -134,15 +161,19 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
+      isShowStopDialog: false,
+      isShowStartDialog: false,
       isFrequencyTableShowing: false,
       formDetails: {},
-      multipleSystemUserPayload: {}
+      multipleSystemUserPayload: {},
+      startStopCampaignPayload: {},
+      isStartDialogActionButtonDisabled: false,
+      isStopDialogActionButtonDisabled: false
     }
   },
   computed: {
     ...mapGetters({
-      getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions'
+      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -285,9 +316,54 @@ export default {
       this.isDuplicate = true
       this.toggleAddCampaignManagerModal()
     },
+    handleStop(obj = {}) {
+      this.startStopCampaignPayload = obj
+      this.toggleStopCampaignDialog()
+    },
+    handleStart(obj = {}) {
+      this.startStopCampaignPayload = obj
+      this.toggleStartCampaignDialog()
+    },
+    handleStartCampaign(row) {
+      this.isStartDialogActionButtonDisabled = true
+      launchPhishingCampaignInstanceGroup(row.resourceId, row.instanceGroup)
+        .then(() => {
+          if (this.isFrequencyTableShowing) {
+            this.$refs.campaignManagerFrequencyTable.callForData()
+          } else {
+            this.$refs.campaignManagerItemTable.callForData()
+          }
+          this.toggleStartCampaignDialog()
+        })
+        .finally(() => {
+          this.isStartDialogActionButtonDisabled = false
+        })
+    },
+    handleStopCampaign(row) {
+      this.isStopDialogActionButtonDisabled = true
+      stopPhishingCampaignJob(row.resourceId, row.instanceGroup)
+        .then(() => {
+          if (this.isFrequencyTableShowing) {
+            this.$refs.campaignManagerFrequencyTable.callForData()
+          } else {
+            this.$refs.campaignManagerItemTable.callForData()
+          }
+          this.toggleStopCampaignDialog()
+        })
+        .finally(() => {
+          this.isStopDialogActionButtonDisabled = false
+        })
+    },
     handleLaunch(row = {}) {
       this.launchResourceId = row.resourceId
+      this.selectedRow = row
       this.toggleShowLaunchDialog()
+    },
+    toggleStartCampaignDialog() {
+      this.isShowStartDialog = !this.isShowStartDialog
+    },
+    toggleStopCampaignDialog() {
+      this.isShowStopDialog = !this.isShowStopDialog
     },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedRow = null
@@ -305,7 +381,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      if (this.getCampaignManagerParentDeletePermissions) {
+      if (this.getCallbackCampaignDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(item.resourceId)
           .then(() => {

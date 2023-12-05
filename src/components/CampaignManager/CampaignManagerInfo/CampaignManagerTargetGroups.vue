@@ -37,6 +37,7 @@
               :is-all-groups="isAllGroups"
               :is-call-api-when-created="isCallApiWhenCreated"
               :is-show-company-column="isShowCompanyColumn"
+              :isCallback="isCallback"
               :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
@@ -60,6 +61,10 @@
               :last-column-name="lastColumnName"
               :add-row-class-name="addRowClassName"
               :is-vishing="isVishing"
+              :is-smishing="isSmishing"
+              :is-awareness="isAwareness"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
+              :add-phone-number-column="isAwareness"
             />
           </div>
         </Multipane>
@@ -111,6 +116,26 @@ export default {
       default: false
     },
     isCallApiWhenCreated: {
+      type: Boolean,
+      default: false
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
+    },
+    isCallback: {
+      type: Boolean,
+      default: false
+    },
+    isAwareness: {
+      type: Boolean,
+      default: false
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
+    addPhoneNumberColumn: {
       type: Boolean,
       default: false
     }

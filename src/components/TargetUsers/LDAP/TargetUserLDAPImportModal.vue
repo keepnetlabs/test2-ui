@@ -129,7 +129,9 @@ export default {
       fieldMappings: this.fieldMappings,
       customFields: this.customFields,
       isEdit: this.isEdit,
-      setTotalNumberOfRecords: (val) => (this.totalNumberOfRecords = val),
+      setTotalNumberOfRecords: (val) => {
+        if (!this.totalNumberOfRecords) this.totalNumberOfRecords = val
+      },
       setSelectedUsers: (val) => (this.selectedUsers = val),
       getEditedScheduledFilter: () => this.editedScheduledFilter,
       handleServerSideSelectionParams: (serverSideSelectionParams) =>

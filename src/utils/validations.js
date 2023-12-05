@@ -233,10 +233,10 @@ export function isDomainUrl(value, message = 'Invalid URL') {
     ) || message
   )
 }
-export function numberRangeRule(value, min = 0, max = 999) {
+export function numberRangeRule(value, min = 0, max = 999, message) {
   if (value == '' && value == null) return false
   if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
-  return `Enter a number between ${min} and ${max}`
+  return message || `Enter a number between ${min} and ${max}`
 }
 
 export function subdomainDash(value, message = 'Invalid Subdomain') {
@@ -280,4 +280,12 @@ export function isGsm7(
     '^[A-Za-z0-9 \\r\\n@£$¥èéùìòÇØøÅå\u0394_\u03A6\u0393\u039B\u03A9\u03A0\u03A8\u03A3\u0398\u039EÆæßÉ!"#$%&\'()*+,\\-./:;<=>?¡ÄÖÑÜ§¿äöñüà^{}\\\\\\[~\\]|\u20AC]*$'
   )
   return gsm.test(v) || message
+}
+
+export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
+  return (
+    /^(ldaps?:\/\/)?([0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[0-9]{1,5})?$/i.test(
+      value
+    ) || message
+  )
 }

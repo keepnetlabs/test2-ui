@@ -1,0 +1,108 @@
+.callback-template-dialog-step {
+    margin-bottom: 12px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 0px 1px rgba(0, 0, 0, 0.25) !important;
+  
+    &:last-child {
+      margin-bottom: 0px !important;
+    }
+  
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 16px !important;
+      cursor: move;
+    }
+  
+    &__header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  
+    &__header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  
+    &__header-text {
+      font-weight: 600;
+      font-size: 18px;
+    }
+  
+    &__form-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+  
+    &__form-subtitle {
+      font-size: 14px;
+    }
+  
+    &__form-title-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  
+    &__form-label {
+      font-weight: 600;
+      font-size: 16px;
+    }
+  
+    &__body {
+      padding: 0px 12px !important;
+    }
+  
+    &__audio-badge-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  
+    &__audio-badge {
+      display: flex;
+      align-items: center;
+      background-color: #e0e0e0;
+      margin-right: 8px;
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      color: #757575;
+    }
+  
+    &__audio-file-preview-container {
+      width: 100%;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      background-color: #f2f2f2;
+      padding: 10px 14px;
+      margin-top: 1rem;
+    }
+  
+    &__audio-player-container {
+      background-color: #ffffff;
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+  
+    #callback-template-dialog-step__play-audio-button:disabled {
+      opacity: 0.5;
+      background-color: #2195f3 !important;
+  
+      i {
+        color: #ffffff !important;
+      }
+    }
+  }
+  

@@ -4,6 +4,6 @@
 
 <script>
 export default {
-  name: 'PlayFile'
+  name: "PlayFile",
 }
 </script>

@@ -157,6 +157,18 @@ export default {
             width: 180
           },
           {
+            property: 'phoneNumber',
+            align: 'left',
+            editable: false,
+            label: 'Phone Number',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 180
+          },
+          {
             property: 'department',
             align: 'left',
             fixed: false,
@@ -201,6 +213,19 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'date'
+          },
+          {
+            property: 'deliveryType',
+            align: 'left',
+            editable: false,
+            label: 'Delivery Type',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'select',
+            filterableItems: ['Email', 'Email & SMS']
           }
         ],
         addButton: {

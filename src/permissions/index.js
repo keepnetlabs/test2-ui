@@ -2428,5 +2428,280 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  CALLBACK_SIMULATOR_LEFT_MENU_PERMISSIONS: {
+    SCENARIOS: {
+      url: `callback-simulator/scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CAMPAIGN_MANAGER: {
+      url: `callback-simulator/campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SETTINGS: {
+      url: `callback-simulator/settings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_SCENARIOS_LEFT_MENU_PERMISSIONS: {
+    SCENARIOS: {
+      url: `callback-simulator/scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EMAIL_TEMPLATES: {
+      url: `callback-simulator/email-template/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CALLBACK_TEMPLATES: {
+      url: 'callback-simulator/callback-template/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS: {
+    SEARCH: {
+      url: `callback-simulator/campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_SETTINGS_LEFT_MENU_PERMISSIONS: {
+    SEARCH: {
+      url: `callback-simulator/settings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_SCENARIOS_PERMISSIONS: {
+    SEARCH: {
+      url: `callback-simulator/scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `callback-simulator/scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `callback-simulator/scenario`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `callback-simulator/scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `callback-simulator/scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `callback-simulator/scenario/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_EMAIL_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `callback-simulator/email-template/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `callback-simulator/email-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `callback-simulator/email-template`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `callback-simulator/email-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `callback-simulator/email-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `callback-simulator/email-template/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `callback-simulator/callback-template/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `callback-simulator/callback-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `callback-simulator/callback-template`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `callback-simulator/callback-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `callback-simulator/callback-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `callback-simulator/callback-template/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_CAMPAIGN_MANAGER_PARENT: {
+    SEARCH: {
+      url: 'callback-simulator/campaign/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    PREVIEW: {
+      url: 'callback-simulator/campaign/preview/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    DELETE: {
+      url: 'callback-simulator/campaign/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'callback-simulator/campaign/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    CREATE: {
+      url: 'callback-simulator/campaign',
+      hasPermission: false,
+      method: 'POST'
+    },
+    EXPORT: {
+      url: 'callback-simulator/campaign/search/export',
+      hasPermission: false,
+      method: 'POST'
+    }
+  },
+  CALLBACK_CAMPAIGN_JOB_PERMISSIONS: {
+    SEARCH: {
+      url: 'callback-simulator/campaign-job-report/search/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    START: {
+      url: 'callback-simulator/campaign-job/start/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    LAUNCH: {
+      url: 'callback-simulator/campaign-job/start',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    STOP: {
+      url: 'callback-simulator/campaign-job/stop/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.PATCH
+    },
+    DELETE: {
+      url: `callback-simulator/campaign-job/{resourceId}/{instanceGroup}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    RESEND: {
+      url: 'callback-simulator/campaign-job/resend/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    RESEND_LIST: {
+      url: 'callback-simulator/campaign-job/resend/users/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT: {
+      url: `callback-simulator/campaign-job-report/export/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CALLBACK_REPORT_PERMISSIONS: {
+    SUMMARY: {
+      url: 'callback-simulator/campaign-job-report/summary/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SEARCH_TYPE: {
+      url:
+        'callback-simulator/campaign-job-report/{searchType}/search/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TYPE_EXPORT: {
+      url:
+        'callback-simulator/campaign-job-report/{searchType}/search/export/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    OPENED_DETAILS: {
+      url: 'callback-simulator/campaign-job-report/search-email-opened/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    REPORTED_DETAILS: {
+      url: 'callback-simulator/campaign-job-report/search-email-reported/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DOWNLOAD_REPORT: {
+      url: 'callback-simulator/campaign-job-report/export/{resourceId}/{instanceGroup}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  CALLBACK_SETTINGS_PERMISSIONS: {
+    SEARCH: {
+      url: 'callback-simulator/settings/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXPORT: {
+      url: 'callback-simulator/settings/search/export',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    MAP_NUMBERS: {
+      url: 'callback-simulator/settings/map-numbers',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EXCHANGE: {
+      url:
+        'callback-simulator/settings/exchange-number/{oldProviderNumberId}/{newProviderNumberId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }

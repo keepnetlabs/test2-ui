@@ -37,6 +37,28 @@ export const ENROLLMENT_STATUSES_FILTER = [
 ]
 
 export const COLUMNS = {
+  ENROLLMENT_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.EnrollmentName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  TRAINING_NAME_UNFIXED: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.TrainingName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
   NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
@@ -189,6 +211,19 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+  },
+  DELIVERY_TYPE: {
+    property: PROPERTY_STORE.DELIVERY_TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.DeliveryType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    filterableType: 'select',
+    filterableItems: ['Email', 'Email & SMS']
   },
   START_DATE: {
     property: PROPERTY_STORE.START_DATE,

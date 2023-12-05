@@ -7,7 +7,12 @@
       @on-close="closeConfigureNewCompanyDialog"
       @on-confirm="confirmConfigureNewCompanyDialog"
     />
-
+    <CallbackNumberWarningModal
+      v-if="isWarningModalVisible"
+      :status="isWarningModalVisible"
+      :availableNumberCount="callbackNumberItems.length"
+      @closeOverlay="handleCloseWarningModal"
+    />
     <v-card flat light class="header" style="padding: 32px 96px 0 96px;">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
@@ -342,6 +347,43 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item v-if="isCallbackSelected" class="mt-6">
+                  <v-list-item-content class="mb-2">
+                    <label class="bottom-margin">Number Of Callback Phone Numbers</label>
+                    <v-list-item-title class="v-card-sub-header bottom-margin"
+                      >Number of phone numbers that will be used in callback campaigns
+                    </v-list-item-title>
+                    <AlertBox
+                      class="bg-aqua-light mb-4"
+                      icon-color="#2196F3"
+                      icon-name="mdi-information"
+                      :slots="{ primaryAction: false, secondaryAction: false }"
+                    >
+                      <template #text>
+                        <p class="mb-0 mb-n1">
+                          There are only <strong>{{ callbackNumberItems.length }}</strong> available
+                          callback phone numbers in the system. If you would like to execute up to
+                          <strong>12</strong> callback scenarios, then get in touch with your
+                          support representative to add more callback phone numbers to the system.
+                        </p>
+                      </template>
+                    </AlertBox>
+                    <k-select
+                      :items="callbackNumberItems"
+                      v-model="formData.CallBackNumberBookingCount"
+                      id="input--company--callback-number-booking-count"
+                      outlined
+                      placeholder="Select number of callback phone numbers"
+                      :rules="callbackNumberItems.length === 0 ? [] : [(v) => !!v || 'Required']"
+                      :disabled="stepLock || callbackNumberItems.length === 0"
+                      hint="*Required"
+                      position="top"
+                      :menu-props="{ offsetY: true }"
+                      @input="handleLicenseTypeChange"
+                      persistent-hint
+                    ></k-select>
+                  </v-list-item-content>
+                </v-list-item>
               </v-form>
             </v-stepper-content>
             <!-- STEP 3 -->
@@ -527,6 +569,7 @@ import {
   searchCompanyGroupsWithParents,
   updateCompany
 } from '@/api/company'
+import CallbackService from '@/api/callback'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import {
   getSelectSearchPayload,
@@ -550,6 +593,8 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
+import AlertBox from '@/components/AlertBox'
+import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -569,7 +614,9 @@ export default {
     InputUrl,
     KFileUpload,
     InputDate,
-    InputEntityName
+    InputEntityName,
+    AlertBox,
+    CallbackNumberWarningModal
   },
   directives: {
     'infinite-scroll': InfiniteScroll,
@@ -608,6 +655,7 @@ export default {
         LicenseStartDate: '',
         LicenseEndDate: '',
         IsNumberOfUsersLimited: true,
+        CallBackNumberBookingCount: null,
         NumberOfUsers: '',
         NotificationTemplateTypeResourceId: '',
         TrainingContentTypeResourceId: '',
@@ -635,7 +683,9 @@ export default {
         disabledDate: this.disabledEndDates
       },
       validations: validations,
-      companyGroupPayload: getDefaultAxiosPayload({ pageSize: 100 })
+      companyGroupPayload: getDefaultAxiosPayload({ pageSize: 100 }),
+      callbackNumberItems: [],
+      isWarningModalVisible: false
     }
   },
   computed: {
@@ -701,9 +751,17 @@ export default {
     },
     canPrev() {
       return this.activeStep > 1
+    },
+    isCallbackSelected() {
+      return this.formData?.LicenseModuleResourceIdArray?.includes('AYAPp3vt3SvS')
     }
   },
   watch: {
+    isCallbackSelected(val) {
+      if (!val) {
+        this.formData.CallBackNumberBookingCount = null
+      }
+    },
     'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
       if (oldVal && newVal === 'MaR9NJslgSGW' && this.edit) {
         this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
@@ -789,6 +847,7 @@ export default {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
+    this.getAvailableCallbackNumbers()
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
@@ -817,6 +876,8 @@ export default {
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
+      this.formData.CallBackNumberBookingCount =
+        this.selectedExtend?.callBackNumberBookingCount || null
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
@@ -826,6 +887,9 @@ export default {
     }
   },
   methods: {
+    handleCloseWarningModal() {
+      this.isWarningModalVisible = false
+    },
     disabledEndDates(val) {
       let selectedStartDate = new Date()
       if (this.formData.LicenseStartDate) {
@@ -960,6 +1024,20 @@ export default {
           this.isCompanyGroupsLoading = false
         })
     },
+    getAvailableCallbackNumbers() {
+      CallbackService.getAvailableCallbackNumbers().then((res) => {
+        if (res?.data?.data?.length > 12) {
+          this.callbackNumberItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }
+        if (res?.data?.data?.length === 0) {
+          this.callbackNumberItems = []
+          return
+        }
+        if (res?.data?.data?.length < 12) {
+          this.callbackNumberItems = Array.from({ length: res.data.data.length }, (_, i) => i + 1)
+        }
+      })
+    },
     closeConfigureNewCompanyDialog() {
       this.isShowConfigureNewCompany = false
       this.cancelForm()
@@ -992,6 +1070,9 @@ export default {
         }
 
         const payload = { ...this.formData, LicenseStartDate, LicenseEndDate }
+        if (!this.isCallbackSelected) {
+          delete payload.CallBackNumberBookingCount
+        }
 
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, payload)
@@ -1035,6 +1116,10 @@ export default {
       if (this.activeStep === 3) {
         isFormValid = this.$refs.refStep3Form.validate()
       } else if (this.activeStep === 2) {
+        if (this.callbackNumberItems.length === 0 && this.isCallbackSelected) {
+          this.isWarningModalVisible = true
+          return
+        }
         isFormValid = this.$refs.refStep2Form.validate()
       } else if (this.activeStep === 1) {
         isFormValid = this.$refs.refStep1Form.validate()

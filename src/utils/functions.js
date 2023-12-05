@@ -85,6 +85,8 @@ export function getBtnStatusColor(type) {
   if (_type === 'medium') return 'rgba(17, 115, 193, 1)'
   if (_type === 'hard') return 'rgba(184, 58, 58, 1)'
   if (_type === 'no match') return '#757575'
+  if (_type === 'not in use') return '#757575'
+  if (_type === 'in use') return '#1173C1'
   return '#00bcd4'
 }
 
@@ -146,6 +148,8 @@ export function getDataTableFieldLabel(field = '') {
   if (field === 'Easy') return 'Easy'
   if (field === 'Medium') return 'Medium'
   if (field === 'Hard') return 'Hard'
+  if (field === 'not in use') return 'Not In Use'
+  if (field === 'in use') return 'In Use'
   return defField
 }
 
