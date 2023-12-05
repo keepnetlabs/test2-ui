@@ -162,7 +162,7 @@
                 <ElTabs v-model="tab" class="phishing-scenario-tab-container">
                   <ElTabPane
                     id="campaign-manager-info--email-content"
-                    name="email"
+                    name="individual-printout"
                     :label="labels.IndividualPrintout"
                   >
                     <div class="template-preview pt-0">
@@ -349,7 +349,7 @@ export default {
   },
   data() {
     return {
-      tab: 'email',
+      tab: 'individual-printout',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
       trainingTabModel: {},
@@ -516,6 +516,13 @@ export default {
       this.callForPhishingScenarios()
     }
   },
+  mounted() {
+    setTimeout(() => {
+      const el = document.querySelector('.el-tabs__active-bar.is-top')
+      if (!el) return
+      el.style.width = '144px'
+    }, 500)
+  },
   methods: {
     getItemClasses(itemResourceId = '') {
       return [
@@ -612,7 +619,7 @@ export default {
             mfaTextTemplate
           }
           this.landingPageTemplates = landingPages || []
-          this.tab = 'email'
+          this.tab = 'individual-printout'
           this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
         })
       })
@@ -687,14 +694,7 @@ export default {
       } else {
         this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel('', '', [], value))
       }
-      if (value) {
-        this.$emit('input', [...this.value, item])
-      } else {
-        this.$emit(
-          'input',
-          this.value.filter((phishingScenario) => item.resourceId !== phishingScenario.resourceId)
-        )
-      }
+      this.$emit('input', [item])
     },
     handleClickPreview() {
       this.toggleTemplateDialog()

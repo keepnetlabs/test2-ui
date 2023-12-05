@@ -101,7 +101,7 @@
               :title="labels.CampaignSummary"
               :subtitle="labels.CampaignSummarySub"
             />
-            <CampaignManagerSummary
+            <CampaignManagerPrintoutSummary
               ref="refCampaignManagerSummary"
               :type="SCENARIO_TYPES.QUISHING"
               :form-data="getFormDataForCampaignSummary"
@@ -140,7 +140,6 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import { isDifferent } from '@/utils/functions'
-import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
@@ -150,6 +149,8 @@ import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import CampaignManagerPrintoutCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPrintoutCampaignInfo.vue'
 import CampaignManagerPrintOutPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPrintOutPhishingScenarios.vue'
+import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
+import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -157,12 +158,12 @@ const EMITS = {
 export default {
   name: 'QuishingCampaignManagerPrintoutAddOrEditModal',
   components: {
+    CampaignManagerPrintoutSummary,
     CampaignManagerPrintOutPhishingScenarios,
     CampaignManagerPrintoutCampaignInfo,
     CampaignManagerTargetAudience,
     CustomError,
     StepperFooter,
-    CampaignManagerSummary,
     ConfigureCompanyStepHeader,
     AppModal
   },
@@ -200,7 +201,7 @@ export default {
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
       defaultTargetGroupResourceIds: [],
-      scheduleInfoResponse: {}
+      selectedSchedule: ''
     }
   },
   computed: {
@@ -254,8 +255,8 @@ export default {
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
-        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
+        formData.scheduledDate = this.selectedSchedule
       }
       return formData
     },
@@ -387,13 +388,31 @@ export default {
           this.changeStep()
           return
         case 2:
-          const { refCampaignManagerPhishingScenarios } = this.$refs
+          const {
+            refCampaignManagerPhishingScenarios,
+            refCampaignManagerCampaignInfo: { inputScheduleFormData }
+          } = this.$refs
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
+          const response = await QuishingService.calculateScheduleInfo({
+            scheduleTypeId: inputScheduleFormData?.scheduleTypeId,
+            scheduledDate: inputScheduleFormData?.scheduledDate,
+            scheduledDateTimeZoneId: inputScheduleFormData?.scheduledDateTimeZoneId,
+            quishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+              (pScenario) => pScenario.resourceId
+            )
+          })
+          if (inputScheduleFormData?.scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER)
+            this.selectedSchedule = labels.Later
+          else {
+            this.selectedSchedule = response?.data?.data?.isStarting
+              ? labels.Now
+              : `${inputScheduleFormData?.scheduledDate}`
+          }
           this.changeStep()
           return
         case 3:
