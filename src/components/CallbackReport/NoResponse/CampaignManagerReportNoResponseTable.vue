@@ -34,13 +34,13 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
+import { COLUMNS, REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import SmishingService from '@/api/smishing'
+import CallbackService from '@/api/callback'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -80,16 +80,16 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.PHONENUMBER,
+          COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.SCENARIO_NAME,
           COLUMNS.EMAIL_SEND_DATE
         ],
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportOpened
+          message: `You do not have any user who didn't respond to the email`
         },
         selectEvent: {
           resend: true
@@ -126,11 +126,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      SmishingService.searchCampaignJobType(
-        'NoResponse',
-        this.axiosPayload,
+      CallbackService.getCampaignTabUsers(
+        REPORT_TABS.NO_RESPONSE,
         this.id,
-        this.instanceGroup
+        this.instanceGroup,
+        this.axiosPayload
       )
         .then((response) => {
           const {
@@ -163,11 +163,11 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        SmishingService.exportCampaignJobType(
-          'NoResponse',
-          payload,
+        CallbackService.exportCampaignTabUsers(
+          REPORT_TABS.NO_RESPONSE,
           this.id,
-          this.instanceGroup
+          this.instanceGroup,
+          payload
         ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
@@ -181,7 +181,7 @@ export default {
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [4],
+        Types: [REPORT_TABS.NO_RESPONSE],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,

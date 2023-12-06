@@ -81,7 +81,18 @@ const {
   SMISHING_DOMAIN_PERMISSIONS,
   SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS,
   SMISHING_EXCLUDED_IP_PERMISSIONS,
-  TRAINING_REPORTS_PERMISSIONS
+  TRAINING_REPORTS_PERMISSIONS,
+  CALLBACK_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  CALLBACK_SCENARIOS_LEFT_MENU_PERMISSIONS,
+  CALLBACK_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  CALLBACK_SETTINGS_LEFT_MENU_PERMISSIONS,
+  CALLBACK_SCENARIOS_PERMISSIONS,
+  CALLBACK_EMAIL_TEMPLATES_PERMISSIONS,
+  CALLBACK_TEMPLATES_PERMISSIONS,
+  CALLBACK_CAMPAIGN_MANAGER_PARENT,
+  CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
+  CALLBACK_REPORT_PERMISSIONS,
+  CALLBACK_SETTINGS_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -166,7 +177,18 @@ const defaultState = {
   quishingCampaignManagerParentPermissions: QUISHING_CAMPAIGN_MANAGER_PARENT,
   quishingDnsPermissions: QUISHING_DNS_PERMISSIONS,
   quishingDomainPermissions: QUISHING_DOMAIN_PERMISSIONS,
-  quishingExcludeIpAddressPermissions: QUISHING_EXCLUDE_IP_ADDRESS_PERMISSIONS
+  quishingExcludeIpAddressPermissions: QUISHING_EXCLUDE_IP_ADDRESS_PERMISSIONS,
+  callbackSimulatorLeftMenuPermissions: CALLBACK_SIMULATOR_LEFT_MENU_PERMISSIONS,
+  callbackScenariosLeftMenuPermissions: CALLBACK_SCENARIOS_LEFT_MENU_PERMISSIONS,
+  callbackCampaignManagerLeftMenuPermissions: CALLBACK_CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS,
+  callbackSettingsLeftMenuPermissions: CALLBACK_SETTINGS_LEFT_MENU_PERMISSIONS,
+  callbackScenariosPermissions: CALLBACK_SCENARIOS_PERMISSIONS,
+  callbackEmailTemplatesPermissions: CALLBACK_EMAIL_TEMPLATES_PERMISSIONS,
+  callbackTemplatesPermissions: CALLBACK_TEMPLATES_PERMISSIONS,
+  callbackCampaignManagerParentPermissions: CALLBACK_CAMPAIGN_MANAGER_PARENT,
+  callbackCampaignJobPermissions: CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
+  callbackReportPermissions: CALLBACK_REPORT_PERMISSIONS,
+  callbackSettingsPermissions: CALLBACK_SETTINGS_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -270,7 +292,6 @@ const store = {
     getPhishingScenariosExportPermissions(state) {
       return state?.phishingScenariosPermissions?.EXPORT?.hasPermission
     },
-
     getQuishingSimulatorLeftMenuPermissions(state) {
       return state?.quishingSimulatorLeftPermissions?.isOneOfThemPermitted
     },
@@ -1402,6 +1423,132 @@ const store = {
     },
     getAllowListPermissionsExport(state) {
       return state?.allowListPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackSimulatorLeftMenuPermissions(state) {
+      return state?.callbackSimulatorLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getCallbackScenarioLeftMenuPermissions(state) {
+      return state?.callbackScenariosLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getCallbackScenariosSearchPermissions(state) {
+      return state?.callbackScenariosPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackScenariosEditPermissions(state) {
+      return state?.callbackScenariosPermissions?.UPDATE?.hasPermission
+    },
+    getCallbackScenariosCreatePermissions(state) {
+      return state?.callbackScenariosPermissions?.CREATE?.hasPermission
+    },
+    getCallbackScenariosDeletePermissions(state) {
+      return state?.callbackScenariosPermissions?.DELETE?.hasPermission
+    },
+    getCallbackScenariosExportPermissions(state) {
+      return state?.callbackScenariosPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackEmailTemplatesSearchPermissions(state) {
+      return state?.callbackEmailTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackEmailTemplatesEditPermissions(state) {
+      return state?.callbackEmailTemplatesPermissions?.UPDATE?.hasPermission
+    },
+    getCallbackEmailTemplatesCreatePermissions(state) {
+      return state?.callbackEmailTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getCallbackEmailTemplatesDeletePermissions(state) {
+      return state?.callbackEmailTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getCallbackEmailTemplatesExportPermissions(state) {
+      return state?.callbackEmailTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackTemplatesSearchPermissions(state) {
+      return state?.callbackTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackTemplatesEditPermissions(state) {
+      return state?.callbackTemplatesPermissions?.UPDATE?.hasPermission
+    },
+    getCallbackTemplatesCreatePermissions(state) {
+      return state?.callbackTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getCallbackTemplatesDeletePermissions(state) {
+      return state?.callbackTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getCallbackTemplatesExportPermissions(state) {
+      return state?.callbackTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackCampaignManagerLeftMenuPermissions(state) {
+      return state?.callbackCampaignManagerLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getCallbackCampaignSearchPermissions(state) {
+      return state?.callbackCampaignManagerParentPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackCampaignPreviewPermissions(state) {
+      return state?.callbackCampaignManagerParentPermissions?.PREVIEW?.hasPermission
+    },
+    getCallbackCampaignCreatePermissions(state) {
+      return state?.callbackCampaignManagerParentPermissions?.CREATE?.hasPermission
+    },
+    getCallbackCampaignDeletePermissions(state) {
+      return state?.callbackCampaignManagerParentPermissions?.DELETE?.hasPermission
+    },
+    getCallbackCampaignExportPermissions(state) {
+      return state?.callbackCampaignManagerParentPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackCampaignJobSearchPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackCampaignJobStartPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.START?.hasPermission
+    },
+    getCallbackCampaignJobLaunchPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.LAUNCH?.hasPermission
+    },
+    getCallbackCampaignJobStopPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.STOP?.hasPermission
+    },
+    getCallbackCampaignJobDeletePermissions(state) {
+      return state?.callbackCampaignJobPermissions?.DELETE?.hasPermission
+    },
+    getCallbackCampaignJobResendPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.RESEND?.hasPermission
+    },
+    getCallbackCampaignJobResendListPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.RESEND_LIST?.hasPermission
+    },
+    getCallbackCampaignJobExportPermissions(state) {
+      return state?.callbackCampaignJobPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackReportSummaryPermissions(state) {
+      return state?.callbackReportPermissions?.SUMMARY?.hasPermission
+    },
+    getCallbackReportSearchTypePermissions(state) {
+      return state?.callbackReportPermissions?.SEARCH_TYPE?.hasPermission
+    },
+    getCallbackReportTypeExportPermissions(state) {
+      return state?.callbackReportPermissions?.TYPE_EXPORT?.hasPermission
+    },
+    getCallbackReportOpenedDetailsPermissions(state) {
+      return state?.callbackReportPermissions?.OPENED_DETAILS?.hasPermission
+    },
+    getCallbackReportReportedDetailsPermissions(state) {
+      return state?.callbackReportPermissions?.REPORTED_DETAILS?.hasPermission
+    },
+    getCallbackReportDownloadReportPermissions(state) {
+      return state?.callbackReportPermissions?.DOWNLOAD_REPORT?.hasPermission
+    },
+    getCallbackSettingsLeftMenuPermissions(state) {
+      return state?.callbackSettingsLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getCallbackSettingsSearchPermissions(state) {
+      return state?.callbackSettingsPermissions?.SEARCH?.hasPermission
+    },
+    getCallbackSettingsExportPermissions(state) {
+      return state?.callbackSettingsPermissions?.EXPORT?.hasPermission
+    },
+    getCallbackSettingsMapNumbersPermissions(state) {
+      return state?.callbackSettingsPermissions?.MAP_NUMBERS?.hasPermission
+    },
+    getCallbackSettingsExchangePermissions(state) {
+      return state?.callbackSettingsPermissions?.EXCHANGE?.hasPermission
     }
   },
   mutations: {
@@ -1490,7 +1637,18 @@ const store = {
         'quishingDnsPermissions',
         'quishingDomainPermissions',
         'quishingExcludeIpAddressPermissions',
-        'quishingCampaignReportsPermissions'
+        'quishingCampaignReportsPermissions',
+        'callbackSimulatorLeftMenuPermissions',
+        'callbackScenariosLeftMenuPermissions',
+        'callbackCampaignManagerLeftMenuPermissions',
+        'callbackSettingsLeftMenuPermissions',
+        'callbackScenariosPermissions',
+        'callbackEmailTemplatesPermissions',
+        'callbackTemplatesPermissions',
+        'callbackCampaignManagerParentPermissions',
+        'callbackCampaignJobPermissions',
+        'callbackReportPermissions',
+        'callbackSettingsPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

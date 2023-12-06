@@ -62,8 +62,7 @@ export default {
       labels,
       openedEmailIcon: require('../../../assets/img/ic-opened-email.svg'),
       noResponseIcon: require('../../../assets/img/smishing-report-no-response-icon.svg'),
-      // TODO: Change called back icon
-      calledBackIcon: require('../../../assets/img/ic-exclude.svg'),
+      calledBackIcon: require('../../../assets/img/callback-report-called-back.svg'),
       enteredDigitsIcon: require('../../../assets/img/ic-dialed.svg')
     }
   },

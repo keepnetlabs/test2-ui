@@ -8,6 +8,7 @@
       v-if="isShowSelectPhoneNumbersModal"
       :isLoading="isMutating"
       :status="isShowSelectPhoneNumbersModal"
+      :selectablePhoneNumberCount="selectablePhoneNumberCount"
       @confirm="handleConfirmSelectPhoneNumbers"
       @close="handleCloseSelectPhoneNumbersModal"
     />
@@ -19,9 +20,16 @@
       @confirm="handleConfirmExchangePhoneNumber"
       @close="handleCloseExchangePhoneNumberModal"
     />
-    <!-- // TODO: Change permission -->
+    <AlertBox
+      v-if="canRenderAlertBox"
+      class="bg-aqua-light mb-4"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      :text="getAlertBoxText"
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <DataTable
-      v-if="getThreatIntelligencePermissionsSearch"
+      v-if="getCallbackSettingsSearchPermissions"
       ref="refCallbackSettings"
       id="callback-phone-numbers-table"
       is-server-side
@@ -50,15 +58,21 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @downloadEvent="exportData"
-      @refreshAction="callForData"
+      @refreshAction="callForNumberUsage"
     >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="callback-settings-table__status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.isUsing)" :col="col" size="medium" />
+        </div>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
           :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
-          :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Use'"
-          :text="tableOptions.rowActions[0].name"
+          :disabled="tableOptions.rowActions[0].disabled || scope.row.isUsing === 'In Use'"
+          :text="scope.row.isUsing === 'In Use' ? 'Number in use' : 'Exchange'"
           :checkIsOwnerProperty="false"
           @on-click="handleExchange(scope.row)"
         />
@@ -84,6 +98,9 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import SelectPhoneNumbersModal from '@/components/CallbackSettings/SelectPhoneNumbersModal'
 import ExchangePhoneNumberModal from '@/components/CallbackSettings/ExchangePhoneNumberModal'
+import Badge from '@/components/Badge'
+import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'CallbackSettings',
   components: {
@@ -92,11 +109,15 @@ export default {
     CompanySettingsHeader,
     DefaultButtonRowAction,
     SelectPhoneNumbersModal,
-    ExchangePhoneNumberModal
+    ExchangePhoneNumberModal,
+    Badge,
+    AlertBox
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      licenseNumberLimit: 0,
+      selectablePhoneNumberCount: 0,
       CONSTANTS: {
         id: 'CallbackSettingsSearchContainer',
         ascending: 'ascending'
@@ -145,7 +166,7 @@ export default {
             fixed: false,
             hideSort: false,
             show: true,
-            type: 'status',
+            type: 'slot',
             width: 150,
             filterableType: 'select',
             filterableItems: ['Not In Use', 'In Use']
@@ -190,8 +211,7 @@ export default {
             icon: 'mdi-swap-horizontal',
             action: 'handleExchange',
             id: 'btn-exchange--callback-settings',
-            // TODO: Change permission
-            disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+            disabled: !this.$store.getters['permissions/getCallbackSettingsExchangePermissions']
           }
         ],
         addButton: {
@@ -201,8 +221,7 @@ export default {
           action: 'selectPhoneNumbers',
           tooltip: 'Select phone numbers',
           id: 'btn-select--phone-numbers',
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsMapNumbersPermissions']
         },
         iEmpty: {
           message:
@@ -211,8 +230,7 @@ export default {
           action: 'selectPhoneNumbers',
           id: 'btn-empty--callback-settings',
           icon: 'mdi-phone',
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getSmishingCampaignManagerCreatePermissions']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsMapNumbersPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -222,22 +240,71 @@ export default {
         },
         downloadButton: {
           show: true,
-          // TODO: Change permission
-          disabled: !this.$store.getters['permissions/getThreatIntelligencePermissionsExport']
+          disabled: !this.$store.getters['permissions/getCallbackSettingsExportPermissions']
         }
       }
     }
   },
   mounted() {
-    this.callForData()
+    this.callForNumberUsage()
   },
-  // TODO: Change permission
   computed: {
     ...mapGetters({
-      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch'
-    })
+      getCallbackSettingsSearchPermissions: 'permissions/getCallbackSettingsSearchPermissions'
+    }),
+    canRenderAlertBox() {
+      return this.selectablePhoneNumberCount === 0
+    },
+    getAlertBoxText() {
+      return `You can add a maximum of ${this.licenseNumberLimit} phone number${
+        this.licenseNumberLimit > 1 ? 's' : ''
+      } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
+    }
   },
   methods: {
+    getStatusBadgeProps(status) {
+      if (status === 'Not In Use')
+        return {
+          color: '#757575',
+          text: 'Not In Use'
+        }
+
+      if (status === 'In Use')
+        return {
+          color: '#1173C1',
+          text: 'In Use'
+        }
+    },
+    callForNumberUsage() {
+      this.isLoading = true
+      CallbackService.getUsedCallbackNumbers()
+        .then((res) => {
+          const { companyCount, usedCount } = res.data.data
+          if (companyCount === null) companyCount = 0
+          if (usedCount === null) usedCount = 0
+          this.selectablePhoneNumberCount = companyCount - usedCount
+          this.licenseNumberLimit = companyCount
+          if (!this.selectablePhoneNumberCount) {
+            this.tableOptions.addButton.disabled = true
+            this.tableOptions.addButton.tooltip = `You can add a maximum of ${
+              this.licenseNumberLimit
+            } phone number${
+              this.licenseNumberLimit > 1 ? 's' : ''
+            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
+            this.tableOptions.iEmpty.disabled = true
+            this.tableOptions.iEmpty.tooltip = `You can add a maximum of ${
+              this.licenseNumberLimit
+            } phone number${
+              this.licenseNumberLimit > 1 ? 's' : ''
+            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
+          }
+        })
+        .catch(() => {
+          this.tableOptions.addButton.disabled = true
+          this.tableOptions.iEmpty.disabled = true
+        })
+        .finally(this.callForData)
+    },
     callForData() {
       this.isLoading = true
       CallbackService.searchCallbackSettings(this.axiosPayload)
@@ -259,7 +326,9 @@ export default {
         .catch(() => {
           this.tableData = []
         })
-        .finally(() => (this.isLoading = false))
+        .finally(() => {
+          this.isLoading = false
+        })
     },
     handleExchange(row) {
       this.selectedRow = row

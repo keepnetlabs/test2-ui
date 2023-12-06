@@ -13,7 +13,7 @@
           :value="value.isVishingStep"
           label="Digit Entering Step"
           customStyle="text-transform: none;"
-          @input="onCallbackStepChange"
+          @input="onVishingStepChange"
         />
         <v-tooltip :disabled="!isRemoveDisabled" right max-width="200">
           <template v-slot:activator="{ on }">
@@ -135,7 +135,7 @@
           style="max-width: 603px;"
           labelClassName="callback-template-dialog-step__form-label"
           title="Text"
-          subTitle="Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags."
+          :subTitle="getTextToSpeechSubTitlte"
         >
           <InputMergeTag
             :value="value.inputText"
@@ -245,6 +245,12 @@ export default {
     }
   },
   computed: {
+    getTextToSpeechSubTitlte() {
+      if (this.isCallGreeting) {
+        return ` Enter your text to be voiced by AI.`
+      }
+      return ` Enter your text to be voiced by AI. Make your scenario more realistic by using merge tags.`
+    },
     isPlayAudioDisabled() {
       return (!this.value?.inputUrl && !this.value?.content) || this.isPlayAudioClicked
     },
@@ -345,6 +351,12 @@ export default {
     }
   },
   methods: {
+    onVishingStepChange(val) {
+      this.$emit('input', { ...this.value, isVishingStep: val })
+      if (val) {
+        this.$emit('vishingStepChange', this.index)
+      }
+    },
     handlePlayAudio() {
       this.isPlayAudioClicked = true
     },
@@ -372,9 +384,6 @@ export default {
           inputDigit: val.length ? parseInt(val) : null
         })
       }
-    },
-    onCallbackStepChange(val) {
-      this.$emit('input', { ...this.value, isVishingStep: val })
     },
     onFileChanged(file) {
       this.isPlayAudioClicked = false

@@ -210,9 +210,9 @@ export default {
     },
     hasAudioFile() {
       return (
-        this.template?.steps?.some((step) => step?.inputUrl) ||
-        this.template?.callGreeting?.inputUrl ||
-        this.template?.invalidDialingNotice?.inputUrl
+        this.template?.steps?.some((step) => step?.inputType === 'FileUpload') ||
+        this.template?.callGreeting?.inputType === 'FileUpload' ||
+        this.template?.invalidDialingNotice?.inputType === 'FileUpload'
       )
     },
     getSelectedInputType() {

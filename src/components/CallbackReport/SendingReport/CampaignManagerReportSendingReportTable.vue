@@ -93,20 +93,20 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps } from '@/components/SmishingReport/Opened/utils'
+import { COLUMNS, getStatusBadgeProps } from '@/components/CallbackReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { getCampaignJobEmailActivity } from '@/api/phishingsimulator'
-import SmishingService from '@/api/smishing'
+import CallbackService from '@/api/callback'
 import { useLoading } from '@/hooks/useLoading'
-import CampaignManagerReportSendingReportEvent from '@/components/SmishingReport/SendingReport/CampaignManagerReportSendingReportEvent'
+import CampaignManagerReportSendingReportEvent from '@/components/CallbackReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
+import { REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -148,7 +148,7 @@ export default {
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
-          COLUMNS.PHONENUMBER,
+          COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
           COLUMNS.DATE_FIRST_SENT,
@@ -170,16 +170,13 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-sending-report',
             icon: '$custom-resend',
             action: 'on-resend'
+          },
+          {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-sending-report',
+            icon: '$custom-details',
+            action: 'on-detail'
           }
-          // {
-          //   name: labels.Details,
-          //   id: 'btn-details--row-actions-campaign-manager-report-sending-report',
-          //   icon: '$custom-details',
-          //   action: 'on-detail',
-          //   disabled: !this.$store.getters[
-          //     'permissions/getCampaignReportsSendingReportDetailsPermissions'
-          //   ]
-          // }
         ]
       },
       isShowExtendedView: false,
@@ -257,13 +254,13 @@ export default {
     }
   },
   watch: {
-    lastSendingStatusItems: {
-      immediate: true,
-      deep: true,
-      handler() {
-        this.setLastSendingStatusItems()
-      }
-    },
+    // lastSendingStatusItems: {
+    //   immediate: true,
+    //   deep: true,
+    //   handler() {
+    //     this.setLastSendingStatusItems()
+    //   }
+    // },
     customFields: {
       deep: true,
       immediate: true,
@@ -284,7 +281,12 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      SmishingService.searchCampaignJobType('all', this.axiosPayload, this.id, this.instanceGroup)
+      CallbackService.getCampaignTabUsers(
+        REPORT_TABS.ALL,
+        this.id,
+        this.instanceGroup,
+        this.axiosPayload
+      )
         .then((response) => {
           const {
             data: {
@@ -304,14 +306,14 @@ export default {
         })
         .finally(this.setLoading)
     },
-    setLastSendingStatusItems() {
-      this.$set(
-        this.tableOptions.columns.find((col) => col && col.property === 'status'),
-        'filterableItems',
-        this.lastSendingStatusItems.map((item) => ({ ...item, value: item.text }))
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
+    // setLastSendingStatusItems() {
+    //   this.$set(
+    //     this.tableOptions.columns.find((col) => col && col.property === 'status'),
+    //     'filterableItems',
+    //     this.lastSendingStatusItems.map((item) => ({ ...item, value: item.text }))
+    //   )
+    //   this?.$refs?.refTable?.reRenderFilters()
+    // },
     getEventReason(event = {}) {
       const { reason, eventName } = event
       if (reason) return reason
@@ -336,22 +338,25 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        SmishingService.exportCampaignJobType('all', payload, this.id, this.instanceGroup).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Callback-Report-Sending-Report.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
+        CallbackService.exportCampaignTabUsers(
+          REPORT_TABS.ALL,
+          this.id,
+          this.instanceGroup,
+          payload
+        ).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Callback-Report-Sending-Report.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [0],
+        Types: [REPORT_TABS.ALL],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
@@ -362,7 +367,7 @@ export default {
     handleOnDetail(row) {
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      getCampaignJobEmailActivity(row.resourceId)
+      CallbackService.getUserEmailActivity(row.resourceId)
         .then((response) => {
           const { data: { data = [] } = {} } = response || { data: { data: [] } }
           this.extendedViewValue = [data]

@@ -34,7 +34,7 @@ import CampaignManagerReportHeader from '@/components/CallbackReport/CampaignMan
 import labels from '@/model/constants/labels'
 import CampaignManagerReportPhishingReportTable from '@/components/CallbackReport/PhishingReport/CampaignManagerReportPhishingReportTable'
 import CampaignManagerReportPhishingReporterItemDetailDialog from '@/components/CallbackReport/PhishingReport/CampaignManagerReportPhishingReporterItemDetailDialog'
-import { useResend } from '@/hooks/useResend'
+import { useResend } from '@/hooks/useCallbackResend'
 import CampaignManagerReportResendDialog from '@/components/CallbackReport/CampaignManagerReportResendDialog'
 export default {
   name: 'CampaignManagerReportPhishingReport',

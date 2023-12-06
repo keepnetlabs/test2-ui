@@ -124,9 +124,12 @@
                     :disabled="addButton && addButton['disabled']"
                     @click="addButtonFunction(addButton.action)"
                   >
-                    <v-icon v-if="!!getAddButtonIcon" style="font-size: 20px; margin-top: 1px;">{{
-                      getAddButtonIcon
-                    }}</v-icon>
+                    <v-icon
+                      v-if="!!getAddButtonIcon"
+                      style="font-size: 20px; margin-top: 1px; color: #ffffff !important;"
+                      color="#ffffff"
+                      >{{ getAddButtonIcon }}</v-icon
+                    >
                     <span class="button-new__text">{{ getAddButtonLabel }}</span>
                   </v-btn>
                   <v-btn
@@ -813,7 +816,11 @@
                 @click="onEmptyBtnClicked"
               >
                 <!-- empty action -->
-                <v-icon class="mr-1">{{ empty.icon }}</v-icon>
+                <v-icon
+                  class="mr-1"
+                  style="font-size: 20px; margin-top: 1px; color: #ffffff !important;"
+                  >{{ empty.icon }}</v-icon
+                >
                 <span>{{ empty.btn }} </span>
               </v-btn>
             </slot>
@@ -2509,7 +2516,9 @@ export default {
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
-        if (this.renderedColumns.find((property) => property === filterItem.property)) {
+        if (
+          this.renderedColumns.find((property) => filterItem && property === filterItem.property)
+        ) {
           acc.push({
             FieldName: filterItem['isCustomField']
               ? filterItem.property

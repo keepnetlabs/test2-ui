@@ -71,6 +71,10 @@ export default {
     showMarkAsTest: {
       type: Boolean,
       default: true
+    },
+    isCallback: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -110,9 +114,23 @@ export default {
     }
   },
   watch: {
-    defaultValues(val) {
-      for (const key of Object.keys(val)) {
-        this.formData[key] = val[key]
+    isCallback: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.rules.days.push((v) =>
+            validations.numberRangeRule(v, 1, 30, 'Duration can be minimum 1, maximum 30 days')
+          )
+        }
+      }
+    },
+    defaultValues: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        for (const key of Object.keys(val)) {
+          this.formData[key] = val[key]
+        }
       }
     }
   },
