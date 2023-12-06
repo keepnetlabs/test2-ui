@@ -204,7 +204,10 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import QuishingService from '@/api/quishing'
+import QuishingService, {
+  getMergedTextForQuishingPrintout,
+  updateQuishingPrintoutTemplate
+} from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
@@ -572,11 +575,12 @@ export default {
             : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
+        type: QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
-        QuishingService.updateQuishingEmailTemplate(payload, this.emailTemplateId)
+        QuishingService.updateQuishingPrintoutTemplate(payload, this.emailTemplateId)
           .then(() => {
             this.$emit('changeNewIndividualPrintoutModalStatus', false, true)
           })
@@ -584,7 +588,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        QuishingService.createQuishingEmailTemplate(payload)
+        QuishingService.createQuishingPrintoutTemplate(payload)
           .then(() => {
             this.$emit('changeNewIndividualPrintoutModalStatus', false, true)
           })
@@ -595,7 +599,7 @@ export default {
     },
 
     callForMergedTags() {
-      QuishingService.getMergedTextForQuishing().then((response) => {
+      QuishingService.getMergedTextForQuishingPrintout().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })

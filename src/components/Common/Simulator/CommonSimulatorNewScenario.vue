@@ -172,6 +172,7 @@
               <div :style="getLastStepContainerStyle">
                 <CampaignManagerSummaryCard
                   icon="mdi-information"
+                  :class="!isMethodMfa ? 'common-simulator-new-scenario-campaign-info' : ''"
                   :title="labels.ScenarioInfo"
                   :items="getScenarioInfoItems"
                 />

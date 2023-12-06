@@ -2,11 +2,11 @@
   <CampaignManagerSummaryCard
     class="mt-4"
     detailable
-    icon="mdi-email"
     detailable-button-id="btn-preview--campaign-report-email-template"
+    :icon="getIcon"
     :isLoading="isFetchingSummary"
     :show-body-detail.sync="isShowEmailTemplate"
-    :title="labels.EmailThatWill"
+    :title="getTitle"
   >
     <template #body>
       <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
@@ -101,6 +101,9 @@ export default {
     },
     isFetchingSummary: {
       type: Boolean
+    },
+    isQuishingPrintout: {
+      type: Boolean
     }
   },
   data() {
@@ -116,6 +119,14 @@ export default {
     }
   },
   computed: {
+    getIcon() {
+      return this.isQuishingPrintout ? '$pdf-file' : 'mdi-email'
+    },
+    getTitle() {
+      return this.isQuishingPrintout
+        ? 'Individual printouts that will be given to users'
+        : labels.EmailThatWill
+    },
     isFormData() {
       return Object.keys(this.formData).length
     }

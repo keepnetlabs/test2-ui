@@ -292,6 +292,8 @@ export const labels = {
   CampaignInstance: 'Campaign Instance',
   CampaignInstanceSub:
     'Select target groups and schedule options for this phishing campaign instance',
+  QuishingCampaignInstanceSub:
+    'Select target groups and schedule options for this quishing campaign instance',
   MarkAsTest: 'Mark as Test',
   LastReported: 'Last Reported',
   Data: 'Data',
@@ -415,6 +417,7 @@ export const labels = {
   Idle: 'Idle',
   TargetGroups: 'Target Groups',
   TargetGroupsSub: 'Select target groups to send this phishing email',
+  QuishingTargetGroupsSub: 'Select target groups to send this quishing email',
   InstancesOfCampaign: 'Instances Of Campaign',
   Start: 'Start',
   Stop: 'Stop',

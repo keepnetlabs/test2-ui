@@ -16,12 +16,12 @@
     <template #overlay-body>
       <AppModalBodyHeader
         :title="labels.CampaignInstance"
-        :sub-title="labels.CampaignInstanceSub"
+        :sub-title="labels.QuishingCampaignInstanceSub"
       />
       <FormGroup
         class-name="campaign-manager__target-groups"
         :title="labels.TargetGroups"
-        :sub-title="labels.TargetGroupsSub"
+        :sub-title="labels.QuishingTargetGroupsSub"
       />
       <CampaignManagerTargetGroups
         ref="refCampaignManagerTargetGroup"

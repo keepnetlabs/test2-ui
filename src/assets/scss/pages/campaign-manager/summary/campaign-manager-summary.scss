@@ -211,7 +211,7 @@
     grid-template-columns: 1fr 1fr;
     .campaign-manager-summary-card__body-item{
       &:first-child, &:nth-child(3),&:nth-child(5){
-        padding-right: 40px;
+        padding-right: 40px !important;
         border-right: 1px solid #F2F2F2;
       }
       &:nth-child(2),&:nth-child(4) {

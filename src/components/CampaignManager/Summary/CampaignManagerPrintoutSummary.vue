@@ -36,48 +36,6 @@
         </template>
       </CampaignManagerSummaryCard>
     </div>
-    <div class="my-6 d-flex justify-space-between align-center">
-      <div>
-        <span class="campaign-manager-last-step__phishing-scenario-label">{{
-          type === SCENARIO_TYPES.PHISHING ? 'Phishing Scenarios' : 'Quishing Scenarios'
-        }}</span>
-        <VTooltip v-if="phishingScenarios.length > 5" bottom>
-          <template #activator="{ on }">
-            <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
-              >Total {{ phishingScenarios.length }} Scenarios</span
-            >
-          </template>
-          <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
-            {{ methodWrapper.method }} ({{ methodWrapper.count }})
-          </div>
-        </VTooltip>
-      </div>
-      <div v-if="showSchedule">
-        <v-btn
-          class="campaign-manager-summary-card__button pr-4 mr-6"
-          rounded
-          outlined
-          color="#2196f3"
-          @click="handleSchedule"
-        >
-          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-calendar-range</v-icon>
-          Schedule
-        </v-btn>
-      </div>
-    </div>
-    <ElTabs
-      v-if="phishingScenarios.length"
-      v-model="selectedScenarioResourceId"
-      class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
-      @tab-click="callForScenarioDetail($event)"
-    >
-      <ElTabPane
-        v-for="(template, index) in phishingScenarios"
-        :key="index"
-        :name="template.resourceId"
-        :label="template.name"
-      />
-    </ElTabs>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
@@ -116,12 +74,6 @@
                   </template>
                 </Badge>
               </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              From: {{ emailTemplateParams.fromName }}
-              <span>&#60;</span>
-              {{ emailTemplateParams.fromAddress }}
-              <span>&#62;</span>
             </div>
             <div
               v-if="!!getPhishingFile"

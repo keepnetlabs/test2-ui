@@ -133,7 +133,7 @@
           :email-template-logo="emailTemplateLogo"
         />
         <individual-print-out-template-default
-          v-else-if="templateType === 'individual-printout'"
+          v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
           ref="refPreview"
           :email-template-logo="emailTemplateLogo"
         />
@@ -195,6 +195,7 @@ export default {
   ],
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       previewTemplate: null,
       initialTemplate: null,
       labels,
