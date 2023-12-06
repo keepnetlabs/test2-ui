@@ -75,7 +75,6 @@ import { useLoading } from '@/hooks/useLoading'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import QuishingService from '@/api/quishing'
-import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
