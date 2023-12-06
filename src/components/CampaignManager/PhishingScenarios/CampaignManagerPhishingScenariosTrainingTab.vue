@@ -29,27 +29,148 @@
         @click:clear="handleTrainingItemSelect(null)"
       />
     </FormGroup>
-    <InputContentLanguage
-      :key="inputContentLanguageKey"
-      ref="inputContentLanguage"
-      v-model="value.trainingLanguageIds"
-      class="ml-4 mt-4"
-      :is-add-default-value="false"
-      :training-id="getTrainingId"
-      :disabled="isInputLanguageDisabled"
-      @on-api-call-finished="handleApiCallFinished"
-    />
-    <VBtn
-      id="btn-preview--campaign-manager-training-tab"
-      class="white--text btn-util no-box-shadow mt-1 btn-download-add-in ml-4"
-      color="#757575"
-      rounded
-      :disabled="isPreviewButtonDisabled"
-      @click="handlePreview"
+    <div class="d-flex">
+      <InputContentLanguage
+        :key="inputContentLanguageKey"
+        ref="inputContentLanguage"
+        v-model="value.trainingLanguageIds"
+        class="ml-3 mt-6"
+        :is-add-default-value="false"
+        :training-id="getTrainingId"
+        :disabled="isInputLanguageDisabled"
+        @on-api-call-finished="handleApiCallFinished"
+      />
+      <VBtn
+        id="btn-preview--campaign-manager-training-tab"
+        class="white--text btn-util no-box-shadow mt-1 btn-download-add-in ml-4"
+        style="margin-bottom: -32px; align-self: center;"
+        color="#757575"
+        rounded
+        :disabled="isPreviewButtonDisabled"
+        @click="handlePreview"
+      >
+        <v-icon left>mdi-eye</v-icon>
+        {{ labels.TrainingPreview }}
+      </VBtn>
+    </div>
+    <FormGroup
+      class-name="ml-3 mt-3"
+      has-hint
+      title="Enrollment"
+      sub-title="Training enrollment setting when users fail in the simulation"
     >
-      <v-icon left>mdi-eye</v-icon>
-      {{ labels.TrainingPreview }}
-    </VBtn>
+      <k-select
+        v-model="value.enrollmentSendTypeId"
+        id="input--campaign-manager-notification-templates"
+        class="tlp-select"
+        outlined
+        persistent-hint
+        hint="*Required"
+        placeholder="Select an option"
+        item-text="title"
+        :items="enrollmentItems"
+        :disabled="!isInputsEditable"
+        :rules="[(v) => !!v || 'Required']"
+        :return-object="false"
+        :slots="{ item: true, selection: false }"
+      >
+        <template #item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-subtitle class="tlp_subtitle">{{ item.description }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </template>
+      </k-select>
+    </FormGroup>
+    <FormGroup class="ml-3 mt-3" :title="labels.Reminder" style="max-width: 875px;">
+      <div class="campaign-manager-advanced-settings__other-settings-last">
+        <VCheckbox
+          v-model="sendReminderEvery"
+          id="input--campaign-manager-advanced-settings-randomly-selected"
+          color="#2196f3"
+          :disabled="!isInputsEditable"
+          hide-details
+        />
+        <span :style="!isInputsEditable && { opacity: '0.5' }">Set reminder every</span>
+        <VTextField
+          v-model="value.enrollmentReminder.periodCount"
+          v-mask="'#######'"
+          id="input--edit-enrollment-reminder-period-count"
+          placeholder="Enter number"
+          outlined
+          class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+          style="max-width: 64px;"
+          :disabled="!sendReminderEvery"
+          :rules="rules.number"
+        />
+        <KSelect
+          v-model.trim="value.enrollmentReminder.periodType"
+          id="input--edit-enrollment-reminder-period-type"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          style="max-width: 120px;"
+          :items="getPeriodTypeItems"
+          :disabled="!sendReminderEvery"
+        />
+        <span class="ml-2" :style="!isInputsEditable && { opacity: '0.5' }">ends</span>
+        <KSelect
+          v-model.trim="value.enrollmentReminder.endType"
+          id="input--edit-enrollment-reminder-end-type"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          style="max-width: 282px; min-width: 282px;"
+          :items="getEndTypeItems"
+          :disabled="!sendReminderEvery"
+        />
+        <VTextField
+          v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
+          v-model="value.enrollmentReminder.occurrenceCount"
+          v-mask="'#######'"
+          id="input--campaign-manager-advanced-settings-other-settings-occurence-count"
+          placeholder="Enter number"
+          outlined
+          class="ml-2 absolute-text-input-error"
+          style="max-width: 64px;"
+          :disabled="!sendReminderEvery"
+          :rules="rules.number"
+        />
+        <span
+          v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
+          class="ml-2"
+          :style="!isInputsEditable && { opacity: '0.5' }"
+          >times</span
+        >
+        <InputDate
+          v-if="value.enrollmentReminder.endType === 'OnDate'"
+          v-model="value.enrollmentReminder.stopTime"
+          class="date-picker-height-40 ml-2"
+          type="date"
+          ref="refPicker"
+          placeholder="Select Date"
+          format="dd/MM/yyyy"
+          style="width: 100%; max-width: 180px;"
+          :picker-options="datePickerOptions"
+          :disabled="!sendReminderEvery"
+        />
+      </div>
+    </FormGroup>
+    <FormGroup class="ml-3 mt-6 mb-6" :title="labels.Certificate">
+      <v-checkbox
+        v-model="value.awardCertificate"
+        id="input--campaign-manager-advanced-settings-randomly-selected"
+        hide-details
+        color="#2196f3"
+        label="Award certificate when a user completes the training"
+        :disabled="!isInputsEditable"
+      >
+      </v-checkbox>
+    </FormGroup>
   </div>
 </template>
 <script>
@@ -62,14 +183,23 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { enrollmentItems } from '@/components/CampaignManager/PhishingScenarios/utils'
+import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
-  components: { InputContentLanguage, KSelect, AlertBox, FormGroup },
+  components: { InputDate, InputContentLanguage, KSelect, AlertBox, FormGroup },
   props: {
     value: {
       type: Object,
       default() {
         return new TrainingTabModel()
+      }
+    },
+    enumTypes: {
+      type: Object,
+      default() {
+        return {}
       }
     },
     isEdit: {
@@ -84,8 +214,22 @@ export default {
   data() {
     return {
       inputContentLanguageKey: createRandomCryptStringNumber(),
+      sendReminderEvery: false,
       labels,
-      trainingItems: []
+      trainingItems: [],
+      enrollmentItems,
+      rules: {
+        number: [
+          (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => v > 0 || 'Enter number greater than 0',
+          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
+        ]
+      },
+      datePickerOptions: {
+        disabledDate: this.disabledEndDates
+      },
+      periodTypeItems,
+      endTypeItems
     }
   },
   watch: {
@@ -94,6 +238,22 @@ export default {
     }
   },
   computed: {
+    getPeriodTypeItems() {
+      return (
+        this?.enumTypes?.EmailPeriodTypeEnum?.map((type, index) => ({
+          text: this.periodTypeItems[index].text,
+          value: type.name
+        })) || this.periodTypeItems
+      )
+    },
+    getEndTypeItems() {
+      return (
+        this?.enumTypes?.ReminderEndTypeEnum?.map((type, index) => ({
+          text: this.endTypeItems[index].text,
+          value: type.name
+        })) || this.endTypeItems
+      )
+    },
     getSubtitle() {
       let type = SCENARIO_TYPES.PHISHING
       if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING
@@ -173,6 +333,9 @@ export default {
     },
     handleApiCallFinished() {
       if (!this.value.trainingLanguageIds.length) this.$refs.inputContentLanguage.setDefaultValue()
+    },
+    disabledEndDates(val) {
+      return new Date().setHours(0, 0, 0, 0) > val.getTime()
     }
   }
 }

@@ -112,7 +112,8 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data || {}
-        const distributionDelayTimeTypes = [
+        // TODO: Fetch distributionDelayTimeTypes
+        this.distributionDelayTimeTypes = [
           {
             text: 'seconds',
             value: '1'
@@ -126,8 +127,6 @@ export default {
             value: '3'
           }
         ]
-        // TODO: Fetch distributionDelayTimeTypes
-        this.distributionDelayTimeTypes = distributionDelayTimeTypes
         this.enumTypes = enumNameValuePairs
         this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId

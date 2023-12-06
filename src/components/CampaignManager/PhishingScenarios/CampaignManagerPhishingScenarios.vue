@@ -286,6 +286,7 @@
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :type="type"
                       :is-edit="isEdit"
+                      :enum-types="enumTypes"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -336,6 +337,7 @@ import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -405,7 +407,8 @@ export default {
       landingPageTemplates: [],
       phishingScenarioItems: [],
       isMethodMfa: false,
-      isShowTrainingDialog: false
+      isShowTrainingDialog: false,
+      enumTypes: {}
     }
   },
   computed: {
@@ -546,11 +549,16 @@ export default {
     }
   },
   created() {
-    if (!this.isEdit) {
-      this.callForPhishingScenarios()
-    }
+    if (!this.isEdit) this.callForPhishingScenarios()
+    this.callForEnrollmentFormDetails()
   },
   methods: {
+    callForEnrollmentFormDetails() {
+      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
+        const { enumNameValuePairs = {} } = response?.data?.data || {}
+        this.enumTypes = enumNameValuePairs
+      })
+    },
     getItemClasses(itemResourceId = '') {
       return [
         'template-list',
