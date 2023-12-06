@@ -87,8 +87,7 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
-          COLUMNS.TIMES_OPENED,
-          COLUMNS.ACTIVITY_TYPE
+          COLUMNS.TIMES_OPENED
         ],
         addButton: {
           show: false

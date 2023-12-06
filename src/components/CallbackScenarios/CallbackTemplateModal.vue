@@ -264,6 +264,7 @@
                       entity-name="Text to speech"
                       isTextToSpeech
                       isCallback
+                      required
                     />
                   </FormGroup>
                   <div
@@ -277,16 +278,6 @@
                           >Upload an audio file</span
                         >
                       </div>
-                      <div class="callback-template-dialog-step__form--title-right">
-                        <AudioPlayer
-                          v-if="
-                            formValues.dialingNoticeStepInputType === 'FileUpload' &&
-                            getDialingNoticeFileSrc
-                          "
-                          isPreview
-                          :src="getDialingNoticeFileSrc"
-                        />
-                      </div>
                     </div>
                     <KFileUpload
                       hint="Only MP3 files. Max. file size 1MB"
@@ -295,6 +286,54 @@
                       :filePreviews="getDialingNoticeFilePreviews"
                       @inputFile="onFileChanged"
                       @on-clear="onClearFile"
+                    />
+                    <div
+                      v-if="
+                        formValues.dialingNoticeStepInputUrl || formValues.dialingNoticeStepContent
+                      "
+                      class="callback-template-dialog-step__audio-file-preview-container"
+                    >
+                      <div class="callback-template-dialog-step__audio-badge-container">
+                        <div class="callback-template-dialog-step__audio-badge">
+                          <v-icon class="mr-1" color="#757575" size="large">$playfile-gray</v-icon
+                          >Audio File
+                        </div>
+                        <v-btn
+                          rounded
+                          color="#2196f3"
+                          :id="'callback-template-dialog-step__play-audio-button'"
+                          :class="[
+                            'add-step-button',
+                            'button-new',
+                            isPlayAudioDisabled ? 'add-step-button--disabled' : ''
+                          ]"
+                          :disabled="isPlayAudioDisabled"
+                          @click="handlePlayAudio"
+                        >
+                          <v-icon color="#ffffff" style="font-size: 20px; margin-top: 1px;"
+                            >mdi-play</v-icon
+                          >
+                          <span class="add-step-button__text" style="text-transform: none;"
+                            >Play Audio</span
+                          >
+                        </v-btn>
+                      </div>
+                      <div
+                        v-if="isPlayAudioClicked"
+                        class="callback-template-dialog-step__audio-player-container"
+                      >
+                        <AudioPlayer
+                          class="callback-template-dialog-step__audio-player"
+                          :src="getDialingNoticeFileSrc"
+                        />
+                      </div>
+                    </div>
+                    <CustomError
+                      class="mb-4"
+                      style="margin-top: 2px;"
+                      :showValidMessage="false"
+                      :isValid="!fileUploadErrorText"
+                      :errorMessage="fileUploadErrorText"
                     />
                   </div>
                 </v-card>
@@ -342,6 +381,7 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
+import CustomError from '@/components/CustomError'
 
 const initialFormValues = {
   resourceId: null,
@@ -396,7 +436,8 @@ export default {
     KFileUpload,
     Draggable,
     AudioPlayer,
-    InputMergeTag
+    InputMergeTag,
+    CustomError
   },
   props: {
     status: {
@@ -428,6 +469,8 @@ export default {
   },
   data() {
     return {
+      isPlayAudioClicked: false,
+      fileUploadErrorText: '',
       mergeTags: [
         {
           text: 'Full Name',
@@ -532,6 +575,12 @@ export default {
     }
   },
   computed: {
+    isPlayAudioDisabled() {
+      return (
+        (!this.formValues.dialingNoticeStepInputUrl && !this.formValues.dialingNoticeStepContent) ||
+        this.isPlayAudioClicked
+      )
+    },
     getVoiceResourceId() {
       const callbackLanguageIndex = this.languageItems.findIndex(
         (language) =>
@@ -641,6 +690,9 @@ export default {
     }
   },
   methods: {
+    handlePlayAudio() {
+      this.isPlayAudioClicked = true
+    },
     onVishingStepChange(index) {
       for (let i = 0; i < this.formValues.steps.length; i++) {
         if (index === i) {
@@ -776,9 +828,12 @@ export default {
       if (Array.isArray(file) && file.length === 0) {
         this.formValues.dialingNoticeStepContent = null
         this.formValues.dialingNoticeStepInputUrl = null
+        this.fileUploadErrorText = `Audio file can't be empty.`
       } else {
         this.formValues.dialingNoticeStepContent = file
+        this.fileUploadErrorText = ''
       }
+      this.isPlayAudioClicked = false
     },
     onClearFile() {
       this.formValues.dialingNoticeStepContent = null

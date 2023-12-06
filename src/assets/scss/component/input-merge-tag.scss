@@ -3,19 +3,17 @@
   flex-direction: column;
   overflow: hidden;
 
-  &.text-to-speech {
-    .v-input__slot {
-      display: flex;
-      flex-direction: column-reverse;
-      justify-content: stretch;
+  .v-input__slot {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: stretch;
 
-      .v-input__prepend-inner {
-        align-self: stretch !important;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        translate: -13px;
-        width: calc(100% + 28px);
-      }
+    .v-input__prepend-inner {
+      align-self: stretch !important;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      translate: -13px;
+      width: calc(100% + 28px);
     }
   }
 
