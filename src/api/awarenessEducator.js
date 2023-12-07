@@ -230,6 +230,15 @@ const exportExamTrainingReportResults = (payload, resourceId) => {
     responseType: 'blob'
   })
 }
+const examTrainingNonTargetUserReportResults = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/anonymous/${resourceId}/result`, payload)
+}
+const examTrainingNonTargetUserTrainingDetails = (payload, resourceId, targetUserResultId) => {
+  return testRequest.post(
+    `/training-reports/anonymous/${resourceId}/result-detail/${targetUserResultId}`,
+    payload
+  )
+}
 
 const exportNoResponseReportResults = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/no-response/search/export`, payload, {
@@ -254,6 +263,16 @@ const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
   if (interactionType) url += `?emailEventType=${interactionType}`
   return testRequest.get(url)
+}
+const getTrainingReportNonTargetUserInteractions = (
+  enrollmentId,
+  resourceId,
+  interactionType,
+  axiosPayload
+) => {
+  let url = `/training-reports/anonymous/${enrollmentId}/user-detail/${resourceId}`
+  if (interactionType) url += `?emailEventType=${interactionType}`
+  return testRequest.post(url, axiosPayload)
 }
 
 const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
@@ -388,6 +407,13 @@ const getPhishedLandingPage = (resourceId = '') => {
   return testRequest.get(`/enrollments/${resourceId}/content`)
 }
 
+const searchProxyTargetUsers = (payload, id) => {
+  return testRequest.post(`/training-reports/anonymous/${id}`, payload)
+}
+const getProxyTargetUserById = (id) => {
+  return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -443,6 +469,7 @@ export default {
   exportExamTrainingReportResults,
   exportSendingReport,
   getTrainingReportInteractions,
+  getTrainingReportNonTargetUserInteractions,
   getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile,
@@ -464,5 +491,9 @@ export default {
   resendTrainingToUserList,
   exportTrainingReport,
   getTrainingItems,
-  getPhishedLandingPage
+  getPhishedLandingPage,
+  searchProxyTargetUsers,
+  getProxyTargetUserById,
+  examTrainingNonTargetUserReportResults,
+  examTrainingNonTargetUserTrainingDetails
 }

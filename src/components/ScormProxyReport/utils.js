@@ -34,12 +34,6 @@ export function getStatusBadgeProps(status) {
       text: 'Completed'
     }
   }
-  if (trimmedStatus === 'Passed') {
-    return {
-      color: '#217124',
-      text: 'Passed'
-    }
-  }
 
   if (trimmedStatus === 'InQueue') {
     return {
@@ -61,13 +55,6 @@ export function getStatusBadgeProps(status) {
       color: '#B6791D',
       text: 'Cancelled',
       outline: false
-    }
-  }
-  if (trimmedStatus === 'Failed') {
-    return {
-      color: '#B6791D',
-      text: 'Failed',
-      outline: true
     }
   }
 

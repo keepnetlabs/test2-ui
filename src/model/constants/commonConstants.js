@@ -326,8 +326,13 @@ export const PROPERTY_STORE = {
 
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
+  TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRAINING_REPORT_NON_TARGET_USERS_PROGRESS_TABLE:
+    'TrainingReportNonTargetUserProgressTableSettings',
+  TRAINING_REPORT_NON_TARGET_RESULTS_EXAM_RESULTS_TABLE:
+    'TrainingReportNonTargetResultsExamResultsTableSettings',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
   QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
     'QuishingCampaignManagerReportSubmittedMfaDataTableSettings',
@@ -489,8 +494,12 @@ export const COMMON_SNACKBAR = {
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
+  TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportNonTargetUserTable',
+  TRAINING_REPORT_NON_TARGET_USERS_PROGRESS_TABLE: 'TrainingReportNonTargetUserProgressTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSearchContainerKeys',
+  TRAINING_REPORT_NON_TARGET_RESULTS_EXAM_RESULTS_TABLE:
+    'TrainingReportNonTargetResultsExamResultsTable',
   VISHING_REPORT_USERS_TABLE: 'VishingReportUsersTable',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
   QUISHING_DOMAINS: 'QuishingDomainsTableContainerKeys',
