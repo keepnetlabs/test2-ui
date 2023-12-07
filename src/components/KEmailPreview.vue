@@ -4,7 +4,6 @@
     ref="iframe"
     class="k-email-preview"
     width="100%"
-    sandbox="allow-same-origin"
     title="Email Preview"
     :srcdoc="html"
     :style="{ height }"

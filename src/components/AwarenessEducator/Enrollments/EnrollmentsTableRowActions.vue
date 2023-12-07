@@ -148,7 +148,7 @@ export default {
     },
     routeToTrainingReport(row) {
       this.$router.push({
-        name: 'Training Report',
+        name: this.isScormProxy ? 'Scorm Proxy Report' : 'Training Report',
         params: {
           id: row.enrollmentId
         }
