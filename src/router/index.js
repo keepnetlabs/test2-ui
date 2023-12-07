@@ -63,6 +63,7 @@ import QuishingSimulator from '@/views/QuishingSimulator.vue'
 import QuishingCampaignManager from '@/views/QuishingCampaignManager.vue'
 import QuishingSettings from '@/views/QuishingSettings.vue'
 import QuishingCampaignManagerReport from '@/views/QuishingCampaignManagerReport.vue'
+import ScormProxyReport from '@/views/ScormProxyReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -271,6 +272,18 @@ const router = new Router({
               props: true,
               params: true,
               component: TrainingReport
+            },
+            {
+              path: 'enrollments/scorm-proxy-report/:id',
+              name: 'Scorm Proxy Report',
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Enrollments',
+                permissionStoreKey: 'permissions/getTrainingReportsSearchPermissions'
+              },
+              props: true,
+              params: true,
+              component: ScormProxyReport
             }
           ]
         },

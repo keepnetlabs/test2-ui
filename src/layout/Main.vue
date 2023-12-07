@@ -596,7 +596,10 @@
                   route-name="Enrollments"
                   :router-name="routerName"
                   :active-class-comparator="
-                    () => routerName === 'Enrollments' || routerName === 'Training Report'
+                    () =>
+                      routerName === 'Enrollments' ||
+                      routerName === 'Training Report' ||
+                      routerName === 'Scorm Proxy Report'
                   "
                 />
               </v-list-item-content>
@@ -912,6 +915,9 @@
             <h1 v-else-if="routerName === 'Callback Report'">
               {{ getCallbackReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Scorm Proxy Report'">
+              {{ getScormProxyReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1178,6 +1184,12 @@ export default {
       }
       return 'Training Report'
     },
+    getScormProxyReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Scorm Proxy Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Scorm Proxy Report'
+    },
     getVishingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
         return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`
@@ -1310,12 +1322,14 @@ export default {
           routerName === 'Training List' ||
           routerName === 'Enrollments' ||
           routerName === 'Certificates' ||
-          routerName === 'Training Report',
+          routerName === 'Training Report' ||
+          routerName === 'Scorm Proxy Report',
         'un-selected-list-item':
           routerName !== 'Training List' ||
           routerName !== 'Enrollments' ||
           routerName !== 'Certificates' ||
-          routerName !== 'Training Report'
+          routerName !== 'Training Report' ||
+          routerName !== 'Scorm Proxy Report'
       }
     },
     getLicenseDialogBody() {
