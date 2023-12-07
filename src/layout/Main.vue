@@ -915,6 +915,9 @@
             <h1 v-else-if="routerName === 'Callback Report'">
               {{ getCallbackReportName }}
             </h1>
+            <h1 v-else-if="routerName === 'Scorm Proxy Report'">
+              {{ getScormProxyReportName }}
+            </h1>
 
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1180,6 +1183,12 @@ export default {
         return `Training Report - ${this.$store?.state?.common?.activePageRouterName}`
       }
       return 'Training Report'
+    },
+    getScormProxyReportName() {
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Scorm Proxy Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Scorm Proxy Report'
     },
     getVishingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
