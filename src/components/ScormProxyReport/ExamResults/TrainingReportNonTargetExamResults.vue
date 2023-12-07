@@ -1,35 +1,50 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    rowKey="targetUserResourceId"
-    selectable
-    filterable
-    options
-    is-server-side-selection
-    is-server-side
-    :loading="isLoading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    :select-event="tableOptions.selectEvent"
-    :axios-payload.sync="axiosPayload"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportTrainingReportExamResultsTable"
-    @refreshAction="callForData"
-    @on-details="handleOnDetail"
-  />
+  <div>
+    <TrainingReportNonTargetExumResultsDetails
+      v-if="isShowInteractionsModal"
+      :status="isShowInteractionsModal"
+      :item="selectedRow"
+      @on-close="toggleIsShowInteractionsModal"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      rowKey="targetUserResourceId"
+      selectable
+      filterable
+      options
+      is-server-side-selection
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @refreshAction="callForData"
+      @on-details="handleInteractions"
+    >
+      <template #datatable-custom-column="{ scope, col }">
+        <div class="training-report-progress__progress-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.isPassed)" :col="col" size="medium" />
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -44,14 +59,19 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import Badge from '@/components/Badge.vue'
+import TrainingReportNonTargetExumResultsDetails from '@/components/ScormProxyReport/ExamResults/TrainingReportNonTargetExumResultsDetails.vue'
 
 export default {
   name: 'TrainingReportNonTargetExamResults',
-  components: { DataTable },
+  components: { TrainingReportNonTargetExumResultsDetails, Badge, DataTable },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     formDetails: {
       type: Object
+    },
+    id: {
+      type: String
     }
   },
   data() {
@@ -61,12 +81,12 @@ export default {
       resendPayload: null,
       isResendActionButtonDisabled: false,
       selectedRow: null,
-      isShowDetailsModal: false,
+      isShowInteractionsModal: false,
       CONSTANTS: {
         id: 'training-report-exam-results-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'lastInteractionDate' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -78,9 +98,10 @@ export default {
           resend: true,
           clipboard: true
         },
+        downloadButton: { show: false },
         columns: [
           {
-            property: 'firstName',
+            property: 'targetUserResourceId',
             align: 'left',
             editable: false,
             label: 'Non-Target Users ID',
@@ -89,10 +110,10 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 260
           },
           {
-            property: 'examResultDate',
+            property: 'sessionStartDate',
             align: 'left',
             editable: false,
             label: 'Date',
@@ -104,33 +125,32 @@ export default {
             filterableType: 'date'
           },
           {
-            property: 'examStatus',
+            property: 'isPassed',
             align: 'center',
             editable: false,
             label: 'Status',
             sortable: true,
             fixed: false,
             show: true,
-            type: 'badge',
+            type: 'slot',
             width: 200,
             filterableType: 'select',
-            filterableItems:
-              this?.formDetails?.examStatusEnum?.map((item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })) || []
+            filterableItems: [
+              { text: 'Passed', value: true },
+              { text: 'Failed', value: false }
+            ]
           },
           {
-            property: 'examScore',
+            property: 'sessionCount',
             align: 'right',
             editable: false,
-            label: 'Score',
+            label: 'Total Sessions',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 140,
-            filterableType: 'text'
+            width: 160,
+            filterableType: 'number'
           }
         ],
         addButton: {
@@ -157,7 +177,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
+      AwarenessEducatorService.examTrainingNonTargetUserReportResults(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
@@ -167,10 +187,11 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results
         })
         .finally(this.setLoading)
     },
+    /*
     exportTrainingReportExamResultsTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -195,8 +216,27 @@ export default {
         )
       })
     },
-    handleOnDetail(row) {
+
+     */
+    handleInteractions(row) {
       this.selectedRow = row
+      this.toggleIsShowInteractionsModal()
+    },
+    getStatusBadgeProps(isPassed) {
+      if (isPassed) {
+        return {
+          color: '#217124',
+          text: 'Passed'
+        }
+      } else {
+        return {
+          color: '#B6791D',
+          text: 'Failed'
+        }
+      }
+    },
+    toggleIsShowInteractionsModal() {
+      this.isShowInteractionsModal = !this.isShowInteractionsModal
     }
   }
 }

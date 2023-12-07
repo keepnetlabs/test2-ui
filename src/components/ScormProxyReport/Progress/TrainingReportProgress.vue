@@ -52,7 +52,7 @@
           @on-details="handleDetails"
           @on-resend="handleOnResend"
         >
-          <template v-slot:datatable-custom-column="{ scope, col }">
+          <template #datatable-custom-column="{ scope, col }">
             <div class="training-report-progress__progress-column">
               <v-btn style="display: none;" />
               <Badge v-bind="getStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
@@ -70,7 +70,7 @@
           title="Non-Target Users Progress"
           subtitle="Training progress details of non-target users"
         />
-        <TrainingReportNonTargetUsersProgress :form-details="formDetails" />
+        <TrainingReportNonTargetUsersProgress :form-details="formDetails" :id="id" />
       </ElTabPane>
     </ElTabs>
   </div>

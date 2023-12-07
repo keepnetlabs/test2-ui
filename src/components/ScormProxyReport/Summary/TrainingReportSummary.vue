@@ -117,9 +117,9 @@ export default {
     },
     getTrainingInfoData() {
       const { startDate = '' } = this?.trainingSummary || {}
-      const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
-      const { targetGroupCount = 0, autoEnrollDescription = 'No', languages = ['EN'] } = this
-        .trainingSummary || {
+      const { totalTargetUserCount = 0, totalNonTargetUserCount = 0 } =
+        this?.trainingSummary?.reportDetail || {}
+      const { targetGroupCount = 0, languages = ['EN'] } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
       }
@@ -138,7 +138,7 @@ export default {
         },
         'Non-Target Users': {
           show: true,
-          value: totalTargetUserCount
+          value: totalNonTargetUserCount
         },
         'Training Proxy Package Download Date': {
           show: true,

@@ -63,7 +63,7 @@
           title="Non-Target Users Exam Results"
           subtitle="Exam results of non-target users"
         />
-        <TrainingReportNonTargetExamResults :form-details="formDetails" />
+        <TrainingReportNonTargetExamResults :form-details="formDetails" :id="id" />
       </ElTabPane>
     </ElTabs>
   </div>

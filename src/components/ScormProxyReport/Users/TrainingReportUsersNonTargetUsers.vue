@@ -1,42 +1,51 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    rowKey="targetUserResourceId"
-    selectable
-    filterable
-    options
-    is-server-side-selection
-    is-server-side
-    :loading="isLoading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    :select-event="tableOptions.selectEvent"
-    :axios-payload.sync="axiosPayload"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportTrainingReportUsersTable"
-    @refreshAction="callForData"
-    @on-interactions="handleInteractions"
-  >
-    <template #datatable-custom-column="{ scope, col }">
-      <div class="training-report-users__status-column">
-        <v-btn style="display: none;" />
-        <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
-      </div>
-    </template>
-  </DataTable>
+  <div>
+    <TrainingReportNonUserInteractionsModal
+      v-if="isShowInteractionsModal"
+      :status="isShowInteractionsModal"
+      :item="selectedRow"
+      @on-close="toggleIsShowInteractionsModal"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      rowKey="targetUserResourceId"
+      selectable
+      filterable
+      options
+      is-server-side-selection
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :download-button="tableOptions.downloadButton"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportTrainingReportUsersTable"
+      @refreshAction="callForData"
+      @on-interactions="handleInteractions"
+    >
+      <template #datatable-custom-column="{ scope, col }">
+        <div class="training-report-users__status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -53,10 +62,11 @@ import {
 import labels from '@/model/constants/labels'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
+import TrainingReportNonUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportNonUserInteractionsModal.vue'
 
 export default {
   name: 'TrainingReportUsersNonTargetUsers',
-  components: { DataTable, Badge },
+  components: { TrainingReportNonUserInteractionsModal, DataTable, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     formDetails: {
@@ -73,7 +83,8 @@ export default {
         id: 'training-report-non-target-users-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
+      selectedRow: null,
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'lastInteractionDate' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -85,9 +96,12 @@ export default {
           resend: true,
           clipboard: true
         },
+        downloadButton: {
+          show: false
+        },
         columns: [
           {
-            property: 'firstName',
+            property: 'targetUserResultId',
             align: 'left',
             editable: false,
             label: 'Non-Target Users ID',
@@ -96,7 +110,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 260
           },
           {
             property: 'status',
@@ -148,6 +162,7 @@ export default {
           }
         ]
       },
+      isShowInteractionsModal: false,
       tableData: []
     }
   },
@@ -164,11 +179,10 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
-          debugger
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results
         })
         .finally(this.setLoading)
     },
@@ -197,6 +211,9 @@ export default {
     handleInteractions(row) {
       this.selectedRow = row
       this.toggleIsShowInteractionsModal()
+    },
+    toggleIsShowInteractionsModal() {
+      this.isShowInteractionsModal = !this.isShowInteractionsModal
     },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)

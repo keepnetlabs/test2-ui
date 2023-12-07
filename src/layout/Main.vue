@@ -596,7 +596,10 @@
                   route-name="Enrollments"
                   :router-name="routerName"
                   :active-class-comparator="
-                    () => routerName === 'Enrollments' || routerName === 'Training Report'
+                    () =>
+                      routerName === 'Enrollments' ||
+                      routerName === 'Training Report' ||
+                      routerName === 'Scorm Proxy Report'
                   "
                 />
               </v-list-item-content>
@@ -1310,12 +1313,14 @@ export default {
           routerName === 'Training List' ||
           routerName === 'Enrollments' ||
           routerName === 'Certificates' ||
-          routerName === 'Training Report',
+          routerName === 'Training Report' ||
+          routerName === 'Scorm Proxy Report',
         'un-selected-list-item':
           routerName !== 'Training List' ||
           routerName !== 'Enrollments' ||
           routerName !== 'Certificates' ||
-          routerName !== 'Training Report'
+          routerName !== 'Training Report' ||
+          routerName !== 'Scorm Proxy Report'
       }
     },
     getLicenseDialogBody() {
