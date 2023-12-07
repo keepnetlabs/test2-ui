@@ -253,7 +253,7 @@ export default {
       getCallbackSettingsSearchPermissions: 'permissions/getCallbackSettingsSearchPermissions'
     }),
     canRenderAlertBox() {
-      return this.selectablePhoneNumberCount === 0
+      return !this.isLoading && this.selectablePhoneNumberCount === 0
     },
     getAlertBoxText() {
       return `You can add a maximum of ${this.licenseNumberLimit} phone number${
@@ -286,17 +286,7 @@ export default {
           this.licenseNumberLimit = companyCount
           if (!this.selectablePhoneNumberCount) {
             this.tableOptions.addButton.disabled = true
-            this.tableOptions.addButton.tooltip = `You can add a maximum of ${
-              this.licenseNumberLimit
-            } phone number${
-              this.licenseNumberLimit > 1 ? 's' : ''
-            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
             this.tableOptions.iEmpty.disabled = true
-            this.tableOptions.iEmpty.tooltip = `You can add a maximum of ${
-              this.licenseNumberLimit
-            } phone number${
-              this.licenseNumberLimit > 1 ? 's' : ''
-            } (as allowed by your license limit) here for use in callback phishing scenarios in the running callback phishing campaigns simultaneously.`
           }
         })
         .catch(() => {
