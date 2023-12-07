@@ -48,7 +48,7 @@
       :hint="hint"
       @input="$emit('input', $event)"
     >
-      <template #prepend-inner>
+      <template v-if="isTextToSpeech" #prepend-inner>
         <div class="input-merge-tag__inner">
           <div v-if="isTextToSpeech" class="input-merge-tag__badges-and-button">
             <div class="input-merge-tag__badges">
