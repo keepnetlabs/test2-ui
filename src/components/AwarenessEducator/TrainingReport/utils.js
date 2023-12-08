@@ -65,7 +65,7 @@ export function getStatusBadgeProps(status) {
   }
   if (trimmedStatus === 'Failed') {
     return {
-      color: '#B6791D',
+      color: '#B83A3A',
       text: 'Failed',
       outline: true
     }
