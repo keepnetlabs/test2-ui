@@ -285,5 +285,19 @@ export const COLUMNS = {
     width: 150,
     hasTooltip: true,
     filterableType: 'text'
+  },
+  ENROLLMENT_TAGS: {
+    property: PROPERTY_STORE.TAGS,
+    align: 'left',
+    editable: false,
+    label: 'Tags',
+    fixed: false,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'smallBadge',
+    width: 150,
+    hasTooltip: true,
+    filterableType: 'text'
   }
 }
