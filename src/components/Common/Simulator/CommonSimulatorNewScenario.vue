@@ -642,24 +642,29 @@ export default {
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
     },
-    isQuishingTypeEmail() {
-      if (!this.isQuishing) return false
-      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
-    },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false
-      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      return (
+        this.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
     },
     getEmailTemplateApiFuncs() {
-      return this.type === SCENARIO_TYPES.PHISHING
-        ? {
-            list: getEmailTemplatesList,
-            content: getEmailTemplatePreviewContent
-          }
-        : {
-            list: QuishingService.getEmailTemplatesList,
-            content: QuishingService.getEmailTemplatePreviewContent
-          }
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        return {
+          list: getEmailTemplatesList,
+          content: getEmailTemplatePreviewContent
+        }
+      } else if (this.isQuishingTypeIndividualPrintOut) {
+        return {
+          list: QuishingService.getEmailTemplatesList,
+          content: QuishingService.getQuishingTemplatePreviewContent
+        }
+      }
+      return {
+        list: QuishingService.getEmailTemplatesList,
+        content: QuishingService.getEmailTemplatePreviewContent
+      }
     },
     getLandingPageApiFuncs() {
       return this.type === SCENARIO_TYPES.PHISHING

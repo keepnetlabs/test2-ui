@@ -27,7 +27,7 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Email', value: 'Email' },
-      { text: 'Individual Printout', value: 'Individual Printout' }
+      { text: 'Individual Printout', value: 'Individual' }
     ]
   },
   TEMPLATE_NAME: {

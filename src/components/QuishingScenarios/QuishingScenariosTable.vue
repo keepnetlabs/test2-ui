@@ -230,7 +230,7 @@ export default {
   watch: {
     scenarioDetailsLookup() {
       this.$set(
-        this.tableOptions.columns[1],
+        this.tableOptions.columns[2],
         'filterableItems',
         this.scenarioDetailsLookup.methodTypes.map((item) => {
           return { text: item.text, value: item.text }
