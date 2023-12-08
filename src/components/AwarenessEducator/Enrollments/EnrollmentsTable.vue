@@ -106,7 +106,7 @@ export default {
           COLUMNS.DELIVERY,
           COLUMNS.DELIVERY_TYPE,
           COLUMNS.TARGET_USERS,
-          COLUMNS.TAGS
+          COLUMNS.ENROLLMENT_TAGS
         ],
         iEmpty: {
           message: labels.EmptyEnrollments
