@@ -237,7 +237,7 @@ export const SCENARIO_TYPES = {
 }
 export const quishingTypeItems = [
   { text: 'Email', value: 'Email' },
-  { text: 'Individual Printout', value: 'Individual Printout' }
+  { text: 'Individual Printout', value: 'Individual' }
 ]
 export const getDifficultyColor = (difficulty) => {
   if (difficulty === 'Easy') {
