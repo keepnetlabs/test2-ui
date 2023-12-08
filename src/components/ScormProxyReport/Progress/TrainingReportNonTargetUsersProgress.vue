@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TrainingReportNonUserInteractionsModal
+    <TrainingReportNonTargetUsersProgressDetailDialog
       v-if="isShowInteractionsModal"
       :status="isShowInteractionsModal"
       :item="selectedRow"
@@ -60,11 +60,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
-import TrainingReportNonUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportNonUserInteractionsModal.vue'
+import TrainingReportNonTargetUsersProgressDetailDialog from '@/components/ScormProxyReport/Progress/TrainingReportNonTargetUsersProgressDetailDialog'
 
 export default {
   name: 'TrainingReportNonTargetUsersProgress',
-  components: { TrainingReportNonUserInteractionsModal, DataTable, Badge },
+  components: { TrainingReportNonTargetUsersProgressDetailDialog, DataTable, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     formDetails: {
