@@ -14,7 +14,7 @@
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <div v-if="!isPreviewLoading" class="template-preview">
         <div class="template-preview__text" v-if="!!templateHTML">
-          <template v-if="!isQuishingTypeIndividualPrintOut">
+          <template v-if="!isIndividualPrintoutTemplate">
             <div>
               <span class="template-preview__text--title">Template Name: </span>
               <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
@@ -34,13 +34,14 @@
               <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
             </div>
           </template>
-          <div v-else class="d-flex justify-space-between">
+          <div v-else class="d-flex justify-space-between items-center">
             <div>Example Individual Printout</div>
             <VBtn
               id="btn-preview-indiviual-printout"
               class="white--text btn-util btn-download-add-in"
               color="#2196F3"
               rounded
+              :style="getIndividualPrintoutStyle"
               @click="handlePreviewIndividualPrintout"
             >
               <v-icon left>mdi-file-eye</v-icon>
@@ -81,7 +82,7 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import QuishingService from '@/api/quishing'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
@@ -123,20 +124,20 @@ export default {
       labels,
       isPreviewLoading: false,
       emailTemplateParams: {},
-      templateHTML: null
+      templateHTML: null,
+      isIndividualPrintoutButtonDisabled: false
     }
   },
   computed: {
-    isQuishing() {
-      return this.type === SCENARIO_TYPES.QUISHING
-    },
-    isQuishingTypeEmail() {
-      if (!this.isQuishing) return false
-      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
-    },
-    isQuishingTypeIndividualPrintOut() {
-      if (!this.isQuishing) return false
-      return this.emailTemplateParams.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    getIndividualPrintoutStyle() {
+      const style = {
+        textTransform: 'capitalize'
+      }
+      if (this.isIndividualPrintoutButtonDisabled) {
+        style.cursor = 'default'
+        style.opacity = 0.5
+      }
+      return style
     },
     getTitle() {
       return this?.isIndividualPrintoutTemplate
@@ -189,7 +190,25 @@ export default {
     handleClose() {
       this.$emit('on-close')
     },
-    handlePreviewIndividualPrintout() {}
+    handlePreviewIndividualPrintout() {
+      this.isIndividualPrintoutButtonDisabled = true
+      QuishingService.getQuishingPdfPreviewContent(this.selectedRow.resourceId)
+        .then((response) => {
+          const file = new File([response.data], 'Quishing PDF Preview', {
+            type: 'application/pdf'
+          })
+          const fileURL = URL.createObjectURL(file)
+          const newWindow = window.open(fileURL)
+          newWindow.onload = function () {
+            setTimeout(() => {
+              newWindow.document.title = 'Quishing PDF Preview'
+            }, 250)
+          }
+        })
+        .finally(() => {
+          this.isIndividualPrintoutButtonDisabled = false
+        })
+    }
   }
 }
 </script>

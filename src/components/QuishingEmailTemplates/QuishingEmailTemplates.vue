@@ -26,7 +26,7 @@
       :status="isShowPreviewDialog"
       :is-individual-printout-template="isIndividualPrintoutTemplate"
       :selected-row="selectedEmailTemplate"
-      :api-func="getEmailTemplatePreviewContent"
+      :api-func="getPreviewDialogApiFunc"
       @on-close="togglePreviewDialog"
     />
     <CommonSimulatorAttachmentRenameDialog
@@ -62,7 +62,6 @@ import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
-
 export default {
   name: 'QuishingEmailTemplates',
   components: {
@@ -87,8 +86,16 @@ export default {
     }
   },
   computed: {
+    getPreviewDialogApiFunc() {
+      return this.isIndividualPrintoutTemplate
+        ? QuishingService.getQuishingTemplatePreviewContent
+        : QuishingService.getEmailTemplatePreviewContent
+    },
     isIndividualPrintoutTemplate() {
-      return this?.selectedEmailTemplate?.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      return (
+        this?.selectedEmailTemplate?.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
     },
     getSelectedEmailTemplateId() {
       return this.selectedEmailTemplate?.resourceId || ''

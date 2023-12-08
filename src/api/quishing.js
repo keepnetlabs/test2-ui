@@ -49,7 +49,7 @@ const createLandingPage = (payload) => {
 }
 
 const getEmailTemplatesList = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-templates/search`, payload)
 }
 const getLandingPageList = (payload) => {
   return testRequest.post(`/quishing-simulator/landing-page-template/search`, payload)
@@ -58,10 +58,10 @@ const getLandingPageTemplatePreviewContent = (id) => {
   return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
 }
 const searchQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-templates/search`, payload)
 }
 const exportQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search/export`, payload, {
+  return testRequest.post(`/quishing-simulator/quishing-templates/search/export`, payload, {
     responseType: 'blob'
   })
 }
@@ -348,6 +348,14 @@ const updateQuishingPrintoutTemplate = (payload = {}, id = '') => {
 }
 const getEmailTemplatePreviewContent = (id) => {
   return testRequest.get(`quishing-simulator/email-templates/${id}`)
+}
+const getQuishingTemplatePreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-templates/${id}`)
+}
+const getQuishingPdfPreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-templates/preview/${id}`, {
+    responseType: 'blob'
+  })
 }
 export function getMergedTextForQuishing() {
   return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
@@ -684,5 +692,7 @@ export default {
   searchCampaignJobUserEmailSubmittedDetails,
   searchCampaignJobUserEmailSubmittedDetailsMfa,
   exportCampaignJobUserEmailSubmittedMfa,
-  searchCampaignJobUserEmailSubmittedMfa
+  searchCampaignJobUserEmailSubmittedMfa,
+  getQuishingTemplatePreviewContent,
+  getQuishingPdfPreviewContent
 }

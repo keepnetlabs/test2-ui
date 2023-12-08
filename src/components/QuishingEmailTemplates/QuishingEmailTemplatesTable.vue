@@ -50,7 +50,7 @@
             @on-click="handleEmitEmailTemplateModal(scope.row, false)"
           />
           <DefaultMenuRowAction
-            v-if="scope.row.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
+            v-if="checkIsQuishingTypePrintout(scope.row)"
             :scope="scope"
             :id="tableOptions.rowActions[4].id"
             :check-is-owner-property="false"
@@ -244,6 +244,9 @@ export default {
     this.callForData()
   },
   methods: {
+    checkIsQuishingTypePrintout(row) {
+      return row.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    },
     callForData() {
       this.setLoading(true)
       QuishingService.searchQuishingEmailTemplates(this.axiosPayload)
@@ -262,7 +265,11 @@ export default {
         .finally(this.setLoading)
     },
     handleEmitEmailTemplateModal(row = {}, isDuplicate = false) {
-      this.$emit('on-edit-or-new', row, isDuplicate)
+      if (this.checkIsQuishingTypePrintout(row)) {
+        this.$emit('on-add-individual-printout-template', row, isDuplicate)
+      } else {
+        this.$emit('on-edit-or-new', row, isDuplicate)
+      }
     },
     handlePreview(row = {}) {
       this.$emit('on-preview', row)
@@ -293,7 +300,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Quishing-Email-Templates.${
+          link.download = `Quishing-Templates.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()
@@ -301,7 +308,18 @@ export default {
       })
     },
     handlePrintPreview(row = {}) {
-      this.$emit('on-add-individual-printout-template', row, false)
+      QuishingService.getQuishingPdfPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
     }
   }
 }

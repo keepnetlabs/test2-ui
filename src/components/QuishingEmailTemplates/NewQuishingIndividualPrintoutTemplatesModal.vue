@@ -200,17 +200,13 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
-import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import QuishingService, {
-  getMergedTextForQuishingPrintout,
-  updateQuishingPrintoutTemplate
-} from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'NewQuishingIndividualPrintoutTemplatesModal',
   components: {
@@ -365,11 +361,9 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    }
+    if (!this.isEdit) this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     if (this.isEdit) {
-      QuishingService.getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
+      QuishingService.getQuishingTemplatePreviewContent(this.emailTemplateId).then((response) => {
         if (response?.data?.data?.template) {
           response.data.data.template = response?.data?.data?.template?.replaceAll(
             '{QRCODEURLIMAGE}',
@@ -404,6 +398,7 @@ export default {
           ]
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        console.log(this.formValues)
       })
     }
   },
@@ -423,35 +418,6 @@ export default {
     },
     handleRenameAttachment() {
       this.$emit('showRenameAttachmentModal')
-    },
-    handleUploadEmailButtonClick() {
-      this?.$refs?.refInputFileUpload?.click()
-    },
-    handleFileUpload(e) {
-      const { files } = e.target
-      if (files.length) {
-        const formData = new FormData()
-        formData.append('File', files[0])
-        parseEmailOrMessageFile(formData).then((response) => {
-          const {
-            data: { data }
-          } = response
-          let { from, fromName, subject, attachments, body } = data
-          this.formValues.fromAddress = from
-          this.formValues.template = body
-          this.formValues.subject = subject
-          this.formValues.fromName = fromName
-          if (attachments) {
-            attachments = attachments.map((item) => ({
-              ...item,
-              fileName: item.name,
-              isDeletable: true
-            }))
-            this.formValues.importedEmailAttachments = attachments
-            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
-          }
-        })
-      }
     },
     handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName
@@ -562,17 +528,9 @@ export default {
         isDuplicated: this.isDuplicate,
         duplicatedTemplateResourceId: this.isDuplicate ? this.emailTemplateId : null,
         description: this.formValues.description || '',
-        attachmentFiles: [
-          ...this.formValues.attachmentFiles,
-          ...this.formValues.importedEmailAttachments
-        ],
         isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
         isPhishingFileModified: this.isPhishingFileModified,
         isAddedNewPhishingFile: this.isAddedNewPhishingFile,
-        phishingFileName:
-          !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
-            ? this.formValues.attachmentFiles[0]?.fileName
-            : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         ),

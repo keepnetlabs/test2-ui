@@ -15,7 +15,7 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableType: 'text'
   },
   QUISHING_TYPE: {
-    property: PROPERTY_STORE.TYPE,
+    property: 'quishingType',
     align: 'left',
     editable: false,
     label: labels.QuishingType,

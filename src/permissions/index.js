@@ -422,7 +422,7 @@ export default {
   },
   QUISHING_EMAIL_TEMPLATES_PERMISSIONS: {
     SEARCH: {
-      url: `quishing-simulator/email-templates/search`,
+      url: `quishing-simulator/quishing-templates/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
@@ -447,7 +447,7 @@ export default {
       method: ENUMS.METHODS.DELETE
     },
     EXPORT: {
-      url: `quishing-simulator/email-templates/search/export`,
+      url: `quishing-simulator/quishing-templates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
