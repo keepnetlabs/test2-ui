@@ -230,7 +230,7 @@ export default {
         }
       } else {
         return {
-          color: '#B6791D',
+          color: '#B83A3A',
           text: 'Failed'
         }
       }

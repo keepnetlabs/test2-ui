@@ -101,7 +101,7 @@ export default {
         },
         columns: [
           {
-            property: 'targetUserResultId',
+            property: 'targetUserResourceId',
             align: 'left',
             editable: false,
             label: 'Non-Target Users ID',
