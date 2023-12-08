@@ -168,7 +168,7 @@ export default {
   },
   computed: {
     getSubtitle() {
-      return `${this.item?.targetUserResultId}`
+      return `${this.item?.targetUserResourceId}`
     },
     getMessage() {
       if (['In Queue', 'InQueue'].includes(this.item.status)) {
