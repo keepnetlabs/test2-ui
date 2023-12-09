@@ -135,7 +135,7 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'sessionDate' }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns,
