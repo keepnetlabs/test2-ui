@@ -141,6 +141,18 @@ export default {
             ]
           },
           {
+            property: 'score',
+            align: 'right',
+            editable: false,
+            label: 'Score',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 140,
+            filterableType: 'number'
+          },
+          {
             property: 'sessionCount',
             align: 'right',
             editable: false,
