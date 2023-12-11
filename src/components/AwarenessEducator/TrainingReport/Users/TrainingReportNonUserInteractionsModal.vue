@@ -135,7 +135,7 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'sessionDate' }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns,
@@ -155,7 +155,7 @@ export default {
   },
   computed: {
     getSubtitle() {
-      return `${this.item?.targetUserResultId}`
+      return `${this.item?.targetUserResourceId}`
     },
     getMessage() {
       if (['In Queue', 'InQueue'].includes(this.item.status)) {
