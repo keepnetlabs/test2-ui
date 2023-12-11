@@ -155,6 +155,10 @@ export default {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
       tableData: [],
+      activeTemplateTypes: [
+        QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      ],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_EMAIL_TEMPLATES,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_EMAIL_TEMPLATES,
@@ -245,10 +249,12 @@ export default {
   },
   methods: {
     checkIsQuishingTypePrintout(row) {
+      if (!row) return false
       return row.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
     },
     callForData() {
       this.setLoading(true)
+      this.axiosPayload.templateTypes = this.activeTemplateTypes
       QuishingService.searchQuishingEmailTemplates(this.axiosPayload)
         .then((response) => {
           const {

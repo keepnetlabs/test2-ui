@@ -207,7 +207,22 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Email', value: 'Email' },
-      { text: 'Individual Printout', value: 'Individual Printout' }
+      { text: 'Individual Printout', value: 'Individual' }
+    ],
+    width: 160
+  },
+  QUISHING_EMAIL_TYPE: {
+    property: PROPERTY_STORE.TEMPLATETYPE,
+    align: 'left',
+    label: labels.QuishingType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual' }
     ],
     width: 160
   },

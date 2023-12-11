@@ -122,10 +122,12 @@
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
+                    :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :api-funcs="getEmailTemplateApiFuncs"
+                    :quishing-type="quishingType"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -219,7 +221,10 @@
                           <div class="template-summary__title">
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
                           </div>
-                          <div class="template-summary__sub-title mt-2">
+                          <div
+                            v-if="!isQuishingTypeIndividualPrintOut"
+                            class="template-summary__sub-title mt-2"
+                          >
                             From:
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
@@ -348,7 +353,8 @@
                                 }}
                               </div>
                               <div class="template-summary__sub-title mt-2">
-                                <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                                <b>{{ getURLText }}:</b>
+                                {{ summaryData.landingPageTemplate.urlTemplate }}
                               </div>
                             </div>
                             <div class="d-flex" v-if="!!summaryData">
@@ -639,6 +645,9 @@ export default {
     }
   },
   computed: {
+    getURLText() {
+      return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
+    },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
     },
@@ -874,13 +883,10 @@ export default {
       this.selectedTab = '1'
     },
     'formValues.methodTypeId'(val, oldVal) {
-      if (val !== oldVal && !this.isInitial) {
-        this.formValues.emailTemplateId = null
-        this.formValues.landingPageTemplateId = null
-        this.landingPageTemplateId = null
-        this.landingPageTemplateResourceId = null
-        this.emailTemplateResourceId = null
-      }
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
+    },
+    quishingType(val, oldVal) {
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
     }
   },
   created() {
@@ -1041,12 +1047,16 @@ export default {
             this.type === SCENARIO_TYPES.PHISHING
               ? getSummaryOfScenario
               : QuishingService.getSummaryOfScenario
-          apiFunc(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
+          let params = [this.emailTemplateResourceId, this.landingPageTemplateResourceId]
+          if (this.isQuishing) params.push(this.quishingType.toLowerCase())
+          apiFunc(...params)
             .then((response) => {
               const {
                 data: { data }
               } = response
-              if (this.type === SCENARIO_TYPES.QUISHING) {
+              if (this.isQuishing) {
+                if (this.isQuishingTypeIndividualPrintOut)
+                  data.emailTemplate = data.quishingTemplate
                 data.emailTemplate.template = data.emailTemplate.template?.replaceAll(
                   '{QRCODEURLIMAGE}',
                   qrCodeString
@@ -1087,6 +1097,7 @@ export default {
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
       }
+      if (this.isQuishing) payload.quishingType = this.quishingType
       if (this.isEdit && !this.isDuplicate) {
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario
@@ -1108,6 +1119,13 @@ export default {
             this.isSubmitDisabled = false
           })
       }
+    },
+    resetLandingPageAndEmailTemplateSelection() {
+      this.formValues.emailTemplateId = null
+      this.formValues.landingPageTemplateId = null
+      this.landingPageTemplateId = null
+      this.landingPageTemplateResourceId = null
+      this.emailTemplateResourceId = null
     }
   }
 }

@@ -28,9 +28,9 @@ const updateScenario = (payload, id) => {
 const getScenario = (id) => {
   return testRequest.get(`/quishing-simulator/quishing-scenario/${id}`)
 }
-const getSummaryOfScenario = (templateId, landingPageId) => {
+const getSummaryOfScenario = (templateId, landingPageId, templateType) => {
   return testRequest.get(
-    `/quishing-simulator/quishing-scenario/preview/${templateId}/${landingPageId}`
+    `/quishing-simulator/quishing-scenario/preview/${templateType}/${templateId}/${landingPageId}`
   )
 }
 const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
@@ -70,6 +70,11 @@ const getScenarioDataDetails = () => {
 }
 const deleteEmailTemplate = (id) => {
   return testRequest.delete(`/quishing-simulator/email-templates/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const deleteIndividualPrintoutTemplate = (id) => {
+  return testRequest.delete(`/quishing-simulator/quishing-templates/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -694,5 +699,6 @@ export default {
   exportCampaignJobUserEmailSubmittedMfa,
   searchCampaignJobUserEmailSubmittedMfa,
   getQuishingTemplatePreviewContent,
-  getQuishingPdfPreviewContent
+  getQuishingPdfPreviewContent,
+  deleteIndividualPrintoutTemplate
 }

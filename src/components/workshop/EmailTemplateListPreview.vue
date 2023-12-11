@@ -287,6 +287,10 @@ export default {
     isCallback: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   directives: {
@@ -331,11 +335,14 @@ export default {
     },
     isQuishingTypeEmail() {
       if (!this.isQuishing) return false
-      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+      return this.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL.toLowerCase()
     },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false
-      return this.quishingType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      return (
+        this.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
     }
   },
   watch: {
@@ -444,6 +451,11 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
+      console.log(this.quishingType)
+      if (this.isQuishingTypeIndividualPrintOut)
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
+      else if (this.isQuishingTypeEmail)
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
       this.apiFuncs
         .list(bodyData)
         .then((response) => {

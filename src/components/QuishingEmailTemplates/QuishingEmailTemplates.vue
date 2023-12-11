@@ -39,7 +39,7 @@
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :selected-email-template="selectedEmailTemplate"
-      :api-func="deleteEmailTemplate"
+      :api-func="getDeleteApiFunc"
       @on-success="toggleDeleteDialog(null, true)"
       @on-close="toggleDeleteDialog"
     />
@@ -86,6 +86,10 @@ export default {
     }
   },
   computed: {
+    getDeleteApiFunc() {
+      if (this.isIndividualPrintoutTemplate) return QuishingService.deleteIndividualPrintoutTemplate
+      return QuishingService.deleteEmailTemplate
+    },
     getPreviewDialogApiFunc() {
       return this.isIndividualPrintoutTemplate
         ? QuishingService.getQuishingTemplatePreviewContent
@@ -103,7 +107,6 @@ export default {
   },
   methods: {
     getEmailTemplatePreviewContent: QuishingService.getEmailTemplatePreviewContent,
-    deleteEmailTemplate: QuishingService.deleteEmailTemplate,
     toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
       this.isDuplicate = isDuplicate
