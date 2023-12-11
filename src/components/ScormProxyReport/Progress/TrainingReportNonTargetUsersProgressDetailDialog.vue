@@ -46,7 +46,7 @@
         <template #datatable-custom-column="{ scope, col }">
           <div class="training-report-users-interactions__interaction-column">
             <v-btn style="display: none;" />
-            <Badge v-bind="getStatusBadgeProps(scope.row.isPassed)" :col="col" size="medium" />
+            <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
           </div>
         </template>
       </DataTable>
@@ -68,6 +68,7 @@ import Badge from '@/components/Badge'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 
 export default {
   name: 'TrainingReportNonTargetUsersProgressDetailDialog',
@@ -207,18 +208,8 @@ export default {
     this.callForData()
   },
   methods: {
-    getStatusBadgeProps(isPassed) {
-      if (isPassed) {
-        return {
-          color: '#217124',
-          text: 'Passed'
-        }
-      } else {
-        return {
-          color: '#B83A3A',
-          text: 'Failed'
-        }
-      }
+    getStatusBadgeProps(status) {
+      return getStatusBadgeProps(status)
     },
     callForData() {
       this.setLoading(true)

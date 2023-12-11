@@ -201,7 +201,7 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    //this.callForData()
   },
   watch: {
     isScormProxy: {
