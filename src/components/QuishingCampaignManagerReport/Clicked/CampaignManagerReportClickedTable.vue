@@ -85,8 +85,8 @@ export default {
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.LAST_CLICKED,
-          COLUMNS.TIMES_CLICKED
+          COLUMNS.LAST_SCANNED,
+          COLUMNS.TIMES_SCANNED
         ],
         addButton: {
           show: false
