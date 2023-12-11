@@ -16,3 +16,15 @@ export const enrollmentItems = [
     value: '3'
   }
 ]
+export const getEnrollmentSendTypeIdByEnum = (enrollmentSendTypeId) => {
+  switch (enrollmentSendTypeId) {
+    case 'StartTrainingImmediately ':
+      return '1'
+    case 'EnrollViaEmailNotification':
+      return '2'
+    case 'StartTrainingImmediatelyAndEnrollViaEmailNotification':
+      return '3'
+    default:
+      return '1'
+  }
+}

@@ -54,6 +54,7 @@
       </VBtn>
     </div>
     <FormGroup
+      v-if="isShowReminder"
       class-name="ml-3 mt-3"
       has-hint
       title="Enrollment"
@@ -82,10 +83,15 @@
         </template>
       </k-select>
     </FormGroup>
-    <FormGroup class="ml-3 mt-3" :title="labels.Reminder" style="max-width: 875px;">
+    <FormGroup
+      v-if="isShowReminder"
+      class="ml-3 mt-3"
+      :title="labels.Reminder"
+      style="max-width: 875px;"
+    >
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <VCheckbox
-          v-model="sendReminderEvery"
+          v-model="value.enrollmentReminder.sendReminderEvery"
           id="input--campaign-manager-advanced-settings-randomly-selected"
           color="#2196f3"
           :disabled="!isInputsEditable"
@@ -100,7 +106,7 @@
           outlined
           class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
           style="max-width: 64px;"
-          :disabled="!sendReminderEvery"
+          :disabled="!value.enrollmentReminder.sendReminderEvery"
           :rules="rules.number"
         />
         <KSelect
@@ -113,7 +119,7 @@
           placeholder="Select a item"
           style="max-width: 120px;"
           :items="getPeriodTypeItems"
-          :disabled="!sendReminderEvery"
+          :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
         <span class="ml-2" :style="!isInputsEditable && { opacity: '0.5' }">ends</span>
         <KSelect
@@ -126,7 +132,7 @@
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
           :items="getEndTypeItems"
-          :disabled="!sendReminderEvery"
+          :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
         <VTextField
           v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
@@ -137,7 +143,7 @@
           outlined
           class="ml-2 absolute-text-input-error"
           style="max-width: 64px;"
-          :disabled="!sendReminderEvery"
+          :disabled="!value.enrollmentReminder.sendReminderEvery"
           :rules="rules.number"
         />
         <span
@@ -156,11 +162,11 @@
           format="dd/MM/yyyy"
           style="width: 100%; max-width: 180px;"
           :picker-options="datePickerOptions"
-          :disabled="!sendReminderEvery"
+          :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
       </div>
     </FormGroup>
-    <FormGroup class="ml-3 mt-6 mb-6" :title="labels.Certificate">
+    <FormGroup v-if="isShowReminder" class="ml-3 mt-6 mb-6" :title="labels.Certificate">
       <v-checkbox
         v-model="value.awardCertificate"
         id="input--campaign-manager-advanced-settings-randomly-selected"
@@ -209,12 +215,15 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isShowReminder: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       inputContentLanguageKey: createRandomCryptStringNumber(),
-      sendReminderEvery: false,
       labels,
       trainingItems: [],
       enrollmentItems,

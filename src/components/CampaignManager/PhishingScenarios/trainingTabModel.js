@@ -3,15 +3,16 @@ export default class TrainingTabModel {
     trainingId = '',
     trainingName = '',
     trainingLanguageIds = [],
-    enrollmentSendTypeId = '1',
     isCheckboxSelected = false,
+    enrollmentSendTypeId = '1',
     awardCertificate = false,
     enrollmentReminder = {
       periodCount: 1,
       periodType: 'Day',
       endType: 'TrainingCompleted',
       occurrenceCount: 1,
-      stopTime: ''
+      stopTime: '',
+      sendReminderEvery: false
     }
   ) {
     this.trainingId = trainingId

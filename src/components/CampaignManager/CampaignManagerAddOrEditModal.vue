@@ -74,6 +74,7 @@
             <CampaignManagerPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              is-show-reminder
               :campaign-manager-resource-id="getCampaignResourceId"
               :is-edit="isEdit || isDuplicate"
               :languages="languageOptions"
@@ -638,11 +639,14 @@ export default {
               enrollmentSendTypeId
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
+            const { sendReminderEvery } = enrollmentReminder
+            const enrollmentReminderEveryValue = sendReminderEvery
+            delete enrollmentReminder.sendReminderEvery
             phishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
               phishingScenarioResourceId,
-              enrollmentReminder,
+              enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
               enrollmentSendTypeId
             })
