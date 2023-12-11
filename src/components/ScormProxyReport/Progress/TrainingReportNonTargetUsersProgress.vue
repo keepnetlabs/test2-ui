@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TrainingReportNonUserInteractionsModal
+    <TrainingReportNonTargetUsersProgressDetailDialog
       v-if="isShowInteractionsModal"
       :status="isShowInteractionsModal"
       :item="selectedRow"
@@ -34,7 +34,6 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      @downloadEvent="exportTrainingProgressEmailTable"
       @refreshAction="callForData"
       @on-details="handleInteractions"
     >
@@ -61,11 +60,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
-import TrainingReportNonUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportNonUserInteractionsModal.vue'
+import TrainingReportNonTargetUsersProgressDetailDialog from '@/components/ScormProxyReport/Progress/TrainingReportNonTargetUsersProgressDetailDialog'
 
 export default {
   name: 'TrainingReportNonTargetUsersProgress',
-  components: { TrainingReportNonUserInteractionsModal, DataTable, Badge },
+  components: { TrainingReportNonTargetUsersProgressDetailDialog, DataTable, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     formDetails: {
@@ -88,7 +87,7 @@ export default {
         id: 'training-report-non-target-users-progress-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'lastInteractionDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'enrollmentDate' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -105,7 +104,7 @@ export default {
         },
         columns: [
           {
-            property: 'targetUserResultId',
+            property: 'targetUserResourceId',
             align: 'left',
             editable: false,
             label: 'Non-Target Users ID',
@@ -120,7 +119,7 @@ export default {
             property: 'status',
             align: 'center',
             editable: false,
-            label: 'Status',
+            label: 'Progress',
             sortable: true,
             show: true,
             type: 'slot',
@@ -139,16 +138,52 @@ export default {
               })) || []
           },
           {
-            property: 'lastInteractionDate',
+            property: 'enrollmentDate',
             align: 'left',
             editable: false,
-            label: 'Last Interaction',
+            label: 'Enrollment Date',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
             width: 180,
             filterableType: 'date'
+          },
+          {
+            property: 'sessionStartDate',
+            align: 'left',
+            editable: false,
+            label: 'Session Started',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'date'
+          },
+          {
+            property: 'sessionEndDate',
+            align: 'left',
+            editable: false,
+            label: 'Session Ended',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'date'
+          },
+          {
+            property: 'sessionCount',
+            align: 'right',
+            editable: false,
+            label: 'Total Sessions',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'Number'
           }
         ],
         addButton: {
@@ -175,7 +210,10 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchProxyTargetUsers(this.axiosPayload, this.id)
+      AwarenessEducatorService.progressNonTargetUsersTrainingReportEmails(
+        this.axiosPayload,
+        this.id
+      )
         .then((response) => {
           const {
             data: {
@@ -188,30 +226,6 @@ export default {
           this.tableData = results
         })
         .finally(this.setLoading)
-    },
-    exportTrainingProgressEmailTable(downloadTypes) {
-      downloadTypes.exportTypes.forEach((item) => {
-        let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: this.axiosPayload.orderBy,
-          ascending: this.axiosPayload.ascending,
-          reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
-        }
-        AwarenessEducatorService.exportProgressTrainingReportEmails(payload, this.id).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Training-Progress.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
-      })
     },
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)

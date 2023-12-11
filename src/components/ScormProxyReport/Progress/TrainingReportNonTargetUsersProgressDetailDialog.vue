@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     title-id="text--training-report-user-interactions-popup-title"
-    title="Exam Results"
+    title="Details"
     subtitle-id="text--training-report-user-interactions-popup-subtitle"
     maxHeightSize="665"
     :custom-size="'800'"
@@ -70,7 +70,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 
 export default {
-  name: 'TrainingReportNonTargetExumResultsDetails',
+  name: 'TrainingReportNonTargetUsersProgressDetailDialog',
   components: { AppDialogFooterWithClose, DataTable, AppDialog, Badge },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
@@ -95,7 +95,7 @@ export default {
         align: 'center',
         fixed: 'left',
         editable: false,
-        label: 'Status',
+        label: 'Progress',
         show: true,
         type: 'slot',
         props: {
@@ -116,14 +116,28 @@ export default {
         hideSort: true
       },
       {
-        property: 'score',
+        property: 'sessionStartDate',
         align: 'left',
-        fixed: 'right',
         editable: false,
-        label: labels.Score,
+        label: 'Session Started',
+        fixed: false,
+        sortable: true,
         show: true,
         type: 'text',
-        hideSort: true
+        width: 180,
+        filterableType: 'date'
+      },
+      {
+        property: 'sessionEndDate',
+        align: 'left',
+        editable: false,
+        label: 'Session Ended',
+        fixed: 'right',
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'date'
       }
     ]
 
@@ -134,7 +148,7 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'sessionDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'enrollmentDate' }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns,
@@ -142,7 +156,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: 'No details for the user who hasn’t responded yet'
+          message: 'No details for the user who hasn’t progressed yet'
         },
         rowActions: [],
         downloadButton: {
@@ -208,7 +222,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.examTrainingNonTargetUserTrainingDetails(
+      AwarenessEducatorService.progressNonTargetUsersTrainingReportEmailsDetails(
         this.axiosPayload,
         this.item.enrollmentId,
         this.item.targetUserResultId

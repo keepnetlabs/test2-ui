@@ -220,6 +220,19 @@ const exportProgressTrainingReportEmails = (payload, resourceId) => {
     responseType: 'blob'
   })
 }
+const progressNonTargetUsersTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/anonymous/${resourceId}/progress`, payload)
+}
+const progressNonTargetUsersTrainingReportEmailsDetails = (
+  payload,
+  resourceId,
+  targetUserResultId
+) => {
+  return testRequest.post(
+    `/training-reports/anonymous/${resourceId}/progress-detail/${targetUserResultId}`,
+    payload
+  )
+}
 
 const examTrainingReportResults = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/exam-results/search`, payload)
@@ -495,5 +508,7 @@ export default {
   searchProxyTargetUsers,
   getProxyTargetUserById,
   examTrainingNonTargetUserReportResults,
-  examTrainingNonTargetUserTrainingDetails
+  examTrainingNonTargetUserTrainingDetails,
+  progressNonTargetUsersTrainingReportEmails,
+  progressNonTargetUsersTrainingReportEmailsDetails
 }
