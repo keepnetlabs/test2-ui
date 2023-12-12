@@ -69,7 +69,7 @@
         hint="*Required"
         placeholder="Select an option"
         item-text="title"
-        :items="enrollmentItems"
+        :items="enrollmentItemsTrainingTab"
         :disabled="!isInputsEditable"
         :rules="[(v) => !!v || 'Required']"
         :return-object="false"
@@ -189,7 +189,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { enrollmentItems } from '@/components/CampaignManager/PhishingScenarios/utils'
+import { enrollmentItemsTrainingTab } from '@/components/CampaignManager/PhishingScenarios/utils'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 export default {
@@ -226,7 +226,7 @@ export default {
       inputContentLanguageKey: createRandomCryptStringNumber(),
       labels,
       trainingItems: [],
-      enrollmentItems,
+      enrollmentItemsTrainingTab,
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
@@ -287,6 +287,7 @@ export default {
           break
         case SCENARIO_TYPES.CALLBACK:
           scenarioText = 'callback'
+          break
         default:
           break
       }
