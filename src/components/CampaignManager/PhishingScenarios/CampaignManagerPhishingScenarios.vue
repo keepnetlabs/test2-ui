@@ -491,7 +491,7 @@ export default {
               endType: val.reminderEndTypeId || 'TrainingCompleted',
               occurrenceCount: 1,
               stopTime: '',
-              sendReminderEvery: val.emailPeriodTypeId !== 0
+              sendReminderEvery: val.isEnrollmentReminderActive || false
             }
           )
         )
