@@ -17,6 +17,7 @@ import QrCode from '@/components/CustomIcons/QrCode'
 import QrCodeSelected from '@/components/CustomIcons/QrCodeSelected'
 import PlayFile from '@/components/CustomIcons/PlayFile'
 import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
+import PDFFile from '@/components/CustomIcons/PDFFile.vue'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -75,6 +76,9 @@ export default new Vuetify({
       },
       'lock-open-time': {
         component: LockOpenTime
+      },
+      'pdf-file': {
+        component: PDFFile
       }
     }
   }

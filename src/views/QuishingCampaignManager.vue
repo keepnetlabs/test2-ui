@@ -37,12 +37,24 @@
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
+    <QuishingCampaignManagerPrintoutAddOrEditModal
+      v-if="isShowIndividualPrintoutTemplateModal"
+      ref="refPrintoutCampaignModal"
+      :status="isShowIndividualPrintoutTemplateModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      :form-details="formDetails"
+      :is-duplicate="isDuplicate"
+      @on-close="toggleAddIndiviudalPrintoutCampaignModal"
+      @on-submit="handleOnSubmit"
+    />
     <QuishingCampaignManagerNewInstanceModal
       v-if="isShowNewInstanceModal"
       ref="refCampaignNewInstance"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       :form-details="formDetails"
+      :selected-row="selectedRow"
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
@@ -59,6 +71,7 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
+      @on-add-individual-printout-campaign="toggleAddIndiviudalPrintoutCampaignModal"
     />
     <QuishingCampaignManagerItemTable
       v-if="selectedParentItem"
@@ -99,9 +112,11 @@ import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingCampaignManagerAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerAddOrEditModal.vue'
 import QuishingCampaignManagerNewInstanceModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerNewInstanceModal.vue'
 import { mapGetters } from 'vuex'
+import QuishingCampaignManagerPrintoutAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerPrintoutAddOrEditModal.vue'
 export default {
   name: 'QuishingCampaignManager',
   components: {
+    QuishingCampaignManagerPrintoutAddOrEditModal,
     QuishingCampaignManagerAddOrEditModal,
     CommonCampaignManagerPreviewDialog,
     QuishingCampaignManagerFrequencyTable,
@@ -115,6 +130,7 @@ export default {
   data() {
     return {
       PREVIEW_DIALOG_TYPES,
+      isShowIndividualPrintoutTemplateModal: false,
       selectedParentItem: null,
       selectedInstanceItem: null,
       instanceResourceId: '',
@@ -318,6 +334,9 @@ export default {
     },
     toggleFrequencyTableShowing() {
       this.isFrequencyTableShowing = !this.isFrequencyTableShowing
+    },
+    toggleAddIndiviudalPrintoutCampaignModal() {
+      this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
     }
   }
 }

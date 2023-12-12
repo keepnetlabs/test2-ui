@@ -6,7 +6,7 @@
     max-height
     max-height-size="900"
     icon="mdi-eye"
-    :title="title"
+    :title="getTitle"
     :subtitle="subtitle"
     @changeStatus="handleClose"
   >
@@ -14,21 +14,39 @@
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <div v-if="!isPreviewLoading" class="template-preview">
         <div class="template-preview__text" v-if="!!templateHTML">
-          <div>
-            <span class="template-preview__text--title">Template Name: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--title">From Name: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--title">From Email Address: </span>
-            <span class="template-preview__text--body">{{ emailTemplateParams.fromAddress }}</span>
-          </div>
-          <div>
-            <span class="template-preview__text--subject">Subject: </span>
-            <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
+          <template v-if="!isIndividualPrintoutTemplate">
+            <div>
+              <span class="template-preview__text--title">Template Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--title">From Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--title">From Email Address: </span>
+              <span class="template-preview__text--body">{{
+                emailTemplateParams.fromAddress
+              }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--subject">Subject: </span>
+              <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
+            </div>
+          </template>
+          <div v-else class="d-flex justify-space-between align-center">
+            <div class="text-primary-color fs-4">Example Individual Printout</div>
+            <VBtn
+              id="btn-preview-indiviual-printout"
+              class="white--text btn-util btn-download-add-in"
+              color="#2196F3"
+              rounded
+              :style="getIndividualPrintoutStyle"
+              @click="handlePreviewIndividualPrintout"
+            >
+              <v-icon left>mdi-file-eye</v-icon>
+              {{ labels.PrintPreview }}
+            </VBtn>
           </div>
         </div>
         <div
@@ -64,6 +82,7 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import QuishingService from '@/api/quishing'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
@@ -94,16 +113,37 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isIndividualPrintoutTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
+      labels,
       isPreviewLoading: false,
       emailTemplateParams: {},
-      templateHTML: null
+      templateHTML: null,
+      isIndividualPrintoutButtonDisabled: false
     }
   },
   computed: {
+    getIndividualPrintoutStyle() {
+      const style = {
+        textTransform: 'capitalize'
+      }
+      if (this.isIndividualPrintoutButtonDisabled) {
+        style.cursor = 'default'
+        style.opacity = 0.5
+      }
+      return style
+    },
+    getTitle() {
+      return this?.isIndividualPrintoutTemplate
+        ? labels.IndividualPrintoutTemplatePreview
+        : this.title
+    },
     subtitle() {
       return this?.selectedRow?.name || ''
     }
@@ -149,6 +189,25 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handlePreviewIndividualPrintout() {
+      this.isIndividualPrintoutButtonDisabled = true
+      QuishingService.getQuishingPdfPreviewContent(this.selectedRow.resourceId)
+        .then((response) => {
+          const file = new File([response.data], 'Quishing PDF Preview', {
+            type: 'application/pdf'
+          })
+          const fileURL = URL.createObjectURL(file)
+          const newWindow = window.open(fileURL)
+          newWindow.onload = function () {
+            setTimeout(() => {
+              newWindow.document.title = 'Quishing PDF Preview'
+            }, 250)
+          }
+        })
+        .finally(() => {
+          this.isIndividualPrintoutButtonDisabled = false
+        })
     }
   }
 }

@@ -153,8 +153,11 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'slot',
-    width: 150,
-    filterableType: 'select'
+    width: 170,
+    filterableType: 'select',
+    props: {
+      style: { maxWidth: '130px' }
+    }
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
@@ -193,6 +196,36 @@ export const COLUMNS = {
       { text: 'Data Submission', value: 'Data Submission' },
       { text: 'Attachment', value: 'Attachment' },
       { text: 'MFA', value: 'MFA' }
+    ],
+    width: 160
+  },
+  QUISHING_TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    label: labels.QuishingType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual' }
+    ],
+    width: 160
+  },
+  QUISHING_EMAIL_TYPE: {
+    property: PROPERTY_STORE.TEMPLATETYPE,
+    align: 'left',
+    label: labels.QuishingType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual' }
     ],
     width: 160
   },
@@ -295,6 +328,12 @@ export function getStatusBadgeProps(status) {
       color: '#F56C6C',
       text: 'Error',
       outline: false
+    }
+  }
+  if (status === 'Individual Printout') {
+    return {
+      color: '#757575',
+      text: 'Individual Printout'
     }
   }
 }

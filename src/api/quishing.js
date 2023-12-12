@@ -28,13 +28,18 @@ const updateScenario = (payload, id) => {
 const getScenario = (id) => {
   return testRequest.get(`/quishing-simulator/quishing-scenario/${id}`)
 }
-const getSummaryOfScenario = (templateId, landingPageId) => {
+const getSummaryOfScenario = (templateId, landingPageId, templateType) => {
   return testRequest.get(
-    `/quishing-simulator/quishing-scenario/preview/${templateId}/${landingPageId}`
+    `/quishing-simulator/quishing-scenario/preview/${templateType}/${templateId}/${landingPageId}`
   )
 }
-const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
-  return testRequest.get(`/quishing-simulator/quishing-scenario/preview/${resourceId}`)
+const getQuishingScenarioLandingPageAndEmailTemplate = (
+  resourceId = '',
+  templateType = 'email'
+) => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-scenario/preview/${templateType}/${resourceId}`
+  )
 }
 const updateLandingPage = (payload, id) => {
   return testRequest.put(`/quishing-simulator/landing-page-template/${id}`, payload, {
@@ -49,7 +54,7 @@ const createLandingPage = (payload) => {
 }
 
 const getEmailTemplatesList = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-templates/search`, payload)
 }
 const getLandingPageList = (payload) => {
   return testRequest.post(`/quishing-simulator/landing-page-template/search`, payload)
@@ -58,10 +63,10 @@ const getLandingPageTemplatePreviewContent = (id) => {
   return testRequest.get(`/quishing-simulator/landing-page-template/${id}`)
 }
 const searchQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`/quishing-simulator/quishing-templates/search`, payload)
 }
 const exportQuishingEmailTemplates = (payload) => {
-  return testRequest.post(`/quishing-simulator/email-templates/search/export`, payload, {
+  return testRequest.post(`/quishing-simulator/quishing-templates/search/export`, payload, {
     responseType: 'blob'
   })
 }
@@ -70,6 +75,11 @@ const getScenarioDataDetails = () => {
 }
 const deleteEmailTemplate = (id) => {
   return testRequest.delete(`/quishing-simulator/email-templates/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const deleteIndividualPrintoutTemplate = (id) => {
+  return testRequest.delete(`/quishing-simulator/quishing-templates/${id}`, {
     snackbar: COMMON_SNACKBAR
   })
 }
@@ -279,6 +289,7 @@ const createCommonFormDataForQuishingTemplate = (payload) => {
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  if (payload.type) formData.append('type', payload.type)
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = getQuishingFileType(payload)
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
@@ -292,7 +303,27 @@ const createCommonFormDataForQuishingTemplate = (payload) => {
   }
   return formData
 }
-
+const createCommonFormDataForQuishingPrintoutTemplate = (payload) => {
+  const formData = new FormData()
+  formData.append('name', payload.name)
+  formData.append('description', payload.description)
+  formData.append('categoryResourceId', payload.categoryResourceId)
+  for (let i = 0; i < payload?.tags?.length; i++) {
+    formData.append(`tags[${[i]}]`, payload.tags[i])
+  }
+  formData.append('difficultyResourceId', payload.difficultyResourceId)
+  for (let i = 0; i < payload.availableForRequests.length; i++) {
+    formData.append(`availableForRequests[${[i]}].Type`, payload.availableForRequests[i].type)
+    formData.append(
+      `availableForRequests[${[i]}].ResourceId`,
+      payload.availableForRequests[i].resourceId
+    )
+  }
+  formData.append('template', payload.template)
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  if (payload.type) formData.append('type', payload.type)
+  return formData
+}
 const createQuishingEmailTemplate = (payload = {}) => {
   const formData = createCommonFormDataForQuishingTemplate(payload)
   formData.append('isDuplicated', payload.isDuplicated)
@@ -309,12 +340,40 @@ export function updateQuishingEmailTemplate(payload = {}, id = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+const createQuishingPrintoutTemplate = (payload = {}) => {
+  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload)
+  formData.append('isDuplicated', payload.isDuplicated)
+  formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
+  return testRequest.post(`quishing-simulator/quishing-templates`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const updateQuishingPrintoutTemplate = (payload = {}, id = '') => {
+  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload)
+  return testRequest.put(`quishing-simulator/quishing-templates/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    snackbar: COMMON_SNACKBAR
+  })
+}
 const getEmailTemplatePreviewContent = (id) => {
   return testRequest.get(`quishing-simulator/email-templates/${id}`)
+}
+const getQuishingTemplatePreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-templates/${id}`)
+}
+const getQuishingPdfPreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-templates/preview/${id}`, {
+    responseType: 'blob'
+  })
 }
 export function getMergedTextForQuishing() {
   return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
 }
+export function getMergedTextForQuishingPrintout() {
+  return testRequest.get(`/quishing-simulator/quishing-templates/merge-tags/individual`)
+}
+
 const getDefaultCompanySmtpSetting = () => {
   return testRequest.get(
     '/quishing-simulator/quishing-campaign/root-company-shared-smtp-resource-id'
@@ -605,9 +664,12 @@ export default {
   updateLandingPage,
   createLandingPage,
   createQuishingEmailTemplate,
+  createQuishingPrintoutTemplate,
   getEmailTemplatePreviewContent,
   getMergedTextForQuishing,
+  getMergedTextForQuishingPrintout,
   updateQuishingEmailTemplate,
+  updateQuishingPrintoutTemplate,
   getDefaultCompanySmtpSetting,
   getEmailDeliveries,
   getCampaignJobSummary,
@@ -640,5 +702,8 @@ export default {
   searchCampaignJobUserEmailSubmittedDetails,
   searchCampaignJobUserEmailSubmittedDetailsMfa,
   exportCampaignJobUserEmailSubmittedMfa,
-  searchCampaignJobUserEmailSubmittedMfa
+  searchCampaignJobUserEmailSubmittedMfa,
+  getQuishingTemplatePreviewContent,
+  getQuishingPdfPreviewContent,
+  deleteIndividualPrintoutTemplate
 }

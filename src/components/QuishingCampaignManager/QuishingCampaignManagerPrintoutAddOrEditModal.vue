@@ -39,14 +39,6 @@
             class="k-stepper__step"
             :complete="step > 4"
             :step="4"
-            >{{ labels.DeliverySettings }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
-            class="k-stepper__step"
-            :complete="step > 5"
-            :step="5"
             >{{ labels.CampaignSummary }}
           </v-stepper-step>
         </v-stepper-header>
@@ -57,7 +49,7 @@
               :title="labels.QuishingCampaignSettings"
               :subtitle="labels.PhishingCampaignSettingsSub"
             />
-            <CampaignManagerCampaignInfo
+            <CampaignManagerPrintoutCampaignInfo
               ref="refCampaignManagerCampaignInfo"
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
@@ -69,11 +61,12 @@
             <ConfigureCompanyStepHeader
               class="mb-8"
               :title="labels.QuishingScenarios"
-              :subtitle="labels.CampaignManagerQuishingScenariosSub"
+              :subtitle="labels.CampaignManagerQuishingIndividualPrintoutScenariosSub"
             />
-            <CampaignManagerPhishingScenarios
+            <CampaignManagerPrintOutPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              is-single
               :type="SCENARIO_TYPES.QUISHING"
               :campaign-manager-resource-id="getCampaignResourceId"
               :is-edit="isEdit || isDuplicate"
@@ -91,6 +84,7 @@
             />
             <CampaignManagerTargetAudience
               ref="refCampaignManagerTargetAudience"
+              is-quishing-print-out
               :is-multiple-phishing-scenarios="selectedPhishingScenarios.length > 1"
               :is-all-groups="!isEdit"
               :default-values="getDefaultTargetAudienceSettings"
@@ -100,36 +94,16 @@
               :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
-              :isMFAScenarioSelected="isMFAScenarioSelected"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
             <ConfigureCompanyStepHeader
-              :title="labels.DeliverySettings"
-              :subtitle="labels.DeliverySettingsSub"
-            />
-            <CampaignManagerDeliverySettings
-              ref="refCampaignManagerDeliverySettings"
-              :type="SCENARIO_TYPES.QUISHING"
-              :default-values="getDefaultValuesDeliverySettings"
-              :form-details="formDetails"
-              :target-group-resource-ids="targetGroupResourceIds"
-              :total-target-user-count="totalTargetUserCount"
-              :user-target-audience-data="getUserTargetAudienceData"
-              :selected-phishing-scenario="getSelectedPhishingScenario"
-              :is-edit="isEdit"
-              @set-action-button-disability="setActionButtonDisability"
-            />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="5">
-            <ConfigureCompanyStepHeader
               :title="labels.CampaignSummary"
               :subtitle="labels.CampaignSummarySub"
             />
-            <CampaignManagerSummary
+            <CampaignManagerPrintoutSummary
               ref="refCampaignManagerSummary"
               :type="SCENARIO_TYPES.QUISHING"
-              :show-schedule="showSchedule"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
             />
@@ -139,7 +113,7 @@
     </template>
     <template #overlay-footer>
       <StepperFooter
-        max-step="5"
+        max-step="4"
         :ids="{
           cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
           backButton: 'btn-back--add-or-edit-company-manager-modal',
@@ -165,36 +139,31 @@
 import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
-import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
+import { isDifferent } from '@/utils/functions'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
-import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
-import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
-import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import CampaignManagerPrintoutCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPrintoutCampaignInfo.vue'
+import CampaignManagerPrintOutPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPrintOutPhishingScenarios.vue'
+import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
+import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
 }
 export default {
-  name: 'QuishingCampaignManagerAddOrEditModal',
+  name: 'QuishingCampaignManagerPrintoutAddOrEditModal',
   components: {
-    CampaignManagerDeliverySettings,
+    CampaignManagerPrintoutSummary,
+    CampaignManagerPrintOutPhishingScenarios,
+    CampaignManagerPrintoutCampaignInfo,
     CampaignManagerTargetAudience,
     CustomError,
-    CampaignManagerPhishingScenarios,
     StepperFooter,
-    CampaignManagerSummary,
-    CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
     AppModal
   },
@@ -232,13 +201,10 @@ export default {
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
       defaultTargetGroupResourceIds: [],
-      scheduleInfoResponse: {}
+      selectedSchedule: ''
     }
   },
   computed: {
-    isMFAScenarioSelected() {
-      return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
-    },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(
@@ -246,26 +212,15 @@ export default {
         0
       )
     },
-    showSchedule() {
-      if (this.step === 5) {
-        const { refCampaignManagerDeliverySettings } = this.$refs
-        return (
-          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId !==
-            SCHEDULE_TYPES.SAVE_FOR_LATER &&
-          refCampaignManagerDeliverySettings?.formData?.frequency !== 0
-        )
-      }
-      return false
-    },
     getCampaignResourceId() {
       return this.selectedRow?.resourceId || ''
     },
     getTitle() {
       const text = this.isEdit ? labels.Edit : labels.New
-      return `${text} Quishing Campaign`
+      return `${text} Quishing Individual Printout Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3].includes(this.step) ? labels.Next : labels.Launch
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
@@ -281,23 +236,12 @@ export default {
     },
     getFormDataForCampaignSummary() {
       let formData = {}
-      if (this.step === 5) {
+      if (this.step === 4) {
         const {
           refCampaignManagerCampaignInfo,
           refCampaignManagerTargetAudience,
-          refCampaignManagerDeliverySettings,
           refCampaignManagerPhishingScenarios
         } = this.$refs
-        const scheduleTypeId =
-          refCampaignManagerDeliverySettings.inputScheduleFormData.scheduleTypeId
-        let selectedSchedule =
-          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate || ''
-        if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) selectedSchedule = labels.Later
-        else {
-          selectedSchedule = this?.scheduleInfoResponse?.isStarting
-            ? labels.Now
-            : `${selectedSchedule} ${refCampaignManagerDeliverySettings?.selectedTimeZoneText}`
-        }
         formData.userCountDetailResponse = this.userCountDetailResponse
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
         formData.excludeFromReports = refCampaignManagerCampaignInfo.formData.excludeFromReports
@@ -308,24 +252,11 @@ export default {
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCalculateTypeId
-        formData.selectedEmailDelivery = refCampaignManagerDeliverySettings?.emailDelivery
-        formData.sendingLimit =
-          refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
-        formData.selectedSchedule = selectedSchedule
-        formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
-        formData.scheduledDateTimeZoneId =
-          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId
-        formData.scheduledDate =
-          refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
-        formData.frequency = refCampaignManagerDeliverySettings.frequencyItems.find(
-          (frequency) => frequency.value === refCampaignManagerDeliverySettings.formData.frequency
-        )?.text
-        formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
-        formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
+        formData.scheduledDate = this.selectedSchedule
       }
       return formData
     },
@@ -359,55 +290,6 @@ export default {
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
       }
     },
-    getDefaultValuesDeliverySettings() {
-      const keys = Object.keys(this.selectedRowFormData)
-      if (!keys.length) return {}
-      const {
-        distributionEmailOver,
-        distributionEmailOverTimeTypeId,
-        distributionDelayEvery,
-        distributionDelayTimeTypeId,
-        distributionTypeId,
-        sendingLimit,
-        sendOnlyActiveUsers,
-        sendRandomlyUsersCount,
-        sendRandomlyUsersCalculateTypeId,
-        smtpSetting,
-        directEmailSetting,
-        emailDeliverySettingType,
-        scheduleTypeId,
-        scheduledDate,
-        scheduledDateTimeZoneId,
-        frequency,
-        distributionDays,
-        distributionStartTime,
-        distributionEndTime,
-        distributionStartTypeId
-      } = this.selectedRowFormData
-      return {
-        smtpSetting,
-        distributionEmailOver: distributionEmailOver.toString(),
-        distributionEmailOverTimeTypeId: distributionEmailOverTimeTypeId.toString(),
-        distributionDelayEvery: distributionDelayEvery.toString(),
-        distributionDelayTimeTypeId: distributionDelayTimeTypeId.toString(),
-        distributionTypeId: distributionTypeId.toString(),
-        sendingLimit,
-        sendOnlyActiveUsers,
-        sendRandomlyUsersCount,
-        emailDeliverySettingType,
-        directEmailSetting,
-        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString(),
-        scheduleTypeId: scheduleTypeId.toString(),
-        scheduledDate,
-        scheduledDateTimeZoneId,
-        frequency,
-        distributionDays,
-        distributionStartTime: distributionStartTime || '09:00',
-        distributionEndTime: distributionEndTime || '17:00',
-        distributionStartTypeId,
-        sendCallsOnDays: getSendCallOnDays(distributionDays)
-      }
-    },
     getUserTargetAudienceData() {
       const defaultObj = {
         sendOnlyActiveUsers: false,
@@ -415,7 +297,7 @@ export default {
         sendRandomlyUsersCount: 20,
         sendRandomlyUsersCalculateTypeId: '1'
       }
-      if (this.step === 4) {
+      if (this.step === 3) {
         const { refCampaignManagerTargetAudience } = this.$refs
         return refCampaignManagerTargetAudience?.formData || defaultObj
       }
@@ -425,16 +307,6 @@ export default {
   watch: {
     selectedPhishingScenarios(val) {
       this.isPhishingScenariosValid = !!val.length
-    },
-    step(val) {
-      if (
-        val === 4 &&
-        !this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
-      ) {
-        this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
-          Date.now()
-        ).format(getTimeZoneForMoment())
-      }
     }
   },
   created() {
@@ -516,13 +388,31 @@ export default {
           this.changeStep()
           return
         case 2:
-          const { refCampaignManagerPhishingScenarios } = this.$refs
+          const {
+            refCampaignManagerPhishingScenarios,
+            refCampaignManagerCampaignInfo: { inputScheduleFormData }
+          } = this.$refs
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
+          const response = await QuishingService.calculateScheduleInfo({
+            scheduleTypeId: inputScheduleFormData?.scheduleTypeId,
+            scheduledDate: inputScheduleFormData?.scheduledDate,
+            scheduledDateTimeZoneId: inputScheduleFormData?.scheduledDateTimeZoneId,
+            quishingScenarioResourceIds: this.selectedPhishingScenarios.map(
+              (pScenario) => pScenario.resourceId
+            )
+          })
+          if (inputScheduleFormData?.scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER)
+            this.selectedSchedule = labels.Later
+          else {
+            this.selectedSchedule = response?.data?.data?.isStarting
+              ? labels.Now
+              : `${inputScheduleFormData?.scheduledDate}`
+          }
           this.changeStep()
           return
         case 3:
@@ -556,78 +446,11 @@ export default {
           this.setActionButtonDisability(false)
           return
         case 4:
-          const { refCampaignManagerDeliverySettings } = this.$refs
-          if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
-          if (!refCampaignManagerDeliverySettings?.validateForm()) return
-          try {
-            this.setActionButtonDisability(true)
-            const response = await QuishingService.calculateScheduleInfo({
-              scheduleTypeId:
-                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduleTypeId,
-              scheduledDate:
-                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate,
-              scheduledDateTimeZoneId:
-                refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDateTimeZoneId,
-              frequency: refCampaignManagerDeliverySettings?.formData?.frequency,
-              quishingScenarioResourceIds: this.selectedPhishingScenarios.map(
-                (pScenario) => pScenario.resourceId
-              )
-            })
-            this.scheduleInfoResponse = response?.data?.data
-          } catch (e) {
-            this.setActionButtonDisability(false)
-            return
-          }
-          if (
-            refCampaignManagerDeliverySettings.emailDelivery.type ===
-            EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
-          ) {
-            this.changeStep()
-            this.setActionButtonDisability(false)
-            return
-          }
-          if (
-            refCampaignManagerDeliverySettings &&
-            refCampaignManagerDeliverySettings.testEmailErrorMessage &&
-            !refCampaignManagerDeliverySettings.isTestMailSend
-          ) {
-            refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
-          } else if (
-            refCampaignManagerDeliverySettings &&
-            !refCampaignManagerDeliverySettings.testEmailErrorMessage &&
-            !refCampaignManagerDeliverySettings.isTestMailSend
-          ) {
-            try {
-              const testResponse = await refCampaignManagerDeliverySettings.callForTestConnection()
-              if (testResponse) {
-                this.changeStep()
-              } else {
-                refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
-              }
-            } catch (e) {
-              refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
-            }
-          } else {
-            this.changeStep()
-          }
-          this.setActionButtonDisability(false)
-          return
-        case 5:
           let {
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
-            refCampaignManagerDeliverySettings: {
-              formData: deliverySettingsFormData,
-              inputScheduleFormData,
-              inputDistributionFormData
-            },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
-          deliverySettingsFormData = {
-            ...deliverySettingsFormData,
-            ...inputScheduleFormData,
-            ...inputDistributionFormData
-          }
           const quishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
             const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
@@ -646,36 +469,11 @@ export default {
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             duration: campaignManagerFormData.duration,
-            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
-            scheduledDate:
-              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : deliverySettingsFormData.scheduledDate,
-            scheduledDateTimeZoneId:
-              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : deliverySettingsFormData.scheduledDateTimeZoneId,
-            distributionTypeId: deliverySettingsFormData.distributionTypeId,
-            distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
-            distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
-            distributionEmailOver: deliverySettingsFormData.distributionEmailOver,
-            distributionEmailOverTimeTypeId:
-              deliverySettingsFormData.distributionEmailOverTimeTypeId,
-            sendingLimit: deliverySettingsFormData.sendingLimit,
-            smtpSettingResourceId: deliverySettingsFormData.smtpSettingResourceId,
-            directEmailSettingResourceId: deliverySettingsFormData.directEmailSettingResourceId,
-            emailDeliverySettingType: deliverySettingsFormData.emailDeliverySettingType,
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
-            frequency: deliverySettingsFormData.frequency,
-            distributionStartTime: deliverySettingsFormData.distributionStartTime,
-            distributionEndTime: deliverySettingsFormData.distributionEndTime,
-            distributionDays: deliverySettingsFormData.distributionDays,
-            distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
-            templateType: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

@@ -93,7 +93,7 @@
                 }"
                 @scroll="handleScroll"
               >
-                <div class="my-5 mx-6">
+                <div v-if="!isSingle" class="my-5 mx-6">
                   <VSwitch
                     v-model="isShowSelectedScenarios"
                     id="input--campaign-manager-show-selected-status"
@@ -108,11 +108,12 @@
                   v-for="item in getItems"
                   :key="item.resourceId"
                   :class="getItemClasses(item.resourceId)"
-                  @click="callForSelectedPhishingScenario(item.resourceId)"
+                  @click="callForSelectedPhishingScenario(item.resourceId, item)"
                 >
                   <div class="d-flex justify-space-between mb-2">
                     <div class="d-flex overflow-hidden">
                       <VCheckbox
+                        v-if="!isSingle"
                         v-model="checkboxModel[item.resourceId]"
                         color="#2196f3"
                         hide-details
@@ -384,6 +385,10 @@ export default {
       type: String,
       default: SCENARIO_TYPES.PHISHING
     },
+    isSingle: {
+      type: Boolean,
+      default: false
+    },
     isShowReminder: {
       type: Boolean,
       default: false
@@ -606,7 +611,7 @@ export default {
         ? 'difficulty-medium'
         : 'difficulty-hard'
     },
-    callForSelectedPhishingScenario(resourceId = '') {
+    callForSelectedPhishingScenario(resourceId = '', item = {}) {
       this.adjustTrainingModel(resourceId)
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
@@ -680,6 +685,14 @@ export default {
           this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
         })
       })
+      if (this.isSingle) {
+        Object.keys(this.trainingTabModel).forEach((key) => {
+          if (key !== resourceId) {
+            this.$set(this.trainingTabModel[key], 'isCheckboxSelected', false)
+          }
+        })
+        this.setSelectedTemplate(item, true)
+      }
     },
     adjustTrainingModel(resourceId = '') {
       if (!resourceId) return
@@ -714,7 +727,10 @@ export default {
           this.value.push(item)
         })
         if (isSelectFirstItem && this.phishingScenarioItems.length) {
-          this.callForSelectedPhishingScenario(this.phishingScenarioItems[0].resourceId)
+          this.callForSelectedPhishingScenario(
+            this.phishingScenarioItems[0].resourceId,
+            this.phishingScenarioItems[0]
+          )
         }
       })
     },
