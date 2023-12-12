@@ -180,6 +180,7 @@ import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -673,7 +674,8 @@ export default {
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
+            templateType: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

@@ -226,7 +226,7 @@
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
-                          <span class="template-preview__text--title">Phishing URL: </span>
+                          <span class="template-preview__text--title">Quishing URL: </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.urlTemplate
                           }}</span>
@@ -512,9 +512,7 @@ export default {
     }
   },
   created() {
-    if (!this.isEdit) {
-      this.callForPhishingScenarios()
-    }
+    if (!this.isEdit) this.callForPhishingScenarios()
   },
   mounted() {
     setTimeout(() => {
