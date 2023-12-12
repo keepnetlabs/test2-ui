@@ -285,8 +285,10 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      :is-show-reminder="isShowReminder"
                       :type="type"
                       :is-edit="isEdit"
+                      :enum-types="enumTypes"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -337,6 +339,8 @@ import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -384,6 +388,10 @@ export default {
     isSingle: {
       type: Boolean,
       default: false
+    },
+    isShowReminder: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -410,7 +418,8 @@ export default {
       landingPageTemplates: [],
       phishingScenarioItems: [],
       isMethodMfa: false,
-      isShowTrainingDialog: false
+      isShowTrainingDialog: false,
+      enumTypes: {}
     }
   },
   computed: {
@@ -470,10 +479,26 @@ export default {
         this.checkboxModel[resourceId] = true
       }
       const addTrainingKeyToTabModel = (val) => {
+        console.log('val', val)
         this.$set(
           this.trainingTabModel,
           val.value,
-          new TrainingTabModel(val.trainingId, val.trainingName, val.trainingLanguageIds, true)
+          new TrainingTabModel(
+            val.trainingId,
+            val.trainingName,
+            val.trainingLanguageIds,
+            true,
+            getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
+            val.awardCertificate,
+            {
+              periodCount: val.periodCount || 1,
+              periodType: val.emailPeriodTypeId || 'Day',
+              endType: val.reminderEndTypeId || 'TrainingCompleted',
+              occurrenceCount: 1,
+              stopTime: '',
+              sendReminderEvery: val.isEnrollmentReminderActive || false
+            }
+          )
         )
       }
       if (Array.isArray(val)) {
@@ -551,11 +576,16 @@ export default {
     }
   },
   created() {
-    if (!this.isEdit) {
-      this.callForPhishingScenarios()
-    }
+    if (!this.isEdit) this.callForPhishingScenarios()
+    this.callForEnrollmentFormDetails()
   },
   methods: {
+    callForEnrollmentFormDetails() {
+      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
+        const { enumNameValuePairs = {} } = response?.data?.data || {}
+        this.enumTypes = enumNameValuePairs
+      })
+    },
     getItemClasses(itemResourceId = '') {
       return [
         'template-list',
