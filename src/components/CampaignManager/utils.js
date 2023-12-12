@@ -153,8 +153,11 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'slot',
-    width: 150,
-    filterableType: 'select'
+    width: 170,
+    filterableType: 'select',
+    props: {
+      style: { maxWidth: '130px' }
+    }
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
@@ -325,6 +328,12 @@ export function getStatusBadgeProps(status) {
       color: '#F56C6C',
       text: 'Error',
       outline: false
+    }
+  }
+  if (status === 'Individual Printout') {
+    return {
+      color: '#757575',
+      text: 'Individual Printout'
     }
   }
 }
