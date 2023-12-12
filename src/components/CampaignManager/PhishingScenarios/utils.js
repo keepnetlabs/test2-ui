@@ -16,6 +16,19 @@ export const enrollmentItems = [
     value: '3'
   }
 ]
+export const enrollmentItemsTrainingTab = [
+  {
+    title: 'Start Training Immediately',
+    description: 'Target audience begins training right away after a failed phishing behavior',
+    value: '1'
+  },
+  {
+    title: 'Enroll via Email Notification',
+    description: 'Target audience enrolls in training through an email notification',
+    value: '2'
+  }
+]
+
 export const getEnrollmentSendTypeIdByEnum = (enrollmentSendTypeId) => {
   switch (enrollmentSendTypeId) {
     case 'StartTrainingImmediately ':
