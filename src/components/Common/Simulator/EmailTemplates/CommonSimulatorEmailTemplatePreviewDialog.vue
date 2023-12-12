@@ -34,8 +34,8 @@
               <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
             </div>
           </template>
-          <div v-else class="d-flex justify-space-between items-center">
-            <div>Example Individual Printout</div>
+          <div v-else class="d-flex justify-space-between align-center">
+            <div class="text-primary-color fs-4">Example Individual Printout</div>
             <VBtn
               id="btn-preview-indiviual-printout"
               class="white--text btn-util btn-download-add-in"
