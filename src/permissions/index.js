@@ -395,7 +395,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     PREVIEW: {
-      url: `quishing-simulator/quishing-scenario/preview/{resourceId}`,
+      url: `quishing-simulator/quishing-scenario/preview/{templateType}/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },

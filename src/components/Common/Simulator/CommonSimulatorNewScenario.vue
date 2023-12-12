@@ -919,8 +919,11 @@ export default {
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-          this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
+          const emailTemplateResourceId = this.isQuishing
+            ? response.data.data.templateResourceId
+            : response.data.data.emailTemplateResourceId
+          this.formValues.emailTemplateId = emailTemplateResourceId
+          this.emailTemplateResourceId = emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
           this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
@@ -931,6 +934,7 @@ export default {
           this.availableForRequests = getAvailableForValueFromList(availableForList)
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isFetched = true
+          if (this.isQuishing) this.quishingType = response.data.data.templateType
         })
         .finally(() => {
           this.isSubmitDisabled = false
@@ -1097,7 +1101,12 @@ export default {
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
       }
-      if (this.isQuishing) payload.quishingType = this.quishingType
+      if (this.isQuishing) {
+        payload.templateType = this.quishingType
+        payload.templateResourceId = this.emailTemplateResourceId
+        delete payload.emailTemplateId
+        delete payload.emailTemplateResourceId
+      }
       if (this.isEdit && !this.isDuplicate) {
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario

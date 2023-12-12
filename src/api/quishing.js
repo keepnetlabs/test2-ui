@@ -33,8 +33,13 @@ const getSummaryOfScenario = (templateId, landingPageId, templateType) => {
     `/quishing-simulator/quishing-scenario/preview/${templateType}/${templateId}/${landingPageId}`
   )
 }
-const getQuishingScenarioLandingPageAndEmailTemplate = (resourceId = '') => {
-  return testRequest.get(`/quishing-simulator/quishing-scenario/preview/${resourceId}`)
+const getQuishingScenarioLandingPageAndEmailTemplate = (
+  resourceId = '',
+  templateType = 'email'
+) => {
+  return testRequest.get(
+    `/quishing-simulator/quishing-scenario/preview/${templateType}/${resourceId}`
+  )
 }
 const updateLandingPage = (payload, id) => {
   return testRequest.put(`/quishing-simulator/landing-page-template/${id}`, payload, {

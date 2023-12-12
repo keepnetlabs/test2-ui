@@ -191,7 +191,10 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      this.apiFunc(this.selectedRow.resourceId)
+      const params = [this.selectedRow.resourceId]
+      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
+        params.push(this.selectedRow.quishingType.toLowerCase())
+      this.apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
