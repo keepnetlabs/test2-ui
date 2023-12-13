@@ -22,6 +22,7 @@
           :training-name="getTrainingName"
           :form-details="formDetails"
           :trainingSummary="trainingSummary"
+          :scormTrainingSummary="scormTrainingSummary"
           :isScormProxy="isScormProxy"
         />
       </el-tab-pane>
@@ -48,6 +49,7 @@ export default {
   data() {
     return {
       trainingSummary: null,
+      scormTrainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -147,6 +149,9 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
+      AwarenessEducatorService.getScormProxyTrainingReportSummary(this.id).then((response) => {
+        this.scormTrainingSummary = response?.data?.data
+      })
     },
     callForFormDetails() {
       AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {

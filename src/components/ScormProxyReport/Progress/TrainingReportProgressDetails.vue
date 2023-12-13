@@ -58,6 +58,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import Badge from '@/components/Badge'
+import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 
 export default {
   name: 'TrainingReportProgressDetails',
@@ -209,23 +210,7 @@ export default {
         .finally(this.setLoading)
     },
     getStatusBadgeProps(progress) {
-      if (progress === 'Not Completed')
-        return {
-          color: '#B83A3A',
-          text: 'Not Completed'
-        }
-
-      if (progress === 'In Progress')
-        return {
-          color: '#B6791D',
-          text: 'In Progress'
-        }
-
-      if (progress === 'Completed')
-        return {
-          color: '#217124',
-          text: 'Completed'
-        }
+      return getStatusBadgeProps(progress)
     },
     handleClose() {
       this.$emit('on-close')

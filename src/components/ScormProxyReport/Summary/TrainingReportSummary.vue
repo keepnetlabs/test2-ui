@@ -63,6 +63,9 @@ export default {
     trainingSummary: {
       type: Object
     },
+    scormTrainingSummary: {
+      type: Object
+    },
     isLoading: {
       type: Boolean
     }
@@ -78,9 +81,6 @@ export default {
     }
   },
   computed: {
-    isSMSSummaryExist() {
-      return !!this.trainingSummary?.smsSummary
-    },
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
     },
@@ -107,18 +107,9 @@ export default {
     getUserGroups() {
       return this.trainingSummary?.userGroups || {}
     },
-    getSMSSummaryData() {
-      const { smsPhoneNumber, template } = this?.trainingSummary?.smsSummary || {}
-      return {
-        'Sender Phone Number': { show: true, value: smsPhoneNumber },
-        'SMS Text': { show: true, value: template },
-        'Delivery Status': { show: true, value: '' }
-      }
-    },
     getTrainingInfoData() {
+      const { totalTargetUser = 0, totalNonTargetUser = 0 } = this.scormTrainingSummary || {}
       const { startDate = '' } = this?.trainingSummary || {}
-      const { totalTargetUserCount = 0, totalNonTargetUserCount = 0 } =
-        this?.trainingSummary?.reportDetail || {}
       const { targetGroupCount = 0, languages = ['EN'] } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
@@ -126,7 +117,7 @@ export default {
       return {
         'Target Users': {
           show: true,
-          value: totalTargetUserCount
+          value: totalTargetUser
         },
         Languages: {
           show: true,
@@ -138,7 +129,7 @@ export default {
         },
         'Non-Target Users': {
           show: true,
-          value: totalNonTargetUserCount
+          value: totalNonTargetUser
         },
         'Training Proxy Package Download Date': {
           show: true,
@@ -261,74 +252,27 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      const { reportDetail = {}, completedCount = 0 } = this.trainingSummary || {}
       const {
-        totalTargetUserCount = 0,
-        totalUserClickedCount = 0,
-        totalUserOpenedCount = 0,
-        noResponseCount = 0,
-        inProgressCount = 0
-      } = reportDetail
-      const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
+        totalTargetUser = 0,
+        totalNonTargetUser = 0,
+        totalInProgress = 0,
+        totalCompleteds = 0
+      } = this.scormTrainingSummary || {}
+      const totalUsers = totalTargetUser + totalNonTargetUser
       return {
-        openedEmail: {
-          userCount: totalUserOpenedCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
-        },
         inProgress: {
-          userCount: inProgress,
-          userPercent:
-            totalTargetUserCount === 0 ? '0' : ((inProgress / totalTargetUserCount) * 100).toFixed()
+          userCount: totalInProgress,
+          userPercent: totalUsers === 0 ? '0' : ((totalInProgress / totalUsers) * 100).toFixed()
         },
         completedTraining: {
-          userCount: completedCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((completedCount / totalTargetUserCount) * 100).toFixed()
-        },
-        noResponse: {
-          userCount: noResponseCount,
-          userPercent:
-            totalTargetUserCount === 0
-              ? '0'
-              : ((noResponseCount / totalTargetUserCount) * 100).toFixed()
+          userCount: totalCompleteds,
+          userPercent: totalUsers === 0 ? '0' : ((totalCompleteds / totalUsers) * 100).toFixed()
         }
       }
     },
     getTrainingEmailNotificationTemplateTypeResourceId() {
       const { trainingEmailNotificationTemplateTypeResourceId = '' } = this.trainingSummary || {}
       return trainingEmailNotificationTemplateTypeResourceId
-    },
-    getTotalUsers() {
-      const { campaignInfo = {} } = this.trainingSummary
-      return campaignInfo['totalTargetUserCount'] || 0
-    },
-    getEnrollmentTemplateData() {
-      const { trainingDetails = {} } = this.trainingSummary || {}
-      const { companyName = '', description: trainingDescription = '' } = trainingDetails
-      const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
-      return {
-        name,
-        createdBy: companyName,
-        description: description || trainingDescription,
-        template
-      }
-    },
-    getCertificateData() {
-      const { name = '', companyName = '', description = '', template = '' } =
-        this.certificateEmailData || {}
-      return {
-        name,
-        createdBy: companyName,
-        description,
-        template:
-          template?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') ||
-          ''
-      }
     },
     getTrainingMaterialData() {
       const { trainingDetails = {}, languages = [] } = this.trainingSummary || {}
