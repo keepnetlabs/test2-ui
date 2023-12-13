@@ -61,7 +61,6 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import Badge from '@/components/Badge'
@@ -107,16 +106,6 @@ export default {
         hideSort: true
       },
       {
-        property: 'sessionDate',
-        align: 'left',
-        fixed: false,
-        editable: false,
-        label: labels.Date,
-        show: true,
-        type: 'text',
-        hideSort: true
-      },
-      {
         property: 'sessionStartDate',
         align: 'left',
         editable: false,
@@ -125,7 +114,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 180,
+        width: 200,
         filterableType: 'date'
       },
       {
@@ -137,7 +126,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 180,
+        width: 200,
         filterableType: 'date'
       }
     ]
