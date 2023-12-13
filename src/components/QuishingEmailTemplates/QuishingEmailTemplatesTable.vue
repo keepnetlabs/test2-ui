@@ -139,7 +139,7 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { columnFilterChanged } from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 
 export default {
   name: 'QuishingEmailTemplatesTable',
@@ -342,6 +342,20 @@ export default {
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
           filter,
+          this.axiosPayload
+        )
+      }
+      this.callForData()
+    },
+    columnFilterCleared(fieldName) {
+      if (fieldName === 'quishingType') {
+        this.activeTemplateTypes = [
+          QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+        ]
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+          fieldName,
           this.axiosPayload
         )
       }

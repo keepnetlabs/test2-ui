@@ -192,13 +192,9 @@ export default {
               firstScenario?.scenarioInfo?.templateType?.toString().toLowerCase() ===
               QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
             ) {
-              const sendingReportIndex = this.tabItems.findIndex(
-                (tab) => tab.name === labels.SendingReport
-              )
               const phishingReportIndex = this.tabItems.findIndex(
                 (tab) => tab.name === labels.PhishingReporter
               )
-              if (sendingReportIndex !== -1) this.tabItems.splice(sendingReportIndex, 1)
               if (phishingReportIndex !== -1) this.tabItems.splice(phishingReportIndex, 1)
             }
           } else {

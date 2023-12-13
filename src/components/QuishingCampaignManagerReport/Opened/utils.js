@@ -14,6 +14,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  FIRST_NAME_PRINTOUT: {
+    property: PROPERTY_STORE.FIRSTNAME,
+    align: 'left',
+    label: labels.FirstName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
+    isEditable: false,
+    filterableType: 'text'
+  },
   LAST_NAME: {
     property: PROPERTY_STORE.LASTNAME,
     align: 'left',
@@ -23,6 +35,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  LAST_NAME_PRINTOUT: {
+    property: PROPERTY_STORE.LASTNAME,
+    align: 'left',
+    label: labels.LastName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
@@ -47,6 +71,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  EMAIL_PRINTOUT: {
+    property: PROPERTY_STORE.EMAIL,
+    align: 'left',
+    label: labels.Email,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
@@ -106,6 +142,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  DEPARTMENT_PRINTOUT: {
+    property: PROPERTY_STORE.DEPARTMENT,
+    align: 'left',
+    label: labels.Department,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
