@@ -82,7 +82,6 @@ export default {
   },
   computed: {
     isScormProxy() {
-      console.log('this.trainingSummary', this.trainingSummary)
       return this.trainingSummary?.isScormProxy || false
     },
     getTrainingMaterialRow() {

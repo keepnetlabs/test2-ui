@@ -149,14 +149,9 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
-      AwarenessEducatorService.getScormProxyTrainingReportSummary(this.id)
-        .then((response) => {
-          console.log('scormTrainingSummary', response?.data?.data)
-          this.scormTrainingSummary = response?.data?.data
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
+      AwarenessEducatorService.getScormProxyTrainingReportSummary(this.id).then((response) => {
+        this.scormTrainingSummary = response?.data?.data
+      })
     },
     callForFormDetails() {
       AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
