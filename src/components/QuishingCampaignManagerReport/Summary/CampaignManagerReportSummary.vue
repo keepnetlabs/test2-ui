@@ -6,6 +6,7 @@
       :id="id"
       :training-infos="trainingInfos"
       :is-show-training-report-button="!!trainingInfos.length"
+      :is-show-resend-dialog-button="isShowResendDialogButton"
       :is-multiple-training-report="trainingInfos.length > 1"
       :instance-group="instanceGroup"
       :training-report-dialog-items="trainingReportDialogItems"
@@ -24,7 +25,14 @@
       :items="getCardsData"
       :is-loading="isLoading || !getScenarioMethod"
     />
-    <div class="campaign-manager-report-summary__general-info mt-6">
+    <div
+      :class="[
+        isQuishingTypePrintout
+          ? 'common-simulator-new-scenario-campaign-info '
+          : 'campaign-manager-report-summary__general-info',
+        'mt-6'
+      ]"
+    >
       <CampaignManagerReportSummaryCampaignInfo
         :items="getCampaignSummaryItems"
         :helper-data="getCampaignSummaryHelperData"
@@ -32,6 +40,7 @@
         :isLoading="isLoading"
       />
       <CampaignManagerReportEmailDelivery
+        v-if="!isQuishingTypePrintout"
         class="ml-4"
         :items="getEmailDeliveryData"
         :helper-data="getEmailDeliveryHelperData"
@@ -101,8 +110,8 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/QuishingCampaignManagerReport/Summary/utils'
 import QuishingService from '@/api/quishing'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -155,7 +164,15 @@ export default {
   },
   computed: {
     isQuishingTypePrintout() {
-      return this.campaignSummary?.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      if (this?.getActiveScenario?.scenarioInfo?.templateType === undefined) return false
+      return (
+        this?.getActiveScenario?.scenarioInfo?.templateType?.toString().toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      )
+    },
+    isShowResendDialogButton() {
+      if (this?.getActiveScenario?.scenarioInfo?.templateType === undefined) return false
+      return !this.isQuishingTypePrintout
     },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
@@ -223,7 +240,8 @@ export default {
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : ''
+        Languages: languages.size ? [...languages].join(', ') : '',
+        Duration: duration
       }
     },
     getCampaignSummaryHelperData() {
@@ -416,9 +434,11 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
+      let { emailTemplateInfo = {}, scenarioInfo = {}, quishingTemplateInfo = {} } = this
+        .getActiveScenario || {
         emailTemplateInfo: {}
       }
+      if (this.isQuishingTypePrintout) emailTemplateInfo = quishingTemplateInfo
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }

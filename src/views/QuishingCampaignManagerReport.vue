@@ -43,6 +43,7 @@ import CampaignManagerReportNoResponse from '@/components/QuishingCampaignManage
 import CampaignManagerReportPhishingReport from '@/components/QuishingCampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport.vue'
 import CampaignManagerReportSendingReport from '@/components/QuishingCampaignManagerReport/SendingReport/CampaignManagerReportSendingReport.vue'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'QuishingCampaignManagerReport',
   components: { KContainer },
@@ -186,6 +187,19 @@ export default {
             } else if (scenarioMethodType === 4) {
               this.setMultipleType(scenarios)
               this.setTabStatus()
+            }
+            if (
+              firstScenario?.scenarioInfo?.templateType?.toString().toLowerCase() ===
+              QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+            ) {
+              const sendingReportIndex = this.tabItems.findIndex(
+                (tab) => tab.name === labels.SendingReport
+              )
+              const phishingReportIndex = this.tabItems.findIndex(
+                (tab) => tab.name === labels.PhishingReporter
+              )
+              if (sendingReportIndex !== -1) this.tabItems.splice(sendingReportIndex, 1)
+              if (phishingReportIndex !== -1) this.tabItems.splice(phishingReportIndex, 1)
             }
           } else {
             this.setMultipleType(scenarios)
