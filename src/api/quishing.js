@@ -411,6 +411,16 @@ const getCampaignManagerEmailTemplatePreviewContent = (
     `quishing-simulator/quishing-campaign-job-report/summary/${campaignResourceId}/${instanceGroup}/email-templates/${id}`
   )
 }
+const getCampaignManagerQuishingTemplatePreviewContent = (
+  id = '',
+  campaignResourceId = '',
+  instanceGroup = ''
+) => {
+  return testRequest.get(
+    `quishing-simulator/quishing-campaign-job-report/summary/${campaignResourceId}/${instanceGroup}/quishing-templates/${id}`
+  )
+}
+
 const exportQuishingCampaignJob = (id = '', instanceGroup = '') => {
   return testRequest.get(
     `/quishing-simulator/quishing-campaign-job-report/export/${id}/${instanceGroup}`,
@@ -717,5 +727,6 @@ export default {
   getQuishingPdfPreviewContent,
   getQuishingPdfScenarioPreviewContent,
   deleteIndividualPrintoutTemplate,
-  getQuishingPdfCampaignPreviewContent
+  getQuishingPdfCampaignPreviewContent,
+  getCampaignManagerQuishingTemplatePreviewContent
 }

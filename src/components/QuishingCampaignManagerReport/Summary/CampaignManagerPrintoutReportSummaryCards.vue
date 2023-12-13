@@ -1,5 +1,9 @@
 <template>
-  <div id="campaign-manager-report-summary-cards" class="campaign-manager-report-summary-cards">
+  <div
+    id="campaign-manager-report-summary-cards"
+    class="campaign-manager-report-summary-cards"
+    :style="getMainContainerStyle"
+  >
     <div class="campaign-manager-report-summary-cards__left" :style="getFirstContainerStyle">
       <CampaignManagerReportSummaryInfoCard
         v-bind="getNoResponseData"
@@ -78,6 +82,9 @@ export default {
     getFirstContainerStyle() {
       return this.isCampaignClickOnly ? { display: 'grid', gridTemplateColumns: '1fr 1fr' } : {}
     },
+    getMainContainerStyle() {
+      return this.isCampaignClickOnly ? { display: 'grid', gridTemplateColumns: '1fr' } : {}
+    },
     getThirdCardProps() {
       if (this.isCampaignDataSubmission) return this.getSubmittedData
       if (this.isCampaignClickOnlyAndMfa) return this.getMfaData
@@ -92,23 +99,6 @@ export default {
       if (this.isCampaignDataSubmission) return this.submittedDataIcon
       if (this.isCampaignClickOnlyAndMfa) return this.mfaIcon
       return this.submittedDataIcon
-    },
-    isCampaignHasAllTypes() {
-      return this.multipleType.length && this.multipleType.every(Boolean)
-    },
-    isCampaignHasClickOnlyAndDataSubmissionAndAttachment() {
-      return (
-        this.multipleType.length &&
-        this.multipleType[0] &&
-        this.multipleType[1] &&
-        this.multipleType[2]
-      )
-    },
-    isCampaignHasAttachmentAndDataSubmission() {
-      return this.multipleType.length && this.multipleType[1] && this.multipleType[2]
-    },
-    isCampaignClickOnlyAndAttachment() {
-      return this.multipleType.length && this.multipleType[0] && this.multipleType[2]
     },
     isCampaignClickOnlyAndMfa() {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[3]
