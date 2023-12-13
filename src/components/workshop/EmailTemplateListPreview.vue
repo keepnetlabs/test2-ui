@@ -6,7 +6,7 @@
       max-height
       max-height-size="900"
       icon="mdi-eye"
-      subtitle="Email Template Preview"
+      :subtitle="getEmailTemplateDialogSubtitle"
       :title="selectedTemplateHeader"
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
@@ -202,15 +202,15 @@
                     <span class="template-preview__text--title">Template Name: </span>
                     <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">From Email Address: </span>
                     <span class="template-preview__text--body">{{ templateFromEmail }}</span>
                   </div>
@@ -330,6 +330,13 @@ export default {
     }
   },
   computed: {
+    getEmailTemplateDialogSubtitle() {
+      if (this.isQuishing)
+        return this.isQuishingTypeIndividualPrintOut
+          ? 'Individual Printout Template Preview'
+          : 'Quishing Email Template Preview'
+      return 'Email Template Preview'
+    },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
     },
@@ -451,7 +458,6 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      console.log(this.quishingType)
       if (this.isQuishingTypeIndividualPrintOut)
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
       else if (this.isQuishingTypeEmail)

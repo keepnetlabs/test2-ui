@@ -26,7 +26,11 @@
         />
       </ElTabs>
       <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
-        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
+        <ElTabPane
+          id="campaign-manager-info--email-content"
+          name="email"
+          :label="getFirstSubTabLabel"
+        >
           <div class="template-preview pt-4">
             <div v-if="isQuishing" class="mb-2">
               <span class="template-preview__text--title">Quishing Type: </span>
@@ -168,6 +172,9 @@ export default {
     }
   },
   computed: {
+    getFirstSubTabLabel() {
+      return this.isQuishing ? labels.QuishingTemplate : labels.JustEmail
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -248,7 +255,8 @@ export default {
           ? {
               name: phishingScenarioPreviewDto?.[templateKey]?.phishingFileName
             }
-          : null
+          : null,
+        type: phishingScenarioPreviewDto?.[templateKey]?.type || ''
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []

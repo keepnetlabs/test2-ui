@@ -61,7 +61,6 @@
           @on-click="handleEmitScenarioModal(scope.row, false)"
         />
         <DefaultMenuRowAction
-          v-if="scope.row.type !== QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -71,7 +70,7 @@
           @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
-          v-else
+          v-if="checkRowIsIndividualPrintout(scope.row)"
           :id="tableOptions.rowActions[5].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -122,6 +121,7 @@ import labels from '@/model/constants/labels'
 import QuishingService from '@/api/quishing'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { columnFilterChanged } from '@/utils/helperFunctions'
 export default {
   name: 'QuishingScenariosTable',
   components: {
@@ -142,6 +142,10 @@ export default {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
       tableData: [],
+      activeTemplateTypes: [
+        QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      ],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_SCENARIOS,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_SCENARIOS,
@@ -252,6 +256,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
+      this.axiosPayload.templateTypes = this.activeTemplateTypes
       QuishingService.searchScenarios(this.axiosPayload)
         .then((response) => {
           const {
@@ -301,7 +306,44 @@ export default {
         })
       })
     },
-    handlePrintPreview(row = {}) {}
+    checkRowIsIndividualPrintout(row = {}) {
+      return (
+        row.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
+    handlePrintPreview(row = {}) {
+      QuishingService.getQuishingPdfScenariorPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
+    },
+    columnFilterChanged(filter) {
+      if (filter.FieldName === 'quishingType') {
+        if (!filter.Value)
+          this.activeTemplateTypes = [
+            QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+            QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+          ]
+        else {
+          this.activeTemplateTypes = filter.Value.split(',')
+        }
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+          filter,
+          this.axiosPayload
+        )
+      }
+      this.callForData()
+    }
   }
 }
 </script>

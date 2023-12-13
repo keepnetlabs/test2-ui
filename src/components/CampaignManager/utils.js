@@ -277,7 +277,8 @@ export const ACTION_STATUSES = {
   COMPLETE: 'Completed',
   CANCEL: 'Canceled',
   IDLE: 'Idle',
-  ERROR: 'Error'
+  ERROR: 'Error',
+  INDIVIDUAL: 'Individual Printout'
 }
 
 export function getStatusBadgeProps(status) {

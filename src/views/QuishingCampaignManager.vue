@@ -45,8 +45,8 @@
       :selected-row="selectedRow"
       :form-details="formDetails"
       :is-duplicate="isDuplicate"
-      @on-close="toggleAddIndiviudalPrintoutCampaignModal"
-      @on-submit="handleOnSubmit"
+      @on-close="toggleAddIndividualPrintoutCampaignModal"
+      @on-submit="handleOnSubmitPrintout"
     />
     <QuishingCampaignManagerNewInstanceModal
       v-if="isShowNewInstanceModal"
@@ -71,7 +71,7 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
-      @on-add-individual-printout-campaign="toggleAddIndiviudalPrintoutCampaignModal"
+      @on-add-individual-printout-campaign="toggleAddIndividualPrintoutCampaignModal"
     />
     <QuishingCampaignManagerItemTable
       v-if="selectedParentItem"
@@ -267,6 +267,10 @@ export default {
       this.$refs.campaignManagerParentTable.callForData()
       this.toggleAddCampaignManagerModal()
     },
+    handleOnSubmitPrintout() {
+      this.$refs.campaignManagerParentTable.callForData()
+      this.toggleAddIndividualPrintoutCampaignModal()
+    },
     handleItemOnEdit(row) {
       this.selectedRow = row
       this.isEdit = true
@@ -335,7 +339,7 @@ export default {
     toggleFrequencyTableShowing() {
       this.isFrequencyTableShowing = !this.isFrequencyTableShowing
     },
-    toggleAddIndiviudalPrintoutCampaignModal() {
+    toggleAddIndividualPrintoutCampaignModal() {
       this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
     }
   }

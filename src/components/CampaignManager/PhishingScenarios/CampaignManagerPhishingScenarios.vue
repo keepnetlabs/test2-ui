@@ -341,6 +341,7 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -479,7 +480,6 @@ export default {
         this.checkboxModel[resourceId] = true
       }
       const addTrainingKeyToTabModel = (val) => {
-        console.log('val', val)
         this.$set(
           this.trainingTabModel,
           val.value,
@@ -628,15 +628,23 @@ export default {
           this.type === SCENARIO_TYPES.PHISHING
             ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
             : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
-        previewFunc(resourceId).then((response) => {
+        const params = [resourceId]
+        if (
+          item.quishingType.toLowerCase() ===
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+        )
+          params.push(QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT)
+        previewFunc(...params).then((response) => {
           const { data: { data = {} } = {} } = response
-          const {
+          let {
             emailTemplate,
             landingPageTemplate,
+            quishingTemplate,
             methodTypeId,
             mfaTextTemplate,
             mfaSmsSenderNumber
           } = data
+          if (!emailTemplate) emailTemplate = quishingTemplate
           let {
             template,
             fromName,
@@ -716,6 +724,9 @@ export default {
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
+      }
       apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }

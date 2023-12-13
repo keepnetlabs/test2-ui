@@ -367,6 +367,16 @@ const getQuishingPdfPreviewContent = (id) => {
     responseType: 'blob'
   })
 }
+const getQuishingPdfScenarioPreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-scenario/print-preview/${id}`, {
+    responseType: 'blob'
+  })
+}
+const getQuishingPdfCampaignPreviewContent = (id) => {
+  return testRequest.get(`quishing-simulator/quishing-campaign/print-preview/${id}`, {
+    responseType: 'blob'
+  })
+}
 export function getMergedTextForQuishing() {
   return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
 }
@@ -705,5 +715,7 @@ export default {
   searchCampaignJobUserEmailSubmittedMfa,
   getQuishingTemplatePreviewContent,
   getQuishingPdfPreviewContent,
-  deleteIndividualPrintoutTemplate
+  getQuishingPdfScenarioPreviewContent,
+  deleteIndividualPrintoutTemplate,
+  getQuishingPdfCampaignPreviewContent
 }
