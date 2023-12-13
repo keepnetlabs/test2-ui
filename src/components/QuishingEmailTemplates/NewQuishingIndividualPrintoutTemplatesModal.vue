@@ -4,7 +4,8 @@
       <DefaultErrorDialog
         v-if="isShowQrCodeErrorDialog"
         :status="isShowQrCodeErrorDialog"
-        error-message="You must insert {QRCODEURLIMAGE} merge tag to your email design for phishing campaign to work correctly"
+        title="Warning"
+        error-message="You must insert {QRCODEURLIMAGE} merge tag to your email design for quishing campaign to work correctly"
         @on-close="toggleQrCodeErrorDialog"
       />
       <v-stepper light v-model="step" class="k-stepper">
