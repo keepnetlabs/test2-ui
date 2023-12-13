@@ -73,9 +73,8 @@ export default {
     return {
       labels,
       noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
-      clickedLinkIcon: require('../../../assets/img/ic-qr-code-report.svg'),
       submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
-      mfaIcon: require('../../../assets/img/phonelink_lock.svg')
+      mfaIcon: require('../../../assets/img/ic-qr-code-report.svg')
     }
   },
   computed: {
