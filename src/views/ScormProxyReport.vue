@@ -22,6 +22,7 @@
           :training-name="getTrainingName"
           :form-details="formDetails"
           :trainingSummary="trainingSummary"
+          :scormTrainingSummary="scormTrainingSummary"
           :isScormProxy="isScormProxy"
         />
       </el-tab-pane>
@@ -48,6 +49,7 @@ export default {
   data() {
     return {
       trainingSummary: null,
+      scormTrainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -143,6 +145,14 @@ export default {
         .then((response) => {
           this.trainingSummary = response?.data?.data
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+      AwarenessEducatorService.getScormProxyTrainingReportSummary(this.id)
+        .then((response) => {
+          console.log('scormTrainingSummary', response?.data?.data)
+          this.scormTrainingSummary = response?.data?.data
         })
         .finally(() => {
           this.isLoading = false

@@ -93,4 +93,9 @@ export function getStatusBadgeProps(status) {
       outline: true
     }
   }
+  if (trimmedStatus === 'NotCompleted')
+    return {
+      color: '#B83A3A',
+      text: 'Not Completed'
+    }
 }

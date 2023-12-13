@@ -177,6 +177,10 @@ const getTrainingReportSummary = (resourceId) => {
   return testRequest.get(`/training-reports/${resourceId}/summary`)
 }
 
+const getScormProxyTrainingReportSummary = (resourceId) => {
+  return testRequest.get(`/training-reports/anonymous/${resourceId}/summary`)
+}
+
 const getTrainingReportFormDetails = () => {
   return testRequest.get('/training-reports/form-details')
 }
@@ -510,5 +514,6 @@ export default {
   examTrainingNonTargetUserReportResults,
   examTrainingNonTargetUserTrainingDetails,
   progressNonTargetUsersTrainingReportEmails,
-  progressNonTargetUsersTrainingReportEmailsDetails
+  progressNonTargetUsersTrainingReportEmailsDetails,
+  getScormProxyTrainingReportSummary
 }
