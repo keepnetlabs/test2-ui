@@ -14,6 +14,22 @@ export const COMMON_SIMULATOR_COLUMNS = {
     width: 240,
     filterableType: 'text'
   },
+  QUISHING_TYPE: {
+    property: 'quishingType',
+    align: 'left',
+    editable: false,
+    label: labels.QuishingType,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 240,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Email', value: 'Email' },
+      { text: 'Individual Printout', value: 'Individual' }
+    ]
+  },
   TEMPLATE_NAME: {
     property: PROPERTY_STORE.NAME,
     align: 'left',
@@ -219,7 +235,10 @@ export const SCENARIO_TYPES = {
   SMISHING: 'Smishing',
   CALLBACK: 'Callback'
 }
-
+export const quishingTypeItems = [
+  { text: 'Email', value: 'Email' },
+  { text: 'Individual Printout', value: 'Individual' }
+]
 export const getDifficultyColor = (difficulty) => {
   if (difficulty === 'Easy') {
     return '#217124'

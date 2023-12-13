@@ -6,7 +6,7 @@
       max-height
       max-height-size="900"
       icon="mdi-eye"
-      subtitle="Email Template Preview"
+      :subtitle="getEmailTemplateDialogSubtitle"
       :title="selectedTemplateHeader"
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
@@ -93,7 +93,10 @@
               <div
                 v-for="(item, index) in listData"
                 :key="item.name + index"
-                :class="{ 'template-list': true, 'template-list--selected': item['selected'] }"
+                :class="{
+                  'template-list': true,
+                  'template-list--selected': item['selected']
+                }"
                 @click="setSelectedTemplate(item, index)"
               >
                 <div class="d-flex justify-space-between mb-2">
@@ -160,7 +163,24 @@
                 "
                 class="pl-5 pt-5"
               >
-                You do not have Email Template
+                {{
+                  isQuishingTypeIndividualPrintOut
+                    ? 'You do not have any individual printout templates'
+                    : 'You do not have Email Template'
+                }}
+              </div>
+              <div
+                v-if="
+                  !loadingTemplates &&
+                  !loadingTemplatePreview &&
+                  !search &&
+                  !listData.length &&
+                  isQuishingTypeIndividualPrintOut
+                "
+                class="pl-5 pt-5"
+              >
+                Go to Quishing Simulator > Quishing Scenarios > Quishing Templates to create a new
+                individual printout template
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
@@ -174,9 +194,7 @@
                     outlined
                     @click="isTemplateDetails = true"
                   >
-                    <v-icon color="#2196f3" medium>
-                      mdi-fullscreen
-                    </v-icon>
+                    <v-icon color="#2196f3" medium> mdi-fullscreen </v-icon>
                   </v-btn>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
@@ -184,15 +202,15 @@
                     <span class="template-preview__text--title">Template Name: </span>
                     <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>
-                  <div>
+                  <div v-if="!isQuishingTypeIndividualPrintOut">
                     <span class="template-preview__text--title">From Email Address: </span>
                     <span class="template-preview__text--body">{{ templateFromEmail }}</span>
                   </div>
@@ -240,8 +258,9 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -258,12 +277,20 @@ export default {
         content: getEmailTemplatePreviewContent
       })
     },
+    quishingType: {
+      type: String,
+      default: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
     languages: {
       type: Array
     },
     isCallback: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.PHISHING
     }
   },
   directives: {
@@ -300,6 +327,29 @@ export default {
       loadingTemplates: false,
       selectedTemplateId: null,
       selectedPreviousIndex: 0
+    }
+  },
+  computed: {
+    getEmailTemplateDialogSubtitle() {
+      if (this.isQuishing)
+        return this.isQuishingTypeIndividualPrintOut
+          ? 'Individual Printout Template Preview'
+          : 'Quishing Email Template Preview'
+      return 'Email Template Preview'
+    },
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeEmail() {
+      if (!this.isQuishing) return false
+      return this.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL.toLowerCase()
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return (
+        this.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
     }
   },
   watch: {
@@ -368,7 +418,10 @@ export default {
               this.templateHTML = null
             } else {
               this.listData = data.data.results.map((item) => {
-                return { ...item, selected: item.resourceId === this.emailTemplateResourceId }
+                return {
+                  ...item,
+                  selected: item.resourceId === this.emailTemplateResourceId
+                }
               })
             }
           })
@@ -405,6 +458,10 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
+      if (this.isQuishingTypeIndividualPrintOut)
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
+      else if (this.isQuishingTypeEmail)
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
       this.apiFuncs
         .list(bodyData)
         .then((response) => {

@@ -13,28 +13,51 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <ElTabs v-if="!isLoading" v-model="tab">
-        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
+        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="getFirstTabLabel">
           <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
+              <div v-if="isQuishing">
+                <span class="template-preview__text--title">Quishing Type: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.type || 'Email'
+                }}</span>
+              </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title">From: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title">From Email Address: </span>
                 <span class="template-preview__text--body">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
-              <div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--subject">Subject: </span>
                 <span class="template-preview__text--subject">{{
                   emailTemplateParams.subject
                 }}</span>
+              </div>
+              <div
+                v-if="isQuishingTypeIndividualPrintOut"
+                class="d-flex justify-space-between align-center"
+              >
+                <div class="text-primary-color fs-4">Example Individual Printout</div>
+                <VBtn
+                  id="btn-preview-indiviual-printout"
+                  class="white--text btn-util btn-download-add-in"
+                  color="#2196F3"
+                  rounded
+                  :style="getIndividualPrintoutStyle"
+                  @click="handlePreviewIndividualPrintout"
+                >
+                  <v-icon left>mdi-file-eye</v-icon>
+                  {{ labels.PrintPreview }}
+                </VBtn>
               </div>
             </div>
             <div
@@ -86,6 +109,8 @@ import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import QuishingService from '@/api/quishing'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
@@ -123,10 +148,34 @@ export default {
       tab: 'email',
       isLoading: false,
       labels,
-      timeoutId: ''
+      timeoutId: '',
+      isIndividualPrintoutButtonDisabled: false
     }
   },
   computed: {
+    getFirstTabLabel() {
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.JustEmail : labels.QuishingTemplate
+    },
+    getIndividualPrintoutStyle() {
+      const style = {
+        textTransform: 'capitalize'
+      }
+      if (this.isIndividualPrintoutButtonDisabled) {
+        style.cursor = 'default'
+        style.opacity = 0.5
+      }
+      return style
+    },
+    isQuishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return (
+        this?.emailTemplateParams?.type?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
     isAttachmentBasedScenario() {
       return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
     },
@@ -138,17 +187,8 @@ export default {
     getSubtitle() {
       return this.selectedRow?.name || ''
     },
-    hasLandingPageTemplate() {
-      return this.landingPageTemplates.length > 0
-    },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
-    },
-    hasNextTemplate() {
-      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
-    },
-    hasPreviousTemplate() {
-      return this.selectedLandingPageIndex > 0
     }
   },
   created() {
@@ -160,10 +200,14 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      this.apiFunc(this.selectedRow.resourceId)
+      const params = [this.selectedRow.resourceId]
+      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
+        params.push(this.selectedRow.quishingType.toLowerCase())
+      this.apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
+          let { emailTemplate, landingPageTemplate, quishingTemplate } = data
+          if (!emailTemplate) emailTemplate = quishingTemplate
           let {
             template,
             fromName,
@@ -171,10 +215,13 @@ export default {
             name,
             difficultyResourceId,
             phishingFileName,
-            subject
+            subject,
+            type,
+            resourceId
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
+            resourceId,
             fromName,
             fromAddress,
             name,
@@ -184,7 +231,8 @@ export default {
               ? {
                   name: phishingFileName
                 }
-              : null
+              : null,
+            type
           }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -224,11 +272,24 @@ export default {
     handleClose() {
       this.$emit('on-close')
     },
-    handlePreviousTemplate() {
-      this.selectedLandingPageIndex--
-    },
-    handleNextTemplate() {
-      this.selectedLandingPageIndex++
+    handlePreviewIndividualPrintout() {
+      this.isIndividualPrintoutButtonDisabled = true
+      QuishingService.getQuishingPdfPreviewContent(this.emailTemplateParams.resourceId)
+        .then((response) => {
+          const file = new File([response.data], 'Quishing PDF Preview', {
+            type: 'application/pdf'
+          })
+          const fileURL = URL.createObjectURL(file)
+          const newWindow = window.open(fileURL)
+          newWindow.onload = function () {
+            setTimeout(() => {
+              newWindow.document.title = 'Quishing PDF Preview'
+            }, 250)
+          }
+        })
+        .finally(() => {
+          this.isIndividualPrintoutButtonDisabled = false
+        })
     }
   }
 }

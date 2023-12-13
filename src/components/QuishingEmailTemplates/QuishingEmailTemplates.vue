@@ -10,12 +10,23 @@
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
+    <NewQuishingIndividualPrintoutTemplatesModal
+      v-if="isShowIndividualPrintoutTemplateModal"
+      ref="newIndividualPrintoutTemplate"
+      :status="isShowIndividualPrintoutTemplateModal"
+      :is-duplicate="isDuplicate"
+      :is-edit="isEdit"
+      :email-template-id="getSelectedEmailTemplateId"
+      @changeNewIndividualPrintoutModalStatus="changeNewIndividualPrintoutModalStatus"
+      @showRenameAttachmentModal="onShowRenameAttachmentModal"
+    />
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowPreviewDialog"
       :type="SCENARIO_TYPES.QUISHING"
       :status="isShowPreviewDialog"
+      :is-individual-printout-template="isIndividualPrintoutTemplate"
       :selected-row="selectedEmailTemplate"
-      :api-func="getEmailTemplatePreviewContent"
+      :api-func="getPreviewDialogApiFunc"
       @on-close="togglePreviewDialog"
     />
     <CommonSimulatorAttachmentRenameDialog
@@ -28,7 +39,7 @@
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :selected-email-template="selectedEmailTemplate"
-      :api-func="deleteEmailTemplate"
+      :api-func="getDeleteApiFunc"
       @on-success="toggleDeleteDialog(null, true)"
       @on-close="toggleDeleteDialog"
     />
@@ -37,6 +48,7 @@
       @on-edit-or-new="toggleNewEmailTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
+      @on-add-individual-printout-template="toggleIndividualPrintoutTemplateModal"
     />
   </div>
 </template>
@@ -48,10 +60,12 @@ import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
 export default {
   name: 'QuishingEmailTemplates',
   components: {
+    NewQuishingIndividualPrintoutTemplatesModal,
     NewQuishingEmailTemplatesModal,
     CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
@@ -67,17 +81,32 @@ export default {
       selectedEmailTemplate: null,
       isDuplicate: false,
       isShowRenameAttachmentDialog: false,
+      isShowIndividualPrintoutTemplateModal: false,
       isEdit: false
     }
   },
   computed: {
+    getDeleteApiFunc() {
+      if (this.isIndividualPrintoutTemplate) return QuishingService.deleteIndividualPrintoutTemplate
+      return QuishingService.deleteEmailTemplate
+    },
+    getPreviewDialogApiFunc() {
+      return this.isIndividualPrintoutTemplate
+        ? QuishingService.getQuishingTemplatePreviewContent
+        : QuishingService.getEmailTemplatePreviewContent
+    },
+    isIndividualPrintoutTemplate() {
+      return (
+        this?.selectedEmailTemplate?.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
     getSelectedEmailTemplateId() {
       return this.selectedEmailTemplate?.resourceId || ''
     }
   },
   methods: {
     getEmailTemplatePreviewContent: QuishingService.getEmailTemplatePreviewContent,
-    deleteEmailTemplate: QuishingService.deleteEmailTemplate,
     toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
       this.isDuplicate = isDuplicate
@@ -142,6 +171,16 @@ export default {
     changeNewEmailTemplateModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
       this.toggleNewEmailTemplateModal(null, false)
+    },
+    changeNewIndividualPrintoutModalStatus(status, restart) {
+      if (restart) this.$refs.refTable.callForData()
+      this.toggleIndividualPrintoutTemplateModal(null, false)
+    },
+    toggleIndividualPrintoutTemplateModal(row = null, isDuplicate = false) {
+      this.selectedEmailTemplate = row
+      this.isDuplicate = isDuplicate
+      this.isEdit = !!row
+      this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
     }
   }
 }

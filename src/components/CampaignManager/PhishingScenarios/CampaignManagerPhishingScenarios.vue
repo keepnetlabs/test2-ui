@@ -93,7 +93,7 @@
                 }"
                 @scroll="handleScroll"
               >
-                <div class="my-5 mx-6">
+                <div v-if="!isSingle" class="my-5 mx-6">
                   <VSwitch
                     v-model="isShowSelectedScenarios"
                     id="input--campaign-manager-show-selected-status"
@@ -108,11 +108,12 @@
                   v-for="item in getItems"
                   :key="item.resourceId"
                   :class="getItemClasses(item.resourceId)"
-                  @click="callForSelectedPhishingScenario(item.resourceId)"
+                  @click="callForSelectedPhishingScenario(item.resourceId, item)"
                 >
                   <div class="d-flex justify-space-between mb-2">
                     <div class="d-flex overflow-hidden">
                       <VCheckbox
+                        v-if="!isSingle"
                         v-model="checkboxModel[item.resourceId]"
                         color="#2196f3"
                         hide-details
@@ -340,6 +341,7 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -383,6 +385,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isSingle: {
+      type: Boolean,
+      default: false
     },
     isShowReminder: {
       type: Boolean,
@@ -474,7 +480,6 @@ export default {
         this.checkboxModel[resourceId] = true
       }
       const addTrainingKeyToTabModel = (val) => {
-        console.log('val', val)
         this.$set(
           this.trainingTabModel,
           val.value,
@@ -606,7 +611,7 @@ export default {
         ? 'difficulty-medium'
         : 'difficulty-hard'
     },
-    callForSelectedPhishingScenario(resourceId = '') {
+    callForSelectedPhishingScenario(resourceId = '', item = {}) {
       this.adjustTrainingModel(resourceId)
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
@@ -623,15 +628,23 @@ export default {
           this.type === SCENARIO_TYPES.PHISHING
             ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
             : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
-        previewFunc(resourceId).then((response) => {
+        const params = [resourceId]
+        if (
+          item.quishingType.toLowerCase() ===
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+        )
+          params.push(QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT)
+        previewFunc(...params).then((response) => {
           const { data: { data = {} } = {} } = response
-          const {
+          let {
             emailTemplate,
             landingPageTemplate,
+            quishingTemplate,
             methodTypeId,
             mfaTextTemplate,
             mfaSmsSenderNumber
           } = data
+          if (!emailTemplate) emailTemplate = quishingTemplate
           let {
             template,
             fromName,
@@ -680,6 +693,14 @@ export default {
           this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
         })
       })
+      if (this.isSingle) {
+        Object.keys(this.trainingTabModel).forEach((key) => {
+          if (key !== resourceId) {
+            this.$set(this.trainingTabModel[key], 'isCheckboxSelected', false)
+          }
+        })
+        this.setSelectedTemplate(item, true)
+      }
     },
     adjustTrainingModel(resourceId = '') {
       if (!resourceId) return
@@ -703,6 +724,9 @@ export default {
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
+      }
       apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }
@@ -714,7 +738,10 @@ export default {
           this.value.push(item)
         })
         if (isSelectFirstItem && this.phishingScenarioItems.length) {
-          this.callForSelectedPhishingScenario(this.phishingScenarioItems[0].resourceId)
+          this.callForSelectedPhishingScenario(
+            this.phishingScenarioItems[0].resourceId,
+            this.phishingScenarioItems[0]
+          )
         }
       })
     },

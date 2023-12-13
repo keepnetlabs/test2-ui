@@ -33,6 +33,7 @@
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
+        v-if="scope.row.type !== QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
         :id="tableOptions.rowActions[0].id"
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
@@ -40,6 +41,16 @@
         :disabled="tableOptions.rowActions[0].disabled"
         :checkIsOwnerProperty="false"
         @on-click="handleFastLaunch(scope.row)"
+      />
+      <DefaultMenuRowAction
+        v-else
+        :id="tableOptions.rowActions[2].id"
+        :scope="scope"
+        :check-is-owner-property="false"
+        :disabled="tableOptions.rowActions[2].disabled"
+        :icon="tableOptions.rowActions[2].icon"
+        :text="tableOptions.rowActions[2].name"
+        @on-click="handlePreview(scope.row)"
       />
       <RowActionsMenu>
         <ScenariosRowActionsEditButton
@@ -57,6 +68,16 @@
           :icon="tableOptions.rowActions[2].icon"
           :text="tableOptions.rowActions[2].name"
           @on-click="handlePreview(scope.row)"
+        />
+        <DefaultMenuRowAction
+          v-if="checkRowIsIndividualPrintout(scope.row)"
+          :id="tableOptions.rowActions[5].id"
+          :scope="scope"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[5].disabled"
+          :icon="tableOptions.rowActions[5].icon"
+          :text="tableOptions.rowActions[5].name"
+          @on-click="handlePrintPreview(scope.row)"
         />
         <DefaultMenuRowAction
           :id="tableOptions.rowActions[3].id"
@@ -99,6 +120,8 @@ import {
 import labels from '@/model/constants/labels'
 import QuishingService from '@/api/quishing'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { columnFilterChanged } from '@/utils/helperFunctions'
 export default {
   name: 'QuishingScenariosTable',
   components: {
@@ -117,12 +140,18 @@ export default {
   mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       tableData: [],
+      activeTemplateTypes: [
+        QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      ],
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.QUISHING_SCENARIOS,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.QUISHING_SCENARIOS,
         columns: [
           COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.QUISHING_TYPE,
           COMMON_SIMULATOR_COLUMNS.QUISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
@@ -165,6 +194,12 @@ export default {
             action: 'deleteAction',
             id: 'btn-delete--quishing-scenarios-row-actions',
             disabled: !this.$store.getters['permissions/getQuishingScenariosDeletePermissions']
+          },
+          {
+            name: labels.PrintPreview,
+            icon: 'mdi-file-eye',
+            action: 'printPreviewAction',
+            id: 'btn-preview--quishing-scenarios-row-actions'
           }
         ],
         downloadButton: {
@@ -199,7 +234,7 @@ export default {
   watch: {
     scenarioDetailsLookup() {
       this.$set(
-        this.tableOptions.columns[1],
+        this.tableOptions.columns[2],
         'filterableItems',
         this.scenarioDetailsLookup.methodTypes.map((item) => {
           return { text: item.text, value: item.text }
@@ -221,6 +256,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
+      this.axiosPayload.templateTypes = this.activeTemplateTypes
       QuishingService.searchScenarios(this.axiosPayload)
         .then((response) => {
           const {
@@ -269,6 +305,44 @@ export default {
           link.click()
         })
       })
+    },
+    checkRowIsIndividualPrintout(row = {}) {
+      return (
+        row.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
+    handlePrintPreview(row = {}) {
+      QuishingService.getQuishingPdfScenariorPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
+    },
+    columnFilterChanged(filter) {
+      if (filter.FieldName === 'quishingType') {
+        if (!filter.Value)
+          this.activeTemplateTypes = [
+            QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+            QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+          ]
+        else {
+          this.activeTemplateTypes = filter.Value.split(',')
+        }
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+          filter,
+          this.axiosPayload
+        )
+      }
+      this.callForData()
     }
   }
 }

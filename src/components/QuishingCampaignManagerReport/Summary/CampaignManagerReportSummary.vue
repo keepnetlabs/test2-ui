@@ -11,6 +11,14 @@
       :training-report-dialog-items="trainingReportDialogItems"
     />
     <CampaignManagerReportSummaryCards
+      v-if="!isQuishingTypePrintout"
+      :multiple-type="multipleType"
+      :method="getScenarioMethod"
+      :items="getCardsData"
+      :is-loading="isLoading || !getScenarioMethod"
+    />
+    <CampaignManagerPrintoutReportSummaryCards
+      v-else
       :multiple-type="multipleType"
       :method="getScenarioMethod"
       :items="getCardsData"
@@ -30,7 +38,7 @@
         :isLoading="isLoading"
       />
     </div>
-    <div class="my-6">
+    <div v-if="!isQuishingTypePrintout" class="my-6">
       <span class="campaign-manager-last-step__phishing-scenario-label">Quishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
         <template #activator="{ on }">
@@ -44,7 +52,7 @@
       </VTooltip>
     </div>
     <ElTabs
-      v-if="phishingScenarios.length"
+      v-if="phishingScenarios.length && !isQuishingTypePrintout"
       v-model="selectedScenarioTab"
       class="k-sub-tab campaign-manager-last-step__phishing-scenario-tab"
       @tab-click="setScenarioDetail"
@@ -57,6 +65,7 @@
       />
     </ElTabs>
     <CampaignManagerReportSummaryEmail
+      :is-quishing-printout="isQuishingTypePrintout"
       :difficulties="difficulties"
       :methods="methods"
       :form-data="getEmailTemplateData"
@@ -92,9 +101,12 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/QuishingCampaignManagerReport/Summary/utils'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerPrintoutReportSummaryCards,
     CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
@@ -142,6 +154,9 @@ export default {
     }
   },
   computed: {
+    isQuishingTypePrintout() {
+      return this.campaignSummary?.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {

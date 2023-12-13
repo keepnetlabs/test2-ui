@@ -64,6 +64,10 @@ export default {
     },
     rowActions: {
       type: Array
+    },
+    isQuishingPrintPreview: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -85,6 +89,12 @@ export default {
     },
     getItems() {
       const copyOfRowActions = []
+      const printPreviewItem = {
+        name: labels.PrintPreview,
+        icon: 'mdi-file-eye',
+        action: 'on-print-preview',
+        id: 'btn-preview--email-templates-row-actions'
+      }
       const newInstanceItem = {
         name: labels.CreateNewInstance,
         isNotShow: true,
@@ -118,21 +128,26 @@ export default {
 
       if (
         this.actionStatus === ACTION_STATUSES.IDLE ||
-        this.actionStatus === ACTION_STATUSES.RUNNING
+        this.actionStatus === ACTION_STATUSES.RUNNING ||
+        this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
-        copyOfRowActions.push(duplicateItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
       } else if (
         this.actionStatus === ACTION_STATUSES.COMPLETE ||
-        this.actionStatus === ACTION_STATUSES.CANCEL
+        this.actionStatus === ACTION_STATUSES.CANCEL ||
+        this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
         copyOfRowActions.push(deleteItem)
       } else {
         copyOfRowActions.push(editItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
         copyOfRowActions.push(deleteItem)
       }
 
