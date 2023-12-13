@@ -313,7 +313,7 @@ export default {
       )
     },
     handlePrintPreview(row = {}) {
-      QuishingService.getQuishingPdfScenariorPreviewContent(row.resourceId).then((response) => {
+      QuishingService.getQuishingPdfScenarioPreviewContent(row.resourceId).then((response) => {
         const file = new File([response.data], 'Quishing PDF Preview', {
           type: 'application/pdf'
         })
