@@ -749,8 +749,8 @@ export default {
     getScenarioInfoItems() {
       const obj = {
         Name: this.formValues.name,
-        Method: this.getMethodText,
-        Difficulty: this.getDifficultyType
+        Difficulty: this.getDifficultyType,
+        Method: this.getMethodText
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType
