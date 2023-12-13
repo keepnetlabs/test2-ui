@@ -299,6 +299,7 @@ import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CampaignManagerPrintOutPhishingScenarios',
   components: {
@@ -380,13 +381,6 @@ export default {
     }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
-    },
-    getPhishingFile() {
-      return this.emailTemplateParams?.phishingFileName
-        ? {
-            name: this.emailTemplateParams?.phishingFileName
-          }
-        : null
     },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`
@@ -564,15 +558,23 @@ export default {
           this.type === SCENARIO_TYPES.PHISHING
             ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
             : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
-        previewFunc(resourceId).then((response) => {
+        const params = [resourceId]
+        if (
+          item.quishingType.toLowerCase() ===
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+        )
+          params.push(QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT)
+        previewFunc(...params).then((response) => {
           const { data: { data = {} } = {} } = response
-          const {
+          let {
             emailTemplate,
+            quishingTemplate,
             landingPageTemplate,
             methodTypeId,
             mfaTextTemplate,
             mfaSmsSenderNumber
           } = data
+          if (!emailTemplate) emailTemplate = quishingTemplate
           let {
             template,
             fromName,
@@ -582,11 +584,13 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            type
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplateParams = {
+            type,
             fromName,
             fromAddress,
             name,
@@ -652,6 +656,7 @@ export default {
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      this.axiosPayload.templateTypes = ['Individual']
       apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }

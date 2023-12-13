@@ -238,6 +238,10 @@ export default {
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
       this.emailTemplate = template
+      console.log(
+        'phishingScenarioPreviewDto?.[templateKey]',
+        phishingScenarioPreviewDto?.[templateKey]
+      )
       this.emailTemplateParams = {
         resourceId: phishingScenarioPreviewDto?.[templateKey]?.resourceId || '',
         name: phishingScenarioPreviewDto?.[templateKey]?.name || '',
@@ -248,7 +252,8 @@ export default {
           ? {
               name: phishingScenarioPreviewDto?.[templateKey]?.phishingFileName
             }
-          : null
+          : null,
+        type: phishingScenarioPreviewDto?.[templateKey]?.type || ''
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []

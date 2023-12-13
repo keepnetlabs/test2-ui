@@ -45,6 +45,14 @@
               :subtitle="labels.CampaignSummarySub"
             />
             <CampaignManagerSummary
+              v-if="!isQuishingTypeIndividualPrintOut"
+              ref="refCampaignManagerSummary"
+              :type="type"
+              :form-data="getFormDataForCampaignSummary"
+              :language-options="languageOptions"
+            />
+            <CampaignManagerPrintoutSummary
+              v-else
               ref="refCampaignManagerSummary"
               :type="type"
               :form-data="getFormDataForCampaignSummary"
@@ -98,9 +106,12 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
 export default {
   name: 'CommonSimulatorFastLaunch',
   components: {
+    CampaignManagerPrintoutSummary,
     StepperFooter,
     CampaignManagerSummary,
     CommonSimulatorFastLaunchStep1,
@@ -135,6 +146,17 @@ export default {
     }
   },
   computed: {
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeIndividualPrintOut() {
+      console.log(this.selectedScenario)
+      if (!this.isQuishing) return false
+      return (
+        this?.selectedScenario?.quishingType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
     isMFAScenarioSelected() {
       return this.selectedScenario?.method === 'MFA'
     },
@@ -172,6 +194,7 @@ export default {
           type: EMAIL_DELIVERY_TYPES.SMTP
         }
         formData.frequency = 'One Time'
+        formData.templateType = this?.emailTemplateParams?.type
       }
       return formData
     }
@@ -218,14 +241,20 @@ export default {
         this.type === SCENARIO_TYPES.PHISHING
           ? getPhishingScenarioLandingPageAndEmailTemplate
           : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
-      apiFunc(this.selectedScenario.resourceId).then((response) => {
+      const params = [this.selectedScenario.resourceId]
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        params.push(this.selectedScenario.quishingType)
+      }
+      apiFunc(...params).then((response) => {
         if (this?.$refs?.refFastLaunch?.$refs?.refCampaignManagerCampaignInfo) {
           this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
             this.selectedScenario.name
           )
         }
         const { data: { data = {} } = {} } = response
-        const { emailTemplate, landingPageTemplate } = data
+        let { emailTemplate, landingPageTemplate, quishingTemplate } = data
+        if (this.isQuishingTypeIndividualPrintOut) emailTemplate = quishingTemplate
+
         const {
           template,
           fromName,
@@ -234,7 +263,8 @@ export default {
           difficultyResourceId,
           categoryResourceId,
           languageTypeResourceId,
-          phishingFileName
+          phishingFileName,
+          type
         } = emailTemplate
 
         this.emailTemplateParams = {
@@ -246,7 +276,8 @@ export default {
           )?.text,
           method: methods.find((item) => item.value === categoryResourceId)?.text,
           difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
-          phishingFileName
+          phishingFileName,
+          type
         }
         this.emailTemplate = template
         if (landingPageTemplate) {

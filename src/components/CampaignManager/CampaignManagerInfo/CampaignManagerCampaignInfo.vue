@@ -103,16 +103,6 @@ export default {
       }
     }
   },
-  computed: {
-    getTargetGroupErrorMessage() {
-      return this.formData.targetGroupResourceIds.length
-        ? this.getTargetGroupErrorText
-        : labels.TargetGroupSelectionRequiredError
-    },
-    getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
-    }
-  },
   watch: {
     isCallback: {
       immediate: true,
@@ -128,6 +118,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
+        if (!val) return
         for (const key of Object.keys(val)) {
           this.formData[key] = val[key]
         }

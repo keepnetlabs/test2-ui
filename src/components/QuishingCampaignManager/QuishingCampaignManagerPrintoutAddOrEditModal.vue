@@ -257,6 +257,7 @@ export default {
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
         formData.scheduledDate = this.selectedSchedule
+        formData.templateType = this.getSelectedPhishingScenario?.type
       }
       return formData
     },

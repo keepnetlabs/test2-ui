@@ -181,6 +181,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CampaignManagerPrintoutSummary',
   components: {
@@ -238,21 +239,6 @@ export default {
   computed: {
     isRenderTrainingCard() {
       return this.trainingParams
-    },
-    getScheduledDialogItems() {
-      return this?.formData?.scheduleItems || []
-    },
-    getSelectedFrequency() {
-      return this?.formData?.frequency || ''
-    },
-    getSelectedFrequencyId() {
-      return this?.formData?.frequencyId || ''
-    },
-    getScheduleTypeId() {
-      return this?.formData?.selectedScheduleId || ''
-    },
-    getPhishingScenarios() {
-      return this?.formData?.selectedPhishingScenarios || []
     },
     getScheduledDate() {
       return this?.formData?.scheduledDate || ''
@@ -431,10 +417,17 @@ export default {
         this.type === SCENARIO_TYPES.PHISHING
           ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
           : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
-      apiFunc(resourceId)
+      const params = [resourceId]
+      if (
+        this.formData.templateType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+        params.push(this.formData.templateType)
+      apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
+          let { emailTemplate, landingPageTemplate, quishingTemplate } = data
+          if (quishingTemplate) emailTemplate = quishingTemplate
           let {
             template,
             fromName,

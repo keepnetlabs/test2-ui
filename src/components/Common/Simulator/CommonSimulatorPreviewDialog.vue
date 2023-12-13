@@ -168,10 +168,6 @@ export default {
     },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false
-      console.log(
-        this?.emailTemplateParams?.type?.toLowerCase() ===
-          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
-      )
       return (
         this?.emailTemplateParams?.type?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
