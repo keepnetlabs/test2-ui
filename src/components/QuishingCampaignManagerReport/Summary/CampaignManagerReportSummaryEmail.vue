@@ -36,7 +36,10 @@
             </Badge>
           </div>
         </div>
-        <div class="campaign-manager-last-step__email-template-body-header-sub">
+        <div
+          v-if="!isQuishingPrintout"
+          class="campaign-manager-last-step__email-template-body-header-sub"
+        >
           From: {{ fromName }}
           <span>&#60;</span>
           {{ fromAddress }} <span>&#62;</span>
@@ -147,8 +150,11 @@ export default {
         this.formData?.resourceId &&
         this.formData?.campaignResourceId &&
         this.formData?.instanceGroup
-      )
-        QuishingService.getCampaignManagerEmailTemplatePreviewContent(
+      ) {
+        const apiFunc = this.isQuishingPrintout
+          ? QuishingService.getQuishingTemplatePreviewContent
+          : QuishingService.getCampaignManagerEmailTemplatePreviewContent
+        apiFunc(
           this.formData.resourceId,
           this.formData.campaignResourceId,
           this.formData.instanceGroup
@@ -169,6 +175,7 @@ export default {
           .finally(() => {
             if (showLoader) this.setLoading()
           })
+      }
     },
     getBadgeColor(text = '') {
       return getDifficultyBadgeColor(text)

@@ -137,12 +137,6 @@ export default {
         }
       }
     },
-    getSMSSummaryHelperData() {
-      const { sentCount } = this?.trainingSummary?.smsSummary || {}
-      return {
-        sentCount
-      }
-    },
     getTrainingInfoHelperData() {
       const { groupCount } = this?.trainingSummary || {}
       return {
@@ -152,39 +146,6 @@ export default {
     isTestTraining() {
       const { isTest = false } = this.trainingSummary || {}
       return isTest
-    },
-    getTrainingDeliveryHelperData() {
-      const { reportDetail = {} } = this.trainingSummary || {}
-      const {
-        emailDeliveredUserCount = 0,
-        emailErrorUserCount = 0,
-        totalTargetUserCount = 0
-      } = reportDetail
-      return {
-        emailDeliveredUserCount,
-        emailErrorUserCount,
-        totalTargetUserCount
-      }
-    },
-    getTrainingDeliveryData() {
-      const { reminderDescription = 'No', startDate = '' } = this.trainingSummary || {
-        reminderDescription: 'No',
-        startDate: ''
-      }
-      return {
-        'Start Date': {
-          show: true,
-          value: startDate
-        },
-        'Reminder Options': {
-          show: true,
-          value: reminderDescription || 'No'
-        },
-        'Delivery Status': {
-          show: true,
-          value: ''
-        }
-      }
     },
     getResendDialogItems() {
       const [

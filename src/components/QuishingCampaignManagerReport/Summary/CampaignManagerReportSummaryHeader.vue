@@ -35,6 +35,7 @@
         >{{ labels.DownloadReport }}</VBtn
       >
       <VBtn
+        v-if="isShowResendDialogButton"
         id="btn-resend-campaign--campaign-reports"
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
@@ -88,6 +89,10 @@ export default {
       default: false
     },
     isShowTrainingReportButton: {
+      type: Boolean,
+      default: true
+    },
+    isShowResendDialogButton: {
       type: Boolean,
       default: true
     },
