@@ -398,7 +398,6 @@ export default {
           ]
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-        console.log(this.formValues)
       })
     }
   },

@@ -151,6 +151,7 @@ import CampaignManagerPrintoutCampaignInfo from '@/components/CampaignManager/Ca
 import CampaignManagerPrintOutPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPrintOutPhishingScenarios.vue'
 import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -448,7 +449,10 @@ export default {
           return
         case 4:
           let {
-            refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
+            refCampaignManagerCampaignInfo: {
+              formData: campaignManagerFormData,
+              inputScheduleFormData: scheduleFormData
+            },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
@@ -474,7 +478,22 @@ export default {
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
+            scheduleTypeId: parseInt(scheduleFormData.scheduleTypeId),
+            scheduledDate:
+              scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+                ? null
+                : scheduleFormData.scheduledDate,
+            scheduledDateTimeZoneId:
+              scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
+                ? null
+                : scheduleFormData.scheduledDateTimeZoneId,
+            distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
+            distributionDelayEvery: 20,
+            distributionDelayTimeTypeId: '1',
+            distributionEmailOver: 8,
+            distributionEmailOverTimeTypeId: '1',
+            sendingLimit: 50
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

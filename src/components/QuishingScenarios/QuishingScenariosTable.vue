@@ -61,7 +61,6 @@
           @on-click="handleEmitScenarioModal(scope.row, false)"
         />
         <DefaultMenuRowAction
-          v-if="!checkRowIsIndividualPrintout(scope.row)"
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -71,7 +70,7 @@
           @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
-          v-else
+          v-if="checkRowIsIndividualPrintout(scope.row)"
           :id="tableOptions.rowActions[5].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -313,7 +312,20 @@ export default {
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
       )
     },
-    handlePrintPreview(row = {}) {},
+    handlePrintPreview(row = {}) {
+      QuishingService.getQuishingPdfScenariorPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
+    },
     columnFilterChanged(filter) {
       if (filter.FieldName === 'quishingType') {
         if (!filter.Value)

@@ -458,7 +458,6 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      console.log(this.quishingType)
       if (this.isQuishingTypeIndividualPrintOut)
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
       else if (this.isQuishingTypeEmail)

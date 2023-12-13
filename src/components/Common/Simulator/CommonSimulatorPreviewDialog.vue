@@ -13,7 +13,7 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <ElTabs v-if="!isLoading" v-model="tab">
-        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
+        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="getFirstTabLabel">
           <div class="template-preview pt-4">
             <div class="template-preview__text" v-if="!!emailTemplate">
               <div v-if="isQuishing">
@@ -107,7 +107,7 @@ import AppDialog from '@/components/AppDialog.vue'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'
@@ -153,6 +153,9 @@ export default {
     }
   },
   computed: {
+    getFirstTabLabel() {
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.JustEmail : labels.QuishingTemplate
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'

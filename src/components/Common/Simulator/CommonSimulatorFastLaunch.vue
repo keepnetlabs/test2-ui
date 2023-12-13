@@ -150,7 +150,6 @@ export default {
       return this.type === SCENARIO_TYPES.QUISHING
     },
     isQuishingTypeIndividualPrintOut() {
-      console.log(this.selectedScenario)
       if (!this.isQuishing) return false
       return (
         this?.selectedScenario?.quishingType?.toLowerCase() ===

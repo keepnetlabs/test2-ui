@@ -120,14 +120,13 @@
       <CampaignManagerRowActions
         :scope="scope"
         :row-actions="tableOptions.rowActions"
-        :is-quishing-print-preview="
-          scope.row.type === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
-        "
+        :is-quishing-print-preview="checkIsQuishingTypePrintout(scope.row)"
         @on-edit="handleEdit"
         @on-preview="handlePreview"
         @on-delete="handleDelete"
         @on-duplicate="handleDuplicate"
         @on-launch="handleLaunch"
+        @on-print-preview="handlePrintPreview"
       />
     </template>
   </DataTable>
@@ -416,6 +415,26 @@ export default {
       if (item.text === this.addQuishingItems[1].text) {
         this.$emit('on-add-individual-printout-campaign', null, false)
       }
+    },
+    checkIsQuishingTypePrintout(row = {}) {
+      return (
+        row?.templateType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
+    handlePrintPreview(row = {}) {
+      QuishingService.getQuishingPdfCampaignPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
     }
   }
 }

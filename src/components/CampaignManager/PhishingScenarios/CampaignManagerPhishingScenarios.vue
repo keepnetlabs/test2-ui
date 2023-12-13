@@ -480,7 +480,6 @@ export default {
         this.checkboxModel[resourceId] = true
       }
       const addTrainingKeyToTabModel = (val) => {
-        console.log('val', val)
         this.$set(
           this.trainingTabModel,
           val.value,
@@ -725,6 +724,9 @@ export default {
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
+      }
       apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }

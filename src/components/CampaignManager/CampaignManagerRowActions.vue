@@ -128,16 +128,18 @@ export default {
 
       if (
         this.actionStatus === ACTION_STATUSES.IDLE ||
-        this.actionStatus === ACTION_STATUSES.RUNNING
+        this.actionStatus === ACTION_STATUSES.RUNNING ||
+        this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
-        copyOfRowActions.push(duplicateItem)
+        if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
       } else if (
         this.actionStatus === ACTION_STATUSES.COMPLETE ||
-        this.actionStatus === ACTION_STATUSES.CANCEL
+        this.actionStatus === ACTION_STATUSES.CANCEL ||
+        this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem)
         copyOfRowActions.push(newInstanceItem)
