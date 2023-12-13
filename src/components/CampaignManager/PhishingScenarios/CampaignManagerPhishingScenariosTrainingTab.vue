@@ -70,7 +70,7 @@
         placeholder="Select an option"
         item-text="title"
         :items="enrollmentItemsTrainingTab"
-        :disabled="!isInputsEditable"
+        :disabled="!isInputsEditable || isInputLanguageDisabled"
         :rules="[(v) => !!v || 'Required']"
         :return-object="false"
         :slots="{ item: true, selection: false }"
@@ -94,10 +94,12 @@
           v-model="value.enrollmentReminder.sendReminderEvery"
           id="input--campaign-manager-advanced-settings-randomly-selected"
           color="#2196f3"
-          :disabled="!isInputsEditable"
+          :disabled="!isInputsEditable || isInputLanguageDisabled"
           hide-details
         />
-        <span :style="!isInputsEditable && { opacity: '0.5' }">Set reminder every</span>
+        <span :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
+          >Set reminder every</span
+        >
         <VTextField
           v-model="value.enrollmentReminder.periodCount"
           v-mask="'#######'"
@@ -121,7 +123,11 @@
           :items="getPeriodTypeItems"
           :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
-        <span class="ml-2" :style="!isInputsEditable && { opacity: '0.5' }">ends</span>
+        <span
+          class="ml-2"
+          :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
+          >ends</span
+        >
         <KSelect
           v-model.trim="value.enrollmentReminder.endType"
           id="input--edit-enrollment-reminder-end-type"
@@ -149,7 +155,7 @@
         <span
           v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
           class="ml-2"
-          :style="!isInputsEditable && { opacity: '0.5' }"
+          :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
           >times</span
         >
         <InputDate
@@ -173,7 +179,7 @@
         hide-details
         color="#2196f3"
         label="Award certificate when a user completes the training"
-        :disabled="!isInputsEditable"
+        :disabled="!isInputsEditable || isInputLanguageDisabled"
       >
       </v-checkbox>
     </FormGroup>
