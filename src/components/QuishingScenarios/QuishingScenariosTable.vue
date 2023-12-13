@@ -293,7 +293,8 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          templateTypes: this.activeTemplateTypes
         }
         QuishingService.exportScenarios(payload).then((response) => {
           const { data } = response

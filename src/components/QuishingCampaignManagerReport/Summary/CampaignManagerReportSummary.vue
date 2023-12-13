@@ -239,8 +239,8 @@ export default {
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Users': totalTargetUserCount,
-        'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : '',
+        'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Duration: duration
       }
     },

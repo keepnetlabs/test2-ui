@@ -7,9 +7,9 @@
             >Scenario Info</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
-            >Email Template</v-stepper-step
-          >
+          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2">{{
+            isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
+          }}</v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
             :class="{
@@ -749,8 +749,8 @@ export default {
     getScenarioInfoItems() {
       const obj = {
         Name: this.formValues.name,
-        Method: this.getMethodText,
-        Difficulty: this.getDifficultyType
+        Difficulty: this.getDifficultyType,
+        Method: this.getMethodText
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType
