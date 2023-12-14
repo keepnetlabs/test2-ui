@@ -19,6 +19,7 @@ export const labels = {
   PrintPreview: 'Print Preview',
   QuishingType: 'Quishing Type',
   QuishingTemplate: 'Quishing Template',
+  Download: 'Download',
   EmailTemplatePreview: 'Email Template Preview',
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',

@@ -33,17 +33,6 @@
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
-        v-if="scope.row.type !== QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
-        :id="tableOptions.rowActions[0].id"
-        :icon="tableOptions.rowActions[0].icon"
-        :text="tableOptions.rowActions[0].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
-        :checkIsOwnerProperty="false"
-        @on-click="handleFastLaunch(scope.row)"
-      />
-      <DefaultMenuRowAction
-        v-else
         :id="tableOptions.rowActions[2].id"
         :scope="scope"
         :check-is-owner-property="false"
@@ -59,15 +48,6 @@
           :name="tableOptions.rowActions[1].name"
           :disabled="tableOptions.rowActions[1].disabled"
           @on-click="handleEmitScenarioModal(scope.row, false)"
-        />
-        <DefaultMenuRowAction
-          :id="tableOptions.rowActions[2].id"
-          :scope="scope"
-          :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[2].disabled"
-          :icon="tableOptions.rowActions[2].icon"
-          :text="tableOptions.rowActions[2].name"
-          @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
           v-if="checkRowIsIndividualPrintout(scope.row)"
@@ -121,7 +101,7 @@ import labels from '@/model/constants/labels'
 import QuishingService from '@/api/quishing'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { columnFilterChanged } from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'QuishingScenariosTable',
   components: {
@@ -340,6 +320,20 @@ export default {
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
           filter,
+          this.axiosPayload
+        )
+      }
+      this.callForData()
+    },
+    columnFilterCleared(fieldName) {
+      if (fieldName === 'quishingType') {
+        this.activeTemplateTypes = [
+          QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+        ]
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+          fieldName,
           this.axiosPayload
         )
       }
