@@ -40,7 +40,7 @@
                 <div>
                   <KSelect
                     v-model="method"
-                    :items="quishingMethods"
+                    :items="getMethodItems"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
@@ -320,7 +320,8 @@ import labels from '@/model/constants/labels'
 import {
   difficulties,
   PHISHING_SCENARIOS_METHOD_TYPE_BY_ID,
-  quishingMethods
+  quishingMethods,
+  methods
 } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
@@ -427,6 +428,12 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    getMethodItems() {
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        return quishingMethods
+      }
+      return methods
+    },
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
     },
