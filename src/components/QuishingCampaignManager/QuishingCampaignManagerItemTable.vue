@@ -99,7 +99,7 @@
             :scope="scope"
             :check-is-owner-property="false"
             icon="mdi-download"
-            text="Download"
+            text="Download Individual Printout"
             @on-click="handleDownload(scope.row)"
           />
           <RowActionsMenu>
@@ -281,7 +281,7 @@ export default {
           ]
           this.tableOptions.rowActions = [
             {
-              name: labels.Download,
+              name: 'Download Individual Printout',
               isNotShow: true,
               id: 'btn-download--row-actions-campaign-item-manager',
               icon: 'mdi-download',

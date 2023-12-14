@@ -282,6 +282,10 @@ export default {
     handleItemOnEdit(row) {
       this.selectedRow = row
       this.isEdit = true
+      if (row?.templateType?.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT) {
+        return this.toggleAddIndividualPrintoutCampaignModal()
+      }
+
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnPreview(row) {
