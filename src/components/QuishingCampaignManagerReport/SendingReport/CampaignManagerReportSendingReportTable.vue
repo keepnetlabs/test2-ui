@@ -23,6 +23,7 @@
     :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
     :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
     :extended-view-value="extendedViewValue"
+    :download-button="tableOptions.downloadButton"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -172,6 +173,9 @@ export default {
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns,
+        downloadButton: {
+          show: false
+        },
         addButton: {
           show: false
         },
@@ -318,13 +322,17 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => {
-            let customFields = {}
-            row.customFieldValues.forEach((field) => {
-              customFields[`${field.name}`] = field?.value
+          if (this.isQuishingTypePrintout) {
+            this.tableData = results
+          } else {
+            this.tableData = results.map((row) => {
+              let customFields = {}
+              row.customFieldValues.forEach((field) => {
+                customFields[`${field.name}`] = field?.value
+              })
+              return { ...row, ...customFields }
             })
-            return { ...row, ...customFields }
-          })
+          }
         })
         .finally(this.setLoading)
     },
