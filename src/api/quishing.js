@@ -378,9 +378,12 @@ const getQuishingPdfCampaignPreviewContent = (id) => {
   })
 }
 const getQuishingPdfCampaignDownloadContent = (id, instanceGroup) => {
-  return testRequest.get(`quishing-simulator/quishing-campaign-job/${id}/${instanceGroup}`, {
-    responseType: 'blob'
-  })
+  return testRequest.get(
+    `quishing-simulator/quishing-campaign-job/download-individual/${id}/${instanceGroup}`,
+    {
+      responseType: 'blob'
+    }
+  )
 }
 export function getMergedTextForQuishing() {
   return testRequest.get(`quishing-simulator/email-templates/merge-tags`)
@@ -584,7 +587,7 @@ const searchCampaignJobUserSendingReport = (payload = {}, id = '', instanceGroup
   )
 }
 const searchCampaignJobPrintoutUserSendingReport = (payload = {}, id = '', instanceGroup = '') => {
-  return testRequest.get(
+  return testRequest.post(
     `/quishing-simulator/quishing-campaign-job-report/users/${id}/${instanceGroup}`,
     payload
   )

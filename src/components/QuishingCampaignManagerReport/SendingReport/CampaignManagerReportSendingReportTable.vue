@@ -307,6 +307,7 @@ export default {
       const apiFunc = this.isQuishingTypePrintout
         ? QuishingService.searchCampaignJobPrintoutUserSendingReport
         : QuishingService.searchCampaignJobUserSendingReport
+      if (this.isQuishingTypePrintout) this.axiosPayload.orderBy = 'email'
       apiFunc(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
