@@ -588,7 +588,7 @@ const searchCampaignJobUserSendingReport = (payload = {}, id = '', instanceGroup
 }
 const searchCampaignJobPrintoutUserSendingReport = (payload = {}, id = '', instanceGroup = '') => {
   return testRequest.post(
-    `/quishing-simulator/quishing-campaign-job-report/users/${id}/${instanceGroup}`,
+    `/quishing-simulator/quishing-campaign-job-report/printout-users/search/${id}/${instanceGroup}`,
     payload
   )
 }
