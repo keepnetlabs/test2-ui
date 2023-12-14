@@ -228,7 +228,6 @@ export default {
         }
       })
       this.multipleType = [isClickedOnly, isSubmittedData, isAttachment, isMfa]
-      console.log('this.multipleType', this.multipleType)
     },
     setTabStatus() {
       //click only
