@@ -47,6 +47,11 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 export default {
   name: 'QuishingCampaignManagerReport',
   components: { KContainer },
+  provide() {
+    return {
+      getQuishingTypePrintOut: () => this.isQuishingTypePrintout
+    }
+  },
   data() {
     return {
       formDetails: null,
@@ -114,7 +119,8 @@ export default {
             'permissions/getQuishingCampaignReportsSendingReportPermissions'
           ]
         }
-      ]
+      ],
+      isQuishingTypePrintout: false
     }
   },
   computed: {
@@ -162,6 +168,10 @@ export default {
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
+          this.isQuishingTypePrintout =
+            firstScenario?.scenarioInfo?.templateType?.toLowerCase() ===
+            QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+          console.log('this.isQuishingTypePrintout', this.isQuishingTypePrintout)
           if (scenarios.length === 1) {
             const scenarioMethodType = firstScenario.scenarioInfo?.methodTypeId
             if (scenarioMethodType === 1) {

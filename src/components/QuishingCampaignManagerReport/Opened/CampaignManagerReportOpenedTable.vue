@@ -62,7 +62,40 @@ export default {
       default: () => []
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
+    const columns = [
+      COLUMNS.FIRST_NAME,
+      COLUMNS.LAST_NAME,
+      COLUMNS.EMAIL,
+      COLUMNS.DEPARTMENT,
+      COLUMNS.PHISHING_SCENARIO_NAME,
+      COLUMNS.LAST_OPENED
+    ]
+    if (isQuishingTypePrintout) {
+      columns.push(COLUMNS.TIMES_OPENED_PRINTOUT)
+    } else {
+      columns.push(COLUMNS.TIMES_OPENED)
+      rowActions.push(
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-opened',
+          icon: '$custom-resend',
+          action: 'on-resend'
+        },
+        {
+          name: labels.Details,
+          id: 'btn-details--row-actions-campaign-manager-report-opened',
+          icon: '$custom-details',
+          action: 'on-detail',
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignReportsOpenedDetailsPermissions'
+          ]
+        }
+      )
+    }
     return {
       CONSTANTS: {
         id: 'campaign-manager-opened-data-table',
@@ -80,38 +113,14 @@ export default {
         selectEvent: {
           resend: true
         },
-        columns: [
-          COLUMNS.FIRST_NAME,
-          COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
-          COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.LAST_OPENED,
-          COLUMNS.TIMES_OPENED
-        ],
+        columns,
         addButton: {
           show: false
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-opened',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-opened',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsOpenedDetailsPermissions'
-            ]
-          }
-        ]
+        rowActions
       }
     }
   },
