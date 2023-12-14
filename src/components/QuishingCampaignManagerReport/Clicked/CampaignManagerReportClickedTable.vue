@@ -62,7 +62,40 @@ export default {
       default: () => []
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
+    const columns = [
+      COLUMNS.FIRST_NAME,
+      COLUMNS.LAST_NAME,
+      COLUMNS.EMAIL,
+      COLUMNS.DEPARTMENT,
+      COLUMNS.PHISHING_SCENARIO_NAME,
+      COLUMNS.LAST_CLICKED
+    ]
+    if (isQuishingTypePrintout) {
+      columns.push(COLUMNS.TIMES_CLICKED_PRINTOUT)
+    } else {
+      columns.push(COLUMNS.TIMES_CLICKED)
+      rowActions.push(
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-clicked',
+          icon: '$custom-resend',
+          action: 'on-resend'
+        },
+        {
+          name: labels.Details,
+          id: 'btn-details--row-actions-campaign-manager-report-clicked',
+          icon: '$custom-details',
+          action: 'on-detail',
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
+          ]
+        }
+      )
+    }
     return {
       CONSTANTS: {
         id: 'campaign-manager-clicked-data-table',
@@ -79,15 +112,7 @@ export default {
         savedTableSettingsLocalStorageKey:
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          COLUMNS.FIRST_NAME,
-          COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
-          COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.LAST_CLICKED,
-          COLUMNS.TIMES_CLICKED
-        ],
+        columns,
         addButton: {
           show: false
         },
@@ -97,23 +122,7 @@ export default {
         selectEvent: {
           resend: true
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-clicked',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-clicked',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
-            ]
-          }
-        ]
+        rowActions
       }
     }
   },

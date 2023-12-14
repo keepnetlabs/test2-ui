@@ -96,8 +96,10 @@
         />
         <template v-else>
           <DefaultButtonRowAction
+            disabled-tooltip-text="PDF file not available for download yet. Please wait for it to be ready."
             :scope="scope"
             :check-is-owner-property="false"
+            :disabled="!scope.row.isPdfReady"
             icon="mdi-download"
             text="Download Individual Printout"
             @on-click="handleDownload(scope.row)"
