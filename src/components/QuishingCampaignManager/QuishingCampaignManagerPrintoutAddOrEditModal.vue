@@ -291,19 +291,6 @@ export default {
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
       }
-    },
-    getUserTargetAudienceData() {
-      const defaultObj = {
-        sendOnlyActiveUsers: false,
-        sendRandomlyUsers: false,
-        sendRandomlyUsersCount: 20,
-        sendRandomlyUsersCalculateTypeId: '1'
-      }
-      if (this.step === 3) {
-        const { refCampaignManagerTargetAudience } = this.$refs
-        return refCampaignManagerTargetAudience?.formData || defaultObj
-      }
-      return defaultObj
     }
   },
   watch: {
