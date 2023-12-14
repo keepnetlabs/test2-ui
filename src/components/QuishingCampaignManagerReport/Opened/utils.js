@@ -228,6 +228,18 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'number'
   },
+  TIMES_OPENED_PRINTOUT: {
+    property: 'openedCount',
+    align: 'right',
+    editable: false,
+    fixed: 'right',
+    label: labels.TimesOpened,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
+    filterableType: 'number'
+  },
   TIMES_REPORTED: {
     property: 'reportedCount',
     align: 'right',
@@ -419,6 +431,18 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'number'
   },
+  TIMES_CLICKED_PRINTOUT: {
+    property: 'clickedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesClicked,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: 'right',
+    overrideWidth: true,
+    filterableType: 'number'
+  },
   PASSWORD_COMPLEXITY: {
     property: 'minPasswordComplexity',
     align: 'center',
@@ -463,6 +487,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'number'
+  },
+  TIMES_SUBMISSION_PRINTOUT: {
+    property: 'submittedCount',
+    align: 'right',
+    label: labels.TimesSubmission,
+    fixed: 'right',
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'number'
   },
