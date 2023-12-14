@@ -117,7 +117,7 @@ export default {
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true
+          resend: !isQuishingTypePrintout
         },
         columns,
         addButton: {
