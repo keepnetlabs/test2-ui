@@ -1,7 +1,7 @@
 <template>
   <div
     id="campaign-manager-report-summary-cards"
-    class="campaign-manager-report-summary-cards"
+    class="campaign-manager-report-summary-cards campaign-manager-report-printout-summary-cards"
     :style="getMainContainerStyle"
   >
     <div class="campaign-manager-report-summary-cards__left" :style="getFirstContainerStyle">
@@ -26,7 +26,24 @@
         :title="getThirdCardLabel"
         :is-loading="isLoading"
         :icon-src="getThirdCardIcon"
-      />
+      >
+        <template #icon>
+          <div
+            v-if="isCampaignClickOnlyAndMfa"
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+            style="position: absolute; right: 0; bottom: 6px;"
+          >
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
+          </div>
+          <div
+            v-else
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+            style="position: absolute; right: 0; bottom: 6px;"
+          >
+            <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+        </template>
+      </CampaignManagerReportSummaryInfoCard>
     </div>
     <div v-if="isCampaignDataSubmissionAndMfa" class="campaign-manager-report-summary-cards__right">
       <CampaignManagerReportSummaryInfoCard
@@ -36,14 +53,32 @@
         :title="labels.SubmittedData"
         :is-loading="isLoading"
         :icon-src="submittedDataIcon"
-      />
+      >
+        <template #icon>
+          <div
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+            style="position: absolute; right: 0; bottom: 6px;"
+          >
+            <img src="../../../assets/img/enhanced_encryption.png" alt="icon" />
+          </div>
+        </template>
+      </CampaignManagerReportSummaryInfoCard>
       <CampaignManagerReportSummaryInfoCard
         v-bind="getMfaData"
         background-color="#B83A3A"
         :title="labels.SubmittedMFACode"
         :is-loading="isLoading"
         :icon-src="mfaIcon"
-      />
+      >
+        <template #icon>
+          <div
+            class="campaign-manager-report-summary-info-card--submitted-data-icon"
+            style="position: absolute; right: 0; bottom: 6px;"
+          >
+            <img src="../../../assets/img/phonelink_lock.svg" alt="icon" />
+          </div>
+        </template>
+      </CampaignManagerReportSummaryInfoCard>
     </div>
   </div>
 </template>
@@ -74,7 +109,8 @@ export default {
       labels,
       noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
       submittedDataIcon: require('../../../assets/img/enhanced_encryption.png'),
-      mfaIcon: require('../../../assets/img/ic-qr-code-report.svg')
+      mfaIcon: require('../../../assets/img/ic-qr-code-report.svg'),
+      phoneIcon: require('../../../assets/img/phonelink_lock.svg')
     }
   },
   computed: {
@@ -82,6 +118,8 @@ export default {
       return this.isCampaignClickOnly ? { display: 'grid', gridTemplateColumns: '1fr 1fr' } : {}
     },
     getMainContainerStyle() {
+      if (this.isCampaignClickOnlyAndMfa || this.isCampaignDataSubmission)
+        return { display: 'grid', gridTemplateColumns: '1fr' }
       return this.isCampaignClickOnly ? { display: 'grid', gridTemplateColumns: '1fr' } : {}
     },
     getThirdCardProps() {
@@ -96,7 +134,7 @@ export default {
     },
     getThirdCardIcon() {
       if (this.isCampaignDataSubmission) return this.submittedDataIcon
-      if (this.isCampaignClickOnlyAndMfa) return this.mfaIcon
+      if (this.isCampaignClickOnlyAndMfa) return this.phoneIcon
       return this.submittedDataIcon
     },
     isCampaignClickOnlyAndMfa() {
@@ -125,33 +163,6 @@ export default {
     isCampaignDataSubmissionAndMfa() {
       return this.multipleType.length && this.multipleType[1] && this.multipleType[3]
     },
-    isCampaignMfaClickOnlyAndDataSubmission() {
-      return (
-        this.multipleType.length &&
-        this.multipleType[0] &&
-        this.multipleType[1] &&
-        this.multipleType[3]
-      )
-    },
-    isCampaignAttachmentAndMfaClickOnly() {
-      return (
-        this.multipleType.length &&
-        this.multipleType[0] &&
-        this.multipleType[2] &&
-        this.multipleType[3]
-      )
-    },
-    isCampaignAttachmentAndMfaDataSubmission() {
-      return (
-        this.multipleType.length &&
-        this.multipleType[1] &&
-        this.multipleType[2] &&
-        this.multipleType[3]
-      )
-    },
-    isCampaignClickOnlyAndDataSubmission() {
-      return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
-    },
     getNoResponseData() {
       const { noResponse } = this.items
       return noResponse ? noResponse : {}
@@ -160,21 +171,9 @@ export default {
       const { openedEmail } = this.items
       return openedEmail ? openedEmail : {}
     },
-    getOpenedAttachmentData() {
-      const { attachmentOpenedEmail } = this.items
-      return attachmentOpenedEmail ? attachmentOpenedEmail : {}
-    },
     getSubmittedData() {
       const { submittedEmail } = this.items
       return submittedEmail ? submittedEmail : {}
-    },
-    getClickedData() {
-      const { clickedEmail } = this.items
-      return clickedEmail ? clickedEmail : {}
-    },
-    getPhishingReporterData() {
-      const { phishingReporter } = this.items
-      return phishingReporter ? phishingReporter : {}
     },
     getMfaData() {
       const { mfa } = this.items
