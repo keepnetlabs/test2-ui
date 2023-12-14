@@ -12,7 +12,7 @@
         <v-icon :ripple="!isDisabled">{{ icon }}</v-icon>
       </v-btn>
     </template>
-    <span>{{ isDisabled ? disabledTooltipText : text }}</span>
+    <span>{{ tooltipMessage }}</span>
   </v-tooltip>
 </template>
 
@@ -50,6 +50,14 @@ export default {
         return !!this.disabled || !row.isOwner
       }
       return !!this.disabled
+    },
+    tooltipMessage() {
+      if (this.isDisabled) {
+        return this.scope.row.isDownloading
+          ? 'Downloading PDF. Please wait...'
+          : this.disabledTooltipText
+      }
+      return this.text
     }
   },
   methods: {
