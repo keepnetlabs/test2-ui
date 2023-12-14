@@ -99,7 +99,7 @@
             disabled-tooltip-text="PDF file not available for download yet. Please wait for it to be ready."
             :scope="scope"
             :check-is-owner-property="false"
-            :disabled="!scope.row.isPdfReady"
+            :disabled="!scope.row.isPdfReady || scope.row.isDownloading"
             icon="mdi-download"
             text="Download Individual Printout"
             @on-click="handleDownload(scope.row)"
@@ -136,6 +136,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import {
+  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -456,6 +457,12 @@ export default {
       })
     },
     handleDownload(row) {
+      this.$set(row, 'isDownloading', true)
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'Download progress has been started. Please wait...',
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
       QuishingService.getQuishingPdfCampaignDownloadContent(
         this.item.resourceId,
         row.instanceGroup
@@ -464,6 +471,7 @@ export default {
         link.href = window.URL.createObjectURL(response.data)
         link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
         link.click()
+        this.$set(row, 'isDownloading', false)
       })
     },
     handleViewReport(row) {
