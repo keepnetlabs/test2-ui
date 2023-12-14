@@ -114,7 +114,13 @@
         }
     }
 }
-
+.campaign-manager-report-printout-summary-cards{
+  @media (max-width: 1024px){
+    .campaign-manager-report-summary-cards__left{
+      flex-wrap: wrap;
+    }
+  }
+}
 .campaign-manager-schedule-dialog__container{
     border:1px solid #E0E0E0;
     border-radius: 8px;
