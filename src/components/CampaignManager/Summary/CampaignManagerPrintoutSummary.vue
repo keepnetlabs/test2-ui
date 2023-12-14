@@ -319,7 +319,7 @@ export default {
         difficulty: [...difficultySet].join(', ')
       }
       if (formData.excludeFromReports) {
-        obj['Exclude from Reports'] = 'Yes'
+        obj['Excluded from Reports'] = 'Yes'
       }
       return obj
     },

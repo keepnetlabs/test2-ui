@@ -121,6 +121,18 @@ export const COLUMNS = {
     width: 200,
     filterableType: 'date'
   },
+  EMAIL_SEND_DATE_PRINTOUT: {
+    property: 'lastSendingTime',
+    align: 'left',
+    editable: false,
+    label: 'Email Send Date',
+    sortable: true,
+    fixed: 'right',
+    show: true,
+    type: 'text',
+    overrideWidth: true,
+    filterableType: 'date'
+  },
   DATA: {
     property: 'submittedData',
     align: 'left',

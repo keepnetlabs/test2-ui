@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom>
+  <v-tooltip content-class="max-w-300" bottom>
     <template #activator="{ on }">
       <v-btn
         v-on="on"
@@ -12,7 +12,7 @@
         <v-icon :ripple="!isDisabled">{{ icon }}</v-icon>
       </v-btn>
     </template>
-    <span>{{ text }}</span>
+    <span>{{ isDisabled ? disabledTooltipText : text }}</span>
   </v-tooltip>
 </template>
 
@@ -37,6 +37,9 @@ export default {
       default: true
     },
     id: {
+      type: String
+    },
+    disabledTooltipText: {
       type: String
     }
   },
