@@ -454,8 +454,6 @@ export default {
       })
     },
     handleDownload(row) {
-      console.log('row', row)
-      console.log('item', this.item)
       QuishingService.getQuishingPdfCampaignDownloadContent(
         this.item.resourceId,
         row.instanceGroup
