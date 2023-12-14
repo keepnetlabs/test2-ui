@@ -311,13 +311,17 @@ export default {
         methodSet.add(pScenario.method)
         difficultySet.add(pScenario.difficulty)
       })
-      return {
+      const obj = {
         name: formData.name,
         'Tracking Duration': formData.duration,
         method: [...methodSet].join(', '),
         Starting: this.getScheduledDate,
         difficulty: [...difficultySet].join(', ')
       }
+      if (formData.excludeFromReports) {
+        obj['Exclude from Reports'] = 'Yes'
+      }
+      return obj
     },
     getTotalRandomlySelectedUserCount() {
       let text = ''
