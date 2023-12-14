@@ -454,13 +454,15 @@ export default {
       })
     },
     handleDownload(row) {
+      console.log('row', row)
+      console.log('item', this.item)
       QuishingService.getQuishingPdfCampaignDownloadContent(
         this.item.resourceId,
         row.instanceGroup
       ).then((response) => {
         const link = document.createElement('a')
         link.href = window.URL.createObjectURL(response.data)
-        link.download = `Quishing PDF Preview.pdf`
+        link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
         link.click()
       })
     },
