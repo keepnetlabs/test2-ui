@@ -129,9 +129,33 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isQuishingTypePrintout: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
+    const columns = []
+    if (!this.isQuishingTypePrintout) {
+      columns.push(
+        COLUMNS.FIRST_NAME,
+        COLUMNS.LAST_NAME,
+        COLUMNS.EMAIL,
+        COLUMNS.DEPARTMENT,
+        COLUMNS.PHISHING_SCENARIO_NAME,
+        COLUMNS.EMAIL_DELIVERY,
+        COLUMNS.DATE_SENT,
+        COLUMNS.DELIVERY_STATUS
+      )
+    } else {
+      columns.push(
+        COLUMNS.FIRST_NAME_PRINTOUT,
+        COLUMNS.LAST_NAME_PRINTOUT,
+        COLUMNS.EMAIL_PRINTOUT,
+        COLUMNS.DEPARTMENT_PRINTOUT
+      )
+    }
     return {
       CONSTANTS: {
         id: 'campaign-manager-sending-report-data-table',
@@ -147,16 +171,7 @@ export default {
         savedTableSettingsLocalStorageKey:
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          COLUMNS.FIRST_NAME,
-          COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
-          COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.EMAIL_DELIVERY,
-          COLUMNS.DATE_SENT,
-          COLUMNS.DELIVERY_STATUS
-        ],
+        columns,
         addButton: {
           show: false
         },
@@ -166,23 +181,25 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignManagerReportSendingReport
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-sending-report',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-sending-report',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsSendingReportDetailsPermissions'
+        rowActions: this.isQuishingTypePrintout
+          ? []
+          : [
+              {
+                name: labels.Resend,
+                id: 'btn-resend--row-actions-campaign-manager-report-sending-report',
+                icon: '$custom-resend',
+                action: 'on-resend'
+              },
+              {
+                name: labels.Details,
+                id: 'btn-details--row-actions-campaign-manager-report-sending-report',
+                icon: '$custom-details',
+                action: 'on-detail',
+                disabled: !this.$store.getters[
+                  'permissions/getQuishingCampaignReportsSendingReportDetailsPermissions'
+                ]
+              }
             ]
-          }
-        ]
       },
       isShowExtendedView: false,
       extendedViewOptions: {
@@ -262,6 +279,7 @@ export default {
     lastSendingStatusItems: {
       immediate: true,
       handler() {
+        if (this.isQuishingTypePrintout) return
         this.setLastSendingStatusItems()
       }
     },
@@ -269,6 +287,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
+        if (this.isQuishingTypePrintout) return
         const fields = createCustomFieldColumns(val)
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
@@ -285,11 +304,11 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      QuishingService.searchCampaignJobUserSendingReport(
-        this.axiosPayload,
-        this.id,
-        this.instanceGroup
-      )
+      const apiFunc = this.isQuishingTypePrintout
+        ? QuishingService.searchCampaignJobPrintoutUserSendingReport
+        : QuishingService.searchCampaignJobUserSendingReport
+      if (this.isQuishingTypePrintout) this.axiosPayload.orderBy = 'email'
+      apiFunc(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {
@@ -389,9 +408,6 @@ export default {
     },
     getStatusBadgeProps(status = '') {
       return getStatusBadgeProps(status)
-    },
-    getDataTableFieldLabel(status = '') {
-      return getDataTableFieldLabel(status)
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage

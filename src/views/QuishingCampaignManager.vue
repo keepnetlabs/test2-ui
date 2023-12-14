@@ -80,6 +80,7 @@
       :is-loading="isItemTableLoading"
       :item="selectedParentItem"
       :status-items="getStatusItems"
+      :is-quishing-type-printout="isSelectedItemQuishingPrintout"
       @on-launch="handleLaunch"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
@@ -113,6 +114,7 @@ import QuishingCampaignManagerAddOrEditModal from '@/components/QuishingCampaign
 import QuishingCampaignManagerNewInstanceModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerNewInstanceModal.vue'
 import { mapGetters } from 'vuex'
 import QuishingCampaignManagerPrintoutAddOrEditModal from '@/components/QuishingCampaignManager/QuishingCampaignManagerPrintoutAddOrEditModal.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'QuishingCampaignManager',
   components: {
@@ -161,6 +163,12 @@ export default {
     }),
     getStatusItems() {
       return this.formDetails.status || []
+    },
+    isSelectedItemQuishingPrintout() {
+      return (
+        this.selectedParentItem?.templateType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
     }
   },
   watch: {
