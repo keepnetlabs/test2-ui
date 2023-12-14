@@ -180,7 +180,7 @@ export default {
           show: false
         },
         selectEvent: {
-          resend: true
+          resend: !this.isQuishingTypePrintout
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportSendingReport

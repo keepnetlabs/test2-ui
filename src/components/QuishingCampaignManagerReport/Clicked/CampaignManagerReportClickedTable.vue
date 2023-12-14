@@ -120,7 +120,7 @@ export default {
           message: labels.EmptyCampaignManagerReportClicked
         },
         selectEvent: {
-          resend: true
+          resend: !isQuishingTypePrintout
         },
         rowActions
       }
