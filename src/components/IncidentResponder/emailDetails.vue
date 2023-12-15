@@ -285,9 +285,7 @@
                           <span class="cursor-poineter">
                             <a
                               v-if="
-                                scope.row.analysisEnginePermalink &&
-                                scope.row.result !== 'Excluded' &&
-                                scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+                                scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               class="attachments-table__link"
