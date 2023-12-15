@@ -257,6 +257,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -313,6 +314,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     isRenderTrainingCard() {
       return this.trainingParams
     },
@@ -503,7 +507,7 @@ export default {
     }
   },
   created() {
-    this.callForTrainingLanguages()
+    if (this.getTrainingSearchPermission) this.callForTrainingLanguages()
   },
   methods: {
     callForTrainingLanguages() {
