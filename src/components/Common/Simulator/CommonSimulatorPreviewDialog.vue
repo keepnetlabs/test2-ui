@@ -154,7 +154,9 @@ export default {
   },
   computed: {
     getFirstTabLabel() {
-      return this.type === SCENARIO_TYPES.PHISHING ? labels.JustEmail : labels.QuishingTemplate
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+        ? labels.JustEmail
+        : labels.QuishingTemplate
     },
     getIndividualPrintoutStyle() {
       const style = {
