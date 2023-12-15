@@ -511,7 +511,6 @@ export default {
   },
   methods: {
     callForTrainingLanguages() {
-      console.log('iam in')
       AwarenessEducatorService.getLanguages().then((res) => {
         this.trainingLanguages = res?.data?.data || []
       })
