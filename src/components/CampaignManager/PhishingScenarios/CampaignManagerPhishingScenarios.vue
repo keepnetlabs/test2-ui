@@ -577,7 +577,7 @@ export default {
   },
   created() {
     if (!this.isEdit) this.callForPhishingScenarios()
-    this.callForEnrollmentFormDetails()
+    if (this.getTrainingSearchPermission) this.callForEnrollmentFormDetails()
   },
   methods: {
     callForEnrollmentFormDetails() {
