@@ -213,7 +213,15 @@ export default {
       if (newVal) {
         const copyOfFormData = JSON.parse(JSON.stringify(newVal))
         delete copyOfFormData.fieldMappings
-        this.formData = { ...copyOfFormData }
+        console.log(copyOfFormData)
+        this.formData = {
+          url: copyOfFormData.url,
+          username: copyOfFormData.username,
+          password: copyOfFormData.password,
+          baseDN: copyOfFormData?.baseDN || '',
+          relativeDNs: copyOfFormData?.relativeDN?.join('\n') || '',
+          isActive: copyOfFormData.isActive
+        }
       }
     }
   },
@@ -234,8 +242,14 @@ export default {
     },
     handleTestConnection(callApi = false) {
       this.isTestingConnection = true
-      const { url, password, username } = this.formData
-      LDAPService.testLDAPConnection({ url, password, username })
+      const { url, password, username, relativeDNs, baseDN } = this.formData
+      LDAPService.testLDAPConnection({
+        url,
+        password,
+        username,
+        baseDN: baseDN,
+        relativeDN: relativeDNs.split('\n').filter(Boolean)
+      })
         .then(() => {
           this.isTestingConnection = false
           this.isTestConnectionValid = true
@@ -248,7 +262,12 @@ export default {
     handleSubmit() {
       if (this.isTestConnectionValid)
         this.$emit('on-submit', {
-          ...this.formData,
+          url: this.formData.url,
+          username: this.formData.username,
+          password: this.formData.password,
+          baseDN: this.formData.baseDN,
+          relativeDN: this.formData.relativeDNs.split('\n').filter(Boolean),
+          isActive: this.formData.isActive,
           fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
         })
       else this.handleTestConnection(true)
