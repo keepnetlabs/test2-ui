@@ -62,7 +62,7 @@
           persistent-hint
           hint="Example: CN=Users,OU=Department"
           placeholder="Enter base DN"
-          :rules="[(v) => Validations.required(v, labels.Required), relativeDNsRule]"
+          :rules="[relativeDNsRule]"
         ></v-textarea>
       </FormGroup>
       <FormGroup :title="labels.Status" class="mb-6">
@@ -160,11 +160,14 @@ export default {
       isFormValid: false,
       disabledStyle: { pointerEvents: 'none', opacity: '.5' },
       baseDNRules: [
-        (v) => Validations.required(v, labels.Required),
-        (v) =>
-          /^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
-            v
-          ) || 'Invalid base DN format'
+        (v) => {
+          if (!v) return true
+          return (
+            /^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
+              v
+            ) || 'Invalid base DN format'
+          )
+        }
       ],
       pathRules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
@@ -227,7 +230,9 @@ export default {
   },
   methods: {
     relativeDNsRule(v) {
+      if (!v) return true
       const rows = v.split('\n')
+      if (!rows.length) return true
       const isInvalid = rows.some((row) => {
         if (!row) return false
         return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
