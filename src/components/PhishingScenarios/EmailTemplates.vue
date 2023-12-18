@@ -109,7 +109,11 @@
 <script>
 import DataTable from '../DataTable'
 import NewEmailTemplates from './NewEmailTemplates'
-import { getEmailTemplatesList, exportEmailTemplates } from '@/api/phishingsimulator'
+import {
+  getEmailTemplatesList,
+  exportEmailTemplates,
+  deleteEmailTemplate
+} from '@/api/phishingsimulator'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -131,7 +135,7 @@ import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowAct
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
-import { deleteEmailTemplate } from '@/api/company'
+// import { deleteEmailTemplate } from '@/api/company'
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 export default {
   name: 'EmailTemplates',
