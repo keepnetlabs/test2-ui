@@ -248,6 +248,7 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      is-show-reminder
                       :type="type"
                       :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"

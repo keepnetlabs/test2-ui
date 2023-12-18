@@ -445,14 +445,26 @@ export default {
           } = this.$refs
           const quishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
-            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
-              phishingScenarioResourceId
-            ]
+            const {
+              trainingId,
+              trainingLanguageIds,
+              isCheckboxSelected,
+              enrollmentReminder,
+              awardCertificate,
+              enrollmentSendTypeId
+            } = trainingTabModel[phishingScenarioResourceId]
+            if (!isCheckboxSelected) return
+            const { sendReminderEvery } = enrollmentReminder
+            const enrollmentReminderEveryValue = sendReminderEvery
+            delete enrollmentReminder.sendReminderEvery
             if (!isCheckboxSelected) return
             quishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
-              quishingScenarioResourceId: phishingScenarioResourceId
+              quishingScenarioResourceId: phishingScenarioResourceId,
+              enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
+              awardCertificate,
+              enrollmentSendTypeId
             })
           })
           const payload = {
