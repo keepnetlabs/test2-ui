@@ -242,6 +242,7 @@
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
+                      is-show-reminder
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :type="SCENARIO_TYPES.SMISHING"
                       :is-edit="isEdit"

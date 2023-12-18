@@ -28,24 +28,16 @@
       @on-close="toggleShowLaunchDialog"
       @on-confirm="handleConfirmLaunchDialog"
     />
-    <v-overlay
+    <NewScenario
       v-if="isNewScenarioModalVisible"
-      id="new-smishing-scenario-overlay"
-      :value="isNewScenarioModalVisible"
-      :opacity="1"
-      :z-index="99"
-      color="white"
-    >
-      <NewScenario
-        ref="newScenarioModal"
-        :status="isNewScenarioModalVisible"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        @changeNewScenarioModalStatus="handleCloseNewScenarioModal"
-      />
-    </v-overlay>
+      ref="newScenarioModal"
+      :status="isNewScenarioModalVisible"
+      :scenarioDetailsLookup="scenarioDetailsLookup"
+      @changeNewScenarioModalStatus="handleCloseNewScenarioModal"
+    />
     <CreateNewUserGroupModal
-      v-if="isTargeGroupModalVisible"
-      :status="isTargeGroupModalVisible"
+      v-if="isTargetGroupModalVisible"
+      :status="isTargetGroupModalVisible"
       :is-create-button-disabled="isCreateTargetGroupButtonDisabled"
       @changeNewUserGroupStatus="handleCloseTargetGroupModal"
       @handleSave="handleConfirmTargetGroupModal"
@@ -172,7 +164,7 @@ export default {
       isItemTableShowing: false,
       isNoScenarioModalVisible: false,
       isNoTargetUserGroupModalVisible: false,
-      isTargeGroupModalVisible: false,
+      isTargetGroupModalVisible: false,
       isNewScenarioModalVisible: false,
       isCreateTargetGroupButtonDisabled: false,
       isDuplicate: false,
@@ -257,6 +249,7 @@ export default {
       this.toggleShowDeleteDialog()
     },
     handleOnMultipleDelete() {
+      /*
       this.setDeleteDialogActionButtonDisabled(true)
       bulkDeleteCampaignReports(this.multipleSystemUserPayload)
         .then(() => {
@@ -267,6 +260,8 @@ export default {
         .finally(() => {
           this.setDeleteDialogActionButtonDisabled(false)
         })
+
+       */
     },
     handleOnRecordButtonClick(row) {
       this.selectedParentItem = row
@@ -367,19 +362,19 @@ export default {
       }
     },
     handleCloseTargetGroupModal() {
-      this.isTargeGroupModalVisible = false
+      this.isTargetGroupModalVisible = false
     },
     handleConfirmTargetGroupModal(group) {
       this.isCreateTargetGroupButtonDisabled = true
       createTargetGroup(group)
         .then(() => {
-          this.isTargeGroupModalVisible = false
+          this.isTargetGroupModalVisible = false
           this.$refs?.campaignManagerParentTable?.callForData?.()
         })
         .finally(() => (this.isCreateTargetGroupButtonDisabled = false))
     },
     handleShowTargetGroupModal() {
-      this.isTargeGroupModalVisible = true
+      this.isTargetGroupModalVisible = true
     },
     handleCloseNoScenarioModal() {
       this.isNoScenarioModalVisible = false
