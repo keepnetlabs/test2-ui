@@ -226,7 +226,8 @@ export default {
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
       defaultTargetGroupResourceIds: [],
-      scheduleInfoResponse: {}
+      scheduleInfoResponse: {},
+      timeoutId: null
     }
   },
   computed: {
@@ -432,6 +433,14 @@ export default {
   },
   mounted() {
     this.initialFormValues = this.getFormValues()
+    this.timeoutId = setTimeout(() => {
+      const el = document.querySelector('.el-tabs__active-bar.is-top')
+      if (!el) return
+      el.style.width = '104px'
+    }, 500)
+  },
+  beforeDestroy() {
+    if (this.timeoutId) clearTimeout(this.timeoutId)
   },
   methods: {
     callForLanguages() {
@@ -584,14 +593,26 @@ export default {
           }
           const smishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
-            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
-              phishingScenarioResourceId
-            ]
+            const {
+              trainingId,
+              trainingLanguageIds,
+              isCheckboxSelected,
+              enrollmentReminder,
+              awardCertificate,
+              enrollmentSendTypeId
+            } = trainingTabModel[phishingScenarioResourceId]
+            if (!isCheckboxSelected) return
+            const { sendReminderEvery } = enrollmentReminder
+            const enrollmentReminderEveryValue = sendReminderEvery
+            delete enrollmentReminder.sendReminderEvery
             if (!isCheckboxSelected) return
             smishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
-              phishingScenarioResourceId
+              phishingScenarioResourceId,
+              enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
+              awardCertificate,
+              enrollmentSendTypeId
             })
           })
           const payload = {
