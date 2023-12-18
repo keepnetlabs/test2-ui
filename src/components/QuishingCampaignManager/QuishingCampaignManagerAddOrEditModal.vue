@@ -74,6 +74,7 @@
             <CampaignManagerPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              is-show-reminder
               :type="SCENARIO_TYPES.QUISHING"
               :campaign-manager-resource-id="getCampaignResourceId"
               :is-edit="isEdit || isDuplicate"
