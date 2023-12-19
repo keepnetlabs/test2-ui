@@ -112,7 +112,15 @@ export default {
         savedTableSettingsLocalStorageKey:
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns,
+        columns: [
+          COLUMNS.FIRST_NAME,
+          COLUMNS.LAST_NAME,
+          COLUMNS.EMAIL,
+          COLUMNS.DEPARTMENT,
+          COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.LAST_SCANNED,
+          COLUMNS.TIMES_SCANNED
+        ],
         addButton: {
           show: false
         },

@@ -421,6 +421,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  LAST_SCANNED: {
+    property: 'lastClickedTime',
+    align: 'left',
+    label: labels.LastScanned,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   TIMES_CLICKED: {
     property: 'clickedCount',
     align: 'right',
@@ -441,7 +453,17 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
-    overrideWidth: true,
+    overrideWidth: true
+  },
+  TIMES_SCANNED: {
+    property: 'clickedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesScanned,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
     filterableType: 'number'
   },
   PASSWORD_COMPLEXITY: {

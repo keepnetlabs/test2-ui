@@ -314,12 +314,11 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
-            v-if="isServerSideSelection || !isServerSide"
+            v-if="isRenderSelectAllButton"
             :ripple="false"
-            class="btn-all-selection"
+            class="btn-all-selection no-box-shadow"
             rounded
             color="white"
-            style="box-shadow: none;"
             @click="handleSelectButtonClick"
           >
             {{ getSelectionButtonText }}
@@ -1319,6 +1318,10 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isRenderSelectAllButton() {
+      if (this.isServerSideSelection) return !this.search && !this.isSearchActive
+      return this.isServerSideSelection || !this.isServerSide
+    },
     getAddButtonLabel() {
       return this.addButton?.label || 'NEW'
     },
@@ -1482,7 +1485,8 @@ export default {
       isMultipleEdit: false,
       firstOpenSettingsTimeout: null,
       renderFixedItemsTimeout: null,
-      initialAxiosPayload: JSON.parse(JSON.stringify(this.axiosPayload))
+      initialAxiosPayload: JSON.parse(JSON.stringify(this.axiosPayload)),
+      isSearchActive: false
     }
   },
   watch: {
@@ -2532,6 +2536,7 @@ export default {
     },
     searchChangedEvent() {
       const debounceTime = 750
+      this.isSearchActive = true
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
           const filterItems = this.getSearchFilterItems()
@@ -2546,12 +2551,8 @@ export default {
               ]
             }
           }
-
+          this.isSearchActive = false
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-
-          if (this.isServerSideSelection) {
-            this.resetSelectableParams()
-          }
         }, debounceTime)
       } else {
         this.debounce(() => {
