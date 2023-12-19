@@ -820,14 +820,14 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
-      this.payload.filter.FilterGroups[1].FilterItems = [
-        ...this.payload.filter.FilterGroups[1].FilterItems.filter(
-          (item) =>
-            !this.customFields.some((cf) => {
-              return cf.name === item.FieldName
-            })
-        )
-      ]
+      // this.payload.filter.FilterGroups[1].FilterItems = [
+      //   ...this.payload.filter.FilterGroups[1].FilterItems.filter(
+      //     (item) =>
+      //       !this.customFields.some((cf) => {
+      //         return cf.name === item.FieldName
+      //       })
+      //   )
+      // ]
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
