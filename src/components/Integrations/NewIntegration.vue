@@ -819,9 +819,7 @@
                 color="#2196f3"
                 style="margin-top: 2px;"
                 :disabled="
-                  isSpamHouse ||
-                  isVirusTotal ||
-                  (!selectedIntegrationType.isSendIp && !isCustomIntegration)
+                  isSpamHouse || (!selectedIntegrationType.isSendIp && !isCustomIntegration)
                 "
               ></v-checkbox>
             </div>
