@@ -2,28 +2,28 @@
   <div>
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <v-form v-show="!isLoading" v-model="isFormValid" ref="refForm">
-      <FormGroup :title="labels.Path" has-hint>
+      <FormGroup title="Server URL" has-hint>
         <InputUrl
           v-model="formData.url"
           id="input--ldap-path"
-          placeholder="Enter LDAP path"
+          placeholder="Enter Server URL"
           hint="Example: ldap[s]://ldapserver.acme.corp[:port]. (Standard LDAP port is 389)"
           :rules="pathRules"
         />
       </FormGroup>
-      <FormGroup :title="labels.UserName" has-hint>
+      <FormGroup title="Bind Username" has-hint>
         <v-text-field
           v-model="formData.username"
           id="input--ldap-username"
           outlined
           dense
           persistent-hint
-          placeholder="Your LDAP username"
+          placeholder="Enter bind username"
           hint="*Required"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
       </FormGroup>
-      <FormGroup :title="labels.Password" has-hint>
+      <FormGroup title="Bind User Password" has-hint>
         <v-text-field
           v-model="formData.password"
           id="input--ldap-password"
@@ -32,9 +32,38 @@
           dense
           persistent-hint
           hint="*Required"
-          placeholder="LDAP password"
+          placeholder="Enter bind user password"
           :rules="[(v) => Validations.required(v, labels.Required)]"
         ></v-text-field>
+      </FormGroup>
+      <FormGroup title="Base DN" has-hint>
+        <v-text-field
+          v-model="formData.baseDN"
+          id="input--ldap-base-dn"
+          outlined
+          dense
+          persistent-hint
+          hint="Example: DN=<company>,DN=<domain>"
+          placeholder="Enter base DN"
+          :rules="baseDNRules"
+        ></v-text-field>
+      </FormGroup>
+      <FormGroup
+        title="Relative DNs"
+        subTitle="Relative search that will be conducted on the subbranches of base DN for LDAP users whose objectType=user. You can enter a different relative DN on each line."
+        has-hint
+      >
+        <v-textarea
+          v-model="formData.relativeDNs"
+          id="input--ldap-base-dn"
+          type="password"
+          outlined
+          dense
+          persistent-hint
+          hint="Example: CN=Users,OU=Department"
+          placeholder="Enter base DN"
+          :rules="[relativeDNsRule]"
+        ></v-textarea>
       </FormGroup>
       <FormGroup :title="labels.Status" class="mb-6">
         <v-switch
@@ -122,12 +151,24 @@ export default {
         url: '',
         username: '',
         password: '',
+        baseDN: '',
+        relativeDNs: '',
         isActive: true
       },
       isTestingConnection: false,
       isTestConnectionValid: false,
       isFormValid: false,
       disabledStyle: { pointerEvents: 'none', opacity: '.5' },
+      baseDNRules: [
+        (v) => {
+          if (!v) return true
+          return (
+            /^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
+              v
+            ) || 'Invalid base DN format'
+          )
+        }
+      ],
       pathRules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.ldapConnectionStringUrl(v, 'Incorrect path format'),
@@ -175,18 +216,45 @@ export default {
       if (newVal) {
         const copyOfFormData = JSON.parse(JSON.stringify(newVal))
         delete copyOfFormData.fieldMappings
-        this.formData = { ...copyOfFormData }
+        console.log(copyOfFormData)
+        this.formData = {
+          url: copyOfFormData.url,
+          username: copyOfFormData.username,
+          password: copyOfFormData.password,
+          baseDN: copyOfFormData?.baseDN || '',
+          relativeDNs: copyOfFormData?.relativeDN?.join('\n') || '',
+          isActive: copyOfFormData.isActive
+        }
       }
     }
   },
   methods: {
+    relativeDNsRule(v) {
+      if (!v) return true
+      const rows = v.split('\n')
+      if (!rows.length) return true
+      const isInvalid = rows.some((row) => {
+        if (!row) return false
+        return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
+          row
+        )
+      })
+      if (isInvalid) return 'Invalid base DN format'
+      return true
+    },
     checkTestConnectionValidityByParam(newVal, oldVal) {
       if (newVal !== oldVal) this.isTestConnectionValid = false
     },
     handleTestConnection(callApi = false) {
       this.isTestingConnection = true
-      const { url, password, username } = this.formData
-      LDAPService.testLDAPConnection({ url, password, username })
+      const { url, password, username, relativeDNs, baseDN } = this.formData
+      LDAPService.testLDAPConnection({
+        url,
+        password,
+        username,
+        baseDN: baseDN,
+        relativeDN: relativeDNs.split('\n').filter(Boolean)
+      })
         .then(() => {
           this.isTestingConnection = false
           this.isTestConnectionValid = true
@@ -199,7 +267,12 @@ export default {
     handleSubmit() {
       if (this.isTestConnectionValid)
         this.$emit('on-submit', {
-          ...this.formData,
+          url: this.formData.url,
+          username: this.formData.username,
+          password: this.formData.password,
+          baseDN: this.formData.baseDN,
+          relativeDN: this.formData.relativeDNs.split('\n').filter(Boolean),
+          isActive: this.formData.isActive,
           fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
         })
       else this.handleTestConnection(true)

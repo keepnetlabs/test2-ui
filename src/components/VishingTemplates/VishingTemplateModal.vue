@@ -245,6 +245,7 @@
                       :voiceResourceId="getVoiceResourceId"
                       :isVoiceTextToSpeechCompatible="isVoiceTextToSpeechCompatible"
                       isTextToSpeech
+                      required
                     />
                   </FormGroup>
                   <div
@@ -947,11 +948,19 @@ export default {
           `Steps[${i + 1}].IsVishingStep`,
           this.formValues.steps[i].isVishingStep || false
         )
-        formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText)
-        formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit)
-        formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration)
-        formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
-        formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
+        if (this.formValues.steps[i].inputText)
+          formData.append(`Steps[${i + 1}].InputText`, this.formValues.steps[i].inputText)
+        if (this.formValues.steps[i].inputDigit)
+          formData.append(`Steps[${i + 1}].InputDigit`, this.formValues.steps[i].inputDigit)
+        if (
+          this.formValues.steps[i].duration !== undefined ||
+          this.formValues.steps[i].duration !== null
+        )
+          formData.append(`Steps[${i + 1}].Duration`, this.formValues.steps[i].duration)
+        if (this.formValues.steps[i].inputUrl)
+          formData.append(`Steps[${i + 1}].InputUrl`, this.formValues.steps[i].inputUrl)
+        if (this.formValues.steps[i].content)
+          formData.append(`Steps[${i + 1}].Content`, this.formValues.steps[i].content)
         if (this.isEdit && !this.formValues.steps[i].content) {
           formData.delete(`Steps[${i + 1}].Content`)
           formData.delete(`Steps[${i + 1}].InputUrl`)
@@ -981,9 +990,12 @@ export default {
           'Steps[0].InputType',
           this.getInputTypeValue(this.formValues.dialingNoticeStepInputType)
         )
-        formData.append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
-        formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
-        formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
+        if (this.formValues.dialingNoticeStepContent)
+          formData.append('Steps[0].Content', this.formValues.dialingNoticeStepContent)
+        if (this.formValues.dialingNoticeStepInputUrl)
+          formData.append('Steps[0].InputUrl', this.formValues.dialingNoticeStepInputUrl)
+        if (this.formValues.dialingNoticeStepInputText)
+          formData.append('Steps[0].InputText', this.formValues.dialingNoticeStepInputText)
         if (this.isEdit && !this.formValues.dialingNoticeStepContent) {
           formData.delete(`Steps[0].Content`)
           formData.delete(`Steps[0].InputUrl`)

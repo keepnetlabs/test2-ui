@@ -242,6 +242,7 @@
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
+                      is-show-reminder
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :type="SCENARIO_TYPES.SMISHING"
                       :is-edit="isEdit"
@@ -291,6 +292,7 @@ import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 
 export default {
   name: 'CampaignManagerSmishingScenarios',
@@ -430,7 +432,22 @@ export default {
         this.$set(
           this.trainingTabModel,
           val.value,
-          new TrainingTabModel(val.trainingId, val.trainingName, val.trainingLanguageIds, true)
+          new TrainingTabModel(
+            val.trainingId,
+            val.trainingName,
+            val.trainingLanguageIds,
+            true,
+            getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
+            val.awardCertificate,
+            {
+              periodCount: val.periodCount || 1,
+              periodType: val.emailPeriodTypeId || 'Day',
+              endType: val.reminderEndTypeId || 'TrainingCompleted',
+              occurrenceCount: 1,
+              stopTime: '',
+              sendReminderEvery: val.isEnrollmentReminderActive || false
+            }
+          )
         )
       }
       if (Array.isArray(val)) {

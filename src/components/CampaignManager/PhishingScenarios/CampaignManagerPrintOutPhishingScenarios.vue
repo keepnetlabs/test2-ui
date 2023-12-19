@@ -248,6 +248,7 @@
                     <CampaignManagerPhishingScenariosTrainingTab
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
+                      is-show-reminder
                       :type="type"
                       :is-edit="isEdit"
                       @on-preview="handleTrainingPreviewButtonClick"
@@ -300,6 +301,7 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 export default {
   name: 'CampaignManagerPrintOutPhishingScenarios',
   components: {
@@ -428,7 +430,22 @@ export default {
         this.$set(
           this.trainingTabModel,
           val.value,
-          new TrainingTabModel(val.trainingId, val.trainingName, val.trainingLanguageIds, true)
+          new TrainingTabModel(
+            val.trainingId,
+            val.trainingName,
+            val.trainingLanguageIds,
+            true,
+            getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
+            val.awardCertificate,
+            {
+              periodCount: val.periodCount || 1,
+              periodType: val.emailPeriodTypeId || 'Day',
+              endType: val.reminderEndTypeId || 'TrainingCompleted',
+              occurrenceCount: 1,
+              stopTime: '',
+              sendReminderEvery: val.isEnrollmentReminderActive || false
+            }
+          )
         )
       }
       if (Array.isArray(val)) {
