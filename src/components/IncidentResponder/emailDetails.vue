@@ -287,7 +287,7 @@
                               v-if="
                                 scope.row.analysisEnginePermalink &&
                                 scope.row.result !== 'Excluded' &&
-                                scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+                                scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               class="attachments-table__link"
