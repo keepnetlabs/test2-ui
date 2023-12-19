@@ -126,7 +126,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Clicked Link ${this.item?.['clickedCount'] || 0} Time(s)`
+      return `Scanned QR Code Email ${this.item?.['clickedCount'] || 0} Time(s)`
     },
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
