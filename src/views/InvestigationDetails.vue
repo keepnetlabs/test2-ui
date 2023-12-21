@@ -1439,7 +1439,7 @@ export default {
         minWidth: 170,
         type: 'badge',
         filterableType: 'select',
-        filterableItems: ['Completed', 'Interrupted', 'Running'],
+        filterableItems: ['Completed', 'Interrupted', 'Running', 'Expired'],
         errorStateFor: true
       },
       {
