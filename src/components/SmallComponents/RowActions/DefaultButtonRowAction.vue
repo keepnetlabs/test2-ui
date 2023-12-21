@@ -55,7 +55,7 @@ export default {
       if (this.isDisabled) {
         return this.scope.row.isDownloading
           ? 'Downloading PDF. Please wait...'
-          : this.disabledTooltipText
+          : this.disabledTooltipText || this.text
       }
       return this.text
     }
