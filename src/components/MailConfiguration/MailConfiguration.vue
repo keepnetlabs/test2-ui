@@ -144,7 +144,7 @@
           </v-list-item>
         </v-form>
       </template>
-      <template v-slot:overlay-footer>
+      <template #overlay-footer>
         <div class="text-left">
           <v-btn
             id="btn-cancel--mail-configurations-modal"
@@ -416,7 +416,7 @@
                   }`
                 }}
                 <a
-                  href="https://doc.keepnetlabs.com/technical-guide/phishing-incident-responder/api-settings/gsuite-api-configuration-guide"
+                  href="https://doc.keepnetlabs.com/Next-Generation-Product/platform/incident-responder/mail-configurations/google-workspace"
                   target="_blank"
                   rel="noopener"
                   style="color: #1173c1; cursor: pointer; text-decoration: none;"
