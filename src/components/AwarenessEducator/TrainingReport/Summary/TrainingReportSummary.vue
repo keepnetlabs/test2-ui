@@ -376,7 +376,7 @@ export default {
       return certificateAttachmentResourceId
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages()
     // this.callForEnrollmentEmail()
     // this.callForCertificate()
@@ -385,14 +385,20 @@ export default {
     clearInterval(this.interval)
   },
   watch: {
-    getCertificateEmailNotificationTemplateTypeResourceId(val) {
-      if (val) {
-        this.callForCertificate()
+    getCertificateEmailNotificationTemplateTypeResourceId: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.callForCertificate()
+        }
       }
     },
-    getTrainingEmailNotificationTemplateTypeResourceId(val) {
-      if (val) {
-        this.callForEnrollmentEmail()
+    getTrainingEmailNotificationTemplateTypeResourceId: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.callForEnrollmentEmail()
+        }
       }
     }
   },
