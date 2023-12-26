@@ -119,6 +119,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :phishing-type-id="3"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
