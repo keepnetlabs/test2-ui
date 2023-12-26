@@ -457,6 +457,8 @@ export default {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
         let { fromAddress, fromName, template } = this.selectedPhishingScenario
+        if (this.type === SCENARIO_TYPES.QUISHING)
+          template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
         const payload = {
           ...smtpData,
           to: this.$store.state.auth.user.email,
@@ -464,8 +466,6 @@ export default {
           fromName,
           message: template
         }
-        if (this.type === SCENARIO_TYPES.QUISHING)
-          template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
         if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
         try {
           await testConnection(payload)
