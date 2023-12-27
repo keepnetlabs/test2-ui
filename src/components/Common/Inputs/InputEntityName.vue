@@ -69,6 +69,13 @@ export default {
     }
   },
   watch: {
+    initialRules: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.rules = this.applyRules ? val : []
+      }
+    },
     required: {
       immediate: true,
       handler() {

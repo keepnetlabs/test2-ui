@@ -69,7 +69,7 @@
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <DatatableLoading v-if="loading" :loading="loading" />
-          <email-template
+          <EmailTemplate
             v-else
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
@@ -79,6 +79,8 @@
             :subject.sync="formValues.subject"
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
+            :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
+            :isNotificationTemplate="true"
             @handleEditHtmlTemplate="formValues.template = $event"
           />
         </form-group>
@@ -195,6 +197,25 @@ export default {
     }
   },
   computed: {
+    getEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Enrollment')?.value
+    },
+    getEnrollmentReminderTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Enrollment Reminder')?.value
+    },
+    getEnrollmentAfterFailedInASimulationTemplateResourceId() {
+      return this.categoryItems?.find(
+        (template) => template.text === 'Enrollment after Failed in a Simulation'
+      )?.value
+    },
+    isEnrollmentCategorySelected() {
+      if (!this.formValues?.emailTemplateCategoryResourceId) return false
+      return [
+        this.getEnrollmentTemplateResourceId,
+        this.getEnrollmentReminderTemplateResourceId,
+        this.getEnrollmentAfterFailedInASimulationTemplateResourceId
+      ].includes(this.formValues.emailTemplateCategoryResourceId)
+    },
     getModalId() {
       return this.selectedItem ? this.getSelectedItemTitleId : 'new-notification-template-modal'
     },
