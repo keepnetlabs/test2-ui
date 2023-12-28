@@ -487,7 +487,7 @@ export default {
               scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : scheduleFormData.scheduledDateTimeZoneId,
-            distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
+            distributionTypeId: DISTRIBUTION_TYPES.QUISHING_INDIVIDUAL_PRINTOUT,
             distributionDelayEvery: 20,
             distributionDelayTimeTypeId: '1',
             distributionEmailOver: 8,
