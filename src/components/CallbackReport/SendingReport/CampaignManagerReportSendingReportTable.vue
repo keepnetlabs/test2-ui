@@ -254,13 +254,13 @@ export default {
     }
   },
   watch: {
-    // lastSendingStatusItems: {
-    //   immediate: true,
-    //   deep: true,
-    //   handler() {
-    //     this.setLastSendingStatusItems()
-    //   }
-    // },
+    lastSendingStatusItems: {
+      immediate: true,
+      deep: true,
+      handler() {
+        this.setLastSendingStatusItems()
+      }
+    },
     customFields: {
       deep: true,
       immediate: true,
@@ -306,14 +306,14 @@ export default {
         })
         .finally(this.setLoading)
     },
-    // setLastSendingStatusItems() {
-    //   this.$set(
-    //     this.tableOptions.columns.find((col) => col && col.property === 'status'),
-    //     'filterableItems',
-    //     this.lastSendingStatusItems.map((item) => ({ ...item, value: item.text }))
-    //   )
-    //   this?.$refs?.refTable?.reRenderFilters()
-    // },
+    setLastSendingStatusItems() {
+      this.$set(
+        this.tableOptions.columns.find((col) => col && col.property === 'status'),
+        'filterableItems',
+        this.lastSendingStatusItems.map((item) => ({ ...item, value: item.text }))
+      )
+      this?.$refs?.refTable?.reRenderFilters()
+    },
     getEventReason(event = {}) {
       const { reason, eventName } = event
       if (reason) return reason

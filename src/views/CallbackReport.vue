@@ -152,7 +152,7 @@ export default {
       })
     },
     callForFormDetails() {
-      CallbackService.getCampaignManagerFormDetails().then((response) => {
+      CallbackService.getCallbackCampaignJobFormDetails().then((response) => {
         this.formDetails = response?.data?.data
       })
     }
