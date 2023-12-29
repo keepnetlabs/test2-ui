@@ -253,7 +253,7 @@ export default {
       getCallbackSettingsSearchPermissions: 'permissions/getCallbackSettingsSearchPermissions'
     }),
     canRenderAlertBox() {
-      return !this.isLoading && this.selectablePhoneNumberCount === 0
+      return !this.isLoading
     },
     getAlertBoxText() {
       return `You can add a maximum of ${this.licenseNumberLimit} phone number${

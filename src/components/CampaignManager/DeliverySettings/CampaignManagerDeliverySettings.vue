@@ -124,6 +124,7 @@ import { mapGetters } from 'vuex'
 import useDistributionComputed from '@/hooks/awareness-educator/useDistributionComputed'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
@@ -167,6 +168,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    phishingTypeId: {
+      type: Number,
+      default: null
     }
   },
   data() {
@@ -451,7 +456,9 @@ export default {
       try {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
-        const { fromAddress, fromName, template } = this.selectedPhishingScenario
+        let { fromAddress, fromName, template } = this.selectedPhishingScenario
+        if (this.type === SCENARIO_TYPES.QUISHING)
+          template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
         const payload = {
           ...smtpData,
           to: this.$store.state.auth.user.email,
@@ -459,6 +466,7 @@ export default {
           fromName,
           message: template
         }
+        if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
         try {
           await testConnection(payload)
           this.isTestMailSend = true

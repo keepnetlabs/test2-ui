@@ -43,7 +43,7 @@
           outlined
           dense
           persistent-hint
-          hint="Example: DN=<company>,DN=<domain>"
+          hint="Example: DC=<company>,DC=<domain>"
           placeholder="Enter base DN"
           :rules="baseDNRules"
         ></v-text-field>
@@ -61,7 +61,7 @@
           dense
           persistent-hint
           hint="Example: CN=Users,OU=Department"
-          placeholder="Enter base DN"
+          placeholder="Enter relative DNs"
           :rules="[relativeDNsRule]"
         ></v-textarea>
       </FormGroup>
@@ -212,11 +212,12 @@ export default {
     'formData.url': 'checkTestConnectionValidityByParam',
     'formData.password': 'checkTestConnectionValidityByParam',
     'formData.username': 'checkTestConnectionValidityByParam',
+    'formData.baseDN': 'checkTestConnectionValidityByParam',
+    'formData.relativeDNs': 'checkTestConnectionValidityByParam',
     initialFormData(newVal) {
       if (newVal) {
         const copyOfFormData = JSON.parse(JSON.stringify(newVal))
         delete copyOfFormData.fieldMappings
-        console.log(copyOfFormData)
         this.formData = {
           url: copyOfFormData.url,
           username: copyOfFormData.username,
@@ -239,7 +240,7 @@ export default {
           row
         )
       })
-      if (isInvalid) return 'Invalid base DN format'
+      if (isInvalid) return 'Invalid relative DNs format'
       return true
     },
     checkTestConnectionValidityByParam(newVal, oldVal) {
@@ -256,11 +257,13 @@ export default {
         relativeDN: relativeDNs.split('\n').filter(Boolean)
       })
         .then(() => {
-          this.isTestingConnection = false
           this.isTestConnectionValid = true
           if (callApi) this.handleSubmit()
         })
         .catch(() => {
+          this.isTestConnectionValid = false
+        })
+        .finally(() => {
           this.isTestingConnection = false
         })
     },
