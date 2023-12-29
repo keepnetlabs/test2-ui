@@ -4,6 +4,7 @@
       v-if="isShowTemplate"
       :status="isShowTemplate"
       :landing-page-params="landingPageParams"
+      :email-template-params="emailTemplateParams"
       :email-template="emailTemplate"
       :tab="tab"
       :landing-page-templates="landingPageTemplates"
