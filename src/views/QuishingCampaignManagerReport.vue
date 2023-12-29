@@ -205,6 +205,10 @@ export default {
                 (tab) => tab.name === labels.PhishingReporter
               )
               if (phishingReportIndex !== -1) this.tabItems.splice(phishingReportIndex, 1)
+              const openedEmailReportIndex = this.tabItems.findIndex(
+                (tab) => tab.name === labels.Opened
+              )
+              if (openedEmailReportIndex !== -1) this.tabItems.splice(openedEmailReportIndex, 1)
             }
           } else {
             this.setMultipleType(scenarios)

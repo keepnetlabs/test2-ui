@@ -598,6 +598,18 @@ export default {
       return MERGED_TEXTS[item]
     },
     setActiveBlockManagerComponents(activeComponent = []) {
+      const phishingCodeIndex = activeComponent.findIndex((item) => item === '{PHISHING_CODE}')
+      if (phishingCodeIndex) {
+        activeComponent.unshift(activeComponent[phishingCodeIndex])
+        activeComponent.splice(phishingCodeIndex, 1)
+      }
+      const phishingCallbackPhoneIndex = activeComponent.findIndex(
+        (item) => item === '{PHISHING_CALLBACK_PHONE}'
+      )
+      if (phishingCallbackPhoneIndex) {
+        activeComponent.unshift(activeComponent[phishingCallbackPhoneIndex])
+        activeComponent.splice(phishingCallbackPhoneIndex, 1)
+      }
       this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {
         acc[item] = this.getTagsComponent(item)
         return acc
