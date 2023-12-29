@@ -159,7 +159,10 @@
               </div>
               <multipane-resizer></multipane-resizer>
               <div class="pane pl-3 mt-2" :style="{ flexGrow: 1 }">
-                <ElTabs v-model="tab" class="phishing-scenario-tab-container">
+                <ElTabs
+                  v-model="tab"
+                  class="phishing-scenario-tab-container quishing-scenario-tab-container"
+                >
                   <ElTabPane
                     id="campaign-manager-info--email-content"
                     name="individual-printout"

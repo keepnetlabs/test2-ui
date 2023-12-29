@@ -60,7 +60,7 @@ export default {
       return this.landingPageParams?.name || ''
     },
     getTemplatePreviewContent() {
-      if (this.tab === 'email') {
+      if (this.tab === 'email' || this.tab === 'individual-printout') {
         return this.emailTemplate
       } else {
         return this.getCurrentLandingPageTemplate
