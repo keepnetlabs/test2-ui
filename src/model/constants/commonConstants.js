@@ -615,7 +615,8 @@ export const INTEGRATION_TYPES = {
   CUSTOMINTEGRATION: 'Cross Company Integration',
   ROKSIT: 'Cyber X-Ray',
   CyberXRay: 'Cyber X-Ray',
-  GOOGLEWEBRISK: 'Google Web Risk'
+  GOOGLEWEBRISK: 'Google Web Risk',
+  OPSWAT: 'OPSWAT'
 }
 export const INTEGRATION_LABELS = {
   ANYRUN: 'AnyRun',
