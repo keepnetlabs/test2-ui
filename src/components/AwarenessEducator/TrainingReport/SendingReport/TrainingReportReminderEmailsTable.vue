@@ -333,6 +333,19 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (col) => col.FieldName === 'SmtpName'
+      )
+      if (filterItemIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     getEventReason(event = {}) {
       const { reason, event: eventName } = event
       if (reason) return reason
