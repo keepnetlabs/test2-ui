@@ -340,7 +340,6 @@ export default {
       const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
         (col) => col.FieldName === 'SmtpName'
       )
-      console.log(filterItemIndex)
       if (filterItemIndex !== -1) {
         this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
       }
