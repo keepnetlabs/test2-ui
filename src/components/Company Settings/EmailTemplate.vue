@@ -213,7 +213,7 @@ export default {
       mergeTags: [
         {
           text: 'Enrollment Name',
-          value: '{ENROLLMENTNAME}'
+          value: '{ENROLLMENT_NAME}'
         }
       ],
       mergeTagRules: [
