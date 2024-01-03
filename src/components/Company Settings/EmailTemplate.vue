@@ -23,40 +23,43 @@
         />
       </template>
     </app-modal>
-    <div class="email-template__item mx-4 pt-4" v-if="!onlyGrapes">
-      <label>Subject</label>
-      <InputEntityName
-        id="input--notification-template-subject"
-        initialPlaceholder="Enter email subject"
-        entityName="email subject"
-        :value="subject"
-        :disabled="editItemsDisabled"
-        :initialRules="subjectRules"
-        @input="$emit('update:subject', $event)"
-      />
+    <div class="mx-4 pt-4" v-if="!onlyGrapes">
+      <FormGroup title="Subject" :sub-title="getSubjectSubtitle" style="max-width: unset;">
+        <InputEntityName
+          id="input--notification-template-subject"
+          initialPlaceholder="Enter email subject"
+          entityName="email subject"
+          :value="subject"
+          :disabled="editItemsDisabled"
+          :initialRules="getSubjectRules"
+          @input="$emit('update:subject', $event)"
+        />
+      </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" class="email-template__item mx-4">
-      <label>From Name</label>
-      <InputEntityName
-        id="input--notification-template-sender-name"
-        initialPlaceholder="Enter sender name"
-        entityName="sender name"
-        :value="fromName"
-        :disabled="editItemsDisabled"
-        :initialRules="senderNameRules"
-        @input="$emit('update:fromName', $event)"
-      />
+    <div v-if="!onlyGrapes" class="mx-4">
+      <FormGroup title="From Name" style="max-width: unset;">
+        <InputEntityName
+          id="input--notification-template-sender-name"
+          initialPlaceholder="Enter sender name"
+          entityName="sender name"
+          :value="fromName"
+          :disabled="editItemsDisabled"
+          :initialRules="senderNameRules"
+          @input="$emit('update:fromName', $event)"
+        />
+      </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" class="email-template__item mx-4">
-      <label>From Email</label>
-      <InputEmail
-        id="input--notification-template-from-email"
-        :disabled="editItemsDisabled"
-        :value="fromAddress"
-        @input="$emit('update:fromAddress', $event)"
-      />
+    <div v-if="!onlyGrapes" class="mx-4">
+      <FormGroup title="From Email" style="max-width: unset;">
+        <InputEmail
+          id="input--notification-template-from-email"
+          :disabled="editItemsDisabled"
+          :value="fromAddress"
+          @input="$emit('update:fromAddress', $event)"
+        />
+      </FormGroup>
     </div>
-    <div class="d-flex email-template__item mx-4" v-if="isPhishingTemplate && !onlyGrapes">
+    <div class="d-flex mx-4" v-if="isPhishingTemplate && !onlyGrapes">
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
@@ -160,6 +163,7 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/IndividualPrintOutTemplateDefault.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -172,7 +176,8 @@ export default {
     InputEmail,
     KFileUpload,
     AttachmentsPreview,
-    InputEntityName
+    InputEntityName,
+    FormGroup
   },
   props: [
     'fromAddress',
@@ -191,7 +196,9 @@ export default {
     'extensions',
     'fileUploadHint',
     'size',
-    'isAttachmentError'
+    'isAttachmentError',
+    'isNotificationTemplate',
+    'isEnrollmentCategorySelected'
   ],
   data() {
     return {
@@ -203,6 +210,43 @@ export default {
       grapeJsKey: `${createRandomCryptStringNumber()}-key`,
       Validations,
       attachmentListKey: `${createRandomCryptStringNumber()}-key`,
+      mergeTags: [
+        {
+          text: 'Enrollment Name',
+          value: '{ENROLLMENTNAME}'
+        }
+      ],
+      mergeTagRules: [
+        (v) => {
+          if (!v) return true
+          const matches = v.match(/{(.*?)}/gi)
+          if (!matches?.length) return true
+          const tags = this.mergeTags.map((tag) => tag.value)
+          for (let i = 0; i < matches.length; i++) {
+            if (!tags.includes(matches[i].toUpperCase())) {
+              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+            }
+          }
+          return true
+        },
+        (v) => {
+          if (!v) return true
+          const regexp = new RegExp(
+            `(${this.mergeTags.map((mergeTag) => mergeTag.value).join('|')})`,
+            'gi'
+          )
+          const matches = v.match(regexp)
+          if (!matches?.length) return true
+          const mergeTags = this.mergeTags.map((tag) => tag.value)
+          const usedMergeTags = mergeTags.filter((tag) =>
+            matches.some((match) => match.toUpperCase() === tag)
+          )
+          return (
+            matches.every((match) => usedMergeTags.includes(match)) ||
+            'Only use uppercase letters for the merge tag'
+          )
+        }
+      ],
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
@@ -222,6 +266,19 @@ export default {
     },
     attachments() {
       return [...this.attachmentFiles, ...this.importedEmailAttachments]
+    },
+    isMergeTagSubject() {
+      return this.isNotificationTemplate && this.isEnrollmentCategorySelected
+    },
+    getSubjectSubtitle() {
+      if (!this.isMergeTagSubject) return undefined
+      return `Define a subject for the notification email. Use {ENROLLMENTNAME} merge tag as a variable for the notification email subject`
+    },
+    getSubjectRules() {
+      if (this.isMergeTagSubject) {
+        return [...this.subjectRules, ...this.mergeTagRules]
+      }
+      return this.subjectRules
     }
   },
   watch: {

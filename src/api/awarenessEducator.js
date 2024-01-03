@@ -272,8 +272,11 @@ const noResponseTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/no-response/search`, payload)
 }
 
-const sendingReportTrainingReport = (payload, resourceId) => {
+const searchSendingReportEnrollmentEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
+}
+const searchSendingReportReminderEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
@@ -298,6 +301,10 @@ const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
 
 const getTrainingReportSendingReportDetails = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/email-event/${resourceId}`)
+}
+
+const getTrainingReportReminderEmailDetails = (enrollmentId, userMailId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
@@ -475,7 +482,8 @@ export default {
   progressTrainingReportEmails,
   examTrainingReportResults,
   noResponseTrainingReportEmails,
-  sendingReportTrainingReport,
+  searchSendingReportEnrollmentEmails,
+  searchSendingReportReminderEmails,
   exportTrainingReportUsers,
   getTrainingReportFormDetails,
   getTrainingReportExamResultsDetails,
@@ -491,6 +499,7 @@ export default {
   duplicateTraining,
   deleteTrainingFile,
   getTrainingReportSendingReportDetails,
+  getTrainingReportReminderEmailDetails,
   searchTrash,
   deletePermanentlyEnrollment,
   restoreEnrollment,
