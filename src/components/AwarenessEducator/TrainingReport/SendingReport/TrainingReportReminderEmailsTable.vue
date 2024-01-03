@@ -216,12 +216,13 @@ export default {
             align: 'left',
             editable: false,
             label: 'SMTP',
-            sortable: true,
+            hideSort: true,
+            filterable: false,
+            sortable: false,
             show: true,
             fixed: false,
             type: 'text',
-            width: 150,
-            filterableType: 'text'
+            width: 150
           }
           /*
           {
