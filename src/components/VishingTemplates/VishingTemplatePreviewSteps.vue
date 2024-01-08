@@ -69,6 +69,7 @@
             </div>
             <AudioPlayer
               ref="refTTSAudioPlayer"
+              @srcError="playInputText"
               :key="componentKey"
               :src="ttsUrl"
               :isFetchingTTSUrl="isFetchingTTSUrl"
@@ -149,6 +150,7 @@ export default {
   },
   data() {
     return {
+      retryCount: 5,
       componentKey: '',
       ttsUrl: '',
       isFetchingTTSUrl: false,
@@ -172,6 +174,7 @@ export default {
   watch: {
     selectedStep() {
       this.componentKey = Math.random()
+      this.retryCount = 5
     },
     getSelectedInputType: {
       deep: true,
@@ -179,21 +182,7 @@ export default {
       handler(val) {
         if (!this.getSelectedStepObject) return
         if (val === 'TextToSpeech' && this.isTextToSpeechCompatible) {
-          if (!this.getSelectedStepObject?.inputText) return
-          this.isFetchingTTSUrl = true
-          const payload = {
-            inputText: this.getSelectedStepObject?.inputText || '',
-            voiceResourceId: this.voiceResourceId
-          }
-          playTextToSpeech(payload)
-            .then((res) => {
-              if (res?.data?.data) {
-                this.ttsUrl = res?.data?.data
-              }
-            })
-            .finally(() => {
-              this.isFetchingTTSUrl = false
-            })
+          this.playInputText()
         }
       }
     }
@@ -252,6 +241,26 @@ export default {
     }
   },
   methods: {
+    playInputText() {
+      if (!this.getSelectedStepObject?.inputText) return
+      if (!this.retryCount) return
+      this.retryCount--
+      this.componentKey = Math.random()
+      this.isFetchingTTSUrl = true
+      const payload = {
+        inputText: this.getSelectedStepObject?.inputText || '',
+        voiceResourceId: this.voiceResourceId
+      }
+      playTextToSpeech(payload)
+        .then((res) => {
+          if (res?.data?.data) {
+            this.ttsUrl = res?.data?.data
+          }
+        })
+        .finally(() => {
+          this.isFetchingTTSUrl = false
+        })
+    },
     getStepName(step, category = 'Step', order = 1) {
       if (!step) return
       if (category === 'Step') {

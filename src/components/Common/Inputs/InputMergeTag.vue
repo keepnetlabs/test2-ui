@@ -306,7 +306,7 @@ export default {
       )}${mergeTag}${textarea.value.substring(end_position, textarea.value.length)}`
       this.$emit('input', newValue)
     },
-    handlePlayTextToSpeech() {
+    handlePlayTextToSpeech(retryCount = 5) {
       if (!this.value) return
       this.isPlayTextClicked = true
       this.isFetchingTTSUrl = true
@@ -326,6 +326,9 @@ export default {
             this.audioSrc = res?.data?.data
             this.isPlayTextClicked = true
           }
+        })
+        .catch(() => {
+          if (retryCount) this.handlePlayTextToSpeech(retryCount - 1)
         })
         .finally(() => {
           this.isFetchingTTSUrl = false
