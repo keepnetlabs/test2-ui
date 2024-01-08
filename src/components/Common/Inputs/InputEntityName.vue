@@ -83,8 +83,8 @@ export default {
       }
     }
   },
-  created() {
-    this.rules.unshift((v) =>
+  mounted() {
+    this.rules?.unshift((v) =>
       Validations.maxLength(v, 256, labels.getMaxLengthMessage(this.entityName, 256))
     )
 
@@ -96,7 +96,7 @@ export default {
     applyRequiredProps() {
       if (this.required) {
         this.requiredProps = { hint: this.hint || '*Required', persistentHint: true }
-        this.rules.unshift((v) => Validations.required(v))
+        this.rules?.unshift((v) => Validations.required(v))
       } else {
         this.requiredProps = {}
         this.rules = this.applyRules ? this.initialRules : []
