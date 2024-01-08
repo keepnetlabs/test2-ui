@@ -133,6 +133,7 @@ export default {
   },
   methods: {
     onError() {
+      if (!this.src) return
       this.$emit('srcError')
     },
     onChangeCurrentTime(index) {
