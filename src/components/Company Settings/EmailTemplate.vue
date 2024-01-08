@@ -272,7 +272,7 @@ export default {
     },
     getSubjectSubtitle() {
       if (!this.isMergeTagSubject) return undefined
-      return `Define a subject for the notification email. Use {ENROLLMENTNAME} merge tag as a variable for the notification email subject`
+      return `Define a subject for the notification email. Use {ENROLLMENT_NAME} merge tag as a variable for the notification email subject`
     },
     getSubjectRules() {
       if (this.isMergeTagSubject) {
