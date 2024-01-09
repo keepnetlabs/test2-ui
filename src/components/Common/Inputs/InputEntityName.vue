@@ -73,7 +73,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        this.rules = this.applyRules ? val : []
+        if (val) this.rules = this.applyRules ? val : []
       }
     },
     required: {
@@ -84,7 +84,7 @@ export default {
     }
   },
   mounted() {
-    this.rules?.unshift((v) =>
+    this.rules.unshift((v) =>
       Validations.maxLength(v, 256, labels.getMaxLengthMessage(this.entityName, 256))
     )
 
@@ -96,7 +96,7 @@ export default {
     applyRequiredProps() {
       if (this.required) {
         this.requiredProps = { hint: this.hint || '*Required', persistentHint: true }
-        this.rules?.unshift((v) => Validations.required(v))
+        this.rules.unshift((v) => Validations.required(v))
       } else {
         this.requiredProps = {}
         this.rules = this.applyRules ? this.initialRules : []
