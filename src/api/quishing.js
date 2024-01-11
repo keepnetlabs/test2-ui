@@ -111,7 +111,8 @@ const deleteCampaign = (id) => {
   })
 }
 const deleteBulkCampaigns = (payload) => {
-  return testRequest.post(`/quishing-simulator/quishing-campaign/bulk-delete`, payload, {
+  return testRequest.delete(`/quishing-simulator/quishing-campaign/bulk-delete`, {
+    data: payload,
     snackbar: COMMON_SNACKBAR
   })
 }
