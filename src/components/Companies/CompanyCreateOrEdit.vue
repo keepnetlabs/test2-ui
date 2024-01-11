@@ -64,6 +64,7 @@
                     v-model.trim="formData.Name"
                     id="input--company-name"
                     entity-name="company"
+                    :initialRules="[(v) => validations.required(v)]"
                     initial-placeholder="Enter a name for the company"
                   />
                 </FormGroup>

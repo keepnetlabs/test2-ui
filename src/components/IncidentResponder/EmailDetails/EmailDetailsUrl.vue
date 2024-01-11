@@ -86,7 +86,8 @@
                     v-if="
                       scope.row.analysisEnginePermalink &&
                       scope.row.result !== 'Excluded' &&
-                      scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL
+                      scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL &&
+                      scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT
                     "
                     :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row['analysisEnginePermalink']"

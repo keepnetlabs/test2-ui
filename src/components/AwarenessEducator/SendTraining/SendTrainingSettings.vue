@@ -4,7 +4,7 @@
       <InputEntityName
         v-model.trim="formData.name"
         id="input--enrollment-name"
-        entity-name="name"
+        entity-name="enrollment"
       />
     </FormGroup>
     <FormGroup
