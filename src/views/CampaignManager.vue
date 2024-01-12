@@ -48,6 +48,7 @@
       :selected-row="selectedRow"
       :form-details="formDetails"
       :is-duplicate="isDuplicate"
+      :user="getUser"
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
@@ -173,6 +174,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      getUser: 'auth/userGetter',
       getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
     }),
     getStatusItems() {
