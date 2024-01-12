@@ -28,8 +28,17 @@
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
         :disabled="isTestingConnection"
+        :slots="{ item: true, selection: false }"
         @change="handleChangeEmailDelivery"
       >
+        <template #item="{ item }">
+          <v-list-item-content :disabled="item.disabled">
+            <v-list-item-title>{{ item.name }}</v-list-item-title>
+            <v-list-item-subtitle v-if="item.description" class="tlp_subtitle">{{
+              item.description
+            }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </template>
       </KSelect>
       <v-btn
         v-if="isSelectedEmailDeliveryIsSmtp"
@@ -65,6 +74,17 @@
           </span>
         </template>
       </v-btn>
+    </FormGroup>
+    <FormGroup>
+      <AlertBox
+        v-if="canRenderAlertBox"
+        style="margin-top: -20px;"
+        class="bg-aqua-light mb-4"
+        icon-color="#2196F3"
+        icon-name="mdi-information"
+        text="If a DEC configuration exists for both the reseller and its sub-companies, you can conduct an email phishing simulation using the respective company's DEC configuration. In the absence of a specific configuration, the system will send the simulation via SMTP using the relevant company's default SMTP settings as a fallback."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </FormGroup>
     <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub" has-hint>
       <KSelect
@@ -125,6 +145,8 @@ import useDistributionComputed from '@/hooks/awareness-educator/useDistributionC
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'CampaignManagerDeliverySettings',
   components: {
@@ -132,7 +154,8 @@ export default {
     InputSchedule,
     CampaignManagerSmtpErrorDialog,
     KSelect,
-    FormGroup
+    FormGroup,
+    AlertBox
   },
   mixins: [useDebounce, useDistributionComputed],
   props: {
@@ -172,6 +195,9 @@ export default {
     phishingTypeId: {
       type: Number,
       default: null
+    },
+    targetGroupCompanyNames: {
+      type: Array
     }
   },
   data() {
@@ -231,8 +257,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      timeZones: 'common/getTimezones'
+      timeZones: 'common/getTimezones',
+      getUser: 'auth/userGetter'
     }),
+    canRenderAlertBox() {
+      return (
+        this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
+      )
+    },
     getDistributionDelayTimeItems() {
       return this.formDetails['distributionSmtpDelayTimeTypes'] || []
     },
@@ -294,7 +326,6 @@ export default {
       }
     },
     'inputScheduleFormData.scheduledDateTimeZoneId': {
-      immediate: true,
       handler(val) {
         if (val) {
           this.selectedTimeZoneText =
@@ -354,7 +385,23 @@ export default {
         )
         if (directEmailItems.length) {
           deliveries.push({ header: 'Direct Email Creation' })
-          deliveries.push(...directEmailItems)
+          if (
+            this.type === SCENARIO_TYPES.PHISHING &&
+            this.getUser?.role?.name === 'Reseller' &&
+            this.targetGroupCompanyNames.some((cn) => cn !== this.getUser?.userCompany?.name)
+          ) {
+            deliveries.push(directEmailItems[0])
+            const disabledItems = directEmailItems.map((d) => ({
+              name: d.name,
+              description:
+                'This DEC setting is disabled because you’ve selected user group(s) which doesn’t belong to you.',
+              disabled: true
+            }))
+            disabledItems.splice(0, 1)
+            deliveries.push(...disabledItems)
+          } else {
+            deliveries.push(...directEmailItems)
+          }
         }
         this.emailDeliveryItems = deliveries
         this.$nextTick(() => {

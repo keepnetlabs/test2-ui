@@ -109,6 +109,7 @@
               :subtitle="labels.DeliverySettingsSub"
             />
             <CampaignManagerDeliverySettings
+              v-if="step === 4"
               ref="refCampaignManagerDeliverySettings"
               :default-values="getDefaultValuesDeliverySettings"
               :form-details="formDetails"
@@ -117,6 +118,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -271,6 +273,11 @@ export default {
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
+    },
+    targetGroupCompanyNames() {
+      return Array.from(
+        new Set(this.selectedTargetGroupsMapped.map((tg) => tg?.extraDatas?.companyName))
+      )
     },
     getSelectedPhishingScenario() {
       let selectedScenario = {}
@@ -431,6 +438,7 @@ export default {
     step(val) {
       if (
         val === 4 &&
+        this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData &&
         !this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
       ) {
         this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.scheduledDate = this.$moment(
