@@ -409,6 +409,7 @@
               box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
+              transform: translateY(0px);
             "
           />
         </div>
@@ -417,6 +418,7 @@
             style="
               box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
+              transform: translateY(0px);
             "
           />
         </div>
@@ -432,6 +434,7 @@
               box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
+              transform: translateY(0px);
             "
             :has-link="false"
           />
@@ -446,6 +449,7 @@
               box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
+              transform: translateY(0px);
             "
             :has-link="false"
           />
