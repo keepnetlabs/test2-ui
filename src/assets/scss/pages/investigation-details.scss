@@ -109,6 +109,8 @@
 
         &__container {
             &__stats {
+                justify-content: space-between;
+
                 @media (max-width: 768px) {
                     justify-content: space-around;
                 }
@@ -178,8 +180,7 @@
                         display: flex;
                         flex-flow: row;
                         align-items: center;
-                        justify-content: center;
-
+                        min-width: 250px;
                         &-left {
                             &__icon {
                                 width: 50px;
