@@ -17,31 +17,19 @@
 <script>
 import AdvancedReportsCard from '@/components/AdvancedReports/AdvancedReportsCard'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import ReportsService from '@/api/reports'
-import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'AdvancedReportsList',
   components: { DatatableLoading, AdvancedReportsCard },
-  mixins: [useLoading],
-  data() {
-    return {
-      reports: []
+  props: {
+    reports: {
+      type: Array
+    },
+    isLoading: {
+      type: Boolean
     }
   },
-  created() {
-    this.callForData()
-  },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      ReportsService.getReports()
-        .then((response) => {
-          const { data: { data = [] } = {} } = response || {}
-          this.reports = data.sort((a, b) => a.orderNumber - b.orderNumber)
-        })
-        .finally(this.setLoading)
-    },
     handleActionButtonClick(resourceId = '') {
       this.$router.push(`/reports/advanced-reports/advanced-report/${resourceId}`)
     }
