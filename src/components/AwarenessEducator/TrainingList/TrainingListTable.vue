@@ -67,7 +67,7 @@
     </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
-        v-if="scope.row.type === 'SCORM'"
+        v-if="scope.row.type === TRAINING_TYPES.SCORM"
         :id="tableOptions.rowActions[0].id"
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
@@ -98,7 +98,7 @@
           @on-click="handleEdit(scope.row)"
         />
         <DefaultMenuRowAction
-          v-if="scope.row.type === 'SCORM'"
+          v-if="scope.row.type === TRAINING_TYPES.SCORM"
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -109,7 +109,6 @@
           @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
-          v-else
           :id="tableOptions.rowActions[5].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -151,7 +150,7 @@ import labels from '@/model/constants/labels'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import { EMITS, COLUMNS } from '../utils'
+import { EMITS, COLUMNS, TRAINING_TYPES } from '../utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -169,6 +168,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
+      TRAINING_TYPES,
       CONSTANTS: {
         id: 'awareness-educator-training-list-data-table'
       },
@@ -300,6 +300,9 @@ export default {
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
     },
+    handleAddPoster() {
+      this.$emit(EMITS.ON_ADD_POSTER)
+    },
     exportTrainingList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -332,11 +335,11 @@ export default {
         this.handleAdd()
       }
       if (item.text === this.addTrainingItems[1].text) {
-        //todo open poster modal
+        this.handleAddPoster()
       }
     },
     handleDownloadPoster(item = {}) {
-      //todo download
+      this.$emit(EMITS.ON_DOWNLOAD_POSTER, item)
     }
   }
 }

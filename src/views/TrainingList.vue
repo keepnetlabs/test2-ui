@@ -14,6 +14,15 @@
       :languages="languages"
       @on-close="toggleShowPreviewDialog"
     />
+    <PosterPreviewDialog
+      v-if="isShowPosterPreviewDialog"
+      :status="isShowPosterPreviewDialog"
+      :selected-row="selectedRow"
+      :languages="languages"
+      :title="getPosterPreviewDialogTitle"
+      :subtitle="getPosterPreviewDialogSubtitle"
+      @on-close="toggleShowPosterPreviewDialog"
+    />
     <SendTrainingModal
       v-if="isShowSendTrainingModal"
       :status="isShowSendTrainingModal"
@@ -49,6 +58,8 @@
       @on-add="toggleShowNewTrainingModal"
       @on-edit="handleEditRowClick"
       @on-training="handleSendTrainingRowClick"
+      @on-add-poster="toggleShowNewPosterModal"
+      @on-download-poster="toggleShowPosterDownloadDialog"
     />
   </KContainer>
 </template>
@@ -62,9 +73,13 @@ import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrai
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
+import PosterPreviewDialog from '@/components/AwarenessEducator/Poster/PosterPreviewDialog.vue'
+import labels from '@/model/constants/labels'
 export default {
   name: 'TrainingList',
   components: {
+    PosterPreviewDialog,
     SendTrainingModal,
     NewTrainingModal,
     DeleteTrainingDialog,
@@ -89,6 +104,9 @@ export default {
       isShowDeleteTrainingDialog: false,
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
+      isShowPosterModal: false,
+      isShowPosterPreviewDialog: false,
+      posterPreviewDialogType: 'poster',
       selectedRow: null,
       isEdit: false,
       enumTypes: {},
@@ -98,6 +116,16 @@ export default {
       certificateEmailNotificationTemplateTypeResourceId: '',
       reminderEmailNotificationTemplateTypeResourceId: '',
       trainingEmailNotificationTemplateTypeResourceId: ''
+    }
+  },
+  computed: {
+    getPosterPreviewDialogTitle() {
+      return this.posterPreviewDialogType === 'poster'
+        ? labels.PosterPreview
+        : labels.DownloadPoster
+    },
+    getPosterPreviewDialogSubtitle() {
+      return this.posterPreviewDialogType === 'poster' ? '' : this.selectedRow.posterName
     }
   },
   created() {
@@ -142,6 +170,10 @@ export default {
     toggleShowPreviewDialog() {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
+    toggleShowPosterPreviewDialog() {
+      if (this.isShowPosterPreviewDialog) this.posterPreviewDialogType = 'poster'
+      this.isShowPosterPreviewDialog = !this.isShowPosterPreviewDialog
+    },
     toggleShowNewTrainingModal(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)
       if (this.isShowNewTrainingModal) {
@@ -156,6 +188,10 @@ export default {
         this.selectedRow = null
       }
       this.isShowSendTrainingModal = !this.isShowSendTrainingModal
+    },
+    toggleShowPosterDownloadDialog() {
+      this.posterPreviewDialogType = 'download'
+      this.toggleShowPosterPreviewDialog()
     },
     getDataAndReRenderTable(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
@@ -175,7 +211,16 @@ export default {
     },
     handlePreviewRowClick(row) {
       this.selectedRow = row
-      this.toggleShowPreviewDialog()
+      if (row.type === TRAINING_TYPES.SCORM) this.toggleShowPreviewDialog()
+      else this.toggleShowPosterPreviewDialog()
+    },
+    toggleShowNewPosterModal(forceUpdate = false) {
+      this.getDataAndReRenderTable(forceUpdate)
+      if (this.isShowPosterModal) {
+        this.selectedRow = null
+        this.isEdit = false
+      }
+      this.isShowPosterModal = !this.isShowPosterModal
     }
   }
 }

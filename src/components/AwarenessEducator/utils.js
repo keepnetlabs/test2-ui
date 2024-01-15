@@ -10,7 +10,14 @@ export const EMITS = {
   ON_TRAINING: 'on-training',
   ON_ITEM_CHANGE: 'on-item-change',
   ON_DUPLICATE: 'on-duplicate',
-  ON_DOWNLOAD: 'on-download'
+  ON_DOWNLOAD: 'on-download',
+  ON_ADD_POSTER: 'on-add-poster',
+  ON_DOWNLOAD_POSTER: 'on-download-poster'
+}
+
+export const TRAINING_TYPES = {
+  SCORM: 'SCORM',
+  POSTER: 'POSTER'
 }
 
 export const ENROLLMENT_STATUSES = {
