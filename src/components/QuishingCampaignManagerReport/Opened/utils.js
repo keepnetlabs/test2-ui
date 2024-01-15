@@ -130,8 +130,8 @@ export const COLUMNS = {
     fixed: false,
     show: true,
     type: 'text',
-    width: 180,
     overrideWidth: true,
+    minWidth: 180,
     filterableType: 'date'
   },
   DATA: {

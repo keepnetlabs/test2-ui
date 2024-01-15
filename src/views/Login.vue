@@ -1033,6 +1033,15 @@ export default {
         response.data.expiredIn,
         response.data.status
       )
+      if (response?.data?.uuid) {
+        localStorage.setItem(
+          'uuid',
+          JSON.stringify({
+            email: payload.email,
+            uuid: response.data.uuid
+          })
+        )
+      }
       if (this.checkQueryHasCommunityPostId()) {
         this.redirectToCommunityPost()
       } else if (this.checkQueryHasCommunityRequestId()) {
