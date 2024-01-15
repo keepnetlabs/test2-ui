@@ -335,7 +335,7 @@ export default {
       getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions'
     })
   },
-  created() {
+  mounted() {
     this.callForLanguages('refScenariosList')
     this.callForScenarioDetails()
   },
