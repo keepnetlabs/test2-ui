@@ -275,7 +275,10 @@
         </app-dialog>
 
         <div class="investigation-details__container__stats">
-          <InvestigationDetailsTopBarLoading :loading="topMenuLoading">
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
             <template #skeleton-content>
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
@@ -332,6 +335,7 @@
           <InvestigationDetailsTopBarLoading
             v-if="statsAndMenuData.status !== 'Running'"
             :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
           >
             <template v-slot:skeleton-content>
               <div class="investigation-details__container__stats__cards__card">
@@ -365,7 +369,10 @@
               </div>
             </template>
           </InvestigationDetailsTopBarLoading>
-          <InvestigationDetailsTopBarLoading :loading="topMenuLoading">
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
             <template v-slot:skeleton-content>
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
@@ -394,7 +401,10 @@
               </div>
             </template>
           </InvestigationDetailsTopBarLoading>
-          <InvestigationDetailsTopBarLoading :loading="topMenuLoading">
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
             <template v-slot:skeleton-content>
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
