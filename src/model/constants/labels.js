@@ -28,6 +28,7 @@ export const labels = {
   EnrollmentSettings: 'Enrollment Settings',
   EnrollmentSettingsSub: 'Define enrollment settings',
   Attachment: 'Attachment',
+  DownloadPoster: 'Download Poster',
   Date: 'Date',
   Quishing: 'Quishing',
   TimesScanned: 'Times Scanned',
