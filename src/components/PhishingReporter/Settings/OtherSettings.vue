@@ -211,7 +211,7 @@ export default {
         ? [
             (v) => validations.required(v, labels.Required),
             (v) => validations.urlWithPort(v, labels.InvalidURL),
-            (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+            (v) => validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
           ]
         : []
     },
@@ -234,7 +234,7 @@ export default {
         rules.push(
           (v) => validations.required(v, labels.Required),
           (v) => validations.url(v, labels.InvalidURL),
-          (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+          (v) => validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
         )
       }
       return rules

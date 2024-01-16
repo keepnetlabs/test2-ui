@@ -127,7 +127,7 @@
               (v) => validations.required(v, labels.Required),
               (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
               (v) => validations.isDomainUrl(v, labels.InvalidURL),
-              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+              (v) => validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000)),
               (v) => validations.noWhitespace(v, labels.InvalidURL)
             ]"
           />
@@ -141,7 +141,7 @@
               (v) => validations.required(v, labels.Required),
               (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
               (v) => validations.isDomainUrl(v, labels.InvalidURL),
-              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+              (v) => validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000)),
               (v) => validations.noWhitespace(v, labels.InvalidURL)
             ]"
           />
