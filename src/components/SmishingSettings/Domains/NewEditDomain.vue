@@ -279,7 +279,7 @@ export default {
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v, labels.Required),
           (v) => Validations.url(v, labels.InvalidURL),
-          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+          (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
         ]
       }
       return props

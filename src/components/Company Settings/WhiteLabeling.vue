@@ -415,7 +415,7 @@ export default {
         (v) => validations.required(v, labels.Required),
         (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
         (v) => validations.isDomainUrl(v),
-        (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+        (v) => validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
       ],
       brandRules: [
         (v) => validations.required(v, labels.Required),
