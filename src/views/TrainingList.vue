@@ -7,6 +7,13 @@
       :selected-row="selectedRow"
       @on-close="toggleShowNewTrainingModal"
     />
+    <NewPosterModal
+      v-if="isShowNewPosterModal"
+      :status="isShowNewPosterModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      @on-close="toggleShowNewPosterModal"
+    />
     <TrainingPreviewDialog
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
@@ -76,9 +83,11 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 import PosterPreviewDialog from '@/components/AwarenessEducator/Poster/PosterPreviewDialog.vue'
 import labels from '@/model/constants/labels'
+import NewPosterModal from '@/components/AwarenessEducator/NewPoster/NewPosterModal.vue'
 export default {
   name: 'TrainingList',
   components: {
+    NewPosterModal,
     PosterPreviewDialog,
     SendTrainingModal,
     NewTrainingModal,
@@ -104,7 +113,7 @@ export default {
       isShowDeleteTrainingDialog: false,
       isShowNewTrainingModal: false,
       isShowSendTrainingModal: false,
-      isShowPosterModal: false,
+      isShowNewPosterModal: false,
       isShowPosterPreviewDialog: false,
       posterPreviewDialogType: 'poster',
       selectedRow: null,
@@ -216,11 +225,11 @@ export default {
     },
     toggleShowNewPosterModal(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)
-      if (this.isShowPosterModal) {
+      if (this.isShowNewPosterModal) {
         this.selectedRow = null
         this.isEdit = false
       }
-      this.isShowPosterModal = !this.isShowPosterModal
+      this.isShowNewPosterModal = !this.isShowNewPosterModal
     }
   }
 }
