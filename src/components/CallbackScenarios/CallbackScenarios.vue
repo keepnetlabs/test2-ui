@@ -373,7 +373,7 @@ export default {
       getCallbackScenariosSearchPermissions: 'permissions/getCallbackScenariosSearchPermissions'
     })
   },
-  created() {
+  mounted() {
     this.callForLanguages('refScenariosList')
     this.callForData()
   },
