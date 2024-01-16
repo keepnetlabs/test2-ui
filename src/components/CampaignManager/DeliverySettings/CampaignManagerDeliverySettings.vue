@@ -347,7 +347,6 @@ export default {
   },
   created() {
     this.callForDefaultSmtpSetting()
-    this.callForEmailDeliveries()
   },
   methods: {
     getTestConnectionButtonStyle() {
