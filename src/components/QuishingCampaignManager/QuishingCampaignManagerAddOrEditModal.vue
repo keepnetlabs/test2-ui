@@ -429,6 +429,9 @@ export default {
       this.isPhishingScenariosValid = !!val.length
     },
     step(val) {
+      if (val === 4) {
+        this?.$refs?.refCampaignManagerDeliverySettings?.callForEmailDeliveries()
+      }
       if (
         val === 4 &&
         !this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData?.scheduledDate
