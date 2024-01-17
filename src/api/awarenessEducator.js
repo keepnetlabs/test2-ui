@@ -28,6 +28,14 @@ const uploadTrainingContent = (payload, resourceId, abortSignal, onUploadProgres
     timeout: Infinity
   })
 }
+const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressCallback) => {
+  return testRequest.post(`/trainings/${resourceId}/upload-file-content`, payload, {
+    snackbar: COMMON_SNACKBAR,
+    onUploadProgress: onUploadProgressCallback,
+    signal: abortSignal,
+    timeout: Infinity
+  })
+}
 
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
@@ -524,5 +532,6 @@ export default {
   examTrainingNonTargetUserTrainingDetails,
   progressNonTargetUsersTrainingReportEmails,
   progressNonTargetUsersTrainingReportEmailsDetails,
-  getScormProxyTrainingReportSummary
+  getScormProxyTrainingReportSummary,
+  uploadPosterContent
 }

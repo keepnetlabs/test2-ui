@@ -28,6 +28,11 @@
       :languages="languages"
       :title="getPosterPreviewDialogTitle"
       :subtitle="getPosterPreviewDialogSubtitle"
+      :type="posterPreviewDialogType"
+      :show-details="posterPreviewDialogType === 'poster'"
+      :show-tabs="posterPreviewDialogType === 'poster'"
+      :show-poster-name="posterPreviewDialogType === 'poster'"
+      :icon="posterPreviewDialogType === 'poster' ? 'mdi-eye' : 'mdi-download'"
       @on-close="toggleShowPosterPreviewDialog"
     />
     <SendTrainingModal
@@ -134,7 +139,7 @@ export default {
         : labels.DownloadPoster
     },
     getPosterPreviewDialogSubtitle() {
-      return this.posterPreviewDialogType === 'poster' ? '' : this.selectedRow.posterName
+      return this.posterPreviewDialogType === 'poster' ? '' : this.selectedRow.trainingName
     }
   },
   created() {
@@ -212,6 +217,9 @@ export default {
     handleEditRowClick(row) {
       this.selectedRow = row
       this.isEdit = true
+      if (row.type.toLowerCase() === TRAINING_TYPES.POSTER.toLowerCase()) {
+        return this.toggleShowNewPosterModal()
+      }
       this.toggleShowNewTrainingModal()
     },
     handleSendTrainingRowClick(row) {

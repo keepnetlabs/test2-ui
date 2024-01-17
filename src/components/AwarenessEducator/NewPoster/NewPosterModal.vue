@@ -76,7 +76,7 @@
 
 <script>
 import AppModal from '@/components/AppModal'
-import { EMITS } from '@/components/AwarenessEducator/utils'
+import { EMITS, TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -194,7 +194,8 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests
+            availableForRequests,
+            type: TRAINING_TYPES.POSTER
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
@@ -236,7 +237,7 @@ export default {
         }
       } = refTrainingCourseInformation
       const {
-        formData: { hasQuiz, type }
+        formData: { hasQuiz }
       } = refTrainingContent
       const payload = new FormData()
       if (coverImageUrl) {
@@ -248,7 +249,7 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', type)
+      payload.append('trainingDetail.type', TRAINING_TYPES.POSTER)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })

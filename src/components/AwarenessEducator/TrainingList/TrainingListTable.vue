@@ -109,6 +109,7 @@
           @on-click="handlePreview(scope.row)"
         />
         <DefaultMenuRowAction
+          v-else
           :id="tableOptions.rowActions[5].id"
           :scope="scope"
           :check-is-owner-property="false"

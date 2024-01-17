@@ -17,7 +17,7 @@ export const EMITS = {
 
 export const TRAINING_TYPES = {
   SCORM: 'SCORM',
-  POSTER: 'POSTER'
+  POSTER: 'Poster'
 }
 
 export const ENROLLMENT_STATUSES = {

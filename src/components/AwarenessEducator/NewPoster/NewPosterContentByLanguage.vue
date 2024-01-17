@@ -32,14 +32,14 @@
     >
       <KFileUpload
         ref="refCoverImageFileUpload"
-        id="input--new-training-content-by-language-file"
+        id="input--new-poster-content-by-language-file"
         style="width: 205px !important;"
         :size="100"
         :hint="getHint"
         :isShowFileProgress="true"
         :is-stand-alone="true"
         :onUploadProgress="progressEvent"
-        :extensions="['.zip']"
+        :extensions="['jpg', 'pdf', 'tiff', 'png']"
         :file-previews="filePreviews"
         :disabled="!value.languageId"
         :readonly="isReadonly"
@@ -58,6 +58,7 @@ import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import * as Validations from '@/utils/validations'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 export default {
   name: 'NewPosterContentByLanguage',
   components: { KFileUpload, InputSelectLanguage, FormGroupHorizontalContent },
@@ -114,9 +115,7 @@ export default {
       return !!this?.filePreviews?.length || this.isDisabled
     },
     getHint() {
-      return `${
-        this.typeWithDisplayName ? this.typeWithDisplayName : this.scormType
-      } .zip file. Max. file size 100MB`
+      return '.jpg, .png, .pdf, .tiff file. Max. file size 100MB'
     }
   },
   methods: {
@@ -128,12 +127,13 @@ export default {
       this.$emit('input', { ...this.value, isUploading: true })
       this.abortController = new AbortController()
       const payload = new FormData()
-      payload.append('zipFile', file)
-      payload.append('languageId', this.value.languageId)
+      payload.append('File', file)
+      payload.append('LanguageId', this.value.languageId)
+      payload.append('Type', TRAINING_TYPES.POSTER)
       this.isDisabled = true
       this.isReadonly = true
       this.isBackendParsed = false
-      AwarenessEducatorService.uploadTrainingContent(
+      AwarenessEducatorService.uploadPosterContent(
         payload,
         this.trainingResourceId,
         this.abortController.signal,
