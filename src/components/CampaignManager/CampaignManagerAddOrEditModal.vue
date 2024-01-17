@@ -109,7 +109,6 @@
               :subtitle="labels.DeliverySettingsSub"
             />
             <CampaignManagerDeliverySettings
-              v-if="step === 4"
               ref="refCampaignManagerDeliverySettings"
               :default-values="getDefaultValuesDeliverySettings"
               :form-details="formDetails"
@@ -436,6 +435,9 @@ export default {
       this.isPhishingScenariosValid = !!val.length
     },
     step(val) {
+      if (val === 4) {
+        this?.$refs?.refCampaignManagerDeliverySettings?.callForEmailDeliveries()
+      }
       if (
         val === 4 &&
         this?.$refs?.refCampaignManagerDeliverySettings?.inputScheduleFormData &&

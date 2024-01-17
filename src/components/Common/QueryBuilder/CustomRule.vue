@@ -368,7 +368,7 @@ export default {
     getSubjectRules() {
       return [
         (v) => this.validations.required(v, labels.Required),
-        (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Subject', 64))
+        (v) => this.validations.maxLength(v, 512, labels.getMaxLengthMessage('Subject', 512))
       ]
     },
     getKeywordRules() {

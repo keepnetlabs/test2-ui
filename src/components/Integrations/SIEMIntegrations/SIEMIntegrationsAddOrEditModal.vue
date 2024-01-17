@@ -217,13 +217,13 @@ export default {
         (v) => Validations.startsWithHttpOrHttps(v, labels.MustStartWithHttpOrHttps),
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.urlOrIpAddress(v),
-        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+        (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
       ],
       serverAddressRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.urlOrIpAddress(v),
-        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+        (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000))
       ],
       portRules: [
         (v) => Validations.required(v, labels.Required),

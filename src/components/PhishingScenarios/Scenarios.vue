@@ -265,7 +265,7 @@ export default {
       return this.selectedRow?.method === 'Attachment' || undefined
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refScenariosList')
     this.callForScenarioDetails().then(() => {
       this.callForData()
