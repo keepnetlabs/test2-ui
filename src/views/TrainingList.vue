@@ -71,7 +71,7 @@
       @on-edit="handleEditRowClick"
       @on-training="handleSendTrainingRowClick"
       @on-add-poster="toggleShowNewPosterModal"
-      @on-download-poster="toggleShowPosterDownloadDialog"
+      @on-download-poster="handleDownloadPosterAction"
     />
   </KContainer>
 </template>
@@ -174,6 +174,10 @@ export default {
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId
         this.trainingEmailNotificationTemplateTypeResourceId = trainingEmailNotificationTemplateTypeResourceId
       })
+    },
+    handleDownloadPosterAction(row) {
+      this.selectedRow = row
+      this.toggleShowPosterDownloadDialog()
     },
     toggleShowDeleteTrainingDialog(forceUpdate = false) {
       this.getDataAndReRenderTable(forceUpdate)

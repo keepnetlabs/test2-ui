@@ -446,6 +446,12 @@ const getProxyTargetUserById = (id) => {
   return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
 }
 
+const downloadPoster = (payload) => {
+  return testRequest.post(`/trainings/scorm/download`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -533,5 +539,6 @@ export default {
   progressNonTargetUsersTrainingReportEmails,
   progressNonTargetUsersTrainingReportEmailsDetails,
   getScormProxyTrainingReportSummary,
-  uploadPosterContent
+  uploadPosterContent,
+  downloadPoster
 }

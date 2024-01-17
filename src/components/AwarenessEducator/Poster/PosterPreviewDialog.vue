@@ -19,7 +19,9 @@
               <div v-if="showPosterName">
                 <div>
                   <span class="template-preview__text--title">Poster Name: </span>
-                  <span class="template-preview__text--body">{{ selectedRow.trainingName }}</span>
+                  <span class="template-preview__text--body">{{
+                    selectedRow && selectedRow.trainingName
+                  }}</span>
                 </div>
               </div>
               <FormGroupHorizontalContent
@@ -40,7 +42,7 @@
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <span class="template-preview__text--title">File Name: </span>
-                  <span class="template-preview__text--body">{{ posterParams.fileName }}</span>
+                  <span class="template-preview__text--body">{{ fileName }}</span>
                 </div>
 
                 <VBtn
@@ -56,8 +58,9 @@
               </div>
             </div>
             <hr class="mt-4" />
-            <div class="max-w-100 d-flex justify-center">
-              <img class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+            <div class="max-w-100 d-flex justify-center w-100">
+              <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+              <pdf class="w-100" v-else :src="pdfSrc" />
             </div>
           </div>
         </ElTabPane>
@@ -135,7 +138,7 @@
           <div class="d-flex justify-space-between align-center">
             <div>
               <span class="template-preview__text--title">File Name: </span>
-              <span class="template-preview__text--body">{{ posterParams.fileName }}</span>
+              <span class="template-preview__text--body">{{ fileName }}</span>
             </div>
 
             <VBtn
@@ -152,7 +155,8 @@
         </div>
         <hr class="mt-4" />
         <div class="max-w-100 d-flex justify-center">
-          <img class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+          <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+          <pdf v-else :src="posterPreviewSrc" />
         </div>
       </div>
     </template>
@@ -169,7 +173,6 @@ import labels from '@/model/constants/labels'
 import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
 export default {
   name: 'PosterPreviewDialog',
   components: {
@@ -177,7 +180,8 @@ export default {
     FormGroupHorizontalContent,
     AppDialog,
     DatatableLoading,
-    AppDialogFooterWithClose
+    AppDialogFooterWithClose,
+    pdf: () => import('vue-pdf')
   },
   props: {
     status: {
@@ -226,7 +230,10 @@ export default {
       isLoading: false,
       labels,
       posterParams: {},
-      posterPreviewSrc: ''
+      posterPreviewSrc: '',
+      fileName: '',
+      isPdf: true,
+      pdfSrc: null
     }
   },
   computed: {
@@ -252,15 +259,23 @@ export default {
   },
   methods: {
     callForData() {
+      this.isLoading = true
+      this.pdfSrc = ''
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
         this.specification
       )
         .then((response) => {
           this.posterPreviewSrc = response?.data?.data?.trainingUrl
+          console.log(response?.data?.data?.trainingUrl.split('/'))
+          const splittedUrl = response?.data?.data?.trainingUrl.split('/')
+          this.fileName = splittedUrl[splittedUrl.length - 1]
+          this.isPdf = this.fileName.includes('.pdf')
+          if (this.isPdf) this.handleDownloadPoster()
         })
         .finally(() => {
-          this.$emit('update:isLoading', false)
+          if (this.isPdf) return
+          this.isLoading = false
         })
     },
     callForPoster() {
@@ -271,7 +286,31 @@ export default {
     handleClose() {
       this.$emit('on-close')
     },
-    handleDownloadPoster() {}
+    handleDownloadPoster() {
+      if (this.isPdf && this.pdfSrc) {
+        return this.downloadPDFObject(this.pdfSrc)
+      }
+      AwarenessEducatorService.downloadPoster({
+        trainingId: this.selectedRow.trainingId,
+        languageId: this.specification
+      })
+        .then((response) => {
+          if (this.isPdf) {
+            this.pdfSrc = window.URL.createObjectURL(response.data)
+            return
+          }
+          this.downloadPDFObject(window.URL.createObjectURL(data))
+        })
+        .finally(() => {
+          if (this.isPdf) this.isLoading = false
+        })
+    },
+    downloadPDFObject(data) {
+      const link = document.createElement('a')
+      link.href = data
+      link.download = `${this.fileName}`
+      link.click()
+    }
   }
 }
 </script>

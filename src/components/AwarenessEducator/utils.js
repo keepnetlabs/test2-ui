@@ -169,7 +169,9 @@ export const COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 160
+    width: 160,
+    filterableType: 'select',
+    filterableItems: ['SCORM', 'Poster']
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
