@@ -385,7 +385,7 @@ export default {
       return this.emailTemplateParams?.template
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refEmailTemplatesList')
     this.callForData()
   },
