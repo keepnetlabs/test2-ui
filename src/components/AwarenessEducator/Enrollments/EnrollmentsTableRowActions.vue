@@ -10,6 +10,22 @@
     />
     <RowActionsMenu>
       <DefaultMenuRowAction
+        v-if="isRenderStopReminderButton"
+        id="btn-stop--row-actions-stop-reminder"
+        icon="mdi-stop"
+        text="Stop Reminder"
+        :scope="scope"
+        @on-click="$emit('on-stop-reminder', scope.row)"
+      />
+      <DefaultMenuRowAction
+        v-if="isRenderStopAutoEnrollButton"
+        id="btn-stop--row-actions-stop-auto-enroll"
+        icon="mdi-stop"
+        text="Stop Auto-enroll"
+        :scope="scope"
+        @on-click="$emit('on-stop-auto-enroll', scope.row)"
+      />
+      <DefaultMenuRowAction
         v-if="!isShowReport"
         id="btn-view-report--row-actions-enrollments-list"
         :scope="scope"
@@ -91,6 +107,12 @@ export default {
       return [ENROLLMENT_STATUSES.AUTO_ENROLL, ENROLLMENT_STATUSES.SCHEDULED].includes(
         this.scope.row.status
       )
+    },
+    isRenderStopAutoEnrollButton() {
+      return [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status)
+    },
+    isRenderStopReminderButton() {
+      return this.scope?.row?.isReminderActive
     },
     isScheduled() {
       return this.scope.row.status === ENROLLMENT_STATUSES.SCHEDULED

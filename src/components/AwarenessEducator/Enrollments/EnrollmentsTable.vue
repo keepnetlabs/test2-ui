@@ -33,6 +33,8 @@
       <EnrollmentsTableRowActions
         :scope="scope"
         :row-actions="tableOptions.rowActions"
+        @on-stop-reminder="$emit('on-stop-reminder', $event)"
+        @on-stop-auto-enroll="$emit('on-stop-auto-enroll', $event)"
         @on-stop="$emit('on-stop', $event)"
         @on-send="$emit('on-send', $event)"
         @on-edit="$emit('on-edit', $event)"
