@@ -31,13 +31,12 @@
             />
           </FormGroup>
           <FormGroup
-            v-if="sendReminderEvery"
+            v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
             class="mb-2"
           >
             <div
-              v-if="!isReminderStopped"
               class="campaign-manager-advanced-settings__other-settings-last campaign-manager-advanced-settings__other-settings-last--disabled"
             >
               <v-checkbox
@@ -124,24 +123,13 @@
             <v-icon class="mr-2" style="font-size: 22px;">mdi-stop</v-icon>
             Stop Reminder
           </v-btn>
-          <FormGroup>
-            <AlertBox
-              v-if="isReminderStopped"
-              class="bg-aqua-light"
-              icon-color="#2196F3"
-              icon-name="mdi-information"
-              text="Reminder is already stopped and can not run again for this enrollment."
-              :slots="{ primaryAction: false, secondaryAction: false }"
-            />
-          </FormGroup>
           <FormGroup
-            v-if="isAutoEnroll"
+            v-if="isAutoEnroll && !isAutoEnrollStopped"
             class="mt-4 mb-2"
             style="max-width: 950px;"
             :title="labels.AutoEnroll"
           >
             <div
-              v-if="!isAutoEnrollStopped"
               class="campaign-manager-advanced-settings__other-settings-last campaign-manager-advanced-settings__other-settings-last--disabled"
             >
               <v-checkbox
@@ -216,16 +204,6 @@
             <v-icon class="mr-2" style="font-size: 22px;">mdi-stop</v-icon>
             Stop Auto-enroll
           </v-btn>
-          <FormGroup>
-            <AlertBox
-              v-if="isAutoEnrollStopped"
-              class="bg-aqua-light"
-              icon-color="#2196F3"
-              icon-name="mdi-information"
-              text="Auto-enroll is already stopped and can not run again for this enrollment."
-              :slots="{ primaryAction: false, secondaryAction: false }"
-            />
-          </FormGroup>
           <FormGroup class="mt-6" title="Mark as Test">
             <v-checkbox
               v-model="formData.markedAsTest"
@@ -254,7 +232,6 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog'
 import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog'
-import AlertBox from '@/components/AlertBox'
 export default {
   name: 'EditEnrollmentsModal',
   components: {
@@ -265,8 +242,7 @@ export default {
     AppModal,
     InputEntityName,
     StopReminderDialog,
-    StopAutoEnrollDialog,
-    AlertBox
+    StopAutoEnrollDialog
   },
   props: {
     status: {
