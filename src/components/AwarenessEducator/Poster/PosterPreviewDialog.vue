@@ -266,11 +266,10 @@ export default {
         this.specification
       )
         .then((response) => {
-          this.posterPreviewSrc = response?.data?.data?.trainingUrl
-          console.log(response?.data?.data?.trainingUrl.split('/'))
           const splittedUrl = response?.data?.data?.trainingUrl.split('/')
           this.fileName = splittedUrl[splittedUrl.length - 1]
           this.isPdf = this.fileName.includes('.pdf')
+          this.posterPreviewSrc = response?.data?.data?.trainingUrl
           if (this.isPdf) this.handleDownloadPoster()
         })
         .finally(() => {
