@@ -58,6 +58,14 @@
               :text="getUnverifiedDomainsText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderPhoneNumberAlertBox"
+              class="mt-4"
+              icon-color="#B83A3A"
+              style="background-color: #f56c6c33;"
+              text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -279,6 +287,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
     languageOptions: {
       type: Array,
       default: () => []
@@ -377,6 +389,9 @@ export default {
     canRenderAlertbox() {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
+    canRenderPhoneNumberAlertBox() {
+      return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+    },
     getUnverifiedDomainsText() {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
@@ -385,6 +400,13 @@ export default {
         this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+      )
+    },
+    getActiveUsersWithPhoneNumberCount() {
+      return (
+        this.formData.userCountDetailResponse?.data?.data
+          ?.find((row) => row.status === 'Active')
+          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
       )
     },
     isFormData() {

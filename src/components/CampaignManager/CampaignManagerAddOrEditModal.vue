@@ -128,6 +128,7 @@
             />
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
               :show-schedule="showSchedule"
               :form-data="getFormDataForCampaignSummary"
               :language-options="languageOptions"
@@ -183,6 +184,7 @@ import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAu
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -624,6 +626,7 @@ export default {
           return
         case 5:
           let {
+            refCampaignManagerSummary,
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
             refCampaignManagerDeliverySettings: {
@@ -633,6 +636,23 @@ export default {
             },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
+          if (refCampaignManagerSummary?.canRenderPhoneNumberAlertBox) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'There are no defined phone numbers for the selected target groups.',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-information'
+            })
+            return
+          }
+          if (this.selectedPhishingScenarios.length > this.totalTargetUserCount) {
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                'The count of scenarios selected should not exceed the count of target users selected.',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-information'
+            })
+            return
+          }
           deliverySettingsFormData = {
             ...deliverySettingsFormData,
             ...inputScheduleFormData,
