@@ -200,6 +200,9 @@ export default {
           this.loading = false
         })
     },
+    handleCloseStopReminderDialog() {
+      this.isStopReminderDialogVisible = false
+    },
     handleConfirmStopAutoEnroll() {
       this.loading = true
       AwarenessEducatorService.stopAutoEnroll(this.selectedRow.enrollmentId)
@@ -210,6 +213,9 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    handleCloseStopAutoEnrollDialog() {
+      this.isStopAutoEnrollDialogVisible = false
     }
   }
 }

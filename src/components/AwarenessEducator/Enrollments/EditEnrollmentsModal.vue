@@ -23,7 +23,7 @@
       <template #overlay-body>
         <AppModalBodyHeader title="Enrollment Settings" />
         <v-form ref="refForm">
-          <FormGroup has-hint :title="labels.EnrollmentName" class="mt-6">
+          <FormGroup has-hint :title="labels.EnrollmentName">
             <InputEntityName
               v-model.trim="formData.name"
               id="input--enrollment-name"
@@ -136,7 +136,7 @@
           </FormGroup>
           <FormGroup
             v-if="isAutoEnroll"
-            class="mt-6 mb-2"
+            class="mt-4 mb-2"
             style="max-width: 950px;"
             :title="labels.AutoEnroll"
           >
@@ -373,7 +373,7 @@ export default {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
           const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
-          if (enrollmentAutoEnroll) this.isAutoEnroll = true
+          if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
             : this.formData.enrollmentReminder
@@ -426,7 +426,7 @@ export default {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
     },
     handleClose() {
-      this.$emit(EMITS.ON_CLOSE)
+      this.$emit(EMITS.ON_CLOSE, this.isAutoEnrollStopped || this.isReminderStopped)
     },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
