@@ -33,6 +33,18 @@
           :languages="languages"
           @on-close="toggleShowPreviewDialog"
         />
+        <StopReminderDialog
+          :status="isStopReminderDialogVisible"
+          :isActionButtonDisabled="loading"
+          @confirm="handleConfirmStopReminder"
+          @close="handleCloseStopReminderDialog"
+        />
+        <StopAutoEnrollDialog
+          :status="isStopAutoEnrollDialogVisible"
+          :isActionButtonDisabled="loading"
+          @confirm="handleConfirmStopAutoEnroll"
+          @close="handleCloseStopAutoEnrollDialog"
+        />
         <EnrollmentsTable
           v-if="tab === 'enrollments'"
           ref="refTable"
@@ -42,6 +54,8 @@
           :scorm-types="scormTypes"
           :main-languages="languages"
           :enrollmentStatusEnum="enrollmentStatusEnum"
+          @on-stop-reminder="handleStopReminder"
+          @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
           @on-stop="handleStop"
           @on-send="handleSend"
@@ -68,7 +82,8 @@ import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/Edi
 import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import SendEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/SendEnrollmentDialog'
 import Trash from '@/components/AwarenessEducator/Enrollments/Trash'
-
+import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog'
+import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog'
 export default {
   name: 'Enrollments',
   components: {
@@ -79,11 +94,16 @@ export default {
     DeleteEnrollmentDialog,
     EnrollmentsTable,
     KContainer,
-    TrainingPreviewDialog
+    TrainingPreviewDialog,
+    StopReminderDialog,
+    StopAutoEnrollDialog
   },
   mixins: [useAwarenessHelperCalls],
   data() {
     return {
+      loading: false,
+      isStopAutoEnrollDialogVisible: false,
+      isStopReminderDialogVisible: false,
       tab: 'enrollments',
       isShowSendEnrollmentDialog: false,
       isShowDeleteEnrollmentsDialog: false,
@@ -160,6 +180,36 @@ export default {
         link.download = `${row.enrollmentId}_Scorm.zip`
         link.click()
       })
+    },
+    handleStopReminder(row) {
+      this.selectedRow = row
+      this.isStopReminderDialogVisible = true
+    },
+    handleStopAutoEnroll(row) {
+      this.selectedRow = row
+      this.isStopAutoEnrollDialogVisible = true
+    },
+    handleConfirmStopReminder() {
+      this.loading = true
+      AwarenessEducatorService.stopReminder(this.selectedRow.enrollmentId)
+        .then((res) => {
+          this.isStopReminderDialogVisible = false
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    handleConfirmStopAutoEnroll() {
+      this.loading = true
+      AwarenessEducatorService.stopAutoEnroll(this.selectedRow.enrollmentId)
+        .then((res) => {
+          this.isStopAutoEnrollDialogVisible = false
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }

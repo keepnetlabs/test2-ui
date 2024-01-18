@@ -133,6 +133,18 @@ const getEnrollment = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}`)
 }
 
+const stopReminder = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/stop-reminder`, undefined, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const stopAutoEnroll = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/stop-autoenroll`, undefined, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 const updateEnrollment = (payload, resourceId) => {
   return testRequest.put(`/enrollments/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -470,6 +482,8 @@ export default {
   stopEnrollment,
   getEnrollment,
   updateEnrollment,
+  stopReminder,
+  stopAutoEnroll,
   createEnrollment,
   getContentLanguageItems,
   getTrainingUrl,
