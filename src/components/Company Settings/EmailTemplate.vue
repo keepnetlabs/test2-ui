@@ -250,7 +250,7 @@ export default {
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320))
+        (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage(labels.Subject, 512))
       ],
       senderNameRules: [
         (v) => Validations.required(v, labels.Required),

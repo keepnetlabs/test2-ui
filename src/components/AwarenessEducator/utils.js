@@ -10,7 +10,14 @@ export const EMITS = {
   ON_TRAINING: 'on-training',
   ON_ITEM_CHANGE: 'on-item-change',
   ON_DUPLICATE: 'on-duplicate',
-  ON_DOWNLOAD: 'on-download'
+  ON_DOWNLOAD: 'on-download',
+  ON_ADD_POSTER: 'on-add-poster',
+  ON_DOWNLOAD_POSTER: 'on-download-poster'
+}
+
+export const TRAINING_TYPES = {
+  SCORM: 'SCORM',
+  POSTER: 'Poster'
 }
 
 export const ENROLLMENT_STATUSES = {
@@ -162,7 +169,9 @@ export const COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 160
+    width: 160,
+    filterableType: 'select',
+    filterableItems: ['SCORM', 'Poster']
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
