@@ -28,6 +28,14 @@ const uploadTrainingContent = (payload, resourceId, abortSignal, onUploadProgres
     timeout: Infinity
   })
 }
+const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressCallback) => {
+  return testRequest.post(`/trainings/${resourceId}/upload-file-content`, payload, {
+    snackbar: COMMON_SNACKBAR,
+    onUploadProgress: onUploadProgressCallback,
+    signal: abortSignal,
+    timeout: Infinity
+  })
+}
 
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
@@ -438,6 +446,12 @@ const getProxyTargetUserById = (id) => {
   return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
 }
 
+const downloadPoster = (payload) => {
+  return testRequest.post(`/trainings/scorm/download`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -524,5 +538,7 @@ export default {
   examTrainingNonTargetUserTrainingDetails,
   progressNonTargetUsersTrainingReportEmails,
   progressNonTargetUsersTrainingReportEmailsDetails,
-  getScormProxyTrainingReportSummary
+  getScormProxyTrainingReportSummary,
+  uploadPosterContent,
+  downloadPoster
 }

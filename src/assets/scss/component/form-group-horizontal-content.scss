@@ -16,7 +16,7 @@
             color: #383b41;
         }
 
-        
+
         .saml-default-role {
             display: flex;
             flex-direction: column;
@@ -24,7 +24,7 @@
                 margin-top: 8px;
             }
         }
-        
+
 
     }
 
@@ -53,6 +53,22 @@
         line-height: 21px;
         color: #383b41;
 
-        
+
     }
+}
+.poster-preview-specification{
+  &.form-group-horizontal-content {
+    justify-content: flex-start;
+    .form-group-horizontal-content__label{
+      font-size: 16px;
+      color:rgba(56, 59, 65, 0.72) !important;
+    }
+    .v-text-field{
+      max-width: 200px !important;
+    }
+  }
+  & > *:first-child {
+    flex-basis:auto;
+  }
+
 }

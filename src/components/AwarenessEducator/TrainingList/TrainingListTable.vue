@@ -31,8 +31,43 @@
     @add-training="handleAdd"
     @downloadEvent="exportTrainingList"
   >
+    <template #addUsers>
+      <v-menu :offset-y="true" bottom left nudge-right="32" nudge-bottom="4">
+        <template #activator="{ on: menu }">
+          <v-tooltip bottom opacity="1">
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                v-on="{ ...tooltip, ...menu }"
+                :disabled="!$store.getters['permissions/getCreateTrainingPermission']"
+                id="btn-add--training"
+                class="button-new"
+                style="margin-right: 10px;"
+                rounded
+                color="#2196f3"
+              >
+                <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+                <span class="button-new__text">NEW</span>
+              </v-btn>
+            </template>
+            <span class="tooltip-span">Add Training</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="item in addTrainingItems"
+            :key="item.id"
+            :id="item.id"
+            :disabled="item.disabled"
+            @click="handleAddTraining(item)"
+          >
+            <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
+        v-if="scope.row.type === TRAINING_TYPES.SCORM"
         :id="tableOptions.rowActions[0].id"
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
@@ -41,6 +76,18 @@
         :checkIsOwnerProperty="false"
         @on-click="handleSendTraining(scope.row)"
       />
+      <DefaultButtonRowAction
+        v-else
+        :id="tableOptions.rowActions[2].id"
+        :scope="scope"
+        :check-is-owner-property="false"
+        :disabled="tableOptions.rowActions[2].disabled"
+        :icon="tableOptions.rowActions[2].icon"
+        :text="tableOptions.rowActions[2].name"
+        :checkIsOwnerProperty="false"
+        @on-click="handlePreview(scope.row)"
+      />
+
       <RowActionsMenu>
         <DefaultMenuRowAction
           :id="tableOptions.rowActions[1].id"
@@ -51,6 +98,7 @@
           @on-click="handleEdit(scope.row)"
         />
         <DefaultMenuRowAction
+          v-if="scope.row.type === TRAINING_TYPES.SCORM"
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
           :check-is-owner-property="false"
@@ -59,6 +107,17 @@
           :text="tableOptions.rowActions[2].name"
           :checkIsOwnerProperty="false"
           @on-click="handlePreview(scope.row)"
+        />
+        <DefaultMenuRowAction
+          v-else
+          :id="tableOptions.rowActions[5].id"
+          :scope="scope"
+          :check-is-owner-property="false"
+          :disabled="tableOptions.rowActions[5].disabled"
+          :icon="tableOptions.rowActions[5].icon"
+          :text="tableOptions.rowActions[5].name"
+          :checkIsOwnerProperty="false"
+          @on-click="handleDownloadPoster(scope.row)"
         />
         <DefaultMenuRowAction
           :id="tableOptions.rowActions[3].id"
@@ -92,7 +151,7 @@ import labels from '@/model/constants/labels'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import { EMITS, COLUMNS } from '../utils'
+import { EMITS, COLUMNS, TRAINING_TYPES } from '../utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -110,6 +169,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
+      TRAINING_TYPES,
       CONSTANTS: {
         id: 'awareness-educator-training-list-data-table'
       },
@@ -183,10 +243,23 @@ export default {
             name: labels.Delete,
             icon: 'mdi-delete',
             disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
+          },
+          {
+            id: 'btn-download--row-actions-training-list',
+            name: labels.DownloadPoster,
+            icon: 'mdi-download',
+            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
-      }
+      },
+      addTrainingItems: [
+        { text: 'SCORM Training', id: 'btn-add-scorm-training' },
+        {
+          text: 'Poster',
+          id: 'btn-add-poster'
+        }
+      ]
     }
   },
   mounted() {
@@ -228,6 +301,9 @@ export default {
     handleAdd() {
       this.$emit(EMITS.ON_ADD)
     },
+    handleAddPoster() {
+      this.$emit(EMITS.ON_ADD_POSTER)
+    },
     exportTrainingList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -254,6 +330,17 @@ export default {
       AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
         this.callForData()
       })
+    },
+    handleAddTraining(item = { text: '' }) {
+      if (item.text === this.addTrainingItems[0].text) {
+        this.handleAdd()
+      }
+      if (item.text === this.addTrainingItems[1].text) {
+        this.handleAddPoster()
+      }
+    },
+    handleDownloadPoster(item = {}) {
+      this.$emit(EMITS.ON_DOWNLOAD_POSTER, item)
     }
   }
 }

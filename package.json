@@ -43,6 +43,7 @@
     "vue-grid-layout": "^2.3.9",
     "vue-moment": "^4.1.0",
     "vue-multipane": "^0.9.5",
+    "vue-pdf": "^4.3.0",
     "vue-query-builder": "^0.8.2",
     "vue-recaptcha": "^1.2.0",
     "vue-router": "^3.3.4",
