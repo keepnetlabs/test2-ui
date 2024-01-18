@@ -18,14 +18,14 @@
             <div class="template-preview__text">
               <div v-if="showPosterName">
                 <div>
-                  <span class="template-preview__text--title">Poster Name: </span>
+                  <span class="template-preview__text--title text-preview-gray">Poster Name: </span>
                   <span class="template-preview__text--body">{{
                     selectedRow && selectedRow.trainingName
                   }}</span>
                 </div>
               </div>
               <FormGroupHorizontalContent
-                class="mt-4 poster-preview-specification"
+                class="mt-4 poster-preview-specification text-preview-gray"
                 label="Specifications:"
               >
                 <KSelect
@@ -39,9 +39,10 @@
                   @input="callForData(true)"
                 />
               </FormGroupHorizontalContent>
-              <div class="d-flex justify-space-between align-center">
+              <hr class="mb-2" />
+              <div class="d-flex justify-space-between align-center mb-4">
                 <div>
-                  <span class="template-preview__text--title">File Name: </span>
+                  <span class="template-preview__text--title text-preview-gray">File Name: </span>
                   <span class="template-preview__text--body">{{ fileName }}</span>
                 </div>
 
@@ -57,10 +58,9 @@
                 </VBtn>
               </div>
             </div>
-            <hr class="mt-4" />
             <div class="max-w-100 d-flex justify-center w-100">
               <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
-              <pdf class="w-100" v-else :src="pdfSrc" />
+              <pdf v-else class="w-100" :src="pdfSrc" />
             </div>
           </div>
         </ElTabPane>
@@ -135,12 +135,12 @@
               @input="callForData(true)"
             />
           </FormGroupHorizontalContent>
-          <div class="d-flex justify-space-between align-center">
+          <hr class="mb-4" />
+          <div class="d-flex justify-space-between align-center mb-4">
             <div>
-              <span class="template-preview__text--title">File Name: </span>
+              <span class="template-preview__text--title text-preview-gray">File Name: </span>
               <span class="template-preview__text--body">{{ fileName }}</span>
             </div>
-
             <VBtn
               id="btn-preview-indiviual-printout"
               class="white--text btn-util btn-download-add-in"
@@ -153,10 +153,9 @@
             </VBtn>
           </div>
         </div>
-        <hr class="mt-4" />
         <div class="max-w-100 d-flex justify-center">
           <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
-          <pdf v-else :src="posterPreviewSrc" />
+          <pdf v-else class="w-100" :src="pdfSrc" />
         </div>
       </div>
     </template>
