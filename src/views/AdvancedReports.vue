@@ -76,7 +76,11 @@ export default {
       return this.userRole === 'Root' || this.userRole === 'Reseller'
     },
     canRenderCompanyTab() {
-      return this.userRole === 'Root' || this.userRole === 'Company Admin'
+      return (
+        this.userRole === 'Root' ||
+        this.userRole === 'Reseller' ||
+        this.userRole === 'Company Admin'
+      )
     }
   },
   created() {
