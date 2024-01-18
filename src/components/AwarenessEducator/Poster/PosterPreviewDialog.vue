@@ -49,6 +49,7 @@
                 <VBtn
                   id="btn-preview-indiviual-printout"
                   class="white--text btn-util btn-download-add-in"
+                  style="text-transform: none;"
                   color="#2196F3"
                   rounded
                   @click="handleDownloadPoster"
@@ -144,6 +145,7 @@
             <VBtn
               id="btn-preview-indiviual-printout"
               class="white--text btn-util btn-download-add-in"
+              style="text-transform: none;"
               color="#2196F3"
               rounded
               @click="handleDownloadPoster"
