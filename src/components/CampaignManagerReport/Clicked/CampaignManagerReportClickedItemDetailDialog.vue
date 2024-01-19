@@ -2,7 +2,7 @@
   <AppDialog
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
-    :custom-size="'800'"
+    :custom-size="'1300'"
     maxHeightSize="665"
     :icon="CONSTANTS.icon"
     :title="getTitle"
@@ -11,6 +11,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
+      <SandboxDetailDialogAlerts />
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
@@ -49,6 +50,25 @@
             v-if="col.property === COLUMNS.IP_SLOT.property"
             :scope="scope"
           />
+          <CampaignManagerReportActivityColumn
+            v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+            :scope="scope"
+            :tooltip-text="
+              scope.row.sandboxType === 1 || scope.row.sandoxType === 2
+                ? 'Sandbox Activity Rules: A1'
+                : 'Sandbox Activity Rules: A2'
+            "
+          />
+        </template>
+        <template #datatable-row-actions="{ scope }">
+          <DefaultButtonRowAction
+            :id="tableOptions.rowActions[0].id"
+            :icon="tableOptions.rowActions[0].icon"
+            :text="tableOptions.rowActions[0].name"
+            :scope="scope"
+            :disabled="scope.row.activityType === ACTIVITY_TYPES.HUMAN"
+            @on-click="handleMarkAsActivity(scope)"
+          />
         </template>
       </DataTable>
     </template>
@@ -61,7 +81,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { ACTIVITY_TYPES, COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulator'
@@ -71,10 +91,16 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
   components: {
+    CampaignManagerReportActivityColumn,
+    DefaultButtonRowAction,
+    SandboxDetailDialogAlerts,
     AppDialogFooterWithClose,
     CampaignManagerReportUserAgentColumn,
     CampaignManagerReportIPColumn,
@@ -92,6 +118,7 @@ export default {
   },
   data() {
     return {
+      ACTIVITY_TYPES,
       COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -108,7 +135,8 @@ export default {
           COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.IP_SLOT
+          COLUMNS.IP_SLOT_NON_FIXED,
+          COLUMNS.ACTIVITY_TYPE
         ],
         addButton: {
           show: false
@@ -116,7 +144,14 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpenedDetail
         },
-        rowActions: [],
+        rowActions: [
+          {
+            name: 'Mark as human activity',
+            id: 'btn-mark-as--row-actions-campaign-manager-report-clicked',
+            icon: 'mdi-account-check',
+            action: 'on-mark-as'
+          }
+        ],
         downloadButton: {
           show: false
         },
@@ -154,6 +189,7 @@ export default {
         })
         .finally(this.setLoading)
     },
+    handleMarkAsActivity(scope) {},
     handleClose() {
       this.$emit('on-close')
     }
