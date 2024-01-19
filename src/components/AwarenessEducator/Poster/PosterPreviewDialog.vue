@@ -52,6 +52,7 @@
                   style="text-transform: none;"
                   color="#2196F3"
                   rounded
+                  :style="getDownloadPosterStyle"
                   @click="handleDownloadPoster"
                 >
                   <v-icon left>mdi-download</v-icon>
@@ -145,9 +146,9 @@
             <VBtn
               id="btn-preview-indiviual-printout"
               class="white--text btn-util btn-download-add-in"
-              style="text-transform: none;"
               color="#2196F3"
               rounded
+              :style="getDownloadPosterStyle"
               @click="handleDownloadPoster"
             >
               <v-icon left>mdi-download</v-icon>
@@ -234,10 +235,21 @@ export default {
       posterPreviewSrc: '',
       fileName: '',
       isPdf: true,
-      pdfSrc: null
+      pdfSrc: null,
+      isDownloadButtonDisabled: false
     }
   },
   computed: {
+    getDownloadPosterStyle() {
+      const style = {
+        textTransform: 'none'
+      }
+      if (this.isDownloadButtonDisabled) {
+        style.opacity = '.7'
+        style.pointerEvents = 'none'
+      }
+      return style
+    },
     getTitle() {
       return labels.PosterPreview
     },
@@ -290,6 +302,7 @@ export default {
       if (this.isPdf && this.pdfSrc) {
         return this.downloadPDFObject(this.pdfSrc)
       }
+      this.isDownloadButtonDisabled = true
       AwarenessEducatorService.downloadPoster({
         trainingId: this.selectedRow.trainingId,
         languageId: this.specification
@@ -299,10 +312,11 @@ export default {
             this.pdfSrc = window.URL.createObjectURL(response.data)
             return
           }
-          this.downloadPDFObject(window.URL.createObjectURL(data))
+          this.downloadPDFObject(window.URL.createObjectURL(response.data))
         })
         .finally(() => {
           if (this.isPdf) this.isLoading = false
+          this.isDownloadButtonDisabled = false
         })
     },
     downloadPDFObject(data) {
