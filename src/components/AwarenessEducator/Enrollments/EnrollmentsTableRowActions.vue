@@ -35,7 +35,6 @@
         @on-click="routeToTrainingReport(scope.row)"
       />
       <DefaultMenuRowAction
-        v-if="isRenderEditButton"
         :id="rowActions[1].id"
         :scope="scope"
         :disabled="rowActions[1].disabled"
@@ -103,11 +102,6 @@ export default {
     }
   },
   computed: {
-    isRenderEditButton() {
-      return [ENROLLMENT_STATUSES.AUTO_ENROLL, ENROLLMENT_STATUSES.SCHEDULED].includes(
-        this.scope.row.status
-      )
-    },
     isRenderStopAutoEnrollButton() {
       return [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status)
     },

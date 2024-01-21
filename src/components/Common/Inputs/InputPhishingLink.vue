@@ -197,6 +197,9 @@ export default {
     },
     'value.subDomain'() {
       this.changeDisabledLabel()
+    },
+    'value.pathTypeId'() {
+      this.changeDisabledLabel()
     }
   },
   mounted() {
@@ -221,6 +224,8 @@ export default {
       })
     },
     changeDisabledLabel() {
+      // console.log(this.pathTypes)
+      // console.log(this.value.pathTypeId)
       this.disabledLabel = `${
         this.getUrlSchemaTypesModified.find(
           (item) => item.value === this.value.urlSchemaTypeId?.toString() || ''
