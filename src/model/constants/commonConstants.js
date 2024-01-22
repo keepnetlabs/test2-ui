@@ -176,6 +176,7 @@ export const PROPERTY_STORE = {
   LANDING_PAGE_TEMPLATE: 'landingPageTemplate',
   EMAIL_DELIVERY: 'emailDelivery',
   SCENARIO_COUNT: 'scenarioCount',
+  ACTIVITYTYPE: 'activityType',
   AUDIENCE: 'audience',
   TRAINING_NAME: 'trainingName',
   START_DATE: 'startDate',
