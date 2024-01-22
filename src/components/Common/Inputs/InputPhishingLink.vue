@@ -197,6 +197,9 @@ export default {
     },
     'value.subDomain'() {
       this.changeDisabledLabel()
+    },
+    'value.pathTypeId'() {
+      this.changeDisabledLabel()
     }
   },
   mounted() {

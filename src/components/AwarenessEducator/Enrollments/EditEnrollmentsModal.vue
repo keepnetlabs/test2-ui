@@ -17,6 +17,7 @@
       icon-name="mdi-pencil"
       title="Edit Enrollment"
       title-id="text--edit-enrollments-modal-title"
+      :saveDisable="loading"
       @closeOverlay="handleClose"
       @submit="handleSubmit"
     >
@@ -418,14 +419,17 @@ export default {
     },
     handleSubmit() {
       if (this.$refs.refForm.validate()) {
+        this.loading = true
         const payload = JSON.parse(JSON.stringify(this.formData))
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
-        AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId).then(
-          () => {
+        AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
+          .then(() => {
             this.$emit(EMITS.ON_CLOSE, true)
-          }
-        )
+          })
+          .finally(() => {
+            this.loading = false
+          })
       }
     }
   }
