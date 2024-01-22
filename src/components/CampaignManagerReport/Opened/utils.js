@@ -49,10 +49,7 @@ export const COLUMNS = {
     width: 180,
     isEditable: false,
     filterableType: 'select',
-    filterableItems: [
-      { text: 'Human Activity', value: 0 },
-      { text: 'Sandbox Activity', value: 1 }
-    ]
+    filterableItems: [{ text: 'Human Activity', value: '0' }]
   },
   PHISHING_SCENARIO_NAME: {
     property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,

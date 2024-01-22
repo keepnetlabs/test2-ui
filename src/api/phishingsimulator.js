@@ -503,3 +503,13 @@ export function getPhishingScenariosPhoneNumber() {
 export function getCalculatedScheduleInfo(payload) {
   return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-schedule-info`, payload)
 }
+
+export const updateSandboxActivity = (resourceId, payload) => {
+  return testRequest.put(
+    `/phishing-simulator/phishing-campaign-job-report/activity/${resourceId}`,
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}

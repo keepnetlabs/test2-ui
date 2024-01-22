@@ -56,15 +56,16 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { columnFilterChanged, createCustomFieldColumns } from '@/utils/helperFunctions'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: {
     CampaignManagerReportActivityColumn,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
       type: String
@@ -80,7 +81,6 @@ export default {
   data() {
     return {
       COLUMNS,
-      tableActionLabel: 'SHOW SANDBOX ACTIVITY',
       CONSTANTS: {
         id: 'campaign-manager-opened-data-table',
         ascending: 'ascending'
@@ -104,7 +104,7 @@ export default {
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
           COLUMNS.TIMES_OPENED,
-          COLUMNS.ACTIVITY_TYPE
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
           show: true,
@@ -133,8 +133,7 @@ export default {
             disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
         ]
-      },
-      isShowSandbox: false
+      }
     }
   },
   created() {
@@ -153,12 +152,6 @@ export default {
           this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
       }
-    },
-    tableActionLabel(val) {
-      this.$set(this.tableOptions.addButton, 'label', val)
-      this.$set(this.tableOptions.addButton, 'tooltip', val)
-      this.axiosPayload.activityType = this.isShowSandbox ? 2 : 0
-      this.callForData()
     }
   },
   methods: {
@@ -184,30 +177,6 @@ export default {
           })
         })
         .finally(this.setLoading)
-    },
-    columnFilterChanged(filter) {
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.axiosPayload
-      )
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'activityType'
-      )
-      if (index !== -1) {
-        const value = this.axiosPayload.filter.FilterGroups[0].FilterItems[index].Value
-        if (value === '0,1' || value === '1,0') {
-          this.axiosPayload.activityType = 2
-          this.isShowSandbox = true
-        } else if (value === '1') {
-          this.axiosPayload.activityType = 1
-          this.isShowSandbox = true
-        } else {
-          this.axiosPayload.activityType = 0
-          this.isShowSandbox = false
-        }
-        this.setTableActionLabel()
-      }
-      this.callForData()
     },
     exportCampaignManagerReportOpenedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -243,13 +212,6 @@ export default {
     },
     handleOnDetail(row) {
       this.$emit('on-detail', row)
-    },
-    handleActivity() {
-      this.isShowSandbox = !this.isShowSandbox
-      this.setTableActionLabel()
-    },
-    setTableActionLabel() {
-      this.tableActionLabel = this.isShowSandbox ? `HIDE SANDBOX ACTIVITY` : `SHOW SANDBOX ACTIVITY`
     }
   }
 }
