@@ -29,7 +29,15 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+    @on-activity="handleActivity"
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportActivityColumn
+        v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+        :scope="scope"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -49,11 +57,15 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
-
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 export default {
   name: 'CampaignManagerReportOpenedTable',
-  components: { DataTable },
-  mixins: [useLoading, useDefaultTableFunctions],
+  components: {
+    CampaignManagerReportActivityColumn,
+    DataTable
+  },
+  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
       type: String
@@ -68,6 +80,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-opened-data-table',
         ascending: 'ascending'
@@ -90,10 +103,17 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
-          COLUMNS.TIMES_OPENED
+          COLUMNS.TIMES_OPENED,
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
-          show: false
+          show: true,
+          icon: null,
+          label: 'SHOW SANDBOX ACTIVITY',
+          action: 'on-activity',
+          tooltip: 'SHOW SANDBOX ACTIVITY',
+          type: 'secondary',
+          id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
@@ -137,6 +157,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
+      if (!this.axiosPayload.activityType) this.axiosPayload.activityType = 0
       searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {

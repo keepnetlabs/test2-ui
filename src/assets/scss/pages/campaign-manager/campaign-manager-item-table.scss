@@ -17,3 +17,9 @@
         top: 131px;
     }
 }
+#btn-select--hide-sandbox-activity{
+  opacity: 1;
+  .v-btn__content{
+    opacity: 1;
+  }
+}

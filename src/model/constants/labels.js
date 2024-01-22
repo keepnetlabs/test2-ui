@@ -23,6 +23,7 @@ export const labels = {
   PosterInformation: 'Poster Information',
   PosterInformationSub: 'Enter poster information and select intended target audience',
   CreateNewPosterContent: 'Create New Poster Content',
+  ActivityType: 'Activity Type',
   EditPosterContent: 'Edit Poster Content',
   PrintPreview: 'Print Preview',
   QuishingType: 'Quishing Type',
