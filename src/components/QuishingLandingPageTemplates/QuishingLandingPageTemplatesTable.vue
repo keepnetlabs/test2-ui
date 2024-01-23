@@ -200,7 +200,7 @@ export default {
       this?.$refs?.refLandingPageList?.reRenderFilters()
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refLandingPageList')
     this.callForData()
   },

@@ -365,7 +365,7 @@ export default {
         'permissions/getCallbackEmailTemplatesSearchPermissions'
     })
   },
-  created() {
+  mounted() {
     this.callForLanguages('refEmailTemplatesList')
     this.callForData()
   },
