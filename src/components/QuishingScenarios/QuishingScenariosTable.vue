@@ -229,7 +229,7 @@ export default {
       )
     }
   },
-  created() {
+  mounted() {
     this.callForData()
     this.callForLanguages('refScenariosList')
   },

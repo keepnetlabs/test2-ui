@@ -365,20 +365,11 @@ export default {
       getSmishingLandingPageTemplatesSearchPermissions:
         'permissions/getSmishingLandingPageTemplatesSearchPermissions'
     }),
-    hasLandingPageTemplate() {
-      return this.landingPageTemplates.length > 0
-    },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
-    },
-    hasNextTemplate() {
-      return this.landingPageTemplates.length - 1 > this.selectedLandingPageIndex
-    },
-    hasPreviousTemplate() {
-      return this.selectedLandingPageIndex > 0
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refLandingPageList')
     this.callForLookups()
     this.callForData()

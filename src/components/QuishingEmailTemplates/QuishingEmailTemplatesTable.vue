@@ -244,7 +244,7 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages('refEmailTemplatesList')
     this.callForData()
   },
