@@ -186,8 +186,10 @@ export default {
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_CAMPAIGN_MANAGER_PARENT_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.CALLBACK_CAMPAIGN_MANAGER_PARENT_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -310,7 +312,6 @@ export default {
           this.tableOptions.addButton.disabled = true
           this.tableData = []
           this.setLoading(false)
-          return
         } else {
           this.callForAvailableNumbers({ isInitial: true })
         }

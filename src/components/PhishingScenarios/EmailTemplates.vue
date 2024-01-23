@@ -346,7 +346,7 @@ export default {
       getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
     })
   },
-  created() {
+  mounted() {
     this.callForLanguages('refEmailTemplatesList')
     this.callForData()
   },
