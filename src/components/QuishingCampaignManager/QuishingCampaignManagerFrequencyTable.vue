@@ -240,14 +240,15 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          phishingCampaignFrequencyGroup: this.item.frequencyGroup
         }
         QuishingService.exportCampaignManagerItem(payload, this.parentResourceId).then(
           (response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Campaign-Manager-Instance.${
+            link.download = `Quishing-Campaign-Manager-Instance.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()
