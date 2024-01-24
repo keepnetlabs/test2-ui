@@ -495,7 +495,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      companyObject: 'dashboard/getCurrentCompanyObject',
+      selectedTimeZone: 'common/getSelectedTimeZone',
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
@@ -587,11 +587,10 @@ export default {
     }
   },
   watch: {
-    timeZones: {
-      deep: true,
+    selectedTimeZone: {
       immediate: true,
-      handler() {
-        this.setTimezoneId()
+      handler(val) {
+        if (val) this.formValues.scheduledDateTimeZoneId = val
       }
     },
     timezoneFormat: {
@@ -652,7 +651,7 @@ export default {
           this.formValues.scheduleDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
         if (!this.formValues.scheduledDateTimeZoneId) {
-          this.formValues.scheduledDateTimeZoneId = this.companyObject?.timeZoneId || ''
+          this.formValues.scheduledDateTimeZoneId = this.selectedTimeZone
         }
       }
     },
@@ -673,13 +672,6 @@ export default {
         }
         this.checkTimezoneValid()
       }
-    },
-    companyObject: {
-      deep: true,
-      immediate: true,
-      handler() {
-        this.setTimezoneId()
-      }
     }
   },
   created() {
@@ -687,18 +679,14 @@ export default {
       this.callForCampaign()
     }
     this.callForTargetGroups()
+    this.getSelectedTimeZone()
   },
   methods: {
-    setTimezoneId() {
-      if (this.isEdit || this.isDuplicate) return
-      if (this.timeZones && this.companyObject) {
-        this.formValues.scheduledDateTimeZoneId = this.companyObject?.timeZoneId || ''
-        if (this.formValues.scheduledDateTimeZoneId) {
-          this.selectedTimeZoneText =
-            this.timeZones?.timeZoneList?.find(
-              (item) => item.id === this.formValues.scheduledDateTimeZoneId
-            )?.displayName || ''
-        }
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formValues.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
+      } else {
+        this.$store.dispatch('common/callForSettings')
       }
     },
     handleCancel(forceUpdate = false) {
