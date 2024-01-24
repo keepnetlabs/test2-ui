@@ -187,7 +187,8 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          activityType: this.axiosPayload.activityType
         }
         exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
           const { data } = response
