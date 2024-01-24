@@ -167,7 +167,8 @@
               isGoogleSafeBrowser ||
               isCustomIntegration ||
               isRoksit ||
-              isGoogleWebRisk
+              isGoogleWebRisk ||
+              isOPSWAT
             "
           >
             <v-list-item-content>
@@ -1164,6 +1165,9 @@ export default {
         this.selectedIntegrationType.name
       )
     },
+    isOPSWAT() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.OPSWAT
+    },
     isGoogleWebRisk() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.GOOGLEWEBRISK
     },
@@ -1383,7 +1387,8 @@ export default {
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-          INTEGRATION_TYPES.GOOGLEWEBRISK
+          INTEGRATION_TYPES.GOOGLEWEBRISK,
+          INTEGRATION_TYPES.OPSWAT
         ].includes(this.selectedIntegrationType.name)
       ) {
         if (this.isVirusTotal) {
@@ -1559,7 +1564,8 @@ export default {
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-          INTEGRATION_TYPES.GOOGLEWEBRISK
+          INTEGRATION_TYPES.GOOGLEWEBRISK,
+          INTEGRATION_TYPES.OPSWAT
         ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
@@ -1632,7 +1638,8 @@ export default {
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
           INTEGRATION_TYPES.SPAMHOUSE,
           INTEGRATION_TYPES.ROKSIT,
-          INTEGRATION_TYPES.GOOGLEWEBRISK
+          INTEGRATION_TYPES.GOOGLEWEBRISK,
+          INTEGRATION_TYPES.OPSWAT
         ].includes(this.selectedIntegrationType.name)
       ) {
         response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
@@ -1740,7 +1747,8 @@ export default {
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
           INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-          INTEGRATION_TYPES.GOOGLEWEBRISK
+          INTEGRATION_TYPES.GOOGLEWEBRISK,
+          INTEGRATION_TYPES.OPSWAT
         ].includes(this.selectedIntegrationType.name)
       ) {
         for (const item of this.formValues.apiKeys) {
@@ -1919,6 +1927,8 @@ export default {
         this.formValues.apiUrl = 'https://safebrowsing.googleapis.com'
       } else if (name === INTEGRATION_TYPES.SPAMHOUSE) {
         this.formValues.apiUrl = 'zen.spamhaus.org'
+      } else if (name === INTEGRATION_TYPES.OPSWAT) {
+        this.formValues.apiUrl = 'https://api.metadefender.com/v4/'
       } else if (this.formValues) {
         this.formValues.apiUrl = ''
       }

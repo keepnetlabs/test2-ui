@@ -9,6 +9,7 @@
       @pause="onPause"
       @timeupdate="onTimeupdate($event)"
       @loadedmetadata="onLoadedmetadata($event)"
+      @error="onError($event)"
     />
     <div v-if="isPreview && src" class="audio-player audio-player--preview">
       <v-btn small text color="#2196F3" :disabled="!canPlay" @click="onTogglePlay">
@@ -131,6 +132,10 @@ export default {
     }
   },
   methods: {
+    onError() {
+      if (!this.src) return
+      this.$emit('srcError')
+    },
     onChangeCurrentTime(index) {
       this.$refs.refAudio.currentTime = parseInt((index / 100) * this.audio.maxTime)
     },

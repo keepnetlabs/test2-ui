@@ -32,7 +32,6 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-// TODO: Changep endpoints
 import { getVishingCampaignPreview } from '@/api/vishing'
 import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'

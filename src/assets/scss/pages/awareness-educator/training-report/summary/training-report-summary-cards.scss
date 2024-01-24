@@ -120,3 +120,41 @@
   grid-template-columns: 0.33fr 0.33fr 0.34fr;
   grid-column-gap: 16px;
 }
+.scorm-proxy-report-summary-cards{
+    .training-report-summary-info-card:last-child{
+        .training-report-summary-info-card-body__icon{
+            bottom:-12px;
+            right:-10px;
+        }
+    }
+    @media (max-width: 1300px) {
+        .training-report-summary-info-card{
+            max-width:initial;
+            &:last-child{
+                margin-left: 0 !important;
+            }
+        }
+    }
+}
+.training-report-scorm-info{
+    .campaign-manager-summary-card__body-container {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        padding-bottom: 8px !important;
+        padding-top:16px !important;
+    }
+    .campaign-manager-summary-card__body-item:first-child,.campaign-manager-summary-card__body-item:nth-child(3){
+        padding-right: 24px !important;
+        border-right:1px solid #F2F2F2;
+    }
+    .campaign-manager-summary-card__body-item:nth-child(2),.campaign-manager-summary-card__body-item:nth-child(4){
+        padding-left: 24px !important;
+    }
+    .campaign-manager-summary-card__body-item:nth-child(3),.campaign-manager-summary-card__body-item:nth-child(4){
+        border-bottom:none !important;
+    }
+    .campaign-manager-summary-card__body-item-key{
+        flex-basis:50%;
+    }
+
+}

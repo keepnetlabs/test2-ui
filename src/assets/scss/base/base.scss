@@ -162,7 +162,7 @@ html {
 .url-badge {
   font-family: "Open Sans", sans-serif;
   position: absolute;
-  right: 0px;
+  right: 0;
   color: white;
   background-color: #757575;
   height: 10px;
@@ -250,7 +250,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .threat-sharing-content {
   .member-company-body {
     .v-tabs-slider-wrapper {
-      bottom: 0px !important;
+      bottom: 0 !important;
     }
   }
 }

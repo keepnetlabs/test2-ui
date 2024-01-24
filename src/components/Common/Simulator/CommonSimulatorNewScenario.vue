@@ -7,9 +7,9 @@
             >Scenario Info</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
-            >Email Template</v-stepper-step
-          >
+          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2">{{
+            isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
+          }}</v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
             :class="{
@@ -56,6 +56,24 @@
                     :maxLength="300"
                   />
                 </FormGroup>
+                <FormGroup
+                  v-if="isQuishing"
+                  has-hint
+                  title="Quishing Type"
+                  sub-title="Select the quishing type for this scenario"
+                >
+                  <KSelect
+                    v-model.trim="quishingType"
+                    id="input--quishing-type-scenario"
+                    outlined
+                    dense
+                    persistent-hint
+                    placeholder="Select a quishing type"
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    :items="quishingTypeItems"
+                  />
+                </FormGroup>
                 <InputPhishingMethod
                   v-model.trim="formValues.methodTypeId"
                   item-text-key="text"
@@ -99,18 +117,17 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <div class="email-settings">
-              <ConfigureCompanyStepHeader
-                :title="labels.SelectEmailTemplate"
-                :subtitle="getStep2Subtitle"
-              />
+              <ConfigureCompanyStepHeader :title="getStep2Title" :subtitle="getStep2Subtitle" />
               <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
+                    :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :api-funcs="getEmailTemplateApiFuncs"
+                    :quishing-type="quishingType"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -157,6 +174,7 @@
               <div :style="getLastStepContainerStyle">
                 <CampaignManagerSummaryCard
                   icon="mdi-information"
+                  :class="!isMethodMfa ? 'common-simulator-new-scenario-campaign-info' : ''"
                   :title="labels.ScenarioInfo"
                   :items="getScenarioInfoItems"
                 />
@@ -173,9 +191,13 @@
                     <div class="summary-header">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          mdi-email
+                          {{ isQuishingTypeIndividualPrintOut ? '$pdf-file' : 'mdi-email' }}
                         </v-icon>
-                        Email that will be sent to users
+                        {{
+                          isQuishingTypeIndividualPrintOut
+                            ? 'Individual printout that will be given to users'
+                            : 'Email that will be sent to users'
+                        }}
                       </div>
                       <div>
                         <v-btn
@@ -199,7 +221,10 @@
                           <div class="template-summary__title">
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
                           </div>
-                          <div class="template-summary__sub-title mt-2">
+                          <div
+                            v-if="!isQuishingTypeIndividualPrintOut"
+                            class="template-summary__sub-title mt-2"
+                          >
                             From:
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
                           </div>
@@ -328,7 +353,8 @@
                                 }}
                               </div>
                               <div class="template-summary__sub-title mt-2">
-                                <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                                <b>{{ getURLText }}:</b>
+                                {{ summaryData.landingPageTemplate.urlTemplate }}
                               </div>
                             </div>
                             <div class="d-flex" v-if="!!summaryData">
@@ -507,13 +533,20 @@ import {
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import AppModal from '@/components/AppModal'
-import { getDifficultyColor, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import {
+  getDifficultyColor,
+  quishingTypeItems,
+  SCENARIO_TYPES
+} from '@/components/Common/Simulator/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    KSelect,
     InputPhishingMethod,
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
@@ -559,6 +592,7 @@ export default {
   },
   data() {
     return {
+      quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
@@ -581,6 +615,7 @@ export default {
       step: 1,
       Validations,
       initialFormValues: {},
+      quishingType: '',
       formValues: {
         name: '',
         description: '',
@@ -610,16 +645,35 @@ export default {
     }
   },
   computed: {
+    getURLText() {
+      return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
+    },
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isQuishingTypeIndividualPrintOut() {
+      if (!this.isQuishing) return false
+      return (
+        this.quishingType.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
     getEmailTemplateApiFuncs() {
-      return this.type === SCENARIO_TYPES.PHISHING
-        ? {
-            list: getEmailTemplatesList,
-            content: getEmailTemplatePreviewContent
-          }
-        : {
-            list: QuishingService.getEmailTemplatesList,
-            content: QuishingService.getEmailTemplatePreviewContent
-          }
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        return {
+          list: getEmailTemplatesList,
+          content: getEmailTemplatePreviewContent
+        }
+      } else if (this.isQuishingTypeIndividualPrintOut) {
+        return {
+          list: QuishingService.getEmailTemplatesList,
+          content: QuishingService.getQuishingTemplatePreviewContent
+        }
+      }
+      return {
+        list: QuishingService.getEmailTemplatesList,
+        content: QuishingService.getEmailTemplatePreviewContent
+      }
     },
     getLandingPageApiFuncs() {
       return this.type === SCENARIO_TYPES.PHISHING
@@ -693,11 +747,15 @@ export default {
       return this.formValues.methodTypeId === '4'
     },
     getScenarioInfoItems() {
-      return {
+      const obj = {
         Name: this.formValues.name,
-        Method: this.getMethodText,
-        Difficulty: this.getDifficultyType
+        Difficulty: this.getDifficultyType,
+        Method: this.getMethodText
       }
+      if (this.isQuishing) {
+        obj['Quishing Type'] = this.quishingType
+      }
+      return obj
     },
     getMfaSettingsItems() {
       return {
@@ -719,18 +777,26 @@ export default {
           : this.selectedEmailTemplate.categoryName
       } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
     },
+    getStep2Title() {
+      return this.isQuishingTypeIndividualPrintOut
+        ? labels.SelectIndividualPrintoutTemplate
+        : labels.SelectEmailTemplate
+    },
     getStep2Subtitle() {
+      const type = this.isQuishingTypeIndividualPrintOut
+        ? 'individual printout template'
+        : 'email template'
       const mTypeText =
         this.scenarioDetailsLookup?.methodTypes?.find(
           (mType) => mType.value === this.formValues.methodTypeId
         )?.text || ''
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
-        return 'Choose your click only type email template'
+        return `Choose your click only type ${type}`
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
-        return 'Choose your data submission type email template'
+        return `Choose your data submission type ${type}`
       else if (mTypeText === SCENARIO_METHOD_TYPES.ATTACHMENT)
-        return 'Choose your attachment type email template'
-      else return 'Choose your click only or data submission type email template'
+        return `Choose your attachment type ${type}`
+      else return `Choose your click only or data submission type ${type}`
     },
     getStep3Subtitle() {
       const mTypeText =
@@ -817,13 +883,10 @@ export default {
       this.selectedTab = '1'
     },
     'formValues.methodTypeId'(val, oldVal) {
-      if (val !== oldVal && !this.isInitial) {
-        this.formValues.emailTemplateId = null
-        this.formValues.landingPageTemplateId = null
-        this.landingPageTemplateId = null
-        this.landingPageTemplateResourceId = null
-        this.emailTemplateResourceId = null
-      }
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
+    },
+    quishingType(val, oldVal) {
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
     }
   },
   created() {
@@ -856,8 +919,11 @@ export default {
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-          this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-          this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
+          const emailTemplateResourceId = this.isQuishing
+            ? response.data.data.templateResourceId
+            : response.data.data.emailTemplateResourceId
+          this.formValues.emailTemplateId = emailTemplateResourceId
+          this.emailTemplateResourceId = emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
           this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
@@ -868,6 +934,7 @@ export default {
           this.availableForRequests = getAvailableForValueFromList(availableForList)
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isFetched = true
+          if (this.isQuishing) this.quishingType = response.data.data.templateType
         })
         .finally(() => {
           this.isSubmitDisabled = false
@@ -984,12 +1051,16 @@ export default {
             this.type === SCENARIO_TYPES.PHISHING
               ? getSummaryOfScenario
               : QuishingService.getSummaryOfScenario
-          apiFunc(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
+          let params = [this.emailTemplateResourceId, this.landingPageTemplateResourceId]
+          if (this.isQuishing) params.push(this.quishingType.toLowerCase())
+          apiFunc(...params)
             .then((response) => {
               const {
                 data: { data }
               } = response
-              if (this.type === SCENARIO_TYPES.QUISHING) {
+              if (this.isQuishing) {
+                if (this.isQuishingTypeIndividualPrintOut)
+                  data.emailTemplate = data.quishingTemplate
                 data.emailTemplate.template = data.emailTemplate.template?.replaceAll(
                   '{QRCODEURLIMAGE}',
                   qrCodeString
@@ -1030,6 +1101,12 @@ export default {
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
       }
+      if (this.isQuishing) {
+        payload.templateType = this.quishingType
+        payload.templateResourceId = this.emailTemplateResourceId
+        delete payload.emailTemplateId
+        delete payload.emailTemplateResourceId
+      }
       if (this.isEdit && !this.isDuplicate) {
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario
@@ -1051,6 +1128,13 @@ export default {
             this.isSubmitDisabled = false
           })
       }
+    },
+    resetLandingPageAndEmailTemplateSelection() {
+      this.formValues.emailTemplateId = null
+      this.formValues.landingPageTemplateId = null
+      this.landingPageTemplateId = null
+      this.landingPageTemplateResourceId = null
+      this.emailTemplateResourceId = null
     }
   }
 }

@@ -100,6 +100,8 @@
                     :category-resource-id="formValues.methodTypeId"
                     :apiFuncs="getEmailTemplateApiFuncs"
                     :defaultBodyData="defaultEmailTemplateBodyData"
+                    :languages="languageOptions"
+                    isCallback
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -413,7 +415,8 @@ export default {
                   FieldName: 'CategoryResourceId',
                   Operator: 'Include'
                 },
-                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' },
+                { value: '', FieldName: 'LanguageTypeResourceId', Operator: 'Include' }
               ]
             },
             {

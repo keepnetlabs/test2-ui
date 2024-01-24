@@ -64,6 +64,7 @@
                     v-model.trim="formData.Name"
                     id="input--company-name"
                     entity-name="company"
+                    :initialRules="[(v) => validations.required(v)]"
                     initial-placeholder="Enter a name for the company"
                   />
                 </FormGroup>
@@ -896,7 +897,8 @@ export default {
         const [day, month, year] = this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/')
         selectedStartDate = new Date(year, month - 1, day)
       }
-      return selectedStartDate.getTime() + 1000 * 60 * 60 * 24 > val.getTime()
+      const selectedStartDateInMs = selectedStartDate.getTime() + 1000 * 60 * 60 * 24
+      return selectedStartDateInMs > val.getTime() || val.getTime() < new Date().getTime()
     },
     handleCancel() {
       if (this.isFormDataChanged()) {

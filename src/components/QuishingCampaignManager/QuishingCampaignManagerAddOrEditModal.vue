@@ -74,6 +74,7 @@
             <CampaignManagerPhishingScenarios
               v-model="selectedPhishingScenarios"
               ref="refCampaignManagerPhishingScenarios"
+              is-show-reminder
               :type="SCENARIO_TYPES.QUISHING"
               :campaign-manager-resource-id="getCampaignResourceId"
               :is-edit="isEdit || isDuplicate"
@@ -100,6 +101,7 @@
               :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -117,6 +119,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :phishing-type-id="3"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -179,6 +182,7 @@ import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -234,6 +238,9 @@ export default {
     }
   },
   computed: {
+    isMFAScenarioSelected() {
+      return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
+    },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(
@@ -625,14 +632,26 @@ export default {
           }
           const quishingScenarios = []
           Object.keys(trainingTabModel).forEach((phishingScenarioResourceId) => {
-            const { trainingId, trainingLanguageIds, isCheckboxSelected } = trainingTabModel[
-              phishingScenarioResourceId
-            ]
+            const {
+              trainingId,
+              trainingLanguageIds,
+              isCheckboxSelected,
+              enrollmentReminder,
+              awardCertificate,
+              enrollmentSendTypeId
+            } = trainingTabModel[phishingScenarioResourceId]
+            if (!isCheckboxSelected) return
+            const { sendReminderEvery } = enrollmentReminder
+            const enrollmentReminderEveryValue = sendReminderEvery
+            delete enrollmentReminder.sendReminderEvery
             if (!isCheckboxSelected) return
             quishingScenarios.push({
               trainingId,
               trainingLanguageIds: trainingLanguageIds.filter((lang) => lang !== labels.All),
-              quishingScenarioResourceId: phishingScenarioResourceId
+              quishingScenarioResourceId: phishingScenarioResourceId,
+              enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
+              awardCertificate,
+              enrollmentSendTypeId
             })
           })
           const payload = {
@@ -669,7 +688,8 @@ export default {
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
+            templateType: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

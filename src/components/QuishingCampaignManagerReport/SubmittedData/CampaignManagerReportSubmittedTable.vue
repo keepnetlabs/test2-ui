@@ -65,7 +65,42 @@ export default {
       default: () => []
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
+    const columns = [
+      COLUMNS.FIRST_NAME,
+      COLUMNS.LAST_NAME,
+      COLUMNS.EMAIL,
+      COLUMNS.DEPARTMENT,
+      COLUMNS.PHISHING_SCENARIO_NAME,
+      COLUMNS.PASSWORD_COMPLEXITY,
+      COLUMNS.LAST_SUBMISSION
+    ]
+    if (isQuishingTypePrintout) {
+      columns.push(COLUMNS.TIMES_SUBMISSION_PRINTOUT)
+    } else {
+      columns.push(COLUMNS.TIMES_SUBMISSION)
+      rowActions.push(
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
+          icon: '$custom-resend',
+          action: 'on-resend'
+        },
+        {
+          name: labels.Details,
+          id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
+          icon: '$custom-details',
+          action: 'on-detail',
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+          ]
+        }
+      )
+    }
+
     return {
       CONSTANTS: {
         id: 'campaign-manager-submitted-data-table',
@@ -82,41 +117,16 @@ export default {
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true
+          resend: !isQuishingTypePrintout
         },
-        columns: [
-          COLUMNS.FIRST_NAME,
-          COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
-          COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.PASSWORD_COMPLEXITY,
-          COLUMNS.LAST_SUBMISSION,
-          COLUMNS.TIMES_SUBMISSION
-        ],
+        columns,
         addButton: {
           show: false
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportSubmittedData
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
-            ]
-          }
-        ]
+        rowActions
       }
     }
   },

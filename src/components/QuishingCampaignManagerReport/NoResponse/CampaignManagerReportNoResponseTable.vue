@@ -61,7 +61,28 @@ export default {
       default: () => []
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
+    const columns = [
+      COLUMNS.FIRST_NAME,
+      COLUMNS.LAST_NAME,
+      COLUMNS.EMAIL,
+      COLUMNS.DEPARTMENT,
+      COLUMNS.PHISHING_SCENARIO_NAME
+    ]
+    if (isQuishingTypePrintout) {
+      columns.push(COLUMNS.EMAIL_SEND_DATE_PRINTOUT)
+    } else {
+      rowActions.push({
+        name: labels.Resend,
+        id: 'btn-resend--row-actions-campaign-manager-report-no-response',
+        icon: '$custom-resend',
+        action: 'on-resend'
+      })
+      columns.push(COLUMNS.EMAIL_SEND_DATE)
+    }
     return {
       CONSTANTS: {
         id: 'campaign-manager-no-response-data-table',
@@ -77,14 +98,7 @@ export default {
         savedTableSettingsLocalStorageKey:
           TABLE_SETTINGS_KEYS.QUISHING_CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          COLUMNS.FIRST_NAME,
-          COLUMNS.LAST_NAME,
-          COLUMNS.EMAIL,
-          COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
-          COLUMNS.EMAIL_SEND_DATE
-        ],
+        columns,
         addButton: {
           show: false
         },
@@ -92,16 +106,9 @@ export default {
           message: labels.EmptyCampaignManagerReportOpened
         },
         selectEvent: {
-          resend: true
+          resend: !isQuishingTypePrintout
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-no-response',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          }
-        ]
+        rowActions
       }
     }
   },

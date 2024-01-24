@@ -223,7 +223,7 @@ const startCallbackCampaignJob = (resourceId, instanceGroup) => {
 }
 
 const stopCallbackCampaignJob = (resourceId, instanceGroup) => {
-  return testRequest.patch(`/callback-simulator/campaign-job/start/${resourceId}/${instanceGroup}`)
+  return testRequest.patch(`/callback-simulator/campaign-job/stop/${resourceId}/${instanceGroup}`)
 }
 
 const deleteCallbackJob = (resourceId, instanceGroup) => {

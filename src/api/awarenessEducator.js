@@ -177,6 +177,10 @@ const getTrainingReportSummary = (resourceId) => {
   return testRequest.get(`/training-reports/${resourceId}/summary`)
 }
 
+const getScormProxyTrainingReportSummary = (resourceId) => {
+  return testRequest.get(`/training-reports/anonymous/${resourceId}/summary`)
+}
+
 const getTrainingReportFormDetails = () => {
   return testRequest.get('/training-reports/form-details')
 }
@@ -220,6 +224,19 @@ const exportProgressTrainingReportEmails = (payload, resourceId) => {
     responseType: 'blob'
   })
 }
+const progressNonTargetUsersTrainingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/anonymous/${resourceId}/progress`, payload)
+}
+const progressNonTargetUsersTrainingReportEmailsDetails = (
+  payload,
+  resourceId,
+  targetUserResultId
+) => {
+  return testRequest.post(
+    `/training-reports/anonymous/${resourceId}/progress-detail/${targetUserResultId}`,
+    payload
+  )
+}
 
 const examTrainingReportResults = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/exam-results/search`, payload)
@@ -229,6 +246,15 @@ const exportExamTrainingReportResults = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/exam-results/search/export`, payload, {
     responseType: 'blob'
   })
+}
+const examTrainingNonTargetUserReportResults = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/anonymous/${resourceId}/result`, payload)
+}
+const examTrainingNonTargetUserTrainingDetails = (payload, resourceId, targetUserResultId) => {
+  return testRequest.post(
+    `/training-reports/anonymous/${resourceId}/result-detail/${targetUserResultId}`,
+    payload
+  )
 }
 
 const exportNoResponseReportResults = (payload, resourceId) => {
@@ -246,14 +272,27 @@ const noResponseTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/no-response/search`, payload)
 }
 
-const sendingReportTrainingReport = (payload, resourceId) => {
+const searchSendingReportEnrollmentEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
+}
+const searchSendingReportReminderEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
   if (interactionType) url += `?emailEventType=${interactionType}`
   return testRequest.get(url)
+}
+const getTrainingReportNonTargetUserInteractions = (
+  enrollmentId,
+  resourceId,
+  interactionType,
+  axiosPayload
+) => {
+  let url = `/training-reports/anonymous/${enrollmentId}/user-detail/${resourceId}`
+  if (interactionType) url += `?emailEventType=${interactionType}`
+  return testRequest.post(url, axiosPayload)
 }
 
 const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
@@ -262,6 +301,10 @@ const getTrainingReportExamResultsDetails = (enrollmentId, resourceId) => {
 
 const getTrainingReportSendingReportDetails = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/email-event/${resourceId}`)
+}
+
+const getTrainingReportReminderEmailDetails = (enrollmentId, userMailId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
@@ -388,6 +431,13 @@ const getPhishedLandingPage = (resourceId = '') => {
   return testRequest.get(`/enrollments/${resourceId}/content`)
 }
 
+const searchProxyTargetUsers = (payload, id) => {
+  return testRequest.post(`/training-reports/anonymous/${id}`, payload)
+}
+const getProxyTargetUserById = (id) => {
+  return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
+}
+
 export default {
   searchTraining,
   deleteTraining,
@@ -432,7 +482,8 @@ export default {
   progressTrainingReportEmails,
   examTrainingReportResults,
   noResponseTrainingReportEmails,
-  sendingReportTrainingReport,
+  searchSendingReportEnrollmentEmails,
+  searchSendingReportReminderEmails,
   exportTrainingReportUsers,
   getTrainingReportFormDetails,
   getTrainingReportExamResultsDetails,
@@ -443,10 +494,12 @@ export default {
   exportExamTrainingReportResults,
   exportSendingReport,
   getTrainingReportInteractions,
+  getTrainingReportNonTargetUserInteractions,
   getProgressDetailsTable,
   duplicateTraining,
   deleteTrainingFile,
   getTrainingReportSendingReportDetails,
+  getTrainingReportReminderEmailDetails,
   searchTrash,
   deletePermanentlyEnrollment,
   restoreEnrollment,
@@ -464,5 +517,12 @@ export default {
   resendTrainingToUserList,
   exportTrainingReport,
   getTrainingItems,
-  getPhishedLandingPage
+  getPhishedLandingPage,
+  searchProxyTargetUsers,
+  getProxyTargetUserById,
+  examTrainingNonTargetUserReportResults,
+  examTrainingNonTargetUserTrainingDetails,
+  progressNonTargetUsersTrainingReportEmails,
+  progressNonTargetUsersTrainingReportEmailsDetails,
+  getScormProxyTrainingReportSummary
 }

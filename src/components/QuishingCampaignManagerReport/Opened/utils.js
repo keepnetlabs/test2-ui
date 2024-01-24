@@ -14,6 +14,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  FIRST_NAME_PRINTOUT: {
+    property: PROPERTY_STORE.FIRSTNAME,
+    align: 'left',
+    label: labels.FirstName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
+    isEditable: false,
+    filterableType: 'text'
+  },
   LAST_NAME: {
     property: PROPERTY_STORE.LASTNAME,
     align: 'left',
@@ -23,6 +35,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  LAST_NAME_PRINTOUT: {
+    property: PROPERTY_STORE.LASTNAME,
+    align: 'left',
+    label: labels.LastName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
@@ -47,6 +71,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  EMAIL_PRINTOUT: {
+    property: PROPERTY_STORE.EMAIL,
+    align: 'left',
+    label: labels.Email,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
@@ -85,6 +121,19 @@ export const COLUMNS = {
     width: 200,
     filterableType: 'date'
   },
+  EMAIL_SEND_DATE_PRINTOUT: {
+    property: 'lastSendingTime',
+    align: 'left',
+    editable: false,
+    label: 'Email Send Date',
+    sortable: true,
+    fixed: false,
+    show: true,
+    type: 'text',
+    width: 180,
+    overrideWidth: true,
+    filterableType: 'date'
+  },
   DATA: {
     property: 'submittedData',
     align: 'left',
@@ -106,6 +155,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  DEPARTMENT_PRINTOUT: {
+    property: PROPERTY_STORE.DEPARTMENT,
+    align: 'left',
+    label: labels.Department,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'text'
   },
@@ -166,6 +227,19 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
+    filterableType: 'number'
+  },
+  TIMES_OPENED_PRINTOUT: {
+    property: 'openedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesOpened,
+    sortable: true,
+    show: true,
+    type: 'text',
+    minWidth: 180,
+    fixed: 'right',
+    overrideWidth: true,
     filterableType: 'number'
   },
   TIMES_REPORTED: {
@@ -348,11 +422,45 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  LAST_SCANNED: {
+    property: 'lastClickedTime',
+    align: 'left',
+    label: labels.LastScanned,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   TIMES_CLICKED: {
     property: 'clickedCount',
     align: 'right',
     editable: false,
     label: labels.TimesClicked,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'number'
+  },
+  TIMES_CLICKED_PRINTOUT: {
+    property: 'clickedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesClicked,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    overrideWidth: true
+  },
+  TIMES_SCANNED: {
+    property: 'clickedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesScanned,
     sortable: true,
     show: true,
     type: 'text',
@@ -403,6 +511,18 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'number'
+  },
+  TIMES_SUBMISSION_PRINTOUT: {
+    property: 'submittedCount',
+    align: 'right',
+    label: labels.TimesSubmission,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    overrideWidth: true,
     isEditable: false,
     filterableType: 'number'
   },

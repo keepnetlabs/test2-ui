@@ -1289,8 +1289,13 @@ export default {
       getDashboardReportedEmailTrendsPermission:
         'permissions/getDashboardReportedEmailTrendsPermission'
     }),
-    isHashFilterActive() {
+    isParentTableHashFilterActive() {
       return !!this.requestBodyReportedEmails?.filter?.FilterGroups[0]?.FilterItems.find((item) =>
+        ['MD5', 'SHA512'].includes(item.FieldName)
+      )
+    },
+    isClusteredTableHashFilterActive() {
+      return !!this.clusteredTableAxios?.filter?.FilterGroups[0]?.FilterItems.find((item) =>
         ['MD5', 'SHA512'].includes(item.FieldName)
       )
     },
@@ -1320,15 +1325,20 @@ export default {
     }
   },
   watch: {
-    isHashFilterActive(val) {
+    isParentTableHashFilterActive(val) {
       if (val) {
         this.emails.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
         this.emails.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
-        this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
-        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
       } else {
         this.emails.addButton.label = `FILTER BY MD5 OR sha512 Hash`
         this.emails.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
+      }
+    },
+    isClusteredTableHashFilterActive(val) {
+      if (val) {
+        this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
+      } else {
         this.clusteredTable.addButton.label = `FILTER BY MD5 OR sha512 Hash`
         this.clusteredTable.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
       }
@@ -1380,44 +1390,83 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
     handleFilterByHash() {
-      if (this.isHashFilterActive) {
+      if (this.isParentTableHashFilterActive || this.isClusteredTableHashFilterActive) {
         this.clearFilterByHashProps()
       } else {
         this.isFilterByHashModalVisible = true
       }
     },
     clearFilterByHashProps() {
-      this.hashfilterProps = this.defaultHashfilterProps
-      const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-      )
-      if (hashFilterIndex !== -1) {
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.splice(hashFilterIndex, 1)
+      this.hashfilterProps = { ...this.defaultHashfilterProps }
+      if (this.isShowingClusteredTable) {
+        const clusteredHashFilterIndex = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+        )
+        if (clusteredHashFilterIndex !== -1) {
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(
+            clusteredHashFilterIndex,
+            1
+          )
+        }
+        this.callForClusteredTable()
+      } else {
+        const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+        )
+        if (hashFilterIndex !== -1) {
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.splice(
+            hashFilterIndex,
+            1
+          )
+        }
+        this.callForSearchNotifiedMail()
       }
-      this.callForSearchNotifiedMail()
     },
     confirmFilterByHash() {
-      const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-      )
-      if (hashFilterIndex !== -1) {
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
-          hashFilterIndex
-        ].FieldName = this.hashfilterProps.filterBy
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
-          hashFilterIndex
-        ].Value = this.hashfilterProps.hash
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
-          hashFilterIndex
-        ].Operator = '='
+      if (this.clusteredRow) {
+        const hashFilterIndex = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+        )
+        if (hashFilterIndex !== -1) {
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].FieldName = this.hashfilterProps.filterBy
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].Value = this.hashfilterProps.hash
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[hashFilterIndex].Operator =
+            '='
+        } else {
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.push({
+            FieldName: this.hashfilterProps.filterBy,
+            Value: this.hashfilterProps.hash,
+            Operator: '='
+          })
+        }
+        this.callForClusteredTable()
       } else {
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.push({
-          FieldName: this.hashfilterProps.filterBy,
-          Value: this.hashfilterProps.hash,
-          Operator: '='
-        })
+        const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
+        )
+        if (hashFilterIndex !== -1) {
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].FieldName = this.hashfilterProps.filterBy
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].Value = this.hashfilterProps.hash
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].Operator = '='
+        } else {
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.push({
+            FieldName: this.hashfilterProps.filterBy,
+            Value: this.hashfilterProps.hash,
+            Operator: '='
+          })
+        }
+        this.callForSearchNotifiedMail()
       }
-      this.callForSearchNotifiedMail()
       this.closeFilterByHashModal()
     },
     closeFilterByHashModal() {
@@ -1597,6 +1646,7 @@ export default {
       this.resetTableFilters()
       this.changeColumnsOrder(selectedCluster)
       this.changeFirstColumnWidth(360)
+      this.hashfilterProps = { ...this.defaultHashfilterProps }
       this.requestBodyReportedEmails.pageNumber = 1
       this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(selectedCluster)
       this.isCustomOverflowedColumn = true

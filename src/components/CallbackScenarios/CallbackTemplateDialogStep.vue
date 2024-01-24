@@ -13,7 +13,7 @@
           :value="value.isVishingStep"
           label="Digit Entering Step"
           customStyle="text-transform: none;"
-          @input="onCallbackStepChange"
+          @input="onVishingStepChange"
         />
         <v-tooltip :disabled="!isRemoveDisabled" right max-width="200">
           <template v-slot:activator="{ on }">
@@ -351,6 +351,12 @@ export default {
     }
   },
   methods: {
+    onVishingStepChange(val) {
+      this.$emit('input', { ...this.value, isVishingStep: val })
+      if (val) {
+        this.$emit('vishingStepChange', this.index)
+      }
+    },
     handlePlayAudio() {
       this.isPlayAudioClicked = true
     },
@@ -378,9 +384,6 @@ export default {
           inputDigit: val.length ? parseInt(val) : null
         })
       }
-    },
-    onCallbackStepChange(val) {
-      this.$emit('input', { ...this.value, isVishingStep: val })
     },
     onFileChanged(file) {
       this.isPlayAudioClicked = false

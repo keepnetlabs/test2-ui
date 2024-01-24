@@ -269,7 +269,8 @@ export const difficulties = [
 
 export const DISTRIBUTION_TYPES = {
   PHISHING: '1',
-  SMISHING: '3'
+  SMISHING: '3',
+  QUISHING_INDIVIDUAL_PRINTOUT: '4'
 }
 export const DISTRIBUTION_START_TYPES = {
   NOW: 1,

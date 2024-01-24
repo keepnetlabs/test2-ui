@@ -85,6 +85,7 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <CampaignManagerItemRowActions
+          v-if="!isQuishingTypePrintout"
           :type="SCENARIO_TYPES.QUISHING"
           :campaign-resource-id="item.resourceId"
           :scope="scope"
@@ -93,6 +94,33 @@
           @on-stop="handleStop"
           @on-launch="handleLaunch"
         />
+        <template v-else>
+          <DefaultButtonRowAction
+            disabled-tooltip-text="PDF file not available for download yet. Please wait for it to be ready."
+            :scope="scope"
+            :check-is-owner-property="false"
+            :disabled="!scope.row.isPdfReady || scope.row.isDownloading"
+            icon="mdi-download"
+            text="Download Individual Printout"
+            @on-click="handleDownload(scope.row)"
+          />
+          <RowActionsMenu>
+            <DefaultMenuRowAction
+              :scope="scope"
+              :check-is-owner-property="false"
+              icon="mdi-text-box"
+              text="View Report"
+              @on-click="handleViewReport(scope.row)"
+            />
+            <DefaultMenuRowAction
+              :scope="scope"
+              :check-is-owner-property="false"
+              icon="mdi-delete"
+              text="Delete"
+              @on-click="handleDelete(scope.row)"
+            />
+          </RowActionsMenu>
+        </template>
       </template>
       <template #table-all-records>
         <div class="campaign-manager__table-all-records">
@@ -108,6 +136,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import {
+  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -121,15 +150,22 @@ import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
 import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
   ON_BACK_CLICK: 'on-back-click',
   ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
 }
+
 export default {
   name: 'QuishingCampaignManagerItemTable',
   components: {
+    RowActionsMenu,
+    DefaultMenuRowAction,
+    DefaultButtonRowAction,
     TheRecordsButton,
     Badge,
     CampaignManagerItemDeleteDialog,
@@ -142,6 +178,10 @@ export default {
     },
     statusItems: {
       type: Array
+    },
+    isQuishingTypePrintout: {
+      type: Boolean,
+      default: false
     }
   },
   emits: EMITS,
@@ -231,6 +271,69 @@ export default {
           })
         )
         this.reRenderFilters()
+      }
+    },
+    isQuishingTypePrintout: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.tableOptions.columns = [
+            COLUMNS.START_TIME,
+            COLUMNS.TARGET_USERS_ITEM_TABLE,
+            COLUMNS.CREATE_TIME_ITEM_TABLE
+          ]
+          this.tableOptions.rowActions = [
+            {
+              name: 'Download Individual Printout',
+              isNotShow: true,
+              id: 'btn-download--row-actions-campaign-item-manager',
+              icon: 'mdi-download',
+              action: 'on-download'
+            },
+            {
+              name: labels.Stop,
+              isNotShow: true,
+              id: 'btn-stop--row-actions-campaign-item-manager',
+              icon: 'mdi-stop',
+              action: 'on-stop'
+            },
+            {
+              name: labels.Delete,
+              id: 'btn-delete--row-actions-campaign-manager',
+              icon: 'mdi-delete',
+              action: 'on-delete',
+              disabled: !this.$store.getters[
+                'permissions/getQuishingCampaignReportsDeletePermissions'
+              ]
+            }
+          ]
+        } else {
+          this.tableOptions.columns = [
+            COLUMNS.FREQUENCY,
+            COLUMNS.START_TIME,
+            COLUMNS.TARGET_USERS_ITEM_TABLE,
+            COLUMNS.STATUS,
+            COLUMNS.CREATE_TIME_ITEM_TABLE
+          ]
+          this.tableOptions.rowActions = [
+            {
+              name: labels.Stop,
+              isNotShow: true,
+              id: 'btn-stop--row-actions-campaign-item-manager',
+              icon: 'mdi-stop',
+              action: 'on-stop'
+            },
+            {
+              name: labels.Delete,
+              id: 'btn-delete--row-actions-campaign-manager',
+              icon: 'mdi-delete',
+              action: 'on-delete',
+              disabled: !this.$store.getters[
+                'permissions/getQuishingCampaignReportsDeletePermissions'
+              ]
+            }
+          ]
+        }
       }
     }
   },
@@ -351,6 +454,30 @@ export default {
       this.reRenderFilters({})
       this.axiosPayload = getDefaultAxiosPayload({
         orderBy: 'CreatedDate'
+      })
+    },
+    handleDownload(row) {
+      this.$set(row, 'isDownloading', true)
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'Download progress has been started. Please wait...',
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
+      QuishingService.getQuishingPdfCampaignDownloadContent(
+        this.item.resourceId,
+        row.instanceGroup
+      ).then((response) => {
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(response.data)
+        link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
+        link.click()
+        this.$set(row, 'isDownloading', false)
+      })
+    },
+    handleViewReport(row) {
+      this.$router.push({
+        name: 'Quishing Report',
+        params: { id: this.item.resourceId, instanceGroup: row.instanceGroup }
       })
     }
   }

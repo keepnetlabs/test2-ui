@@ -43,9 +43,15 @@ import CampaignManagerReportNoResponse from '@/components/QuishingCampaignManage
 import CampaignManagerReportPhishingReport from '@/components/QuishingCampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport.vue'
 import CampaignManagerReportSendingReport from '@/components/QuishingCampaignManagerReport/SendingReport/CampaignManagerReportSendingReport.vue'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 export default {
   name: 'QuishingCampaignManagerReport',
   components: { KContainer },
+  provide() {
+    return {
+      getQuishingTypePrintOut: () => this.isQuishingTypePrintout
+    }
+  },
   data() {
     return {
       formDetails: null,
@@ -113,7 +119,8 @@ export default {
             'permissions/getQuishingCampaignReportsSendingReportPermissions'
           ]
         }
-      ]
+      ],
+      isQuishingTypePrintout: false
     }
   },
   computed: {
@@ -161,6 +168,9 @@ export default {
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
+          this.isQuishingTypePrintout =
+            firstScenario?.scenarioInfo?.templateType?.toLowerCase() ===
+            QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
           if (scenarios.length === 1) {
             const scenarioMethodType = firstScenario.scenarioInfo?.methodTypeId
             if (scenarioMethodType === 1) {
@@ -186,6 +196,19 @@ export default {
             } else if (scenarioMethodType === 4) {
               this.setMultipleType(scenarios)
               this.setTabStatus()
+            }
+            if (
+              firstScenario?.scenarioInfo?.templateType?.toString().toLowerCase() ===
+              QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+            ) {
+              const phishingReportIndex = this.tabItems.findIndex(
+                (tab) => tab.name === labels.PhishingReporter
+              )
+              if (phishingReportIndex !== -1) this.tabItems.splice(phishingReportIndex, 1)
+              const openedEmailReportIndex = this.tabItems.findIndex(
+                (tab) => tab.name === labels.Opened
+              )
+              if (openedEmailReportIndex !== -1) this.tabItems.splice(openedEmailReportIndex, 1)
             }
           } else {
             this.setMultipleType(scenarios)

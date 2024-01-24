@@ -107,7 +107,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Submitted MFA Code ${this.item?.['submittedCount'] || 0} Time(s)`
+      return `Submitted MFA Code ${this.item?.['mfaSubmittedCount'] || 0} Time(s)`
     },
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`

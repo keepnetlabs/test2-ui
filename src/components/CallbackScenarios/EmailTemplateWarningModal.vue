@@ -11,7 +11,7 @@
     @changeStatus="closeOverlay"
   >
     <template v-slot:app-dialog-body
-      >You must insert {PHISHING_CODE} ve {PHISHING_CALLBACK_PHONE} merge tag to your email design
+      >You must insert {PHISHING_CODE} and {PHISHING_CALLBACK_PHONE} merge tag to your email design
       for phishing campaign to work correctly</template
     >
     <template v-slot:app-dialog-footer>

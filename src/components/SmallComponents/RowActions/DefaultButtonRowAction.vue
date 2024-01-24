@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom>
+  <v-tooltip content-class="max-w-300" bottom>
     <template #activator="{ on }">
       <v-btn
         v-on="on"
@@ -12,7 +12,7 @@
         <v-icon :ripple="!isDisabled">{{ icon }}</v-icon>
       </v-btn>
     </template>
-    <span>{{ text }}</span>
+    <span>{{ tooltipMessage }}</span>
   </v-tooltip>
 </template>
 
@@ -38,6 +38,9 @@ export default {
     },
     id: {
       type: String
+    },
+    disabledTooltipText: {
+      type: String
     }
   },
   computed: {
@@ -47,6 +50,14 @@ export default {
         return !!this.disabled || !row.isOwner
       }
       return !!this.disabled
+    },
+    tooltipMessage() {
+      if (this.isDisabled) {
+        return this.scope.row.isDownloading
+          ? 'Downloading PDF. Please wait...'
+          : this.disabledTooltipText || this.text
+      }
+      return this.text
     }
   },
   methods: {

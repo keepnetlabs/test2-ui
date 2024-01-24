@@ -194,7 +194,7 @@ import CampaignManagerScheduleDialog from '@/components/CallbackCampaignManager/
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
-
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -204,7 +204,8 @@ export default {
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
     CallbackCampaignModalSummaryCallbackTemplate,
-    AlertBox
+    AlertBox,
+    KEmailPreview
   },
   props: {
     formData: {

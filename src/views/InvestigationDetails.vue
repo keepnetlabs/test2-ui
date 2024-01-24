@@ -1370,13 +1370,14 @@ export default {
       {
         property: 'emailLastAction',
         align: 'left',
-        sortable: true,
-        hideSort: false,
+        sortable: false,
+        filterable: false,
+        hideFilter: true,
+        hideSort: true,
         label: 'Status',
         show: true,
         minWidth: 280,
-        type: 'slot',
-        filterableType: 'text'
+        type: 'slot'
       }
     ],
     columnsTargetUsers: [
@@ -1438,7 +1439,7 @@ export default {
         minWidth: 170,
         type: 'badge',
         filterableType: 'select',
-        filterableItems: ['Completed', 'Interrupted', 'Running'],
+        filterableItems: ['Completed', 'Interrupted', 'Running', 'Expired'],
         errorStateFor: true
       },
       {
@@ -1861,8 +1862,10 @@ export default {
       }
       if (section === 'onlineUserCount') {
         if (this.statsAndMenuData.status === 'Running') return `${val} Online User(s)`
-        if (this.statsAndMenuData.status === 'Canceled') return `${val} User(s)`
-        if (this.statsAndMenuData.status === 'Expired') return `${val} User(s)`
+        if (this.statsAndMenuData.status === 'Canceled')
+          return `${this.statsAndMenuData.notScannedUserCount} User(s)`
+        if (this.statsAndMenuData.status === 'Expired')
+          return `${this.statsAndMenuData.notScannedUserCount} User(s)`
         if (this.statsAndMenuData.status === 'Finished') return 'All users scanned'
       }
       if (section === 'totalUserCount') {

@@ -16,12 +16,12 @@
     <template #overlay-body>
       <AppModalBodyHeader
         :title="labels.CampaignInstance"
-        :sub-title="labels.CampaignInstanceSub"
+        :sub-title="labels.QuishingCampaignInstanceSub"
       />
       <FormGroup
         class-name="campaign-manager__target-groups"
         :title="labels.TargetGroups"
-        :sub-title="labels.TargetGroupsSub"
+        :sub-title="labels.QuishingTargetGroupsSub"
       />
       <CampaignManagerTargetGroups
         ref="refCampaignManagerTargetGroup"
@@ -39,6 +39,7 @@
       />
       <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
       <InputDistribution
+        v-if="isQuishingTypeEmail"
         v-model="inputDistributionFormData"
         :distribution-delay-time-items="getDistributionDelayTimeItems"
         :selected-time-zone-text="selectedTimeZoneText"
@@ -84,6 +85,7 @@ import {
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import useDistributionComputed from '@/hooks/awareness-educator/useDistributionComputed'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 const defaultFormValues = {
   targetGroupResourceIds: [],
   scheduleTypeId: '1',
@@ -116,6 +118,10 @@ export default {
       type: String
     },
     formDetails: {
+      type: Object,
+      default: () => ({})
+    },
+    selectedRow: {
       type: Object,
       default: () => ({})
     }
@@ -161,6 +167,9 @@ export default {
     }
   },
   computed: {
+    isQuishingTypeEmail() {
+      return this.selectedRow?.type === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+    },
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionSmtpDelayTimeTypes']
         ? this.formDetails['distributionSmtpDelayTimeTypes']?.find(

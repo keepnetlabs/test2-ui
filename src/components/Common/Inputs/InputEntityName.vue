@@ -69,6 +69,13 @@ export default {
     }
   },
   watch: {
+    initialRules: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) this.rules = this.applyRules ? val : []
+      }
+    },
     required: {
       immediate: true,
       handler() {
@@ -76,7 +83,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.rules.unshift((v) =>
       Validations.maxLength(v, 256, labels.getMaxLengthMessage(this.entityName, 256))
     )

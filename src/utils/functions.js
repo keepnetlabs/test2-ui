@@ -87,6 +87,7 @@ export function getBtnStatusColor(type) {
   if (_type === 'no match') return '#757575'
   if (_type === 'not in use') return '#757575'
   if (_type === 'in use') return '#1173C1'
+  if (_type === 'passed') return '#217124'
   return '#00bcd4'
 }
 

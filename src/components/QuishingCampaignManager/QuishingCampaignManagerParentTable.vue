@@ -32,6 +32,42 @@
     @refreshAction="callForData"
     @handleMultipleDelete="handleMultipleDeleteOfCampaigns"
   >
+    <template #addUsers>
+      <v-menu :offset-y="true" bottom left>
+        <template v-slot:activator="{ on: menu }">
+          <v-tooltip bottom opacity="1">
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                v-on="{ ...tooltip, ...menu }"
+                :disabled="
+                  !$store.getters['permissions/getQuishingCampaignManagerParentCreatePermissions']
+                "
+                id="btn-add--quishing-scenario"
+                class="button-new"
+                style="margin-right: 10px;"
+                rounded
+                color="#2196f3"
+              >
+                <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+                <span class="button-new__text">NEW</span>
+              </v-btn>
+            </template>
+            <span class="tooltip-span">Add a Template</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="item in addQuishingItems"
+            :key="item.id"
+            :id="item.id"
+            :disabled="item.disabled"
+            @click="handleAddQuishingCampaign(item)"
+          >
+            <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
         <div class="reported-email-subject__container">
@@ -50,7 +86,7 @@
       <template v-if="scope.column.property === 'status'">
         <div class="campaign-manager-parent-table__status-column">
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <v-btn style="display: none;" />
               <Badge
                 v-bind="getStatusBadgeProps(scope.row.status)"
@@ -84,11 +120,13 @@
       <CampaignManagerRowActions
         :scope="scope"
         :row-actions="tableOptions.rowActions"
+        :is-quishing-print-preview="checkIsQuishingTypePrintout(scope.row)"
         @on-edit="handleEdit"
         @on-preview="handlePreview"
         @on-delete="handleDelete"
         @on-duplicate="handleDuplicate"
         @on-launch="handleLaunch"
+        @on-print-preview="handlePrintPreview"
       />
     </template>
   </DataTable>
@@ -110,6 +148,7 @@ import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/function
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import QuishingService from '@/api/quishing'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -137,6 +176,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       METHOD_TYPES,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
@@ -161,6 +201,7 @@ export default {
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
           COLUMNS.SCENARIO_COUNT,
+          COLUMNS.QUISHING_EMAIL_TYPE,
           COLUMNS.QUISHING_METHOD,
           COLUMNS.CREATEDBY,
           COLUMNS.EMAIL_DELIVERY,
@@ -216,7 +257,14 @@ export default {
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
-      }
+      },
+      addQuishingItems: [
+        { text: 'Email Campaign', id: 'btn-add-email-campaign' },
+        {
+          text: 'Individual Printout Campaign',
+          id: 'btn-add-individual-printout-template'
+        }
+      ]
     }
   },
   computed: {
@@ -359,6 +407,34 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
+    },
+    handleAddQuishingCampaign(item = { text: '' }) {
+      if (item.text === this.addQuishingItems[0].text) {
+        this.toggleAddCampaignManagerModal()
+      }
+      if (item.text === this.addQuishingItems[1].text) {
+        this.$emit('on-add-individual-printout-campaign', null, false)
+      }
+    },
+    checkIsQuishingTypePrintout(row = {}) {
+      return (
+        row?.templateType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      )
+    },
+    handlePrintPreview(row = {}) {
+      QuishingService.getQuishingPdfCampaignPreviewContent(row.resourceId).then((response) => {
+        const file = new File([response.data], 'Quishing PDF Preview', {
+          type: 'application/pdf'
+        })
+        const fileURL = URL.createObjectURL(file)
+        const newWindow = window.open(fileURL)
+        newWindow.onload = function () {
+          setTimeout(() => {
+            newWindow.document.title = 'Quishing PDF Preview'
+          }, 250)
+        }
+      })
     }
   }
 }

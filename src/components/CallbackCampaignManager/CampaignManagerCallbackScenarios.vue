@@ -225,7 +225,7 @@
                   <ElTabPane
                     label="Callback Template"
                     name="callbackTemplate"
-                    id="campaign-manager-info--landing-content"
+                    id="campaign-manager-info--callback-content"
                   >
                     <CallbackTemplatePreviewSteps
                       v-if="!!callbackTemplate"
@@ -290,43 +290,8 @@ import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/tra
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
-const defaultAxiosPayload = {
-  pageNumber: 1,
-  pageSize: 10,
-  orderBy: 'createTime',
-  ascending: false,
-  filter: {
-    Condition: 'AND',
-    FilterGroups: [
-      {
-        Condition: 'AND',
-        FilterItems: [
-          { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
-          {
-            Value: '',
-            FieldName: 'voice',
-            Operator: '='
-          },
-          { Value: '', FieldName: 'difficulty', Operator: 'Include' }
-        ],
-        FilterGroups: []
-      },
-      {
-        Condition: 'OR',
-        FilterItems: [
-          { FieldName: 'name', Operator: 'Contains', Value: '' },
-          { FieldName: 'difficulty', Operator: 'Contains', Value: '' },
-          { FieldName: 'createdBy', Operator: 'Contains', Value: '' },
-          { FieldName: 'tags', Operator: 'Contains', Value: '' },
-          { FieldName: 'createTime', Operator: 'Contains', Value: '' }
-        ],
-        FilterGroups: []
-      }
-    ]
-  }
-}
 export default {
-  name: 'CampaignManagerSmishingScenarios',
+  name: 'CampaignManagerCallbackScenarios',
   components: {
     TrainingLibraryPreviewDialog,
     // CampaignManagerPhishingScenariosTrainingTab,
@@ -372,7 +337,41 @@ export default {
     return {
       SCENARIO_TYPES,
       tab: 'email',
-      axiosPayload: { ...defaultAxiosPayload },
+      axiosPayload: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
+                {
+                  Value: '',
+                  FieldName: 'voice',
+                  Operator: '='
+                },
+                { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                { FieldName: 'name', Operator: 'Contains', Value: '' },
+                { FieldName: 'difficulty', Operator: 'Contains', Value: '' },
+                { FieldName: 'createdBy', Operator: 'Contains', Value: '' },
+                { FieldName: 'tags', Operator: 'Contains', Value: '' },
+                { FieldName: 'createTime', Operator: 'Contains', Value: '' }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       trainingTabModel: {},
       checkboxModel: {},
       labels,
@@ -389,8 +388,6 @@ export default {
       emailTemplate: null,
       emailTemplateParams: null,
       callbackTemplate: null,
-      selectedLandingPageTab: '1',
-      landingPageTemplates: [],
       phishingScenarioItems: [],
       isMethodMfa: false,
       isShowTrainingDialog: false,
@@ -449,19 +446,8 @@ export default {
     getTemplatePreviewContent() {
       return this.emailTemplate
     },
-    getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
-        : this.landingPageTemplates?.[0]?.content || ''
-    },
     getTemplateHeader() {
       return this.emailTemplateParams?.name || ''
-    },
-    isLandingPageTabsVisible() {
-      return this.landingPageTemplates?.length > 1
-    },
-    getSingleTemplateDetails() {
-      return this.landingPageTemplates?.[0]?.content || ''
     }
   },
   watch: {
@@ -708,10 +694,44 @@ export default {
     },
     resetFilters() {
       this.search = ''
-      this.difficulty = ''
-      this.method = ''
-      this.language = ''
-      this.axiosPayload = { ...defaultAxiosPayload }
+      this.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value = ''
+      this.axiosPayload.filter.FilterGroups[0].FilterItems[1].Value = ''
+      this.axiosPayload.filter.FilterGroups[0].FilterItems[2].Value = ''
+      this.axiosPayload = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
+                {
+                  Value: '',
+                  FieldName: 'voice',
+                  Operator: '='
+                },
+                { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                { FieldName: 'name', Operator: 'Contains', Value: '' },
+                { FieldName: 'difficulty', Operator: 'Contains', Value: '' },
+                { FieldName: 'createdBy', Operator: 'Contains', Value: '' },
+                { FieldName: 'tags', Operator: 'Contains', Value: '' },
+                { FieldName: 'createTime', Operator: 'Contains', Value: '' }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
       this.callForPhishingScenarios(false)
     },
     handleTrainingPreviewButtonClick() {

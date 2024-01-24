@@ -277,7 +277,11 @@ export default {
       if (this.selectedRow && this.selectedRow.resourceId) {
         getRestApi(this.selectedRow.resourceId).then((response) => {
           const { data: { data = {} } = {} } = response
-          this.fillForm(data)
+          const allowedIpAddresses = data?.allowedIpAddresses?.map((ip) => ({
+            name: ip,
+            value: ip
+          }))
+          this.fillForm({ ...data, allowedIpAddresses })
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
       }

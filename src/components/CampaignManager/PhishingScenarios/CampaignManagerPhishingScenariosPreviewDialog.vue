@@ -44,6 +44,10 @@ export default {
       type: Array,
       default: () => []
     },
+    emailTemplateParams: {
+      type: Object,
+      default: () => ({})
+    },
     tab: {
       type: String,
       default: 'email'
@@ -57,10 +61,12 @@ export default {
   },
   computed: {
     getTitle() {
+      if (this.tab === 'email' || this.tab === 'individual-printout')
+        return this.emailTemplateParams?.name || ''
       return this.landingPageParams?.name || ''
     },
     getTemplatePreviewContent() {
-      if (this.tab === 'email') {
+      if (this.tab === 'email' || this.tab === 'individual-printout') {
         return this.emailTemplate
       } else {
         return this.getCurrentLandingPageTemplate
