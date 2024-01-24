@@ -75,7 +75,7 @@ export default {
           COLUMNS.CATEGORY,
           COLUMNS.AUDIENCE,
           COLUMNS.LANGUAGES,
-          COLUMNS.TYPE,
+          COLUMNS.ENROLLMENT_TYPE,
           COLUMNS.ENROLLED_BY,
           COLUMNS.START_DATE,
           COLUMNS.DELIVERY,
