@@ -173,6 +173,19 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ['SCORM', 'Poster']
   },
+  ENROLLMENT_TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.Type,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: ['SCORM']
+  },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
     align: 'left',
