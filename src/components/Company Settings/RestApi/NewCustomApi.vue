@@ -203,7 +203,7 @@ import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import * as validations from '../../../utils/validations'
-import { getSystemUsersRole } from '@/api/systemUsers'
+import { getAvailableSystemUsersRole } from '@/api/systemUsers'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
@@ -291,10 +291,9 @@ export default {
     copyToClipboard,
     getRoles() {
       return new Promise((res, rej) => {
-        let payload = getDefaultAxiosPayload({ pageSize: 1000 }, 'RoleName')
         let allRoles = []
         let availableRoles = []
-        getSystemUsersRole(payload)
+        getAvailableSystemUsersRole()
           .then((response) => {
             allRoles = response.data.data
             availableRoles = []
