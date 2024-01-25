@@ -165,13 +165,14 @@ export default {
       httpRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.subdomainBlacklist(v),
-        (v) =>
-          Validations.subdomainDashDot(v, 'Only (-) and (.)  are allowed as special characters')
+        (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character'),
+        (v) => Validations.startsOrEndsWithHyphen(v)
       ],
       httpsRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.subdomainBlacklist(v),
-        (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character')
+        (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character'),
+        (v) => Validations.startsOrEndsWithHyphen(v)
       ]
     }
   },
