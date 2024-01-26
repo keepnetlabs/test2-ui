@@ -79,7 +79,8 @@ export default {
       return (
         this.userRole === 'Root' ||
         this.userRole === 'Reseller' ||
-        this.userRole === 'Company Admin'
+        this.userRole === 'Company Admin' ||
+        this.$store.getters['permissions/getAdvancedReportsSearchPermissions']
       )
     }
   },
