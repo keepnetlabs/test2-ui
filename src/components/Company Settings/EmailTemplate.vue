@@ -140,6 +140,11 @@
           ref="refPreview"
           :email-template-logo="emailTemplateLogo"
         />
+        <quishing-email-template-default
+          v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
+          ref="refPreview"
+          :email-template-logo="emailTemplateLogo"
+        />
         <email-template-default v-else ref="refPreview" :email-template-logo="emailTemplateLogo" />
       </template>
     </div>
@@ -164,9 +169,11 @@ import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/Indiv
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    QuishingEmailTemplateDefault,
     IndividualPrintOutTemplateDefault,
     EmailTemplateDefault,
     LandingPageTemplateDefault,
@@ -356,7 +363,10 @@ export default {
     },
     saveGrapeJs() {
       const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-      if (this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT) {
+      if (
+        this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT ||
+        this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+      ) {
         if (!template.includes(qrCodeString)) {
           return this.$emit('showErrorDialog')
         }
