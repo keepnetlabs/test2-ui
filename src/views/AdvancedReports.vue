@@ -93,7 +93,11 @@ export default {
       handler(val) {
         if (val === 'Root') this.tab = 'system'
         if (val === 'Reseller') this.tab = 'reseller'
-        if (val === 'Company Admin') this.tab = 'company'
+        if (
+          val === 'Company Admin' ||
+          this.$store.getters['permissions/getAdvancedReportsSearchPermissions']
+        )
+          this.tab = 'company'
       }
     }
   },
