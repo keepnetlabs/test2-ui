@@ -62,7 +62,15 @@
           </v-btn>
         </div>
       </div>
-      <div class="edit-popup__body" v-if="options && options.col && options.col.length">
+      <div v-if="options.isErrorState" class="edit-popup__body">
+        <div class="campaign-manager-sending-report-event" style="font-size: 12px;">
+          {{ options.errorStateText || 'Email delivery information cannot be accessed.' }}
+        </div>
+      </div>
+      <div
+        class="edit-popup__body"
+        v-if="options && options.col && options.col.length && !options.isErrorState"
+      >
         <v-form lazy-validation ref="refForm">
           <div class="items-wrapper">
             <div
@@ -164,7 +172,10 @@
                     col.property !== 'lastUpdateDate'
                   "
                   :style="[
-                    { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
+                    {
+                      color: getTextColor(copyOfEditedRows[0][col.property]),
+                      fontWeight: 600
+                    }
                   ]"
                 >
                   {{ getDataTableFieldLabel(copyOfEditedRows[0][col.property]) }}
@@ -172,17 +183,19 @@
                 <badge
                   :id="`badge--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="
-                        ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected' || col.type==='badge'))
-                      "
+                    (!editMode || !col.isEditable) &&
+                    (col.type === 'status' || col.type === 'detected' || col.type === 'badge')
+                  "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
                   :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <div
                   v-else-if="
-                        (copyOfEditedRows[0][col.property] && (!editMode || !col.isEditable) && (col.type === 'smallBadge'))
-                      "
+                    copyOfEditedRows[0][col.property] &&
+                    (!editMode || !col.isEditable) &&
+                    col.type === 'smallBadge'
+                  "
                   style="display: flex; flex-wrap: wrap;"
                 >
                   <badge
@@ -250,7 +263,12 @@
                   offset-y
                   max-width="290px"
                   min-width="290px"
-                  v-else-if=" (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'datepicker')"
+                  v-else-if="
+                    !multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'datepicker'
+                  "
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
@@ -275,8 +293,11 @@
                 <v-checkbox
                   :id="`input--extended-view-singular-value-checkbox-${col.label}-${index}`"
                   v-else-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'checkbox')
-                      "
+                    !multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'checkbox'
+                  "
                   color="#2196f3"
                   :label="col.editOptions.checkboxLabel"
                   :value="copyOfEditedRows[0][col.property]"
@@ -289,16 +310,22 @@
                   outlined
                   v-bind="col.editOptions.props"
                   v-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'textfield')
-                      "
+                    !multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'textfield'
+                  "
                   :value="copyOfEditedRows[0][col.property]"
                   @input="handleEditPopupTextFieldChange($event, col.property)"
                 />
                 <v-combobox
                   :id="`input--extended-view-singular-value-${col.label}-${index}`"
                   v-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'combobox')
-                      "
+                    !multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'combobox'
+                  "
                   :items="[]"
                   placeholder="Enter Tag"
                   outlined
@@ -318,8 +345,11 @@
                   :value="copyOfEditedRows[0][col.property]"
                   @input="handleEditPopupTextFieldChange($event, col.property)"
                   v-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'textarea')
-                      "
+                    !multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'textarea'
+                  "
                   rows="2"
                   v-bind="col.editOptions.props"
                   row-height="20"
@@ -479,8 +509,11 @@
 
                 <v-checkbox
                   v-else-if="
-                        (multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'checkbox')
-                      "
+                    multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.editOptions.component === 'checkbox'
+                  "
                   color="#2196f3"
                   :id="`input--extended-view-multiple-value-checkbox-${col.label}-${index}`"
                   :indeterminate="getCheckboxStatus(col.property)"
