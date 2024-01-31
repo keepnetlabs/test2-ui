@@ -31,7 +31,7 @@
           <iframe
             v-if="activeTemplate && !isTemplateLoading"
             :key="iframeKey"
-            class="training-library-preview__player"
+            :class="['training-library-preview__player', iframeClass]"
             allowfullscreen
             title="Training Preview"
             :src="activeTemplate"
@@ -117,6 +117,10 @@ export default {
     },
     trainingParams: {
       type: Object
+    },
+    iframeClass: {
+      type: String,
+      default: ''
     }
   },
   data() {

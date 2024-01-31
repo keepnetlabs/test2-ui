@@ -38,3 +38,10 @@
     font-weight: 400;
   }
 }
+.campaign-manager-phishing-training-preview{
+  .training-library-preview{
+    &__title,.form-group-horizontal-content__label{
+      color:#383B41;
+    }
+  }
+}
