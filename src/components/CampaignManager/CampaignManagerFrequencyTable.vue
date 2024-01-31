@@ -110,7 +110,12 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: { Badge, CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
+  components: {
+    Badge,
+    CampaignManagerItemDeleteDialog,
+    CampaignManagerItemRowActions,
+    DataTable
+  },
   props: {
     item: {
       type: Object
@@ -233,7 +238,8 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          phishingCampaignFrequencyGroup: this.item.frequencyGroup
         }
         exportCampaignManagerItem(payload, this.parentResourceId).then((response) => {
           const { data } = response

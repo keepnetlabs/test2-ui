@@ -105,6 +105,24 @@
             :landing-page-templates="landingPageTemplates"
           />
         </ElTabPane>
+        <ElTabPane
+          v-if="isTrainingScenario"
+          :label="labels.Training"
+          name="training"
+          id="campaign-manager-info--training-content"
+        >
+          <TrainingLibraryPreview
+            v-if="selectedLanguages.length"
+            v-show="!isLoading"
+            class="mt-6 campaign-manager-phishing-training-preview"
+            iframe-class="w-100"
+            :has-api="false"
+            :name="getTrainingName"
+            :training-id="getTrainingId"
+            :languages="selectedLanguages"
+            :training-params="trainingParams"
+          />
+        </ElTabPane>
       </ElTabs>
     </template>
     <template #app-dialog-footer>
@@ -127,10 +145,13 @@ import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'
+import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
   components: {
+    TrainingLibraryPreview,
     AppDialogFooterWithClose,
     TabsWithMfaSettings,
     AttachmentsPreview,
@@ -161,6 +182,7 @@ export default {
       landingPageTemplates: [],
       emailTemplateParams: {},
       landingPageParams: {},
+      trainingParams: {},
       tab: 'email',
       isLoading: false,
       labels,
@@ -168,7 +190,9 @@ export default {
       selectedScenario: null,
       phishingScenarios: [],
       isMethodMfa: false,
-      isIndividualPrintoutButtonDisabled: false
+      isIndividualPrintoutButtonDisabled: false,
+      isTrainingScenario: false,
+      selectedLanguages: []
     }
   },
   computed: {
@@ -202,6 +226,12 @@ export default {
         this.selectedRow?.templateType?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
       )
+    },
+    getTrainingName() {
+      return this?.trainingParams?.name || ''
+    },
+    getTrainingId() {
+      return this?.trainingParams?.trainingId || ''
     }
   },
   created() {
@@ -245,6 +275,10 @@ export default {
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
       this.emailTemplate = template
+      this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
+      this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
+      if (this.isTrainingScenario)
+        this.callForTrainingLanguages(this.trainingParams.trainingContents)
       this.emailTemplateParams = {
         resourceId: phishingScenarioPreviewDto?.[templateKey]?.resourceId || '',
         name: phishingScenarioPreviewDto?.[templateKey]?.name || '',
@@ -297,6 +331,27 @@ export default {
         .finally(() => {
           this.isIndividualPrintoutButtonDisabled = false
         })
+    },
+    callForTrainingLanguages(trainingContents = []) {
+      const languages = trainingContents.reduce((acc, item) => {
+        acc.push(item.languageId)
+        return acc
+      }, [])
+      AwarenessEducatorService.getLanguages().then((res) => {
+        languages.forEach((lang) => {
+          const language = res?.data?.data?.find((item) => item.id === lang)
+          if (language) {
+            this.selectedLanguages.push({
+              text: language.name,
+              value: language.id
+            })
+            if (!this.trainingParams.languages) this.trainingParams.languages = [language.name]
+            else this.trainingParams.languages.push(language.name)
+          }
+        })
+        if (this.trainingParams.languages)
+          this.trainingParams.languages = this.trainingParams.languages.join(', ')
+      })
     }
   }
 }
