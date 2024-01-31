@@ -244,7 +244,8 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          smishingCampaignFrequencyGroup: this.item.frequencyGroup
         }
         SmishingService.exportSmishingCampaignItems(payload, this.parentResourceId).then(
           (response) => {
