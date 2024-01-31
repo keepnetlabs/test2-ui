@@ -168,7 +168,7 @@ export default {
           COLUMNS.METHOD,
           COLUMNS.CREATEDBY,
           COLUMNS.CREATE_TIME,
-          COLUMNS.LAST_LAUNCH
+          COLUMNS.LAST_LAUNCH_FILTERED
         ],
         iEmpty: {
           message: labels.EmptyCampaignManager,
