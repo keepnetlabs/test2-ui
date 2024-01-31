@@ -115,8 +115,6 @@ const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
 
-const defaultExtendedViewOptions = {}
-
 export default {
   name: 'TrainingReportEnrollmentEmailsTable',
   components: {
@@ -478,6 +476,7 @@ export default {
           this.extendedViewValue = [data]
         })
         .catch(() => {
+          this.extendedViewValue = [{}]
           this.extendedViewOptions.isErrorState = true
         })
         .finally(() => {

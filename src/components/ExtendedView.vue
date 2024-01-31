@@ -752,7 +752,6 @@ export default {
       this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
       this.defaultValues = JSON.parse(JSON.stringify(rows))
     },
-    options(val) {},
     editMode(val) {
       if (this.changeFooterPosition) {
         const footer = document.querySelector('.k-footer')

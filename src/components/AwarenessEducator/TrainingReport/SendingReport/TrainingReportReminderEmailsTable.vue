@@ -78,7 +78,7 @@
         />
       </div>
       <div
-        v-if="!getEvents.length"
+        v-if="!getEvents.length && !extendedViewOptions.isErrorState"
         style="
           background-color: #f5f7fa;
           padding: 8px;
@@ -415,6 +415,7 @@ export default {
           this.extendedViewValue = [data]
         })
         .catch(() => {
+          this.extendedViewValue = [{}]
           this.extendedViewOptions.isErrorState = true
         })
         .finally(() => {
