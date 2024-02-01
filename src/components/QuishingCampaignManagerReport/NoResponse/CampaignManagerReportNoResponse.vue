@@ -4,6 +4,7 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -54,6 +55,12 @@ export default {
   data() {
     return {
       labels
+    }
+  },
+  methods: {
+    handleOnResend(payload) {
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
     }
   }
 }

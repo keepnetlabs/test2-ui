@@ -4,6 +4,7 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -242,7 +243,8 @@ export default {
       AwarenessEducatorService.resendTrainingToOpenedEmailList(this.resendPayload, this.id)
         .then(() => {
           this.toggleIsShowResendDialog()
-          this.$refs.refTable.callForData()
+          this.$refs.refTable.resetSelectableParams()
+          this.callForData()
         })
         .finally(() => {
           this.isResendActionButtonDisabled = false

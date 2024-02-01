@@ -4,6 +4,7 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -34,7 +35,6 @@ import CampaignManagerReportResendDialog from '@/components/CampaignManagerRepor
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedMfaCodeTable from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable'
 import CampaignManagerReportSubmittedMfaCodeDetailDialog from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeDetailDialog'
-
 import { useResend } from '@/hooks/useResend'
 import labels from '@/model/constants/labels'
 
@@ -73,6 +73,10 @@ export default {
     }
   },
   methods: {
+    handleOnResend(payload) {
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
+    },
     handleOnDetail(row = {}) {
       this.selectedRow = row
       this.toggleShowDetailDialog()

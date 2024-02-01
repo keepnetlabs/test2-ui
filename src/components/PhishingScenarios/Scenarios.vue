@@ -125,8 +125,6 @@
 import DataTable from '../DataTable'
 import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
 import {
-  getStoreValue,
-  PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -186,7 +184,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
           COMMON_SIMULATOR_COLUMNS.NAME,
-          COMMON_SIMULATOR_COLUMNS.QUISHING_METHOD,
+          COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,

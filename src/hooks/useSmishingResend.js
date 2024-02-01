@@ -25,6 +25,7 @@ export const useSmishingResend = {
       )
         .then(() => {
           this.toggleIsShowResendDialog()
+          this.$refs.refTable.$refs?.refTable?.resetSelectableParams?.()
           this.$refs.refTable.callForData()
         })
         .finally(() => {

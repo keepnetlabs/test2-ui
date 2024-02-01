@@ -21,6 +21,7 @@ export const useResend = {
       resendPhishingCampaignToUserList(this.resendPayload, this.id, this.instanceGroup)
         .then(() => {
           this.toggleIsShowResendDialog()
+          this.$refs.refTable.$refs?.refTable?.resetSelectableParams?.()
           this.$refs.refTable.callForData()
         })
         .finally(() => {
