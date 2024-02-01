@@ -77,6 +77,24 @@ export const COMMON_SIMULATOR_COLUMNS = {
       { text: 'MFA', value: 'MFA' }
     ]
   },
+  PHISHING_METHOD: {
+    property: PROPERTY_STORE.METHOD,
+    align: 'left',
+    editable: false,
+    label: labels.Method,
+    sortable: true,
+    show: true,
+    type: 'text',
+    fixed: false,
+    width: 240,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Click Only', value: 'Click-Only' },
+      { text: 'Data Submission', value: 'Data Submission' },
+      { text: 'Attachment', value: 'Attachment' },
+      { text: 'MFA', value: 'MFA' }
+    ]
+  },
   LANGUAGE: {
     property: PROPERTY_STORE.LANGUAGE,
     align: 'left',
