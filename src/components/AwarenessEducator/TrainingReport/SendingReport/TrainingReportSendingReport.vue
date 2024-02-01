@@ -4,6 +4,7 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -16,6 +17,7 @@
         />
         <TrainingReportEnrollmentEmailsTable
           v-if="tab === 'enrollment'"
+          ref="refEnrollmentTable"
           class="mt-6"
           :isScormProxy="isScormProxy"
           :id="id"
@@ -31,6 +33,7 @@
         />
         <TrainingReportReminderEmailsTable
           v-if="tab === 'reminder'"
+          ref="refReminderTable"
           class="mt-6"
           :id="id"
           :form-details="formDetails"
@@ -80,7 +83,10 @@ export default {
       AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
         .then(() => {
           this.toggleIsShowResendDialog()
-          this.$refs.refTable.callForData()
+          this.$refs?.refEnrollmentTable?.$refs?.refTable?.resetSelectableParams?.()
+          this.$refs?.refReminderTable?.$refs?.refTable?.resetSelectableParams?.()
+          this.$refs?.refEnrollmentTable?.callForData?.()
+          this.$refs?.refReminderTable?.callForData?.()
         })
         .finally(() => {
           this.isResendActionButtonDisabled = false
