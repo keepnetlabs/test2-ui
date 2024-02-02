@@ -59,8 +59,8 @@
         />
       </FormGroup>
     </div>
-    <div class="d-flex mx-4" v-if="isPhishingTemplate && !onlyGrapes">
-      <label>Attach File</label>
+    <div class="d-flex mx-4 align-center" v-if="isPhishingTemplate && !onlyGrapes">
+      <label class="mr-4 mb-6" style="font-weight: 600; font-size: 20px;">Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
         is-stand-alone

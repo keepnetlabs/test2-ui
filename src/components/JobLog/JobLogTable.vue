@@ -51,7 +51,7 @@
         :text="rowActions[0].name"
         :scope="scope"
         :disabled="rowActions[0].disabled"
-        @on-click="handleDetailsClick"
+        @on-click="handleDetailsClick(scope.row)"
       />
     </template>
   </DataTable>
