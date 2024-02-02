@@ -52,9 +52,13 @@
       @on-resend="handleOnResend"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
-        <div class="training-report-users__status-column">
+        <div v-if="col.property === 'status'" class="training-report-users__status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
+        </div>
+        <div v-if="col.property === 'examStatus'" class="training-report-users__exam-status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.examStatus)" :col="col" size="medium" />
         </div>
       </template>
     </DataTable>
@@ -204,6 +208,24 @@ export default {
               })) || []
           },
           {
+            property: 'examStatus',
+            align: 'center',
+            editable: false,
+            label: 'Exam Status',
+            sortable: true,
+            show: false,
+            type: 'slot',
+            width: 200,
+            props: {
+              style: {
+                maxWidth: '110px !important'
+              }
+            },
+            overrideWidth: true,
+            filterableType: 'select',
+            filterableItems: ['Failed', 'Success', 'Undetailed']
+          },
+          {
             property: 'lastInteractionDate',
             align: 'left',
             editable: false,
@@ -335,7 +357,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
         })
         .finally(this.setLoading)
     },
