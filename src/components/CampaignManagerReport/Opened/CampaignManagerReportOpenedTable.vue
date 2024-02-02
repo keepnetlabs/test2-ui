@@ -76,6 +76,10 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -109,10 +113,10 @@ export default {
         addButton: {
           show: true,
           icon: null,
-          label: 'SHOW SANDBOX ACTIVITY',
+          label: 'HIDE SANDBOX ACTIVITY',
           action: 'on-activity',
-          tooltip: 'SHOW SANDBOX ACTIVITY',
-          type: 'secondary',
+          tooltip: 'HIDE SANDBOX ACTIVITY',
+          type: 'outlined',
           id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
@@ -136,9 +140,6 @@ export default {
       }
     }
   },
-  created() {
-    this.callForData()
-  },
   watch: {
     customFields: {
       deep: true,
@@ -152,12 +153,18 @@ export default {
           this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
       }
+    },
+    isShowSandbox(val) {
+      this.$emit('update:is-show-sandbox-from-parent', val)
     }
+  },
+  created() {
+    this.callForData()
   },
   methods: {
     callForData() {
       this.setLoading(true)
-      if (!this.axiosPayload.activityType) this.axiosPayload.activityType = 0
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
       searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
