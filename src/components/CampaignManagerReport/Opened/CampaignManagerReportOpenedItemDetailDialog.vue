@@ -111,6 +111,7 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
 import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
   components: {
@@ -132,15 +133,23 @@ export default {
     },
     item: {
       type: Object
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
+    const sandboxText = this.isShowSandboxFromParent
+      ? 'HIDE SANDBOX ACTIVITY'
+      : 'SHOW SANDBOX ACTIVITY'
     return {
       COLUMNS,
       ACTIVITY_TYPES,
       isShowMarkAsHumanActivityDialog: false,
       isShowMarkAsSandboxActivityDialog: false,
-      tableActionLabel: 'SHOW SANDBOX ACTIVITY',
+      isShowSandbox: this.isShowSandboxFromParent,
+      tableActionLabel: sandboxText,
       selectedRow: null,
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -157,15 +166,15 @@ export default {
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP_SLOT_NON_FIXED,
-          COLUMNS.ACTIVITY_TYPE
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
           show: true,
           icon: null,
-          label: 'SHOW SANDBOX ACTIVITY',
+          label: sandboxText,
           action: 'on-activity',
-          tooltip: 'SHOW SANDBOX ACTIVITY',
-          type: 'secondary',
+          tooltip: sandboxText,
+          type: 'outlined',
           id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
@@ -197,12 +206,28 @@ export default {
   },
   created() {
     this.serverSideProps.pageSize = 5
+    const index = this.tableOptions.columns.findIndex(
+      (c) => c.property === PROPERTY_STORE.ACTIVITYTYPE
+    )
+    if (index !== -1) {
+      this.$set(
+        this.tableOptions.columns[index],
+        'filterableItems',
+        this.isShowSandboxFromParent
+          ? [
+              { text: 'Human Activity', value: '0' },
+              { text: 'Sandbox Activity', value: '1' }
+            ]
+          : [{ text: 'Human Activity', value: '0' }]
+      )
+    }
     this.callForData()
   },
   methods: {
     callForData() {
       this.setLoading(true)
-      if (!this.axiosPayload.activityType) this.axiosPayload.activityType = 0
+      if (typeof this.axiosPayload.activityType === 'undefined')
+        this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0
       searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {

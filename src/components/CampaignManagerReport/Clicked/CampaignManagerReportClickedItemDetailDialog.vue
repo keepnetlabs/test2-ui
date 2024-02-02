@@ -130,15 +130,23 @@ export default {
     },
     item: {
       type: Object
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
+    const sandboxText = this.isShowSandboxFromParent
+      ? 'HIDE SANDBOX ACTIVITY'
+      : 'SHOW SANDBOX ACTIVITY'
     return {
       ACTIVITY_TYPES,
       COLUMNS,
       isShowMarkAsHumanActivityDialog: false,
       isShowMarkAsSandboxActivityDialog: false,
-      tableActionLabel: 'SHOW SANDBOX ACTIVITY',
+      isShowSandbox: this.isShowSandboxFromParent,
+      tableActionLabel: sandboxText,
       selectedRow: null,
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -156,15 +164,15 @@ export default {
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP_SLOT_NON_FIXED,
-          COLUMNS.ACTIVITY_TYPE
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
           show: true,
           icon: null,
-          label: 'SHOW SANDBOX ACTIVITY',
+          label: sandboxText,
           action: 'on-activity',
-          tooltip: 'SHOW SANDBOX ACTIVITY',
-          type: 'secondary',
+          tooltip: sandboxText,
+          type: 'outlined',
           id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
@@ -201,7 +209,8 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      if (!this.axiosPayload.activityType) this.axiosPayload.activityType = 0
+      if (typeof this.axiosPayload.activityType === 'undefined')
+        this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0
       searchCampaignJobUserEmailClickedDetails(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {
