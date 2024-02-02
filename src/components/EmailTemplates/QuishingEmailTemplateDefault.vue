@@ -133,8 +133,7 @@
       <tr style="text-align: center;">
         <td>
           <p style="margin-bottom: 0;">
-            This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
-            <span>{DATESENT}</span>
+            This email is sent from <span>{COMPANYNAME}</span> on <span>{DATESENT}</span>
           </p>
         </td>
       </tr>
