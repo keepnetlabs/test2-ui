@@ -4,8 +4,8 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 export default {
   data() {
     return {
-      isShowSandbox: false,
-      tableActionLabel: 'SHOW SANDBOX ACTIVITY'
+      isShowSandbox: true,
+      tableActionLabel: 'HIDE SANDBOX ACTIVITY'
     }
   },
   watch: {
@@ -27,7 +27,6 @@ export default {
             : [{ text: 'Human Activity', value: '0' }]
         )
       }
-
       this.axiosPayload.activityType = this.isShowSandbox ? 2 : 0
       if (
         this.axiosPayload.activityType === 0 &&

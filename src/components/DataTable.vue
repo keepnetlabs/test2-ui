@@ -156,6 +156,34 @@
                       getAddButtonLabel
                     }}</span>
                   </v-btn>
+                  <v-btn
+                    v-if="
+                      addButton &&
+                      addButton.show &&
+                      addButton.action &&
+                      getAddButtonType === 'outlined'
+                    "
+                    v-on="on"
+                    :id="addButton.id"
+                    :class="[
+                      'campaign-manager-report-summary-header__btn-download-report',
+                      addButton && addButton.disabled && 'btn-add--disabled'
+                    ]"
+                    rounded
+                    outlined
+                    color="#2196f3"
+                    style="order: 1; margin-right: 10px;"
+                    :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
+                  >
+                    <v-icon
+                      v-if="!!getAddButtonIcon"
+                      style="font-size: 20px; margin-top: 1px; color: #ffffff !important;"
+                      color="#ffffff"
+                      >{{ getAddButtonIcon }}</v-icon
+                    >
+                    <span>{{ getAddButtonLabel }}</span>
+                  </v-btn>
                 </template>
                 <span class="tooltip-span">{{
                   (addButton && addButton.tooltip) || 'Add Users'
