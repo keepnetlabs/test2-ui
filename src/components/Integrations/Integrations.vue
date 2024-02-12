@@ -182,7 +182,11 @@ export default {
               INTEGRATION_TYPES.SPAMHOUSE,
               INTEGRATION_TYPES.CUSTOMINTEGRATION,
               INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-              INTEGRATION_TYPES.ROKSIT
+              INTEGRATION_TYPES.ROKSIT,
+              INTEGRATION_TYPES.CyberXRay,
+              INTEGRATION_TYPES.GOOGLEWEBRISK,
+              INTEGRATION_TYPES.OPSWAT,
+              INTEGRATION_TYPES.ANYRUN
             ]
           },
           {
