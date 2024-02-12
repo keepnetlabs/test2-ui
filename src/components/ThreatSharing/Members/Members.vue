@@ -56,7 +56,6 @@
                   dense
                   class="filter-field pt-6"
                 ></v-text-field>
-                <v-icon class="filter-icon">mdi-filter-variant</v-icon>
               </div>
             </template>
             <template #default="props">
@@ -152,7 +151,6 @@
                   class="filter-field pt-6"
                   v-model="search"
                 ></v-text-field>
-                <v-icon class="filter-icon">mdi-filter-variant</v-icon>
               </div>
             </template>
             <template #default="props">
@@ -178,9 +176,7 @@
                 </v-expansion-panels>
                 <div v-else>
                   <div class="empty-members mb-10">
-                    <p class="empty-members-span">
-                      No Requests to join your community
-                    </p>
+                    <p class="empty-members-span">No Requests to join your community</p>
                   </div>
                 </div>
               </v-skeleton-loader>
@@ -188,9 +184,7 @@
             <template slot="no-data">
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
                 <div class="empty-members mb-10">
-                  <p class="empty-members-span">
-                    No Requests to join your community
-                  </p>
+                  <p class="empty-members-span">No Requests to join your community</p>
                 </div>
               </v-skeleton-loader>
             </template>
