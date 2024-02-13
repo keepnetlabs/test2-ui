@@ -739,6 +739,16 @@ export default {
           filterableType: 'text'
         },
         {
+          property: 'senderIp',
+          filterableCustomFieldName: 'SenderIp',
+          label: 'Sender IP',
+          isEditable: false,
+          type: 'text',
+          show: true,
+          filterableType: 'text',
+          width: 200
+        },
+        {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
           label: 'Case Id',

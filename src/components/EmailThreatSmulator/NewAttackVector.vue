@@ -8,7 +8,7 @@
       @changeStatus="handleCloseStatusDialog(true)"
     >
       <template #app-dialog-body>
-        <span> Are you sure you want to enable these attack vectors?\ </span>
+        <span>Are you sure you want to enable these attack vectors?</span>
       </template>
       <template #app-dialog-footer>
         <app-dialog-footer
