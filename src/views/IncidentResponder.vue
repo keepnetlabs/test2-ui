@@ -602,14 +602,6 @@ export default {
             show: true
           },
           {
-            property: 'senderIp',
-            label: 'Sender IP',
-            isEditable: false,
-            type: 'text',
-            show: true,
-            width: 200
-          },
-          {
             property: PROPERTY_STORE.RESOURCEID,
             label: 'Case Id',
             isEditable: false,
@@ -748,10 +740,12 @@ export default {
         },
         {
           property: 'senderIp',
+          filterableCustomFieldName: 'SenderIp',
           label: 'Sender IP',
           isEditable: false,
           type: 'text',
           show: true,
+          filterableType: 'text',
           width: 200
         },
         {
