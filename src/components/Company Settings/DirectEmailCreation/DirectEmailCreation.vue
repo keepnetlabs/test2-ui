@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     checkUrlForMicrosoft() {
-      console.log(this.$route)
       const { query = {} } = this.$route
       const {
         tenant = '',
