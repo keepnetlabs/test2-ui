@@ -56,13 +56,14 @@
         @searchChangedEvent="handleSearchChange"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
       >
-        <template #datatable-row-actions="{scope}">
+        <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
             :icon="tableOptions.rowActions[0].icon"
             :text="tableOptions.rowActions[0].name"
             :scope="scope"
-            :disabled="tableOptions.rowActions[0].disabled"
+            :disabled="tableOptions.rowActions[0].disabled || !scope.row.isEditable"
+            disabledTooltipText="You are not authorized to update this user"
             @on-click="handleEdit(scope.row)"
           />
           <DefaultButtonRowAction
@@ -71,6 +72,7 @@
             :text="tableOptions.rowActions[1].name"
             :scope="scope"
             :disabled="tableOptions.rowActions[1].disabled || scope.row.email === getUser.email"
+            disabledTooltipText="You are not authorized to delete this user"
             @on-click="handleDelete(scope.row)"
           />
         </template>
