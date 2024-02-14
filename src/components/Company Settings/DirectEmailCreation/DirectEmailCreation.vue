@@ -59,9 +59,20 @@ export default {
   },
   methods: {
     checkUrlForMicrosoft() {
+      console.log(this.$route)
       const { query = {} } = this.$route
-      const { tenant = '', error = '', error_description = '', error_subcode = '' } = query
+      const {
+        tenant = '',
+        state = '',
+        error = '',
+        error_description = '',
+        error_subcode = ''
+      } = query
       this.isMicrosoftEmailCreationInitial = !tenant
+      if (state) {
+        const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
+        window.location = newUrl
+      }
       const errorSubCodeMessage =
         error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
       const errorMessage = error && (error_description || errorSubCodeMessage)
