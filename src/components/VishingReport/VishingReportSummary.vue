@@ -119,7 +119,7 @@ export default {
     },
     getVishingTemplateData() {
       if (!this.vishingSummary || !this.languageItems) return {}
-      const { vishingTemplateDto = {} } = this.vishingSummary || {}
+      const { vishingTemplateDto = {}, campaignName = '' } = this.vishingSummary || {}
       const {
         name = '',
         description = '',
@@ -129,7 +129,7 @@ export default {
         steps = [],
         vishingLanguageResourceId = ''
       } = vishingTemplateDto
-      this.$store.dispatch('common/setActivePageRouterName', name)
+      this.$store.dispatch('common/setActivePageRouterName', campaignName)
       const langaugeIndex = this.languageItems.findIndex(
         (language) => language.resourceId === vishingLanguageResourceId
       )
