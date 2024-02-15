@@ -634,18 +634,27 @@ export default {
       getVishingTemplate(this.templateId).then((response) => {
         this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
         for (const step of this.formValues.steps) {
-          step['isExpanded'] = false
+          if (step.order === 1) {
+            step['isExpanded'] = true
+          } else {
+            step['isExpanded'] = false
+          }
+          step['inputDigit'] = 0
+          step['duration'] = 0
         }
         const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
           (step) => step.order === 0
         )
         if (invalidDialingNoticeStepIndex !== -1) {
+          const dialingNoticeStepInputType = this.formValues.steps[
+            invalidDialingNoticeStepIndex
+          ].inputType.includes('TextToSpeech')
+            ? 'TextToSpeech'
+            : 'FileUpload'
           this.formValues.dialingNoticeStepResourceId = this.formValues.steps[
             invalidDialingNoticeStepIndex
           ].resourceId
-          this.formValues.dialingNoticeStepInputType = this.formValues.steps[
-            invalidDialingNoticeStepIndex
-          ].inputType
+          this.formValues.dialingNoticeStepInputType = dialingNoticeStepInputType
           this.formValues.dialingNoticeStepInputText = this.formValues.steps[
             invalidDialingNoticeStepIndex
           ].inputText
