@@ -36,7 +36,7 @@
                 <div>
                   <KSelect
                     v-model="scenarioType"
-                    placeholder="Scenario Type"
+                    placeholder="Campaign Type"
                     clearable
                     outlined
                     persistent-hint
