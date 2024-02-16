@@ -25,6 +25,7 @@
         :form-values="formValues"
         :role-items="roleItems"
         :status-items="statusItems"
+        :isSameUser="isSameUser"
         @on-status-change="handleChangeStatus"
       />
       <form-group v-if="selectedRow">
@@ -80,6 +81,10 @@ export default {
     },
     createdCompanyResourceId: {
       type: String
+    },
+    isSameUser: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
