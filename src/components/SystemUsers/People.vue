@@ -6,6 +6,7 @@
         ref="systemUserModal"
         :status="showCreateOrEditSystemUserModal"
         :selectedRow="selectedRow"
+        :isSameUser="isSameUser"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
       />
@@ -71,7 +72,11 @@
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
             :scope="scope"
-            :disabled="tableOptions.rowActions[1].disabled || scope.row.email === getUser.email"
+            :disabled="
+              tableOptions.rowActions[1].disabled ||
+              scope.row.email === getUser.email ||
+              !scope.row.isEditable
+            "
             disabledTooltipText="You are not authorized to delete this user"
             @on-click="handleDelete(scope.row)"
           />
@@ -284,7 +289,10 @@ export default {
     ...mapGetters({
       getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission',
       getUser: 'auth/userGetter'
-    })
+    }),
+    isSameUser() {
+      return this.getUser?.email === this.selectedRow?.email
+    }
   },
   mounted() {
     this.callForData()
