@@ -244,7 +244,7 @@ export default {
             },
             overrideWidth: true,
             filterableType: 'select',
-            filterableItems: ['Failed', 'Success', 'Undetailed']
+            filterableItems: ['Failed', 'Success', 'Incomplete']
           },
           {
             property: 'lastInteractionDate',
