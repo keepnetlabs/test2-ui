@@ -99,10 +99,10 @@ export function getStatusBadgeProps(status) {
       outline: true
     }
   }
-  if (trimmedStatus === 'Undetailed') {
+  if (trimmedStatus === 'Incomplete') {
     return {
       color: '#757575',
-      text: 'Undetailed',
+      text: 'Incomplete',
       outline: true
     }
   }
