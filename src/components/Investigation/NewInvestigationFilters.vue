@@ -61,7 +61,7 @@ export default {
                 { label: 'CC', id: 'cc' },
                 { label: 'BCC', id: 'bcc' },
                 { label: 'Sender Name', id: 'senderName' },
-                { label: 'IP Address', id: 'ip', isDisabled: false }
+                { label: 'Sender IP', id: 'ip', isDisabled: false }
               ]
             },
             {
