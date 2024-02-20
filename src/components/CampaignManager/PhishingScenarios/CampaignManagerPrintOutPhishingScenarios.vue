@@ -392,14 +392,20 @@ export default {
       return `Only show selected scenarios (${this.value.length})`
     },
     getTableEmptyTextMessage() {
+      const message =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? 'You do not have any Phishing Scenarios'
+          : 'You do not have any Quishing Scenarios'
       return this.isFilterOrSearchActive
         ? 'Sorry, that search and filter criteria has no results.'
-        : 'You do not have any Phishing Scenarios'
+        : message
     },
     getTableEmptySubMessage() {
-      return this.isFilterOrSearchActive
-        ? 'Go to Phishing Simulator>Phishing Scenarios to create a new scenario'
-        : 'Please try adjusting your search or filter'
+      const message =
+        this.type === SCENARIO_TYPES.PHISHING
+          ? 'Go to Phishing Simulator > Phishing Scenarios to create a new scenario'
+          : 'Go to Quishing Simulator > Quishing Scenarios to create a new scenario'
+      return this.isFilterOrSearchActive ? message : 'Please try adjusting your search or filter'
     },
     isFilterOrSearchActive() {
       const { method, difficulty, search } = this
