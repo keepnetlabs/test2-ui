@@ -510,7 +510,7 @@ export default {
     },
     language(val) {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'languageTypeResourceId'
+        (item) => item.FieldName === 'LanguageTypeResourceId'
       )
       const obj = { Value: val, FieldName: 'LanguageTypeResourceId', Operator: 'Contains' }
       if (index > -1) {
