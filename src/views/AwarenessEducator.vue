@@ -6,7 +6,7 @@
 export default {
   name: 'AwarenessEducator',
   created() {
-    if (this.$route.name === 'Awareness Educator') this.$router.push({ name: 'Training List' })
+    if (this.$route.name === 'Awareness Educator') this.$router.push({ name: 'Training Library' })
   }
 }
 </script>

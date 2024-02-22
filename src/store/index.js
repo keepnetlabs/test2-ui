@@ -14,6 +14,7 @@ import tableReload from '@/store/modules/tableReload'
 import whitelabel from '@/store/modules/whitelabel'
 import widgets from '@/store/modules/widgets'
 import permissions from '@/store/modules/permissions'
+import trainingLibrary from '@/store/modules/trainingLibrary'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -30,7 +31,8 @@ let store = new Vuex.Store({
     tableReload,
     whitelabel,
     widgets,
-    permissions
+    permissions,
+    trainingLibrary
   }
 })
 

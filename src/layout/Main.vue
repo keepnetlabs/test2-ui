@@ -578,9 +578,9 @@
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
-                  to="/awareness-educator/training-list"
-                  id="btn--link-navigator-menu-training-list"
-                  route-name="Training List"
+                  to="/awareness-educator/training-library"
+                  id="btn--link-navigator-menu-training-library"
+                  route-name="Training Library"
                   :router-name="routerName"
                 />
               </v-list-item-content>
@@ -1319,13 +1319,13 @@ export default {
       const routerName = this.routerName
       return {
         'primary--text active-menu-parent':
-          routerName === 'Training List' ||
+          routerName === 'Training Library' ||
           routerName === 'Enrollments' ||
           routerName === 'Certificates' ||
           routerName === 'Training Report' ||
           routerName === 'Scorm Proxy Report',
         'un-selected-list-item':
-          routerName !== 'Training List' ||
+          routerName !== 'Training Library' ||
           routerName !== 'Enrollments' ||
           routerName !== 'Certificates' ||
           routerName !== 'Training Report' ||
