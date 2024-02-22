@@ -106,7 +106,11 @@
           </div>
           <div class="table-settings" v-if="options">
             <slot name="addUsers">
-              <v-tooltip v-if="!addButton.hideTooltip" bottom opacity="1">
+              <v-tooltip
+                v-if="addButton && addButton.show && addButton.action && !addButton.hideTooltip"
+                bottom
+                opacity="1"
+              >
                 <template #activator="{ on }">
                   <v-btn
                     v-if="
@@ -190,7 +194,7 @@
                 }}</span>
               </v-tooltip>
               <v-btn
-                v-else
+                v-else-if="addButton && addButton.show && addButton.action && addButton.hideTooltip"
                 :id="addButton.id"
                 :class="[
                   'campaign-manager-report-summary-header__btn-download-report',
