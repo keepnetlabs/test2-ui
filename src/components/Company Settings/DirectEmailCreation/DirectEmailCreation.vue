@@ -80,11 +80,11 @@ export default {
           })
           this.toggleNewDirectEmailCreationModal()
         } else {
-          if (state) {
-            const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
-            window.location = newUrl
-            return
-          }
+          // if (state) {
+          //   const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
+          //   window.location = newUrl
+          //   return
+          // }
           this.tenantId = tenant
           this.toggleNewDirectEmailCreationModal()
           this.$router.replace('/company/company-settings')
