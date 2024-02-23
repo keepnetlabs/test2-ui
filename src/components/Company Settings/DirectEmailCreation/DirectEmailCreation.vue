@@ -67,7 +67,6 @@ export default {
         error_description = '',
         error_subcode = ''
       } = query
-      console.log(this.$route.query)
       this.isMicrosoftEmailCreationInitial = !tenant
       const errorSubCodeMessage =
         error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
@@ -79,6 +78,7 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert-circle'
           })
+          this.toggleNewDirectEmailCreationModal()
         } else {
           if (state) {
             const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
