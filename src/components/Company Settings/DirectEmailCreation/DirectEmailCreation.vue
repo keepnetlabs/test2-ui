@@ -67,11 +67,8 @@ export default {
         error_description = '',
         error_subcode = ''
       } = query
+      console.log(this.$route.query)
       this.isMicrosoftEmailCreationInitial = !tenant
-      if (state) {
-        const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
-        window.location = newUrl
-      }
       const errorSubCodeMessage =
         error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
       const errorMessage = error && (error_description || errorSubCodeMessage)
@@ -82,10 +79,16 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert-circle'
           })
+        } else {
+          if (state) {
+            const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
+            window.location = newUrl
+            return
+          }
+          this.tenantId = tenant
+          this.toggleNewDirectEmailCreationModal()
+          this.$router.replace('/company/company-settings')
         }
-        this.tenantId = tenant
-        this.toggleNewDirectEmailCreationModal()
-        this.$router.replace('/company/company-settings')
       }
     },
     toggleNewDirectEmailCreationModal(forceUpdate = false) {
