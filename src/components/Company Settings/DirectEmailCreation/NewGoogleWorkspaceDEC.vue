@@ -45,7 +45,7 @@
           <InputWithCopyToClipboard copyKey="clientId" @on-copy="handleCopyToClipboard">
             <template #input>
               <VTextField
-                v-model.trim="formData.clientId"
+                v-model.trim="clientId"
                 style="min-width: 554px;"
                 outlined
                 dense
@@ -137,10 +137,10 @@ export default {
       isShowDomainsLoader: false,
       formData: {
         name: '',
-        domains: [],
-        clientId: ''
+        domains: []
       },
       domainItems: [],
+      clientId: '',
       domainRules: [(v) => !!v.length || labels.Required],
       timeoutId: null
     }
@@ -179,7 +179,6 @@ export default {
       DirectCreationService.getDirectEmailCreation(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response || {}
         const { name = '', allowedDomains = [] } = data
-        this.editedTenantId = tenantId
         this.formData.name = name
         this.formData.domains = allowedDomains
       })
@@ -220,7 +219,9 @@ export default {
         })
     },
     callForClientId() {
-      DirectCreationService.getGoogleWorkspaceClientId().then((response) => {})
+      DirectCreationService.getGoogleWorkspaceClientId().then((response) => {
+        this.clientId = response?.data?.data
+      })
     },
     handleClose(forceUpdate = false) {
       this.$emit(EMITS.ON_CLOSE, forceUpdate)
