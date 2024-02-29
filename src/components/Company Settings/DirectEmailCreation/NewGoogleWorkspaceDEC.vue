@@ -39,7 +39,10 @@
           <template #subTitle>
             <v-list-item-subtitle class="k-form-group__sub-title">
               Copying the 'Client ID' information and pasting it into the appropriate field on the
-              Google Workspace configuration page is necessary. Learn how to set a client ID
+              Google Workspace configuration page is necessary. Learn
+              <a style="color: #2196f3; text-decoration: none;" href="" target="_blank"
+                >how to set a client ID</a
+              >
             </v-list-item-subtitle>
           </template>
           <InputWithCopyToClipboard copyKey="clientId" @on-copy="handleCopyToClipboard">
