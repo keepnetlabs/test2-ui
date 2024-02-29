@@ -50,6 +50,10 @@ const getDirectEmailSettings = () => {
   return testRequest.get(`${API_URL}/settings`)
 }
 
+const getGoogleWorkspaceClientId = () => {
+  return testRequest.get(`${API_URL}/google-client`)
+}
+
 export default {
   getApplicationId,
   getDomains,
@@ -60,5 +64,6 @@ export default {
   exportDirectEmailCreation,
   createDirectEmailCreation,
   updateDirectEmailCreation,
-  getDirectEmailSettings
+  getDirectEmailSettings,
+  getGoogleWorkspaceClientId
 }
