@@ -21,7 +21,10 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     filterableType: 'select',
-    filterableItems: [{ text: 'Microsoft 365', value: 'Microsoft365' }],
+    filterableItems: [
+      { text: 'Microsoft 365', value: 'Microsoft365' },
+      { text: 'Google Workspace', value: 'GoogleWorkspace' }
+    ],
     type: 'text',
     width: 180
   },
@@ -50,6 +53,11 @@ export const COLUMNS = {
   }
 }
 
+export const DEC_PLATFORMS = {
+  MICROSOFT_365: 'Microsoft 365',
+  GOOGLE_WORKSPACE: 'Google Workspace'
+}
+
 export const PLATFORM_TYPES = {
   Microsoft365: 1,
   GoogleWorkspace: 2,
@@ -57,7 +65,8 @@ export const PLATFORM_TYPES = {
 }
 
 export const EMITS = {
-  ON_ADD: 'on-add',
+  ON_ADD_GOOGLE_WORKSPACE: 'on-add-google-workspace',
+  ON_ADD_MICROSOFT_365: 'on-add-microsoft-365',
   ON_PREVIEW: 'on-preview',
   ON_ACTION_DELETE: 'on-action-delete',
   ON_EDIT: 'on-edit',
