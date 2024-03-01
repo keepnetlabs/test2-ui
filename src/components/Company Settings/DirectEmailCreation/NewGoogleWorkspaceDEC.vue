@@ -268,7 +268,8 @@ export default {
       this.isTestEmailActionDisabled = true
       const payload = {
         ...data,
-        tenantId: null
+        tenantId: null,
+        type: PLATFORM_TYPES.GoogleWorkspace
       }
       if (this.isEdit) {
         payload.resourceId = this.selectedRow.resourceId
