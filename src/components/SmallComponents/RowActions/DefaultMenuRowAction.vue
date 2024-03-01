@@ -1,12 +1,14 @@
 <template>
-  <v-tooltip v-if="canRenderTooltip" bottom>
-    <template #activator="{on}">
-      <v-list-item :class="className" :disabled="isDisabled" @click="onClick">
-        <v-list-item-title v-on="on">
-          <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
-          <span>{{ text }}</span>
-        </v-list-item-title>
-      </v-list-item>
+  <v-tooltip v-if="canRenderTooltip" bottom offset-overflow>
+    <template #activator="{ on }">
+      <div v-on="on">
+        <v-list-item :class="className" :disabled="isDisabled" @click="onClick">
+          <v-list-item-title>
+            <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
+            <span>{{ text }}</span>
+          </v-list-item-title>
+        </v-list-item>
+      </div>
     </template>
     <span>{{ disabledTooltipText }}</span>
   </v-tooltip>
