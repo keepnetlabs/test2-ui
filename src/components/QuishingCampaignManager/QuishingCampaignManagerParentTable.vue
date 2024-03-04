@@ -142,7 +142,7 @@ import {
 } from '@/model/constants/commonConstants'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
-import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
+import CampaignManagerRowActions from '@/components/SmishingCampaignManager/CampaignManagerRowActions'
 import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'

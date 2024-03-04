@@ -1,13 +1,20 @@
 <template>
   <div id="direct-email-creation">
-    <NewDirectMicrosoftEmailCreation
-      v-if="isShowDirectMicrosoftEmailCreationModal"
-      :status="isShowDirectMicrosoftEmailCreationModal"
+    <NewMicrosoft365DEC
+      v-if="isShowMicrosoft365DECCreationModal"
+      :status="isShowMicrosoft365DECCreationModal"
       :tenant-id="tenantId"
       :is-initial="isMicrosoftEmailCreationInitial"
       :is-edit="isEdit"
       :selected-row="selectedRow"
-      @on-close="toggleNewDirectEmailCreationModal"
+      @on-close="toggleNewMicrosoft365DECModal"
+    />
+    <NewGoogleWorkspaceDEC
+      v-if="isShowGoogleWorkspaceDECCreationModal"
+      :status="isShowGoogleWorkspaceDECCreationModal"
+      :is-edit="isEdit"
+      :selected-row="selectedRow"
+      @on-close="toggleNewGoogleWorkspaceDECModal"
     />
     <DeleteDirectEmailCreationDialog
       v-if="isShowDeleteDirectEmailCreationDialog"
@@ -21,7 +28,8 @@
     />
     <DirectEmailCreationTable
       ref="refTable"
-      @on-add="toggleNewDirectEmailCreationModal"
+      @on-add-microsoft-365="toggleNewMicrosoft365DECModal"
+      @on-add-google-workspace="toggleNewGoogleWorkspaceDECModal"
       @on-edit="handleEditRowClick"
       @on-action-delete="handleDeleteRowClick"
     />
@@ -32,22 +40,26 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import labels from '@/model/constants/labels'
 import DirectEmailCreationTable from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreationTable'
-import NewDirectMicrosoftEmailCreation from '@/components/Company Settings/DirectEmailCreation/NewDirectMicrosoftEmailCreation'
+import NewMicrosoft365DEC from '@/components/Company Settings/DirectEmailCreation/NewMicrosoft365DEC'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DeleteDirectEmailCreationDialog from '@/components/Company Settings/DirectEmailCreation/DeleteDirectEmailCreationDialog'
+import { DEC_PLATFORMS } from '@/components/Company Settings/DirectEmailCreation/utils'
+import NewGoogleWorkspaceDEC from '@/components/Company Settings/DirectEmailCreation/NewGoogleWorkspaceDEC'
 export default {
   name: 'DirectEmailCreation',
   components: {
     DeleteDirectEmailCreationDialog,
-    NewDirectMicrosoftEmailCreation,
+    NewMicrosoft365DEC,
     DirectEmailCreationTable,
-    CompanySettingsHeader
+    CompanySettingsHeader,
+    NewGoogleWorkspaceDEC
   },
   data() {
     return {
       labels,
       isEdit: false,
-      isShowDirectMicrosoftEmailCreationModal: false,
+      isShowMicrosoft365DECCreationModal: false,
+      isShowGoogleWorkspaceDECCreationModal: false,
       isShowDeleteDirectEmailCreationDialog: false,
       isMicrosoftEmailCreationInitial: true,
       selectedRow: null,
@@ -68,10 +80,6 @@ export default {
         error_subcode = ''
       } = query
       this.isMicrosoftEmailCreationInitial = !tenant
-      if (state) {
-        const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
-        window.location = newUrl
-      }
       const errorSubCodeMessage =
         error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
       const errorMessage = error && (error_description || errorSubCodeMessage)
@@ -82,20 +90,34 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert-circle'
           })
+          this.toggleNewMicrosoft365DECModal()
+        } else {
+          // if (state) {
+          //   const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
+          //   window.location = newUrl
+          //   return
+          // }
+          this.tenantId = tenant
+          this.toggleNewMicrosoft365DECModal()
+          this.$router.replace('/company/company-settings')
         }
-        this.tenantId = tenant
-        this.toggleNewDirectEmailCreationModal()
-        this.$router.replace('/company/company-settings')
       }
     },
-    toggleNewDirectEmailCreationModal(forceUpdate = false) {
-      if (this.isShowDirectMicrosoftEmailCreationModal) {
+    toggleNewMicrosoft365DECModal(forceUpdate = false) {
+      if (this.isShowMicrosoft365DECCreationModal) {
         this.isMicrosoftEmailCreationInitial = true
         this.isEdit = false
         this.tenantId = ''
       }
       this.callForTableData(forceUpdate)
-      this.isShowDirectMicrosoftEmailCreationModal = !this.isShowDirectMicrosoftEmailCreationModal
+      this.isShowMicrosoft365DECCreationModal = !this.isShowMicrosoft365DECCreationModal
+    },
+    toggleNewGoogleWorkspaceDECModal(forceUpdate = false) {
+      if (this.isShowGoogleWorkspaceDECCreationModal) {
+        this.isEdit = false
+      }
+      this.callForTableData(forceUpdate)
+      this.isShowGoogleWorkspaceDECCreationModal = !this.isShowGoogleWorkspaceDECCreationModal
     },
     toggleDeleteDirectEmailCreationDialog(forceUpdate = false) {
       this.callForTableData(forceUpdate)
@@ -112,8 +134,13 @@ export default {
     handleEditRowClick(row = null) {
       this.selectedRow = row
       this.isEdit = true
-      this.isMicrosoftEmailCreationInitial = false
-      this.toggleNewDirectEmailCreationModal()
+      if (row.type === DEC_PLATFORMS.MICROSOFT_365) {
+        this.isMicrosoftEmailCreationInitial = false
+        this.toggleNewMicrosoft365DECModal()
+      }
+      if (row.type === DEC_PLATFORMS.GOOGLE_WORKSPACE) {
+        this.toggleNewGoogleWorkspaceDECModal()
+      }
     }
   }
 }

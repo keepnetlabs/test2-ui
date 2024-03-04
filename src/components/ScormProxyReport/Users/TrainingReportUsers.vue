@@ -233,7 +233,8 @@ export default {
             align: 'center',
             editable: false,
             label: 'Exam Status',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: false,
             type: 'slot',
             width: 200,
@@ -244,7 +245,7 @@ export default {
             },
             overrideWidth: true,
             filterableType: 'select',
-            filterableItems: ['Failed', 'Success', 'Incomplete']
+            filterableItems: ['Failed', 'Passed', 'Incomplete']
           },
           {
             property: 'examScore',

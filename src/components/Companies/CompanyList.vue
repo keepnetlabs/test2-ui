@@ -96,6 +96,62 @@
       @server-side-size-changed="serverSideSizeChanged"
       @handleMultipleDelete="handleMultipleDeleteOfCompanies"
     >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :id="tableOptions.rowActions[0].id"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="editAction(scope.row)"
+        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :id="tableOptions.rowActions[1].id"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="tableOptions.rowActions[1].name"
+            @on-click="handleAddGroupToModal(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :id="tableOptions.rowActions[3].id"
+            :disabled="
+              tableOptions.rowActions[3].disabled ||
+              (scope.row.privacyDurationId === 0 && !scope.row.licenceExpired)
+            "
+            disabledTooltipText="You don't have access permission to this company account"
+            :showTooltip="
+              tableOptions.rowActions[3].disabled ||
+              (scope.row.privacyDurationId === 0 && !scope.row.licenceExpired)
+            "
+            :icon="tableOptions.rowActions[3].icon"
+            :text="tableOptions.rowActions[3].name"
+            @on-click="handleSwitchCompany(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :check-is-owner-property="false"
+            :id="tableOptions.rowActions[4].id"
+            :disabled="tableOptions.rowActions[4].disabled"
+            :icon="tableOptions.rowActions[4].icon"
+            :text="tableOptions.rowActions[4].name"
+            :checkIsOwnerProperty="false"
+            @on-click="handleTableItemDelete(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[2].id"
+            :disabled="tableOptions.rowActions[2].disabled"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            @on-click="handleCreateNewGroupWithCompany(scope.row)"
+          />
+        </RowActionsMenu>
+      </template>
       <template #datatable-custom-column="{ scope }">
         <span
           v-if="scope.column.property === 'companyName'"
@@ -107,7 +163,7 @@
         </span>
         <template v-else-if="scope.column.property === 'numberOfUsers'">
           <v-tooltip bottom v-if="isNumberOfUsersExceed(scope.row)">
-            <template #activator="{on}">
+            <template #activator="{ on }">
               <span
                 v-on="on"
                 :class="{ 'number-of-users-exceed': isNumberOfUsersExceed(scope.row) }"
@@ -166,6 +222,9 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 export default {
   name: 'CompanyList',
   components: {
@@ -176,7 +235,10 @@ export default {
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
-    DeleteModal
+    DeleteModal,
+    DefaultButtonRowAction,
+    RowActionsMenu,
+    DefaultMenuRowAction
   },
   data() {
     return {
@@ -636,7 +698,11 @@ export default {
     },
     handleCreateNewGroupWithCompany(row) {
       this.changeGroupModalStatus(true)
-      this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
+      this.selectedRow = {
+        ...row,
+        ...{ name: null },
+        ...{ resourceId: row.companyResourceId }
+      }
     },
     changeGroupModalStatus(status) {
       this.showCreateNewGroupWithCompany = status
