@@ -49,7 +49,7 @@
               <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
                 >URL:</span
               >
-              {{ formData.urlTemplate }}
+              {{ urlTemplate }}
             </div>
           </ElTabPane>
         </ElTabs>

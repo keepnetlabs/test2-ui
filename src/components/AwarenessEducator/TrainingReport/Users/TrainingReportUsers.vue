@@ -212,7 +212,8 @@ export default {
             align: 'center',
             editable: false,
             label: 'Exam Status',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: false,
             type: 'slot',
             width: 200,
@@ -225,6 +226,7 @@ export default {
             filterableType: 'select',
             filterableItems: ['Failed', 'Passed', 'Incomplete']
           },
+          /*
           {
             property: 'examScore',
             align: 'right',
@@ -237,6 +239,8 @@ export default {
             width: 160,
             filterableType: 'text'
           },
+
+           */
           {
             property: 'lastInteractionDate',
             align: 'left',

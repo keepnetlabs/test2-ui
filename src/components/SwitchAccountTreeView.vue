@@ -114,7 +114,8 @@ export default {
       this.$emit('on-selected-account', {
         label: item.name,
         id: item.resourceId,
-        privacyDurationId: item.privacyDurationId
+        privacyDurationId: item.privacyDurationId,
+        licenceExpired: item.licenceExpired
       })
     },
     handleMenuHeight(resize = false) {

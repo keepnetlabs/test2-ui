@@ -80,12 +80,20 @@
               @on-selected-account="handleOnSelectedAccount"
             />
             <div
-              v-if="isRenderPrivacyCard"
+              v-if="isRenderPrivacyCard && !isRenderLicenseExpiredCard"
               class="error-bg-red mt-2 px-4 py-4 fs-medium d-flex align-center br-2"
             >
               <VIcon color="#F56C6C">mdi-information</VIcon>
               <span class="ml-2">You don't have access permission to this company account</span>
             </div>
+            <AlertBox
+              v-if="isRenderLicenseExpiredCard"
+              class="bg-aqua-light mt-2"
+              icon-color="#2196F3"
+              icon-name="mdi-information"
+              text="This company’s license is over"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </div>
       </div>
@@ -121,9 +129,10 @@ import labels from '@/model/constants/labels'
 import SwitchAccountTreeView from '@/components/SwitchAccountTreeView'
 import useDebounce from '@/hooks/useDebounce'
 import { PRIVACY_DURATIONS } from './Company Settings/AccountPrivacy/utils'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'SwitchAccount',
-  components: { SwitchAccountTreeView },
+  components: { SwitchAccountTreeView, AlertBox },
   props: {
     navigatorMenuProps: {
       type: Object
@@ -163,7 +172,10 @@ export default {
     }),
     getConfirmButtonStyle() {
       const style = {}
-      if (!this.selectedAccount || this.isPrivacyDenied) {
+      if (
+        !this.selectedAccount ||
+        (this.isPrivacyDenied && !this.selectedAccount?.licenceExpired)
+      ) {
         style.color = '#2196f3 !important'
         style.opacity = '0.5'
       }
@@ -175,6 +187,9 @@ export default {
     isRenderPrivacyCard() {
       if (!this.selectedAccount) return false
       return this.isPrivacyDenied
+    },
+    isRenderLicenseExpiredCard() {
+      return this?.selectedAccount?.licenceExpired || false
     },
     switchDialog: {
       get() {
@@ -264,7 +279,8 @@ export default {
       this.searchedCompanyText = item.label
       this.searchItems(false)
       this.isMenuOpen = false
-      this.isSwitchAccountDisabled = item.privacyDurationId === PRIVACY_DURATIONS.DENY
+      this.isSwitchAccountDisabled =
+        item.privacyDurationId === PRIVACY_DURATIONS.DENY && !item.licenceExpired
       this.changeMenuStatus()
       this.searchCompanyIcon = 'mdi-menu-down'
     },
