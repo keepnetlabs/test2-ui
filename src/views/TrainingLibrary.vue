@@ -1,16 +1,18 @@
 <template>
   <KContainer tabless id="training-library">
-    <TrainingLibraryListViewFirstCard />
+    <TrainingLibraryFirstCard />
+    <TrainingLibraryListViewCard />
   </KContainer>
 </template>
 
 <script>
 import KContainer from '@/components/KContainer/KContainer.vue'
-import TrainingLibraryListViewFirstCard from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCard.vue'
+import TrainingLibraryFirstCard from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCard.vue'
 import { mapActions } from 'vuex'
+import TrainingLibraryListViewCard from '@/components/TrainingLibrary/TrainingLibraryListViewCard/TrainingLibraryListViewCard.vue'
 export default {
   name: 'TrainingLibrary',
-  components: { TrainingLibraryListViewFirstCard, KContainer },
+  components: { TrainingLibraryListViewCard, TrainingLibraryFirstCard, KContainer },
   provide() {
     return {
       handleRefresh: this.handleRefresh

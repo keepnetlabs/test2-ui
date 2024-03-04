@@ -7,7 +7,11 @@ const trainingLibrary = {
     searchPlaceholder: 'Search in 3490 training by name',
     firstColFixed: false,
     lastColFixed: false,
-    isListView: true
+    isListView: true,
+    selectedTrainingContent: 'All Materials',
+    selectedSubTrainingContent: 'All Types',
+    filters: [],
+    sortBy: ''
   },
   getters: {
     getTableColumns: (state) => state.tableColumns,
@@ -16,7 +20,9 @@ const trainingLibrary = {
     getSearchPlaceholder: (state) => state.searchPlaceholder,
     getFirstColFixed: (state) => state.firstColFixed,
     getLastColFixed: (state) => state.lastColFixed,
-    getIsLastView: (state) => state.isListView
+    getIsLastView: (state) => state.isListView,
+    getSelectedTrainingContent: (state) => state.selectedTrainingContent,
+    getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent
   },
   mutations: {
     SET_RENDERED_COLUMNS(state) {
@@ -51,6 +57,14 @@ const trainingLibrary = {
       state.firstColFixed = firstColFixed
       state.lastColFixed = lastColFixed
       console.log('state', state)
+    },
+    SET_SELECTED_TRAINING_CONTENT(state, payload) {
+      if (state.selectedTrainingContent === payload) return
+      state.selectedTrainingContent = payload
+    },
+    SET_SUB_SELECTED_TRAINING_CONTENT(state, payload) {
+      if (state.selectedSubTrainingContent === payload) return
+      state.selectedSubTrainingContent = payload
     }
   },
   actions: {
@@ -70,6 +84,12 @@ const trainingLibrary = {
     },
     initDefaultTableSettings({ commit }) {
       commit('SET_DEFAULT_TABLE_SETTINGS')
+    },
+    setSelectedTrainingContent({ commit }, payload) {
+      commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
+    },
+    setSubSelectedTrainingContent({ commit }, payload) {
+      commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
     }
   }
 }

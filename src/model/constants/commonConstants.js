@@ -168,10 +168,12 @@ export const LABEL_STORE = {
 
 export const PROPERTY_STORE = {
   RECIPIENT_TYPE: 'recipientType',
+  MATERIAL_NAME: 'materialName',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LANGUAGE: 'languageTypeName',
   EMAIL_TEMPLATE: 'emailTemplate',
   JUSTDIFFICULTY: 'difficulty',
+  COMPLIANCE: 'compliance',
   HAS_TRAINING: 'hasTraining',
   QUISHING_SCENARIO_NAME: 'quishingScenarioName',
   LANDING_PAGE_TEMPLATE: 'landingPageTemplate',
@@ -335,6 +337,7 @@ export const TABLE_SETTINGS_KEYS = {
     'TrainingReportNonTargetUserProgressTableSettings',
   TRAINING_REPORT_NON_TARGET_RESULTS_EXAM_RESULTS_TABLE:
     'TrainingReportNonTargetResultsExamResultsTableSettings',
+  TRAINING_LIBRARY_ALL_TYPES_TABLE: 'TrainingLibraryAllTypesTableSettings',
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredSettings',
   QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
     'QuishingCampaignManagerReportSubmittedMfaDataTableSettings',
@@ -507,6 +510,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   VISHING_REPORT_ANSWERED_TABLE: 'VishingReportAnsweredTable',
   QUISHING_DOMAINS: 'QuishingDomainsTableContainerKeys',
   QUISHING_SCENARIOS: 'QuishingScenariosTableContainerKeys',
+  TRAINING_LIBRARY_ALL_TYPES_TABLE: 'TrainingLibraryAllTypesTable',
   QUISHING_DNSSERVICELIST: 'QuishingDNSServiceListTableContainerKeys',
   QUISHING_CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
     'QuishingCampaignManagerReportSubmittedMfaDataTableSearchKeys',

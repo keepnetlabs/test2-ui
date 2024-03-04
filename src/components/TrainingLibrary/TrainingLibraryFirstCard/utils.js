@@ -1,20 +1,16 @@
-export const addTrainingItems = [
-  { text: 'Learning Path', id: 'btn-add-training-library-learning-path' },
-  {
-    text: 'Training',
-    id: 'btn-add-training-library-training'
-  },
-  {
-    text: 'Poster',
-    id: 'btn-add-training-library-poster'
-  },
-  {
-    text: 'Infographic',
-    id: 'btn-add-training-library-infographic'
-  },
-  {
-    text: 'Screensaver',
-    id: 'btn-add-training-library-screensaver'
-  }
-]
 export const downloadButtonOptions = ['Download Current Page', 'Download All']
+
+export const trainingTabContents = [
+  { name: 'All Materials', number: 3490 },
+  { name: 'Most Popular', number: 24 },
+  { name: 'Favourites', number: 12 },
+  { name: 'Created by You', number: 1 }
+]
+export const trainingSubTabs = [
+  { name: 'All Types' },
+  { name: 'Learning Path' },
+  { name: 'Training' },
+  { name: 'Poster' },
+  { name: 'Infographic' },
+  { name: 'Screensaver' }
+]

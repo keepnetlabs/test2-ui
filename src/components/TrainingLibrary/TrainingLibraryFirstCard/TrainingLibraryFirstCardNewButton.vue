@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { addTrainingItems } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { addTrainingItems } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingLibraryFirstCardNewButton',

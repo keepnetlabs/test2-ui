@@ -1,4 +1,4 @@
-.training-library-list-view-first-card{
+.training-library-list-view-first-card,.training-library-list-view-card{
   padding: 24px;
   background-color: #fff;
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 2px 0 rgba(0, 0, 0, 0.12);
@@ -123,5 +123,44 @@
     .v-messages {
       display: none !important;
     }
+  }
+}
+.training-library-tab-label{
+  color:#383B41;
+  font-size: 16px;
+  font-weight: 400;
+}
+.training-library-first-card-tabs .is-active {
+  .training-library-tab-label{
+    font-weight: 600;
+    color:#2196F3;
+  }
+}
+.training-library-list-view-card {
+  .table-wrapper {
+    padding-top:32px !important;
+  }
+  .selection-row{
+    top:34px !important;
+  }
+}
+.training-library-filters{
+  display: flex;
+  justify-content: space-between;
+  & > div {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.training-library-filtering-options{
+  &-parent-list-item-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.training-library-filters {
+  input::placeholder{
+    color:rgba(56, 59, 65, 0.72) !important;
   }
 }
