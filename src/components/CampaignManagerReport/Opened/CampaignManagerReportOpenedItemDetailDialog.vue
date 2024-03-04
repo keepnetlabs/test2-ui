@@ -174,6 +174,7 @@ export default {
           label: sandboxText,
           action: 'on-activity',
           tooltip: sandboxText,
+          hideTooltip: true,
           type: 'outlined',
           id: 'btn-select--hide-sandbox-activity'
         },

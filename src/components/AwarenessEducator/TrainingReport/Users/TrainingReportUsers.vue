@@ -226,6 +226,21 @@ export default {
             filterableType: 'select',
             filterableItems: ['Failed', 'Passed', 'Incomplete']
           },
+          /*
+          {
+            property: 'examScore',
+            align: 'right',
+            editable: false,
+            label: 'Exam Score',
+            fixed: false,
+            sortable: true,
+            show: false,
+            type: 'text',
+            width: 160,
+            filterableType: 'text'
+          },
+
+           */
           {
             property: 'lastInteractionDate',
             align: 'left',

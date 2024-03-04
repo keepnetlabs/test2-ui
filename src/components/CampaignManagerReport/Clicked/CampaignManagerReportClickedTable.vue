@@ -112,7 +112,7 @@ export default {
           icon: null,
           label: 'HIDE SANDBOX ACTIVITY',
           action: 'on-activity',
-          tooltip: 'HIDE SANDBOX ACTIVITY',
+          hideTooltip: true,
           type: 'outlined',
           id: 'btn-select--hide-sandbox-activity'
         },
