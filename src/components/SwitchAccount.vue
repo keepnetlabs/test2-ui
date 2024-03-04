@@ -172,7 +172,10 @@ export default {
     }),
     getConfirmButtonStyle() {
       const style = {}
-      if (!this.selectedAccount || this.isPrivacyDenied) {
+      if (
+        !this.selectedAccount ||
+        (this.isPrivacyDenied && !this.selectedAccount?.licenceExpired)
+      ) {
         style.color = '#2196f3 !important'
         style.opacity = '0.5'
       }
