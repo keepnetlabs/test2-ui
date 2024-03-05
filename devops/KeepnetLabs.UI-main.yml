@@ -64,7 +64,7 @@ stages:
           websiteName: 'DevUI'
           artifactName: 'drop'
 
-# DEPLOY DEV NEW
+# DEPLOY DEV DASH NEW
 - stage: DEV
   variables:
   - group: Dev-UI-Config
