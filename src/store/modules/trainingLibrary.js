@@ -1,8 +1,18 @@
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+
 const trainingLibrary = {
   namespaced: true,
   state: {
     tableColumns: [],
     renderedColumns: [],
+    trainingSubTabs: [
+      { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3490 },
+      { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 122 },
+      { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 2220 },
+      { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
+      { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 33 },
+      { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 54 }
+    ],
     search: '',
     searchPlaceholder: 'Search in 3490 training by name',
     firstColFixed: false,
@@ -22,7 +32,8 @@ const trainingLibrary = {
     getLastColFixed: (state) => state.lastColFixed,
     getIsLastView: (state) => state.isListView,
     getSelectedTrainingContent: (state) => state.selectedTrainingContent,
-    getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent
+    getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
+    getTrainingSubTabs: (state) => state.trainingSubTabs
   },
   mutations: {
     SET_RENDERED_COLUMNS(state) {

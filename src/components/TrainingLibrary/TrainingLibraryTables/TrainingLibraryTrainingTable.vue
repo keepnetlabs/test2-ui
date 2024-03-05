@@ -26,11 +26,11 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @onEmptyBtnClicked="handleAddLearningPath"
-    @add-training="handleAddLearningPath"
+    @onEmptyBtnClicked="handleAddTraining"
+    @add-training="handleAddTraining"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryLearningPathRowActions :scope="scope" />
+      <TrainingLibraryTrainingRowActions :scope="scope" />
     </template>
   </DataTable>
 </template>
@@ -48,27 +48,26 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
+import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
-  name: 'TrainingLibraryLearningPathTable',
+  name: 'TrainingLibraryTrainingTable',
   components: {
-    TrainingLibraryLearningPathRowActions,
+    TrainingLibraryTrainingRowActions,
     DataTable
   },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
-        id: 'awareness-educator-training-library-learning-path-data-table'
+        id: 'awareness-educator-training-library-training-data-table'
       },
       axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_LEARNING_PATH_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_LEARNING_PATH_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_TRAINING_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_TRAINING_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -76,7 +75,7 @@ export default {
           download: false
         },
         columns: [
-          TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_NAME,
+          TRAINING_LIBRARY_COLUMNS.TRAINING_NAME,
           TRAINING_LIBRARY_COLUMNS.CATEGORY,
           TRAINING_LIBRARY_COLUMNS.TARGET_AUDIENCE,
           TRAINING_LIBRARY_COLUMNS.LANGUAGES,
@@ -85,10 +84,10 @@ export default {
           TRAINING_LIBRARY_COLUMNS.TAGS
         ],
         iEmpty: {
-          btn: labels.CreateNewLearningPath,
-          message: labels.EmptyLearningPath,
+          btn: labels.CreateNewTraining,
+          message: labels.EmptyTraining,
           icon: 'mdi-plus',
-          id: 'btn-empty--training-library-learning-path-table'
+          id: 'btn-empty--training-library-training-table'
           //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
@@ -127,7 +126,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    handleAddLearningPath() {}
+    handleAddTraining() {}
   }
 }
 </script>

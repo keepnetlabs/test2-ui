@@ -10,15 +10,7 @@
         :key="index"
         :name="template.name"
         :label="template.name"
-      >
-        <template #label>
-          <div style="display: flex;">
-            <span class="training-library-tab-label">
-              {{ template.name }} ({{ template.number }})
-            </span>
-          </div>
-        </template>
-      </ElTabPane>
+      />
     </ElTabs>
     <ElTabs
       :value="selectedSubTrainingContent"
@@ -26,11 +18,16 @@
       @tab-click="setSubSelectedTrainingContent"
     >
       <ElTabPane
-        v-for="(template, index) in trainingSubTabs"
+        v-for="(template, index) in getTrainingSubtabs"
         :key="index"
         :name="template.name"
         :label="template.name"
       >
+        <template #label>
+          <div style="display: flex;">
+            <span> {{ template.name }} ({{ template.totalCount }}) </span>
+          </div>
+        </template>
       </ElTabPane>
     </ElTabs>
   </div>
@@ -38,22 +35,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import {
-  trainingTabContents,
-  trainingSubTabs
-} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { trainingTabContents } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryFirstCardTabs',
   computed: {
     ...mapGetters({
+      getTrainingSubtabs: 'trainingLibrary/getTrainingSubTabs',
       selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
       selectedSubTrainingContent: 'trainingLibrary/getSelectedSubTrainingContent'
     })
   },
   data() {
     return {
-      trainingTabContents,
-      trainingSubTabs
+      trainingTabContents
     }
   },
   methods: {

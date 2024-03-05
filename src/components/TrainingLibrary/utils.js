@@ -2,10 +2,65 @@ import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export const TRAINING_LIBRARY_COLUMNS = {
+  SCREENSAVER_NAME: {
+    property: PROPERTY_STORE.SCREENSAVER_NAME,
+    align: 'left',
+    label: labels.ScreenSaverName,
+    fixed: 'left',
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 200
+  },
+  INFOGRAPHIC_NAME: {
+    property: PROPERTY_STORE.INFOGRAPHIC_NAME,
+    align: 'left',
+    label: labels.InfoGraphicName,
+    fixed: 'left',
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 200
+  },
+  POSTER_NAME: {
+    property: PROPERTY_STORE.POSTER_NAME,
+    align: 'left',
+    label: labels.PosterName,
+    fixed: 'left',
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 200
+  },
+  TRAINING_NAME: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.TrainingName,
+    fixed: 'left',
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 200
+  },
   MATERIAL_NAME: {
     property: PROPERTY_STORE.MATERIAL_NAME,
     align: 'left',
     label: labels.MaterialName,
+    fixed: 'left',
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 200
+  },
+  LEARNING_PATH_NAME: {
+    property: PROPERTY_STORE.LEARNING_PATH_NAME,
+    align: 'left',
+    label: labels.LearningPathName,
     fixed: 'left',
     sortable: false,
     hideSort: true,

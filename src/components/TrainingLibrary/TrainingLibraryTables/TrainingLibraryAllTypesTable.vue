@@ -30,19 +30,20 @@
     @add-training="handleAdd"
   >
     <template #empty-table-inline>
-      <div class="people__no-data">
-        <p id="text--empty-table-title" class="people__no-data__header">
+      <div class="empty-inline">
+        <h2 id="text--empty-table-title" class="people__no-data__header">
           {{ labels.EmptyTrainingMaterial }}
-        </p>
+        </h2>
         <div class="people__no-data__buttons mt-4">
           <VMenu offset-y transition="scale-transition" nudge-bottom="4">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <div
                 class="people__no-data__buttons--button"
+                style="height: 36px;"
                 v-on="on"
                 id="btn-empty--target-users-people"
               >
-                <VIcon color="#fff" style="margin-top: 1px;" class="mr-1">mdi-plus</VIcon>
+                <VIcon color="#fff" class="mr-1">mdi-plus</VIcon>
                 <span class="fw-600">{{ labels.CreateNewMaterial.toUpperCase() }}</span>
               </div>
             </template>
@@ -247,7 +248,30 @@ export default {
       }
     }
   },
+  mounted() {
+    this.callForData()
+  },
   methods: {
+    callForData() {
+      this.setLoading(true)
+      AwarenessEducatorService.searchTraining(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const {
+            results = [],
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1
+          } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     handleSendTraining(row) {
       this.$emit(EMITS.ON_TRAINING, row)
     },

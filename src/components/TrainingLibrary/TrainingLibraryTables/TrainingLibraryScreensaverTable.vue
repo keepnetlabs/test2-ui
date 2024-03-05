@@ -26,11 +26,11 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @onEmptyBtnClicked="handleAddLearningPath"
-    @add-training="handleAddLearningPath"
+    @onEmptyBtnClicked="handleAddScreenSaver"
+    @add-training="handleAddScreenSaver"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryLearningPathRowActions :scope="scope" />
+      <TrainingLibraryScreensaverRowActions :scope="scope" />
     </template>
   </DataTable>
 </template>
@@ -48,27 +48,27 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
 export default {
-  name: 'TrainingLibraryLearningPathTable',
+  name: 'TrainingLibraryScreensaverTable',
   components: {
-    TrainingLibraryLearningPathRowActions,
+    TrainingLibraryScreensaverRowActions,
     DataTable
   },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
-        id: 'awareness-educator-training-library-learning-path-data-table'
+        id: 'awareness-educator-training-library-screensaver-data-table'
       },
       axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_LEARNING_PATH_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_LEARNING_PATH_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_SCREENSAVER_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_SCREENSAVER_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -76,7 +76,7 @@ export default {
           download: false
         },
         columns: [
-          TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_NAME,
+          TRAINING_LIBRARY_COLUMNS.SCREENSAVER_NAME,
           TRAINING_LIBRARY_COLUMNS.CATEGORY,
           TRAINING_LIBRARY_COLUMNS.TARGET_AUDIENCE,
           TRAINING_LIBRARY_COLUMNS.LANGUAGES,
@@ -85,10 +85,10 @@ export default {
           TRAINING_LIBRARY_COLUMNS.TAGS
         ],
         iEmpty: {
-          btn: labels.CreateNewLearningPath,
-          message: labels.EmptyLearningPath,
+          btn: labels.CreateNewInfographic,
+          message: labels.EmptyInfographic,
           icon: 'mdi-plus',
-          id: 'btn-empty--training-library-learning-path-table'
+          id: 'btn-empty--training-library-screensaver-table'
           //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
@@ -127,7 +127,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    handleAddLearningPath() {}
+    handleAddScreenSaver() {}
   }
 }
 </script>

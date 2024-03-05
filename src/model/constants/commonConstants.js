@@ -168,8 +168,12 @@ export const LABEL_STORE = {
 
 export const PROPERTY_STORE = {
   RECIPIENT_TYPE: 'recipientType',
+  INFOGRAPHIC_NAME: 'infographicName',
   MATERIAL_NAME: 'materialName',
+  SCREENSAVER_NAME: 'screensaverName',
+  POSTER_NAME: 'posterName',
   AVAILABLE_FOR: 'availableForCompanyCount',
+  LEARNING_PATH_NAME: 'learningPathName',
   LANGUAGE: 'languageTypeName',
   EMAIL_TEMPLATE: 'emailTemplate',
   JUSTDIFFICULTY: 'difficulty',
@@ -331,8 +335,13 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
+  TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
+  TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTableSettings',
+  TRAINING_LIBRARY_SCREENSAVER_TABLE: 'TrainingLibraryScreensaverTableSettings',
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSettings',
+  TRAINING_LIBRARY_POSTER_TABLE: 'TrainingLibraryPosterTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRAINING_LIBRARY_TRAINING_TABLE: 'TrainingLibraryTrainingTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_PROGRESS_TABLE:
     'TrainingReportNonTargetUserProgressTableSettings',
   TRAINING_REPORT_NON_TARGET_RESULTS_EXAM_RESULTS_TABLE:
@@ -500,7 +509,12 @@ export const COMMON_SNACKBAR = {
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
+  TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTable',
+  TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTable',
+  TRAINING_LIBRARY_TRAINING_TABLE: 'TrainingLibraryTrainingTable',
+  TRAINING_LIBRARY_POSTER_TABLE: 'TrainingLibraryPosterTable',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportNonTargetUserTable',
+  TRAINING_LIBRARY_SCREENSAVER_TABLE: 'TrainingLibraryScreensaverTable',
   TRAINING_REPORT_NON_TARGET_USERS_PROGRESS_TABLE: 'TrainingReportNonTargetUserProgressTable',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTable',
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSearchContainerKeys',
