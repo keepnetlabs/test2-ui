@@ -65,7 +65,7 @@ stages:
           artifactName: 'drop'
 
 # DEPLOY DEV DASH NEW
-- stage: DEV
+- stage: DEV_DASH
   variables:
   - group: Dev-UI-Config
   condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))  
