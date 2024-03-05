@@ -64,6 +64,20 @@ stages:
           websiteName: 'DevUI'
           artifactName: 'drop'
 
+# DEPLOY DEV DASH NEW
+- stage: DEV_DASH
+  variables:
+  - group: Dev-UI-Config
+  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))  
+  dependsOn: CI_Dev
+  jobs:
+    - template: sub-KeepnetLabs.UI-CD.yml
+      parameters:
+          jobName: 'Deploy_UI'
+          environment: 'DEV_DASH_UI'
+          websiteName: 'DevUI'
+          artifactName: 'drop'
+
 # # DEPLOY TEST          
 # - stage: TEST
 #   variables:
