@@ -57,7 +57,7 @@
             </template>
           </InputWithCopyToClipboard>
         </FormGroup>
-        <FormGroup v-if="isEdit" has-hint :title="labels.Domains" :sub-title="labels.DomainsSub">
+        <FormGroup has-hint :title="labels.Domains" :sub-title="labels.DomainsSub">
           <InputDomain
             v-model="formData.domains"
             :items="domainItems"
@@ -130,7 +130,7 @@ export default {
   data() {
     return {
       labels,
-      isActionButtonDisabled: false,
+      isActionButtonDisabled: !this.isEdit,
       isShowTestEmailDialog: false,
       isShowTestEmailErrorDialog: false,
       isTestEmailActionDisabled: false,
@@ -187,12 +187,10 @@ export default {
       })
     },
     callForDomains() {
-      if (!this.isEdit) return
       const payload = {
-        tenantId: null
-      }
-      if (this.isEdit) {
-        payload.resourceId = this.selectedRow.resourceId
+        tenantId: null,
+        resourceId: null,
+        type: PLATFORM_TYPES.GoogleWorkspace
       }
       this.isDomainsLoading = true
       DirectCreationService.getDomains(payload)
@@ -276,11 +274,13 @@ export default {
       }
       DirectCreationService.testDirectEmailCreation(payload)
         .then(() => {
+          this.isActionButtonDisabled = false
           this.toggleShowTestEmailDialog()
         })
         .catch((error) => {
           const { response } = error
           this.testEmailErrorMessage = response?.data?.message
+          this.isActionButtonDisabled = true
           this.toggleShowTestEmailErrorDialog()
         })
         .finally(() => {
