@@ -70,6 +70,8 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import labels from '@/model/constants/labels'
+import { mapActions } from 'vuex'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingLibraryInfographicRowActions',
@@ -122,6 +124,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
+
     handlePreview(row) {
       this.$emit('on-infographic-preview', row)
     },
@@ -141,7 +145,17 @@ export default {
       this.$emit('on-infographic-duplicate', row)
     },
     handleActionDelete(row) {
-      this.$emit('on-infographic-delete', row)
+      this.setDeleteDialog({
+        status: true,
+        title: 'Delete Infographic Material?',
+        body: 'Are you sure you want to delete this infographic material?',
+        selectedRow: row,
+        type: 'infographic',
+        apiFunc: AwarenessEducatorService.deleteTraining,
+        onClose: (forceUpdate) => {
+          if (forceUpdate) this.$emit('on-force-update', forceUpdate)
+        }
+      })
     }
   }
 }

@@ -167,3 +167,17 @@ export const addTrainingItems = [
     id: 'btn-add-training-library-screensaver'
   }
 ]
+
+export const emptyTrainingDeleteDialogObj = {
+  status: false,
+  title: '',
+  body: '',
+  selectedRow: null,
+  type: '',
+  onClose: () => {}
+}
+export const emptyTrainingPreviewDialogObj = {
+  status: false,
+  selectedRow: null,
+  onClose: () => {}
+}

@@ -62,6 +62,8 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import labels from '@/model/constants/labels'
+import { mapActions } from 'vuex'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingLibraryTrainingRowActions',
@@ -109,8 +111,15 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      setDeleteDialog: 'trainingLibrary/setDeleteDialog',
+      setPreviewDialog: 'trainingLibrary/setPreviewDialog'
+    }),
     handlePreview(row) {
-      this.$emit('on-training-preview', row)
+      this.setPreviewDialog({
+        status: true,
+        selectedRow: row
+      })
     },
     handleSend(row) {
       this.$emit('on-training-send', row)
@@ -125,7 +134,17 @@ export default {
       this.$emit('on-training-duplicate', row)
     },
     handleActionDelete(row) {
-      this.$emit('on-training-delete', row)
+      this.setDeleteDialog({
+        status: true,
+        title: 'Delete Training Material?',
+        body: 'Are you sure you want to delete this training material?',
+        selectedRow: row,
+        type: 'training',
+        apiFunc: AwarenessEducatorService.deleteTraining,
+        onClose: (forceUpdate) => {
+          if (forceUpdate) this.$emit('on-force-update', forceUpdate)
+        }
+      })
     }
   }
 }

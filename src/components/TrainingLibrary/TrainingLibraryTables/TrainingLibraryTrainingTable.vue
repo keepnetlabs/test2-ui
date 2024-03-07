@@ -30,7 +30,7 @@
     @add-training="handleAddTraining"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryTrainingRowActions :scope="scope" />
+      <TrainingLibraryTrainingRowActions :scope="scope" @on-force-update="callForData" />
     </template>
   </DataTable>
 </template>

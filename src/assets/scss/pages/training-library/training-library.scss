@@ -151,6 +151,12 @@
     display: flex;
     justify-content: space-between;
   }
+  input::placeholder{
+    color:rgba(56, 59, 65, 0.72) !important;
+  }
+  input {
+    caret-color:transparent;
+  }
 }
 .training-library-filtering-options{
   &-parent-list-item-title{
@@ -159,8 +165,11 @@
     align-items: center;
   }
 }
-.training-library-filters {
-  input::placeholder{
-    color:rgba(56, 59, 65, 0.72) !important;
+.training-library-training-preview{
+  .form-group-horizontal-content__label{
+    flex-basis:auto !important;
+  }
+  .form-group-horizontal-content .v-text-field{
+    max-width: 200px !important;
   }
 }

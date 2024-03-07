@@ -70,6 +70,8 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import labels from '@/model/constants/labels'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibraryScreensaverRowActions',
@@ -122,6 +124,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
     handlePreview(row) {
       this.$emit('on-screensaver-preview', row)
     },
@@ -141,7 +144,17 @@ export default {
       this.$emit('on-screensaver-duplicate', row)
     },
     handleActionDelete(row) {
-      this.$emit('on-screensaver-delete', row)
+      this.setDeleteDialog({
+        status: true,
+        title: 'Delete Screensaver Material?',
+        body: 'Are you sure you want to delete this screensaver material?',
+        selectedRow: row,
+        type: 'screensaver',
+        apiFunc: AwarenessEducatorService.deleteTraining,
+        onClose: (forceUpdate) => {
+          if (forceUpdate) this.$emit('on-force-update', forceUpdate)
+        }
+      })
     }
   }
 }

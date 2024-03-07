@@ -30,7 +30,7 @@
     @add-training="handleAddScreenSaver"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryScreensaverRowActions :scope="scope" />
+      <TrainingLibraryScreensaverRowActions :scope="scope" @on-force-update="callForData" />
     </template>
   </DataTable>
 </template>

@@ -4,3 +4,16 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS = [
   { text: 'Filter Type', icon: 'mdi-menu-right', hasMenu: true },
   { text: 'Show/Hide Filter Items', icon: 'mdi-menu-right', hasMenu: true }
 ]
+export const TRAINING_LIBRARY_SORTING_OPTIONS = [
+  { text: 'Name', icon: 'mdi-menu-right', menu: [{ text: 'A to Z' }, { text: 'Z to A' }] },
+  {
+    text: 'Category',
+    icon: 'mdi-menu-right',
+    menu: [{ text: 'A to Z' }, { text: 'Z to A' }]
+  },
+  {
+    text: 'Date Created',
+    icon: 'mdi-menu-right',
+    menu: [{ text: 'New to old' }, { text: 'Old to new' }]
+  }
+]

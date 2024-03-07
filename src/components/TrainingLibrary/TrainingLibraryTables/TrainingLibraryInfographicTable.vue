@@ -30,7 +30,7 @@
     @add-training="handleAddInfoGraphic"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryInfographicRowActions :scope="scope" />
+      <TrainingLibraryInfographicRowActions :scope="scope" @on-force-update="callForData" />
     </template>
   </DataTable>
 </template>

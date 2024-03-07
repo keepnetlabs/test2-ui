@@ -1,5 +1,6 @@
 <template>
   <KContainer tabless id="training-library">
+    <TrainingLibraryCommonComponents />
     <TrainingLibraryFirstCard />
     <TrainingLibraryListViewCard />
   </KContainer>
@@ -10,9 +11,15 @@ import KContainer from '@/components/KContainer/KContainer.vue'
 import TrainingLibraryFirstCard from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCard.vue'
 import { mapActions } from 'vuex'
 import TrainingLibraryListViewCard from '@/components/TrainingLibrary/TrainingLibraryListViewCard/TrainingLibraryListViewCard.vue'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 export default {
   name: 'TrainingLibrary',
-  components: { TrainingLibraryListViewCard, TrainingLibraryFirstCard, KContainer },
+  components: {
+    TrainingLibraryCommonComponents,
+    TrainingLibraryListViewCard,
+    TrainingLibraryFirstCard,
+    KContainer
+  },
   provide() {
     return {
       handleRefresh: this.handleRefresh

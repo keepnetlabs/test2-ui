@@ -21,7 +21,20 @@ const trainingLibrary = {
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: [],
-    sortBy: ''
+    sortBy: '',
+    deleteDialog: {
+      status: false,
+      title: 'Delete Training Material?',
+      body: 'Are you sure you want to delete this training material?',
+      selectedRow: null,
+      type: 'training',
+      onClose: () => {}
+    },
+    trainingPreviewDialog: {
+      status: false,
+      selectedRow: null,
+      onClose: () => {}
+    }
   },
   getters: {
     getTableColumns: (state) => state.tableColumns,
@@ -33,7 +46,9 @@ const trainingLibrary = {
     getIsLastView: (state) => state.isListView,
     getSelectedTrainingContent: (state) => state.selectedTrainingContent,
     getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
-    getTrainingSubTabs: (state) => state.trainingSubTabs
+    getTrainingSubTabs: (state) => state.trainingSubTabs,
+    getDeleteDialog: (state) => state.deleteDialog,
+    getTrainingPreviewDialog: (state) => state.trainingPreviewDialog
   },
   mutations: {
     SET_RENDERED_COLUMNS(state) {
@@ -76,6 +91,15 @@ const trainingLibrary = {
     SET_SUB_SELECTED_TRAINING_CONTENT(state, payload) {
       if (state.selectedSubTrainingContent === payload) return
       state.selectedSubTrainingContent = payload
+    },
+    SET_SORT_BY(state, payload) {
+      state.sortBy = payload
+    },
+    SET_DELETE_DIALOG(state, payload) {
+      state.deleteDialog = payload
+    },
+    SET_TRAINING_PREVIEW_DIALOG(state, payload) {
+      state.trainingPreviewDialog = payload
     }
   },
   actions: {
@@ -101,6 +125,15 @@ const trainingLibrary = {
     },
     setSubSelectedTrainingContent({ commit }, payload) {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
+    },
+    setSortBy({ commit }, payload) {
+      commit('SET_SORT_BY', payload)
+    },
+    setDeleteDialog({ commit }, payload) {
+      commit('SET_DELETE_DIALOG', payload)
+    },
+    setPreviewDialog({ commit }, payload) {
+      commit('SET_TRAINING_PREVIEW_DIALOG', payload)
     }
   }
 }

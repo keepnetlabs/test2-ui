@@ -70,6 +70,8 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import labels from '@/model/constants/labels'
+import { mapActions } from 'vuex'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingLibraryPosterRowActions',
@@ -122,6 +124,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
     handlePreview(row) {
       this.$emit('on-poster-preview', row)
     },
@@ -141,7 +144,17 @@ export default {
       this.$emit('on-poster-duplicate', row)
     },
     handleActionDelete(row) {
-      this.$emit('on-poster-delete', row)
+      this.setDeleteDialog({
+        status: true,
+        title: 'Delete Poster Material?',
+        body: 'Are you sure you want to delete this poster material? ',
+        selectedRow: row,
+        type: 'poster',
+        apiFunc: AwarenessEducatorService.deleteTraining,
+        onClose: (forceUpdate) => {
+          if (forceUpdate) this.$emit('on-force-update', forceUpdate)
+        }
+      })
     }
   }
 }
