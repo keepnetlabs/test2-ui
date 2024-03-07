@@ -9,6 +9,14 @@
       v-if="getPosterPreviewDialog.status"
       v-bind="getPosterPreviewDialog"
     />
+    <TrainingLibraryInfographicPreviewDialog
+      v-if="getInfographicPreviewDialog.status"
+      v-bind="getInfographicPreviewDialog"
+    />
+    <TrainingLibraryScreensaverPreviewDialog
+      v-if="getScreensaverPreviewDialog.status"
+      v-bind="getScreensaverPreviewDialog"
+    />
   </div>
 </template>
 
@@ -17,10 +25,14 @@ import TrainingLibraryDeleteDialog from '@/components/TrainingLibrary/TrainingLi
 import { mapGetters } from 'vuex'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
+import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
+import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibraryScreensaverPreviewDialog,
+    TrainingLibraryInfographicPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryTrainingPreviewDialog,
     TrainingLibraryDeleteDialog
@@ -29,7 +41,9 @@ export default {
     ...mapGetters({
       getDeleteDialog: 'trainingLibrary/getDeleteDialog',
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
-      getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog'
+      getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
+      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
+      getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog'
     })
   }
 }

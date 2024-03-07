@@ -16,11 +16,11 @@
         <ElTabPane id="poster-info--preview-content" name="preview" :label="labels.Preview">
           <div class="template-preview pt-4">
             <div class="template-preview__text">
-              <div v-if="showPosterName">
+              <div v-if="showScreensaverName">
                 <div class="d-flex justify-space-between align-center">
                   <div>
                     <span class="template-preview__text--title text-preview-gray"
-                      >Poster Name:
+                      >Screensaver Name:
                     </span>
                     <span class="template-preview__text--body ml-2">{{
                       selectedRow && selectedRow.trainingName
@@ -34,13 +34,13 @@
               </div>
               <FormGroupHorizontalContent
                 class="mt-4 poster-preview-specification text-preview-gray"
-                label="Poster Language:"
+                label="Screensaver Language:"
               >
                 <KSelect
                   v-model="specification"
                   dense
                   outlined
-                  placeholder="Select language"
+                  placeholder="Select specification"
                   item-text="name"
                   item-value="id"
                   :items="selectedLanguages"
@@ -60,16 +60,21 @@
                   style="text-transform: none;"
                   color="#2196F3"
                   rounded
-                  :style="getDownloadPosterStyle"
-                  @click="handleDownloadPoster"
+                  :style="getDownloadScreensaverStyle"
+                  @click="handleDownloadScreensaver"
                 >
                   <v-icon left>mdi-download</v-icon>
-                  {{ labels.DownloadPoster }}
+                  {{ labels.DownloadScreensaver }}
                 </VBtn>
               </div>
             </div>
             <div class="max-w-100 d-flex justify-center w-100">
-              <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+              <img
+                v-if="!isPdf"
+                class="max-w-100"
+                :src="screensaverPreviewSrc"
+                alt="Screensaver Preview"
+              />
               <pdf v-else class="w-100" :src="pdfSrc" />
             </div>
           </div>
@@ -78,34 +83,34 @@
           v-if="showDetails"
           :label="labels.Details"
           name="details"
-          id="poster-preview-details"
+          id="infographic-preview-details"
         >
           <div class="training-library-preview__details-item">
             <div>
-              <span class="training-library-preview__title">Poster Name: </span>
-              <span class="training-library-preview__desc">{{ posterParams.name }}</span>
+              <span class="training-library-preview__title">Screensaver Name: </span>
+              <span class="training-library-preview__desc">{{ screensaverParams.name }}</span>
             </div>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Vendor Name: </span>
-            <span class="training-library-preview__desc">{{ posterParams.vendorName }}</span>
+            <span class="training-library-preview__desc">{{ screensaverParams.vendorName }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Category Name: </span>
             <span class="training-library-preview__desc">{{
-              posterParams.categoryName || posterParams.category
+              screensaverParams.categoryName || screensaverParams.category
             }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
             <span class="training-library-preview__desc">{{
-              posterParams.description || posterParams.trainingDescription
+              screensaverParams.description || screensaverParams.trainingDescription
             }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Target Audience: </span>
             <span class="training-library-preview__desc">{{
-              posterParams.targetAudienceName || posterParams.targetAudience
+              screensaverParams.targetAudienceName || screensaverParams.targetAudience
             }}</span>
           </div>
           <div class="training-library-preview__details-item">
@@ -123,11 +128,11 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Created By: </span>
-            <span class="training-library-preview__desc">{{ posterParams.createdBy }}</span>
+            <span class="training-library-preview__desc">{{ screensaverParams.createdBy }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Compliance: </span>
-            <span class="training-library-preview__desc">{{ posterParams.compliance }}</span>
+            <span class="training-library-preview__desc">{{ screensaverParams.compliance }}</span>
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>
@@ -135,7 +140,7 @@
             </div>
             <div class="d-flex flex-wrap gap-2 ml-2">
               <span
-                v-for="tag in posterParams.tagNames"
+                v-for="tag in screensaverParams.tagNames"
                 :key="tag"
                 class="training-library-preview__tag"
                 >{{ tag }}</span
@@ -144,27 +149,27 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
-            <span class="training-library-preview__desc">{{ posterParams.behaviours }}</span>
+            <span class="training-library-preview__desc">{{ screensaverParams.behaviours }}</span>
           </div>
         </ElTabPane>
       </ElTabs>
       <div v-if="!isLoading && !showTabs" class="template-preview pt-1">
         <div class="template-preview__text">
-          <div v-if="showPosterName">
+          <div v-if="showScreensaverName">
             <div>
-              <span class="training-library-preview__title">Poster Name: </span>
+              <span class="training-library-preview__title">screensaverParams Name: </span>
               <span class="training-library-preview__desc">{{ selectedRow.trainingName }}</span>
             </div>
           </div>
           <FormGroupHorizontalContent
             class="poster-preview-specification mt-2"
-            label="Poster Language:"
+            label="Screensaver Language:"
           >
             <KSelect
               v-model="specification"
               dense
               outlined
-              placeholder="Select specification"
+              placeholder="Select language"
               item-text="name"
               item-value="id"
               :items="selectedLanguages"
@@ -182,16 +187,21 @@
               class="white--text btn-util btn-download-add-in"
               color="#2196F3"
               rounded
-              :style="getDownloadPosterStyle"
-              @click="handleDownloadPoster"
+              :style="getDownloadScreensaverStyle"
+              @click="handleDownloadScreensaver"
             >
               <v-icon left>mdi-download</v-icon>
-              {{ labels.DownloadPoster }}
+              {{ labels.DownloadScreensaver }}
             </VBtn>
           </div>
         </div>
         <div class="max-w-100 d-flex justify-center">
-          <img v-if="!isPdf" class="max-w-100" :src="posterPreviewSrc" alt="Poster Preview" />
+          <img
+            v-if="!isPdf"
+            class="max-w-100"
+            :src="screensaverPreviewSrc"
+            alt="Screensaver Preview"
+          />
           <pdf v-else class="w-100" :src="pdfSrc" />
         </div>
       </div>
@@ -210,11 +220,11 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions, mapGetters } from 'vuex'
-import { emptyPosterPreviewDialogObj } from '../utils'
+import { emptyScreensaverPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 export default {
-  name: 'TrainingLibraryPosterPreviewDialog',
+  name: 'TrainingLibraryScreensaverPreviewDialog',
   components: {
     TrainingLibraryFavoriteButton,
     TrainingLibraryNewBadge,
@@ -234,19 +244,19 @@ export default {
     },
     title: {
       type: String,
-      default: labels.PosterPreview
+      default: labels.ScreensaverPreview
     },
     subtitle: {
       type: String,
       default: ''
     },
-    showPosterName: {
+    showScreensaverName: {
       type: Boolean,
       default: true
     },
     type: {
       type: String,
-      default: 'poster'
+      default: 'screensaver'
     },
     showDetails: {
       type: Boolean,
@@ -272,8 +282,8 @@ export default {
       selectedLanguages: [],
       isLoading: false,
       labels,
-      posterParams: {},
-      posterPreviewSrc: '',
+      screensaverParams: {},
+      screensaverPreviewSrc: '',
       fileName: '',
       isPdf: true,
       pdfSrc: null,
@@ -282,7 +292,7 @@ export default {
   },
   computed: {
     ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
-    getDownloadPosterStyle() {
+    getDownloadScreensaverStyle() {
       const style = {
         textTransform: 'none'
       }
@@ -305,10 +315,10 @@ export default {
     }, [])
     this.specification = this.selectedLanguages[0].id
     this.callForData()
-    this.callForPoster()
+    this.callForScreensaver()
   },
   methods: {
-    ...mapActions({ setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog' }),
+    ...mapActions({ setScreensaverPreviewDialog: 'trainingLibrary/setScreensaverPreviewDialog' }),
     callForData() {
       this.isLoading = true
       this.pdfSrc = ''
@@ -320,23 +330,23 @@ export default {
           const splittedUrl = response?.data?.data?.trainingUrl.split('/')
           this.fileName = splittedUrl[splittedUrl.length - 1]
           this.isPdf = this.fileName.includes('.pdf')
-          this.posterPreviewSrc = response?.data?.data?.trainingUrl
-          if (this.isPdf) this.handleDownloadPoster()
+          this.screensaverPreviewSrc = response?.data?.data?.trainingUrl
+          if (this.isPdf) this.handleDownloadScreensaver()
         })
         .finally(() => {
           if (this.isPdf) return
           this.isLoading = false
         })
     },
-    callForPoster() {
+    callForScreensaver() {
       AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
-        this.posterParams = response?.data?.data
+        this.screensaverParams = response?.data?.data
       })
     },
     handleClose() {
-      this.setPosterPreviewDialog(emptyPosterPreviewDialogObj)
+      this.setScreensaverPreviewDialog(emptyScreensaverPreviewDialogObj)
     },
-    handleDownloadPoster() {
+    handleDownloadScreensaver() {
       if (this.isPdf && this.pdfSrc) {
         return this.downloadPDFObject(this.pdfSrc)
       }

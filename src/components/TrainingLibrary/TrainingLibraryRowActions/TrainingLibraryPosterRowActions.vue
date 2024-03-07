@@ -138,6 +138,7 @@ export default {
         showDetails: true,
         showTabs: true,
         showPosterName: true,
+        showFavoriteButton: true,
         icon: 'mdi-eye'
       })
     },
@@ -145,7 +146,18 @@ export default {
       this.$emit('on-poster-send', row)
     },
     handleDownloadPoster(row) {
-      this.$emit('on-poster-download', row)
+      this.setPosterPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'downloadPoster',
+        title: labels.DownloadPoster,
+        subtitle: '',
+        showDetails: false,
+        showTabs: false,
+        showPosterName: true,
+        showFavoriteButton: false,
+        icon: 'mdi-download'
+      })
     },
     handleAddFavorite(row) {
       this.$emit('on-poster-add-favorite', row)

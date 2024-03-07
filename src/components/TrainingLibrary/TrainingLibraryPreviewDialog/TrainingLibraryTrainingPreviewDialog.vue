@@ -34,7 +34,7 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingLibraryTrainingPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreview.vue'
 import { emptyTrainingPreviewDialogObj } from '@/components/TrainingLibrary/utils'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
   name: 'TrainingLibraryTrainingPreviewDialog',
@@ -71,6 +71,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
@@ -93,20 +94,16 @@ export default {
     }),
     callForLanguages() {
       this.isPreviewLoading = true
-      AwarenessEducatorService.getLanguages()
-        .then((res) => {
-          console.log('this.selectedRow', this.selectedRow)
-          this.selectedRow.languages.forEach((lang) => {
-            const language = res?.data?.data?.find((item) => item.code === lang)
-            if (language)
-              this.selectedLanguages.push({
-                text: language.name,
-                value: language.id,
-                code: language.code
-              })
+      this.selectedRow.languages.forEach((lang) => {
+        const language = this.languages.find((item) => item.code === lang)
+        if (language)
+          this.selectedLanguages.push({
+            text: language.name,
+            value: language.id,
+            code: language.code
           })
-        })
-        .finally(this.callForTrainingDetail)
+      })
+      this.callForTrainingDetail()
     },
     callForTrainingDetail() {
       AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {

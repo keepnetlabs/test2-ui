@@ -1,5 +1,12 @@
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import {
+  emptyInfographicPreviewDialogObj,
+  emptyPosterPreviewDialogObj,
+  emptyScreensaverPreviewDialogObj,
+  emptyTrainingDeleteDialogObj,
+  emptyTrainingPreviewDialogObj
+} from '../../components/TrainingLibrary/utils'
 const trainingLibrary = {
   namespaced: true,
   state: {
@@ -22,31 +29,12 @@ const trainingLibrary = {
     selectedSubTrainingContent: 'All Types',
     filters: [],
     sortBy: '',
-    deleteDialog: {
-      status: false,
-      title: 'Delete Training Material?',
-      body: 'Are you sure you want to delete this training material?',
-      selectedRow: null,
-      type: 'training',
-      onClose: () => {}
-    },
-    trainingPreviewDialog: {
-      status: false,
-      selectedRow: null,
-      onClose: () => {}
-    },
-    posterPreviewDialog: {
-      status: false,
-      title: '',
-      subtitle: '',
-      type: '',
-      showDetails: true,
-      showTabs: true,
-      showPosterName: true,
-      icon: 'mdi-eye',
-      selectedRow: null,
-      onClose: () => {}
-    }
+    languages: [],
+    deleteDialog: emptyTrainingDeleteDialogObj,
+    trainingPreviewDialog: emptyTrainingPreviewDialogObj,
+    posterPreviewDialog: emptyPosterPreviewDialogObj,
+    infographicPreviewDialog: emptyInfographicPreviewDialogObj,
+    screensaverPreviewDialog: emptyScreensaverPreviewDialogObj
   },
   getters: {
     getTableColumns: (state) => state.tableColumns,
@@ -61,7 +49,10 @@ const trainingLibrary = {
     getTrainingSubTabs: (state) => state.trainingSubTabs,
     getDeleteDialog: (state) => state.deleteDialog,
     getTrainingPreviewDialog: (state) => state.trainingPreviewDialog,
-    getPosterPreviewDialog: (state) => state.posterPreviewDialog
+    getPosterPreviewDialog: (state) => state.posterPreviewDialog,
+    getLanguages: (state) => state.languages,
+    getInfographicPreviewDialog: (state) => state.infographicPreviewDialog,
+    getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog
   },
   mutations: {
     SET_RENDERED_COLUMNS(state) {
@@ -116,6 +107,15 @@ const trainingLibrary = {
     },
     SET_POSTER_PREVIEW_DIALOG(state, payload) {
       state.posterPreviewDialog = payload
+    },
+    SET_INFO_GRAPHIC_PREVIEW_DIALOG(state, payload) {
+      state.infographicPreviewDialog = payload
+    },
+    SET_SCREENSAVER_PREVIEW_DIALOG(state, payload) {
+      state.screensaverPreviewDialog = payload
+    },
+    SET_LANGUAGES(state, payload) {
+      state.languages = payload
     }
   },
   actions: {
@@ -154,8 +154,16 @@ const trainingLibrary = {
     setPosterPreviewDialog({ commit }, payload) {
       commit('SET_POSTER_PREVIEW_DIALOG', payload)
     },
+    setInfographicPreviewDialog({ commit }, payload) {
+      commit('SET_INFO_GRAPHIC_PREVIEW_DIALOG', payload)
+    },
+    setScreenSaverPreviewDialog({ commit }, payload) {
+      commit('SET_SCREENSAVER_PREVIEW_DIALOG', payload)
+    },
     callForLanguages({ commit }) {
-      commit('SET_DEFAULT_TABLE_SETTINGS')
+      AwarenessEducatorService.getLanguages().then((res) => {
+        commit('SET_LANGUAGES', res?.data?.data)
+      })
     }
   }
 }

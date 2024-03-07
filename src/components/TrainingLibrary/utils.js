@@ -178,12 +178,45 @@ export const emptyTrainingDeleteDialogObj = {
 }
 export const emptyTrainingPreviewDialogObj = {
   status: false,
+  selectedRow: null,
+  onClose: () => {}
+}
+export const emptyPosterPreviewDialogObj = {
+  status: false,
   title: '',
   subtitle: '',
   type: '',
   showDetails: true,
   showTabs: true,
   showPosterName: true,
+  showFavoriteButton: true,
+  icon: 'mdi-eye',
+  selectedRow: null,
+  onClose: () => {}
+}
+export const emptyInfographicPreviewDialogObj = {
+  status: false,
+  title: '',
+  subtitle: '',
+  type: '',
+  showDetails: true,
+  showTabs: true,
+  showInfographicName: true,
+  showFavoriteButton: true,
+  icon: 'mdi-eye',
+  selectedRow: null,
+  onClose: () => {}
+}
+
+export const emptyScreensaverPreviewDialogObj = {
+  status: false,
+  title: '',
+  subtitle: '',
+  type: '',
+  showDetails: true,
+  showTabs: true,
+  showScreensaverName: true,
+  showFavoriteButton: true,
   icon: 'mdi-eye',
   selectedRow: null,
   onClose: () => {}

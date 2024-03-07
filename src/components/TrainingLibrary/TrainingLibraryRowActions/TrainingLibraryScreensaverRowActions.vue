@@ -124,15 +124,39 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
+    ...mapActions({
+      setDeleteDialog: 'trainingLibrary/setDeleteDialog',
+      setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog'
+    }),
     handlePreview(row) {
-      this.$emit('on-screensaver-preview', row)
+      this.setScreenSaverPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'screensaver',
+        title: labels.ScreensaverPreview,
+        subtitle: '',
+        showDetails: true,
+        showTabs: true,
+        showScreensaverName: true,
+        showFavoriteButton: true,
+        icon: 'mdi-eye'
+      })
     },
     handleSend(row) {
       this.$emit('on-screensaver-send', row)
     },
     handleDownloadScreensaver(row) {
-      this.$emit('on-screensaver-download', row)
+      this.setInfographicPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'downloadScreensaver',
+        title: labels.DownloadScreensaver,
+        subtitle: '',
+        showDetails: false,
+        showTabs: false,
+        showFavoriteButton: false,
+        icon: 'mdi-download'
+      })
     },
     handleAddFavorite(row) {
       this.$emit('on-screensaver-add-favorite', row)

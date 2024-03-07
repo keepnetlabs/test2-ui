@@ -79,7 +79,7 @@
             <div>
               <span class="training-library-preview__title">Languages: </span>
             </div>
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2 ml-2">
               <span v-for="lang in languages" :key="lang" class="training-library-preview__tag">{{
                 lang.code
               }}</span>
@@ -97,7 +97,7 @@
             <div>
               <span class="training-library-preview__title">Tags: </span>
             </div>
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2 ml-2">
               <span
                 v-for="tag in trainingParams.tagNames"
                 :key="tag"

@@ -124,16 +124,40 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
+    ...mapActions({
+      setDeleteDialog: 'trainingLibrary/setDeleteDialog',
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+    }),
 
     handlePreview(row) {
-      this.$emit('on-infographic-preview', row)
+      this.setInfographicPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'infographic',
+        title: labels.InfographicPreview,
+        subtitle: '',
+        showDetails: true,
+        showTabs: true,
+        showPosterName: true,
+        showFavoriteButton: true,
+        icon: 'mdi-eye'
+      })
     },
     handleSend(row) {
       this.$emit('on-infographic-send', row)
     },
     handleDownloadInfographic(row) {
-      this.$emit('on-infographic-download', row)
+      this.setInfographicPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'downloadInfographic',
+        title: labels.DownloadInfographic,
+        subtitle: '',
+        showDetails: false,
+        showTabs: false,
+        showFavoriteButton: false,
+        icon: 'mdi-download'
+      })
     },
     handleAddFavorite(row) {
       this.$emit('on-infographic-add-favorite', row)
