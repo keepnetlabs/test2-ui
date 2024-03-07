@@ -196,7 +196,8 @@ export default {
     callForDomains() {
       if (this.isInitial && !this.isEdit) return
       const payload = {
-        tenantId: this.tenantId
+        tenantId: this.tenantId,
+        type: PLATFORM_TYPES.Microsoft365
       }
       if (this.isEdit) {
         payload.tenantId = this.editedTenantId
