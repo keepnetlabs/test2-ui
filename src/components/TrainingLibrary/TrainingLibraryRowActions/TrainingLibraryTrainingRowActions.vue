@@ -113,10 +113,10 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setPreviewDialog: 'trainingLibrary/setPreviewDialog'
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
     }),
     handlePreview(row) {
-      this.setPreviewDialog({
+      this.setTrainingPreviewDialog({
         status: true,
         selectedRow: row
       })

@@ -178,6 +178,13 @@ export const emptyTrainingDeleteDialogObj = {
 }
 export const emptyTrainingPreviewDialogObj = {
   status: false,
+  title: '',
+  subtitle: '',
+  type: '',
+  showDetails: true,
+  showTabs: true,
+  showPosterName: true,
+  icon: 'mdi-eye',
   selectedRow: null,
   onClose: () => {}
 }

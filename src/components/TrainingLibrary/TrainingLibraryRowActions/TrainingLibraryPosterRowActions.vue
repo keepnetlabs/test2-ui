@@ -124,9 +124,22 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ setDeleteDialog: 'trainingLibrary/setDeleteDialog' }),
+    ...mapActions({
+      setDeleteDialog: 'trainingLibrary/setDeleteDialog',
+      setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog'
+    }),
     handlePreview(row) {
-      this.$emit('on-poster-preview', row)
+      this.setPosterPreviewDialog({
+        status: true,
+        selectedRow: row,
+        type: 'poster',
+        title: labels.PosterPreview,
+        subtitle: '',
+        showDetails: true,
+        showTabs: true,
+        showPosterName: true,
+        icon: 'mdi-eye'
+      })
     },
     handleSend(row) {
       this.$emit('on-poster-send', row)

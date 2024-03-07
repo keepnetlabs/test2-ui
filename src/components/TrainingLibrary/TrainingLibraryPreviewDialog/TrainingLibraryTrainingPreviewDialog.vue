@@ -24,7 +24,7 @@
       />
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose @on-close="handleClose" />
+      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" />
     </template>
   </AppDialog>
 </template>
@@ -32,14 +32,14 @@
 import AppDialog from '@/components/AppDialog.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import TrainingLibraryTrainingPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreview.vue'
 import { emptyTrainingPreviewDialogObj } from '@/components/TrainingLibrary/utils'
 import { mapActions } from 'vuex'
+import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
   name: 'TrainingLibraryTrainingPreviewDialog',
   components: {
-    AppDialogFooterWithClose,
+    TrainingLibraryPreviewDialogFooter,
     TrainingLibraryTrainingPreview,
     AppDialog,
     DatatableLoading
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setPreviewDialog: 'trainingLibrary/setPreviewDialog'
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
     }),
     callForLanguages() {
       this.isPreviewLoading = true
@@ -120,7 +120,7 @@ export default {
       })
     },
     handleClose() {
-      this.setPreviewDialog(emptyTrainingPreviewDialogObj)
+      this.setTrainingPreviewDialog(emptyTrainingPreviewDialogObj)
     }
   }
 }

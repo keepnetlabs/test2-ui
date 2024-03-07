@@ -30,10 +30,12 @@ export default {
   },
   created() {
     this.initDefaultTableSettings()
+    this.callForLanguages()
   },
   methods: {
     ...mapActions({
-      initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings'
+      initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings',
+      callForLanguages: 'trainingLibrary/callForLanguages'
     }),
     callForData() {},
     handleRefresh() {}

@@ -34,6 +34,18 @@ const trainingLibrary = {
       status: false,
       selectedRow: null,
       onClose: () => {}
+    },
+    posterPreviewDialog: {
+      status: false,
+      title: '',
+      subtitle: '',
+      type: '',
+      showDetails: true,
+      showTabs: true,
+      showPosterName: true,
+      icon: 'mdi-eye',
+      selectedRow: null,
+      onClose: () => {}
     }
   },
   getters: {
@@ -48,7 +60,8 @@ const trainingLibrary = {
     getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
     getTrainingSubTabs: (state) => state.trainingSubTabs,
     getDeleteDialog: (state) => state.deleteDialog,
-    getTrainingPreviewDialog: (state) => state.trainingPreviewDialog
+    getTrainingPreviewDialog: (state) => state.trainingPreviewDialog,
+    getPosterPreviewDialog: (state) => state.posterPreviewDialog
   },
   mutations: {
     SET_RENDERED_COLUMNS(state) {
@@ -100,6 +113,9 @@ const trainingLibrary = {
     },
     SET_TRAINING_PREVIEW_DIALOG(state, payload) {
       state.trainingPreviewDialog = payload
+    },
+    SET_POSTER_PREVIEW_DIALOG(state, payload) {
+      state.posterPreviewDialog = payload
     }
   },
   actions: {
@@ -132,8 +148,14 @@ const trainingLibrary = {
     setDeleteDialog({ commit }, payload) {
       commit('SET_DELETE_DIALOG', payload)
     },
-    setPreviewDialog({ commit }, payload) {
+    setTrainingPreviewDialog({ commit }, payload) {
       commit('SET_TRAINING_PREVIEW_DIALOG', payload)
+    },
+    setPosterPreviewDialog({ commit }, payload) {
+      commit('SET_POSTER_PREVIEW_DIALOG', payload)
+    },
+    callForLanguages({ commit }) {
+      commit('SET_DEFAULT_TABLE_SETTINGS')
     }
   }
 }
