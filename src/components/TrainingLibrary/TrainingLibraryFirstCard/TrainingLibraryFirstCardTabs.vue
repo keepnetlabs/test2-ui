@@ -2,7 +2,9 @@
   <div>
     <ElTabs
       :value="selectedTrainingContent"
-      class="campaign-manager-last-step__phishing-scenario-tab training-library-first-card-tabs mb-6"
+      :class="[
+        'campaign-manager-last-step__phishing-scenario-tab training-library-first-card-tabs mb-6'
+      ]"
       @tab-click="setSelectedTrainingContent"
     >
       <ElTabPane
@@ -15,6 +17,10 @@
     <ElTabs
       :value="selectedSubTrainingContent"
       class="k-sub-tab"
+      :class="[
+        'k-sub-tab training-library-first-card-sub-tabs',
+        isTabsLoading ? 'training-library-first-card-sub-tabs--loading' : ''
+      ]"
       @tab-click="setSubSelectedTrainingContent"
     >
       <ElTabPane
@@ -25,7 +31,8 @@
       >
         <template #label>
           <div style="display: flex;">
-            <span> {{ template.name }} ({{ template.totalCount }}) </span>
+            <v-skeleton-loader v-if="isTabsLoading" :loading="isTabsLoading" type="chip" />
+            <span v-else> {{ template.name }} ({{ template.totalCount }}) </span>
           </div>
         </template>
       </ElTabPane>
@@ -40,6 +47,7 @@ export default {
   name: 'TrainingLibraryFirstCardTabs',
   computed: {
     ...mapGetters({
+      isTabsLoading: 'trainingLibrary/getTabsLoading',
       getTrainingSubtabs: 'trainingLibrary/getTrainingSubTabs',
       selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
       selectedSubTrainingContent: 'trainingLibrary/getSelectedSubTrainingContent'

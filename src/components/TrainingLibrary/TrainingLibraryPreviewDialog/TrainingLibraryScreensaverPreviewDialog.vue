@@ -318,7 +318,7 @@ export default {
     this.callForScreensaver()
   },
   methods: {
-    ...mapActions({ setScreensaverPreviewDialog: 'trainingLibrary/setScreensaverPreviewDialog' }),
+    ...mapActions({ setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog' }),
     callForData() {
       this.isLoading = true
       this.pdfSrc = ''

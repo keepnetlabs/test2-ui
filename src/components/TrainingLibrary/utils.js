@@ -1,6 +1,12 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-
+export const TRAINING_LIBRARY_TYPES = {
+  LEARNING_PATH: 'Learning Path',
+  TRAINING: 'Training',
+  POSTER: 'Poster',
+  INFOGRAPHIC: 'Infographic',
+  SCREENSAVER: 'Screensaver'
+}
 export const TRAINING_LIBRARY_COLUMNS = {
   SCREENSAVER_NAME: {
     property: PROPERTY_STORE.SCREENSAVER_NAME,
@@ -178,8 +184,11 @@ export const emptyTrainingDeleteDialogObj = {
 }
 export const emptyTrainingPreviewDialogObj = {
   status: false,
-  selectedRow: null,
-  onClose: () => {}
+  selectedRow: null
+}
+export const emptyLearningPathPreviewDialogObj = {
+  status: false,
+  selectedRow: null
 }
 export const emptyPosterPreviewDialogObj = {
   status: false,

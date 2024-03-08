@@ -136,6 +136,15 @@
     color:#2196F3;
   }
 }
+.training-library-first-card-sub-tabs .v-skeleton-loader__chip{
+  height: 24px;
+  margin-top: 12px;
+}
+.training-library-first-card-sub-tabs--loading{
+  .el-tabs__active-bar.is-top {
+    visibility: hidden;
+  }
+}
 .training-library-list-view-card {
   .table-wrapper {
     padding-top:32px !important;

@@ -82,6 +82,7 @@ export default {
     }
   },
   data() {
+    console.log('scope', this.scope)
     return {
       rowActions: [
         {
@@ -101,8 +102,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-infographic',
-          name: labels.AddToFavorites,
-          icon: 'mdi-bookmark-outline'
+          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-infographic',

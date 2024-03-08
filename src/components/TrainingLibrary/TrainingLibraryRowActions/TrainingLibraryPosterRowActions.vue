@@ -101,8 +101,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-poster',
-          name: labels.AddToFavorites,
-          icon: 'mdi-bookmark-outline'
+          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-poster',

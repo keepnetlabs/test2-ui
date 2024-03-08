@@ -26,8 +26,6 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @onEmptyBtnClicked="handleAdd"
-    @add-training="handleAdd"
   >
     <template #empty-table-inline>
       <div class="empty-inline">
@@ -65,89 +63,35 @@
       </div>
     </template>
     <template #datatable-row-actions="{ scope }">
-      <DefaultButtonRowAction
-        v-if="scope.row.type === TRAINING_TYPES.SCORM"
-        :id="tableOptions.rowActions[0].id"
-        :icon="tableOptions.rowActions[0].icon"
-        :text="tableOptions.rowActions[0].name"
+      <TrainingLibraryTrainingRowActions
+        v-if="scope.row.type === TRAINING_LIBRARY_TYPES.TRAINING"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
-        :checkIsOwnerProperty="false"
-        @on-click="handleSendTraining(scope.row)"
       />
-      <DefaultButtonRowAction
-        v-else
-        :id="tableOptions.rowActions[2].id"
+      <TrainingLibraryLearningPathRowActions
+        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH"
         :scope="scope"
-        :check-is-owner-property="false"
-        :disabled="tableOptions.rowActions[2].disabled"
-        :icon="tableOptions.rowActions[2].icon"
-        :text="tableOptions.rowActions[2].name"
-        :checkIsOwnerProperty="false"
-        @on-click="handlePreview(scope.row)"
       />
-      <RowActionsMenu>
-        <DefaultMenuRowAction
-          :id="tableOptions.rowActions[1].id"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[1].disabled || !scope.row.isEditable"
-          :icon="tableOptions.rowActions[1].icon"
-          :text="tableOptions.rowActions[1].name"
-          @on-click="handleEdit(scope.row)"
-        />
-        <DefaultMenuRowAction
-          v-if="scope.row.type === TRAINING_TYPES.SCORM"
-          :id="tableOptions.rowActions[2].id"
-          :scope="scope"
-          :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[2].disabled"
-          :icon="tableOptions.rowActions[2].icon"
-          :text="tableOptions.rowActions[2].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handlePreview(scope.row)"
-        />
-        <DefaultMenuRowAction
-          v-else
-          :id="tableOptions.rowActions[5].id"
-          :scope="scope"
-          :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[5].disabled"
-          :icon="tableOptions.rowActions[5].icon"
-          :text="tableOptions.rowActions[5].name"
-          :checkIsOwnerProperty="false"
-          @on-click="handleDownloadPoster(scope.row)"
-        />
-        <DefaultMenuRowAction
-          :id="tableOptions.rowActions[3].id"
-          :scope="scope"
-          :check-is-owner-property="false"
-          :disabled="tableOptions.rowActions[3].disabled"
-          :icon="tableOptions.rowActions[3].icon"
-          :text="tableOptions.rowActions[3].name"
-          @on-click="handleDuplicate(scope.row)"
-        />
-        <DefaultMenuRowAction
-          :id="tableOptions.rowActions[4].id"
-          :scope="scope"
-          :disabled="tableOptions.rowActions[4].disabled || !scope.row.isEditable"
-          :icon="tableOptions.rowActions[4].icon"
-          :text="tableOptions.rowActions[4].name"
-          @on-click="handleActionDelete(scope.row)"
-        />
-      </RowActionsMenu>
+      <TrainingLibraryScreensaverRowActions
+        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.SCREENSAVER"
+        :scope="scope"
+      />
+      <TrainingLibraryInfographicRowActions
+        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC"
+        :scope="scope"
+      />
+      <TrainingLibraryPosterRowActions
+        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.POSTER"
+        :scope="scope"
+      />
     </template>
   </DataTable>
 </template>
 
 <script>
-import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
 import DataTable from '@/components/DataTable.vue'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
-import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
-import { EMITS, TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -156,16 +100,31 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
+import {
+  TRAINING_LIBRARY_COLUMNS,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/utils'
 import { addTrainingItems } from '@/components/TrainingLibrary/utils'
+import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
+import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
+import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
+import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
+import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
 
 export default {
   name: 'TrainingLibraryAllTypesTable',
-  components: { RowActionsMenu, DefaultButtonRowAction, DataTable, DefaultMenuRowAction },
+  components: {
+    TrainingLibraryPosterRowActions,
+    TrainingLibraryInfographicRowActions,
+    TrainingLibraryScreensaverRowActions,
+    TrainingLibraryLearningPathRowActions,
+    TrainingLibraryTrainingRowActions,
+    DataTable
+  },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
-      TRAINING_TYPES,
+      TRAINING_LIBRARY_TYPES,
       addTrainingItems,
       labels,
       CONSTANTS: {
@@ -206,44 +165,7 @@ export default {
         downloadButton: {
           show: false
         },
-        //todo rowActions
-        rowActions: [
-          {
-            id: 'btn-send--row-actions-training-list',
-            name: labels.SendTraining,
-            icon: 'mdi-send',
-            disabled: !this.$store.getters['permissions/getSendTrainingPermission']
-          },
-          {
-            id: 'btn-edit--row-actions-training-list',
-            name: labels.Edit,
-            icon: 'mdi-pencil',
-            disabled: !this.$store.getters['permissions/getUpdateTrainingPermission']
-          },
-          {
-            id: 'btn-preview--row-actions-training-list',
-            name: labels.Preview,
-            icon: 'mdi-eye'
-          },
-          {
-            id: 'btn-duplicate--row-actions-training-list',
-            name: labels.Duplicate,
-            icon: 'mdi-content-copy',
-            action: 'on-duplicate'
-          },
-          {
-            id: 'btn-delete--row-actions-training-list',
-            name: labels.Delete,
-            icon: 'mdi-delete',
-            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
-          },
-          {
-            id: 'btn-download--row-actions-training-list',
-            name: labels.DownloadPoster,
-            icon: 'mdi-download',
-            disabled: !this.$store.getters['permissions/getDeleteTrainingPermission']
-          }
-        ],
+        rowActions: ['', '', ''],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
@@ -268,35 +190,14 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
+          results[0].type = TRAINING_LIBRARY_TYPES.TRAINING
+          results[1].type = TRAINING_LIBRARY_TYPES.POSTER
+          results[2].type = TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+          results[3].type = TRAINING_LIBRARY_TYPES.SCREENSAVER
+          results[4].type = TRAINING_LIBRARY_TYPES.LEARNING_PATH
           this.tableData = results
         })
         .finally(this.setLoading)
-    },
-    handleSendTraining(row) {
-      this.$emit(EMITS.ON_TRAINING, row)
-    },
-    handleEdit(row) {
-      this.$emit(EMITS.ON_EDIT, row)
-    },
-    handlePreview(row) {
-      this.$emit(EMITS.ON_PREVIEW, row)
-    },
-    handleActionDelete(row) {
-      this.$emit(EMITS.ON_ACTION_DELETE, row)
-    },
-    handleAdd() {
-      this.$emit(EMITS.ON_ADD)
-    },
-    handleAddPoster() {
-      this.$emit(EMITS.ON_ADD_POSTER)
-    },
-    handleDuplicate(row) {
-      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
-        this.callForData()
-      })
-    },
-    handleDownloadPoster(item = {}) {
-      this.$emit(EMITS.ON_DOWNLOAD_POSTER, item)
     },
     handleAddTrainingLibraryContent(text) {}
   }

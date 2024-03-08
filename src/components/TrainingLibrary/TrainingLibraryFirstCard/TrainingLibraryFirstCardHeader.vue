@@ -40,7 +40,7 @@
       <VTooltip bottom opacity="1">
         <template #activator="{ on }">
           <VBtn v-on="on" id="`btn-refresh--training-table" icon>
-            <VIcon @click="handleRefresh">mdi-refresh</VIcon>
+            <VIcon @click="callForData">mdi-refresh</VIcon>
           </VBtn>
         </template>
         <span class="tooltip-span">Refresh</span>
@@ -84,11 +84,6 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'TrainingLibraryFirstCardHeader',
   components: { TrainingLibraryFirstCardSettings, TrainingLibraryFirstCardNewButton },
-  inject: {
-    handleRefresh: {
-      type: Function
-    }
-  },
   data() {
     return {
       downloadButtonOptions,
@@ -114,6 +109,7 @@ export default {
   },
   methods: {
     ...mapActions({
+      callForData: 'trainingLibrary/callForData',
       handleSearch: 'trainingLibrary/setSearch',
       setListView: 'trainingLibrary/setListView'
     }),

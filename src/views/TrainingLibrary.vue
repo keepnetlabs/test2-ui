@@ -20,25 +20,21 @@ export default {
     TrainingLibraryFirstCard,
     KContainer
   },
-  provide() {
-    return {
-      handleRefresh: this.handleRefresh
-    }
-  },
   data() {
     return {}
   },
   created() {
     this.initDefaultTableSettings()
     this.callForLanguages()
+    this.callForTrainingLibrary()
   },
   methods: {
     ...mapActions({
       initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings',
-      callForLanguages: 'trainingLibrary/callForLanguages'
+      callForLanguages: 'trainingLibrary/callForLanguages',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
-    callForData() {},
-    handleRefresh() {}
+    callForData() {}
   }
 }
 </script>

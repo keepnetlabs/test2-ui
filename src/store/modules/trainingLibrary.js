@@ -2,14 +2,22 @@ import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/TrainingLib
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   emptyInfographicPreviewDialogObj,
+  emptyLearningPathPreviewDialogObj,
   emptyPosterPreviewDialogObj,
   emptyScreensaverPreviewDialogObj,
   emptyTrainingDeleteDialogObj,
   emptyTrainingPreviewDialogObj
-} from '../../components/TrainingLibrary/utils'
+} from '@/components/TrainingLibrary/utils'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 const trainingLibrary = {
   namespaced: true,
   state: {
+    isTabsLoading: false,
+    isLoading: false,
+    tableData: [],
+    axiosPayload: getDefaultAxiosPayload(),
+    serverSideProps: new ServerSideProps(),
     tableColumns: [],
     renderedColumns: [],
     trainingSubTabs: [
@@ -32,15 +40,18 @@ const trainingLibrary = {
     languages: [],
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
+    learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
     posterPreviewDialog: emptyPosterPreviewDialogObj,
     infographicPreviewDialog: emptyInfographicPreviewDialogObj,
     screensaverPreviewDialog: emptyScreensaverPreviewDialogObj
   },
   getters: {
+    getIsLoading: (state) => state.isLoading,
     getTableColumns: (state) => state.tableColumns,
     getRenderedColumns: (state) => state.renderedColumns,
     getSearch: (state) => state.search,
-    getSearchPlaceholder: (state) => state.searchPlaceholder,
+    getSearchPlaceholder: (state) =>
+      `Search in ${state.trainingSubTabs[0].totalCount} training by name`,
     getFirstColFixed: (state) => state.firstColFixed,
     getLastColFixed: (state) => state.lastColFixed,
     getIsLastView: (state) => state.isListView,
@@ -49,12 +60,21 @@ const trainingLibrary = {
     getTrainingSubTabs: (state) => state.trainingSubTabs,
     getDeleteDialog: (state) => state.deleteDialog,
     getTrainingPreviewDialog: (state) => state.trainingPreviewDialog,
+    getLearningPathPreviewDialog: (state) => state.learningPathPreviewDialog,
     getPosterPreviewDialog: (state) => state.posterPreviewDialog,
     getLanguages: (state) => state.languages,
     getInfographicPreviewDialog: (state) => state.infographicPreviewDialog,
-    getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog
+    getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
+    getTableData: (state) => state.tableData,
+    getServerSideProps: (state) => state.serverSideProps,
+    getAxiosPayload: (state) => state.axiosPayload,
+    getSortBy: (state) => state.sortBy,
+    getTabsLoading: (state) => state.isTabsLoading
   },
   mutations: {
+    SET_IS_LOADING(state, payload) {
+      state.isLoading = payload
+    },
     SET_RENDERED_COLUMNS(state) {
       state.renderedColumns = state.tableColumns
         .filter((item) => item && item.show)
@@ -88,6 +108,9 @@ const trainingLibrary = {
       state.lastColFixed = lastColFixed
       console.log('state', state)
     },
+    SET_TRAINING_SUB_TABS(state, payload) {
+      state.trainingSubTabs = payload
+    },
     SET_SELECTED_TRAINING_CONTENT(state, payload) {
       if (state.selectedTrainingContent === payload) return
       state.selectedTrainingContent = payload
@@ -105,6 +128,9 @@ const trainingLibrary = {
     SET_TRAINING_PREVIEW_DIALOG(state, payload) {
       state.trainingPreviewDialog = payload
     },
+    SET_LEARNING_PATH_PREVIEW_DIALOG(state, payload) {
+      state.learningPathPreviewDialog = payload
+    },
     SET_POSTER_PREVIEW_DIALOG(state, payload) {
       state.posterPreviewDialog = payload
     },
@@ -116,9 +142,44 @@ const trainingLibrary = {
     },
     SET_LANGUAGES(state, payload) {
       state.languages = payload
+    },
+    SET_TABLE_DATA(state, payload) {
+      state.tableData = payload
+    },
+    SET_SERVER_SIDE_PROPS(state, payload) {
+      state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
+      state.serverSideProps.totalNumberOfPages = payload.totalNumberOfPages
+      state.serverSideProps.pageNumber = payload.pageNumber
+    },
+    SET_TABS_LOADING(state, payload) {
+      state.isTabsLoading = payload
     }
   },
   actions: {
+    callForTableData({ commit, state }) {
+      commit('SET_IS_LOADING', true)
+      AwarenessEducatorService.searchTraining(state.axiosPayload)
+        .then((response) => {
+          const {
+            data: { data = {} }
+          } = response
+          const {
+            results = [],
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1
+          } = data
+          commit('SET_TABLE_DATA', results)
+          commit('SET_SERVER_SIDE_PROPS', {
+            totalNumberOfRecords,
+            totalNumberOfPages,
+            pageNumber
+          })
+        })
+        .finally(() => {
+          commit('SET_IS_LOADING', false)
+        })
+    },
     setChangeVisibilityOfColumn({ commit }) {
       commit('SET_RENDERED_COLUMNS')
       commit('SET_TABLE_SETTINGS_CHANGE')
@@ -139,8 +200,9 @@ const trainingLibrary = {
     setSelectedTrainingContent({ commit }, payload) {
       commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
     },
-    setSubSelectedTrainingContent({ commit }, payload) {
+    setSubSelectedTrainingContent({ commit, dispatch }, payload) {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
+      dispatch('callForTableData')
     },
     setSortBy({ commit }, payload) {
       commit('SET_SORT_BY', payload)
@@ -150,6 +212,9 @@ const trainingLibrary = {
     },
     setTrainingPreviewDialog({ commit }, payload) {
       commit('SET_TRAINING_PREVIEW_DIALOG', payload)
+    },
+    setLearningPathPreviewDialog({ commit }, payload) {
+      commit('SET_LEARNING_PATH_PREVIEW_DIALOG', payload)
     },
     setPosterPreviewDialog({ commit }, payload) {
       commit('SET_POSTER_PREVIEW_DIALOG', payload)
@@ -164,6 +229,24 @@ const trainingLibrary = {
       AwarenessEducatorService.getLanguages().then((res) => {
         commit('SET_LANGUAGES', res?.data?.data)
       })
+    },
+    callForTrainingLibrary({ commit, dispatch }) {
+      commit('SET_TABS_LOADING', true)
+      dispatch('callForSummary')
+      dispatch('callForTableData')
+    },
+    callForSummary({ commit }) {
+      setTimeout(() => {
+        commit('SET_TRAINING_SUB_TABS', [
+          { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3600 },
+          { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 50 },
+          { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 1212 },
+          { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
+          { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 1111 },
+          { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 111 }
+        ])
+        commit('SET_TABS_LOADING', false)
+      }, 1000)
     }
   }
 }

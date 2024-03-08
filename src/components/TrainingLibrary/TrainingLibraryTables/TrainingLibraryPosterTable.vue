@@ -37,34 +37,28 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'TrainingLibraryPosterTable',
   components: {
     TrainingLibraryPosterRowActions,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
   data() {
     return {
       CONSTANTS: {
         id: 'awareness-educator-training-library-poster-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload(),
-      tableData: [],
-      serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_POSTER_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_POSTER_TABLE,
@@ -102,30 +96,16 @@ export default {
       }
     }
   },
-  mounted() {
-    this.callForData()
+  computed: {
+    ...mapGetters({
+      tableData: 'trainingLibrary/getTableData',
+      serverSideProps: 'trainingLibrary/getServerSideProps',
+      axiosPayload: 'trainingLibrary/getAxiosPayload',
+      isLoading: 'trainingLibrary/getIsLoading'
+    })
   },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      AwarenessEducatorService.searchTraining(this.axiosPayload)
-        .then((response) => {
-          const {
-            data: { data = {} }
-          } = response
-          const {
-            results = [],
-            totalNumberOfRecords = 0,
-            totalNumberOfPages = 0,
-            pageNumber = 1
-          } = data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-        })
-        .finally(this.setLoading)
-    },
+    ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
     handleAddPoster() {}
   }
 }
