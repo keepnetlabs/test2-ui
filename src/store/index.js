@@ -15,6 +15,7 @@ import whitelabel from '@/store/modules/whitelabel'
 import widgets from '@/store/modules/widgets'
 import permissions from '@/store/modules/permissions'
 import trainingLibrary from '@/store/modules/trainingLibrary'
+import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -32,7 +33,8 @@ let store = new Vuex.Store({
     whitelabel,
     widgets,
     permissions,
-    trainingLibrary
+    trainingLibrary,
+    trainingLibraryHelpers
   }
 })
 

@@ -21,6 +21,10 @@
       v-if="getScreensaverPreviewDialog.status"
       v-bind="getScreensaverPreviewDialog"
     />
+    <TrainingLibraryNewTrainingModal
+      v-if="getNewTrainingModal.status"
+      v-bind="getNewTrainingModal"
+    />
   </div>
 </template>
 
@@ -32,10 +36,12 @@ import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/Tra
 import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
 import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
 import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
+import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingModal.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibraryNewTrainingModal,
     TrainingLibraryLearningPathPreviewDialog,
     TrainingLibraryScreensaverPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
@@ -50,7 +56,8 @@ export default {
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
       getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog',
-      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
+      getNewTrainingModal: 'trainingLibrary/getNewTrainingModal'
     })
   }
 }

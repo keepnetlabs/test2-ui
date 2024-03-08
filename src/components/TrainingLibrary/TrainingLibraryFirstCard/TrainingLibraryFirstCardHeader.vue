@@ -109,7 +109,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForData: 'trainingLibrary/callForData',
+      callForData: 'trainingLibrary/callForTrainingLibrary',
       handleSearch: 'trainingLibrary/setSearch',
       setListView: 'trainingLibrary/setListView'
     }),

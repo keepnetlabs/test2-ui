@@ -291,7 +291,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
+    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
     getDownloadInfographicStyle() {
       const style = {
         textTransform: 'none'

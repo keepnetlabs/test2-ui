@@ -3,6 +3,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   emptyInfographicPreviewDialogObj,
   emptyLearningPathPreviewDialogObj,
+  emptyNewTrainingModalObj,
   emptyPosterPreviewDialogObj,
   emptyScreensaverPreviewDialogObj,
   emptyTrainingDeleteDialogObj,
@@ -37,13 +38,13 @@ const trainingLibrary = {
     selectedSubTrainingContent: 'All Types',
     filters: [],
     sortBy: '',
-    languages: [],
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
     learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
     posterPreviewDialog: emptyPosterPreviewDialogObj,
     infographicPreviewDialog: emptyInfographicPreviewDialogObj,
-    screensaverPreviewDialog: emptyScreensaverPreviewDialogObj
+    screensaverPreviewDialog: emptyScreensaverPreviewDialogObj,
+    newTrainingModal: emptyNewTrainingModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -62,14 +63,14 @@ const trainingLibrary = {
     getTrainingPreviewDialog: (state) => state.trainingPreviewDialog,
     getLearningPathPreviewDialog: (state) => state.learningPathPreviewDialog,
     getPosterPreviewDialog: (state) => state.posterPreviewDialog,
-    getLanguages: (state) => state.languages,
     getInfographicPreviewDialog: (state) => state.infographicPreviewDialog,
     getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
     getSortBy: (state) => state.sortBy,
-    getTabsLoading: (state) => state.isTabsLoading
+    getTabsLoading: (state) => state.isTabsLoading,
+    getNewTrainingModal: (state) => state.newTrainingModal
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -140,9 +141,6 @@ const trainingLibrary = {
     SET_SCREENSAVER_PREVIEW_DIALOG(state, payload) {
       state.screensaverPreviewDialog = payload
     },
-    SET_LANGUAGES(state, payload) {
-      state.languages = payload
-    },
     SET_TABLE_DATA(state, payload) {
       state.tableData = payload
     },
@@ -153,6 +151,9 @@ const trainingLibrary = {
     },
     SET_TABS_LOADING(state, payload) {
       state.isTabsLoading = payload
+    },
+    SET_NEW_TRAINING_MODAL(state, payload) {
+      state.newTrainingModal = payload
     }
   },
   actions: {
@@ -188,8 +189,9 @@ const trainingLibrary = {
       commit('SET_FIXED_COL', payload)
       commit('SET_TABLE_SETTINGS_CHANGE')
     },
-    setSearch({ commit }, payload) {
+    setSearch({ commit, dispatch }, payload) {
       commit('SET_SEARCH', payload)
+      dispatch('callForTrainingLibrary')
     },
     setListView({ commit }, payload) {
       commit('SET_LIST_VIEW', payload)
@@ -197,8 +199,9 @@ const trainingLibrary = {
     initDefaultTableSettings({ commit }) {
       commit('SET_DEFAULT_TABLE_SETTINGS')
     },
-    setSelectedTrainingContent({ commit }, payload) {
+    setSelectedTrainingContent({ commit, dispatch }, payload) {
       commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
+      dispatch('callForTrainingLibrary')
     },
     setSubSelectedTrainingContent({ commit, dispatch }, payload) {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
@@ -225,17 +228,15 @@ const trainingLibrary = {
     setScreenSaverPreviewDialog({ commit }, payload) {
       commit('SET_SCREENSAVER_PREVIEW_DIALOG', payload)
     },
-    callForLanguages({ commit }) {
-      AwarenessEducatorService.getLanguages().then((res) => {
-        commit('SET_LANGUAGES', res?.data?.data)
-      })
+    setNewTrainingModal({ commit }, payload) {
+      commit('SET_NEW_TRAINING_MODAL', payload)
     },
     callForTrainingLibrary({ commit, dispatch }) {
-      commit('SET_TABS_LOADING', true)
       dispatch('callForSummary')
       dispatch('callForTableData')
     },
     callForSummary({ commit }) {
+      commit('SET_TABS_LOADING', true)
       setTimeout(() => {
         commit('SET_TRAINING_SUB_TABS', [
           { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3600 },

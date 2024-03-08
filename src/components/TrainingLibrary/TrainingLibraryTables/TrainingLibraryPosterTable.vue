@@ -47,6 +47,7 @@ import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryPosterTable',
   components: {
@@ -101,8 +102,24 @@ export default {
       tableData: 'trainingLibrary/getTableData',
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',
-      isLoading: 'trainingLibrary/getIsLoading'
+      isLoading: 'trainingLibrary/getIsLoading',
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     })
+  },
+  watch: {
+    selectedTrainingContent(tabValue) {
+      if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+        this.$set(this.tableOptions, 'iEmpty', {
+          ...this.tableOptions.iEmpty,
+          message: labels.EmptyPosterCreatedByYouSubtitle
+        })
+      } else {
+        this.$set(this.tableOptions, 'iEmpty', {
+          ...this.tableOptions.iEmpty,
+          message: ''
+        })
+      }
+    }
   },
   methods: {
     ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),

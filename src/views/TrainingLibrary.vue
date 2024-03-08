@@ -25,13 +25,13 @@ export default {
   },
   created() {
     this.initDefaultTableSettings()
-    this.callForLanguages()
+    this.callForTrainingHelpers()
     this.callForTrainingLibrary()
   },
   methods: {
     ...mapActions({
       initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings',
-      callForLanguages: 'trainingLibrary/callForLanguages',
+      callForTrainingHelpers: 'trainingLibraryHelpers/callForTrainingHelpers',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForData() {}

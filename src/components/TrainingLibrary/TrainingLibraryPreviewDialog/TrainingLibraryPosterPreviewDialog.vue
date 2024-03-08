@@ -281,7 +281,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
+    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
     getDownloadPosterStyle() {
       const style = {
         textTransform: 'none'

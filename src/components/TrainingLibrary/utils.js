@@ -230,3 +230,10 @@ export const emptyScreensaverPreviewDialogObj = {
   selectedRow: null,
   onClose: () => {}
 }
+
+export const emptyNewTrainingModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}

@@ -30,8 +30,15 @@
     <template #empty-table-inline>
       <div class="empty-inline">
         <h2 id="text--empty-table-title" class="people__no-data__header">
-          {{ labels.EmptyTrainingMaterial }}
+          {{ getEmptyTableText }}
         </h2>
+        <p
+          v-if="getEmptyTableSubtitleText"
+          id="text--empty-table-subtitle"
+          class="people__no-data__body"
+        >
+          {{ getEmptyTableSubtitleText }}
+        </p>
         <div class="people__no-data__buttons mt-4">
           <VMenu offset-y transition="scale-transition" nudge-bottom="4">
             <template #activator="{ on }">
@@ -110,6 +117,9 @@ import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
 import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
+import { mapGetters } from 'vuex'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import useAddTrainingLibraryContent from '@/hooks/useAddTrainingLibraryContent'
 
 export default {
   name: 'TrainingLibraryAllTypesTable',
@@ -121,7 +131,12 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useAddTrainingLibraryContent,
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       TRAINING_LIBRARY_TYPES,
@@ -170,6 +185,27 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+    }),
+    getEmptyTableText() {
+      if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
+        return labels.EmptyTrainingMaterial
+      else if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
+        return labels.EmptyTrainingFavorites
+      else if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU)
+        return labels.EmptyTrainingAllTypeCreatedByYou
+      else return labels.EmptyTrainingMaterial
+    },
+    getEmptyTableSubtitleText() {
+      if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS) return ''
+      else if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES) return ''
+      else if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU)
+        return labels.EmptyTrainingAllTypeCreatedByYouSubtitle
+      else return ''
+    }
+  },
   mounted() {
     this.callForData()
   },
@@ -198,8 +234,7 @@ export default {
           this.tableData = results
         })
         .finally(this.setLoading)
-    },
-    handleAddTrainingLibraryContent(text) {}
+    }
   }
 }
 </script>

@@ -113,7 +113,8 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
+      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal'
     }),
     handlePreview(row) {
       this.setTrainingPreviewDialog({
@@ -128,10 +129,17 @@ export default {
       this.$emit('on-training-add-favorite', row)
     },
     handleEdit(row) {
-      this.$emit('on-training-edit', row)
+      this.setNewTrainingModal({
+        status: true,
+        selectedRow: row,
+        isEdit: true,
+        isDuplicate: false
+      })
     },
     handleDuplicate(row) {
-      this.$emit('on-training-duplicate', row)
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
+      })
     },
     handleActionDelete(row) {
       this.setDeleteDialog({

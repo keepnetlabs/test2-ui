@@ -33,16 +33,15 @@
 
 <script>
 import { addTrainingItems } from '@/components/TrainingLibrary/utils'
+import useAddTrainingLibraryContent from '@/hooks/useAddTrainingLibraryContent'
 
 export default {
   name: 'TrainingLibraryFirstCardNewButton',
+  mixins: [useAddTrainingLibraryContent],
   data() {
     return {
       addTrainingItems
     }
-  },
-  methods: {
-    handleAddTrainingLibraryContent(text) {}
   }
 }
 </script>

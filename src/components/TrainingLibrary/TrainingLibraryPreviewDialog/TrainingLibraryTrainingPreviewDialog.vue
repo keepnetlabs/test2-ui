@@ -71,7 +71,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
+    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams

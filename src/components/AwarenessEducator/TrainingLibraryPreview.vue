@@ -80,8 +80,8 @@
             </div>
             <div class="d-flex flex-wrap gap-2">
               <span
-                v-for="tag in trainingParams.tagNames"
-                :key="tag"
+                v-for="(tag, index) in trainingParams.tagNames"
+                :key="index"
                 class="training-library-preview__tag"
                 >{{ tag }}</span
               >

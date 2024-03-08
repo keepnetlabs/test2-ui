@@ -291,7 +291,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibrary/getLanguages' }),
+    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
     getDownloadScreensaverStyle() {
       const style = {
         textTransform: 'none'

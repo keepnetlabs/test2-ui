@@ -47,6 +47,7 @@ import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryLearningPathTable',
   components: {
@@ -99,11 +100,27 @@ export default {
   },
   computed: {
     ...mapGetters({
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
       tableData: 'trainingLibrary/getTableData',
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',
       isLoading: 'trainingLibrary/getIsLoading'
     })
+  },
+  watch: {
+    selectedTrainingContent(tabValue) {
+      if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+        this.$set(this.tableOptions, 'iEmpty', {
+          ...this.tableOptions.iEmpty,
+          message: labels.EmptyLearningPathCreatedByYouSubtitle
+        })
+      } else {
+        this.$set(this.tableOptions, 'iEmpty', {
+          ...this.tableOptions.iEmpty,
+          message: ''
+        })
+      }
+    }
   },
   methods: {
     ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
