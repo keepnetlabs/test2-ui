@@ -60,7 +60,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 export default {
-  name: 'NewInfographicContentByLanguage',
+  name: 'TrainingLibraryNewScreensaverContentByLanguage',
   components: { KFileUpload, InputSelectLanguage, FormGroupHorizontalContent },
   props: {
     value: {

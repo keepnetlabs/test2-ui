@@ -10,7 +10,8 @@ import {
   emptyPosterPreviewDialogObj,
   emptyScreensaverPreviewDialogObj,
   emptyTrainingDeleteDialogObj,
-  emptyTrainingPreviewDialogObj
+  emptyTrainingPreviewDialogObj,
+  emptyNewScreensaverModalObj
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -50,7 +51,8 @@ const trainingLibrary = {
     newTrainingModal: emptyNewTrainingModalObj,
     newLearningPathModal: emptyNewLearningPathModalObj,
     newPosterModal: emptyNewPosterModalObj,
-    newInfographicModal: emptyNewInfographicModalObj
+    newInfographicModal: emptyNewInfographicModalObj,
+    newScreensaverModal: emptyNewScreensaverModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -79,7 +81,8 @@ const trainingLibrary = {
     getNewTrainingModal: (state) => state.newTrainingModal,
     getNewLearningPathModal: (state) => state.newLearningPathModal,
     getNewPosterModal: (state) => state.newPosterModal,
-    getNewInfographicModal: (state) => state.newInfographicModal
+    getNewInfographicModal: (state) => state.newInfographicModal,
+    getNewScreensaverModal: (state) => state.newScreensaverModal
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -172,6 +175,9 @@ const trainingLibrary = {
     },
     SET_NEW_INFOGRAPHIC_MODAL(state, payload) {
       state.newInfographicModal = payload
+    },
+    SET_NEW_SCREENSAVER_MODAL(state, payload) {
+      state.newScreensaverModal = payload
     }
   },
   actions: {
@@ -258,7 +264,9 @@ const trainingLibrary = {
     setNewInfographicModal({ commit }, payload) {
       commit('SET_NEW_INFOGRAPHIC_MODAL', payload)
     },
-
+    setNewScreensaverModal({ commit }, payload) {
+      commit('SET_NEW_SCREENSAVER_MODAL', payload)
+    },
     callForTrainingLibrary({ commit, dispatch }) {
       dispatch('callForSummary')
       dispatch('callForTableData')

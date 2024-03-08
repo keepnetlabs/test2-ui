@@ -40,7 +40,7 @@
               :title="labels.ScreensaverContent"
               :subtitle="labels.ScreensaverContentSub"
             />
-            <TrainingLibraryNewPosterContent
+            <TrainingLibraryNewScreensaverContent
               ref="refTrainingContent"
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :resource-id="trainingId"
@@ -81,18 +81,16 @@ import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import TrainingLibraryNewPosterInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterInformation.vue'
-import TrainingLibraryNewPosterContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterContent.vue'
 import { mapActions } from 'vuex'
 import { emptyNewPosterModalObj } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewScreensaverInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewScreensaverModal/TrainingLibraryNewScreensaverInformation.vue'
+import TrainingLibraryNewScreensaverContent from './TrainingLibraryNewScreensaverContent.vue'
 
 export default {
   name: 'TrainingLibraryNewScreensaverModal',
   components: {
+    TrainingLibraryNewScreensaverContent,
     TrainingLibraryNewScreensaverInformation,
-    TrainingLibraryNewPosterContent,
-    TrainingLibraryNewPosterInformation,
     StepperFooter,
     ConfigureCompanyStepHeader,
     AppModal
@@ -121,7 +119,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewPoster : labels.EditPoster
+      return !this.isEdit ? labels.CreateNewScreensaver : labels.EditScreensaver
     }
   },
   created() {
@@ -160,7 +158,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
+      setNewPosterModal: 'trainingLibrary/setNewScreensaverModal'
     }),
     handleClose() {
       this.setNewPosterModal(emptyNewPosterModalObj)

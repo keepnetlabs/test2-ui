@@ -126,7 +126,8 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog'
+      setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
     }),
     handlePreview(row) {
       this.setScreenSaverPreviewDialog({
@@ -162,10 +163,17 @@ export default {
       this.$emit('on-screensaver-add-favorite', row)
     },
     handleEdit(row) {
-      this.$emit('on-screensaver-edit', row)
+      this.setNewScreensaverModal({
+        status: true,
+        selectedRow: row,
+        isEdit: true,
+        isDuplicate: false
+      })
     },
     handleDuplicate(row) {
-      this.$emit('on-screensaver-duplicate', row)
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
+      })
     },
     handleActionDelete(row) {
       this.setDeleteDialog({

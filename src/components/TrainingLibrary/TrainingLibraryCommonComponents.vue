@@ -34,6 +34,10 @@
       v-if="getNewInfographicModal.status"
       v-bind="getNewInfographicModal"
     />
+    <TrainingLibraryNewScreensaverModal
+      v-if="getNewScreensaverModal.status"
+      v-bind="getNewScreensaverModal"
+    />
   </div>
 </template>
 
@@ -49,10 +53,12 @@ import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/Traini
 import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathModal.vue'
 import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
 import TrainingLibraryNewInfographicModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicModal.vue'
+import TrainingLibraryNewScreensaverModal from './TrainingLibraryNewModal/TrainingLibraryNewScreensaverModal/TrainingLibraryNewScreensaverModal.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibraryNewScreensaverModal,
     TrainingLibraryNewInfographicModal,
     TrainingLibraryNewPosterModal,
     TrainingLibraryNewLearningPathModal,
@@ -75,7 +81,8 @@ export default {
       getNewTrainingModal: 'trainingLibrary/getNewTrainingModal',
       getNewLearningPathModal: 'trainingLibrary/getNewLearningPathModal',
       getNewPosterModal: 'trainingLibrary/getNewPosterModal',
-      getNewInfographicModal: 'trainingLibrary/getNewInfographicModal'
+      getNewInfographicModal: 'trainingLibrary/getNewInfographicModal',
+      getNewScreensaverModal: 'trainingLibrary/getNewScreensaverModal'
     })
   }
 }

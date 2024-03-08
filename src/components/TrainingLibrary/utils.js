@@ -255,3 +255,10 @@ export const emptyNewInfographicModalObj = {
   isDuplicate: false,
   selectedRow: null
 }
+
+export const emptyNewScreensaverModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}

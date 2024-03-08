@@ -2,7 +2,7 @@
   <div>
     <FormGroup :title="labels.Content" :sub-title="labels.InfographicContentStep2Sub">
       <div v-for="index in formData.contentByLanguage.length" :key="index">
-        <NewInfographicContentByLanguage
+        <TrainingLibraryNewInfographicContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"
           :class="['mb-4', index > 0 && 'mt-6']"
           :language-items="languages"
@@ -34,10 +34,10 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
-import NewInfographicContentByLanguage from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/NewInfographicContentByLanguage.vue'
+import TrainingLibraryNewInfographicContentByLanguage from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicContentByLanguage.vue'
 export default {
   name: 'TrainingLibraryNewInfographicContent',
-  components: { NewInfographicContentByLanguage, FormGroup },
+  components: { TrainingLibraryNewInfographicContentByLanguage, FormGroup },
   props: {
     isActionButtonDisabled: {
       type: Boolean

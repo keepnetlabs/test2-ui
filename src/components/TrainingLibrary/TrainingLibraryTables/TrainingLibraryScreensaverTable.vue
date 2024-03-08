@@ -80,8 +80,8 @@ export default {
           TRAINING_LIBRARY_COLUMNS.TAGS
         ],
         iEmpty: {
-          btn: labels.CreateNewInfographic,
-          message: labels.EmptyInfographic,
+          btn: labels.CreateNewScreensaver,
+          message: labels.EmptyScreensaver,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-screensaver-table'
           //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
@@ -123,8 +123,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
-    handleAddScreenSaver() {}
+    ...mapActions({
+      callForData: 'trainingLibrary/callForTableData',
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
+    }),
+    handleAddScreenSaver() {
+      this.setNewScreensaverModal({
+        status: true,
+        selectedRow: null,
+        isEdit: false,
+        isDuplicate: false
+      })
+    }
   }
 }
 </script>

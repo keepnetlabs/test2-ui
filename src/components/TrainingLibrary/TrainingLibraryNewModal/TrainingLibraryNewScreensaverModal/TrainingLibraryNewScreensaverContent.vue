@@ -2,7 +2,7 @@
   <div>
     <FormGroup :title="labels.Content" :sub-title="labels.ScreensaverContentStep2Sub">
       <div v-for="index in formData.contentByLanguage.length" :key="index">
-        <NewPosterContentByLanguage
+        <TrainingLibraryNewScreensaverContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"
           :class="['mb-4', index > 0 && 'mt-6']"
           :language-items="languages"
@@ -33,11 +33,14 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import NewPosterContentByLanguage from '@/components/AwarenessEducator/NewPoster/NewPosterContentByLanguage.vue'
 import { mapGetters } from 'vuex'
+import TrainingLibraryNewScreensaverContentByLanguage from './TrainingLibraryNewScreensaverContentByLanguage.vue'
 export default {
   name: 'TrainingLibraryNewScreensaverContent',
-  components: { NewPosterContentByLanguage, FormGroup },
+  components: {
+    TrainingLibraryNewScreensaverContentByLanguage,
+    FormGroup
+  },
   props: {
     isActionButtonDisabled: {
       type: Boolean

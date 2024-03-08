@@ -7,7 +7,8 @@ export default {
       setNewTrainingModal: 'trainingLibrary/setNewTrainingModal',
       setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
       setNewPosterModal: 'trainingLibrary/setNewPosterModal',
-      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal'
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
     }),
     handleAddTrainingLibraryContent(text) {
       switch (text) {
@@ -44,7 +45,12 @@ export default {
           })
           break
         case TRAINING_LIBRARY_TYPES.SCREENSAVER:
-          this.$emit('addCourse')
+          this.setNewScreensaverModal({
+            status: true,
+            selectedRow: null,
+            isEdit: false,
+            isDuplicate: false
+          })
           break
         default:
           break
