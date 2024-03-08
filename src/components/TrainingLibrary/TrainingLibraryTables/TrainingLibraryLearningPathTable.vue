@@ -123,8 +123,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
-    handleAddLearningPath() {}
+    ...mapActions({
+      callForData: 'trainingLibrary/callForTableData',
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
+    }),
+    handleAddLearningPath() {
+      this.setNewLearningPathModal({
+        status: true,
+        isEdit: false,
+        isDuplicate: false,
+        selectedRow: null
+      })
+    }
   }
 }
 </script>

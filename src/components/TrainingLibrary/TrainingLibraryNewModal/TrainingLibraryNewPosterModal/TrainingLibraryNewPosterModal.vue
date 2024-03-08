@@ -14,7 +14,7 @@
             class="k-stepper__step"
             :complete="step > 1"
             :step="1"
-            >{{ labels.LearningPathInfo }}
+            >{{ labels.PosterInfo }}
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
@@ -22,25 +22,25 @@
             class="k-stepper__step"
             :complete="step > 2"
             :step="2"
-            >{{ labels.LearningPathContent }}
+            >{{ labels.PosterContent }}
           </v-stepper-step>
         </v-stepper-header>
         <v-stepper-items class="k-stepper__items">
           <v-stepper-content class="k-stepper__content" :step="1">
             <ConfigureCompanyStepHeader
               class="mb-8"
-              :title="labels.LearningPathInformation"
-              :subtitle="labels.LearningPathInformationSub"
+              :title="labels.PosterInformation"
+              :subtitle="labels.PosterInformationSub"
             />
-            <TrainingLibraryNewLearningPathInformation ref="refTrainingCourseInformation" />
+            <TrainingLibraryNewPosterInformation ref="refTrainingCourseInformation" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               class="mb-8"
-              :title="labels.LearningPathContent"
-              :subtitle="labels.LearningPathContentSub"
+              :title="labels.PosterContent"
+              :subtitle="labels.PosterContentSub"
             />
-            <TrainingLibraryNewLearningPathContent
+            <TrainingLibraryNewPosterContent
               ref="refTrainingContent"
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :resource-id="trainingId"
@@ -75,21 +75,22 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal.vue'
+import AppModal from '@/components/AppModal'
+import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
 import labels from '@/model/constants/labels'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
-import StepperFooter from '@/components/Stepper/StepperFooter.vue'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
+import StepperFooter from '@/components/Stepper/StepperFooter'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import TrainingLibraryNewPosterInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterInformation.vue'
+import TrainingLibraryNewPosterContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterContent.vue'
 import { mapActions } from 'vuex'
-import { emptyNewLearningPathModalObj } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryNewLearningPathInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathInformation.vue'
-import TrainingLibraryNewLearningPathContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathContent.vue'
+import { emptyNewPosterModalObj } from '@/components/TrainingLibrary/utils'
 
 export default {
-  name: 'TrainingLibraryNewLearningPathModal',
+  name: 'TrainingLibraryNewPosterModal',
   components: {
-    TrainingLibraryNewLearningPathContent,
-    TrainingLibraryNewLearningPathInformation,
+    TrainingLibraryNewPosterContent,
+    TrainingLibraryNewPosterInformation,
     StepperFooter,
     ConfigureCompanyStepHeader,
     AppModal
@@ -118,7 +119,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewLearningPath : labels.EditLearningPath
+      return !this.isEdit ? labels.CreateNewPoster : labels.EditPoster
     }
   },
   created() {
@@ -157,10 +158,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
     }),
     handleClose() {
-      this.setNewLearningPathModal(emptyNewLearningPathModalObj)
+      this.setNewPosterModal(emptyNewPosterModalObj)
     },
     changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs
@@ -198,7 +199,8 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests
+            availableForRequests,
+            type: TRAINING_TYPES.POSTER
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
@@ -240,7 +242,7 @@ export default {
         }
       } = refTrainingCourseInformation
       const {
-        formData: { hasQuiz, type }
+        formData: { hasQuiz }
       } = refTrainingContent
       const payload = new FormData()
       if (coverImageUrl) {
@@ -252,7 +254,7 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', type)
+      payload.append('trainingDetail.type', TRAINING_TYPES.POSTER)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })

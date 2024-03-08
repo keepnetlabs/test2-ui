@@ -126,7 +126,8 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog'
+      setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
     }),
     handlePreview(row) {
       this.setPosterPreviewDialog({
@@ -163,10 +164,17 @@ export default {
       this.$emit('on-poster-add-favorite', row)
     },
     handleEdit(row) {
-      this.$emit('on-poster-edit', row)
+      this.setNewPosterModal({
+        status: true,
+        isEdit: true,
+        selectedRow: row,
+        isDuplicate: false
+      })
     },
     handleDuplicate(row) {
-      this.$emit('on-poster-duplicate', row)
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
+      })
     },
     handleActionDelete(row) {
       this.setDeleteDialog({

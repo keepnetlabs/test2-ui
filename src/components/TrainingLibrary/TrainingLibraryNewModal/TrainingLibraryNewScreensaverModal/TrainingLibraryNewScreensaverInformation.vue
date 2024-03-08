@@ -1,17 +1,18 @@
 <template>
   <v-form ref="refForm">
-    <FormGroup has-hint :title="labels.TrainingName">
+    <FormGroup has-hint :title="labels.ScreensaverName">
       <InputEntityName
         v-model.trim="formData.name"
         id="input--new-training-training-name"
-        entity-name="training name"
+        entity-name="screensaver name"
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionTrainingSub">
+    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionScreensaverSub">
       <InputDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
+        required
         rows="2"
         height="100"
         :max-length="300"
@@ -57,7 +58,11 @@
         :items="getBehaviours"
       ></KSelect>
     </FormGroup>
-    <FormGroup has-hint :title="labels.TargetAudience" :sub-title="labels.TargetAudienceSub">
+    <FormGroup
+      has-hint
+      :title="labels.TargetAudience"
+      :sub-title="labels.TargetAudienceScreensaverSub"
+    >
       <KSelect
         v-model.trim="formData.targetAudience"
         persistent-hint
@@ -72,7 +77,7 @@
         :items="getTargetAudiences"
       ></KSelect>
     </FormGroup>
-    <FormGroup :title="labels.Tags" :sub-title="labels.TagTrainingSub">
+    <FormGroup :title="labels.Tags" :sub-title="labels.TagScreensaverSub">
       <InputTag
         v-model="formData.tags"
         ref="refTags"
@@ -80,7 +85,7 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheTraining">
+    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheScreensaver">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
@@ -123,7 +128,7 @@ import * as Validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'TrainingLibraryNewTrainingCourseInformation',
+  name: 'TrainingLibraryNewScreensaverInformation',
   components: {
     MakeAvailableFor,
     KFileUpload,
@@ -139,12 +144,10 @@ export default {
       labels,
       formData: {
         coverImage: null,
-        compliance: '',
         name: '',
         description: '',
         category: '',
         targetAudience: '',
-        behaviour: '',
         tags: [],
         availableForRequests: [],
         coverImageUrl: null

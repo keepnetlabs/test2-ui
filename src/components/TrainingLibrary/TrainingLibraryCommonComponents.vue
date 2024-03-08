@@ -25,6 +25,15 @@
       v-if="getNewTrainingModal.status"
       v-bind="getNewTrainingModal"
     />
+    <TrainingLibraryNewLearningPathModal
+      v-if="getNewLearningPathModal.status"
+      v-bind="getNewLearningPathModal"
+    />
+    <TrainingLibraryNewPosterModal v-if="getNewPosterModal.status" v-bind="getNewPosterModal" />
+    <TrainingLibraryNewInfographicModal
+      v-if="getNewInfographicModal.status"
+      v-bind="getNewInfographicModal"
+    />
   </div>
 </template>
 
@@ -37,10 +46,16 @@ import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDia
 import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
 import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
 import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingModal.vue'
+import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathModal.vue'
+import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
+import TrainingLibraryNewInfographicModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicModal.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibraryNewInfographicModal,
+    TrainingLibraryNewPosterModal,
+    TrainingLibraryNewLearningPathModal,
     TrainingLibraryNewTrainingModal,
     TrainingLibraryLearningPathPreviewDialog,
     TrainingLibraryScreensaverPreviewDialog,
@@ -57,7 +72,10 @@ export default {
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
       getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog',
       getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
-      getNewTrainingModal: 'trainingLibrary/getNewTrainingModal'
+      getNewTrainingModal: 'trainingLibrary/getNewTrainingModal',
+      getNewLearningPathModal: 'trainingLibrary/getNewLearningPathModal',
+      getNewPosterModal: 'trainingLibrary/getNewPosterModal',
+      getNewInfographicModal: 'trainingLibrary/getNewInfographicModal'
     })
   }
 }

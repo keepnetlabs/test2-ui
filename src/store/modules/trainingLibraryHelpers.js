@@ -8,7 +8,8 @@ const trainingLibraryHelpers = {
     languages: [],
     targetAudiences: [],
     compliances: [],
-    trainingVendors: []
+    trainingVendors: [],
+    behaviours: []
   },
   getters: {
     getCategories(state) {
@@ -28,6 +29,9 @@ const trainingLibraryHelpers = {
     },
     getTrainingVendors(state) {
       return state.trainingVendors
+    },
+    getBehaviours(state) {
+      return state.behaviours
     }
   },
   mutations: {
@@ -48,6 +52,9 @@ const trainingLibraryHelpers = {
     },
     SET_TRAINING_VENDORS(state, payload) {
       state.trainingVendors = payload
+    },
+    SET_BEHAVIOURS(state, payload) {
+      state.behaviours = payload
     }
   },
   actions: {
@@ -58,6 +65,7 @@ const trainingLibraryHelpers = {
       dispatch('callForTargetAudiences')
       dispatch('callForCompliances')
       dispatch('callForTrainingVendors')
+      dispatch('callForBehaviours')
     },
     callForCategories({ commit }) {
       AwarenessEducatorService.getCategories().then((response) => {
@@ -112,6 +120,17 @@ const trainingLibraryHelpers = {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
         commit(
           'SET_TRAINING_VENDORS',
+          response?.data?.data?.map((compliance) => ({
+            text: compliance.displayName,
+            value: compliance.name
+          })) || []
+        )
+      })
+    },
+    callForBehaviours({ commit }) {
+      AwarenessEducatorService.getTargetAudiences().then((response) => {
+        commit(
+          'SET_BEHAVIOURS',
           response?.data?.data?.map((compliance) => ({
             text: compliance.displayName,
             value: compliance.name

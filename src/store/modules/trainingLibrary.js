@@ -3,6 +3,9 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   emptyInfographicPreviewDialogObj,
   emptyLearningPathPreviewDialogObj,
+  emptyNewInfographicModalObj,
+  emptyNewLearningPathModalObj,
+  emptyNewPosterModalObj,
   emptyNewTrainingModalObj,
   emptyPosterPreviewDialogObj,
   emptyScreensaverPreviewDialogObj,
@@ -44,7 +47,10 @@ const trainingLibrary = {
     posterPreviewDialog: emptyPosterPreviewDialogObj,
     infographicPreviewDialog: emptyInfographicPreviewDialogObj,
     screensaverPreviewDialog: emptyScreensaverPreviewDialogObj,
-    newTrainingModal: emptyNewTrainingModalObj
+    newTrainingModal: emptyNewTrainingModalObj,
+    newLearningPathModal: emptyNewLearningPathModalObj,
+    newPosterModal: emptyNewPosterModalObj,
+    newInfographicModal: emptyNewInfographicModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -70,7 +76,10 @@ const trainingLibrary = {
     getAxiosPayload: (state) => state.axiosPayload,
     getSortBy: (state) => state.sortBy,
     getTabsLoading: (state) => state.isTabsLoading,
-    getNewTrainingModal: (state) => state.newTrainingModal
+    getNewTrainingModal: (state) => state.newTrainingModal,
+    getNewLearningPathModal: (state) => state.newLearningPathModal,
+    getNewPosterModal: (state) => state.newPosterModal,
+    getNewInfographicModal: (state) => state.newInfographicModal
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -154,6 +163,15 @@ const trainingLibrary = {
     },
     SET_NEW_TRAINING_MODAL(state, payload) {
       state.newTrainingModal = payload
+    },
+    SET_NEW_LEARNING_PATH_MODAL(state, payload) {
+      state.newLearningPathModal = payload
+    },
+    SET_NEW_POSTER_MODAL(state, payload) {
+      state.newPosterModal = payload
+    },
+    SET_NEW_INFOGRAPHIC_MODAL(state, payload) {
+      state.newInfographicModal = payload
     }
   },
   actions: {
@@ -231,6 +249,16 @@ const trainingLibrary = {
     setNewTrainingModal({ commit }, payload) {
       commit('SET_NEW_TRAINING_MODAL', payload)
     },
+    setNewLearningPathModal({ commit }, payload) {
+      commit('SET_NEW_LEARNING_PATH_MODAL', payload)
+    },
+    setNewPosterModal({ commit }, payload) {
+      commit('SET_NEW_POSTER_MODAL', payload)
+    },
+    setNewInfographicModal({ commit }, payload) {
+      commit('SET_NEW_INFOGRAPHIC_MODAL', payload)
+    },
+
     callForTrainingLibrary({ commit, dispatch }) {
       dispatch('callForSummary')
       dispatch('callForTableData')

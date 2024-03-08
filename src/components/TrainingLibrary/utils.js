@@ -237,3 +237,21 @@ export const emptyNewTrainingModalObj = {
   isDuplicate: false,
   selectedRow: null
 }
+export const emptyNewLearningPathModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}
+export const emptyNewPosterModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}
+export const emptyNewInfographicModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}

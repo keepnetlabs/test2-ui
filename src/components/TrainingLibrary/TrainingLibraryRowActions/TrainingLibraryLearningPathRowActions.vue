@@ -113,7 +113,8 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog'
+      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
     }),
     handlePreview(row) {
       this.setLearningPathPreviewDialog({
@@ -128,10 +129,17 @@ export default {
       this.$emit('on-learning-path-add-favorite', row)
     },
     handleEdit(row) {
-      this.$emit('on-learning-path-edit', row)
+      this.setNewLearningPathModal({
+        status: true,
+        selectedRow: row,
+        isEdit: true,
+        isDuplicate: false
+      })
     },
     handleDuplicate(row) {
-      this.$emit('on-learning-path-duplicate', row)
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
+      })
     },
     handleActionDelete(row) {
       this.setDeleteDialog({

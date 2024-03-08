@@ -1,6 +1,6 @@
 <template>
   <v-form ref="refForm">
-    <FormGroup has-hint :title="labels.TrainingName">
+    <FormGroup has-hint :title="labels.LearningPathName">
       <InputEntityName
         v-model.trim="formData.name"
         id="input--new-training-training-name"
@@ -8,7 +8,7 @@
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionTrainingSub">
+    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionLearningPathSub">
       <InputDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
@@ -54,10 +54,14 @@
         item-text="text"
         item-value="value"
         placeholder="Select behaviour"
-        :items="getBehaviours"
+        :items="getCompliances"
       ></KSelect>
     </FormGroup>
-    <FormGroup has-hint :title="labels.TargetAudience" :sub-title="labels.TargetAudienceSub">
+    <FormGroup
+      has-hint
+      :title="labels.TargetAudience"
+      :sub-title="labels.TargetAudienceLearningPathSub"
+    >
       <KSelect
         v-model.trim="formData.targetAudience"
         persistent-hint
@@ -72,7 +76,7 @@
         :items="getTargetAudiences"
       ></KSelect>
     </FormGroup>
-    <FormGroup :title="labels.Tags" :sub-title="labels.TagTrainingSub">
+    <FormGroup :title="labels.Tags" :sub-title="labels.TagLearningSub">
       <InputTag
         v-model="formData.tags"
         ref="refTags"
@@ -80,7 +84,7 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheTraining">
+    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheLearningPath">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
@@ -123,7 +127,7 @@ import * as Validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'TrainingLibraryNewTrainingCourseInformation',
+  name: 'TrainingLibraryNewLearningPathInformation',
   components: {
     MakeAvailableFor,
     KFileUpload,
@@ -155,8 +159,7 @@ export default {
     ...mapGetters({
       getCategories: 'trainingLibraryHelpers/getCategories',
       getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
-      getCompliances: 'trainingLibraryHelpers/getCompliances',
-      getBehaviours: 'trainingLibraryHelpers/getBehaviours'
+      getCompliances: 'trainingLibraryHelpers/getCompliances'
     }),
     getPreviewOfCoverImage() {
       return this.formData.coverImage || this.formData.coverImageUrl

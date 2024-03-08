@@ -83,8 +83,8 @@ export default {
           btn: labels.CreateNewInfographic,
           message: labels.EmptyInfographic,
           icon: 'mdi-plus',
-          id: 'btn-empty--training-library-infographic-table'
-          //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
+          id: 'btn-empty--training-library-infographic-table',
+          disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: false
@@ -92,7 +92,6 @@ export default {
         downloadButton: {
           show: false
         },
-        //todo rowActions
         rowActions: ['', '', ''],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
@@ -123,8 +122,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
-    handleAddInfoGraphic() {}
+    ...mapActions({
+      callForData: 'trainingLibrary/callForTableData',
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal'
+    }),
+    handleAddInfoGraphic() {
+      this.setNewInfographicModal({
+        status: true,
+        isEdit: false,
+        selectedRow: null,
+        isDuplicate: false
+      })
+    }
   }
 }
 </script>

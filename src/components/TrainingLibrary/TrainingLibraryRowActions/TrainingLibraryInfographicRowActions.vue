@@ -127,7 +127,8 @@ export default {
   methods: {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
-      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal'
     }),
 
     handlePreview(row) {
@@ -164,10 +165,17 @@ export default {
       this.$emit('on-infographic-add-favorite', row)
     },
     handleEdit(row) {
-      this.$emit('on-infographic-edit', row)
+      this.setNewInfographicModal({
+        status: true,
+        selectedRow: row,
+        isEdit: true,
+        isDuplicate: false
+      })
     },
     handleDuplicate(row) {
-      this.$emit('on-infographic-duplicate', row)
+      AwarenessEducatorService.duplicateTraining(row.trainingId).then(() => {
+        this.callForData()
+      })
     },
     handleActionDelete(row) {
       this.setDeleteDialog({

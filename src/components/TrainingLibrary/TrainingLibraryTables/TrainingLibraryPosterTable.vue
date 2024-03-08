@@ -79,8 +79,8 @@ export default {
           TRAINING_LIBRARY_COLUMNS.TAGS
         ],
         iEmpty: {
-          btn: labels.CreateNewTraining,
-          message: labels.EmptyTraining,
+          btn: labels.CreateNewPoster,
+          message: labels.EmptyPoster,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-poster-table'
           //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
@@ -122,8 +122,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ callForData: 'trainingLibrary/callForTableData' }),
-    handleAddPoster() {}
+    ...mapActions({
+      callForData: 'trainingLibrary/callForTableData',
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
+    }),
+    handleAddPoster() {
+      this.setNewPosterModal({
+        status: true,
+        isEdit: false,
+        selectedRow: null,
+        isDuplicate: false
+      })
+    }
   }
 }
 </script>
