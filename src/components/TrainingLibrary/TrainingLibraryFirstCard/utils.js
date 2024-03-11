@@ -69,3 +69,65 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
     show: false
   }
 }
+export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
+  BEHAVIOURS: {
+    label: 'Behaviours',
+    property: PROPERTY_STORE.BEHAVIOURS,
+    show: true
+  },
+  TYPE: {
+    label: 'Type',
+    property: PROPERTY_STORE.TYPE,
+    show: true
+  },
+  CATEGORY: {
+    label: 'Category',
+    property: PROPERTY_STORE.CATEGORY,
+    show: true
+  },
+  LANGUAGES: {
+    label: 'Language',
+    property: PROPERTY_STORE.LANGUAGES,
+    show: true
+  },
+  CREATED_BY: {
+    label: 'Created By',
+    property: PROPERTY_STORE.CREATEDBY,
+    show: true
+  },
+  TARGET_AUDIENCE: {
+    label: 'Target Audience',
+    property: PROPERTY_STORE.TARGET_AUDIENCE,
+    show: true
+  },
+  COMPLIANCE: {
+    label: 'Compliance',
+    property: PROPERTY_STORE.COMPLIANCE,
+    show: true
+  },
+  VENDOR: {
+    label: 'Vendor',
+    property: PROPERTY_STORE.VENDOR,
+    show: false
+  },
+  MATERIAL_NAME: {
+    label: 'Material Name',
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    show: false
+  },
+  DESCRIPTION: {
+    label: 'Vendor',
+    property: PROPERTY_STORE.DESCRIPTION,
+    show: false
+  },
+  TAGS: {
+    label: 'Tags',
+    property: PROPERTY_STORE.TAGS,
+    show: true
+  },
+  DATE_CREATED: {
+    label: 'Date Created',
+    property: PROPERTY_STORE.DATE_CREATED,
+    show: false
+  }
+}

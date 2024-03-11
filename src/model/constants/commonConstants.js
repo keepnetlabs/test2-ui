@@ -171,6 +171,7 @@ export const PROPERTY_STORE = {
   INFOGRAPHIC_NAME: 'infographicName',
   MATERIAL_NAME: 'materialName',
   SCREENSAVER_NAME: 'screensaverName',
+  BEHAVIOURS: 'behaviours',
   POSTER_NAME: 'posterName',
   DATE_CREATED: 'dateCreated',
   VENDOR: 'vendor',

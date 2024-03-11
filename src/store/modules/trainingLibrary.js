@@ -1,4 +1,5 @@
 import {
+  TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS,
   TRAINING_LIBRARY_SETTINGS_COLUMNS,
   TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
@@ -41,6 +42,20 @@ const trainingLibrary = {
       TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR,
       TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED
     ],
+    filterOptionsFilters: [
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS,
+      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED
+    ],
     renderedColumns: [],
     trainingSubTabs: [
       { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3490 },
@@ -58,6 +73,7 @@ const trainingLibrary = {
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: [],
+    filterType: 'OR',
     sortBy: '',
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
@@ -97,6 +113,7 @@ const trainingLibrary = {
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
+    getFilterType: (state) => state.filterType,
     getSortBy: (state) => state.sortBy,
     getTabsLoading: (state) => state.isTabsLoading,
     getNewTrainingModal: (state) => state.newTrainingModal,
@@ -107,7 +124,8 @@ const trainingLibrary = {
     getTrainingSendModal: (state) => state.trainingSendModal,
     getPosterSendModal: (state) => state.posterSendModal,
     getInfographicSendModal: (state) => state.infographicSendModal,
-    getScreensaverSendModal: (state) => state.screensaverSendModal
+    getScreensaverSendModal: (state) => state.screensaverSendModal,
+    getFilterOptionsFilters: (state) => state.filterOptionsFilters
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -215,6 +233,12 @@ const trainingLibrary = {
     },
     SET_SCREENSAVER_SEND_MODAL(state, payload) {
       state.screensaverSendModal = payload
+    },
+    SET_AXIOS_PAYLOAD(state, payload) {
+      state.axiosPayload = payload
+    },
+    SET_FILTER_TYPE(state, payload) {
+      state.filterType = payload
     }
   },
   actions: {
@@ -333,6 +357,12 @@ const trainingLibrary = {
     },
     setScreensaverSendModal({ commit }, payload) {
       commit('SET_SCREENSAVER_SEND_MODAL', payload)
+    },
+    setAxiosPayload({ commit }, payload) {
+      commit('SET_AXIOS_PAYLOAD', payload)
+    },
+    setFilterType({ commit }, payload) {
+      commit('SET_FILTER_TYPE', payload)
     }
   }
 }
