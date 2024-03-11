@@ -21,6 +21,10 @@ export const labels = {
   ScreensaverSMSNotificationSub:
     'In addition to the screensaver enrollment, send an SMS notification with the selected phone number',
   TargetAudienceScreensaverSub: 'Select intended audience for this screensaver',
+  LearningPathSMSNotificationSub:
+    'In addition to the learning path enrollment, send an SMS notification with the selected phone number',
+  LearningPathTargetUserGroupsSub: 'Select user groups below to send the learning path',
+  LearningPathCampaignResultsSub: 'Select the campaign results below to send the learning path',
   InfographicContentStep2Sub: 'Upload infographic content by language',
   TargetAudienceInfographicSub: 'Select intended audience for this infographic',
   ScreensaverInformation: 'Screensaver Information',

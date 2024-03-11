@@ -13,7 +13,7 @@
       class="mb-4"
       style="max-width: 585px;"
       title="SMS Text"
-      sub-title="SMS text to be sent to target users. Use the mandatory merge tag {TRAININGURL} for the link to be added to the SMS"
+      :sub-title="mergeTagSubtitle"
     >
       <InputMergeTag
         v-model.trim="formData.smsTextTemplate"
@@ -81,13 +81,22 @@ export default {
     phoneNumbers: {
       type: Array,
       default: () => []
+    },
+    mergeTagSubtitle: {
+      type: String,
+      default:
+        'SMS text to be sent to target users. Use the mandatory merge tag {TRAININGURL} for the link to be added to the SMS'
+    },
+    defaultSmsTextTemplate: {
+      type: String,
+      default: 'Dear {FULLNAME} {TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}'
     }
   },
   data() {
     return {
       labels,
       formData: {
-        smsTextTemplate: `Dear {FULLNAME} {TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}`,
+        smsTextTemplate: this.defaultSmsTextTemplate,
         phoneNumber: '',
         smsProviderNumberResourceId: ''
       },
@@ -117,12 +126,12 @@ export default {
       ],
       mergeTags: [
         {
-          text: 'Training URL',
-          value: '{TRAININGURL}'
+          text: 'Learning Path URL',
+          value: '{LEARNINGPATHURL}'
         },
         {
-          text: 'Training Name',
-          value: '{TRAININGNAME}'
+          text: 'Learning Path Name',
+          value: '{LEARNINGPATHNAME}'
         },
         {
           text: 'Full Name',
@@ -141,8 +150,8 @@ export default {
           value: `{COMPANYNAME}`
         },
         {
-          text: 'Training Description',
-          value: '{TRAININGDESCRIPTION}'
+          text: 'Learning Path Description',
+          value: '{LEARNINGPATHDESCRIPTION}'
         },
         {
           text: 'Date SMS Sent',

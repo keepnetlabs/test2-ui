@@ -19,7 +19,8 @@ import {
   emptyTrainingSendModalObj,
   emptyPosterSendModalObj,
   emptyInfographicSendModalObj,
-  emptyScreensaverSendModalObj
+  emptyScreensaverSendModalObj,
+  emptyLearningPathSendModalObj
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -89,7 +90,8 @@ const trainingLibrary = {
     trainingSendModal: emptyTrainingSendModalObj,
     posterSendModal: emptyPosterSendModalObj,
     infographicSendModal: emptyInfographicSendModalObj,
-    screensaverSendModal: emptyScreensaverSendModalObj
+    screensaverSendModal: emptyScreensaverSendModalObj,
+    learningPathSendModal: emptyLearningPathSendModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -116,6 +118,7 @@ const trainingLibrary = {
     getFilterType: (state) => state.filterType,
     getSortBy: (state) => state.sortBy,
     getTabsLoading: (state) => state.isTabsLoading,
+    getFilterOptionsFilters: (state) => state.filterOptionsFilters,
     getNewTrainingModal: (state) => state.newTrainingModal,
     getNewLearningPathModal: (state) => state.newLearningPathModal,
     getNewPosterModal: (state) => state.newPosterModal,
@@ -125,7 +128,7 @@ const trainingLibrary = {
     getPosterSendModal: (state) => state.posterSendModal,
     getInfographicSendModal: (state) => state.infographicSendModal,
     getScreensaverSendModal: (state) => state.screensaverSendModal,
-    getFilterOptionsFilters: (state) => state.filterOptionsFilters
+    getLearningPathSendModal: (state) => state.learningPathSendModal
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -239,6 +242,9 @@ const trainingLibrary = {
     },
     SET_FILTER_TYPE(state, payload) {
       state.filterType = payload
+    },
+    SET_LEARNING_PATH_SEND_MODAL(state, payload) {
+      state.learningPathSendModal = payload
     }
   },
   actions: {
@@ -357,6 +363,9 @@ const trainingLibrary = {
     },
     setScreensaverSendModal({ commit }, payload) {
       commit('SET_SCREENSAVER_SEND_MODAL', payload)
+    },
+    setLearningPathSendModal({ commit }, payload) {
+      commit('SET_LEARNING_PATH_SEND_MODAL', payload)
     },
     setAxiosPayload({ commit }, payload) {
       commit('SET_AXIOS_PAYLOAD', payload)

@@ -114,7 +114,8 @@ export default {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
-      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
+      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal'
     }),
     handlePreview(row) {
       this.setLearningPathPreviewDialog({
@@ -123,7 +124,10 @@ export default {
       })
     },
     handleSend(row) {
-      this.$emit('on-learning-path-send', row)
+      this.setLearningPathSendModal({
+        status: true,
+        selectedRow: row
+      })
     },
     handleAddFavorite(row) {
       this.$emit('on-learning-path-add-favorite', row)
