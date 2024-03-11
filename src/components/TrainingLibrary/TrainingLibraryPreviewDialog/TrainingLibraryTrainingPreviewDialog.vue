@@ -24,7 +24,7 @@
       />
     </template>
     <template #app-dialog-footer>
-      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" />
+      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
     </template>
   </AppDialog>
 </template>
@@ -90,7 +90,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
+      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal'
     }),
     callForLanguages() {
       this.isPreviewLoading = true
@@ -118,6 +119,13 @@ export default {
     },
     handleClose() {
       this.setTrainingPreviewDialog(emptyTrainingPreviewDialogObj)
+    },
+    handleSend() {
+      this.handleClose()
+      this.setTrainingSendModal({
+        selectedRow: this.selectedRow,
+        status: true
+      })
     }
   }
 }

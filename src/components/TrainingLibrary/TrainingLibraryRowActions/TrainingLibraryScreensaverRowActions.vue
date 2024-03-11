@@ -127,7 +127,8 @@ export default {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
-      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
+      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal'
     }),
     handlePreview(row) {
       this.setScreenSaverPreviewDialog({
@@ -144,10 +145,13 @@ export default {
       })
     },
     handleSend(row) {
-      this.$emit('on-screensaver-send', row)
+      this.setScreensaverSendModal({
+        status: true,
+        selectedRow: row
+      })
     },
     handleDownloadScreensaver(row) {
-      this.setInfographicPreviewDialog({
+      this.setScreenSaverPreviewDialog({
         status: true,
         selectedRow: row,
         type: 'downloadScreensaver',

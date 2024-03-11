@@ -103,6 +103,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
+  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
@@ -187,7 +188,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
+      renderedColumns: 'trainingLibrary/getRenderedColumns',
+      firstColFixed: 'trainingLibrary/getFirstColFixed',
+      lastColFixed: 'trainingLibrary/getLastColFixed'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
@@ -204,6 +208,25 @@ export default {
       else if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU)
         return labels.EmptyTrainingAllTypeCreatedByYouSubtitle
       else return ''
+    }
+  },
+  watch: {
+    renderedColumns(renderedCols = []) {
+      this.tableOptions.columns.forEach((col) => {
+        if (col.property === PROPERTY_STORE.MATERIAL_NAME) {
+          col.show = true
+          return
+        }
+        col.show = renderedCols.includes(col.property)
+      })
+    },
+    firstColFixed() {
+      this.tableOptions.columns[0].fixed = this.firstColFixed
+      this.$refs.refTable.firstColFixed = this.firstColFixed
+    },
+    lastColFixed() {
+      this.tableOptions.columns[this.tableOptions.columns.length - 1].fixed = this.lastColFixed
+      this.$refs.refTable.lastColFixed = this.lastColFixed
     }
   },
   mounted() {

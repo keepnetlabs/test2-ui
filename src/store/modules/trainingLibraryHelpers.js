@@ -1,4 +1,5 @@
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { distributionDelayTimeTypes } from '@/components/TrainingLibrary/utils'
 
 const trainingLibraryHelpers = {
   namespaced: true,
@@ -9,7 +10,12 @@ const trainingLibraryHelpers = {
     targetAudiences: [],
     compliances: [],
     trainingVendors: [],
-    behaviours: []
+    behaviours: [],
+    enumTypes: {},
+    distributionDelayTimeTypes: distributionDelayTimeTypes,
+    certificateEmailNotificationTemplateTypeResourceId: [],
+    reminderEmailNotificationTemplateTypeResourceId: [],
+    trainingEmailNotificationTemplateTypeResourceId: []
   },
   getters: {
     getCategories(state) {
@@ -32,6 +38,21 @@ const trainingLibraryHelpers = {
     },
     getBehaviours(state) {
       return state.behaviours
+    },
+    getDistributionDelayTimeTypes(state) {
+      return state.distributionDelayTimeTypes
+    },
+    getEnumTypes(state) {
+      return state.enumTypes
+    },
+    getCertificateEmailNotificationTemplateTypeResourceId(state) {
+      return state.certificateEmailNotificationTemplateTypeResourceId
+    },
+    getReminderEmailNotificationTemplateTypeResourceId(state) {
+      return state.reminderEmailNotificationTemplateTypeResourceId
+    },
+    getTrainingEmailNotificationTemplateTypeResourceId(state) {
+      return state.trainingEmailNotificationTemplateTypeResourceId
     }
   },
   mutations: {
@@ -55,10 +76,23 @@ const trainingLibraryHelpers = {
     },
     SET_BEHAVIOURS(state, payload) {
       state.behaviours = payload
+    },
+    SET_ENUM_TYPES(state, payload) {
+      state.enumTypes = payload
+    },
+    SET_CERTIFICATE_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.certificateEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.reminderEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.trainingEmailNotificationTemplateTypeResourceId = payload
     }
   },
   actions: {
-    callForTrainingHelpers({ commit, dispatch }) {
+    callForTrainingHelpers({ dispatch }) {
+      dispatch('callForFormDetails')
       dispatch('callForCategories')
       dispatch('callForScormTypes')
       dispatch('callForLanguages')
@@ -135,6 +169,29 @@ const trainingLibraryHelpers = {
             text: compliance.displayName,
             value: compliance.name
           })) || []
+        )
+      })
+    },
+    callForFormDetails({ commit }) {
+      AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
+        const {
+          certificateEmailNotificationTemplateTypeResourceId = '',
+          reminderEmailNotificationTemplateTypeResourceId = '',
+          trainingEmailNotificationTemplateTypeResourceId = '',
+          enumNameValuePairs = {}
+        } = response?.data?.data || {}
+        commit('SET_ENUM_TYPES', enumNameValuePairs)
+        commit(
+          'SET_CERTIFICATE_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          certificateEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          reminderEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          trainingEmailNotificationTemplateTypeResourceId
         )
       })
     }

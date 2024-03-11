@@ -114,7 +114,8 @@ export default {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
-      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal'
+      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal',
+      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal'
     }),
     handlePreview(row) {
       this.setTrainingPreviewDialog({
@@ -123,7 +124,10 @@ export default {
       })
     },
     handleSend(row) {
-      this.$emit('on-training-send', row)
+      this.setTrainingSendModal({
+        status: true,
+        selectedRow: row
+      })
     },
     handleAddFavorite(row) {
       this.$emit('on-training-add-favorite', row)

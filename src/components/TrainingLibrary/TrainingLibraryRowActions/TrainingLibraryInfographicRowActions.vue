@@ -82,7 +82,6 @@ export default {
     }
   },
   data() {
-    console.log('scope', this.scope)
     return {
       rowActions: [
         {
@@ -128,7 +127,8 @@ export default {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
-      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal'
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
     }),
 
     handlePreview(row) {
@@ -146,7 +146,10 @@ export default {
       })
     },
     handleSend(row) {
-      this.$emit('on-infographic-send', row)
+      this.setInfographicSendModal({
+        status: true,
+        selectedRow: row
+      })
     },
     handleDownloadInfographic(row) {
       this.setInfographicPreviewDialog({

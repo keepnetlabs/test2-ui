@@ -157,7 +157,7 @@
         <div class="template-preview__text">
           <div v-if="showScreensaverName">
             <div>
-              <span class="training-library-preview__title">screensaverParams Name: </span>
+              <span class="training-library-preview__title">Screensaver Name: </span>
               <span class="training-library-preview__desc">{{ selectedRow.trainingName }}</span>
             </div>
           </div>
@@ -207,12 +207,11 @@
       </div>
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose id="btn-close--scenario-preview" @on-close="handleClose" />
+      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
     </template>
   </AppDialog>
 </template>
 <script>
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
@@ -223,16 +222,17 @@ import { mapActions, mapGetters } from 'vuex'
 import { emptyScreensaverPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
   name: 'TrainingLibraryScreensaverPreviewDialog',
   components: {
+    TrainingLibraryPreviewDialogFooter,
     TrainingLibraryFavoriteButton,
     TrainingLibraryNewBadge,
     KSelect,
     FormGroupHorizontalContent,
     AppDialog,
     DatatableLoading,
-    AppDialogFooterWithClose,
     pdf: () => import('vue-pdf')
   },
   props: {
@@ -318,7 +318,10 @@ export default {
     this.callForScreensaver()
   },
   methods: {
-    ...mapActions({ setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog' }),
+    ...mapActions({
+      setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
+      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal'
+    }),
     callForData() {
       this.isLoading = true
       this.pdfSrc = ''
@@ -345,6 +348,13 @@ export default {
     },
     handleClose() {
       this.setScreensaverPreviewDialog(emptyScreensaverPreviewDialogObj)
+    },
+    handleSend() {
+      this.setScreensaverSendModal({
+        selectedRow: this.selectedRow,
+        status: true
+      })
+      this.handleClose()
     },
     handleDownloadScreensaver() {
       if (this.isPdf && this.pdfSrc) {

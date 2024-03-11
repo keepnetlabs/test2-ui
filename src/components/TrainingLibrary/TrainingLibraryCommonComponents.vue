@@ -38,6 +38,19 @@
       v-if="getNewScreensaverModal.status"
       v-bind="getNewScreensaverModal"
     />
+    <TrainingLibraryTrainingSendModal
+      v-if="getTrainingSendModal.status"
+      v-bind="getTrainingSendModal"
+    />
+    <TrainingLibraryPosterSendModal v-if="getPosterSendModal.status" v-bind="getPosterSendModal" />
+    <TrainingLibraryInfographicSendModal
+      v-if="getInfographicSendModal.status"
+      v-bind="getInfographicSendModal"
+    />
+    <TrainingLibraryScreensaverSendModal
+      v-if="getScreensaverSendModal.status"
+      v-bind="getScreensaverSendModal"
+    />
   </div>
 </template>
 
@@ -54,10 +67,18 @@ import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/Tr
 import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
 import TrainingLibraryNewInfographicModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicModal.vue'
 import TrainingLibraryNewScreensaverModal from './TrainingLibraryNewModal/TrainingLibraryNewScreensaverModal/TrainingLibraryNewScreensaverModal.vue'
+import TrainingLibraryTrainingSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryTrainingSendModal/TrainingLibraryTrainingSendModal.vue'
+import TrainingLibraryPosterSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryPosterSendModal/TrainingLibraryPosterSendModal.vue'
+import TrainingLibraryInfographicSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibraryInfographicSendModal.vue'
+import TrainingLibraryScreensaverSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibraryScreensaverSendModal.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibraryScreensaverSendModal,
+    TrainingLibraryInfographicSendModal,
+    TrainingLibraryPosterSendModal,
+    TrainingLibraryTrainingSendModal,
     TrainingLibraryNewScreensaverModal,
     TrainingLibraryNewInfographicModal,
     TrainingLibraryNewPosterModal,
@@ -82,7 +103,11 @@ export default {
       getNewLearningPathModal: 'trainingLibrary/getNewLearningPathModal',
       getNewPosterModal: 'trainingLibrary/getNewPosterModal',
       getNewInfographicModal: 'trainingLibrary/getNewInfographicModal',
-      getNewScreensaverModal: 'trainingLibrary/getNewScreensaverModal'
+      getNewScreensaverModal: 'trainingLibrary/getNewScreensaverModal',
+      getTrainingSendModal: 'trainingLibrary/getTrainingSendModal',
+      getPosterSendModal: 'trainingLibrary/getPosterSendModal',
+      getInfographicSendModal: 'trainingLibrary/getInfographicSendModal',
+      getScreensaverSendModal: 'trainingLibrary/getScreensaverSendModal'
     })
   }
 }

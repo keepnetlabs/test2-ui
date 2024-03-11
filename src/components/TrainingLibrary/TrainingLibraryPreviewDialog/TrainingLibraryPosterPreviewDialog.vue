@@ -197,12 +197,11 @@
       </div>
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose id="btn-close--scenario-preview" @on-close="handleClose" />
+      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
     </template>
   </AppDialog>
 </template>
 <script>
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
@@ -213,16 +212,17 @@ import { mapActions, mapGetters } from 'vuex'
 import { emptyPosterPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
   name: 'TrainingLibraryPosterPreviewDialog',
   components: {
+    TrainingLibraryPreviewDialogFooter,
     TrainingLibraryFavoriteButton,
     TrainingLibraryNewBadge,
     KSelect,
     FormGroupHorizontalContent,
     AppDialog,
     DatatableLoading,
-    AppDialogFooterWithClose,
     pdf: () => import('vue-pdf')
   },
   props: {
@@ -308,7 +308,10 @@ export default {
     this.callForPoster()
   },
   methods: {
-    ...mapActions({ setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog' }),
+    ...mapActions({
+      setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
+      setPosterSendModal: 'trainingLibrary/setPosterSendModal'
+    }),
     callForData() {
       this.isLoading = true
       this.pdfSrc = ''
@@ -362,6 +365,13 @@ export default {
       link.href = data
       link.download = `${this.fileName}`
       link.click()
+    },
+    handleSend() {
+      this.setPosterSendModal({
+        selectedRow: this.selectedRow,
+        status: true
+      })
+      this.handleClose()
     }
   }
 }

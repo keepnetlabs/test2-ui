@@ -151,9 +151,44 @@ export const TRAINING_LIBRARY_COLUMNS = {
     show: true,
     type: 'smallBadge',
     width: 160
+  },
+  VENDOR: {
+    property: PROPERTY_STORE.VENDOR,
+    align: 'left',
+    editable: false,
+    label: labels.Vendor,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 160
+  },
+  DATE_CREATED: {
+    property: PROPERTY_STORE.DATE_CREATED,
+    align: 'left',
+    editable: false,
+    label: labels.DateCreated,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 160
   }
 }
-
+export const distributionDelayTimeTypes = [
+  {
+    text: 'seconds',
+    value: '1'
+  },
+  {
+    text: 'minutes',
+    value: '2'
+  },
+  {
+    text: 'hours',
+    value: '3'
+  }
+]
 export const addTrainingItems = [
   { text: 'Learning Path', id: 'btn-add-training-library-learning-path' },
   {
@@ -260,5 +295,26 @@ export const emptyNewScreensaverModalObj = {
   status: false,
   isEdit: false,
   isDuplicate: false,
+  selectedRow: null
+}
+export const emptyTrainingSendModalObj = {
+  status: false,
+  selectedRow: null
+}
+export const emptyPosterSendModalObj = {
+  status: false,
+  selectedRow: null
+}
+
+export const emptyInfographicSendModalObj = {
+  status: false,
+  selectedRow: null
+}
+export const emptyScreensaverSendModalObj = {
+  status: false,
+  selectedRow: null
+}
+export const emptyLearningPathSendModalObj = {
+  status: false,
   selectedRow: null
 }

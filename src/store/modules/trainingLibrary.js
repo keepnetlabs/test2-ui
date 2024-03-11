@@ -1,4 +1,7 @@
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_SETTINGS_COLUMNS,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
   emptyInfographicPreviewDialogObj,
@@ -11,7 +14,11 @@ import {
   emptyScreensaverPreviewDialogObj,
   emptyTrainingDeleteDialogObj,
   emptyTrainingPreviewDialogObj,
-  emptyNewScreensaverModalObj
+  emptyNewScreensaverModalObj,
+  emptyTrainingSendModalObj,
+  emptyPosterSendModalObj,
+  emptyInfographicSendModalObj,
+  emptyScreensaverSendModalObj
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -23,7 +30,17 @@ const trainingLibrary = {
     tableData: [],
     axiosPayload: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps(),
-    tableColumns: [],
+    tableColumns: [
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.TAGS,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR,
+      TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED
+    ],
     renderedColumns: [],
     trainingSubTabs: [
       { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3490 },
@@ -52,7 +69,11 @@ const trainingLibrary = {
     newLearningPathModal: emptyNewLearningPathModalObj,
     newPosterModal: emptyNewPosterModalObj,
     newInfographicModal: emptyNewInfographicModalObj,
-    newScreensaverModal: emptyNewScreensaverModalObj
+    newScreensaverModal: emptyNewScreensaverModalObj,
+    trainingSendModal: emptyTrainingSendModalObj,
+    posterSendModal: emptyPosterSendModalObj,
+    infographicSendModal: emptyInfographicSendModalObj,
+    screensaverSendModal: emptyScreensaverSendModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -82,7 +103,11 @@ const trainingLibrary = {
     getNewLearningPathModal: (state) => state.newLearningPathModal,
     getNewPosterModal: (state) => state.newPosterModal,
     getNewInfographicModal: (state) => state.newInfographicModal,
-    getNewScreensaverModal: (state) => state.newScreensaverModal
+    getNewScreensaverModal: (state) => state.newScreensaverModal,
+    getTrainingSendModal: (state) => state.trainingSendModal,
+    getPosterSendModal: (state) => state.posterSendModal,
+    getInfographicSendModal: (state) => state.infographicSendModal,
+    getScreensaverSendModal: (state) => state.screensaverSendModal
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -178,6 +203,18 @@ const trainingLibrary = {
     },
     SET_NEW_SCREENSAVER_MODAL(state, payload) {
       state.newScreensaverModal = payload
+    },
+    SET_TRAINING_SEND_MODAL(state, payload) {
+      state.trainingSendModal = payload
+    },
+    SET_POSTER_SEND_MODAL(state, payload) {
+      state.posterSendModal = payload
+    },
+    SET_INFOGRAPHIC_SEND_MODAL(state, payload) {
+      state.infographicSendModal = payload
+    },
+    SET_SCREENSAVER_SEND_MODAL(state, payload) {
+      state.screensaverSendModal = payload
     }
   },
   actions: {
@@ -204,6 +241,24 @@ const trainingLibrary = {
         .finally(() => {
           commit('SET_IS_LOADING', false)
         })
+    },
+    callForTrainingLibrary({ commit, dispatch }) {
+      dispatch('callForSummary')
+      dispatch('callForTableData')
+    },
+    callForSummary({ commit }) {
+      commit('SET_TABS_LOADING', true)
+      setTimeout(() => {
+        commit('SET_TRAINING_SUB_TABS', [
+          { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3600 },
+          { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 50 },
+          { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 1212 },
+          { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
+          { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 1111 },
+          { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 111 }
+        ])
+        commit('SET_TABS_LOADING', false)
+      }, 1000)
     },
     setChangeVisibilityOfColumn({ commit }) {
       commit('SET_RENDERED_COLUMNS')
@@ -267,23 +322,17 @@ const trainingLibrary = {
     setNewScreensaverModal({ commit }, payload) {
       commit('SET_NEW_SCREENSAVER_MODAL', payload)
     },
-    callForTrainingLibrary({ commit, dispatch }) {
-      dispatch('callForSummary')
-      dispatch('callForTableData')
+    setTrainingSendModal({ commit }, payload) {
+      commit('SET_TRAINING_SEND_MODAL', payload)
     },
-    callForSummary({ commit }) {
-      commit('SET_TABS_LOADING', true)
-      setTimeout(() => {
-        commit('SET_TRAINING_SUB_TABS', [
-          { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3600 },
-          { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 50 },
-          { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 1212 },
-          { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
-          { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 1111 },
-          { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 111 }
-        ])
-        commit('SET_TABS_LOADING', false)
-      }, 1000)
+    setPosterSendModal({ commit }, payload) {
+      commit('SET_POSTER_SEND_MODAL', payload)
+    },
+    setInfographicSendModal({ commit }, payload) {
+      commit('SET_INFOGRAPHIC_SEND_MODAL', payload)
+    },
+    setScreensaverSendModal({ commit }, payload) {
+      commit('SET_SCREENSAVER_SEND_MODAL', payload)
     }
   }
 }

@@ -172,6 +172,8 @@ export const PROPERTY_STORE = {
   MATERIAL_NAME: 'materialName',
   SCREENSAVER_NAME: 'screensaverName',
   POSTER_NAME: 'posterName',
+  DATE_CREATED: 'dateCreated',
+  VENDOR: 'vendor',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LEARNING_PATH_NAME: 'learningPathName',
   LANGUAGE: 'languageTypeName',

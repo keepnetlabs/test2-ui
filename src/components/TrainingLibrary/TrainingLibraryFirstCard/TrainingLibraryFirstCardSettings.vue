@@ -12,7 +12,7 @@
         </div>
         <div class="training-library-settings-sub-header">Show / Hide Columns</div>
         <div
-          v-if="ind !== 0 && col && !col.hideOnSettingsPopup"
+          v-if="col && !col.hideOnSettingsPopup"
           v-for="(col, ind) of tableColumns"
           :key="ind"
           class="training-library-popup-row"

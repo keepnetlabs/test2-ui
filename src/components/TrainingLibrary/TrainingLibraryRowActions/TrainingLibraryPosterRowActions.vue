@@ -127,7 +127,8 @@ export default {
     ...mapActions({
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
-      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal',
+      setPosterSendModal: 'trainingLibrary/setPosterSendModal'
     }),
     handlePreview(row) {
       this.setPosterPreviewDialog({
@@ -144,7 +145,10 @@ export default {
       })
     },
     handleSend(row) {
-      this.$emit('on-poster-send', row)
+      this.setPosterSendModal({
+        selectedRow: row,
+        status: true
+      })
     },
     handleDownloadPoster(row) {
       this.setPosterPreviewDialog({

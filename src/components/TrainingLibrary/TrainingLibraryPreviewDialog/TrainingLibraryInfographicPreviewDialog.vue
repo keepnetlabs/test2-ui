@@ -207,12 +207,11 @@
       </div>
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose id="btn-close--scenario-preview" @on-close="handleClose" />
+      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
     </template>
   </AppDialog>
 </template>
 <script>
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
@@ -223,16 +222,17 @@ import { mapActions, mapGetters } from 'vuex'
 import { emptyInfographicPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
   name: 'TrainingLibraryInfographicPreviewDialog',
   components: {
+    TrainingLibraryPreviewDialogFooter,
     TrainingLibraryFavoriteButton,
     TrainingLibraryNewBadge,
     KSelect,
     FormGroupHorizontalContent,
     AppDialog,
     DatatableLoading,
-    AppDialogFooterWithClose,
     pdf: () => import('vue-pdf')
   },
   props: {
@@ -318,7 +318,10 @@ export default {
     this.callForInfographic()
   },
   methods: {
-    ...mapActions({ setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog' }),
+    ...mapActions({
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
+    }),
     callForData() {
       this.isLoading = true
       this.pdfSrc = ''
@@ -345,6 +348,13 @@ export default {
     },
     handleClose() {
       this.setInfographicPreviewDialog(emptyInfographicPreviewDialogObj)
+    },
+    handleSend() {
+      this.setInfographicSendModal({
+        selectedRow: this.selectedRow,
+        status: true
+      })
+      this.handleClose()
     },
     handleDownloadInfographic() {
       if (this.isPdf && this.pdfSrc) {
