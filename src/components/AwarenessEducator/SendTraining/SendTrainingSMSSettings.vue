@@ -36,6 +36,7 @@ import * as Validations from '@/utils/validations'
 import useDebounce from '@/hooks/useDebounce'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
+import { trainingMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 export default {
   name: 'SendTrainingSMSSettings',
   components: {
@@ -90,6 +91,10 @@ export default {
     defaultSmsTextTemplate: {
       type: String,
       default: 'Dear {FULLNAME} {TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}'
+    },
+    defaultMergeTags: {
+      type: Array,
+      default: () => trainingMergeTags
     }
   },
   data() {
@@ -124,40 +129,7 @@ export default {
           return true
         }
       ],
-      mergeTags: [
-        {
-          text: 'Learning Path URL',
-          value: '{LEARNINGPATHURL}'
-        },
-        {
-          text: 'Learning Path Name',
-          value: '{LEARNINGPATHNAME}'
-        },
-        {
-          text: 'Full Name',
-          value: '{FULLNAME}'
-        },
-        {
-          text: 'First Name',
-          value: '{FIRSTNAME}'
-        },
-        {
-          text: 'Last Name',
-          value: '{LASTNAME}'
-        },
-        {
-          text: 'Company Name',
-          value: `{COMPANYNAME}`
-        },
-        {
-          text: 'Learning Path Description',
-          value: '{LEARNINGPATHDESCRIPTION}'
-        },
-        {
-          text: 'Date SMS Sent',
-          value: '{DATESMSSENT}'
-        }
-      ]
+      mergeTags: this.defaultMergeTags
     }
   },
   watch: {

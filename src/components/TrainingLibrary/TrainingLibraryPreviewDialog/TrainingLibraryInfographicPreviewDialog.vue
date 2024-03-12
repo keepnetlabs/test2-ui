@@ -207,7 +207,11 @@
       </div>
     </template>
     <template #app-dialog-footer>
-      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
+      <TrainingLibraryPreviewDialogFooter
+        :show-send-button="getInfographicPreviewDialog.showSendButton"
+        @on-close="handleClose"
+        @on-send="handleSend"
+      />
     </template>
   </AppDialog>
 </template>
@@ -291,7 +295,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages',
+      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog'
+    }),
     getDownloadInfographicStyle() {
       const style = {
         textTransform: 'none'

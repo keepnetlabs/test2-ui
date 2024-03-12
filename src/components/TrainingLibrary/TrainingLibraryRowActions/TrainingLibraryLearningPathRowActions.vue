@@ -120,7 +120,8 @@ export default {
     handlePreview(row) {
       this.setLearningPathPreviewDialog({
         status: true,
-        selectedRow: row
+        selectedRow: row,
+        showSendButton: true
       })
     },
     handleSend(row) {

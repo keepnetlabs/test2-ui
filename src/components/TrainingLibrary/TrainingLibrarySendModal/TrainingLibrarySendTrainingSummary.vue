@@ -200,6 +200,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibrarySendTrainingSummary',
@@ -212,6 +213,9 @@ export default {
   },
   props: {
     formData: {
+      type: Object
+    },
+    selectedRow: {
       type: Object
     }
   },
@@ -287,10 +291,19 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        this.$emit('on-show-training-summary')
+        console.log(' selectedRow: this.selectedRow', this.selectedRow)
+        this.setTrainingPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow
+        })
         this.isShowTrainingEmail = false
       }
     }
+  },
+  methods: {
+    ...mapActions({
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
+    })
   }
 }
 </script>

@@ -81,8 +81,8 @@
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
-        title="Training that users will be directed to"
-        icon="mdi-application"
+        title="Learning path that users will be directed to"
+        icon="mdi-school"
         :show-body-detail.sync="isShowTrainingEmail"
       >
         <template #body>
@@ -200,6 +200,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibrarySendLearningPathSummary',
@@ -212,6 +213,9 @@ export default {
   },
   props: {
     formData: {
+      type: Object
+    },
+    selectedRow: {
       type: Object
     }
   },
@@ -287,10 +291,19 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        this.$emit('on-show-training-summary')
+        this.setLearningPathPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          showSendButton: false
+        })
         this.isShowTrainingEmail = false
       }
     }
+  },
+  methods: {
+    ...mapActions({
+      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog'
+    })
   }
 }
 </script>

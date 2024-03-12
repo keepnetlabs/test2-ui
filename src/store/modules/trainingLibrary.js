@@ -192,6 +192,7 @@ const trainingLibrary = {
     },
     SET_POSTER_PREVIEW_DIALOG(state, payload) {
       state.posterPreviewDialog = payload
+      console.log(state.posterPreviewDialog)
     },
     SET_INFO_GRAPHIC_PREVIEW_DIALOG(state, payload) {
       state.infographicPreviewDialog = payload

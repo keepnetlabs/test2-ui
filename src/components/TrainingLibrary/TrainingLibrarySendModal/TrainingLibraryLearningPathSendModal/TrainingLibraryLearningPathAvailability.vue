@@ -1,8 +1,8 @@
 <template>
   <FormGroup title="Learning Path Availability">
-    <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-4">
-      <div style="min-width: 78px;">Start date:</div>
-      <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+    <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-5">
+      <div style="min-width: 78px; font-size: 14px;">Start date:</div>
+      <div :class="['mb-n3', !isStartDateValid && 'date-picker-error']">
         <InputDate
           v-model="value.startDate"
           class="date-picker-height-40 w-100"
@@ -11,20 +11,11 @@
           placeholder="Select Date Select Time"
           :format="parsedFormat"
           :valueFormat="parsedFormat"
-          :picker-options="datePickerOptions"
+          :picker-options="startDatePickerOptions"
         />
-        <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-          <transition appear name="bounce">
-            <div class="v-messages theme--light error--text" role="alert">
-              <div class="v-messages__wrapper">
-                <div class="v-messages__message" style="padding-left: 10px;">
-                  Date is required
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
+        <CustomError class="ml-2" :is-valid="isStartDateValid" />
       </div>
+      <span class="v-label theme--light mx-1" style="font-size: 14px;">in</span>
       <KSelect
         v-model.trim="value.startDateTimezoneId"
         type="autocomplete"
@@ -39,9 +30,9 @@
         :items="scheduledTimeItems"
       />
     </div>
-    <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-4">
-      <div style="min-width: 78px;">Due date:</div>
-      <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+    <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-5">
+      <div style="min-width: 78px; font-size: 14px;">Due date:</div>
+      <div :class="['mb-n3', !isDueDateValid && 'date-picker-error']">
         <InputDate
           v-model="value.dueDate"
           class="date-picker-height-40 w-100"
@@ -51,20 +42,11 @@
           :format="parsedFormat"
           :valueFormat="parsedFormat"
           :disabled="isDueDateDisabled"
-          :picker-options="datePickerOptions"
+          :picker-options="dueDatePickerOptions"
         />
-        <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-          <transition appear name="bounce">
-            <div class="v-messages theme--light error--text" role="alert">
-              <div class="v-messages__wrapper">
-                <div class="v-messages__message" style="padding-left: 10px;">
-                  Date is required
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
+        <CustomError class="ml-2" :is-valid="isDueDateValid" />
       </div>
+      <span class="v-label theme--light mx-1" style="font-size: 14px;">in</span>
       <KSelect
         v-model.trim="value.dueDateTimezoneId"
         type="autocomplete"
@@ -87,10 +69,11 @@ import FormGroup from '../../../SmallComponents/FormGroup.vue'
 import InputDate from '../../../Common/Inputs/InputDate.vue'
 import { getTimeZone } from '../../../../utils/functions'
 import KSelect from '../../../Common/Inputs/KSelect.vue'
+import CustomError from '@/components/CustomError.vue'
 
 export default {
   name: 'TrainingLibraryLearningPathAvailability',
-  components: { KSelect, InputDate, FormGroup },
+  components: { CustomError, KSelect, InputDate, FormGroup },
   props: {
     value: {
       type: Object,
@@ -104,10 +87,15 @@ export default {
   },
   data() {
     return {
-      isDateValid: true,
+      dateFormat: localStorage.getItem('selectedDateFormat'),
+      isStartDateValid: true,
+      isDueDateValid: true,
       parsedFormat: getTimeZone(false),
-      datePickerOptions: {
-        disabledDate: this.disabledEndDates
+      startDatePickerOptions: {
+        disabledDate: this.disabledStartPickerEndDates
+      },
+      dueDatePickerOptions: {
+        disabledDate: this.disableDuePickerEndDates
       }
     }
   },
@@ -129,6 +117,16 @@ export default {
           this.parsedFormat = getTimeZone(false, val)
         }
       }
+    },
+    '$store.state.common.selectedTimeZone'() {
+      this.value.startDateTimezoneId = this.$store?.getters['common/getSelectedTimeZone']
+      this.value.dueDateTimezoneId = this.$store?.getters['common/getSelectedTimeZone']
+    },
+    'value.startDate'(val) {
+      this.isStartDateValid = val && val.length > 0
+    },
+    'value.dueDate'(val) {
+      this.isDueDateValid = !!(val && val.length > 0 && this.value.startDate)
     }
   },
   created() {
@@ -152,8 +150,34 @@ export default {
         this.$store.dispatch('common/callForSettings')
       }
     },
-    disabledEndDates(val) {
+    disabledStartPickerEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
+    },
+    disableDuePickerEndDates(val) {
+      let selectedStartDate = new Date()
+      if (this.value.startDate) {
+        const [datePart, timePart] = this.value?.startDate?.split(' ')
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        let minutes, hours
+        if (this.timeFormat && this.timeFormat === '12h') {
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        } else {
+          const [hoursPart, minutesPart] = timePart?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        }
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          selectedStartDate = new Date(firstPart, secondPart - 1, thirdPart, hours, minutes)
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          selectedStartDate = new Date(thirdPart, firstPart - 1, secondPart, hours, minutes)
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          selectedStartDate = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        }
+      }
+      const selectedStartDateInMs = selectedStartDate.getTime()
+      return selectedStartDateInMs > val.getTime()
     }
   }
 }

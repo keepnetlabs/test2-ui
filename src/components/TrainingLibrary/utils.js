@@ -219,11 +219,13 @@ export const emptyTrainingDeleteDialogObj = {
 }
 export const emptyTrainingPreviewDialogObj = {
   status: false,
-  selectedRow: null
+  selectedRow: null,
+  showSendButton: true
 }
 export const emptyLearningPathPreviewDialogObj = {
   status: false,
-  selectedRow: null
+  selectedRow: null,
+  showSendButton: true
 }
 export const emptyPosterPreviewDialogObj = {
   status: false,
@@ -236,6 +238,7 @@ export const emptyPosterPreviewDialogObj = {
   showFavoriteButton: true,
   icon: 'mdi-eye',
   selectedRow: null,
+  showSendButton: true,
   onClose: () => {}
 }
 export const emptyInfographicPreviewDialogObj = {
@@ -249,6 +252,7 @@ export const emptyInfographicPreviewDialogObj = {
   showFavoriteButton: true,
   icon: 'mdi-eye',
   selectedRow: null,
+  showSendButton: true,
   onClose: () => {}
 }
 
@@ -263,6 +267,7 @@ export const emptyScreensaverPreviewDialogObj = {
   showFavoriteButton: true,
   icon: 'mdi-eye',
   selectedRow: null,
+  showSendButton: false,
   onClose: () => {}
 }
 

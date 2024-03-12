@@ -31,6 +31,11 @@
         >
       </div>
     </FormGroup>
+    <InputContentLanguage
+      v-model="formData.languageIds"
+      ref="refInputContentLanguage"
+      :training-id="selectedRow.trainingId"
+    />
     <div v-if="!formData.isProxy" class="mb-6">
       <FormGroup
         class="send-training-settings__lms"
@@ -49,7 +54,7 @@
             v-model="formData.isSendSMSNotification"
             id="input--send-training-settings-lms"
             hide-details
-            label="SMS notification for your learning path"
+            label="SMS notification for your screensaver"
             color="#2196f3"
           />
         </div>
@@ -57,23 +62,76 @@
       <SendTrainingSMSSettings
         v-if="formData.isSendSMSNotification"
         ref="refSendTrainingSMSSettings"
-        merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {LEARNINGPATHNAME} for the link to be added to the SMS"
+        merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {SCREENSAVERURL} for the link to be added to the SMS"
         default-sms-text-template="Dear {FULLNAME}
-{LEARNINGPATHNAME} assigned to you. Please enroll it on {LEARNINGPATHURL}"
+{SCREENSAVERNAME} assigned to you. Please enroll it on {SCREENSAVERURL}"
+        :default-merge-tags="posterMergeTags"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
-        :default-merge-tags="learningPathMergeTags"
         :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
         :phoneNumberItems="phoneNumberItems"
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <TrainingLibraryLearningPathAvailability
-      ref="refTrainingLibraryLearningPathAvailability"
-      v-model="formData.enrollmentScheduler"
-    />
+    <FormGroup v-if="!formData.isProxy" style="max-width: 600px;" :title="labels.Schedule">
+      <v-radio-group
+        v-model="formData.scheduleTypeId"
+        class="mt-0 campaign-manager-target-groups-radio"
+        hide-details
+      >
+        <v-radio
+          v-for="item in radioItems"
+          :key="item.text"
+          :id="`input--campaign-manager-radio-${item.text}`"
+          style="margin-bottom: 16px;"
+          color="#2196f3"
+          :value="item.value"
+          :label="item.text"
+        ></v-radio>
+        <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+          <v-radio
+            :id="`input--campaign-manager-radio-schedule-to`"
+            style="margin-bottom: 0;"
+            label="Schedule to"
+            color="#2196f3"
+            value="2"
+          />
+          <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+            <InputDate
+              v-model="formData.enrollmentScheduler.scheduledDate"
+              class="date-picker-height-40 ml-2 black-placeholder"
+              type="datetime"
+              ref="refPicker"
+              placeholder="Select Date and Time"
+              style="width: 100%; max-width: 220px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
+              :picker-options="datePickerOptions"
+              :disabled="isScheduledTimeDisabled"
+            />
+            <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+              <transition appear name="bounce">
+                <div class="v-messages theme--light error--text" role="alert">
+                  <div class="v-messages__wrapper">
+                    <div class="v-messages__message" style="padding-left: 10px;">
+                      Date is required
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+          <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
+          <InputTimezone
+            v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            class="black-placeholder"
+            :disabled="isScheduledTimeDisabled"
+          />
+        </div>
+      </v-radio-group>
+    </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
-      class="mt-2"
+      class="mt-6"
       :title="labels.Reminder"
       style="max-width: 875px;"
     >
@@ -157,7 +215,7 @@
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
-        label="Award certificate when a user completes the learning path"
+        label="Award certificate when a user completes the training"
       >
       </v-checkbox>
     </FormGroup>
@@ -251,8 +309,12 @@ import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone.vue'
+import { mapGetters } from 'vuex'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings.vue'
+import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage.vue'
+import { getTimeByTimeZone } from '@/api/company'
 import AlertBox from '@/components/AlertBox.vue'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import {
@@ -261,15 +323,15 @@ import {
   enrollmentAutoEnrollTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
-import TrainingLibraryLearningPathAvailability from './TrainingLibraryLearningPathAvailability.vue'
-import { learningPathMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
+import { posterMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 
 export default {
-  name: 'TrainingLibrarySendLearningPathSettings',
+  name: 'TrainingLibrarySendScreensaverSettings',
   components: {
-    TrainingLibraryLearningPathAvailability,
     InputEntityName,
     AlertBox,
+    InputContentLanguage,
+    InputTimezone,
     InputDate,
     KSelect,
     FormGroup,
@@ -311,7 +373,7 @@ export default {
   },
   data() {
     return {
-      learningPathMergeTags,
+      posterMergeTags,
       parsedFormat: getTimeZone(false),
       labels,
       Validations,
@@ -329,12 +391,12 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
+        scheduleTypeId: '1',
         isProxy: false,
         enrollmentScheduler: {
-          startDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          dueDate: '',
-          startDateTimezoneId: '',
-          dueDateTimezoneId: ''
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: true
         },
         enrollmentAutoEnroll: {
           type: 'SameDay',
@@ -365,6 +427,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
+    }),
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
@@ -380,6 +446,51 @@ export default {
           value: type.name
         })) || this.endTypeItems
       )
+    },
+    isScheduledTimeDisabled() {
+      return this.formData.scheduleTypeId !== '2'
+    }
+  },
+  created() {
+    this.getSelectedTimeZone()
+  },
+  watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
+    'formData.enrollmentScheduler.scheduledTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.formData.enrollmentScheduler.scheduledDate = res.data.data
+          }
+        })
+      }
+    },
+    selectedTimeZone(val) {
+      this.formData.enrollmentScheduler.scheduledTimeZoneId = val
+    },
+    'formData.enrollmentScheduler.scheduledDate'() {
+      this.checkDateIsValid()
+    },
+    'formData.scheduleTypeId'(val) {
+      if (val !== '2') {
+        this.isDateValid = true
+        if (!this.formData.enrollmentScheduler.scheduledDate) {
+          this.formData.enrollmentScheduler.scheduledDate = this.$moment(Date.now()).format(
+            getTimeZoneForMoment()
+          )
+        }
+        if (!this.formData.enrollmentScheduler.scheduledTimeZoneId) {
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone
+        }
+      }
     }
   },
   methods: {
@@ -387,14 +498,25 @@ export default {
       let isDateValid
       if (this.formData) {
         isDateValid =
-          this.formData.enrollmentScheduler.dueDate &&
-          this.formData.enrollmentScheduler.dueDate.length > 0
+          this.formData.scheduleTypeId === '2'
+            ? this.formData.enrollmentScheduler.scheduledDate &&
+              this.formData.enrollmentScheduler.scheduledDate.length > 0
+            : true
       } else isDateValid = false
       this.isDateValid = isDateValid
       return this.isDateValid
     },
     disabledEndDates(val) {
       return new Date().setHours(0, 0, 0, 0) > val.getTime()
+    },
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formData.enrollmentScheduler.scheduledTimeZoneId = this.$store?.getters[
+          'common/getSelectedTimeZone'
+        ]
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
     },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {

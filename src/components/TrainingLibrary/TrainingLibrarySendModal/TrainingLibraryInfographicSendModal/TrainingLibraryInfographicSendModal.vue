@@ -57,7 +57,7 @@
               :title="labels.EnrollmentSettings"
               :subtitle="labels.EnrollmentSettingsSub"
             />
-            <TrainingLibrarySendTrainingSettings
+            <TrainingLibrarySendInfographicSettings
               ref="refSendTrainingSettings"
               :sms-notification-sub="labels.InfographicSMSNotificationSub"
               :show-certificate="false"
@@ -93,6 +93,7 @@
             <TrainingLibrarySendInfographicSummary
               ref="refSendTrainingSummary"
               :form-data="getTrainingSummaryFormData"
+              :selected-row="selectedRow"
               @on-show-training-summary="$emit('on-show-training-summary')"
             />
           </v-stepper-content>
@@ -136,18 +137,18 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibrarySendTrainingSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSettings.vue'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import { emptyInfographicSendModalObj } from '@/components/TrainingLibrary/utils'
 import { endTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendInfographicSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibrarySendInfographicSummary.vue'
+import TrainingLibrarySendInfographicSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibrarySendInfographicSettings.vue'
 
 export default {
   name: 'TrainingLibraryInfographicSendModal',
   components: {
+    TrainingLibrarySendInfographicSettings,
     TrainingLibrarySendInfographicSummary,
     TrainingLibrarySendTrainingSelectUsers,
-    TrainingLibrarySendTrainingSettings,
     DefaultErrorDialog,
     ConfigureCompanyStepHeader,
     StepperFooter,

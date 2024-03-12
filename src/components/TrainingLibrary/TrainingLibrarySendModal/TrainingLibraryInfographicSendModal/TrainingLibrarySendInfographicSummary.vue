@@ -200,6 +200,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibrarySendInfographicSummary',
@@ -212,6 +213,9 @@ export default {
   },
   props: {
     formData: {
+      type: Object
+    },
+    selectedRow: {
       type: Object
     }
   },
@@ -287,10 +291,27 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        this.$emit('on-show-training-summary')
+        this.setInfographicPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          type: 'infographic',
+          title: labels.InfographicPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showPosterName: true,
+          showFavoriteButton: true,
+          showSendButton: false,
+          icon: 'mdi-eye'
+        })
         this.isShowTrainingEmail = false
       }
     }
+  },
+  methods: {
+    ...mapActions({
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+    })
   }
 }
 </script>

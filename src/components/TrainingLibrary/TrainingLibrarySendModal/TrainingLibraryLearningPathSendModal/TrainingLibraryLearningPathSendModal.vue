@@ -91,6 +91,7 @@
             />
             <TrainingLibrarySendLearningPathSummary
               ref="refSendTrainingSummary"
+              :selected-row="selectedRow"
               :form-data="getTrainingSummaryFormData"
               @on-show-training-summary="$emit('on-show-training-summary')"
             />
@@ -441,7 +442,7 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-information',
-              message: `You cannot save without adding a {TRAININGURL} to the SMS text field`
+              message: `You cannot save without adding a {LEARNINGPATHURL} to the SMS text field`
             })
             return
           }

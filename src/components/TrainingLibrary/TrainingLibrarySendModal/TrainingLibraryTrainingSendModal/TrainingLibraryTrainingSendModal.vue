@@ -87,6 +87,7 @@
             />
             <TrainingLibrarySendTrainingSummary
               ref="refSendTrainingSummary"
+              :selected-row="selectedRow"
               :form-data="getTrainingSummaryFormData"
               @on-show-training-summary="$emit('on-show-training-summary')"
             />

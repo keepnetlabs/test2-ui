@@ -200,6 +200,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibrarySendScreensaverSummary',
@@ -212,6 +213,9 @@ export default {
   },
   props: {
     formData: {
+      type: Object
+    },
+    selectedRow: {
       type: Object
     }
   },
@@ -287,10 +291,27 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        this.$emit('on-show-training-summary')
+        this.setScreenSaverPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          type: 'screensaver',
+          title: labels.ScreensaverPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showSendButton: false,
+          showScreensaverName: true,
+          showFavoriteButton: true,
+          icon: 'mdi-eye'
+        })
         this.isShowTrainingEmail = false
       }
     }
+  },
+  methods: {
+    ...mapActions({
+      setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog'
+    })
   }
 }
 </script>

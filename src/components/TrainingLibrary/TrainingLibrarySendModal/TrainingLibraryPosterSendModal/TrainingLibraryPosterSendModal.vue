@@ -57,7 +57,7 @@
               :title="labels.EnrollmentSettings"
               :subtitle="labels.EnrollmentSettingsSub"
             />
-            <TrainingLibrarySendTrainingSettings
+            <TrainingLibrarySendPosterSettings
               ref="refSendTrainingSettings"
               :sms-notification-sub="labels.PosterSMSNotificationSub"
               :show-certificate="false"
@@ -92,6 +92,7 @@
             />
             <TrainingLibrarySendPosterSummary
               ref="refSendTrainingSummary"
+              :selected-row="selectedRow"
               :form-data="getTrainingSummaryFormData"
               @on-show-training-summary="$emit('on-show-training-summary')"
             />
@@ -136,18 +137,18 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibrarySendTrainingSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSettings.vue'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import { emptyPosterSendModalObj } from '@/components/TrainingLibrary/utils'
 import TrainingLibrarySendPosterSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryPosterSendModal/TrainingLibrarySendPosterSummary.vue'
 import { endTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
+import TrainingLibrarySendPosterSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryPosterSendModal/TrainingLibrarySendPosterSettings.vue'
 
 export default {
   name: 'TrainingLibraryPosterSendModal',
   components: {
+    TrainingLibrarySendPosterSettings,
     TrainingLibrarySendPosterSummary,
     TrainingLibrarySendTrainingSelectUsers,
-    TrainingLibrarySendTrainingSettings,
     DefaultErrorDialog,
     ConfigureCompanyStepHeader,
     StepperFooter,
@@ -444,7 +445,7 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-information',
-              message: `You cannot save without adding a {TRAININGURL} to the SMS text field`
+              message: `You cannot save without adding a {POSTERURL} to the SMS text field`
             })
             return
           }

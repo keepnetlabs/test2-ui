@@ -14,17 +14,19 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <TrainingLibraryLearningPathPreview
-        v-if="selectedLanguages.length"
-        v-show="!isPreviewLoading"
+        v-else
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
         :training-id="selectedRow.trainingId"
-        :languages="selectedLanguages"
         :learning-path-params="getTrainingParams"
       />
     </template>
     <template #app-dialog-footer>
-      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
+      <TrainingLibraryPreviewDialogFooter
+        :show-send-button="getLearningPathPreviewDialog.showSendButton"
+        @on-close="handleClose"
+        @on-send="handleSend"
+      />
     </template>
   </AppDialog>
 </template>
@@ -57,63 +59,38 @@ export default {
     callApi: {
       type: Boolean,
       default: true
-    },
-    defaultSelectedLanguages: {
-      type: Array,
-      default: () => []
     }
   },
   data() {
     return {
       isPreviewLoading: false,
-      selectedLanguages: [],
       trainingDetails: null
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
+    ...mapGetters({
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
+    }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
     }
   },
-  watch: {
-    defaultSelectedLanguages: {
-      immediate: true,
-      handler(val) {
-        this.selectedLanguages = val
-      }
-    }
-  },
   created() {
-    if (this.callApi) this.callForLanguages()
+    if (this.callApi) this.callForTrainingDetail()
   },
   methods: {
     ...mapActions({
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal'
     }),
-    callForLanguages() {
-      this.isPreviewLoading = true
-      this.selectedRow.languages.forEach((lang) => {
-        const language = this.languages.find((item) => item.code === lang)
-        if (language)
-          this.selectedLanguages.push({
-            text: language.name,
-            value: language.id,
-            code: language.code
-          })
-      })
-      this.callForTrainingDetail()
-    },
     callForTrainingDetail() {
       AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
         const {
           data: { data }
         } = response
         this.trainingDetails = {
-          ...data,
-          languages: this.selectedLanguages.map((lang) => lang.text).join(', ')
+          ...data
         }
       })
     },

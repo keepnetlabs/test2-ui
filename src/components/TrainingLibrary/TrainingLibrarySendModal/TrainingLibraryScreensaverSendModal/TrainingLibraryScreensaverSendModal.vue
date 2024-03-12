@@ -57,7 +57,7 @@
               :title="labels.EnrollmentSettings"
               :subtitle="labels.EnrollmentSettingsSub"
             />
-            <TrainingLibrarySendTrainingSettings
+            <TrainingLibrarySendScreensaverSettings
               ref="refSendTrainingSettings"
               :sms-notification-sub="labels.ScreensaverSMSNotificationSub"
               :show-certificate="false"
@@ -92,6 +92,7 @@
             />
             <TrainingLibrarySendScreensaverSummary
               ref="refSendTrainingSummary"
+              :selected-row="selectedRow"
               :form-data="getTrainingSummaryFormData"
               @on-show-training-summary="$emit('on-show-training-summary')"
             />
@@ -136,18 +137,18 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibrarySendTrainingSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSettings.vue'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import { emptyScreensaverSendModalObj } from '@/components/TrainingLibrary/utils'
 import { endTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendScreensaverSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibrarySendScreensaverSummary.vue'
+import TrainingLibrarySendScreensaverSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibrarySendScreensaverSettings.vue'
 
 export default {
   name: 'TrainingLibraryScreensaverSendModal',
   components: {
+    TrainingLibrarySendScreensaverSettings,
     TrainingLibrarySendScreensaverSummary,
     TrainingLibrarySendTrainingSelectUsers,
-    TrainingLibrarySendTrainingSettings,
     DefaultErrorDialog,
     ConfigureCompanyStepHeader,
     StepperFooter,

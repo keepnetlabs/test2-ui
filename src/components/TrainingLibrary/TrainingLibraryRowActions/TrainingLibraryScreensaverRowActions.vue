@@ -11,6 +11,7 @@
     />
     <RowActionsMenu>
       <DefaultMenuRowAction
+        v-if="false"
         :id="rowActions[1].id"
         :scope="scope"
         :disabled="rowActions[1].disabled || !scope.row.isEditable"
@@ -139,6 +140,7 @@ export default {
         subtitle: '',
         showDetails: true,
         showTabs: true,
+        showSendButton: false,
         showScreensaverName: true,
         showFavoriteButton: true,
         icon: 'mdi-eye'
@@ -156,6 +158,7 @@ export default {
         selectedRow: row,
         type: 'downloadScreensaver',
         title: labels.DownloadScreensaver,
+        showSendButton: false,
         subtitle: '',
         showDetails: false,
         showTabs: false,

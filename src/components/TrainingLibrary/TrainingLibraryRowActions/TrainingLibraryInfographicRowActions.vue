@@ -142,6 +142,7 @@ export default {
         showTabs: true,
         showPosterName: true,
         showFavoriteButton: true,
+        showSendButton: true,
         icon: 'mdi-eye'
       })
     },
@@ -161,6 +162,7 @@ export default {
         showDetails: false,
         showTabs: false,
         showFavoriteButton: false,
+        showSendButton: true,
         icon: 'mdi-download'
       })
     },
