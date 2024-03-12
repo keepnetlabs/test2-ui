@@ -67,7 +67,7 @@
                   <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
                     <v-radio
                       :id="`input--campaign-manager-radio-schedule-to`"
-                      style="margin-bottom: 0;"
+                      class="mb-0 mr-2"
                       color="#2196f3"
                       label="Schedule to:"
                       value="3"
@@ -75,7 +75,7 @@
                     <div :class="[!isDateValid && 'date-picker-error mb-n3']">
                       <InputDate
                         v-model="formValues.scheduleDate"
-                        class="date-picker-height-40 ml-2 black-placeholder"
+                        class="date-picker-height-40 black-placeholder"
                         type="datetime"
                         ref="refPicker"
                         placeholder="Select Date and Time"
@@ -97,7 +97,7 @@
                         </transition>
                       </div>
                     </div>
-                    <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
+                    <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
                     <div :class="[!isTimezoneValid && 'date-picker-error mb-n3']">
                       <InputTimezone
                         v-model="formValues.scheduledDateTimeZoneId"

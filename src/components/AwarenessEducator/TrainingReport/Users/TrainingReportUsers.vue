@@ -226,7 +226,6 @@ export default {
             filterableType: 'select',
             filterableItems: ['Failed', 'Passed', 'Incomplete']
           },
-          /*
           {
             property: 'examScore',
             align: 'right',
@@ -239,8 +238,6 @@ export default {
             width: 160,
             filterableType: 'text'
           },
-
-           */
           {
             property: 'lastInteractionDate',
             align: 'left',
