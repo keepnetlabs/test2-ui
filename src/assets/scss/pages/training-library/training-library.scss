@@ -153,6 +153,36 @@
     top:34px !important;
   }
 }
+.training-library-filters-container{
+  background-color: #FAFAFA !important;
+  position: relative;
+  display: flex;
+  &__left{
+    width:240px;
+  }
+  &__right{
+    width:280px;
+    background-color: #fff !important;
+    position: relative;
+    &-container{
+      padding:16px;
+    }
+    &-footer{
+      display: flex;
+      padding-right:12px;
+      border-top: 1px solid #E0E0E0;
+      justify-content: flex-end;
+      position: absolute;
+      bottom: 8px;
+      padding-top: 4px;
+      width: 100%;
+      border-top:1px solid #E0E0E0;
+    }
+  }
+}
+.training-library-filter-active{
+  background-color: #fff;
+}
 .training-library-filters{
   display: flex;
   justify-content: space-between;
@@ -172,6 +202,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    &__left-side{
+      display: flex;
+      align-items: center;
+      gap:8px;
+    }
   }
 }
 .training-library-training-preview{

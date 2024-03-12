@@ -162,6 +162,8 @@ const trainingLibrary = {
       const tableSettings = localStorage.getItem('training-library-columns')
       if (!tableSettings) return
       const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(tableSettings)
+      console.log('renderedColumns', renderedColumns)
+      state.tableColumns.forEach((col) => (col.show = renderedColumns.includes(col.property)))
       state.renderedColumns = renderedColumns || []
       state.firstColFixed = firstColFixed
       state.lastColFixed = lastColFixed

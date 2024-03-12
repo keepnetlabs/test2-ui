@@ -211,14 +211,17 @@ export default {
     }
   },
   watch: {
-    renderedColumns(renderedCols = []) {
-      this.tableOptions.columns.forEach((col) => {
-        if (col.property === PROPERTY_STORE.MATERIAL_NAME) {
-          col.show = true
-          return
-        }
-        col.show = renderedCols.includes(col.property)
-      })
+    renderedColumns: {
+      immediate: true,
+      handler(renderedCols = []) {
+        this.tableOptions.columns.forEach((col) => {
+          if (col.property === PROPERTY_STORE.MATERIAL_NAME) {
+            col.show = true
+            return
+          }
+          col.show = renderedCols.includes(col.property)
+        })
+      }
     },
     firstColFixed() {
       this.tableOptions.columns[0].fixed = this.firstColFixed

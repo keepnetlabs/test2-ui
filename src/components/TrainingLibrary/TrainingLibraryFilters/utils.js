@@ -19,16 +19,103 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS = [
   }
 ]
 export const TRAINING_LIBRARY_SORTING_OPTIONS = [
-  { text: 'Name', icon: 'mdi-menu-right', menu: [{ text: 'A to Z' }, { text: 'Z to A' }] },
+  { text: 'Behaviours', icon: 'mdi-account-cog', key: 'behaviours' },
+  {
+    text: 'Type',
+    icon: 'mdi-format-list-bulleted-triangle',
+    key: 'type'
+  },
   {
     text: 'Category',
-    icon: 'mdi-menu-right',
-    menu: [{ text: 'A to Z' }, { text: 'Z to A' }]
+    icon: 'mdi-shape',
+    key: 'category'
+  }
+]
+
+export const TRAINING_LIBRARY_FILTERS = [
+  {
+    text: 'Behaviours',
+    icon: 'mdi-account-cog',
+    key: 'behaviours',
+    show: true,
+    filterType: 'search'
+  },
+  {
+    text: 'Type',
+    icon: 'mdi-format-list-bulleted-triangle',
+    key: 'type',
+    show: true,
+    filterType: 'search'
+  },
+  {
+    text: 'Category',
+    icon: 'mdi-shape',
+    key: 'category',
+    show: true,
+    filterType: 'search'
+  },
+  {
+    text: 'Language',
+    icon: 'mdi-web',
+    key: 'language',
+    show: true,
+    filterType: 'search'
+  },
+  {
+    text: 'Created By',
+    icon: 'mdi-domain',
+    key: 'createdBy',
+    show: true,
+    filterType: 'select'
+  },
+  {
+    text: 'Target Audience',
+    icon: 'mdi-account-multiple',
+    key: 'targetAudience',
+    show: true,
+    filterType: 'select'
+  },
+  {
+    text: 'Compliance',
+    icon: 'mdi-clipboard-check',
+    key: 'compliance',
+    show: true,
+    filterType: 'select'
+  },
+  {
+    text: 'Vendor',
+    icon: 'mdi-store',
+    key: 'vendor',
+    show: false,
+    filterType: 'select'
+  },
+  {
+    text: 'Material Name',
+    icon: 'mdi-book',
+    key: 'compliance',
+    show: false,
+    filterType: 'select'
+  },
+  {
+    text: 'Description',
+    icon: 'mdi-file-document',
+    key: 'description',
+    show: false,
+    filterType: 'select'
+  },
+  {
+    text: 'Tags',
+    icon: 'mdi-tag',
+    key: 'tags',
+    show: false,
+    filterType: 'select'
   },
   {
     text: 'Date Created',
-    icon: 'mdi-menu-right',
-    menu: [{ text: 'New to old' }, { text: 'Old to new' }]
+    icon: 'mdi-calendar',
+    key: 'dateCreated',
+    show: false,
+    filterType: 'select'
   }
 ]
 

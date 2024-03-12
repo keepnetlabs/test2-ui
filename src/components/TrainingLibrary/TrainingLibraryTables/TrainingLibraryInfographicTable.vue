@@ -41,6 +41,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
+  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
@@ -103,10 +104,23 @@ export default {
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',
       isLoading: 'trainingLibrary/getIsLoading',
-      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
+      renderedColumns: 'trainingLibrary/getRenderedColumns'
     })
   },
   watch: {
+    renderedColumns: {
+      immediate: true,
+      handler(renderedCols = []) {
+        this.tableOptions.columns.forEach((col) => {
+          if (col.property === PROPERTY_STORE.INFOGRAPHIC_NAME) {
+            col.show = true
+            return
+          }
+          col.show = renderedCols.includes(col.property)
+        })
+      }
+    },
     selectedTrainingContent(tabValue) {
       if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
         this.$set(this.tableOptions, 'iEmpty', {
