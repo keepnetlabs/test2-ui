@@ -27,7 +27,7 @@
         </template>
         <div class="training-library-filters-container">
           <div class="training-library-filters-container__left">
-            <div v-for="filter in TRAINING_LIBRARY_FILTERS" v-if="filter.show" :key="filter.key">
+            <div v-for="filter in filterItems" v-if="filter.show" :key="filter.key">
               <VListItem
                 :class="[
                   'training-library-filtering-options-parent-list-item cursor-pointer',
@@ -53,7 +53,10 @@
           </div>
           <div class="training-library-filters-container__right">
             <div class="training-library-filters-container__right-container">
-              <TrainingLibrarySearchFilter />
+              <TrainingLibrarySearchFilter
+                :items="activeFilter.items"
+                :filterKey="activeFilter.key"
+              />
             </div>
             <div class="training-library-filters-container__right-footer">
               <v-btn
@@ -89,6 +92,7 @@ import TrainingLibraryFilteringOptions from '@/components/TrainingLibrary/Traini
 import TrainingLibrarySorting from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySorting.vue'
 import { TRAINING_LIBRARY_FILTERS } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingLibraryFilters',
@@ -103,6 +107,11 @@ export default {
       activeFilter: 'behaviours',
       menu: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      filterItems: 'trainingLibrary/getFilterItems'
+    })
   },
   methods: {
     handleSetActiveFilter(filter) {

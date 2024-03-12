@@ -123,9 +123,18 @@ const trainingLibraryHelpers = {
         )
       })
     },
-    callForLanguages({ commit }) {
+    callForLanguages({ commit, dispatch }) {
       AwarenessEducatorService.getLanguages().then((response) => {
         commit('SET_LANGUAGES', response?.data?.data)
+        console.log('response?.data?.data', response?.data?.data)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: 'language',
+            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+          },
+          { root: true }
+        )
       })
     },
     callForTargetAudiences({ commit }) {

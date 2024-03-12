@@ -32,7 +32,7 @@ export const TRAINING_LIBRARY_SORTING_OPTIONS = [
   }
 ]
 
-export const TRAINING_LIBRARY_FILTERS = [
+export const trainingLibraryFilters = [
   {
     text: 'Behaviours',
     icon: 'mdi-account-cog',
@@ -45,21 +45,30 @@ export const TRAINING_LIBRARY_FILTERS = [
     icon: 'mdi-format-list-bulleted-triangle',
     key: 'type',
     show: true,
-    filterType: 'search'
+    filterType: 'search',
+    items: [
+      { text: 'Learning Path', value: 'Learning Path' },
+      { text: 'Training', value: 'Training' },
+      { text: 'Poster', value: 'Poster' },
+      { text: 'Infographic', value: 'Infographic' },
+      { text: 'Screensaver', value: 'Screensaver' }
+    ]
   },
   {
     text: 'Category',
     icon: 'mdi-shape',
     key: 'category',
     show: true,
-    filterType: 'search'
+    filterType: 'search',
+    items: []
   },
   {
     text: 'Language',
     icon: 'mdi-web',
     key: 'language',
     show: true,
-    filterType: 'search'
+    filterType: 'search',
+    items: []
   },
   {
     text: 'Created By',

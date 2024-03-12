@@ -159,6 +159,12 @@
   display: flex;
   &__left{
     width:240px;
+    & > div {
+      max-height: 44px;
+    }
+    & > div:last-child{
+      max-height: 48px;
+    }
   }
   &__right{
     width:280px;
@@ -175,10 +181,16 @@
       position: absolute;
       bottom: 8px;
       padding-top: 4px;
+      z-index: 1111;
+      background:white;
       width: 100%;
       border-top:1px solid #E0E0E0;
     }
   }
+}
+.training-library-search-filter-body{
+  max-height: 240px;
+  overflow: auto;
 }
 .training-library-filter-active{
   background-color: #fff;

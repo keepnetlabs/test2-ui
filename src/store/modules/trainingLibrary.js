@@ -24,6 +24,7 @@ import {
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { trainingLibraryFilters } from '../../components/TrainingLibrary/TrainingLibraryFilters/utils'
 const trainingLibrary = {
   namespaced: true,
   state: {
@@ -73,6 +74,7 @@ const trainingLibrary = {
     isListView: true,
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
+    filterItems: trainingLibraryFilters,
     filters: [],
     filterType: 'OR',
     sortBy: '',
@@ -128,7 +130,8 @@ const trainingLibrary = {
     getPosterSendModal: (state) => state.posterSendModal,
     getInfographicSendModal: (state) => state.infographicSendModal,
     getScreensaverSendModal: (state) => state.screensaverSendModal,
-    getLearningPathSendModal: (state) => state.learningPathSendModal
+    getLearningPathSendModal: (state) => state.learningPathSendModal,
+    getFilterItems: (state) => state.filterItems
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -248,6 +251,10 @@ const trainingLibrary = {
     },
     SET_LEARNING_PATH_SEND_MODAL(state, payload) {
       state.learningPathSendModal = payload
+    },
+    SET_FILTER_ITEMS(state, payload) {
+      const filter = state.filterItems.find((f) => f.key === payload.key)
+      filter.items = payload.items
     }
   },
   actions: {
@@ -375,6 +382,9 @@ const trainingLibrary = {
     },
     setFilterType({ commit }, payload) {
       commit('SET_FILTER_TYPE', payload)
+    },
+    setFilterItems({ commit }, payload) {
+      commit('SET_FILTER_ITEMS', payload)
     }
   }
 }
