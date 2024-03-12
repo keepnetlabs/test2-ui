@@ -40,7 +40,10 @@
             <v-list-item-subtitle class="k-form-group__sub-title">
               Copying the 'Client ID' information and pasting it into the appropriate field on the
               Google Workspace configuration page is necessary. Learn
-              <a style="color: #2196f3; text-decoration: none;" href="" target="_blank"
+              <a
+                style="color: #2196f3; text-decoration: none;"
+                href="https://doc.keepnetlabs.com/Next-Generation-Product/platform/company/company-settings/direct-email-creation/direct-email-creation-for-google-workspace"
+                target="_blank"
                 >how to set a client ID</a
               >
             </v-list-item-subtitle>
