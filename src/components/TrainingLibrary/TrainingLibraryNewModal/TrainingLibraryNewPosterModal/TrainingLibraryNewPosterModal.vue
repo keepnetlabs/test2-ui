@@ -158,7 +158,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewPosterModal: 'trainingLibrary/setNewPosterModal'
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     handleClose() {
       this.setNewPosterModal(emptyNewPosterModalObj)
@@ -268,7 +269,8 @@ export default {
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
-          this.$emit('on-close', true)
+          this.handleClose()
+          this.callForTrainingLibrary()
         })
         .finally(() => {
           this.isActionButtonDisabled = false

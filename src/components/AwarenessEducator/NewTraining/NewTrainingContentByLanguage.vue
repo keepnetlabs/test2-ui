@@ -2,13 +2,13 @@
   <div>
     <FormGroupHorizontalContent
       :label="labels.LANGUAGE"
-      class="mb-2"
-      :style="!isRemovable && { justifyContent: 'flex-start', maxWidth: '456px' }"
+      class="mb-2 training-library-content-by-language"
     >
       <InputSelectLanguage
         v-bind="commonRules"
         v-model="value.languageId"
-        style="min-width: 205px !important; max-width: 205px !important;"
+        style="min-width: 424px !important; max-width: 424px !important;"
+        class="ml-8"
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
@@ -27,13 +27,14 @@
       </v-btn>
     </FormGroupHorizontalContent>
     <FormGroupHorizontalContent
-      style="justify-content: flex-start; max-width: 456px;"
+      class="training-library-content-by-language"
       :label="labels.UploadFile"
     >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
-        style="width: 205px !important;"
+        class="ml-8"
+        style="width: 424px !important;"
         :size="100"
         :hint="getHint"
         :isShowFileProgress="true"

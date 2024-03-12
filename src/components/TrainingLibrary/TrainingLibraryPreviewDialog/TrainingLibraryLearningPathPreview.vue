@@ -40,9 +40,12 @@
               <span class="training-library-preview__title">Languages: </span>
             </div>
             <div class="d-flex flex-wrap gap-2 ml-2">
-              <span v-for="lang in languages" :key="lang" class="training-library-preview__tag">{{
-                lang.code
-              }}</span>
+              <span
+                v-for="(lang, lIndex) in languages"
+                :key="lIndex"
+                class="training-library-preview__tag"
+                >{{ lang.code }}</span
+              >
             </div>
           </div>
           <div class="training-library-preview__details-item">
@@ -55,8 +58,8 @@
             </div>
             <div class="d-flex flex-wrap gap-2 ml-2">
               <span
-                v-for="tag in learningPathParams.tagNames"
-                :key="tag"
+                v-for="(tag, tIndex) in learningPathParams.tagNames"
+                :key="tIndex"
                 class="training-library-preview__tag"
                 >{{ tag }}</span
               >
@@ -148,8 +151,8 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="lang in languages"
-                    :key="lang"
+                    v-for="(lang, langIndex) in languages"
+                    :key="langIndex"
                     class="training-library-preview__tag"
                     >{{ lang.code }}</span
                   >
@@ -173,8 +176,8 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="tag in learningPathParams.tagNames"
-                    :key="tag"
+                    v-for="(tag, tagIndex) in learningPathParams.tagNames"
+                    :key="tagIndex"
                     class="training-library-preview__tag"
                     >{{ tag }}</span
                   >
@@ -262,7 +265,7 @@ export default {
         })
         .finally(() => {
           if (isTemplateLoading) this.isTemplateLoading = false
-          else this.$emit('update:isLoading', false)
+          else setTimeout(() => this.$emit('update:isLoading', false), 200)
         })
     }
   }

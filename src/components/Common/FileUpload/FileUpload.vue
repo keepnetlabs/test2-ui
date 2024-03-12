@@ -22,10 +22,21 @@
         :size="size"
       >
         Select or drop file
-        <v-icon>mdi-folder-open</v-icon>
+        <v-icon>mdi-folder-outline</v-icon>
       </file-upload>
       <template v-if="isPreviewVisible">
-        <div v-for="file in getFiles" :key="file.id" class="k-file-uploads__item">
+        <div
+          v-for="file in getFiles"
+          :key="file.id"
+          :class="showImagePreview ? 'k-file-uploads__item align-center' : 'k-file-uploads__item'"
+        >
+          <div class="k-file-uploads__item-preview">
+            <img
+              v-if="!!getCoverImagePreview && showImagePreview"
+              :src="getCoverImagePreview"
+              alt="logo-preview"
+            />
+          </div>
           <div class="k-file-uploads__item-details">
             <div class="k-file-uploads__item-details--filename">
               {{ displayFileName(file.name) }}
@@ -148,6 +159,10 @@ export default {
     isBackendParsed: {
       type: Boolean,
       default: false
+    },
+    showImagePreview: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -160,6 +175,13 @@ export default {
     }
   },
   computed: {
+    getCoverImagePreview() {
+      if (this.files.length) {
+        console.log(this.files[0])
+        return this.files[0].url
+      }
+      return false
+    },
     getFiles() {
       if (this.files.length) {
         return this.files

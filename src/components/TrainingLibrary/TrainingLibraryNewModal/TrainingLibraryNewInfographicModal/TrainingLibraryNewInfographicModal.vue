@@ -158,7 +158,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal'
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     handleClose() {
       this.setNewInfographicModal(emptyNewInfographicModalObj)
@@ -268,7 +269,8 @@ export default {
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
-          this.$emit('on-close', true)
+          this.handleClose()
+          this.callForTrainingLibrary()
         })
         .finally(() => {
           this.isActionButtonDisabled = false

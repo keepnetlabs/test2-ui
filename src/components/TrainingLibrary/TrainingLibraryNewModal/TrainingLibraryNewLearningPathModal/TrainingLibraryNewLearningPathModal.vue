@@ -157,7 +157,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     handleClose() {
       this.setNewLearningPathModal(emptyNewLearningPathModalObj)
@@ -266,7 +267,8 @@ export default {
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
-          this.$emit('on-close', true)
+          this.handleClose()
+          this.callForTrainingLibrary()
         })
         .finally(() => {
           this.isActionButtonDisabled = false

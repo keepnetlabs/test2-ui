@@ -82,4 +82,13 @@
     .file-uploads.file-uploads-html5 label {
         top: 21px;
     }
+  &__item-preview{
+    margin-right:8px;
+    img{
+      width:48px;
+      height: 48px;
+      padding:4px;
+      border: 1px solid #E0E0E0;
+    }
+  }
 }

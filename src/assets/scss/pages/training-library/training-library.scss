@@ -182,3 +182,13 @@
     max-width: 200px !important;
   }
 }
+.training-library-content-by-language{
+    justify-content: flex-start;
+    .form-group-horizontal-content__label{
+      width:74px;
+    }
+    &.form-group-horizontal-content > *:first-child {
+    max-width: initial;
+    flex-basis:auto;
+    }
+}

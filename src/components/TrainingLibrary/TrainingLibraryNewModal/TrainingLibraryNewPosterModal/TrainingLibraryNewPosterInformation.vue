@@ -85,22 +85,13 @@
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
-        :class="[getPreviewOfCoverImage ? 'mb-2' : 'mb-6']"
+        show-image-preview
+        class="mb-6"
         hint="Only jpg, png files. Max. file size 2MB"
         :extensions="['jpg', 'png']"
         :size="2"
         @inputFile="handleCoverImageChange"
       />
-      <v-list-item v-if="getPreviewOfCoverImage" class="px-0 mb-6">
-        <v-list-item-content>
-          <img
-            v-if="!!getCoverImagePreview"
-            class="add-in-settings__image"
-            :src="getCoverImagePreview"
-            alt="logo-preview"
-          />
-        </v-list-item-content>
-      </v-list-item>
     </FormGroup>
     <MakeAvailableFor
       v-model="formData.availableForRequests"
@@ -156,25 +147,7 @@ export default {
       getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
       getCompliances: 'trainingLibraryHelpers/getCompliances',
       getBehaviours: 'trainingLibraryHelpers/getBehaviours'
-    }),
-    getPreviewOfCoverImage() {
-      return this.formData.coverImage || this.formData.coverImageUrl
-    },
-    getCoverImagePreview() {
-      if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length > 0) {
-        return this.getPreviewOfCoverImage[0]
-      }
-
-      if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length === 0) {
-        return null
-      }
-
-      if (typeof this.getPreviewOfCoverImage === 'string') {
-        return this.getPreviewOfCoverImage
-      }
-
-      return URL.createObjectURL(this.getPreviewOfCoverImage)
-    }
+    })
   },
   methods: {
     handleCoverImageChange(file) {

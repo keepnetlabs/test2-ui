@@ -10,19 +10,20 @@
       class="filter-options__menu training-library-filtering-options"
     >
       <template #activator="{ on }">
-        <VTextField
-          v-on="on"
-          v-model.trim="activeSort"
-          ref="refFiltersInput"
-          id="input--training-library-sorting"
-          style="max-width: 200px;"
-          outlined
-          hide-details
-          autocomplete="off"
-          placeholder="Sort By"
-          prepend-inner-icon="mdi-arrow-down"
-          append-icon="mdi-menu-down"
-        />
+        <div v-on="on">
+          <VTextField
+            v-model.trim="activeSort"
+            ref="refFiltersInput"
+            id="input--training-library-sorting"
+            style="max-width: 200px;"
+            outlined
+            hide-details
+            autocomplete="off"
+            placeholder="Sort By"
+            prepend-inner-icon="mdi-arrow-down"
+            append-icon="mdi-menu-down"
+          />
+        </div>
       </template>
       <div :key="item.text" v-for="(item, index) in TRAINING_LIBRARY_SORTING_OPTIONS">
         <VMenu
