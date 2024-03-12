@@ -14,7 +14,7 @@
     </div>
     <div class="training-library-search-filter-body">
       <VCheckbox
-        v-for="item in items"
+        v-for="item in getItems"
         v-model="filterChecked"
         :key="item.value"
         hide-details
@@ -42,6 +42,16 @@ export default {
     return {
       search: '',
       filterChecked: []
+    }
+  },
+  computed: {
+    getItems() {
+      return this.search ? this.getFilteredSearchItems : this.items
+    },
+    getFilteredSearchItems() {
+      return this.items.filter((item) =>
+        item.text.toLowerCase().includes(this.search.toLowerCase())
+      )
     }
   }
 }
