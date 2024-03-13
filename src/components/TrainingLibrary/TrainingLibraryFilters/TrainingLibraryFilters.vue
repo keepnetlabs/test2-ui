@@ -59,6 +59,10 @@
                 :items="activeFilter.items"
                 :filter="activeFilter"
               />
+              <TrainingLibraryDateFilter
+                v-else-if="activeFilter.filterType === 'date'"
+                :filter="activeFilter"
+              />
               <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
             </div>
             <div class="training-library-filters-container__right-footer">
@@ -102,10 +106,12 @@ import TrainingLibrarySorting from '@/components/TrainingLibrary/TrainingLibrary
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
 import { mapGetters } from 'vuex'
 import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
+import TrainingLibraryDateFilter from './TrainingLibraryDateFilter.vue'
 
 export default {
   name: 'TrainingLibraryFilters',
   components: {
+    TrainingLibraryDateFilter,
     TrainingLibrarySelectFilter,
     TrainingLibrarySearchFilter,
     TrainingLibrarySorting,

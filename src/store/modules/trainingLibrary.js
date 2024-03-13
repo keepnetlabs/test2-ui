@@ -257,20 +257,73 @@ const trainingLibrary = {
     SET_FILTER_ITEMS_SHOW(state, payload) {
       const filter = state.filters.find((f) => f.key === payload.key)
       filter.show = payload.show
-      localStorage.setItem(
-        'training-library-filters',
-        JSON.stringify({
-          filters: state.filters,
-          filterOptionsFilters: state.filterOptionsFilters
-        })
-      )
     },
     SET_DEFAULT_TABLE_FILTERS(state, payload) {
       const filters = localStorage.getItem('training-library-filters')
       if (!filters) return
-      const { filters: savedFilters = {}, filterOptionsFilters = [] } = JSON.parse(filters)
+      const {
+        filters: savedFilters = {},
+        filterOptionsFilters = [],
+        filterType = 'OR',
+        sortBy = '',
+        search = ''
+      } = JSON.parse(filters)
       state.filters = savedFilters
       state.filterOptionsFilters = filterOptionsFilters
+      state.filterType = filterType
+      state.sortBy = sortBy
+      state.search = ''
+    },
+    SET_FILTERS_TO_LOCAL_STORAGE(state) {
+      localStorage.setItem(
+        'training-library-filters',
+        JSON.stringify({
+          filterType: state.filterType,
+          filters: state.filters,
+          filterOptionsFilters: state.filterOptionsFilters,
+          sortBy: state.sortBy,
+          search: state.search
+        })
+      )
+    },
+    RESET_TABLE_PARAMS(state) {
+      state.isTabsLoading = false
+      state.isLoading = false
+      state.tableData = []
+      state.tableColumns = [
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TAGS),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR),
+        Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED)
+      ]
+      state.renderedColumns = []
+    },
+    RESET_FILTERS(state) {
+      state.axiosPayload = getDefaultAxiosPayload()
+      state.serverSideProps = new ServerSideProps()
+      state.filterOptionsFilters = [
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED)
+      ]
+      state.search = ''
+      state.filters = JSON.parse(JSON.stringify(trainingLibraryFilters))
+      state.filterType = 'OR'
+      state.sortBy = ''
     }
   },
   actions: {
@@ -332,6 +385,7 @@ const trainingLibrary = {
       commit('SET_LIST_VIEW', payload)
     },
     initDefaultTableSettings({ commit }) {
+      commit('SET_RENDERED_COLUMNS')
       commit('SET_DEFAULT_TABLE_SETTINGS')
     },
     setSelectedTrainingContent({ commit, dispatch }, payload) {
@@ -407,6 +461,18 @@ const trainingLibrary = {
     },
     initDefaultTableFilters({ commit }) {
       commit('SET_DEFAULT_TABLE_FILTERS')
+    },
+    restoreDefaultFilters({ commit }) {
+      const filters = localStorage.getItem('training-library-filters')
+      if (!filters) return commit('RESET_FILTERS')
+      commit('SET_DEFAULT_TABLE_FILTERS')
+    },
+    writeFiltersToLocalStorage({ commit }) {
+      commit('SET_FILTERS_TO_LOCAL_STORAGE')
+    },
+    resetState({ commit }) {
+      commit('RESET_TABLE_PARAMS')
+      commit('RESET_FILTERS')
     }
   }
 }

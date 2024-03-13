@@ -61,6 +61,7 @@
 import { TRAINING_LIBRARY_FILTER_OPTIONS } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 import TrainingLibraryFilterType from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilterType.vue'
 import TrainingLibraryShowFilterItems from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryShowFilterItems.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingLibraryFilteringOptions',
@@ -77,13 +78,17 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      writeFiltersToLocalStorage: 'trainingLibrary/writeFiltersToLocalStorage',
+      restoreDefaultFilters: 'trainingLibrary/restoreDefaultFilters'
+    }),
     handleListItemClick(item = '') {
       if (item === 'Set as Default Filter') {
-        this.$emit('set-default-search')
+        this.writeFiltersToLocalStorage()
         this.isParentMenuOpen = false
       }
       if (item === 'Restore Default Filter') {
-        this.$emit('restore-default-search')
+        this.restoreDefaultFilters()
         this.isParentMenuOpen = false
       }
     }
