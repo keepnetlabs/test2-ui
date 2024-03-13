@@ -1,3 +1,5 @@
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+
 export const TRAINING_LIBRARY_FILTER_OPTIONS = [
   { text: 'Set as Default Filter', icon: 'mdi-content-save', hasMenu: false },
   { text: 'Restore Default Filter', icon: 'mdi-restore', hasMenu: false },
@@ -19,16 +21,16 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS = [
   }
 ]
 export const TRAINING_LIBRARY_SORTING_OPTIONS = [
-  { text: 'Behaviours', icon: 'mdi-account-cog', key: 'behaviours' },
-  {
-    text: 'Type',
-    icon: 'mdi-format-list-bulleted-triangle',
-    key: 'type'
-  },
+  { text: 'Name', icon: 'mdi-menu-right', menu: [{ text: 'A to Z' }, { text: 'Z to A' }] },
   {
     text: 'Category',
-    icon: 'mdi-shape',
-    key: 'category'
+    icon: 'mdi-menu-right',
+    menu: [{ text: 'A to Z' }, { text: 'Z to A' }]
+  },
+  {
+    text: 'Date Created',
+    icon: 'mdi-menu-right',
+    menu: [{ text: 'New to old' }, { text: 'Old to new' }]
   }
 ]
 
@@ -36,14 +38,15 @@ export const trainingLibraryFilters = [
   {
     text: 'Behaviours',
     icon: 'mdi-account-cog',
-    key: 'behaviours',
+    key: PROPERTY_STORE.BEHAVIOURS,
     show: true,
-    filterType: 'search'
+    filterType: 'search',
+    value: []
   },
   {
     text: 'Type',
     icon: 'mdi-format-list-bulleted-triangle',
-    key: 'type',
+    key: PROPERTY_STORE.TYPE,
     show: true,
     filterType: 'search',
     items: [
@@ -52,79 +55,105 @@ export const trainingLibraryFilters = [
       { text: 'Poster', value: 'Poster' },
       { text: 'Infographic', value: 'Infographic' },
       { text: 'Screensaver', value: 'Screensaver' }
-    ]
+    ],
+    value: []
   },
   {
     text: 'Category',
     icon: 'mdi-shape',
-    key: 'category',
+    key: PROPERTY_STORE.CATEGORY,
     show: true,
     filterType: 'search',
-    items: []
+    items: [
+      { text: 'All Categories', value: 'All Categories' },
+      { text: 'Category 1', value: 'Category 1' },
+      { text: 'Category 2', value: 'Category 2' },
+      { text: 'Category 3', value: 'Category 3' },
+      { text: 'Category 4', value: 'Category 4' },
+      { text: 'Category 5', value: 'Category 5' }
+    ],
+    value: []
   },
   {
     text: 'Language',
     icon: 'mdi-web',
-    key: 'language',
+    key: PROPERTY_STORE.LANGUAGES,
     show: true,
     filterType: 'search',
-    items: []
+    items: [],
+    value: []
   },
   {
     text: 'Created By',
     icon: 'mdi-domain',
-    key: 'createdBy',
+    key: PROPERTY_STORE.CREATEDBY,
     show: true,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Contains',
+    value: ''
   },
   {
     text: 'Target Audience',
     icon: 'mdi-account-multiple',
-    key: 'targetAudience',
+    key: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true,
-    filterType: 'select'
+    filterType: 'search',
+    items: [],
+    value: []
   },
   {
     text: 'Compliance',
     icon: 'mdi-clipboard-check',
-    key: 'compliance',
+    key: PROPERTY_STORE.COMPLIANCE,
     show: true,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Contains',
+    value: ''
   },
   {
     text: 'Vendor',
     icon: 'mdi-store',
-    key: 'vendor',
+    key: PROPERTY_STORE.VENDOR,
     show: false,
-    filterType: 'select'
+    filterType: 'search',
+    items: [],
+    value: []
   },
   {
     text: 'Material Name',
     icon: 'mdi-book',
-    key: 'compliance',
+    key: PROPERTY_STORE.MATERIAL_NAME,
     show: false,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Contains',
+    value: ''
   },
   {
     text: 'Description',
     icon: 'mdi-file-document',
-    key: 'description',
+    key: PROPERTY_STORE.DESCRIPTION,
     show: false,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Contains',
+    value: ''
   },
   {
     text: 'Tags',
     icon: 'mdi-tag',
-    key: 'tags',
+    key: PROPERTY_STORE.TAGS,
     show: false,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Contains',
+    value: ''
   },
   {
     text: 'Date Created',
     icon: 'mdi-calendar',
-    key: 'dateCreated',
+    key: PROPERTY_STORE.DATE_CREATED,
     show: false,
-    filterType: 'select'
+    filterType: 'select',
+    operator: 'Exact Date',
+    value: ''
   }
 ]
 

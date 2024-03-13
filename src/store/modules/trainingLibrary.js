@@ -34,29 +34,29 @@ const trainingLibrary = {
     axiosPayload: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps(),
     tableColumns: [
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.TAGS,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR,
-      TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TAGS),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR),
+      Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED)
     ],
     filterOptionsFilters: [
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS,
-      TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED)
     ],
     renderedColumns: [],
     trainingSubTabs: [
@@ -74,8 +74,7 @@ const trainingLibrary = {
     isListView: true,
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
-    filterItems: trainingLibraryFilters,
-    filters: [],
+    filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
     filterType: 'OR',
     sortBy: '',
     deleteDialog: emptyTrainingDeleteDialogObj,
@@ -131,7 +130,7 @@ const trainingLibrary = {
     getInfographicSendModal: (state) => state.infographicSendModal,
     getScreensaverSendModal: (state) => state.screensaverSendModal,
     getLearningPathSendModal: (state) => state.learningPathSendModal,
-    getFilterItems: (state) => state.filterItems
+    getFilters: (state) => state.filters
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -165,7 +164,6 @@ const trainingLibrary = {
       const tableSettings = localStorage.getItem('training-library-columns')
       if (!tableSettings) return
       const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(tableSettings)
-      console.log('renderedColumns', renderedColumns)
       state.tableColumns.forEach((col) => (col.show = renderedColumns.includes(col.property)))
       state.renderedColumns = renderedColumns || []
       state.firstColFixed = firstColFixed
@@ -253,8 +251,26 @@ const trainingLibrary = {
       state.learningPathSendModal = payload
     },
     SET_FILTER_ITEMS(state, payload) {
-      const filter = state.filterItems.find((f) => f.key === payload.key)
+      const filter = state.filters.find((f) => f.key === payload.key)
       filter.items = payload.items
+    },
+    SET_FILTER_ITEMS_SHOW(state, payload) {
+      const filter = state.filters.find((f) => f.key === payload.key)
+      filter.show = payload.show
+      localStorage.setItem(
+        'training-library-filters',
+        JSON.stringify({
+          filters: state.filters,
+          filterOptionsFilters: state.filterOptionsFilters
+        })
+      )
+    },
+    SET_DEFAULT_TABLE_FILTERS(state, payload) {
+      const filters = localStorage.getItem('training-library-filters')
+      if (!filters) return
+      const { filters: savedFilters = {}, filterOptionsFilters = [] } = JSON.parse(filters)
+      state.filters = savedFilters
+      state.filterOptionsFilters = filterOptionsFilters
     }
   },
   actions: {
@@ -385,6 +401,12 @@ const trainingLibrary = {
     },
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)
+    },
+    setFilterItemsShow({ commit }, payload) {
+      commit('SET_FILTER_ITEMS_SHOW', payload)
+    },
+    initDefaultTableFilters({ commit }) {
+      commit('SET_DEFAULT_TABLE_FILTERS')
     }
   }
 }

@@ -7,13 +7,13 @@
       class="training-library-popup-row py-1"
     >
       {{ col.label }}
-      <VSwitch v-model="col.show" color="#2196f3" @change="handleListItemClick" />
+      <VSwitch v-model="col.show" color="#2196f3" @change="handleListItemClick(col, $event)" />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingLibraryShowFilterItems',
@@ -23,7 +23,13 @@ export default {
     })
   },
   methods: {
-    handleListItemClick(item = '') {}
+    ...mapActions({ setFilterItemsShow: 'trainingLibrary/setFilterItemsShow' }),
+    handleListItemClick(item = {}, event) {
+      this.setFilterItemsShow({
+        key: item.property,
+        show: event
+      })
+    }
   }
 }
 </script>

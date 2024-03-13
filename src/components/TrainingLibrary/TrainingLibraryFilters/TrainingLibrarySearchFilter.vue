@@ -12,10 +12,14 @@
         style="margin-top: 1px;"
       />
     </div>
-    <div class="training-library-search-filter-body">
+    <div
+      class="training-library-search-filter-body"
+      :style="{ maxHeight: `${(totalFilterLength - 2) * 48}px` }"
+    >
       <VCheckbox
         v-for="item in getItems"
-        v-model="filterChecked"
+        v-model="filter.value"
+        :ripple="false"
         :key="item.value"
         hide-details
         class="mb-2"
@@ -31,11 +35,15 @@
 export default {
   name: 'TrainingLibrarySearchFilter',
   props: {
-    filterKey: {
-      type: String
+    filter: {
+      type: Object
     },
     items: {
       type: Array
+    },
+    totalFilterLength: {
+      type: Number,
+      default: 1
     }
   },
   data() {

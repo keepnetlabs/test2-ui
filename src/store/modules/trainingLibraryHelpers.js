@@ -1,5 +1,6 @@
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { distributionDelayTimeTypes } from '@/components/TrainingLibrary/utils'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 const trainingLibraryHelpers = {
   namespaced: true,
@@ -130,7 +131,7 @@ const trainingLibraryHelpers = {
         dispatch(
           'trainingLibrary/setFilterItems',
           {
-            key: 'language',
+            key: PROPERTY_STORE.LANGUAGES,
             items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
           },
           { root: true }

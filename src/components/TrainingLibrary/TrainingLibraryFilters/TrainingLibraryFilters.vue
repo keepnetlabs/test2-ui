@@ -25,9 +25,9 @@
             />
           </div>
         </template>
-        <div class="training-library-filters-container">
+        <div v-if="getTotalFilterLength" class="training-library-filters-container">
           <div class="training-library-filters-container__left">
-            <div v-for="filter in filterItems" v-if="filter.show" :key="filter.key">
+            <div v-for="filter in filters" v-if="filter.show" :key="filter.key">
               <VListItem
                 :class="[
                   'training-library-filtering-options-parent-list-item cursor-pointer',
@@ -54,9 +54,12 @@
           <div class="training-library-filters-container__right">
             <div class="training-library-filters-container__right-container">
               <TrainingLibrarySearchFilter
+                v-if="activeFilter.filterType === 'search'"
+                :total-filter-length="getTotalFilterLength"
                 :items="activeFilter.items"
-                :filterKey="activeFilter.key"
+                :filter="activeFilter"
               />
+              <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
             </div>
             <div class="training-library-filters-container__right-footer">
               <v-btn
@@ -71,12 +74,18 @@
                 text
                 class="filter__footer-button"
                 color="#2196F3"
+                :disabled="isFilterButtonDisabled"
                 @click="handleFilter(activeFilter)"
               >
                 Filter
               </v-btn>
             </div>
           </div>
+        </div>
+        <div v-else class="training-library-filters-container__empty">
+          <p class="mb-0">
+            No filter has been applied. Please select a filter from the filtering options.
+          </p>
         </div>
       </VMenu>
       <TrainingLibraryFilteringOptions />
@@ -90,28 +99,41 @@
 <script>
 import TrainingLibraryFilteringOptions from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilteringOptions.vue'
 import TrainingLibrarySorting from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySorting.vue'
-import { TRAINING_LIBRARY_FILTERS } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
 import { mapGetters } from 'vuex'
+import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
 
 export default {
   name: 'TrainingLibraryFilters',
   components: {
+    TrainingLibrarySelectFilter,
     TrainingLibrarySearchFilter,
     TrainingLibrarySorting,
     TrainingLibraryFilteringOptions
   },
   data() {
     return {
-      TRAINING_LIBRARY_FILTERS,
-      activeFilter: 'behaviours',
+      activeFilter: {},
       menu: false
     }
   },
   computed: {
     ...mapGetters({
-      filterItems: 'trainingLibrary/getFilterItems'
-    })
+      filters: 'trainingLibrary/getFilters'
+    }),
+    getTotalFilterLength() {
+      return this.filters.filter((item) => item.show).length
+    },
+    isFilterButtonDisabled() {
+      if (this.activeFilter.filterType === 'search') {
+        return this.activeFilter.value.length === 0
+      } else {
+        return !this.activeFilter.value
+      }
+    }
+  },
+  created() {
+    if (this.filters) this.handleSetActiveFilter(this.filters[0])
   },
   methods: {
     handleSetActiveFilter(filter) {

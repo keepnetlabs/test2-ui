@@ -160,7 +160,7 @@
   &__left{
     width:240px;
     & > div {
-      max-height: 44px;
+      max-height: 48px;
     }
     & > div:last-child{
       max-height: 48px;
@@ -187,9 +187,18 @@
       border-top:1px solid #E0E0E0;
     }
   }
+  &__empty{
+    padding:16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 326px;
+  }
 }
 .training-library-search-filter-body{
-  max-height: 232px;
+  max-height: 230px;
+  margin-bottom:32px;
+  min-height: 190px;
   overflow: auto;
 }
 .training-library-filter-active{

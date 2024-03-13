@@ -123,7 +123,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   TAGS: {
     label: 'Tags',
     property: PROPERTY_STORE.TAGS,
-    show: true
+    show: false
   },
   DATE_CREATED: {
     label: 'Date Created',

@@ -25,12 +25,14 @@ export default {
   },
   created() {
     this.initDefaultTableSettings()
+    this.initDefaultTableFilters()
     this.callForTrainingHelpers()
     this.callForTrainingLibrary()
   },
   methods: {
     ...mapActions({
       initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings',
+      initDefaultTableFilters: 'trainingLibrary/initDefaultTableFilters',
       callForTrainingHelpers: 'trainingLibraryHelpers/callForTrainingHelpers',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
