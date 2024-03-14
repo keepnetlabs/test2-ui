@@ -54,7 +54,7 @@ stages:
 - stage: DEV
   variables:
   - group: Dev-UI-Config
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))  
+  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
   dependsOn: CI_Dev
   jobs:
     - template: sub-KeepnetLabs.UI-CD.yml
@@ -68,7 +68,7 @@ stages:
 - stage: DEV_DASH
   variables:
   - group: Dev-UI-Config
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))  
+  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
   dependsOn: CI_Dev
   jobs:
     - template: sub-KeepnetLabs.UI-CD.yml
