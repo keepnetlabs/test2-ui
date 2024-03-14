@@ -69,14 +69,14 @@ const trainingLibrary = {
     ],
     search: '',
     searchPlaceholder: 'Search in 3490 training by name',
-    firstColFixed: false,
-    lastColFixed: false,
+    firstColFixed: true,
+    lastColFixed: true,
     isListView: true,
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
     filterType: 'OR',
-    sortBy: '',
+    sortBy: 'Date Created - New to old',
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
     learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
@@ -146,8 +146,8 @@ const trainingLibrary = {
         'training-library-columns',
         JSON.stringify({
           renderedColumns: state.renderedColumns,
-          firstColFixed: state.firstColFixed,
-          lastColFixed: state.lastColFixed
+          firstColFixed: state.firstColFixed || false,
+          lastColFixed: state.lastColFixed || false
         })
       )
     },
@@ -165,12 +165,9 @@ const trainingLibrary = {
       if (!tableSettings) return
       const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(tableSettings)
       state.tableColumns.forEach((col) => (col.show = renderedColumns.includes(col.property)))
-      state.renderedColumns = renderedColumns || []
+      if (renderedColumns) state.renderedColumns = renderedColumns
       state.firstColFixed = !!firstColFixed
       state.lastColFixed = !!lastColFixed
-      console.log('state.lastColFixed', state.lastColFixed)
-      console.log('state.firstColFixed', state.firstColFixed)
-      console.log('state', state)
     },
     SET_TRAINING_SUB_TABS(state, payload) {
       state.trainingSubTabs = payload
@@ -342,6 +339,11 @@ const trainingLibrary = {
           Operator: payload.operator
         })
       }
+    },
+    REMOVE_FILTER_FROM_PAYLOAD(state, payload) {
+      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      if (fIndex !== -1) filterItems.splice(fIndex, 1)
     }
   },
   actions: {
@@ -497,6 +499,10 @@ const trainingLibrary = {
     },
     setFilterToPayload({ commit, dispatch }, payload) {
       commit('SET_FILTER_TO_PAYLOAD', payload)
+      dispatch('callForTrainingLibrary')
+    },
+    removeFilterFromPayload({ commit, dispatch }, payload) {
+      commit('REMOVE_FILTER_FROM_PAYLOAD', payload)
       dispatch('callForTrainingLibrary')
     }
   }

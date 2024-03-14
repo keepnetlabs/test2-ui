@@ -12,15 +12,16 @@
       <template #activator="{ on }">
         <div v-on="on">
           <VTextField
-            v-model.trim="activeSort"
+            :value="activeSort"
             ref="refFiltersInput"
             id="input--training-library-sorting"
-            style="max-width: 200px;"
+            label="Sort By"
+            style="width: 210px;"
+            class="pointer-none"
             outlined
             hide-details
             autocomplete="off"
             placeholder="Sort By"
-            prepend-inner-icon="mdi-arrow-down"
             append-icon="mdi-menu-down"
           />
         </div>
@@ -44,7 +45,7 @@
           <div :key="filter.text" v-for="filter in item.menu">
             <VListItem
               class="training-library-filtering-options-parent-list-item cursor-pointer"
-              @click="handleSortBy(filter)"
+              @click="handleSortBy(item, filter)"
             >
               <VListItemTitle class="training-library-filtering-options-parent-list-item-title">{{
                 filter.text
@@ -58,23 +59,28 @@
 </template>
 <script>
 import { TRAINING_LIBRARY_SORTING_OPTIONS } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingLibrarySorting',
   data() {
     return {
       TRAINING_LIBRARY_SORTING_OPTIONS,
-      activeSort: '',
       parentMenu: false,
       childMenu: [false, false, false]
     }
   },
+  computed: {
+    ...mapGetters({
+      activeSort: 'trainingLibrary/getSortBy'
+    })
+  },
   methods: {
     ...mapActions({ setSortBy: 'trainingLibrary/setSortBy' }),
-    handleSortBy(filter) {
+    handleSortBy(item, sort) {
+      console.log(sort)
       this.parentMenu = false
-      this.setSortBy(filter)
+      this.setSortBy(`${item.text} - ${sort.text}`)
     }
   }
 }

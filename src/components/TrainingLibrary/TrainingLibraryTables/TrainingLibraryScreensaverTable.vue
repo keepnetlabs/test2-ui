@@ -146,6 +146,10 @@ export default {
       this.$refs.refTable.lastColFixed = this.lastColFixed
     }
   },
+  mounted() {
+    this.$refs.refTable.firstColFixed = this.firstColFixed
+    this.$refs.refTable.lastColFixed = this.lastColFixed
+  },
   methods: {
     ...mapActions({
       callForData: 'trainingLibrary/callForTableData',

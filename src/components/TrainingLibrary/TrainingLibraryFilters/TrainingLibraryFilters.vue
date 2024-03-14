@@ -156,7 +156,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setFilterToPayload: 'trainingLibrary/setFilterToPayload'
+      setFilterToPayload: 'trainingLibrary/setFilterToPayload',
+      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     handleSetActiveFilter(filter) {
       if (this.activeFilter.key === filter.key) return
@@ -182,7 +183,6 @@ export default {
       else if (filter.filterType === 'select') filterValue = ''
       filter.value = filterValue
       filter.activeValue = filterValue
-      this.callForData()
       this.setFilterToPayload(filter)
     },
     handleFilter(filter) {

@@ -219,18 +219,16 @@ export default {
         })
       }
     },
-    firstColFixed: {
-      immediate: true,
-      handler() {
-        this.$refs.refTable.firstColFixed = this.firstColFixed
-      }
+    firstColFixed() {
+      this.$refs.refTable.firstColFixed = this.firstColFixed
     },
-    lastColFixed: {
-      immediate: true,
-      handler() {
-        this.$refs.refTable.lastColFixed = !!this.lastColFixed
-      }
+    lastColFixed() {
+      this.$refs.refTable.lastColFixed = this.lastColFixed
     }
+  },
+  mounted() {
+    this.$refs.refTable.firstColFixed = this.firstColFixed
+    this.$refs.refTable.lastColFixed = this.lastColFixed
   }
 }
 </script>
