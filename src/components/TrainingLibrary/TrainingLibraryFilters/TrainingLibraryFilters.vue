@@ -149,10 +149,32 @@ export default {
   },
   methods: {
     handleSetActiveFilter(filter) {
+      if (this.activeFilter.key === filter.key) return
+      if (filter.isFilterActive) {
+        console.log('filter is already active', filter.initialValue)
+        filter.value = filter.initialValue
+      } else {
+        let filterValue
+        if (filter.filterType === 'search') filterValue = []
+        else if (filter.filterType === 'select') filterValue = ''
+        else {
+        }
+        filter.value = filterValue
+      }
       this.activeFilter = filter
     },
-    handleClearFilter(key) {},
-    handleFilter() {},
+    handleClearFilter(filter) {
+      filter.isFilterActive = false
+      let filterValue
+      if (filter.filterType === 'search') filterValue = []
+      else if (filter.filterType === 'select') filterValue = ''
+      filter.value = filterValue
+      filter.initialValue = filterValue
+    },
+    handleFilter(filter) {
+      filter.isFilterActive = true
+      filter.initialValue = filter.value
+    },
     handleMenuVisibilityChange(val) {
       if (this.activeFilter.filterType === 'date') {
         const { refPicker, refPicker2 } = this.$refs.refDateFilter.$refs

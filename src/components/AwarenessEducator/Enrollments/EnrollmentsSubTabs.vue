@@ -34,6 +34,12 @@
       :selected-row="selectedRow"
       @on-close="toggleShowDeleteEnrollmentsDialog"
     />
+    <TrashDeletePermanentlyDialog
+      v-if="isShowDeletePermanentlyDialog"
+      :status="isShowDeletePermanentlyDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowPermanentlyDeleteDialog"
+    />
     <StopEnrollmentDialog
       v-if="isShowStopEnrollmentDialog"
       :status="isShowStopEnrollmentDialog"
@@ -61,6 +67,7 @@
       >
         <EnrollmentsAllTypesTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.ALL_TYPES"
+          :ref="`refTable${template.name}`"
           :is-trash="isTrash"
           :show-download-button="!isTrash"
           :api-func="getApiFunc"
@@ -80,6 +87,7 @@
         />
         <EnrollmentsLearningPathTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.LEARNING_PATH"
+          :ref="`refTable${template.name}`"
           :is-trash="isTrash"
           :show-download-button="!isTrash"
           :api-func="getApiFunc"
@@ -98,6 +106,7 @@
         />
         <EnrollmentsTrainingTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.TRAINING"
+          :ref="`refTable${template.name}`"
           :is-trash="isTrash"
           :show-download-button="!isTrash"
           :api-func="getApiFunc"
@@ -116,6 +125,7 @@
         />
         <EnrollmentsPosterTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.POSTER"
+          :ref="`refTable${template.name}`"
           :is-trash="isTrash"
           :show-download-button="!isTrash"
           :api-func="getApiFunc"
@@ -134,6 +144,7 @@
         />
         <EnrollmentsInfographicTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.INFOGRAPHIC"
+          :ref="`refTable${template.name}`"
           :is-trash="isTrash"
           :show-download-button="!isTrash"
           :api-func="getApiFunc"
@@ -175,9 +186,11 @@ import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/Tra
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
+import TrashDeletePermanentlyDialog from '@/components/AwarenessEducator/Enrollments/TrashDeletePermanentlyDialog.vue'
 export default {
   name: 'EnrollmentsSubTabs',
   components: {
+    TrashDeletePermanentlyDialog,
     TrainingLibraryTrainingPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryLearningPathPreviewDialog,
@@ -223,6 +236,7 @@ export default {
       isShowEditEnrollmentModal: false,
       isShowSendEnrollmentDialog: false,
       isShowDeleteEnrollmentsDialog: false,
+      isShowDeletePermanentlyDialog: false,
       isShowStopEnrollmentDialog: false,
       isShowPreviewDialog: false,
       loading: false,
@@ -252,24 +266,25 @@ export default {
     }),
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
-        this.$refs.refTable.callForData()
+        this.$refs[`refTable${this.tab}`].callForData()
       })
     },
     toggleShowPermanentlyDeleteDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
-      if (this.isShowDeleteDialog) this.selectedRow = null
-      this.isShowDeleteDialog = !this.isShowDeleteDialog
+      if (forceUpdate && typeof forceUpdate === 'boolean')
+        this.$refs[`refTable${this.tab}`].refTable.callForData()
+      if (this.isShowDeletePermanentlyDialog) this.selectedRow = null
+      this.isShowDeletePermanentlyDialog = !this.isShowDeletePermanentlyDialog
     },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) {
-        this.$refs.refTable.$refs.refTable.unSelectRow(this.selectedRow)
-        this.$refs.refTable.callForData()
+        this.$refs[`refTable${this.tab}`].unSelectRow(this.selectedRow)
+        this.$refs[`refTable${this.tab}`].callForData()
       }
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
       this.isShowDeleteEnrollmentsDialog = !this.isShowDeleteEnrollmentsDialog
     },
     toggleShowStopEnrollmentDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
       if (this.isShowStopEnrollmentDialog) this.selectedRow = null
       this.isShowStopEnrollmentDialog = !this.isShowStopEnrollmentDialog
     },
@@ -286,7 +301,7 @@ export default {
       this.toggleShowSendEnrollmentDialog()
     },
     toggleShowEditEnrollmentModal(forceUpdate) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
       if (this.isShowEditEnrollmentModal) this.selectedRow = null
       this.isShowEditEnrollmentModal = !this.isShowEditEnrollmentModal
     },
@@ -340,7 +355,7 @@ export default {
       })
     },
     toggleShowSendEnrollmentDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs.refTable.callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
       if (this.isShowSendEnrollmentDialog) this.selectedRow = null
       this.isShowSendEnrollmentDialog = !this.isShowSendEnrollmentDialog
     },
@@ -366,7 +381,7 @@ export default {
       AwarenessEducatorService.stopReminder(this.selectedRow.enrollmentId)
         .then((res) => {
           this.isStopReminderDialogVisible = false
-          this.$refs.refTable.callForData()
+          this.$refs[`refTable${this.tab}`].callForData()
         })
         .finally(() => {
           this.loading = false
@@ -380,7 +395,7 @@ export default {
       AwarenessEducatorService.stopAutoEnroll(this.selectedRow.enrollmentId)
         .then((res) => {
           this.isStopAutoEnrollDialogVisible = false
-          this.$refs.refTable.callForData()
+          this.$refs[`refTable${this.tab}`].callForData()
         })
         .finally(() => {
           this.loading = false

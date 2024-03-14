@@ -41,7 +41,9 @@ export const trainingLibraryFilters = [
     key: PROPERTY_STORE.BEHAVIOURS,
     show: true,
     filterType: 'search',
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Type',
@@ -56,7 +58,9 @@ export const trainingLibraryFilters = [
       { text: 'Infographic', value: 'Infographic' },
       { text: 'Screensaver', value: 'Screensaver' }
     ],
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Category',
@@ -72,7 +76,9 @@ export const trainingLibraryFilters = [
       { text: 'Category 4', value: 'Category 4' },
       { text: 'Category 5', value: 'Category 5' }
     ],
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Language',
@@ -81,7 +87,9 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     items: [],
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Created By',
@@ -90,7 +98,9 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'select',
     operator: 'Contains',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   },
   {
     text: 'Target Audience',
@@ -99,7 +109,9 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     items: [],
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Compliance',
@@ -108,7 +120,9 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'select',
     operator: 'Contains',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   },
   {
     text: 'Vendor',
@@ -117,7 +131,9 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'search',
     items: [],
-    value: []
+    value: [],
+    initialValue: [],
+    isFilterActive: false
   },
   {
     text: 'Material Name',
@@ -126,7 +142,9 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   },
   {
     text: 'Description',
@@ -135,7 +153,9 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   },
   {
     text: 'Tags',
@@ -144,7 +164,9 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   },
   {
     text: 'Date Created',
@@ -153,7 +175,9 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'date',
     operator: '=',
-    value: ''
+    value: '',
+    initialValue: '',
+    isFilterActive: false
   }
 ]
 
