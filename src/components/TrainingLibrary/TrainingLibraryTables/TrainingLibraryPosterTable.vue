@@ -55,7 +55,7 @@ export default {
     TrainingLibraryPosterRowActions,
     DataTable
   },
-  mixins: [useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       CONSTANTS: {
@@ -105,7 +105,9 @@ export default {
       axiosPayload: 'trainingLibrary/getAxiosPayload',
       isLoading: 'trainingLibrary/getIsLoading',
       selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
-      renderedColumns: 'trainingLibrary/getRenderedColumns'
+      renderedColumns: 'trainingLibrary/getRenderedColumns',
+      firstColFixed: 'trainingLibrary/getFirstColFixed',
+      lastColFixed: 'trainingLibrary/getLastColFixed'
     })
   },
   watch: {
@@ -133,6 +135,14 @@ export default {
           message: ''
         })
       }
+    },
+    firstColFixed() {
+      this.tableOptions.columns[0].fixed = this.firstColFixed
+      this.$refs.refTable.firstColFixed = this.firstColFixed
+    },
+    lastColFixed() {
+      this.tableOptions.columns[this.tableOptions.columns.length - 1].fixed = this.lastColFixed
+      this.$refs.refTable.lastColFixed = this.lastColFixed
     }
   },
   methods: {

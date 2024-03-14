@@ -172,6 +172,15 @@
     position: relative;
     &-container{
       padding:16px;
+      .el-date-editor--datetimerange{
+        & .el-range-separator {
+          margin-right: 10px;
+          margin-left: -2px;
+        }
+        &.el-input__inner input{
+          min-width: 68px !important;
+        }
+      }
     }
     &-footer{
       display: flex;
@@ -197,7 +206,7 @@
 }
 .training-library-search-filter-body{
   max-height: 230px;
-  margin-bottom:32px;
+  margin-bottom:28px;
   min-height: 190px;
   overflow: auto;
 }
@@ -228,7 +237,25 @@
       align-items: center;
       gap:8px;
     }
+    &__right-side{
+      display: flex;
+      align-items: center;
+    }
   }
+}
+.training-library-filter-number{
+  background-color: #2196F3;
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .training-library-training-preview{
   .form-group-horizontal-content__label{

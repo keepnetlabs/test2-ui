@@ -14,7 +14,7 @@
     </div>
     <div
       class="training-library-search-filter-body"
-      :style="{ maxHeight: `${(totalFilterLength - 2) * 48}px` }"
+      :style="{ maxHeight: `${(totalFilterLength - 2) * 45}px` }"
     >
       <VCheckbox
         v-for="item in getItems"

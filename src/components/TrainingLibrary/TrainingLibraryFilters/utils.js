@@ -42,7 +42,8 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     value: [],
-    initialValue: [],
+    activeValue: [],
+    operator: 'Include',
     isFilterActive: false
   },
   {
@@ -51,6 +52,7 @@ export const trainingLibraryFilters = [
     key: PROPERTY_STORE.TYPE,
     show: true,
     filterType: 'search',
+    operator: 'Include',
     items: [
       { text: 'Learning Path', value: 'Learning Path' },
       { text: 'Training', value: 'Training' },
@@ -59,7 +61,7 @@ export const trainingLibraryFilters = [
       { text: 'Screensaver', value: 'Screensaver' }
     ],
     value: [],
-    initialValue: [],
+    activeValue: [],
     isFilterActive: false
   },
   {
@@ -68,6 +70,7 @@ export const trainingLibraryFilters = [
     key: PROPERTY_STORE.CATEGORY,
     show: true,
     filterType: 'search',
+    operator: 'Include',
     items: [
       { text: 'All Categories', value: 'All Categories' },
       { text: 'Category 1', value: 'Category 1' },
@@ -77,7 +80,7 @@ export const trainingLibraryFilters = [
       { text: 'Category 5', value: 'Category 5' }
     ],
     value: [],
-    initialValue: [],
+    activeValue: [],
     isFilterActive: false
   },
   {
@@ -86,9 +89,10 @@ export const trainingLibraryFilters = [
     key: PROPERTY_STORE.LANGUAGES,
     show: true,
     filterType: 'search',
+    operator: 'Include',
     items: [],
     value: [],
-    initialValue: [],
+    activeValue: [],
     isFilterActive: false
   },
   {
@@ -99,7 +103,7 @@ export const trainingLibraryFilters = [
     filterType: 'select',
     operator: 'Contains',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   },
   {
@@ -108,9 +112,10 @@ export const trainingLibraryFilters = [
     key: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true,
     filterType: 'search',
+    operator: 'Include',
     items: [],
     value: [],
-    initialValue: [],
+    activeValue: [],
     isFilterActive: false
   },
   {
@@ -121,7 +126,7 @@ export const trainingLibraryFilters = [
     filterType: 'select',
     operator: 'Contains',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   },
   {
@@ -132,7 +137,8 @@ export const trainingLibraryFilters = [
     filterType: 'search',
     items: [],
     value: [],
-    initialValue: [],
+    activeValue: [],
+    operator: 'Include',
     isFilterActive: false
   },
   {
@@ -143,7 +149,7 @@ export const trainingLibraryFilters = [
     filterType: 'select',
     operator: 'Contains',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   },
   {
@@ -154,7 +160,7 @@ export const trainingLibraryFilters = [
     filterType: 'select',
     operator: 'Contains',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   },
   {
@@ -165,7 +171,7 @@ export const trainingLibraryFilters = [
     filterType: 'select',
     operator: 'Contains',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   },
   {
@@ -176,7 +182,7 @@ export const trainingLibraryFilters = [
     filterType: 'date',
     operator: '=',
     value: '',
-    initialValue: '',
+    activeValue: '',
     isFilterActive: false
   }
 ]

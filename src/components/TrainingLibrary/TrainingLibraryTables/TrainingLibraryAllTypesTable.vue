@@ -132,12 +132,7 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [
-    useAddTrainingLibraryContent,
-    useLoading,
-    useDefaultTableFunctions,
-    useAwarenessColumnBindsFromApi
-  ],
+  mixins: [useDefaultTableFunctions],
   data() {
     return {
       TRAINING_LIBRARY_TYPES,
@@ -146,9 +141,6 @@ export default {
       CONSTANTS: {
         id: 'awareness-educator-training-library-all-types-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload(),
-      tableData: [],
-      serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_LIBRARY_ALL_TYPES_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_LIBRARY_ALL_TYPES_TABLE,
@@ -191,7 +183,11 @@ export default {
       selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
       renderedColumns: 'trainingLibrary/getRenderedColumns',
       firstColFixed: 'trainingLibrary/getFirstColFixed',
-      lastColFixed: 'trainingLibrary/getLastColFixed'
+      lastColFixed: 'trainingLibrary/getLastColFixed',
+      tableData: 'trainingLibrary/getTableData',
+      serverSideProps: 'trainingLibrary/getServerSideProps',
+      axiosPayload: 'trainingLibrary/getAxiosPayload',
+      isLoading: 'trainingLibrary/getIsLoading'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
@@ -223,43 +219,17 @@ export default {
         })
       }
     },
-    firstColFixed() {
-      this.tableOptions.columns[0].fixed = this.firstColFixed
-      this.$refs.refTable.firstColFixed = this.firstColFixed
+    firstColFixed: {
+      immediate: true,
+      handler() {
+        this.$refs.refTable.firstColFixed = this.firstColFixed
+      }
     },
-    lastColFixed() {
-      this.tableOptions.columns[this.tableOptions.columns.length - 1].fixed = this.lastColFixed
-      this.$refs.refTable.lastColFixed = this.lastColFixed
-    }
-  },
-  mounted() {
-    this.callForData()
-  },
-  methods: {
-    callForData() {
-      this.setLoading(true)
-      AwarenessEducatorService.searchTraining(this.axiosPayload)
-        .then((response) => {
-          const {
-            data: { data = {} }
-          } = response
-          const {
-            results = [],
-            totalNumberOfRecords = 0,
-            totalNumberOfPages = 0,
-            pageNumber = 1
-          } = data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          results[0].type = TRAINING_LIBRARY_TYPES.TRAINING
-          results[1].type = TRAINING_LIBRARY_TYPES.POSTER
-          results[2].type = TRAINING_LIBRARY_TYPES.INFOGRAPHIC
-          results[3].type = TRAINING_LIBRARY_TYPES.SCREENSAVER
-          results[4].type = TRAINING_LIBRARY_TYPES.LEARNING_PATH
-          this.tableData = results
-        })
-        .finally(this.setLoading)
+    lastColFixed: {
+      immediate: true,
+      handler() {
+        this.$refs.refTable.lastColFixed = !!this.lastColFixed
+      }
     }
   }
 }

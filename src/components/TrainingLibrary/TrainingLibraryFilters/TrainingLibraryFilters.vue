@@ -47,9 +47,16 @@
                       filter.text
                     }}</span>
                   </div>
-                  <VIcon :color="activeFilter.key === filter.key ? '#2196F3' : '#757575'"
-                    >mdi-menu-right</VIcon
+                  <div
+                    class="training-library-filtering-options-parent-list-item-title__right-side"
                   >
+                    <div v-if="filter.isFilterActive" class="training-library-filter-number">
+                      {{ filter.filterType === 'search' ? filter.activeValue.length : 1 }}
+                    </div>
+                    <VIcon :color="activeFilter.key === filter.key ? '#2196F3' : '#757575'"
+                      >mdi-menu-right</VIcon
+                    >
+                  </div>
                 </VListItemTitle>
               </VListItem>
             </div>
@@ -109,7 +116,7 @@
 import TrainingLibraryFilteringOptions from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilteringOptions.vue'
 import TrainingLibrarySorting from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySorting.vue'
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
 import TrainingLibraryDateFilter from './TrainingLibraryDateFilter.vue'
 
@@ -148,11 +155,17 @@ export default {
     if (this.filters) this.handleSetActiveFilter(this.filters[0])
   },
   methods: {
+    ...mapActions({
+      setFilterToPayload: 'trainingLibrary/setFilterToPayload'
+    }),
     handleSetActiveFilter(filter) {
       if (this.activeFilter.key === filter.key) return
+      this.checkFilter(filter)
+      this.activeFilter = filter
+    },
+    checkFilter(filter) {
       if (filter.isFilterActive) {
-        console.log('filter is already active', filter.initialValue)
-        filter.value = filter.initialValue
+        filter.value = filter.activeValue
       } else {
         let filterValue
         if (filter.filterType === 'search') filterValue = []
@@ -161,7 +174,6 @@ export default {
         }
         filter.value = filterValue
       }
-      this.activeFilter = filter
     },
     handleClearFilter(filter) {
       filter.isFilterActive = false
@@ -169,11 +181,14 @@ export default {
       if (filter.filterType === 'search') filterValue = []
       else if (filter.filterType === 'select') filterValue = ''
       filter.value = filterValue
-      filter.initialValue = filterValue
+      filter.activeValue = filterValue
+      this.callForData()
+      this.setFilterToPayload(filter)
     },
     handleFilter(filter) {
       filter.isFilterActive = true
-      filter.initialValue = filter.value
+      filter.activeValue = filter.value
+      this.setFilterToPayload(filter)
     },
     handleMenuVisibilityChange(val) {
       if (this.activeFilter.filterType === 'date') {
@@ -188,6 +203,7 @@ export default {
       }
       this.isCloseOnClick = true
       this.menu = val
+      if (!this.menu) this.checkFilter(this.activeFilter)
     },
     handleDatePickerChange() {
       const { refMenu } = this.$refs

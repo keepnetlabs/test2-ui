@@ -16,6 +16,7 @@
       <InputDate
         v-if="filter.operator !== 'between'"
         v-model="filter.value"
+        :key="`${getDateKey}2`"
         style="width: 100% !important;"
         placeholder="Select date"
         class="mt-2"
@@ -26,10 +27,11 @@
       <InputDate
         v-else
         v-model="filter.value"
+        :key="`${getDateKey}2`"
         placeholder="Select date"
         ref="refPicker2"
         type="datetimerange"
-        class="w-100"
+        class="w-100 mt-2"
         @change="$emit('on-date-picker-change')"
       />
     </div>
@@ -58,6 +60,11 @@ export default {
         { text: 'Before', value: '<=' },
         { text: 'Between', value: 'between' }
       ]
+    }
+  },
+  computed: {
+    getDateKey() {
+      return this.$store?.state?.auth?.user?.userCompany?.timeZone
     }
   }
 }

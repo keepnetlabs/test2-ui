@@ -166,8 +166,10 @@ const trainingLibrary = {
       const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(tableSettings)
       state.tableColumns.forEach((col) => (col.show = renderedColumns.includes(col.property)))
       state.renderedColumns = renderedColumns || []
-      state.firstColFixed = firstColFixed
-      state.lastColFixed = lastColFixed
+      state.firstColFixed = !!firstColFixed
+      state.lastColFixed = !!lastColFixed
+      console.log('state.lastColFixed', state.lastColFixed)
+      console.log('state.firstColFixed', state.firstColFixed)
       console.log('state', state)
     },
     SET_TRAINING_SUB_TABS(state, payload) {
@@ -266,13 +268,15 @@ const trainingLibrary = {
         filterOptionsFilters = [],
         filterType = 'OR',
         sortBy = '',
-        search = ''
+        search = '',
+        axiosPayload = getDefaultAxiosPayload()
       } = JSON.parse(filters)
       state.filters = savedFilters
       state.filterOptionsFilters = filterOptionsFilters
       state.filterType = filterType
       state.sortBy = sortBy
-      state.search = ''
+      state.search = search
+      state.axiosPayload = axiosPayload
     },
     SET_FILTERS_TO_LOCAL_STORAGE(state) {
       localStorage.setItem(
@@ -282,7 +286,8 @@ const trainingLibrary = {
           filters: state.filters,
           filterOptionsFilters: state.filterOptionsFilters,
           sortBy: state.sortBy,
-          search: state.search
+          search: state.search,
+          axiosPayload: state.axiosPayload
         })
       )
     },
@@ -324,6 +329,19 @@ const trainingLibrary = {
       state.filters = JSON.parse(JSON.stringify(trainingLibraryFilters))
       state.filterType = 'OR'
       state.sortBy = ''
+    },
+    SET_FILTER_TO_PAYLOAD(state, payload) {
+      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      if (fIndex !== -1) {
+        filterItems[fIndex].Value = payload.filterValue
+      } else {
+        filterItems.push({
+          FieldName: payload.key,
+          Value: payload.filterValue,
+          Operator: payload.operator
+        })
+      }
     }
   },
   actions: {
@@ -378,6 +396,7 @@ const trainingLibrary = {
       commit('SET_TABLE_SETTINGS_CHANGE')
     },
     setSearch({ commit, dispatch }, payload) {
+      console.log('set searh')
       commit('SET_SEARCH', payload)
       dispatch('callForTrainingLibrary')
     },
@@ -388,11 +407,12 @@ const trainingLibrary = {
       commit('SET_RENDERED_COLUMNS')
       commit('SET_DEFAULT_TABLE_SETTINGS')
     },
-    setSelectedTrainingContent({ commit, dispatch }, payload) {
+    setSelectedTrainingContent({ commit, dispatch, state }, payload) {
       commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
       dispatch('callForTrainingLibrary')
     },
     setSubSelectedTrainingContent({ commit, dispatch }, payload) {
+      console.log('sub selected')
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
       dispatch('callForTableData')
     },
@@ -474,6 +494,10 @@ const trainingLibrary = {
     resetState({ commit }) {
       commit('RESET_TABLE_PARAMS')
       commit('RESET_FILTERS')
+    },
+    setFilterToPayload({ commit, dispatch }, payload) {
+      commit('SET_FILTER_TO_PAYLOAD', payload)
+      dispatch('callForTrainingLibrary')
     }
   }
 }
