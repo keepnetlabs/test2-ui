@@ -28,7 +28,7 @@ resources:
 stages:
 # BUILD DEV
 - stage: CI_Dev 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
   jobs:
   - job: Build_UI
     steps:
