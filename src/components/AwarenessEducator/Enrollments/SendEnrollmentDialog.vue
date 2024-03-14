@@ -45,7 +45,7 @@ export default {
       CONSTANTS: {
         icon: 'mdi-send',
         title: 'Send Now?',
-        content: 'Do you want to enroll users in this training now?'
+        content: 'Do you want to enroll users now?'
       }
     }
   },
