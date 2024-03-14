@@ -16,10 +16,22 @@
       <InputDate
         v-if="filter.operator !== 'between'"
         v-model="filter.value"
+        style="width: 100% !important;"
+        placeholder="Select date"
+        class="mt-2"
         type="datetime"
         ref="refPicker"
+        @change="$emit('on-date-picker-change')"
       />
-      <InputDate v-model="filter.value" ref="refPicker2" type="datetimerange" />
+      <InputDate
+        v-else
+        v-model="filter.value"
+        placeholder="Select date"
+        ref="refPicker2"
+        type="datetimerange"
+        class="w-100"
+        @change="$emit('on-date-picker-change')"
+      />
     </div>
   </div>
 </template>

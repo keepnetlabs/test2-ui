@@ -35,6 +35,7 @@
         @on-click="routeToTrainingReport(scope.row)"
       />
       <DefaultMenuRowAction
+        v-if="isShowEdit"
         :id="rowActions[1].id"
         :scope="scope"
         :disabled="rowActions[1].disabled"
@@ -123,6 +124,9 @@ export default {
         ENROLLMENT_STATUSES.SCORM_PROXY
       ].includes(this.scope.row.status)
     },
+    isShowEdit() {
+      return this.scope.row.status !== ENROLLMENT_STATUSES.FINISHED
+    },
     getFirstActionParams() {
       const status = this.scope.row.status
       const obj = {
@@ -163,12 +167,7 @@ export default {
       }
     },
     routeToTrainingReport(row) {
-      this.$router.push({
-        name: this.isScormProxy ? 'Scorm Proxy Report' : 'Training Report',
-        params: {
-          id: row.enrollmentId
-        }
-      })
+      this.$emit('on-route-to-report', row)
     }
   }
 }

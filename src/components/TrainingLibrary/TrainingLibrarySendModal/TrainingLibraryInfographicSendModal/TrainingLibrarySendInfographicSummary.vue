@@ -281,7 +281,6 @@ export default {
       return this?.formData?.reminderData
     },
     isReminder() {
-      console.log('this.getSettingItems?.Reminder', this.getSettingItems?.Reminder)
       return this.getSettingItems?.Reminder
     },
     isPhoneNumber() {

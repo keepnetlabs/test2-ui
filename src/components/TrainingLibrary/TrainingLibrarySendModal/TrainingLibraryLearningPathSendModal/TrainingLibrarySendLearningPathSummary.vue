@@ -266,7 +266,6 @@ export default {
       return this?.formData?.settings
     },
     isReminder() {
-      console.log('this.getSettingItems?.Reminder', this.getSettingItems?.Reminder)
       return this.getSettingItems?.Reminder
     },
     isProxy() {

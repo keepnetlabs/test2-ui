@@ -24,7 +24,11 @@
       />
     </template>
     <template #app-dialog-footer>
-      <TrainingLibraryPreviewDialogFooter @on-close="handleClose" @on-send="handleSend" />
+      <TrainingLibraryPreviewDialogFooter
+        :show-send-button="getTrainingPreviewDialog.showSendButton"
+        @on-close="handleClose"
+        @on-send="handleSend"
+      />
     </template>
   </AppDialog>
 </template>
@@ -71,7 +75,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ languages: 'trainingLibraryHelpers/getLanguages' }),
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages',
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+    }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
@@ -95,6 +102,7 @@ export default {
     }),
     callForLanguages() {
       this.isPreviewLoading = true
+      console.log('this.s', this.selectedRow)
       this.selectedRow.languages.forEach((lang) => {
         const language = this.languages.find((item) => item.code === lang)
         if (language)

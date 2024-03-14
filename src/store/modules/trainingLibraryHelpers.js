@@ -127,7 +127,6 @@ const trainingLibraryHelpers = {
     callForLanguages({ commit, dispatch }) {
       AwarenessEducatorService.getLanguages().then((response) => {
         commit('SET_LANGUAGES', response?.data?.data)
-        console.log('response?.data?.data', response?.data?.data)
         dispatch(
           'trainingLibrary/setFilterItems',
           {

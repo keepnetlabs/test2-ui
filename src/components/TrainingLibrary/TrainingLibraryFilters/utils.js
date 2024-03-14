@@ -151,8 +151,8 @@ export const trainingLibraryFilters = [
     icon: 'mdi-calendar',
     key: PROPERTY_STORE.DATE_CREATED,
     show: false,
-    filterType: 'select',
-    operator: 'Exact Date',
+    filterType: 'date',
+    operator: '=',
     value: ''
   }
 ]

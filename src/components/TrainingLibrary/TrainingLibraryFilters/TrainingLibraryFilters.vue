@@ -2,13 +2,16 @@
   <div class="training-library-filters">
     <div>
       <VMenu
-        v-model="menu"
+        :value="menu"
+        ref="refMenu"
         bottom
         offset-y
         nudge-bottom="12"
         :close-on-content-click="false"
+        :close-on-click="isCloseOnClick"
         content-class="filter-options__menu-content"
         class="filter-options__menu training-library-filtering-options"
+        @input="handleMenuVisibilityChange"
       >
         <template #activator="{ on }">
           <div v-on="on">
@@ -61,7 +64,9 @@
               />
               <TrainingLibraryDateFilter
                 v-else-if="activeFilter.filterType === 'date'"
+                ref="refDateFilter"
                 :filter="activeFilter"
+                @on-date-picker-change="handleDatePickerChange"
               />
               <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
             </div>
@@ -120,7 +125,8 @@ export default {
   data() {
     return {
       activeFilter: {},
-      menu: false
+      menu: false,
+      isCloseOnClick: true
     }
   },
   computed: {
@@ -146,7 +152,27 @@ export default {
       this.activeFilter = filter
     },
     handleClearFilter(key) {},
-    handleFilter() {}
+    handleFilter() {},
+    handleMenuVisibilityChange(val) {
+      if (this.activeFilter.filterType === 'date') {
+        const { refPicker, refPicker2 } = this.$refs.refDateFilter.$refs
+        const { refMenu } = this.$refs
+        if ((refPicker && refPicker.pickerVisible) || (refPicker2 && refPicker2.pickerVisible)) {
+          this.isCloseOnClick = false
+          this.menu = true
+          refMenu.isActive = true
+          return
+        }
+      }
+      this.isCloseOnClick = true
+      this.menu = val
+    },
+    handleDatePickerChange() {
+      const { refMenu } = this.$refs
+      this.isCloseOnClick = true
+      this.menu = true
+      refMenu.isActive = true
+    }
   }
 }
 </script>

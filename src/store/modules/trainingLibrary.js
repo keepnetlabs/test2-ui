@@ -24,7 +24,7 @@ import {
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { trainingLibraryFilters } from '../../components/TrainingLibrary/TrainingLibraryFilters/utils'
+import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 const trainingLibrary = {
   namespaced: true,
   state: {
@@ -258,7 +258,7 @@ const trainingLibrary = {
       const filter = state.filters.find((f) => f.key === payload.key)
       filter.show = payload.show
     },
-    SET_DEFAULT_TABLE_FILTERS(state, payload) {
+    SET_DEFAULT_TABLE_FILTERS(state) {
       const filters = localStorage.getItem('training-library-filters')
       if (!filters) return
       const {
@@ -351,7 +351,7 @@ const trainingLibrary = {
           commit('SET_IS_LOADING', false)
         })
     },
-    callForTrainingLibrary({ commit, dispatch }) {
+    callForTrainingLibrary({ dispatch }) {
       dispatch('callForSummary')
       dispatch('callForTableData')
     },
@@ -462,10 +462,11 @@ const trainingLibrary = {
     initDefaultTableFilters({ commit }) {
       commit('SET_DEFAULT_TABLE_FILTERS')
     },
-    restoreDefaultFilters({ commit }) {
+    restoreDefaultFilters({ commit, dispatch }) {
       const filters = localStorage.getItem('training-library-filters')
-      if (!filters) return commit('RESET_FILTERS')
-      commit('SET_DEFAULT_TABLE_FILTERS')
+      if (!filters) commit('RESET_FILTERS')
+      else commit('SET_DEFAULT_TABLE_FILTERS')
+      dispatch('callForTrainingLibrary')
     },
     writeFiltersToLocalStorage({ commit }) {
       commit('SET_FILTERS_TO_LOCAL_STORAGE')

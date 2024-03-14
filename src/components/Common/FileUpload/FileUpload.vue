@@ -177,7 +177,6 @@ export default {
   computed: {
     getCoverImagePreview() {
       if (this.files.length) {
-        console.log(this.files[0])
         return this.files[0].url
       }
       return false

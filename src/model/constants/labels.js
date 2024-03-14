@@ -12,6 +12,10 @@ export const labels = {
   DescriptionInfographicSub: 'Describe the infographic briefly',
   ScreensaverContentStep2Sub: 'Upload screensaver content by language',
   DescriptionScreensaverSub: 'Describe the screensaver briefly',
+  EmptyEnrollmentLearningPath: 'You do not have any learning path enrollments',
+  EmptyEnrollmentInfographic: 'You do not have any infographic enrollments',
+  EmptyEnrollmentPoster: 'You do not have any poster enrollments',
+  EmptyEnrollmentTraining: 'You do not have any training enrollments',
   SMSNotificationSub:
     'In addition to the training enrollment, send an SMS notification with the selected phone number',
   PosterSMSNotificationSub:

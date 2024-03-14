@@ -1,5 +1,6 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export const EMITS = {
   ON_ADD: 'on-add',
@@ -59,6 +60,51 @@ export const COLUMNS = {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
     label: labels.TrainingName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  MATERIAL_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.MaterialName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  POSTER_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.PosterName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  LEARNING_PATH_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.LearningPathName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    overrideWidth: true,
+    width: 200
+  },
+  INFOGRAPHIC_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.InfoGraphicName,
     fixed: false,
     sortable: true,
     show: true,
@@ -184,7 +230,13 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: ['SCORM']
+    filterableItems: [
+      TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+      TRAINING_LIBRARY_TYPES.TRAINING,
+      TRAINING_LIBRARY_TYPES.POSTER,
+      TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
+      TRAINING_LIBRARY_TYPES.SCREENSAVER
+    ]
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,
