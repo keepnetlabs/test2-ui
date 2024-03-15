@@ -78,9 +78,8 @@ export default {
   methods: {
     ...mapActions({ setSortBy: 'trainingLibrary/setSortBy' }),
     handleSortBy(item, sort) {
-      console.log(sort)
       this.parentMenu = false
-      this.setSortBy(`${item.text} - ${sort.text}`)
+      this.setSortBy({ item, sort })
     }
   }
 }

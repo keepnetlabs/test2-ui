@@ -11,14 +11,14 @@
         class="mb-0"
         color="#2196f3"
         label="Or"
-        value="OR"
+        value="Or"
       />
       <VRadio
         :id="`input--campaign-manager-radio-distribution-to`"
         class="mb-0 mt-4"
         color="#2196f3"
         label="And"
-        value="AND"
+        value="And"
       />
     </VRadioGroup>
   </VListItem>

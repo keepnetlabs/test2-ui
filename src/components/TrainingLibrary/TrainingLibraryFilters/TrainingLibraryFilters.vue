@@ -167,27 +167,37 @@ export default {
     checkFilter(filter) {
       if (filter.isFilterActive) {
         filter.value = filter.activeValue
+        filter.operator = filter.activeOperator
       } else {
         let filterValue
         if (filter.filterType === 'search') filterValue = []
-        else if (filter.filterType === 'select') filterValue = ''
-        else {
-        }
+        else filterValue = ''
         filter.value = filterValue
       }
     },
     handleClearFilter(filter) {
       filter.isFilterActive = false
-      let filterValue
-      if (filter.filterType === 'search') filterValue = []
-      else if (filter.filterType === 'select') filterValue = ''
+      let filterValue, filterOperator
+      if (filter.filterType === 'search') {
+        filterValue = []
+        filterOperator = 'Include'
+      } else if (filter.filterType === 'select') {
+        filterValue = ''
+        filterOperator = 'Contains'
+      } else {
+        filterValue = ''
+        filterOperator = '='
+      }
       filter.value = filterValue
       filter.activeValue = filterValue
-      this.setFilterToPayload(filter)
+      filter.operator = filterOperator
+      filter.activeOperator = filterOperator
+      this.removeFilterFromPayload(filter)
     },
     handleFilter(filter) {
       filter.isFilterActive = true
       filter.activeValue = filter.value
+      filter.activeOperator = filter.operator
       this.setFilterToPayload(filter)
     },
     handleMenuVisibilityChange(val) {
@@ -207,7 +217,9 @@ export default {
     },
     handleDatePickerChange() {
       const { refMenu } = this.$refs
-      this.isCloseOnClick = true
+      this.isCloseOnClick = !(
+        this.activeFilter.operator === 'between' && this.activeFilter.value === ''
+      )
       this.menu = true
       refMenu.isActive = true
     }

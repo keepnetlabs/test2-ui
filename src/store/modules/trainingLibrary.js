@@ -75,7 +75,7 @@ const trainingLibrary = {
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
-    filterType: 'OR',
+    filterType: 'Or',
     sortBy: 'Date Created - New to old',
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
@@ -263,8 +263,8 @@ const trainingLibrary = {
       const {
         filters: savedFilters = {},
         filterOptionsFilters = [],
-        filterType = 'OR',
-        sortBy = '',
+        filterType = 'Or',
+        sortBy = 'Date Created - New to old',
         search = '',
         axiosPayload = getDefaultAxiosPayload()
       } = JSON.parse(filters)
@@ -323,25 +323,88 @@ const trainingLibrary = {
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED)
       ]
       state.search = ''
-      state.filters = JSON.parse(JSON.stringify(trainingLibraryFilters))
-      state.filterType = 'OR'
-      state.sortBy = ''
+      state.filters.forEach((f) => {
+        if (f.filterType === 'search') {
+          f.value = []
+          f.activeValue = []
+          f.operator = 'Include'
+          f.activeOperator = 'Include'
+        } else if (f.filterType === 'select') {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = 'Contains'
+          f.activeOperator = 'Contains'
+        } else {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = '='
+          f.activeOperator = '='
+        }
+        f.isFilterActive = false
+      })
+      state.filterType = 'Or'
+      state.sortBy = 'Date Created - New to old'
+    },
+    SET_SORT_BY_TO_PAYLOAD(state, payload) {
+      console.log('payload', payload)
+      state.axiosPayload.ascending = payload.ascending
+      state.axiosPayload.orderBy = payload.orderBy
+    },
+    SET_SEARCH_TO_PAYLOAD(state, payload) {
+      const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === 'materialName')
+      if (fIndex !== -1) {
+        filterItems[fIndex].Value = state.search
+      } else {
+        filterItems.push({
+          FieldName: 'materialName',
+          Value: state.search,
+          Operator: 'Contains'
+        })
+      }
     },
     SET_FILTER_TO_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      let value
+      if (typeof payload.activeValue === 'string') {
+        value = payload.activeValue.trim()
+      } else if (Array.isArray(payload.activeValue)) {
+        if (payload.activeOperator === 'between') {
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[0],
+            Operator: '>='
+          })
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[1],
+            Operator: '<='
+          })
+          return
+        }
+        value = payload.activeValue.join(',')
+      }
       if (fIndex !== -1) {
-        filterItems[fIndex].Value = payload.filterValue
+        filterItems[fIndex].Value = value
       } else {
         filterItems.push({
           FieldName: payload.key,
-          Value: payload.filterValue,
-          Operator: payload.operator
+          Value: value,
+          Operator: payload.activeOperator
         })
       }
     },
+    SET_FILTER_TYPE_TO_PAYLOAD(state) {
+      state.axiosPayload.filter.Condition = state.filterType
+    },
     REMOVE_FILTER_FROM_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
+      if (payload.filterType === 'date' && payload.activeOperator === 'between') {
+        const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+        if (fIndex !== -1) filterItems.splice(fIndex, 2)
+        return
+      }
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       if (fIndex !== -1) filterItems.splice(fIndex, 1)
     }
@@ -398,8 +461,8 @@ const trainingLibrary = {
       commit('SET_TABLE_SETTINGS_CHANGE')
     },
     setSearch({ commit, dispatch }, payload) {
-      console.log('set searh')
       commit('SET_SEARCH', payload)
+      commit('SET_SEARCH_TO_PAYLOAD')
       dispatch('callForTrainingLibrary')
     },
     setListView({ commit }, payload) {
@@ -418,8 +481,10 @@ const trainingLibrary = {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
       dispatch('callForTableData')
     },
-    setSortBy({ commit }, payload) {
-      commit('SET_SORT_BY', payload)
+    setSortBy({ commit, dispatch }, { item, sort }) {
+      commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
+      commit('SET_SORT_BY_TO_PAYLOAD', { ascending: sort.ascending, orderBy: item.orderBy })
+      dispatch('callForTableData')
     },
     setDeleteDialog({ commit }, payload) {
       commit('SET_DELETE_DIALOG', payload)
@@ -472,8 +537,10 @@ const trainingLibrary = {
     setAxiosPayload({ commit }, payload) {
       commit('SET_AXIOS_PAYLOAD', payload)
     },
-    setFilterType({ commit }, payload) {
+    setFilterType({ commit, dispatch }, payload) {
       commit('SET_FILTER_TYPE', payload)
+      commit('SET_FILTER_TYPE_TO_PAYLOAD')
+      dispatch('callForTableData ')
     },
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)
@@ -503,6 +570,10 @@ const trainingLibrary = {
     },
     removeFilterFromPayload({ commit, dispatch }, payload) {
       commit('REMOVE_FILTER_FROM_PAYLOAD', payload)
+      dispatch('callForTrainingLibrary')
+    },
+    clearAllFilters({ commit, dispatch }) {
+      commit('RESET_FILTERS')
       dispatch('callForTrainingLibrary')
     }
   }

@@ -21,16 +21,32 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS = [
   }
 ]
 export const TRAINING_LIBRARY_SORTING_OPTIONS = [
-  { text: 'Name', icon: 'mdi-menu-right', menu: [{ text: 'A to Z' }, { text: 'Z to A' }] },
+  {
+    text: 'Name',
+    orderBy: 'trainingName',
+    icon: 'mdi-menu-right',
+    menu: [
+      { text: 'A to Z', ascending: true },
+      { text: 'Z to A', ascending: false }
+    ]
+  },
   {
     text: 'Category',
     icon: 'mdi-menu-right',
-    menu: [{ text: 'A to Z' }, { text: 'Z to A' }]
+    orderBy: 'category',
+    menu: [
+      { text: 'A to Z', ascending: true },
+      { text: 'Z to A', ascending: true }
+    ]
   },
   {
     text: 'Date Created',
     icon: 'mdi-menu-right',
-    menu: [{ text: 'New to old' }, { text: 'Old to new' }]
+    orderBy: 'createTime',
+    menu: [
+      { text: 'New to old', ascending: true },
+      { text: 'Old to new', ascending: true }
+    ]
   }
 ]
 
@@ -44,6 +60,7 @@ export const trainingLibraryFilters = [
     value: [],
     activeValue: [],
     operator: 'Include',
+    activeOperator: 'Include',
     isFilterActive: false
   },
   {
@@ -53,6 +70,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     operator: 'Include',
+    activeOperator: 'Include',
     items: [
       { text: 'Learning Path', value: 'Learning Path' },
       { text: 'Training', value: 'Training' },
@@ -71,6 +89,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     operator: 'Include',
+    activeOperator: 'Include',
     items: [
       { text: 'All Categories', value: 'All Categories' },
       { text: 'Category 1', value: 'Category 1' },
@@ -90,6 +109,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     operator: 'Include',
+    activeOperator: 'Include',
     items: [],
     value: [],
     activeValue: [],
@@ -102,6 +122,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'select',
     operator: 'Contains',
+    activeOperator: 'Contains',
     value: '',
     activeValue: '',
     isFilterActive: false
@@ -113,6 +134,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'search',
     operator: 'Include',
+    activeOperator: 'Include',
     items: [],
     value: [],
     activeValue: [],
@@ -125,6 +147,7 @@ export const trainingLibraryFilters = [
     show: true,
     filterType: 'select',
     operator: 'Contains',
+    activeOperator: 'Contains',
     value: '',
     activeValue: '',
     isFilterActive: false
@@ -139,6 +162,7 @@ export const trainingLibraryFilters = [
     value: [],
     activeValue: [],
     operator: 'Include',
+    activeOperator: 'Include',
     isFilterActive: false
   },
   {
@@ -148,6 +172,7 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
+    activeOperator: 'Contains',
     value: '',
     activeValue: '',
     isFilterActive: false
@@ -159,6 +184,7 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
+    activeOperator: 'Contains',
     value: '',
     activeValue: '',
     isFilterActive: false
@@ -170,6 +196,7 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'select',
     operator: 'Contains',
+    activeOperator: 'Contains',
     value: '',
     activeValue: '',
     isFilterActive: false
@@ -181,6 +208,7 @@ export const trainingLibraryFilters = [
     show: false,
     filterType: 'date',
     operator: '=',
+    activeOperator: '=',
     value: '',
     activeValue: '',
     isFilterActive: false

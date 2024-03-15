@@ -266,7 +266,6 @@ export default {
       return this?.formData?.settings
     },
     isReminder() {
-      console.log('this.getSettingItems?.Reminder', this.getSettingItems?.Reminder)
       return this.getSettingItems?.Reminder
     },
     isProxy() {
@@ -291,7 +290,6 @@ export default {
   watch: {
     isShowTrainingEmail(val) {
       if (val) {
-        console.log(' selectedRow: this.selectedRow', this.selectedRow)
         this.setTrainingPreviewDialog({
           status: true,
           selectedRow: this.selectedRow

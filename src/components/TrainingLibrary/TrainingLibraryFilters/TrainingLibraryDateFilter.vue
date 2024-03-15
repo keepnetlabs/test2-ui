@@ -10,13 +10,13 @@
         hide-details
         :menu-props="{ offsetY: true }"
         :items="dateFilterItems"
+        @change="handleOperatorChange"
       />
     </div>
     <div>
       <InputDate
         v-if="filter.operator !== 'between'"
         v-model="filter.value"
-        :key="`${getDateKey}2`"
         style="width: 100% !important;"
         placeholder="Select date"
         class="mt-2"
@@ -27,8 +27,8 @@
       <InputDate
         v-else
         v-model="filter.value"
-        :key="`${getDateKey}2`"
         placeholder="Select date"
+        :key="betweenPickerKey"
         ref="refPicker2"
         type="datetimerange"
         class="w-100 mt-2"
@@ -41,7 +41,7 @@
 <script>
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import InputDate from '../../Common/Inputs/InputDate.vue'
-
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'TrainingLibraryDateFilter',
   components: { InputDate, KSelect },
@@ -52,8 +52,7 @@ export default {
   },
   data() {
     return {
-      filteredSelectValue: '=',
-      filteredValue: '',
+      betweenPickerKey: `key-${createRandomCryptStringNumber()}`,
       dateFilterItems: [
         { text: 'Exact date', value: '=' },
         { text: 'After', value: '>=' },
@@ -62,9 +61,14 @@ export default {
       ]
     }
   },
-  computed: {
-    getDateKey() {
-      return this.$store?.state?.auth?.user?.userCompany?.timeZone
+  methods: {
+    handleOperatorChange(operator) {
+      if (operator === 'between') {
+        this.filter.value = []
+        this.betweenPickerKey = `key-${createRandomCryptStringNumber()}`
+      } else {
+        this.filter.value = ''
+      }
     }
   }
 }

@@ -116,7 +116,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
     show: false
   },
   DESCRIPTION: {
-    label: 'Vendor',
+    label: 'Description',
     property: PROPERTY_STORE.DESCRIPTION,
     show: false
   },

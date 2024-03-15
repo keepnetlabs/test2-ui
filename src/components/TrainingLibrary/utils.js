@@ -159,7 +159,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Vendor,
     sortable: false,
     hideSort: true,
-    show: true,
+    show: false,
     type: 'text',
     width: 160
   },
@@ -170,7 +170,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.DateCreated,
     sortable: false,
     hideSort: true,
-    show: true,
+    show: false,
     type: 'text',
     width: 160
   }

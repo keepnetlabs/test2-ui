@@ -21,6 +21,19 @@
     gap:16px;
   }
 }
+@media (max-width:1100px) {
+.training-library-list-view-first-card-header{
+  flex-direction: column;
+  gap:16px;
+  align-items: center;
+   }
+}
+@media (max-width: 812px){
+  .training-library-filters{
+    flex-direction: column;
+    gap: 16px;
+  }
+}
 .training-library-clust-btn{
   border-radius: 6px !important;
   width: 42px !important;
@@ -176,6 +189,7 @@
         & .el-range-separator {
           margin-right: 10px;
           margin-left: -2px;
+          font-size: 12px;
         }
         &.el-input__inner input{
           min-width: 68px !important;
@@ -274,4 +288,52 @@
     max-width: initial;
     flex-basis:auto;
     }
+}
+.training-library-filters-badges{
+  margin-top:24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &__left-side{
+    display: flex;
+    align-items: center;
+    gap:16px;
+  }
+  &__clear{
+    font-size: 12px;
+    font-weight: 600;
+    .v-btn__content{
+      text-transform: capitalize;
+    }
+  }
+}
+.training-library-filter-badge{
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  gap:4px;
+  background-color: #E0E0E0;
+  &__left-side{
+    display: flex;
+    align-items: center;
+    gap:2px;
+  }
+  &-type{
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    color:#757575;
+  }
+  &-value{
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    color:#383B41;
+  }
+}
+.training-library-filters-badges__container{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap:wrap;
 }
