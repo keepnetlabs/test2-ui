@@ -103,7 +103,7 @@ const trainingLibrary = {
       `Search in ${state.trainingSubTabs[0].totalCount} training by name`,
     getFirstColFixed: (state) => state.firstColFixed,
     getLastColFixed: (state) => state.lastColFixed,
-    getIsLastView: (state) => state.isListView,
+    getIsListView: (state) => state.isListView,
     getSelectedTrainingContent: (state) => state.selectedTrainingContent,
     getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
     getTrainingSubTabs: (state) => state.trainingSubTabs,

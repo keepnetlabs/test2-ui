@@ -2,19 +2,22 @@
   <KContainer tabless id="training-library">
     <TrainingLibraryCommonComponents />
     <TrainingLibraryFirstCard />
-    <TrainingLibraryListViewCard />
+    <TrainingLibraryListViewCard v-if="isListView" />
+    <TrainingLibraryCardView v-else />
   </KContainer>
 </template>
 
 <script>
 import KContainer from '@/components/KContainer/KContainer.vue'
 import TrainingLibraryFirstCard from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCard.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryListViewCard from '@/components/TrainingLibrary/TrainingLibraryListViewCard/TrainingLibraryListViewCard.vue'
 import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
+import TrainingLibraryCardView from '../components/TrainingLibrary/TrainingLibraryCardView/TrainingLibraryCardView.vue'
 export default {
   name: 'TrainingLibrary',
   components: {
+    TrainingLibraryCardView,
     TrainingLibraryCommonComponents,
     TrainingLibraryListViewCard,
     TrainingLibraryFirstCard,
@@ -22,6 +25,11 @@ export default {
   },
   data() {
     return {}
+  },
+  computed: {
+    ...mapGetters({
+      isListView: 'trainingLibrary/getIsListView'
+    })
   },
   created() {
     this.initDefaultTableSettings()

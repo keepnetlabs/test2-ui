@@ -94,7 +94,7 @@ export default {
     ...mapGetters({
       search: 'trainingLibrary/getSearch',
       placeholder: 'trainingLibrary/getSearchPlaceholder',
-      isListView: 'trainingLibrary/getIsLastView'
+      isListView: 'trainingLibrary/getIsListView'
     }),
     getBulletedIcon() {
       return this.isListView
