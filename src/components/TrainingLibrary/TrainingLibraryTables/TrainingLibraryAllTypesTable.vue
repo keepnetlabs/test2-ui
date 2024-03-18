@@ -67,24 +67,29 @@
     </template>
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryTrainingRowActions
-        v-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING"
+        v-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING && !isLoading"
         :scope="scope"
+        @on-force-update="callForData"
       />
       <TrainingLibraryLearningPathRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH && !isLoading"
         :scope="scope"
+        @on-force-update="callForData"
       />
       <TrainingLibraryScreensaverRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER && !isLoading"
         :scope="scope"
+        @on-force-update="callForData"
       />
       <TrainingLibraryInfographicRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC && !isLoading"
         :scope="scope"
+        @on-force-update="callForData"
       />
       <TrainingLibraryPosterRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER && !isLoading"
         :scope="scope"
+        @on-force-update="callForData"
       />
     </template>
   </DataTable>
@@ -242,7 +247,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForData: 'trainingLibrary/callForTableData'
+      callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     serverSidePageNumberChanged(pageNumber = 1) {
       this.axiosPayload.pageNumber = pageNumber

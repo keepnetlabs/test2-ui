@@ -475,6 +475,9 @@ const getBehaviours = () => {
 const getCompliances = () => {
   return testRequest.get('/trainings/compliances')
 }
+const getTrainingTypes = () => {
+  return testRequest.get('/trainings/types')
+}
 
 const addToFavorite = (resourceId) => {
   return testRequest.post(
@@ -586,5 +589,6 @@ export default {
   uploadPosterContent,
   downloadPoster,
   addToFavorite,
-  removeFromFavorite
+  removeFromFavorite,
+  getTrainingTypes
 }

@@ -20,17 +20,17 @@
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
     :axios-payload.sync="axiosPayload"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
     @onEmptyBtnClicked="handleAddPoster"
     @add-training="handleAddPoster"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryPosterRowActions :scope="scope" @on-force-update="callForData" />
+      <TrainingLibraryPosterRowActions
+        v-if="!isLoading"
+        :scope="scope"
+        @on-force-update="callForData"
+      />
     </template>
   </DataTable>
 </template>
@@ -158,7 +158,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForData: 'trainingLibrary/callForTableData',
+      callForData: 'trainingLibrary/callForTrainingLibrary',
       setNewPosterModal: 'trainingLibrary/setNewPosterModal'
     }),
     handleAddPoster() {
@@ -168,6 +168,15 @@ export default {
         selectedRow: null,
         isDuplicate: false
       })
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForData()
+    },
+    serverSideSizeChanged(pageSize = 5) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.callForData()
     }
   }
 }

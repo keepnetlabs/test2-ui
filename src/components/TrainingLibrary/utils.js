@@ -138,7 +138,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     sortable: false,
     hideSort: true,
     show: true,
-    type: 'text',
+    type: 'smallBadge',
     width: 160
   },
   TAGS: {
@@ -164,7 +164,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     width: 160
   },
   DATE_CREATED: {
-    property: PROPERTY_STORE.CREATETIME,
+    property: PROPERTY_STORE.DATE_CREATED,
     align: 'left',
     editable: false,
     label: labels.DateCreated,

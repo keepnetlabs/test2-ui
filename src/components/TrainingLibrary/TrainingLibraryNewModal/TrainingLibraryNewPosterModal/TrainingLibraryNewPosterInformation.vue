@@ -8,11 +8,13 @@
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionPosterSub">
+    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionPosterSub">
       <InputDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
         required
+        persistent-hint
+        hint="*Required"
         rows="2"
         height="100"
         :max-length="300"

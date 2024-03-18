@@ -20,12 +20,8 @@
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
     :axios-payload.sync="axiosPayload"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
     @onEmptyBtnClicked="handleAddTraining"
     @add-training="handleAddTraining"
   >
@@ -59,7 +55,6 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [useDefaultTableFunctions],
   data() {
     return {
       CONSTANTS: {
@@ -162,7 +157,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForData: 'trainingLibrary/callForTableData',
+      callForData: 'trainingLibrary/callForTrainingLibrary',
       setNewTrainingModal: 'trainingLibrary/setNewTrainingModal'
     }),
     handleAddTraining() {
@@ -172,6 +167,15 @@ export default {
         isDuplicate: false,
         selectedRow: null
       })
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForData()
+    },
+    serverSideSizeChanged(pageSize = 5) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.callForData()
     }
   }
 }

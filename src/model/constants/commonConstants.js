@@ -180,7 +180,7 @@ export const PROPERTY_STORE = {
   LANGUAGE: 'languageTypeName',
   EMAIL_TEMPLATE: 'emailTemplate',
   JUSTDIFFICULTY: 'difficulty',
-  COMPLIANCE: 'compliance',
+  COMPLIANCE: 'compliances',
   HAS_TRAINING: 'hasTraining',
   QUISHING_SCENARIO_NAME: 'quishingScenarioName',
   LANDING_PAGE_TEMPLATE: 'landingPageTemplate',

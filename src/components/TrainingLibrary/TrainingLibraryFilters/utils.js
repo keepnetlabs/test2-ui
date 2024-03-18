@@ -71,13 +71,7 @@ export const trainingLibraryFilters = [
     filterType: 'search',
     operator: 'Include',
     activeOperator: 'Include',
-    items: [
-      { text: 'Learning Path', value: 'Learning Path' },
-      { text: 'Training', value: 'Training' },
-      { text: 'Poster', value: 'Poster' },
-      { text: 'Infographic', value: 'Infographic' },
-      { text: 'Screensaver', value: 'Screensaver' }
-    ],
+    items: [],
     value: [],
     activeValue: [],
     isFilterActive: false
@@ -90,14 +84,7 @@ export const trainingLibraryFilters = [
     filterType: 'search',
     operator: 'Include',
     activeOperator: 'Include',
-    items: [
-      { text: 'All Categories', value: 'All Categories' },
-      { text: 'Category 1', value: 'Category 1' },
-      { text: 'Category 2', value: 'Category 2' },
-      { text: 'Category 3', value: 'Category 3' },
-      { text: 'Category 4', value: 'Category 4' },
-      { text: 'Category 5', value: 'Category 5' }
-    ],
+    items: [],
     value: [],
     activeValue: [],
     isFilterActive: false

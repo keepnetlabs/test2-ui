@@ -26,8 +26,7 @@
         color="#2196f3"
         :value="item.value"
         :label="item.text"
-      >
-      </VCheckbox>
+      />
     </div>
   </div>
 </template>

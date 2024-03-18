@@ -73,7 +73,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   },
   DATE_CREATED: {
     label: 'Date Created',
-    property: PROPERTY_STORE.CREATETIME,
+    property: PROPERTY_STORE.DATE_CREATED,
     show: false
   }
 }

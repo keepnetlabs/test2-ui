@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isRenderComponent" class="d-flex gap-2 flex-wrap">
+  <Fragment v-if="isRenderComponent">
     <div v-if="isFilterTypeSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
@@ -24,7 +24,7 @@
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
         <span class="training-library-filter-badge-value">{{
-          filter.key === PROPERTY_STORE.LANGUAGES ? getFilterValue(filterVal) : filterVal
+          getFilterValue(filter, filterVal)
         }}</span>
       </div>
       <div>
@@ -52,14 +52,18 @@
         >
       </div>
     </div>
-  </div>
+  </Fragment>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { Fragment } from 'vue-frag'
 
 export default {
   name: 'TrainingLibraryFilterBadge',
+  components: {
+    Fragment
+  },
   props: {
     filter: {
       type: Object
@@ -67,7 +71,12 @@ export default {
   },
   computed: {
     ...mapGetters({
-      languages: 'trainingLibraryHelpers/getLanguages'
+      languages: 'trainingLibraryHelpers/getLanguages',
+      compliances: 'trainingLibraryHelpers/getCompliances',
+      categories: 'trainingLibraryHelpers/getCategories',
+      behaviours: 'trainingLibraryHelpers/getBehaviours',
+      types: 'trainingLibraryHelpers/getTrainingTypes',
+      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
     }),
     PROPERTY_STORE() {
       return PROPERTY_STORE
@@ -90,6 +99,18 @@ export default {
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
       removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
+    getFilterValue(filter, filterVal) {
+      if (filter.key === PROPERTY_STORE.LANGUAGES) return this.getLanguageFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.COMPLIANCE)
+        return this.getComplianceFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.CATEGORY) return this.getCategoryFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.BEHAVIOURS)
+        return this.getBehaviourFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.TYPE) return this.getTrainingTypeFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.TARGET_AUDIENCE)
+        return this.getTargetAudienceFilterValue(filterVal)
+      return filterVal
+    },
     removeSelectFilter() {
       this.filter.activeValue = ''
       this.filter.value = ''
@@ -102,13 +123,58 @@ export default {
       this.filter.isFilterActive = !!this.filter.activeValue.length
       this.removeFilterFromPayload(this.filter)
     },
-    getFilterValue(langCode = '') {
+    getLanguageFilterValue(langCode = '') {
       return (
         this.languages.find((lang) => {
           if (lang.code === langCode) {
             return lang
           }
         })?.name || langCode
+      )
+    },
+    getComplianceFilterValue(compliance = '') {
+      return (
+        this.compliances.find((cmp) => {
+          if (cmp.value === compliance) {
+            return cmp
+          }
+        })?.text || compliance
+      )
+    },
+    getCategoryFilterValue(category = '') {
+      return (
+        this.categories.find((cat) => {
+          if (cat.value === category) {
+            return cat
+          }
+        })?.text || category
+      )
+    },
+    getBehaviourFilterValue(behaviour) {
+      return (
+        this.behaviours.find((beh) => {
+          if (beh.value === behaviour) {
+            return behaviour
+          }
+        })?.text || filter
+      )
+    },
+    getTrainingTypeFilterValue(filterVal) {
+      return (
+        this.types.find((type) => {
+          if (type.value === filterVal) {
+            return type
+          }
+        })?.text || filterVal
+      )
+    },
+    getTargetAudienceFilterValue(filterVal) {
+      return (
+        this.targetAudiences.find((type) => {
+          if (type.value === filterVal) {
+            return type
+          }
+        })?.text || filterVal
       )
     },
     getDateFilterValue(filter) {

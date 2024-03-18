@@ -74,7 +74,6 @@ export default {
     }
   },
   data() {
-    console.log('this.scope.row.isFavourite', this.scope.row.isFavourite)
     return {
       rowActions: [
         {

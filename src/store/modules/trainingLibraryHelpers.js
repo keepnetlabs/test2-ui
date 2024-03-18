@@ -11,6 +11,7 @@ const trainingLibraryHelpers = {
     targetAudiences: [],
     compliances: [],
     trainingVendors: [],
+    types: [],
     behaviours: [],
     enumTypes: {},
     distributionDelayTimeTypes: distributionDelayTimeTypes,
@@ -54,6 +55,9 @@ const trainingLibraryHelpers = {
     },
     getTrainingEmailNotificationTemplateTypeResourceId(state) {
       return state.trainingEmailNotificationTemplateTypeResourceId
+    },
+    getTrainingTypes(state) {
+      return state.types
     }
   },
   mutations: {
@@ -89,6 +93,9 @@ const trainingLibraryHelpers = {
     },
     SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.trainingEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_TYPES(state, payload) {
+      state.types = payload
     }
   },
   actions: {
@@ -101,6 +108,7 @@ const trainingLibraryHelpers = {
       dispatch('callForCompliances')
       dispatch('callForTrainingVendors')
       dispatch('callForBehaviours')
+      dispatch('callForTypes')
     },
     callForCategories({ commit, dispatch }) {
       AwarenessEducatorService.getCategories().then((response) => {
@@ -211,6 +219,24 @@ const trainingLibraryHelpers = {
           {
             key: PROPERTY_STORE.BEHAVIOURS,
             items: behaviours
+          },
+          { root: true }
+        )
+      })
+    },
+    callForTypes({ commit, dispatch }) {
+      AwarenessEducatorService.getTrainingTypes().then((response) => {
+        const types =
+          response?.data?.data?.map((type) => ({
+            text: type.displayName,
+            value: type.id
+          })) || []
+        commit('SET_TYPES', types)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.TYPE,
+            items: types
           },
           { root: true }
         )

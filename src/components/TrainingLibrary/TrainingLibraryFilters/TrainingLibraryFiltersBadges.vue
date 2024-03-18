@@ -1,5 +1,5 @@
 <template>
-  <div class="training-library-filters-badges">
+  <div v-if="isRenderFilters" class="training-library-filters-badges">
     <div class="training-library-filters-badges__left-side">
       <div style="flex-shrink: 0;">Filter Type: {{ filterType }}</div>
       <div class="training-library-filters-badges__container">
@@ -34,8 +34,12 @@ export default {
   computed: {
     ...mapGetters({
       filters: 'trainingLibrary/getFilters',
-      filterType: 'trainingLibrary/getFilterType'
-    })
+      filterType: 'trainingLibrary/getFilterType',
+      getFilters: 'trainingLibrary/getFilters'
+    }),
+    isRenderFilters() {
+      return this.getFilters.some((filter) => filter.isFilterActive)
+    }
   },
   methods: {
     ...mapActions({

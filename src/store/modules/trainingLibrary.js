@@ -265,7 +265,10 @@ const trainingLibrary = {
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
       const filters = localStorage.getItem('training-library-filters')
-      if (!filters) return
+      if (!filters) {
+        state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType = 'Or'
+        return
+      }
       const {
         filters: savedFilters = {},
         filterOptionsFilters = [],
@@ -407,7 +410,7 @@ const trainingLibrary = {
       }
     },
     SET_FILTER_TYPE_TO_PAYLOAD(state) {
-      state.axiosPayload.filter.Condition = state.filterType
+      state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType
     },
     REMOVE_FILTER_FROM_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
@@ -416,8 +419,6 @@ const trainingLibrary = {
         if (fIndex !== -1) filterItems.splice(fIndex, 2)
         return
       }
-      console.log('filterItems', filterItems)
-      console.log('payload', payload)
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       if (fIndex !== -1) filterItems.splice(fIndex, 1)
     },
@@ -537,7 +538,7 @@ const trainingLibrary = {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
       commit('SET_TRAINING_TYPE', trainingType)
       commit('RESET_PAGINATION')
-      dispatch('callForTrainingLibrary')
+      dispatch('callForTableData')
     },
     setSortBy({ commit, dispatch }, { item, sort }) {
       commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
@@ -598,7 +599,7 @@ const trainingLibrary = {
     setFilterType({ commit, dispatch }, payload) {
       commit('SET_FILTER_TYPE', payload)
       commit('SET_FILTER_TYPE_TO_PAYLOAD')
-      dispatch('callForTableData ')
+      dispatch('callForTableData')
     },
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)

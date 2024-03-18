@@ -47,8 +47,7 @@ export default {
       callForTrainingHelpers: 'trainingLibraryHelpers/callForTrainingHelpers',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
       resetState: 'trainingLibrary/resetState'
-    }),
-    callForData() {}
+    })
   }
 }
 </script>

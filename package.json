@@ -40,6 +40,7 @@
     "vue-chartjs": "^3.5.1",
     "vue-clamp": "^0.2.2",
     "vue-custom-element": "^3.2.14",
+    "vue-frag": "^1.4.3",
     "vue-grid-layout": "^2.3.9",
     "vue-moment": "^4.1.0",
     "vue-multipane": "^0.9.5",
