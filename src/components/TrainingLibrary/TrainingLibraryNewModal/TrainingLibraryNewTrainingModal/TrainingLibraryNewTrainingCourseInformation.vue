@@ -158,6 +158,7 @@ export default {
         ...this.formData,
         ...formData
       }
+      console.log('this.formDATA', this.formData)
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {

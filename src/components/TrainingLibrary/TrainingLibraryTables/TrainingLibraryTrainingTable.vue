@@ -30,7 +30,11 @@
     @add-training="handleAddTraining"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryTrainingRowActions :scope="scope" @on-force-update="callForData" />
+      <TrainingLibraryTrainingRowActions
+        v-if="!isLoading"
+        :scope="scope"
+        @on-force-update="callForData"
+      />
     </template>
   </DataTable>
 </template>

@@ -135,7 +135,10 @@ export default {
           trainingContents,
           availableForList,
           category,
-          type
+          type,
+          compliances,
+          behaviours,
+          vendorId
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
@@ -146,10 +149,12 @@ export default {
             description,
             tags: tagNames,
             targetAudience,
-            category
+            category,
+            compliances: compliances.map(({ complianceId }) => complianceId),
+            behaviours: behaviours.map(({ behaviourId }) => behaviourId)
           })
           refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-          refTrainingContent.setFormData({ hasQuiz, type })
+          refTrainingContent.setFormData({ hasQuiz, type, vendorId })
           refTrainingContent.setTrainingContents(trainingContents)
         }
       })

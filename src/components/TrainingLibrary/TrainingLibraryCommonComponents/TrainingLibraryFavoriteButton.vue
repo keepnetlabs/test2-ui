@@ -1,7 +1,7 @@
 <template>
   <div class="training-library-favorite-button" @click="handleFavorite">
     <VIcon class="cursor-pointer" x-small color="#fff">{{
-      isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+      isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
     }}</VIcon>
   </div>
 </template>
@@ -10,7 +10,7 @@
 export default {
   name: 'TrainingLibraryFavoriteButton',
   props: {
-    isFavorite: {
+    isFavourite: {
       type: Boolean,
       default: false
     }

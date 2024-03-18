@@ -292,7 +292,8 @@ export default {
       if (val) {
         this.setTrainingPreviewDialog({
           status: true,
-          selectedRow: this.selectedRow
+          selectedRow: this.selectedRow,
+          sendButton: false
         })
         this.isShowTrainingEmail = false
       }

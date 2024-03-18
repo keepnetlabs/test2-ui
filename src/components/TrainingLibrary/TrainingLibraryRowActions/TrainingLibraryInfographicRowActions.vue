@@ -101,8 +101,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-infographic',
-          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-infographic',
@@ -128,7 +128,8 @@ export default {
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
       setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
-      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal',
+      callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
 
     handlePreview(row) {

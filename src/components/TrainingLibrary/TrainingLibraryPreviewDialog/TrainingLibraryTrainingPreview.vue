@@ -55,7 +55,7 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Vendor Name: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.vendor }}</span>
+            <span class="training-library-preview__desc">{{ trainingParams.vendorName }}</span>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Category Name: </span>
@@ -92,9 +92,18 @@
             <span class="training-library-preview__title">Created By: </span>
             <span class="training-library-preview__desc">{{ trainingParams.createdBy }}</span>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Compliance: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.compliance }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Compliances: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="(tag, tIndex) in trainingParams.complianceNames"
+                :key="tIndex"
+                class="training-library-preview__tag"
+                >{{ tag }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>
@@ -111,7 +120,11 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
-            <span class="training-library-preview__desc">{{ trainingParams.behaviours }}</span>
+            <ul>
+              <li v-for="(behaviour, bIndex) in trainingParams.behaviourNames" :key="bIndex">
+                {{ behaviour }}
+              </li>
+            </ul>
           </div>
         </template>
       </ElTabPane>

@@ -475,6 +475,21 @@ const getBehaviours = () => {
 const getCompliances = () => {
   return testRequest.get('/trainings/compliances')
 }
+
+const addToFavorite = (resourceId) => {
+  return testRequest.post(
+    `/trainings/${resourceId}/favourite`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+const removeFromFavorite = (resourceId) => {
+  return testRequest.delete(`/trainings/${resourceId}/favourite`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   searchTraining,
   getTrainingTypeCount,
@@ -569,5 +584,7 @@ export default {
   progressNonTargetUsersTrainingReportEmailsDetails,
   getScormProxyTrainingReportSummary,
   uploadPosterContent,
-  downloadPoster
+  downloadPoster,
+  addToFavorite,
+  removeFromFavorite
 }

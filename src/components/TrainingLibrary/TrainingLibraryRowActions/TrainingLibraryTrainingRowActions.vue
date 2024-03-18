@@ -13,7 +13,7 @@
       <DefaultMenuRowAction
         :id="rowActions[1].id"
         :scope="scope"
-        :disabled="rowActions[1].disabled || !scope.row.isEditable"
+        :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
@@ -32,7 +32,7 @@
         :id="rowActions[3].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled"
+        :disabled="rowActions[3].disabled || !scope.row.isEditable"
         :icon="rowActions[3].icon"
         :text="rowActions[3].name"
         @on-click="handleEdit(scope.row)"
@@ -74,6 +74,7 @@ export default {
     }
   },
   data() {
+    console.log('this.scope.row.isFavourite', this.scope.row.isFavourite)
     return {
       rowActions: [
         {
@@ -88,8 +89,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-training',
-          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-training',
@@ -115,7 +116,8 @@ export default {
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
       setNewTrainingModal: 'trainingLibrary/setNewTrainingModal',
-      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal'
+      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     handlePreview(row) {
       this.setTrainingPreviewDialog({
@@ -130,7 +132,15 @@ export default {
       })
     },
     handleAddFavorite(row) {
-      this.$emit('on-training-add-favorite', row)
+      if (row.isFavourite) {
+        AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      } else {
+        AwarenessEducatorService.addToFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      }
     },
     handleEdit(row) {
       this.setNewTrainingModal({

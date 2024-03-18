@@ -14,7 +14,7 @@
         v-if="false"
         :id="rowActions[1].id"
         :scope="scope"
-        :disabled="rowActions[1].disabled || !scope.row.isEditable"
+        :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
@@ -41,7 +41,7 @@
         :id="rowActions[4].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled"
+        :disabled="rowActions[3].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
         @on-click="handleEdit(scope.row)"
@@ -102,8 +102,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-screensaver',
-          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-screensaver',
@@ -129,7 +129,8 @@ export default {
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
       setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
-      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal'
+      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal',
+      callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     handlePreview(row) {
       this.setScreenSaverPreviewDialog({

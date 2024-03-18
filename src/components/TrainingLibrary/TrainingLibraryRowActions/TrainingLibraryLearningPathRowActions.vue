@@ -88,8 +88,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-learning-path',
-          name: this.scope.row.isFavorite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-learning-path',
@@ -115,7 +115,8 @@ export default {
       setDeleteDialog: 'trainingLibrary/setDeleteDialog',
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
-      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal'
+      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
+      callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     handlePreview(row) {
       this.setLearningPathPreviewDialog({

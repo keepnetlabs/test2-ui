@@ -11,7 +11,7 @@
       autocomplete="off"
       item-text="text"
       item-value="value"
-      placeholder="Select compliance"
+      placeholder="Select behaviour"
       :items="getBehaviours"
       @input="$emit('input', $event)"
     ></KSelect>
