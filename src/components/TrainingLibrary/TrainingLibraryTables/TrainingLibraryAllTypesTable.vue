@@ -39,7 +39,7 @@
         >
           {{ getEmptyTableSubtitleText }}
         </p>
-        <div class="people__no-data__buttons mt-4">
+        <div v-if="tableOptions.rowActions.btn" class="people__no-data__buttons mt-4">
           <VMenu offset-y transition="scale-transition" nudge-bottom="4">
             <template #activator="{ on }">
               <div
@@ -71,23 +71,23 @@
     </template>
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryTrainingRowActions
-        v-if="scope.row.type === TRAINING_LIBRARY_TYPES.TRAINING"
+        v-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING"
         :scope="scope"
       />
       <TrainingLibraryLearningPathRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH"
         :scope="scope"
       />
       <TrainingLibraryScreensaverRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.SCREENSAVER"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER"
         :scope="scope"
       />
       <TrainingLibraryInfographicRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC"
         :scope="scope"
       />
       <TrainingLibraryPosterRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_TYPES.POSTER"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER"
         :scope="scope"
       />
     </template>
@@ -96,22 +96,14 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import {
-  TRAINING_LIBRARY_COLUMNS,
-  TRAINING_LIBRARY_TYPES
-} from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import { addTrainingItems } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
 import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
@@ -119,7 +111,10 @@ import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/T
 import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
 import { mapGetters } from 'vuex'
-import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_MAIN_TABS,
+  TRAINING_LIBRARY_PAYLOAD_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import useAddTrainingLibraryContent from '@/hooks/useAddTrainingLibraryContent'
 
 export default {
@@ -132,10 +127,10 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [useDefaultTableFunctions],
+  mixins: [useDefaultTableFunctions, useAddTrainingLibraryContent],
   data() {
     return {
-      TRAINING_LIBRARY_TYPES,
+      TRAINING_LIBRARY_PAYLOAD_TYPES,
       addTrainingItems,
       labels,
       CONSTANTS: {
@@ -226,6 +221,24 @@ export default {
     },
     lastColFixed() {
       this.$refs.refTable.lastColFixed = this.lastColFixed
+    },
+    selectedTrainingContent: {
+      immediate: true,
+      handler(tabValue) {
+        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+          this.$set(this.tableOptions, 'iEmpty', {
+            ...this.tableOptions.iEmpty,
+            subMes: labels.EmptyTrainingAllTypeCreatedByYouSubtitle,
+            btn: null
+          })
+        } else {
+          this.$set(this.tableOptions, 'iEmpty', {
+            ...this.tableOptions.iEmpty,
+            subMes: '',
+            btn: labels.CreateNewMaterial
+          })
+        }
+      }
     }
   },
   mounted() {

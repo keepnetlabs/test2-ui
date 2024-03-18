@@ -2,7 +2,7 @@
   <div>
     <FormGroup has-hint :title="labels.TrainingVendor" :sub-title="labels.TrainingVendorSub">
       <KSelect
-        v-model.trim="formData.vendor"
+        v-model.trim="formData.vendorId"
         persistent-hint
         dense
         outlined
@@ -26,6 +26,7 @@
           :is-uploading="isUploading"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
+          :vendor-id="formData.vendorId"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
@@ -76,7 +77,7 @@ export default {
         type: 'SCORM12',
         hasQuiz: false,
         contentByLanguage: [],
-        vendor: ''
+        vendorId: ''
       }
     }
   },

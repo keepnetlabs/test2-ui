@@ -9,15 +9,23 @@ export const TRAINING_LIBRARY_MAIN_TABS = {
   CREATED_BY_YOU: 'Created by You'
 }
 export const trainingTabContents = [
-  { name: TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS },
-  { name: TRAINING_LIBRARY_MAIN_TABS.MOST_POPULAR },
-  { name: TRAINING_LIBRARY_MAIN_TABS.FAVOURITES },
-  { name: TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU }
+  { name: TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS, value: 1 },
+  { name: TRAINING_LIBRARY_MAIN_TABS.MOST_POPULAR, value: 2 },
+  { name: TRAINING_LIBRARY_MAIN_TABS.FAVOURITES, value: 3 },
+  { name: TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU, value: 4 }
 ]
 export const TRAINING_LIBRARY_TYPES = {
   ALL_TYPES: 'All Types',
   LEARNING_PATH: 'Learning Path',
   TRAINING: 'Training',
+  POSTER: 'Poster',
+  INFOGRAPHIC: 'Infographic',
+  SCREENSAVER: 'Screensaver'
+}
+export const TRAINING_LIBRARY_PAYLOAD_TYPES = {
+  ALL_TYPES: 'All Types',
+  LEARNING_PATH: 'LearningPath',
+  TRAINING: 'SCORM',
   POSTER: 'Poster',
   INFOGRAPHIC: 'Infographic',
   SCREENSAVER: 'Screensaver'
@@ -65,7 +73,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   },
   DATE_CREATED: {
     label: 'Date Created',
-    property: PROPERTY_STORE.DATE_CREATED,
+    property: PROPERTY_STORE.CREATETIME,
     show: false
   }
 }
@@ -112,7 +120,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   },
   MATERIAL_NAME: {
     label: 'Material Name',
-    property: PROPERTY_STORE.MATERIAL_NAME,
+    property: PROPERTY_STORE.TRAINING_NAME,
     show: false
   },
   DESCRIPTION: {
@@ -127,7 +135,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   },
   DATE_CREATED: {
     label: 'Date Created',
-    property: PROPERTY_STORE.DATE_CREATED,
+    property: PROPERTY_STORE.CREATETIME,
     show: false
   }
 }

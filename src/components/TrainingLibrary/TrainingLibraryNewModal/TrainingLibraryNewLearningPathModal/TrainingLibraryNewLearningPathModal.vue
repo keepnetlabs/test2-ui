@@ -84,6 +84,7 @@ import { mapActions } from 'vuex'
 import { emptyNewLearningPathModalObj } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewLearningPathInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathInformation.vue'
 import TrainingLibraryNewLearningPathContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathContent.vue'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingLibraryNewLearningPathModal',
@@ -190,7 +191,9 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests
+            availableForRequests,
+            compliances,
+            behaviours
           } = formData
           this.isActionButtonDisabled = true
           AwarenessEducatorService.createDraftTraining({
@@ -199,7 +202,10 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests
+            availableForRequests,
+            type: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH,
+            compliances: compliances.map((compliance) => ({ complianceId: compliance })),
+            behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour }))
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
@@ -237,7 +243,9 @@ export default {
           targetAudience,
           tags,
           availableForRequests,
-          coverImageUrl
+          coverImageUrl,
+          compliances,
+          behaviours
         }
       } = refTrainingCourseInformation
       const {
@@ -253,9 +261,15 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', type)
+      payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
+      })
+      compliances.map((compliance, index) => {
+        payload.append(`trainingDetail.compliances[${index}]`, compliance)
+      })
+      behaviours.map((behaviour, index) => {
+        payload.append(`trainingDetail.behaviours[${index}]`, behaviour)
       })
       availableForRequests.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)

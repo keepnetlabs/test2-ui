@@ -463,9 +463,21 @@ const downloadPoster = (payload) => {
     responseType: 'blob'
   })
 }
-
+const getTrainingTypeCount = (payload) => {
+  return testRequest.post('/trainings/get-training-type-count', payload)
+}
+const getVendors = () => {
+  return testRequest.get('/trainings/vendors')
+}
+const getBehaviours = () => {
+  return testRequest.get('/trainings/behaviours')
+}
+const getCompliances = () => {
+  return testRequest.get('/trainings/compliances')
+}
 export default {
   searchTraining,
+  getTrainingTypeCount,
   deleteTraining,
   getTraining,
   createDraftTraining,
@@ -478,6 +490,9 @@ export default {
   makeDefaultCertificate,
   getCategories,
   getTargetAudiences,
+  getBehaviours,
+  getCompliances,
+  getVendors,
   getLanguages,
   exportTrainingList,
   uploadTrainingContent,

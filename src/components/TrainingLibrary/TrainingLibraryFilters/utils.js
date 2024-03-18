@@ -145,11 +145,11 @@ export const trainingLibraryFilters = [
     icon: 'mdi-clipboard-check',
     key: PROPERTY_STORE.COMPLIANCE,
     show: true,
-    filterType: 'select',
-    operator: 'Contains',
-    activeOperator: 'Contains',
-    value: '',
-    activeValue: '',
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    value: [],
+    activeValue: [],
     isFilterActive: false
   },
   {
@@ -204,7 +204,7 @@ export const trainingLibraryFilters = [
   {
     text: 'Date Created',
     icon: 'mdi-calendar',
-    key: PROPERTY_STORE.DATE_CREATED,
+    key: PROPERTY_STORE.CREATETIME,
     show: false,
     filterType: 'date',
     operator: '=',

@@ -102,14 +102,21 @@ const trainingLibraryHelpers = {
       dispatch('callForTrainingVendors')
       dispatch('callForBehaviours')
     },
-    callForCategories({ commit }) {
+    callForCategories({ commit, dispatch }) {
       AwarenessEducatorService.getCategories().then((response) => {
-        commit(
-          'SET_CATEGORIES',
+        const categories =
           response?.data?.data?.map((category) => ({
             text: category.displayName || category.name,
             value: category.name
           })) || []
+        commit('SET_CATEGORIES', categories)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.CATEGORY,
+            items: categories
+          },
+          { root: true }
         )
       })
     },
@@ -137,47 +144,75 @@ const trainingLibraryHelpers = {
         )
       })
     },
-    callForTargetAudiences({ commit }) {
+    callForTargetAudiences({ commit, dispatch }) {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
-        commit(
-          'SET_TARGET_AUDIENCES',
+        const targetAudience =
           response?.data?.data?.map((targetAudience) => ({
             text: targetAudience.displayName,
             value: targetAudience.name
           })) || []
+        commit('SET_TARGET_AUDIENCES', targetAudience)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.TARGET_AUDIENCE,
+            items: targetAudience
+          },
+          { root: true }
         )
       })
     },
-    callForCompliances({ commit }) {
-      AwarenessEducatorService.getTargetAudiences().then((response) => {
-        commit(
-          'SET_COMPLIANCES',
+    callForCompliances({ commit, dispatch }) {
+      AwarenessEducatorService.getCompliances().then((response) => {
+        const compliances =
           response?.data?.data?.map((compliance) => ({
-            text: compliance.displayName,
-            value: compliance.name
+            text: compliance.name,
+            value: compliance.id
           })) || []
+        commit('SET_COMPLIANCES', compliances)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.COMPLIANCE,
+            items: compliances
+          },
+          { root: true }
         )
       })
     },
-    callForTrainingVendors({ commit }) {
-      AwarenessEducatorService.getTargetAudiences().then((response) => {
-        commit(
-          'SET_TRAINING_VENDORS',
-          response?.data?.data?.map((compliance) => ({
-            text: compliance.displayName,
-            value: compliance.name
+    callForTrainingVendors({ commit, dispatch }) {
+      AwarenessEducatorService.getVendors().then((response) => {
+        const vendors =
+          response?.data?.data?.map((vendor) => ({
+            text: vendor.name,
+            value: vendor.id
           })) || []
+        commit('SET_TRAINING_VENDORS', vendors)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.VENDOR,
+            items: vendors
+          },
+          { root: true }
         )
       })
     },
-    callForBehaviours({ commit }) {
-      AwarenessEducatorService.getTargetAudiences().then((response) => {
-        commit(
-          'SET_BEHAVIOURS',
-          response?.data?.data?.map((compliance) => ({
-            text: compliance.displayName,
-            value: compliance.name
+    callForBehaviours({ commit, dispatch }) {
+      AwarenessEducatorService.getBehaviours().then((response) => {
+        const behaviours =
+          response?.data?.data?.map((behaviour) => ({
+            text: behaviour.name,
+            value: behaviour.id
           })) || []
+        commit('SET_BEHAVIOURS', behaviours)
+        dispatch(
+          'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.BEHAVIOURS,
+            items: behaviours
+          },
+          { root: true }
         )
       })
     },

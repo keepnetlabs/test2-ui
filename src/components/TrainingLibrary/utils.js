@@ -164,7 +164,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     width: 160
   },
   DATE_CREATED: {
-    property: PROPERTY_STORE.DATE_CREATED,
+    property: PROPERTY_STORE.CREATETIME,
     align: 'left',
     editable: false,
     label: labels.DateCreated,
@@ -208,6 +208,13 @@ export const addTrainingItems = [
     id: 'btn-add-training-library-screensaver'
   }
 ]
+
+export const TRAINING_LIBRARY_SEARCH_TYPES = {
+  All: 1,
+  MostPopular: 2,
+  Favourites: 3,
+  CreatedByMe: 4
+}
 
 export const emptyTrainingDeleteDialogObj = {
   status: false,

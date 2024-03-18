@@ -1,7 +1,10 @@
 import {
   TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS,
+  TRAINING_LIBRARY_MAIN_TABS,
+  TRAINING_LIBRARY_PAYLOAD_TYPES,
   TRAINING_LIBRARY_SETTINGS_COLUMNS,
-  TRAINING_LIBRARY_TYPES
+  TRAINING_LIBRARY_TYPES,
+  trainingTabContents
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
@@ -20,7 +23,8 @@ import {
   emptyPosterSendModalObj,
   emptyInfographicSendModalObj,
   emptyScreensaverSendModalObj,
-  emptyLearningPathSendModalObj
+  emptyLearningPathSendModalObj,
+  TRAINING_LIBRARY_SEARCH_TYPES
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -31,7 +35,10 @@ const trainingLibrary = {
     isTabsLoading: false,
     isLoading: false,
     tableData: [],
-    axiosPayload: getDefaultAxiosPayload(),
+    axiosPayload: getDefaultAxiosPayload({
+      trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
+      trainingType: null
+    }),
     serverSideProps: new ServerSideProps(),
     tableColumns: [
       Object.assign({}, TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE),
@@ -60,12 +67,12 @@ const trainingLibrary = {
     ],
     renderedColumns: [],
     trainingSubTabs: [
-      { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3490 },
-      { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 122 },
-      { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 2220 },
-      { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
-      { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 33 },
-      { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 54 }
+      { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 0 }
     ],
     search: '',
     searchPlaceholder: 'Search in 3490 training by name',
@@ -140,6 +147,7 @@ const trainingLibrary = {
       state.renderedColumns = state.tableColumns
         .filter((item) => item && item.show)
         .map((i) => i && i.property)
+      console.log('state.renderedCOlumns', state.renderedColumns)
     },
     SET_TABLE_SETTINGS_CHANGE(state) {
       localStorage.setItem(
@@ -266,7 +274,10 @@ const trainingLibrary = {
         filterType = 'Or',
         sortBy = 'Date Created - New to old',
         search = '',
-        axiosPayload = getDefaultAxiosPayload()
+        axiosPayload = getDefaultAxiosPayload({
+          trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
+          trainingType: null
+        })
       } = JSON.parse(filters)
       state.filters = savedFilters
       state.filterOptionsFilters = filterOptionsFilters
@@ -306,7 +317,10 @@ const trainingLibrary = {
       state.renderedColumns = []
     },
     RESET_FILTERS(state) {
-      state.axiosPayload = getDefaultAxiosPayload()
+      state.axiosPayload = getDefaultAxiosPayload({
+        trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
+        trainingType: null
+      })
       state.serverSideProps = new ServerSideProps()
       state.filterOptionsFilters = [
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
@@ -346,7 +360,6 @@ const trainingLibrary = {
       state.sortBy = 'Date Created - New to old'
     },
     SET_SORT_BY_TO_PAYLOAD(state, payload) {
-      console.log('payload', payload)
       state.axiosPayload.ascending = payload.ascending
       state.axiosPayload.orderBy = payload.orderBy
     },
@@ -407,6 +420,17 @@ const trainingLibrary = {
       }
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       if (fIndex !== -1) filterItems.splice(fIndex, 1)
+    },
+    SET_TRAINING_SEARCH_TYPE(state, payload) {
+      state.axiosPayload.trainingSearchType = payload
+    },
+    SET_TRAINING_TYPE(state, payload) {
+      console.log(payload)
+      if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
+        state.axiosPayload.trainingType = null
+      } else {
+        state.axiosPayload.trainingType = payload
+      }
     }
   },
   actions: {
@@ -438,19 +462,43 @@ const trainingLibrary = {
       dispatch('callForSummary')
       dispatch('callForTableData')
     },
-    callForSummary({ commit }) {
+    callForSummary({ commit, state }) {
       commit('SET_TABS_LOADING', true)
-      setTimeout(() => {
-        commit('SET_TRAINING_SUB_TABS', [
-          { name: TRAINING_LIBRARY_TYPES.ALL_TYPES, totalCount: 3600 },
-          { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH, totalCount: 50 },
-          { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 1212 },
-          { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 111 },
-          { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 1111 },
-          { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 111 }
-        ])
-        commit('SET_TABS_LOADING', false)
-      }, 1000)
+      AwarenessEducatorService.getTrainingTypeCount(state.axiosPayload)
+        .then((response) => {
+          const { data: { data } = {} } = response || {}
+          commit('SET_TRAINING_SUB_TABS', [
+            {
+              name: TRAINING_LIBRARY_TYPES.ALL_TYPES,
+              totalCount: data.reduce((acc, item) => {
+                return acc + item.trainingCount
+              }, 0)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.TRAINING,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.POSTER,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.SCREENSAVER,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+            }
+          ])
+        })
+        .finally(() => {
+          commit('SET_TABS_LOADING', false)
+        })
     },
     setChangeVisibilityOfColumn({ commit }) {
       commit('SET_RENDERED_COLUMNS')
@@ -473,13 +521,16 @@ const trainingLibrary = {
       commit('SET_DEFAULT_TABLE_SETTINGS')
     },
     setSelectedTrainingContent({ commit, dispatch, state }, payload) {
+      let trainingSearchType = getTrainingSearchType(payload.name)
       commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
+      commit('SET_TRAINING_SEARCH_TYPE', trainingSearchType)
       dispatch('callForTrainingLibrary')
     },
     setSubSelectedTrainingContent({ commit, dispatch }, payload) {
-      console.log('sub selected')
+      let trainingType = getTrainingType(payload.name)
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
-      dispatch('callForTableData')
+      commit('SET_TRAINING_TYPE', trainingType)
+      dispatch('callForTrainingLibrary')
     },
     setSortBy({ commit, dispatch }, { item, sort }) {
       commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
@@ -577,6 +628,36 @@ const trainingLibrary = {
       dispatch('callForTrainingLibrary')
     }
   }
+}
+const getTotalCountByType = (data, key) => {
+  return data.find((item) => item.trainingType === key)?.trainingCount
+}
+const getTrainingSearchType = (name) => {
+  let trainingSearchType
+  if (name === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS) {
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.All
+  } else if (name === TRAINING_LIBRARY_MAIN_TABS.MOST_POPULAR) {
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.MostPopular
+  } else if (name === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES) {
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.Favourites
+  } else trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.CreatedByMe
+  return trainingSearchType
+}
+const getTrainingType = (name) => {
+  let trainingType
+  if (name === TRAINING_LIBRARY_TYPES.ALL_TYPES)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES
+  else if (name === TRAINING_LIBRARY_TYPES.LEARNING_PATH)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+  else if (name === TRAINING_LIBRARY_TYPES.TRAINING)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+  else if (name === TRAINING_LIBRARY_TYPES.POSTER)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+  else if (name === TRAINING_LIBRARY_TYPES.INFOGRAPHIC)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+  else if (name === TRAINING_LIBRARY_TYPES.SCREENSAVER)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER
+  return trainingType
 }
 
 export default trainingLibrary

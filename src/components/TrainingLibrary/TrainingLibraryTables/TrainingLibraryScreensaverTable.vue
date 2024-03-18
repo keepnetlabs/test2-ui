@@ -78,7 +78,9 @@ export default {
           TRAINING_LIBRARY_COLUMNS.LANGUAGES,
           TRAINING_LIBRARY_COLUMNS.CREATED_BY,
           TRAINING_LIBRARY_COLUMNS.COMPLIANCE,
-          TRAINING_LIBRARY_COLUMNS.TAGS
+          TRAINING_LIBRARY_COLUMNS.TAGS,
+          TRAINING_LIBRARY_COLUMNS.VENDOR,
+          TRAINING_LIBRARY_COLUMNS.DATE_CREATED
         ],
         iEmpty: {
           btn: labels.CreateNewScreensaver,
@@ -124,17 +126,22 @@ export default {
         })
       }
     },
-    selectedTrainingContent(tabValue) {
-      if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
-        this.$set(this.tableOptions, 'iEmpty', {
-          ...this.tableOptions.iEmpty,
-          message: labels.EmptyScreensaverCreatedByYouSubtitle
-        })
-      } else {
-        this.$set(this.tableOptions, 'iEmpty', {
-          ...this.tableOptions.iEmpty,
-          message: ''
-        })
+    selectedTrainingContent: {
+      immediate: true,
+      handler(tabValue) {
+        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+          this.$set(this.tableOptions, 'iEmpty', {
+            ...this.tableOptions.iEmpty,
+            subMes: labels.EmptyScreensaverCreatedByYouSubtitle,
+            btn: null
+          })
+        } else {
+          this.$set(this.tableOptions, 'iEmpty', {
+            ...this.tableOptions.iEmpty,
+            subMes: '',
+            btn: labels.CreateNewScreensaver
+          })
+        }
       }
     },
     firstColFixed() {

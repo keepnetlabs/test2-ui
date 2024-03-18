@@ -12,7 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isLanguageDisabled"
+        :disabled="isLanguageDisabled || !vendorId"
       />
       <v-btn
         v-if="isRemovable"
@@ -42,7 +42,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
-        :disabled="!value.languageId"
+        :disabled="!value.languageId || !vendorId"
         :readonly="isReadonly"
         :deletable="false"
         :is-backend-parsed="isBackendParsed"
@@ -89,6 +89,10 @@ export default {
     typeWithDisplayName: {
       type: String,
       default: ''
+    },
+    vendorId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -131,6 +135,7 @@ export default {
       const payload = new FormData()
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
+      payload.append('vendorId', this.vendorId)
       this.isDisabled = true
       this.isReadonly = true
       this.isBackendParsed = false

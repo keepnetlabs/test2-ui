@@ -34,30 +34,8 @@
         :items="getCategories"
       ></KSelect>
     </FormGroup>
-    <FormGroup :title="labels.Compliance">
-      <KSelect
-        v-model.trim="formData.compliance"
-        dense
-        outlined
-        autocomplete="off"
-        item-text="text"
-        item-value="value"
-        placeholder="Select compliance"
-        :items="getCompliances"
-      ></KSelect>
-    </FormGroup>
-    <FormGroup :title="labels.Behaviour">
-      <KSelect
-        v-model.trim="formData.behaviour"
-        dense
-        outlined
-        autocomplete="off"
-        item-text="text"
-        item-value="value"
-        placeholder="Select behaviour"
-        :items="getBehaviours"
-      ></KSelect>
-    </FormGroup>
+    <InputCompliance v-model="formData.compliances" />
+    <InputBehaviour v-model="formData.behaviours" />
     <FormGroup has-hint :title="labels.TargetAudience" :sub-title="labels.TargetAudiencePosterSub">
       <KSelect
         v-model.trim="formData.targetAudience"
@@ -114,9 +92,13 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
+import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
 export default {
   name: 'TrainingLibraryNewPosterInformation',
   components: {
+    InputBehaviour,
+    InputCompliance,
     MakeAvailableFor,
     KFileUpload,
     InputTag,
@@ -135,6 +117,8 @@ export default {
         description: '',
         category: '',
         targetAudience: '',
+        compliances: [],
+        behaviours: [],
         tags: [],
         availableForRequests: [],
         coverImageUrl: null
@@ -144,9 +128,7 @@ export default {
   computed: {
     ...mapGetters({
       getCategories: 'trainingLibraryHelpers/getCategories',
-      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
-      getCompliances: 'trainingLibraryHelpers/getCompliances',
-      getBehaviours: 'trainingLibraryHelpers/getBehaviours'
+      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
     })
   },
   methods: {
