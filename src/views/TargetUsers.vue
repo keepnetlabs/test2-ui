@@ -17,6 +17,7 @@
           ref="refPeople"
           :company-license="companyLicense"
           @call-for-company-licenses="callForLicenseCheck"
+          @on-empty-target-group-route="handleRouteToTargetGroup"
       /></el-tab-pane>
       <el-tab-pane
         v-if="getTargetGroupsSearchPermissions"
@@ -24,7 +25,11 @@
         label="Groups"
         name="target-users--group"
       >
-        <groups v-if="tab === 'target-users--group'" ref="groups" :isLoadState="isLoadState"
+        <groups
+          v-if="tab === 'target-users--group'"
+          ref="groups"
+          :isLoadState="isLoadState"
+          :is-open-target-group-modal-on-created="isOpenTargetGroupModalOnCreated"
       /></el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -53,6 +58,7 @@ export default {
     return {
       companyLicense: null,
       isLoadState: false,
+      isOpenTargetGroupModalOnCreated: false,
       showLicenseExceededDialog: false,
       tab: 'target-users--people'
     }
@@ -153,6 +159,11 @@ export default {
     },
     toggleShowLicenseExceededDialog() {
       this.showLicenseExceededDialog = !this.showLicenseExceededDialog
+    },
+    handleRouteToTargetGroup() {
+      this.isOpenTargetGroupModalOnCreated = true
+      this.tab = 'target-users--group'
+      this.$nextTick(() => (this.isOpenTargetGroupModalOnCreated = false))
     }
   }
 }

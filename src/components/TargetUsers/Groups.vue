@@ -169,6 +169,10 @@ export default {
   props: {
     isLoadState: {
       type: Boolean
+    },
+    isOpenTargetGroupModalOnCreated: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -543,6 +547,7 @@ export default {
     if (!this.isLoadState || !tableState) {
       this.callForTargetGroups()
     }
+    this.showNewUserGroupModal = this.isOpenTargetGroupModalOnCreated
   },
   beforeDestroy() {
     const tableState = {
