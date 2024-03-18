@@ -8,7 +8,7 @@
       <div>
         <VIcon
           class="fw-600 cursor-pointer"
-          style="font-size: 20px;"
+          style="font-size: 20px; margin-top: -2px;"
           color="#757575"
           @click="removeSelectFilter"
           >mdi-close</VIcon
@@ -30,7 +30,7 @@
       <div>
         <VIcon
           class="fw-600 cursor-pointer"
-          style="font-size: 20px;"
+          style="font-size: 20px; margin-top: -2px;"
           color="#757575"
           @click="removeSearchFilter(filterVal, fIndex)"
           >mdi-close</VIcon
@@ -45,7 +45,7 @@
       <div>
         <VIcon
           class="fw-600 cursor-pointer"
-          style="font-size: 20px;"
+          style="font-size: 20px; margin-top: -2px;"
           color="#757575"
           @click="removeSelectFilter"
           >mdi-close</VIcon
@@ -87,19 +87,20 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
+      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     removeSelectFilter() {
       this.filter.activeValue = ''
       this.filter.value = ''
       this.filter.isFilterActive = false
-      this.callForTrainingLibrary()
+      this.removeFilterFromPayload(this.filter)
     },
     removeSearchFilter(value, index) {
       this.filter.activeValue.splice(index, 1)
       this.filter.value = this.filter.activeValue
       this.filter.isFilterActive = !!this.filter.activeValue.length
-      this.callForTrainingLibrary()
+      this.removeFilterFromPayload(this.filter)
     },
     getFilterValue(langCode = '') {
       return (

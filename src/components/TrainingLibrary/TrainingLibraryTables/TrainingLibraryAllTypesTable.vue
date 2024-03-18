@@ -20,12 +20,8 @@
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
     :axios-payload.sync="axiosPayload"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
   >
     <template #empty-table-inline>
       <div class="empty-inline">
@@ -96,7 +92,6 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
@@ -110,7 +105,7 @@ import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
 import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import {
   TRAINING_LIBRARY_MAIN_TABS,
   TRAINING_LIBRARY_PAYLOAD_TYPES
@@ -127,7 +122,7 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [useDefaultTableFunctions, useAddTrainingLibraryContent],
+  mixins: [useAddTrainingLibraryContent],
   data() {
     return {
       TRAINING_LIBRARY_PAYLOAD_TYPES,
@@ -244,6 +239,20 @@ export default {
   mounted() {
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
+  },
+  methods: {
+    ...mapActions({
+      callForData: 'trainingLibrary/callForTableData'
+    }),
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForData()
+    },
+    serverSideSizeChanged(pageSize = 5) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.callForData()
+    }
   }
 }
 </script>

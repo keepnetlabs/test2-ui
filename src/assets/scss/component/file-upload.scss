@@ -5,7 +5,10 @@
   &--disabled{
     pointer-events: none;
     .k-file-uploads__wrapper{
-      background: lightgray;
+      background: #f2f2f2 !important;
+    }
+    .file-uploads{
+      opacity:0.5;
     }
   }
 

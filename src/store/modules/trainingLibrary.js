@@ -147,7 +147,6 @@ const trainingLibrary = {
       state.renderedColumns = state.tableColumns
         .filter((item) => item && item.show)
         .map((i) => i && i.property)
-      console.log('state.renderedCOlumns', state.renderedColumns)
     },
     SET_TABLE_SETTINGS_CHANGE(state) {
       localStorage.setItem(
@@ -202,7 +201,6 @@ const trainingLibrary = {
     },
     SET_POSTER_PREVIEW_DIALOG(state, payload) {
       state.posterPreviewDialog = payload
-      console.log(state.posterPreviewDialog)
     },
     SET_INFO_GRAPHIC_PREVIEW_DIALOG(state, payload) {
       state.infographicPreviewDialog = payload
@@ -365,12 +363,12 @@ const trainingLibrary = {
     },
     SET_SEARCH_TO_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems
-      const fIndex = filterItems.findIndex((f) => f.FieldName === 'materialName')
+      const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
       if (fIndex !== -1) {
         filterItems[fIndex].Value = state.search
       } else {
         filterItems.push({
-          FieldName: 'materialName',
+          FieldName: 'trainingName',
           Value: state.search,
           Operator: 'Contains'
         })
@@ -418,14 +416,19 @@ const trainingLibrary = {
         if (fIndex !== -1) filterItems.splice(fIndex, 2)
         return
       }
+      console.log('filterItems', filterItems)
+      console.log('payload', payload)
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       if (fIndex !== -1) filterItems.splice(fIndex, 1)
+    },
+    RESET_PAGINATION(state) {
+      state.axiosPayload.pageNumber = 1
+      state.serverSideProps.pageNumber = 1
     },
     SET_TRAINING_SEARCH_TYPE(state, payload) {
       state.axiosPayload.trainingSearchType = payload
     },
     SET_TRAINING_TYPE(state, payload) {
-      console.log(payload)
       if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
         state.axiosPayload.trainingType = null
       } else {
@@ -521,15 +524,19 @@ const trainingLibrary = {
       commit('SET_DEFAULT_TABLE_SETTINGS')
     },
     setSelectedTrainingContent({ commit, dispatch, state }, payload) {
+      if (state.selectedTrainingContent === payload.name) return
       let trainingSearchType = getTrainingSearchType(payload.name)
       commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
       commit('SET_TRAINING_SEARCH_TYPE', trainingSearchType)
+      commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
-    setSubSelectedTrainingContent({ commit, dispatch }, payload) {
+    setSubSelectedTrainingContent({ commit, dispatch, state }, payload) {
+      if (state.selectedSubTrainingContent === payload.name) return
       let trainingType = getTrainingType(payload.name)
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
       commit('SET_TRAINING_TYPE', trainingType)
+      commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
     setSortBy({ commit, dispatch }, { item, sort }) {

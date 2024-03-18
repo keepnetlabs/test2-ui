@@ -10,7 +10,7 @@
         hide-details
         :value="search"
         :placeholder="placeholder"
-        @input="handleSearch"
+        @input="handleDebouncedSearch"
       />
       <div>
         <VBtn
@@ -81,9 +81,11 @@ import TrainingLibraryFirstCardNewButton from '@/components/TrainingLibrary/Trai
 import { downloadButtonOptions } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import TrainingLibraryFirstCardSettings from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCardSettings.vue'
 import { mapActions, mapGetters } from 'vuex'
+import useDebounce from '@/hooks/useDebounce'
 export default {
   name: 'TrainingLibraryFirstCardHeader',
   components: { TrainingLibraryFirstCardSettings, TrainingLibraryFirstCardNewButton },
+  mixins: [useDebounce],
   data() {
     return {
       downloadButtonOptions,
@@ -113,7 +115,12 @@ export default {
       handleSearch: 'trainingLibrary/setSearch',
       setListView: 'trainingLibrary/setListView'
     }),
-    handleDownloadButtonClick(item) {}
+    handleDownloadButtonClick(item) {},
+    handleDebouncedSearch(event) {
+      this.debounce(() => {
+        this.handleSearch(event)
+      })
+    }
   }
 }
 </script>

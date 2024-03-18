@@ -241,13 +241,11 @@ export default {
           targetAudience,
           tags,
           availableForRequests,
-          coverImageUrl,
-          compliances,
-          behaviours
+          coverImageUrl
         }
       } = refTrainingCourseInformation
       const {
-        formData: { hasQuiz, type }
+        formData: { hasQuiz, type, vendorId }
       } = refTrainingContent
       const payload = new FormData()
       if (coverImageUrl) {
@@ -260,15 +258,9 @@ export default {
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
       payload.append('trainingDetail.type', type)
-      payload.append('trainingDetail.behaviour', behaviour)
+      payload.append('trainingDetail.vendorId', vendorId)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
-      })
-      compliances.map((compliance, index) => {
-        payload.append(`trainingDetail.compliances[${index}]`, compliance)
-      })
-      behaviours.map((behaviour, index) => {
-        payload.append(`trainingDetail.behaviours[${index}]`, behaviour)
       })
       availableForRequests.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)
