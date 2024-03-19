@@ -311,6 +311,7 @@ export default {
       filterList.push(...this.getSelectedMailCcFilter())
       filterList.push(...this.getSelectedMailToFilter())
       filterList.push(...this.getSelectedMailUrlFilter())
+      filterList.push(...this.getSelectedMailSenderIpFilter())
       this.setFormQuery(this?.selectedEmail?.logicalOperator ?? OPERATORS.AND, filterList)
     },
     setFormQuery(logicalOperator = OPERATORS.AND, children = []) {
@@ -379,7 +380,11 @@ export default {
       if (!subjectCase || !this.selectedMail.subject) return []
       return [
         {
-          query: { operand: 'subject', value: this.selectedMail.subject, rule: 'conditions' },
+          query: {
+            operand: 'subject',
+            value: this.selectedMail.subject,
+            rule: 'conditions'
+          },
           type: 'query-builder-rule'
         }
       ]
@@ -408,6 +413,19 @@ export default {
         })
       })
       return filterList
+    },
+    getSelectedMailSenderIpFilter() {
+      if (!this.selectedMail.senderIp) return []
+      return [
+        {
+          query: {
+            operand: 'ip',
+            value: this.selectedMail.senderIp,
+            rule: 'conditions'
+          },
+          type: 'query-builder-rule'
+        }
+      ]
     },
     getEditedFilters() {
       const headers = this?.investigationDetailsData?.headers?.reduce((acc, item) => {
