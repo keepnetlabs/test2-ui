@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     isNotDelivered() {
-      return !!(this.helperData?.emailNotDeliveredUserCount || 0)
+      return !!(this.helperData?.smsNotDeliveredUserCount || 0)
     },
     getDeliveryValue() {
       const { smsDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData

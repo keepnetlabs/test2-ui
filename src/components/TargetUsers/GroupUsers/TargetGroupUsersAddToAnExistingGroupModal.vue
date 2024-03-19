@@ -36,6 +36,7 @@
         @sortChangedEvent="sortChanged"
         @refreshAction="callForTargetGroups"
         @searchChangedEvent="handleSearchChange"
+        @onEmptyBtnClicked="handleEmptyBtnClicked"
       />
     </template>
     <template #app-dialog-footer>
@@ -239,6 +240,9 @@ export default {
     },
     handleSelectionChange(selection = []) {
       this.selectedTargetGroups = selection
+    },
+    handleEmptyBtnClicked() {
+      this.$emit('on-empty-target-group-route')
     }
   }
 }

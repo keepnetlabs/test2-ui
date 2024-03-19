@@ -64,6 +64,7 @@
       :bulkImportPayload="bulkImportPayload"
       @closeOverlay="toggleShowingTargetUserAddToGroup"
       @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
+      @on-empty-target-group-route="$emit('on-empty-target-group-route')"
     />
     <TargetUserCreateGroupWithUserDialog
       v-if="isShowingTargetUserCreateGroupWithUser"

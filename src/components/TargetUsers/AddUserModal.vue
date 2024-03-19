@@ -63,6 +63,32 @@
             id="input--target-user-department"
           />
         </form-group>
+        <FormGroup v-if="!editData" title="Target Group">
+          <k-select
+            v-infinite-scroll="{
+              target: '#input--target-group-groups .k-select__menu',
+              callback: callForTargetGroups
+            }"
+            v-select-search-handler="{
+              callback: searchTargetGroups,
+              isLoadingKey: 'isTargetGroupsLoading'
+            }"
+            type="autocomplete"
+            v-model="formValues.targetGroupResourceIds"
+            id="input--target-group-groups"
+            chips
+            clearable
+            item-text="name"
+            item-value="resourceId"
+            multiple
+            small-chips
+            deletable-chips
+            outlined
+            :no-data-text="noTargetGroupText"
+            placeholder="Select a target group"
+            :items="targetGroupList"
+          ></k-select>
+        </FormGroup>
         <form-group
           v-for="(item, index) in customFields"
           :title="item.name"
@@ -193,7 +219,7 @@
 
 <script>
 import { mail, maxLength, required } from '@/utils/validations'
-import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
+import { createTargetUser, searchTargetGroups, updateTargetUser } from '@/api/targetUsers'
 import AppModal from '../AppModal'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
@@ -210,9 +236,13 @@ import {
   getTimeZone,
   getTimeValueFormatZone,
   isDifferent,
-  scrollToComponent
+  scrollToComponent,
+  getDefaultAxiosPayload,
+  getSelectSearchPayload
 } from '@/utils/functions'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 
 export default {
   name: 'AddUserModal',
@@ -244,12 +274,22 @@ export default {
       type: Object
     }
   },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   data() {
     return {
+      targetGroupPayload: getDefaultAxiosPayload({ pageSize: 100 }),
+      totalNumberOfPagesOfTargetGroups: 1,
+      isTargetGroupsLoading: false,
+      targetGroups: [],
+      targetGroupList: [],
       saveDisable: false,
       labels,
       initialFormValues: null,
       formValues: {
+        targetGroupResourceIds: [],
         firstName: '',
         lastName: '',
         email: '',
@@ -281,6 +321,9 @@ export default {
         ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
         : ''
     },
+    noTargetGroupText() {
+      return this.isTargetGroupsLoading ? 'Loading...' : 'No target group available'
+    },
     getTitle() {
       return this.editData ? 'Edit User' : 'Add New User'
     },
@@ -295,6 +338,7 @@ export default {
   },
   created() {
     if (!this.editData) {
+      this.callForTargetGroups()
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     for (let field of this.customFields) {
@@ -306,6 +350,40 @@ export default {
     this.setEditData()
   },
   methods: {
+    callForTargetGroups(addPage) {
+      if (addPage) {
+        this.targetGroupPayload.pageNumber += 1
+        if (this.targetGroupPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
+      }
+      this.isTargetGroupsLoading = true
+      searchTargetGroups(this.targetGroupPayload)
+        .then(this.setTargetGroups)
+        .then((data) => {
+          this.totalNumberOfPagesOfTargetGroups = data?.data?.totalNumberOfPages || 1
+        })
+        .finally(() => {
+          this.isTargetGroupsLoading = false
+        })
+    },
+    setTargetGroups(response) {
+      const { data: { data = [] } = [] } = response
+      this.targetGroups = [...this.targetGroups, ...data.results]
+      this.targetGroupList = this.targetGroups.map((tg) => ({
+        name: tg.name,
+        resourceId: tg.resourceId
+      }))
+    },
+    searchTargetGroups(search = '') {
+      if (search) {
+        searchTargetGroups(getSelectSearchPayload(this.targetGroupPayload, search))
+          .then(this.setTargetGroups)
+          .finally(() => {
+            this.isTargetGroupsLoading = false
+          })
+      } else {
+        this.callForTargetGroups()
+      }
+    },
     getTimeZone(isDate) {
       return getTimeZone(isDate)
     },
@@ -491,11 +569,6 @@ export default {
           this.$emit('closeAddUserModalWithUpdate')
         })
         .finally(() => (this.saveDisable = false))
-    },
-    callForTargetGroups() {
-      getTargetGroups().then(() => {
-        //const { data } = response.data
-      })
     },
     setEditData() {
       if (this.editData) {

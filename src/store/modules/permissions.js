@@ -1547,6 +1547,9 @@ const store = {
     getCallbackSettingsMapNumbersPermissions(state) {
       return state?.callbackSettingsPermissions?.MAP_NUMBERS?.hasPermission
     },
+    getCallbackSettingsDeleteNumberPermissions(state) {
+      return state?.callbackSettingsPermissions?.DELETE_NUMBER?.hasPermission
+    },
     getCallbackSettingsExchangePermissions(state) {
       return state?.callbackSettingsPermissions?.EXCHANGE?.hasPermission
     }

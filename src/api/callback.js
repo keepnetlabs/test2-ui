@@ -133,17 +133,28 @@ const searchCallbackSettings = (payload) => {
 }
 
 const mapCallbackNumbers = (payload) => {
-  return testRequest.post('/callback-simulator/settings/map-numbers', payload)
+  return testRequest.post('/callback-simulator/settings/map-numbers', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const exchangeCallbackNumbers = (oldProviderNumberId, newProviderNumberId) => {
   return testRequest.post(
-    `/callback-simulator/settings/exchange-number/${oldProviderNumberId}/${newProviderNumberId}`
+    `/callback-simulator/settings/exchange-number/${oldProviderNumberId}/${newProviderNumberId}`,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
   )
 }
 
 const getAvailableCallbackNumbers = () => {
   return testRequest.get(`/callback-simulator/settings/available-numbers`)
+}
+
+const deselectPhoneNumber = (resourceId) => {
+  return testRequest.delete(`/callback-simulator/settings/number-delete/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const getCampaignManagerFormDetails = () => {
@@ -353,6 +364,7 @@ export default {
   searchCallbackSettings,
   mapCallbackNumbers,
   exchangeCallbackNumbers,
+  deselectPhoneNumber,
   getAvailableCallbackNumbers,
   getCampaignManagerFormDetails,
   createCallbackCampaign,
