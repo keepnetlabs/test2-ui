@@ -20,6 +20,14 @@
       @confirm="handleConfirmExchangePhoneNumber"
       @close="handleCloseExchangePhoneNumberModal"
     />
+    <DeselectPhoneNumberModal
+      v-if="isShowDeselectNumberModal"
+      :isLoading="isMutating"
+      :status="isShowDeselectNumberModal"
+      :selectedRow="selectedRow"
+      @confirm="handleConfirmDeselectPhoneNumber"
+      @close="handleCloseDeselectPhoneNumberModal"
+    />
     <AlertBox
       v-if="canRenderAlertBox"
       class="bg-aqua-light mb-4"
@@ -76,6 +84,15 @@
           :checkIsOwnerProperty="false"
           @on-click="handleExchange(scope.row)"
         />
+        <DefaultButtonRowAction
+          :scope="scope"
+          :id="tableOptions.rowActions[1].id"
+          :icon="tableOptions.rowActions[1].icon"
+          :disabled="tableOptions.rowActions[1].disabled || scope.row.isUsing === 'In Use'"
+          :text="scope.row.isUsing === 'In Use' ? 'Number in use' : 'Deselect'"
+          :checkIsOwnerProperty="false"
+          @on-click="handleDeselectNumber(scope.row)"
+        />
       </template>
     </DataTable>
   </KContainer>
@@ -98,6 +115,7 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import SelectPhoneNumbersModal from '@/components/CallbackSettings/SelectPhoneNumbersModal'
 import ExchangePhoneNumberModal from '@/components/CallbackSettings/ExchangePhoneNumberModal'
+import DeselectPhoneNumberModal from '@/components/CallbackSettings/DeselectPhoneNumberModal'
 import Badge from '@/components/Badge'
 import AlertBox from '@/components/AlertBox'
 
@@ -110,6 +128,7 @@ export default {
     DefaultButtonRowAction,
     SelectPhoneNumbersModal,
     ExchangePhoneNumberModal,
+    DeselectPhoneNumberModal,
     Badge,
     AlertBox
   },
@@ -126,6 +145,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isShowSelectPhoneNumbersModal: false,
+      isShowDeselectNumberModal: false,
       isShowExchangePhoneNumberModal: false,
       selectedRow: null,
       tableData: [],
@@ -212,6 +232,13 @@ export default {
             action: 'handleExchange',
             id: 'btn-exchange--callback-settings',
             disabled: !this.$store.getters['permissions/getCallbackSettingsExchangePermissions']
+          },
+          {
+            name: 'Deselect',
+            icon: 'mdi-close',
+            action: 'handleDeselectNumber',
+            id: 'btn-deselect--callback-settings'
+            // disabled: !this.$store.getters['permissions/getCallbackSettingsDeleteNumberPermissions']
           }
         ],
         addButton: {
@@ -323,6 +350,25 @@ export default {
     handleExchange(row) {
       this.selectedRow = row
       this.isShowExchangePhoneNumberModal = true
+    },
+    handleDeselectNumber(row) {
+      this.selectedRow = row
+      this.isShowDeselectNumberModal = true
+    },
+    handleCloseDeselectPhoneNumberModal() {
+      this.selectedRow = null
+      this.isShowDeselectNumberModal = false
+    },
+    handleConfirmDeselectPhoneNumber() {
+      this.isMutating = true
+      CallbackService.deselectPhoneNumber(this.selectedRow.providerNumberId)
+        .then((res) => {
+          this.handleCloseDeselectPhoneNumberModal()
+          this.callForData()
+        })
+        .finally(() => {
+          this.isMutating = false
+        })
     },
     handleCloseExchangePhoneNumberModal() {
       this.isShowExchangePhoneNumberModal = false
