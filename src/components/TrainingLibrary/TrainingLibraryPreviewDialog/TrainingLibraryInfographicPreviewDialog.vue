@@ -27,8 +27,14 @@
                     }}</span>
                   </div>
                   <div v-if="showFavoriteButton" class="d-flex align-center gap-2">
-                    <TrainingLibraryNewBadge />
-                    <TrainingLibraryFavoriteButton />
+                    <TrainingLibraryNewBadge
+                      v-if="isShowInfographicParams && infographicParams.isNew"
+                    />
+                    <TrainingLibraryFavoriteButton
+                      v-if="isShowInfographicParams"
+                      :is-default-favourite="infographicParams.isFavourite"
+                      :training-id="selectedRow.trainingId"
+                    />
                   </div>
                 </div>
               </div>
@@ -158,7 +164,11 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
-            <span class="training-library-preview__desc">{{ infographicParams.behaviours }}</span>
+            <ul>
+              <li v-for="(behaviour, bIndex) in infographicParams.behaviourNames" :key="bIndex">
+                {{ behaviour }}
+              </li>
+            </ul>
           </div>
         </ElTabPane>
       </ElTabs>
@@ -308,6 +318,9 @@ export default {
       languages: 'trainingLibraryHelpers/getLanguages',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog'
     }),
+    isShowInfographicParams() {
+      return Object.keys(this.infographicParams).length > 0
+    },
     getDownloadInfographicStyle() {
       const style = {
         textTransform: 'none'

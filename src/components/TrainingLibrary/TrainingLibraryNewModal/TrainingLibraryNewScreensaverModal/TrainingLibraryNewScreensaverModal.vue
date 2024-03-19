@@ -81,7 +81,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
-import { emptyNewPosterModalObj } from '@/components/TrainingLibrary/utils'
+import { emptyNewScreensaverModalObj } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewScreensaverInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewScreensaverModal/TrainingLibraryNewScreensaverInformation.vue'
 import TrainingLibraryNewScreensaverContent from './TrainingLibraryNewScreensaverContent.vue'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
@@ -136,7 +136,9 @@ export default {
           trainingContents,
           availableForList,
           category,
-          type
+          type,
+          compliances,
+          behaviours
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
@@ -147,7 +149,9 @@ export default {
             description,
             tags: tagNames,
             targetAudience,
-            category
+            category,
+            compliances: compliances.map(({ complianceId }) => complianceId),
+            behaviours: behaviours.map(({ behaviourId }) => behaviourId)
           })
           refTrainingCourseInformation.setMakeAvailableForData(availableForList)
           refTrainingContent.setFormData({ hasQuiz, type })
@@ -158,11 +162,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      setNewPosterModal: 'trainingLibrary/setNewScreensaverModal',
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     handleClose() {
-      this.setNewPosterModal(emptyNewPosterModalObj)
+      this.setNewScreensaverModal(emptyNewScreensaverModalObj)
     },
     changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs
@@ -203,7 +207,7 @@ export default {
             targetAudience,
             tagNames,
             availableForRequests,
-            type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
+            type: TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER,
             compliances: compliances.map((compliance) => ({ complianceId: compliance })),
             behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour }))
           })
@@ -255,21 +259,22 @@ export default {
       if (coverImageUrl) {
         payload.append('trainingDetail.coverImageUrl', coverImageUrl)
       }
+      payload.append('trainingDetail.vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail.name', name)
       payload.append('trainingDetail.description', description)
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })
       compliances.map((compliance, index) => {
-        payload.append(`trainingDetail.compliances[${index}]`, compliance)
+        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
       })
       behaviours.map((behaviour, index) => {
-        payload.append(`trainingDetail.behaviours[${index}]`, behaviour)
+        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
       })
       availableForRequests.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)

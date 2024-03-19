@@ -161,14 +161,22 @@ export default {
         subtitle: '',
         showDetails: false,
         showTabs: false,
-        showSendButton: true,
+        showSendButton: false,
         showPosterName: true,
         showFavoriteButton: false,
         icon: 'mdi-download'
       })
     },
     handleAddFavorite(row) {
-      this.$emit('on-poster-add-favorite', row)
+      if (row.isFavourite) {
+        AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      } else {
+        AwarenessEducatorService.addToFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      }
     },
     handleEdit(row) {
       this.setNewPosterModal({

@@ -163,7 +163,7 @@ export default {
         showDetails: false,
         showTabs: false,
         showFavoriteButton: false,
-        showSendButton: true,
+        showSendButton: false,
         icon: 'mdi-download'
       })
     },

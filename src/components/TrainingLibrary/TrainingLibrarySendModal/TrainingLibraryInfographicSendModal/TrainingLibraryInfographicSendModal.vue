@@ -445,7 +445,7 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-information',
-              message: `You cannot save without adding a {TRAININGURL} to the SMS text field`
+              message: `You cannot save without adding a {INFOGRAPHICURL} to the SMS text field`
             })
             return
           }

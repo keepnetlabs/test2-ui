@@ -132,7 +132,15 @@ export default {
       })
     },
     handleAddFavorite(row) {
-      this.$emit('on-learning-path-add-favorite', row)
+      if (row.isFavourite) {
+        AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      } else {
+        AwarenessEducatorService.addToFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      }
     },
     handleEdit(row) {
       this.setNewLearningPathModal({
