@@ -468,7 +468,9 @@ const trainingLibrary = {
     },
     callForSummary({ commit, state }) {
       commit('SET_TABS_LOADING', true)
-      AwarenessEducatorService.getTrainingTypeCount(state.axiosPayload)
+      const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload))
+      copyOfPayload.pageNumber = 1
+      AwarenessEducatorService.getTrainingTypeCount(copyOfPayload)
         .then((response) => {
           const { data: { data } = {} } = response || {}
           commit('SET_TRAINING_SUB_TABS', [

@@ -246,12 +246,15 @@ export default {
           targetAudience,
           tags,
           availableForRequests,
-          coverImageUrl
+          coverImageUrl,
+          compliances,
+          behaviours
         }
       } = refTrainingCourseInformation
       const {
         formData: { hasQuiz, type, vendorId }
       } = refTrainingContent
+      if (!vendorId) return
       const payload = new FormData()
       if (coverImageUrl) {
         payload.append('trainingDetail.coverImageUrl', coverImageUrl)
@@ -273,6 +276,12 @@ export default {
           `trainingDetail.availableForRequests[${index}].resourceId`,
           request.resourceId
         )
+      })
+      compliances.map((compliance, index) => {
+        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
+      })
+      behaviours.map((behaviour, index) => {
+        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
       })
       this.isActionButtonDisabled = true
       AwarenessEducatorService.updateTraining(payload, this.trainingId)

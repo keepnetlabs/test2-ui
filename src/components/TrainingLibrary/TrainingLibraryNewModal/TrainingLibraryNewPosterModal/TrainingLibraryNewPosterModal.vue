@@ -136,7 +136,9 @@ export default {
           trainingContents,
           availableForList,
           category,
-          type
+          type,
+          compliances,
+          behaviours
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
@@ -147,7 +149,9 @@ export default {
             description,
             tags: tagNames,
             targetAudience,
-            category
+            category,
+            compliances: compliances.map(({ complianceId }) => complianceId),
+            behaviours: behaviours.map(({ behaviourId }) => behaviourId)
           })
           refTrainingCourseInformation.setMakeAvailableForData(availableForList)
           refTrainingContent.setFormData({ hasQuiz, type })
@@ -255,6 +259,7 @@ export default {
       if (coverImageUrl) {
         payload.append('trainingDetail.coverImageUrl', coverImageUrl)
       }
+      //payload.append('trainingDetail.vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail.name', name)
       payload.append('trainingDetail.description', description)
@@ -266,10 +271,10 @@ export default {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })
       compliances.map((compliance, index) => {
-        payload.append(`trainingDetail.compliances[${index}]`, compliance)
+        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
       })
       behaviours.map((behaviour, index) => {
-        payload.append(`trainingDetail.behaviours[${index}]`, behaviour)
+        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
       })
       availableForRequests.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)

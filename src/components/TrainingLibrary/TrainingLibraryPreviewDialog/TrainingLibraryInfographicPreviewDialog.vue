@@ -130,9 +130,18 @@
             <span class="training-library-preview__title">Created By: </span>
             <span class="training-library-preview__desc">{{ infographicParams.createdBy }}</span>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Compliance: </span>
-            <span class="training-library-preview__desc">{{ infographicParams.compliance }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Compliances: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="(tag, tIndex) in infographicParams.complianceNames"
+                :key="tIndex"
+                class="training-library-preview__tag"
+                >{{ tag }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>

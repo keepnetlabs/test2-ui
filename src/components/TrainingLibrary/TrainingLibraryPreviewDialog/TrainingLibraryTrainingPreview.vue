@@ -13,8 +13,12 @@
               <span class="training-library-preview__desc">{{ name }}</span>
             </div>
             <div class="d-flex align-center gap-2">
-              <TrainingLibraryNewBadge />
-              <TrainingLibraryFavoriteButton />
+              <TrainingLibraryNewBadge v-if="trainingParams && trainingParams.isNew" />
+              <TrainingLibraryFavoriteButton
+                v-if="trainingParams"
+                :is-default-favourite="trainingParams.isFavourite"
+                :training-id="trainingId"
+              />
             </div>
           </div>
           <FormGroupHorizontalContent

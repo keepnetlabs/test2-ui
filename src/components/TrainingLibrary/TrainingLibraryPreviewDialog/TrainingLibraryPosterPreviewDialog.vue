@@ -27,8 +27,12 @@
                     }}</span>
                   </div>
                   <div v-if="showFavoriteButton" class="d-flex align-center gap-2">
-                    <TrainingLibraryNewBadge />
-                    <TrainingLibraryFavoriteButton />
+                    <TrainingLibraryNewBadge v-if="isShowPosterParams && posterParams.isNew" />
+                    <TrainingLibraryFavoriteButton
+                      v-if="isShowPosterParams"
+                      :is-default-favourite="posterParams.isFavourite"
+                      :training-id="selectedRow.trainingId"
+                    />
                   </div>
                 </div>
               </div>
@@ -125,9 +129,18 @@
             <span class="training-library-preview__title">Created By: </span>
             <span class="training-library-preview__desc">{{ posterParams.createdBy }}</span>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Compliance: </span>
-            <span class="training-library-preview__desc">{{ posterParams.compliance }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Compliances: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="(tag, tIndex) in posterParams.complianceNames"
+                :key="tIndex"
+                class="training-library-preview__tag"
+                >{{ tag }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>
@@ -144,7 +157,11 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
-            <span class="training-library-preview__desc">{{ posterParams.behaviours }}</span>
+            <ul>
+              <li v-for="(behaviour, bIndex) in posterParams.behaviourNames" :key="bIndex">
+                {{ behaviour }}
+              </li>
+            </ul>
           </div>
         </ElTabPane>
       </ElTabs>
@@ -289,6 +306,9 @@ export default {
       languages: 'trainingLibraryHelpers/getLanguages',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog'
     }),
+    isShowPosterParams() {
+      return Object.keys(this.posterParams).length > 0
+    },
     getDownloadPosterStyle() {
       const style = {
         textTransform: 'none'

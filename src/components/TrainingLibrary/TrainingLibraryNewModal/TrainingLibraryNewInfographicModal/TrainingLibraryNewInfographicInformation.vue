@@ -8,11 +8,13 @@
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionInfographicSub">
+    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionInfographicSub">
       <InputDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
         required
+        persistent-hit
+        hint="*Required"
         rows="2"
         height="100"
         :max-length="300"
@@ -72,7 +74,9 @@
         hint="Only jpg, png files. Max. file size 2MB"
         :extensions="['jpg', 'png']"
         :size="2"
+        :file-previews="coverImageFilePreview"
         @inputFile="handleCoverImageChange"
+        @on-clear="handleCoverImageClear"
       />
     </FormGroup>
     <MakeAvailableFor
@@ -115,6 +119,7 @@ export default {
     return {
       Validations,
       labels,
+      coverImageFilePreview: [],
       formData: {
         coverImage: null,
         name: '',
@@ -156,10 +161,24 @@ export default {
       return false
     },
     setFormData(formData = {}) {
+      if (formData.coverImageUrl) {
+        this.coverImageFilePreview = [
+          {
+            url: formData.coverImageUrl,
+            name: formData.coverImageName || 'Cover Image',
+            size: formData.coverImageSize || 0
+          }
+        ]
+      }
       this.formData = {
         ...this.formData,
         ...formData
       }
+    },
+    handleCoverImageClear() {
+      this.coverImageFilePreview = []
+      this.formData.coverImage = ''
+      this.formData.coverImageUrl = ''
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {

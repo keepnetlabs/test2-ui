@@ -459,7 +459,7 @@ const getProxyTargetUserById = (id) => {
 }
 
 const downloadPoster = (payload) => {
-  return testRequest.post(`/trainings/scorm/download`, payload, {
+  return testRequest.post(`/trainings/download`, payload, {
     responseType: 'blob'
   })
 }

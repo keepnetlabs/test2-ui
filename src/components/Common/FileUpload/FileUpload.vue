@@ -178,6 +178,8 @@ export default {
     getCoverImagePreview() {
       if (this.files.length) {
         return this.files[0].url
+      } else if (this.filePreviews.length) {
+        return this.filePreviews[0].url
       }
       return false
     },
