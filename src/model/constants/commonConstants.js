@@ -175,6 +175,7 @@ export const PROPERTY_STORE = {
   POSTER_NAME: 'trainingName',
   DATE_CREATED: 'dateCreated',
   VENDOR: 'vendor',
+  VENDORID: 'vendorId',
   AVAILABLE_FOR: 'availableForCompanyCount',
   LEARNING_PATH_NAME: 'trainingName',
   LANGUAGE: 'languageTypeName',

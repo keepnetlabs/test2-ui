@@ -142,7 +142,7 @@ export const trainingLibraryFilters = [
   {
     text: 'Vendor',
     icon: 'mdi-store',
-    key: PROPERTY_STORE.VENDOR,
+    key: PROPERTY_STORE.VENDORID,
     show: false,
     filterType: 'search',
     items: [],

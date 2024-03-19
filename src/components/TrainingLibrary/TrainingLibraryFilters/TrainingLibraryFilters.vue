@@ -198,6 +198,7 @@ export default {
       filter.isFilterActive = true
       filter.activeValue = filter.value
       filter.activeOperator = filter.operator
+      console.log('filter', filter)
       this.setFilterToPayload(filter)
     },
     handleMenuVisibilityChange(val) {

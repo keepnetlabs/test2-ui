@@ -76,7 +76,8 @@ export default {
       categories: 'trainingLibraryHelpers/getCategories',
       behaviours: 'trainingLibraryHelpers/getBehaviours',
       types: 'trainingLibraryHelpers/getTrainingTypes',
-      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
+      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
+      vendors: 'trainingLibraryHelpers/getTrainingVendors'
     }),
     PROPERTY_STORE() {
       return PROPERTY_STORE
@@ -109,6 +110,7 @@ export default {
       else if (filter.key === PROPERTY_STORE.TYPE) return this.getTrainingTypeFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.TARGET_AUDIENCE)
         return this.getTargetAudienceFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.VENDORID) return this.getVendorFilterValue(filterVal)
       return filterVal
     },
     removeSelectFilter() {
@@ -171,6 +173,15 @@ export default {
     getTargetAudienceFilterValue(filterVal) {
       return (
         this.targetAudiences.find((type) => {
+          if (type.value === filterVal) {
+            return type
+          }
+        })?.text || filterVal
+      )
+    },
+    getVendorFilterValue(filterVal) {
+      return (
+        this.vendors.find((type) => {
           if (type.value === filterVal) {
             return type
           }

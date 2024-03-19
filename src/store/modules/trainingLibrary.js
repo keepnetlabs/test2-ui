@@ -318,6 +318,8 @@ const trainingLibrary = {
       state.renderedColumns = []
     },
     RESET_FILTERS(state) {
+      state.selectedTrainingContent = 'All Materials'
+      state.selectedSubTrainingContent = 'All Types'
       state.axiosPayload = getDefaultAxiosPayload({
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null
