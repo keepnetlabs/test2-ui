@@ -71,6 +71,7 @@
         hint="Only jpg, png files. Max. file size 2MB"
         :extensions="['jpg', 'png']"
         :size="2"
+        :show-file-size="false"
         :file-previews="coverImageFilePreview"
         @inputFile="handleCoverImageChange"
         @on-clear="handleCoverImageClear"

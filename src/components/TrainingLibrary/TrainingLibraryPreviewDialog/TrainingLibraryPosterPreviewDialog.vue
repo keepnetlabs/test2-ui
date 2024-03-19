@@ -30,6 +30,7 @@
                     <TrainingLibraryNewBadge v-if="isShowPosterParams && posterParams.isNew" />
                     <TrainingLibraryFavoriteButton
                       v-if="isShowPosterParams"
+                      ref="refFavoriteButton"
                       :is-default-favourite="posterParams.isFavourite"
                       :training-id="selectedRow.trainingId"
                     />
@@ -234,6 +235,7 @@ import { emptyPosterPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryPosterPreviewDialog',
   components: {
@@ -304,7 +306,8 @@ export default {
   computed: {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages',
-      getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog'
+      getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
+      getSelectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
     isShowPosterParams() {
       return Object.keys(this.posterParams).length > 0
@@ -336,7 +339,8 @@ export default {
   methods: {
     ...mapActions({
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
-      setPosterSendModal: 'trainingLibrary/setPosterSendModal'
+      setPosterSendModal: 'trainingLibrary/setPosterSendModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForData() {
       this.isLoading = true
@@ -363,6 +367,9 @@ export default {
       })
     },
     handleClose() {
+      if (this.$refs.refFavoriteButton.isFavourite !== this.isFavourite) {
+        this.callForTrainingLibrary()
+      }
       this.setPosterPreviewDialog(emptyPosterPreviewDialogObj)
     },
     handleDownloadPoster() {

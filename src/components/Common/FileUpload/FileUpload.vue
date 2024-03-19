@@ -41,7 +41,7 @@
             <div class="k-file-uploads__item-details--filename">
               {{ displayFileName(file.name) }}
             </div>
-            <div class="k-file-uploads__item-details--filesize">
+            <div v-if="showFileSize" class="k-file-uploads__item-details--filesize">
               <span v-if="!!file.size">{{ getFileSize(file.size) }}</span>
               <span
                 v-if="
@@ -110,6 +110,10 @@ export default {
     fileType: {
       type: String,
       default: 'image'
+    },
+    showFileSize: {
+      type: Boolean,
+      default: true
     },
     extensions: {
       type: Array,

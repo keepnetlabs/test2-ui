@@ -16,6 +16,7 @@
               <TrainingLibraryNewBadge v-if="trainingParams && trainingParams.isNew" />
               <TrainingLibraryFavoriteButton
                 v-if="trainingParams"
+                ref="refFavoriteButton"
                 :is-default-favourite="trainingParams.isFavourite"
                 :training-id="trainingId"
               />

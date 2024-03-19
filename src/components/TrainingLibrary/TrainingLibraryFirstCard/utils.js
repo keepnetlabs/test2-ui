@@ -68,7 +68,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   },
   VENDOR: {
     label: 'Vendor',
-    property: PROPERTY_STORE.VENDOR,
+    property: PROPERTY_STORE.VENDORNAME,
     show: false
   },
   DATE_CREATED: {

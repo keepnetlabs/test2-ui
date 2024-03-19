@@ -33,7 +33,6 @@ export default {
     handleFavorite() {
       if (!this.trainingId) return
       this.isLoading = true
-      console.log('this.isFavourite', this.isFavourite)
       if (this.isFavourite) {
         AwarenessEducatorService.removeFromFavorite(this.trainingId)
           .then(() => {

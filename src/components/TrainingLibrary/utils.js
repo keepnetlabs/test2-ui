@@ -153,7 +153,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     width: 160
   },
   VENDOR: {
-    property: PROPERTY_STORE.VENDOR,
+    property: PROPERTY_STORE.VENDORNAME,
     align: 'left',
     editable: false,
     label: labels.Vendor,

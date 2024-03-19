@@ -32,6 +32,7 @@
                     />
                     <TrainingLibraryFavoriteButton
                       v-if="isShowInfographicParams"
+                      ref="refFavoriteButton"
                       :is-default-favourite="infographicParams.isFavourite"
                       :training-id="selectedRow.trainingId"
                     />
@@ -176,7 +177,7 @@
         <div class="template-preview__text">
           <div v-if="showInfographicName">
             <div>
-              <span class="training-library-preview__title">InfographicParams Name: </span>
+              <span class="training-library-preview__title">Infographic Name: </span>
               <span class="training-library-preview__desc">{{ selectedRow.trainingName }}</span>
             </div>
           </div>
@@ -246,6 +247,7 @@ import { emptyInfographicPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryInfographicPreviewDialog',
   components: {
@@ -316,7 +318,8 @@ export default {
   computed: {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages',
-      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog'
+      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
+      getSelectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
     isShowInfographicParams() {
       return Object.keys(this.infographicParams).length > 0
@@ -348,7 +351,8 @@ export default {
   methods: {
     ...mapActions({
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
-      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForData() {
       this.isLoading = true
@@ -375,6 +379,9 @@ export default {
       })
     },
     handleClose() {
+      if (this.$refs.refFavoriteButton.isFavourite !== this.isFavourite) {
+        this.callForTrainingLibrary()
+      }
       this.setInfographicPreviewDialog(emptyInfographicPreviewDialogObj)
     },
     handleSend() {

@@ -15,6 +15,7 @@
       <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
       <TrainingLibraryLearningPathPreview
         v-else
+        ref="refTrainingLibraryLearningPathPreview"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
         :training-id="selectedRow.trainingId"
@@ -38,6 +39,7 @@ import { emptyLearningPathPreviewDialogObj } from '@/components/TrainingLibrary/
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 import TrainingLibraryLearningPathPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreview.vue'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryLearningPathPreviewDialog',
   components: {
@@ -69,7 +71,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
+      getSelectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
@@ -82,7 +85,8 @@ export default {
   methods: {
     ...mapActions({
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
-      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal'
+      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForTrainingDetail() {
       AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
@@ -95,6 +99,12 @@ export default {
       })
     },
     handleClose() {
+      if (
+        this.$refs.refTrainingLibraryLearningPathPreview.$refs.refFavoriteButton.isFavourite !==
+        this.isFavourite
+      ) {
+        this.callForTrainingLibrary()
+      }
       this.setLearningPathPreviewDialog(emptyLearningPathPreviewDialogObj)
     },
     handleSend() {

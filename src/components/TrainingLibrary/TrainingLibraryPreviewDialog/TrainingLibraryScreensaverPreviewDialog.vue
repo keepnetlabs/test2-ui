@@ -32,6 +32,7 @@
                     />
                     <TrainingLibraryFavoriteButton
                       v-if="isShowScreensaverParams"
+                      ref="refFavoriteButton"
                       :is-default-favourite="screensaverParams.isFavourite"
                       :training-id="selectedRow.trainingId"
                     />
@@ -246,6 +247,7 @@ import { emptyScreensaverPreviewDialogObj } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryScreensaverPreviewDialog',
   components: {
@@ -316,7 +318,8 @@ export default {
   computed: {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages',
-      getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog'
+      getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog',
+      getSelectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
     isShowScreensaverParams() {
       return Object.keys(this.screensaverParams).length > 0
@@ -348,7 +351,8 @@ export default {
   methods: {
     ...mapActions({
       setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
-      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal'
+      setScreensaverSendModal: 'trainingLibrary/setScreensaverSendModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForData() {
       this.isLoading = true
@@ -375,6 +379,9 @@ export default {
       })
     },
     handleClose() {
+      if (this.$refs.refFavoriteButton.isFavourite !== this.isFavourite) {
+        this.callForTrainingLibrary()
+      }
       this.setScreensaverPreviewDialog(emptyScreensaverPreviewDialogObj)
     },
     handleSend() {

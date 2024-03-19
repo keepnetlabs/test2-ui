@@ -168,7 +168,15 @@ export default {
       })
     },
     handleAddFavorite(row) {
-      this.$emit('on-screensaver-add-favorite', row)
+      if (row.isFavourite) {
+        AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      } else {
+        AwarenessEducatorService.addToFavorite(row.trainingId).then(() => {
+          this.callForData()
+        })
+      }
     },
     handleEdit(row) {
       this.setNewScreensaverModal({

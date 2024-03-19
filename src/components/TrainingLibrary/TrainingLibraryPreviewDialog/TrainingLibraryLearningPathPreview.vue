@@ -13,8 +13,13 @@
               <span class="training-library-preview__desc">{{ learningPathParams.name }}</span>
             </div>
             <div class="d-flex align-center gap-2">
-              <TrainingLibraryNewBadge />
-              <TrainingLibraryFavoriteButton />
+              <TrainingLibraryNewBadge v-if="learningPathParams && learningPathParams.isNew" />
+              <TrainingLibraryFavoriteButton
+                v-if="learningPathParams"
+                ref="refFavoriteButton"
+                :is-default-favourite="learningPathParams.isFavourite"
+                :training-id="trainingId"
+              />
             </div>
           </div>
           <div class="training-library-preview__details-item">
@@ -54,7 +59,11 @@
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
-            <span class="training-library-preview__desc">{{ learningPathParams.behaviours }}</span>
+            <ul>
+              <li v-for="(behaviour, bIndex) in trainingParams.behaviourNames" :key="bIndex">
+                {{ behaviour }}
+              </li>
+            </ul>
           </div>
         </template>
       </ElTabPane>

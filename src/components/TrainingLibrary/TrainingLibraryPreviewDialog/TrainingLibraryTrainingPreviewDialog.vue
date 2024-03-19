@@ -16,6 +16,7 @@
       <TrainingLibraryTrainingPreview
         v-if="selectedLanguages.length"
         v-show="!isPreviewLoading"
+        ref="refTrainingLibraryTrainingPreview"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
         :training-id="selectedRow.trainingId"
@@ -40,6 +41,7 @@ import TrainingLibraryTrainingPreview from '@/components/TrainingLibrary/Trainin
 import { emptyTrainingPreviewDialogObj } from '@/components/TrainingLibrary/utils'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
+import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryTrainingPreviewDialog',
   components: {
@@ -77,7 +79,8 @@ export default {
   computed: {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages',
-      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
+      getSelectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
@@ -98,7 +101,8 @@ export default {
   methods: {
     ...mapActions({
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
-      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal'
+      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForLanguages() {
       this.isPreviewLoading = true
@@ -125,6 +129,12 @@ export default {
       })
     },
     handleClose() {
+      if (
+        this.$refs.refTrainingLibraryTrainingPreview.$refs.refFavoriteButton.isFavourite !==
+        this.isFavourite
+      ) {
+        this.callForTrainingLibrary()
+      }
       this.setTrainingPreviewDialog(emptyTrainingPreviewDialogObj)
     },
     handleSend() {
