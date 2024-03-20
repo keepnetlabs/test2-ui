@@ -106,8 +106,10 @@ const trainingLibrary = {
     getTableColumns: (state) => state.tableColumns,
     getRenderedColumns: (state) => state.renderedColumns,
     getSearch: (state) => state.search,
-    getSearchPlaceholder: (state) =>
-      `Search in ${state.trainingSubTabs[0].totalCount} training by name`,
+    getSearchPlaceholder: (state) => {
+      if (state.isTabsLoading) return 'Loading...'
+      return `Search in ${state.trainingSubTabs[0].totalCount} training by name`
+    },
     getFirstColFixed: (state) => state.firstColFixed,
     getLastColFixed: (state) => state.lastColFixed,
     getIsListView: (state) => state.isListView,
@@ -366,9 +368,11 @@ const trainingLibrary = {
       state.axiosPayload.ascending = payload.ascending
       state.axiosPayload.orderBy = payload.orderBy
     },
-    SET_SEARCH_TO_PAYLOAD(state, payload) {
+    SET_SEARCH_TO_PAYLOAD(state) {
       const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
+      state.serverSideProps.pageNumber = 1
+      state.axiosPayload.pageNumber = 1
       if (fIndex !== -1) {
         filterItems[fIndex].Value = state.search
       } else {

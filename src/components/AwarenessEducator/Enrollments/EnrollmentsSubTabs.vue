@@ -73,6 +73,8 @@
           :api-func="getApiFunc"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
           @on-stop-reminder="handleStopReminder"
@@ -93,6 +95,8 @@
           :api-func="getApiFunc"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
           @on-stop-reminder="handleStopReminder"
@@ -103,6 +107,7 @@
           @on-edit="handleEditRowClick"
           @on-preview="handlePreviewRowClick"
           @on-download="handleDownloadPackage"
+          @on-view-report="handleRouteToReport"
         />
         <EnrollmentsTrainingTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.TRAINING"
@@ -112,6 +117,8 @@
           :api-func="getApiFunc"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
           @on-stop-reminder="handleStopReminder"
@@ -122,6 +129,7 @@
           @on-edit="handleEditRowClick"
           @on-preview="handlePreviewRowClick"
           @on-download="handleDownloadPackage"
+          @on-view-report="handleRouteToReport"
         />
         <EnrollmentsPosterTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.POSTER"
@@ -131,6 +139,8 @@
           :api-func="getApiFunc"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
           @on-stop-reminder="handleStopReminder"
@@ -141,6 +151,7 @@
           @on-edit="handleEditRowClick"
           @on-preview="handlePreviewRowClick"
           @on-download="handleDownloadPackage"
+          @on-view-report="handleRouteToReport"
         />
         <EnrollmentsInfographicTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.INFOGRAPHIC"
@@ -150,6 +161,8 @@
           :api-func="getApiFunc"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
           @on-stop-reminder="handleStopReminder"
@@ -160,6 +173,7 @@
           @on-edit="handleEditRowClick"
           @on-preview="handlePreviewRowClick"
           @on-download="handleDownloadPackage"
+          @on-view-report="handleRouteToReport"
         />
       </ElTabPane>
     </ElTabs>
@@ -167,7 +181,10 @@
 </template>
 
 <script>
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_PAYLOAD_TYPES,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import EnrollmentsAllTypesTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsAllTypesTable.vue'
 import EnrollmentsLearningPathTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsLearningPathTable.vue'
 import EnrollmentsTrainingTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsTrainingTable.vue'
@@ -213,6 +230,14 @@ export default {
       default: () => []
     },
     languages: {
+      type: Array,
+      default: () => []
+    },
+    categories: {
+      type: Array,
+      default: () => []
+    },
+    targetAudiences: {
       type: Array,
       default: () => []
     },
@@ -312,22 +337,22 @@ export default {
     handlePreviewRowClick(row) {
       AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
         this.selectedRow = { ...row, trainingId: response?.data?.data?.trainingId }
-        //todo check training type
-        if (true) {
+        if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
           this.setTrainingPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
             showSendButton: false
           })
-        } else {
+        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH) {
           this.setLearningPathPreviewDialog({
             status: true,
-            selectedRow: row,
+            selectedRow: this.selectedRow,
             showSendButton: false
           })
+        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
           this.setPosterPreviewDialog({
             status: true,
-            selectedRow: row,
+            selectedRow: this.selectedRow,
             type: 'poster',
             title: labels.PosterPreview,
             subtitle: '',
@@ -338,9 +363,10 @@ export default {
             showSendButton: false,
             icon: 'mdi-eye'
           })
+        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
           this.setInfographicPreviewDialog({
             status: true,
-            selectedRow: row,
+            selectedRow: this.selectedRow,
             type: 'infographic',
             title: labels.InfographicPreview,
             subtitle: '',

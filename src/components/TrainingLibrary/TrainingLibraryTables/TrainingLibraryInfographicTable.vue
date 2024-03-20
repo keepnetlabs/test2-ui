@@ -127,16 +127,16 @@ export default {
     selectedTrainingContent: {
       immediate: true,
       handler(tabValue) {
-        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES) {
           this.$set(this.tableOptions, 'iEmpty', {
             ...this.tableOptions.iEmpty,
-            subMes: labels.EmptyInfographicCreatedByYouSubtitle,
+            message: labels.EmptyTrainingFavorites,
             btn: null
           })
         } else {
           this.$set(this.tableOptions, 'iEmpty', {
             ...this.tableOptions.iEmpty,
-            subMes: '',
+            message: labels.EmptyInfographic,
             btn: labels.CreateNewInfographic
           })
         }

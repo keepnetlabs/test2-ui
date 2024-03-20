@@ -367,7 +367,7 @@ export default {
       })
     },
     handleClose() {
-      if (this.$refs.refFavoriteButton.isFavourite !== this.isFavourite) {
+      if (this.$refs.refFavoriteButton.isFavourite !== this.posterParams.isFavourite) {
         this.callForTrainingLibrary()
       }
       this.setPosterPreviewDialog(emptyPosterPreviewDialogObj)

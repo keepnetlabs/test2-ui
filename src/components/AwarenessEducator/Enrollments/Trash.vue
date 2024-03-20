@@ -4,6 +4,8 @@
       is-trash
       :enrollment-status-enum="enrollmentStatusEnum"
       :languages="languages"
+      :categories="categories"
+      :target-audiences="targetAudiences"
     />
     <!--
     <TrashDeletePermanentlyDialog
@@ -42,19 +44,12 @@ export default {
   },
   computed: {
     ...mapGetters({
-      languages: 'trainingLibraryHelpers/getLanguages'
+      languages: 'trainingLibraryHelpers/getLanguages',
+      categories: 'trainingLibraryHelpers/getCategories',
+      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
     })
   },
   methods: {
-    handleDeleteRowClick(row) {
-      this.selectedRow = row
-      this.toggleShowDeleteDialog()
-    },
-    handleRestoreRowClick(row) {
-      AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
-        this.$refs.refTable.callForData()
-      })
-    },
     toggleShowDeleteDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs.refTable.callForData()
       if (this.isShowDeleteDialog) this.selectedRow = null

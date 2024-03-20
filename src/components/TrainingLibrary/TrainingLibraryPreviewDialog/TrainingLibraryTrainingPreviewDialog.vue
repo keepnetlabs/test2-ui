@@ -131,7 +131,7 @@ export default {
     handleClose() {
       if (
         this.$refs.refTrainingLibraryTrainingPreview.$refs.refFavoriteButton.isFavourite !==
-        this.isFavourite
+        this.trainingDetails.isFavourite
       ) {
         this.callForTrainingLibrary()
       }

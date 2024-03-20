@@ -6,6 +6,8 @@
           v-if="tab === 'enrollments'"
           :enrollment-status-enum="enrollmentStatusEnum"
           :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
         />
         <!--
         <EditEnrollmentsModal
@@ -130,16 +132,22 @@ export default {
   },
   computed: {
     ...mapGetters({
-      languages: 'trainingLibraryHelpers/getLanguages'
+      languages: 'trainingLibraryHelpers/getLanguages',
+      categories: 'trainingLibraryHelpers/getCategories',
+      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
     })
   },
   created() {
     this.callForFormDetails()
     this.callForLanguages()
+    this.callForCategories()
+    this.callForTargetAudiences()
   },
   methods: {
     ...mapActions({
-      callForLanguages: 'trainingLibraryHelpers/callForLanguages'
+      callForLanguages: 'trainingLibraryHelpers/callForLanguages',
+      callForCategories: 'trainingLibraryHelpers/callForCategories',
+      callForTargetAudiences: 'trainingLibraryHelpers/callForTargetAudiences'
     }),
     callForFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {

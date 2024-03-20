@@ -66,6 +66,7 @@ import {
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import { trashRowActions } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'EnrollmentsTrainingTable',
   components: {
@@ -92,6 +93,9 @@ export default {
     isTrash: {
       type: Boolean,
       default: false
+    },
+    categories: {
+      type: Array
     }
   },
   mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
@@ -100,7 +104,9 @@ export default {
       CONSTANTS: {
         id: 'awareness-educator-enrollments-data-table'
       },
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({
+        enrollmentType: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+      }),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -196,6 +202,14 @@ export default {
           text: l.name,
           value: l.code
         }))
+      )
+      this?.$refs?.refTable?.reRenderFilters()
+    },
+    categories(val) {
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'category'),
+        'filterableItems',
+        val
       )
       this?.$refs?.refTable?.reRenderFilters()
     }

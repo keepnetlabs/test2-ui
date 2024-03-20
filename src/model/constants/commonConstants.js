@@ -304,6 +304,7 @@ export const PROPERTY_STORE = {
   ROLES: 'roles',
   STATUSNAME: 'statusName',
   CREATETIME: 'createTime',
+  CREATE_TIME: 'createTime',
   ROLENAME: 'roleName',
   USERCOUNT: 'userCount',
   TYPENAME: 'typeName',

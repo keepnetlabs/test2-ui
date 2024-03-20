@@ -343,9 +343,69 @@
   border-radius: 12px;
   padding: 24px;
   margin-top:24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
+  &__cards{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  &__pagination{
+    .el-pagination{
+      display: flex;
+    }
+    .el-pagination__text--1 {
+      order: -1;
+      margin-right: 8px
+    }
+    .el-pagination__text--2{
+      margin-right: 42px;
+    }
+    .el-input__inner{
+      background-color: #f2f2f2;
+    }
+    .el-pagination__sizes{
+      margin-right: 27px;
+    }
+    .el-pager{
+      order: 2;
+      padding-left: 0 !important;
+    }
+    .el-icon{
+      font-size: 18px !important;
+      font-weight: bolder !important;
+      color: #757575 !important;
+    }
+    .btn-prev{
+      order:1;
+      padding-right: 4px !important;
+    }
+    .btn-next{
+      order: 3;
+      padding-left: 0 !important;
+    }
+    li {
+      min-width: 13px;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      opacity: 0.7;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    li.active{
+      opacity: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2196f3 !important;
+    }
+  }
+  &__empty{
+    min-height: 292px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px ;
+  }
 }
 .training-library-card{
   border-radius: 8px;
@@ -380,6 +440,11 @@
   &__img{
     position:relative;
     height: 170px;
+    img{
+      height: 170px;
+      width: 100%;
+      object-fit: contain;
+    }
     &--no-img{
       display:flex;
       justify-content: center;
@@ -395,6 +460,16 @@
         line-height: 24px
       }
     }
+  }
+  &__new-btn{
+    position:absolute;
+    top: 16px;
+    left: 16px;
+  }
+  &__favorite-btn{
+    position:absolute;
+    top: 16px;
+    right: 16px;
   }
   &__body{
     padding:16px;
@@ -420,6 +495,11 @@
         height: 6px;
         border-radius: 100%;
         background-color: #D9D9D9;
+      }
+      &-category{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
     &-description{

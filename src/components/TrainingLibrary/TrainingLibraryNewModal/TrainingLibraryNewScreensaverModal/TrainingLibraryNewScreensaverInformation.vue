@@ -160,14 +160,14 @@ export default {
       return false
     },
     setFormData(formData = {}) {
-      if (formData.coverImageUrl) {
+      if (formData.coverImage) {
         this.coverImageFilePreview = [
           {
-            url: formData.coverImageUrl,
-            name: formData.coverImageName || 'Cover Image',
-            size: formData.coverImageSize || 0
+            url: formData.coverImage.imageUrl,
+            name: formData.coverImage.name || 'Cover Image'
           }
         ]
+        this.formData.coverImageUrl = formData.coverImage.imageUrl
       }
       this.formData = {
         ...this.formData,

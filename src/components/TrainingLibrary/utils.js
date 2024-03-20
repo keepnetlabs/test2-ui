@@ -164,12 +164,13 @@ export const TRAINING_LIBRARY_COLUMNS = {
     width: 160
   },
   DATE_CREATED: {
-    property: PROPERTY_STORE.DATE_CREATED,
+    property: PROPERTY_STORE.CREATE_TIME,
     align: 'left',
     editable: false,
     label: labels.DateCreated,
     sortable: false,
     hideSort: true,
+    overrideWidth: true,
     show: false,
     type: 'text',
     width: 160

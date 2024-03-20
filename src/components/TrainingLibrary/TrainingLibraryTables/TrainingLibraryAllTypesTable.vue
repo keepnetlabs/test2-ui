@@ -35,7 +35,7 @@
         >
           {{ getEmptyTableSubtitleText }}
         </p>
-        <div v-if="tableOptions.rowActions.btn" class="people__no-data__buttons mt-4">
+        <div v-if="tableOptions.iEmpty.btn" class="people__no-data__buttons mt-4">
           <VMenu offset-y transition="scale-transition" nudge-bottom="4">
             <template #activator="{ on }">
               <div
@@ -225,10 +225,9 @@ export default {
     selectedTrainingContent: {
       immediate: true,
       handler(tabValue) {
-        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.CREATED_BY_YOU) {
+        if (tabValue === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES) {
           this.$set(this.tableOptions, 'iEmpty', {
             ...this.tableOptions.iEmpty,
-            subMes: labels.EmptyTrainingAllTypeCreatedByYouSubtitle,
             btn: null
           })
         } else {

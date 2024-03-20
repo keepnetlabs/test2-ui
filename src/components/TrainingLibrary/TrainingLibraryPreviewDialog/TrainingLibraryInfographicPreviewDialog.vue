@@ -379,7 +379,7 @@ export default {
       })
     },
     handleClose() {
-      if (this.$refs.refFavoriteButton.isFavourite !== this.isFavourite) {
+      if (this.$refs.refFavoriteButton.isFavourite !== this.infographicParams.isFavourite) {
         this.callForTrainingLibrary()
       }
       this.setInfographicPreviewDialog(emptyInfographicPreviewDialogObj)
