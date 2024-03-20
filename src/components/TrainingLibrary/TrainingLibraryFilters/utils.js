@@ -56,7 +56,7 @@ export const trainingLibraryFilters = [
     icon: 'mdi-account-cog',
     key: PROPERTY_STORE.BEHAVIOURS,
     show: true,
-    filterType: 'search',
+    filterType: 'longTextSearch',
     value: [],
     activeValue: [],
     operator: 'Include',
@@ -142,7 +142,7 @@ export const trainingLibraryFilters = [
   {
     text: 'Vendor',
     icon: 'mdi-store',
-    key: PROPERTY_STORE.VENDORID,
+    key: PROPERTY_STORE.VENDOR,
     show: false,
     filterType: 'search',
     items: [],

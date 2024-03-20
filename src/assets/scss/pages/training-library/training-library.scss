@@ -330,6 +330,15 @@
     line-height: 16px;
     color:#383B41;
   }
+  &-long-text-search{
+    color:#fff !important;
+    .training-library-filter-badge-value{
+      max-width:210px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
 }
 .training-library-filters-badges__container{
   display: flex;
@@ -563,6 +572,39 @@
         height: 36px;
         cursor: pointer;
       }
+    }
+  }
+}
+.training-library-long-text-search{
+  &__tooltip{
+    max-width: 240px;
+  }
+  &__activator{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 198px;
+  }
+}
+.training-library-input-behaviour{
+  &__tooltip{
+    max-width: 240px;
+  }
+  &__activator{
+    text-overflow: ellipsis;
+    overflow: hidden !important;
+    white-space: nowrap;
+    max-width: 506px;
+  }
+  .v-chip{
+    margin:4px;
+  }
+  .v-chip__content{
+    & > span {
+      max-width: 190px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }

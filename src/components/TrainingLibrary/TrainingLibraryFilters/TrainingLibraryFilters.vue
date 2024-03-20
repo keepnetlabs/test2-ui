@@ -51,7 +51,11 @@
                     class="training-library-filtering-options-parent-list-item-title__right-side"
                   >
                     <div v-if="filter.isFilterActive" class="training-library-filter-number">
-                      {{ filter.filterType === 'search' ? filter.activeValue.length : 1 }}
+                      {{
+                        filter.filterType === 'search' || filter.filterType === 'longTextSearch'
+                          ? filter.activeValue.length
+                          : 1
+                      }}
                     </div>
                     <VIcon :color="activeFilter.key === filter.key ? '#2196F3' : '#757575'"
                       >mdi-menu-right</VIcon
@@ -74,6 +78,12 @@
                 ref="refDateFilter"
                 :filter="activeFilter"
                 @on-date-picker-change="handleDatePickerChange"
+              />
+              <TrainingLibraryLongTextSearchFilter
+                v-else-if="activeFilter.filterType === 'longTextSearch'"
+                :filter="activeFilter"
+                :total-filter-length="getTotalFilterLength"
+                :items="activeFilter.items"
               />
               <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
             </div>
@@ -119,10 +129,12 @@ import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLi
 import { mapGetters, mapActions } from 'vuex'
 import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
 import TrainingLibraryDateFilter from './TrainingLibraryDateFilter.vue'
+import TrainingLibraryLongTextSearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryLongTextSearchFilter.vue'
 
 export default {
   name: 'TrainingLibraryFilters',
   components: {
+    TrainingLibraryLongTextSearchFilter,
     TrainingLibraryDateFilter,
     TrainingLibrarySelectFilter,
     TrainingLibrarySearchFilter,
@@ -144,7 +156,10 @@ export default {
       return this.filters.filter((item) => item.show).length
     },
     isFilterButtonDisabled() {
-      if (this.activeFilter.filterType === 'search') {
+      if (
+        this.activeFilter.filterType === 'search' ||
+        this.activeFilter.filterType === 'longTextSearch'
+      ) {
         return this.activeFilter.value.length === 0
       } else {
         return !this.activeFilter.value
@@ -170,7 +185,8 @@ export default {
         filter.operator = filter.activeOperator
       } else {
         let filterValue
-        if (filter.filterType === 'search') filterValue = []
+        if (filter.filterType === 'search' || filter.filterType === 'longTextSearch')
+          filterValue = []
         else filterValue = ''
         filter.value = filterValue
       }
@@ -178,7 +194,7 @@ export default {
     handleClearFilter(filter) {
       filter.isFilterActive = false
       let filterValue, filterOperator
-      if (filter.filterType === 'search') {
+      if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
         filterValue = []
         filterOperator = 'Include'
       } else if (filter.filterType === 'select') {
@@ -198,7 +214,6 @@ export default {
       filter.isFilterActive = true
       filter.activeValue = filter.value
       filter.activeOperator = filter.operator
-      console.log('filter', filter)
       this.setFilterToPayload(filter)
     },
     handleMenuVisibilityChange(val) {

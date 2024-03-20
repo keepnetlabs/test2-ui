@@ -167,6 +167,16 @@ const trainingLibrary = {
       state.search = payload
     },
     SET_LIST_VIEW(state, payload) {
+      if (state.isListView === payload) return
+      state.axiosPayload.pageNumber = 1
+      state.serverSideProps.pageNumber = 1
+      if (payload) {
+        state.serverSideProps.pageSize = 10
+        state.axiosPayload.pageSize = 10
+      } else {
+        state.serverSideProps.pageSize = 9
+        state.axiosPayload.pageSize = 9
+      }
       state.isListView = payload
     },
     SET_DEFAULT_TABLE_SETTINGS(state) {
@@ -280,7 +290,9 @@ const trainingLibrary = {
         axiosPayload = getDefaultAxiosPayload({
           trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
           trainingType: null
-        })
+        }),
+        selectedTrainingContent = 'All Materials',
+        selectedSubTrainingContent = 'All Types'
       } = JSON.parse(filters)
       state.filters = savedFilters
       state.filterOptionsFilters = filterOptionsFilters
@@ -288,6 +300,8 @@ const trainingLibrary = {
       state.sortBy = sortBy
       state.search = search
       state.axiosPayload = axiosPayload
+      state.selectedTrainingContent = selectedTrainingContent
+      state.selectedSubTrainingContent = selectedSubTrainingContent
     },
     SET_FILTERS_TO_LOCAL_STORAGE(state) {
       localStorage.setItem(
@@ -298,7 +312,9 @@ const trainingLibrary = {
           filterOptionsFilters: state.filterOptionsFilters,
           sortBy: state.sortBy,
           search: state.search,
-          axiosPayload: state.axiosPayload
+          axiosPayload: state.axiosPayload,
+          selectedTrainingContent: state.selectedTrainingContent,
+          selectedSubTrainingContent: state.selectedSubTrainingContent
         })
       )
     },
@@ -343,7 +359,7 @@ const trainingLibrary = {
       ]
       state.search = ''
       state.filters.forEach((f) => {
-        if (f.filterType === 'search') {
+        if (f.filterType === 'search' || f.filterType === 'longTextSearch') {
           f.value = []
           f.activeValue = []
           f.operator = 'Include'
@@ -525,8 +541,9 @@ const trainingLibrary = {
       commit('SET_SEARCH_TO_PAYLOAD')
       dispatch('callForTrainingLibrary')
     },
-    setListView({ commit }, payload) {
+    setListView({ commit, dispatch }, payload) {
       commit('SET_LIST_VIEW', payload)
+      dispatch('callForTableData')
     },
     initDefaultTableSettings({ commit }) {
       commit('SET_RENDERED_COLUMNS')

@@ -199,7 +199,7 @@ const trainingLibraryHelpers = {
         dispatch(
           'trainingLibrary/setFilterItems',
           {
-            key: PROPERTY_STORE.VENDORID,
+            key: PROPERTY_STORE.VENDOR,
             items: vendors
           },
           { root: true }

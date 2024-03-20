@@ -115,7 +115,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   },
   VENDOR: {
     label: 'Vendor',
-    property: PROPERTY_STORE.VENDORID,
+    property: PROPERTY_STORE.VENDOR,
     show: false
   },
   MATERIAL_NAME: {

@@ -37,6 +37,33 @@
         >
       </div>
     </div>
+    <div
+      v-else-if="isFilterTypeLongTextSearch"
+      v-for="(filterVal, fIndex) in filter.activeValue"
+      :key="fIndex"
+      class="training-library-filter-badge training-library-filter-badge-long-text-search"
+    >
+      <div class="training-library-filter-badge__left-side">
+        <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
+        <VTooltip bottom content-class="training-library-long-text-search__tooltip">
+          <template #activator="{ on }">
+            <span v-on="on" class="training-library-filter-badge-value">{{
+              getFilterValue(filter, filterVal)
+            }}</span>
+          </template>
+          <span>{{ getFilterValue(filter, filterVal) }}</span>
+        </VTooltip>
+      </div>
+      <div>
+        <VIcon
+          class="fw-600 cursor-pointer"
+          style="font-size: 20px; margin-top: -2px;"
+          color="#757575"
+          @click="removeSearchFilter(filterVal, fIndex)"
+          >mdi-close</VIcon
+        >
+      </div>
+    </div>
     <div v-else-if="isFilterTypeDateSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
@@ -88,11 +115,19 @@ export default {
     isFilterTypeSearch() {
       return this.filter.filterType === 'search' && this.filter.activeValue.length
     },
+    isFilterTypeLongTextSearch() {
+      return this.filter.filterType === 'longTextSearch' && this.filter.activeValue
+    },
     isFilterTypeDateSelect() {
       return this.filter.filterType === 'date' && this.filter.activeValue
     },
     isRenderComponent() {
-      return this.isFilterTypeSelect || this.isFilterTypeSearch || this.isFilterTypeDateSelect
+      return (
+        this.isFilterTypeSelect ||
+        this.isFilterTypeSearch ||
+        this.isFilterTypeDateSelect ||
+        this.isFilterTypeLongTextSearch
+      )
     }
   },
   methods: {
@@ -110,7 +145,7 @@ export default {
       else if (filter.key === PROPERTY_STORE.TYPE) return this.getTrainingTypeFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.TARGET_AUDIENCE)
         return this.getTargetAudienceFilterValue(filterVal)
-      else if (filter.key === PROPERTY_STORE.VENDORID) return this.getVendorFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.VENDOR) return this.getVendorFilterValue(filterVal)
       return filterVal
     },
     removeSelectFilter() {
