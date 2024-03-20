@@ -130,10 +130,11 @@ export default {
   data() {
     return {
       labels,
-      isActionButtonDisabled: !this.isEdit,
+      isActionButtonDisabled: false,
       isShowTestEmailDialog: false,
       isShowTestEmailErrorDialog: false,
       isTestEmailActionDisabled: false,
+      isTestEmailSuccessful: false,
       testEmailErrorMessage: '',
       connectionUrl: '',
       isDomainsLoading: false,
@@ -175,6 +176,14 @@ export default {
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
+  },
+  watch: {
+    'formData.domains': {
+      deep: true,
+      handler() {
+        this.isTestEmailSuccessful = false
+      }
+    }
   },
   methods: {
     callForSelectedEmail() {
@@ -229,6 +238,10 @@ export default {
     },
     submit() {
       if (!this.$refs.refForm.validate()) return
+      if (!this.isTestEmailSuccessful) {
+        this.toggleShowTestEmailDialog()
+        return
+      }
       const { name, domains } = this.formData
       const payload = {
         name,
@@ -274,13 +287,13 @@ export default {
       }
       DirectCreationService.testDirectEmailCreation(payload)
         .then(() => {
-          this.isActionButtonDisabled = false
+          this.isTestEmailSuccessful = true
           this.toggleShowTestEmailDialog()
         })
         .catch((error) => {
           const { response } = error
           this.testEmailErrorMessage = response?.data?.message
-          this.isActionButtonDisabled = true
+          this.isTestEmailSuccessful = false
           this.toggleShowTestEmailErrorDialog()
         })
         .finally(() => {
