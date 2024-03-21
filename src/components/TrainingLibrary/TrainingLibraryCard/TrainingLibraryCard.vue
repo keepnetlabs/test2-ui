@@ -56,37 +56,67 @@
       </div>
       <div class="training-library-card__footer">
         <div class="training-library-card__footer-left-side">
-          <VBtn
-            class="w-100 training-library-card__footer-btn"
-            color="#fff"
-            rounded
-            :ripple="false"
-            @click="handlePreviewClick(item)"
-          >
-            <VIcon class="mr-1" left>mdi-eye</VIcon>
-            Preview
-          </VBtn>
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <VBtn
+                v-on="on"
+                class="w-100 training-library-card__footer-btn"
+                color="#fff"
+                rounded
+                :ripple="false"
+                @click="handlePreviewClick(item)"
+              >
+                <VIcon class="mr-1" left>mdi-eye</VIcon>
+                Preview
+              </VBtn>
+            </template>
+            <span>{{ item.type }} Preview</span>
+          </VTooltip>
         </div>
         <div class="training-library-card__footer-right-side">
-          <VIcon
-            color="#2196f3"
-            class="training-library-card__footer-btn"
-            small
-            @click="handleFastLaunchClick(item)"
-            >mdi-send</VIcon
-          >
-          <VMenu bottom offset-y>
+          <VTooltip v-if="item.type !== TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER" bottom>
+            <template #activator="{ on }">
+              <VIcon
+                v-on="on"
+                color="#2196f3"
+                class="training-library-card__footer-btn"
+                small
+                @click="handleFastLaunchClick(item)"
+                >mdi-send</VIcon
+              >
+            </template>
+            <span>Send {{ item.type }}</span>
+          </VTooltip>
+          <VTooltip v-else bottom>
+            <template #activator="{ on }">
+              <VIcon
+                v-on="on"
+                color="#2196f3"
+                class="training-library-card__footer-btn"
+                small
+                @click="handleDownloadClick(item)"
+                >mdi-download</VIcon
+              >
+            </template>
+            <span>Download {{ item.type }}</span>
+          </VTooltip>
+          <VMenu bottom offset-y min-width="240" max-width="240">
             <template #activator="{ on }">
               <VIcon v-on="on" color="#2196f3" class="training-library-card__footer-btn" small
                 >mdi-dots-vertical</VIcon
               >
             </template>
             <VListItem
+              v-for="actions in getActionsByType"
+              :key="actions.text"
               class="training-library-filtering-options-parent-list-item"
-              @click="handleListItemClick(item.text)"
+              @click="handleListItemClick(actions.text, item)"
             >
-              <VListItemTitle class="training-library-filtering-options-parent-list-item-title"
-                >{{ item.text }} <VIcon>{{ item.icon }}</VIcon></VListItemTitle
+              <VListItemTitle
+                class="training-library-filtering-options-parent-list-item-title justify-start"
+              >
+                <VIcon>{{ actions.icon }}</VIcon>
+                <span class="ml-3">{{ actions.text }}</span></VListItemTitle
               >
             </VListItem>
           </VMenu>
@@ -106,6 +136,7 @@ import {
 import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingLibraryCard',
@@ -117,6 +148,37 @@ export default {
     }
   },
   computed: {
+    getActionsByType() {
+      const actions = [
+        {
+          text: labels.Edit,
+          icon: 'mdi-pencil'
+        },
+        {
+          text: labels.Duplicate,
+          icon: 'mdi-content-copy'
+        },
+        {
+          text: labels.Delete,
+          icon: 'mdi-delete'
+        }
+      ]
+      if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        actions.unshift({
+          text: labels.DownloadInfographic,
+          icon: 'mdi-download'
+        })
+      } else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        actions.unshift({
+          text: labels.DownloadPoster,
+          icon: 'mdi-download'
+        })
+      }
+      return actions
+    },
+    TRAINING_LIBRARY_PAYLOAD_TYPES() {
+      return TRAINING_LIBRARY_PAYLOAD_TYPES
+    },
     ...mapGetters({
       selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
     }),
@@ -147,7 +209,12 @@ export default {
       setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
       setPosterSendModal: 'trainingLibrary/setPosterSendModal',
-      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal',
+      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal',
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
+      setNewPosterModal: 'trainingLibrary/setNewPosterModal',
+      setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
     }),
     handleFavoriteRemove() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
@@ -253,7 +320,101 @@ export default {
         })
       }
     },
-    handleListItemClick() {}
+    handleDownloadClick() {},
+    handleListItemClick(text, item) {
+      console.log('item', item)
+      if (text === labels.Edit) this.handleEditModalByType(text, item)
+      else if (text === labels.Duplicate) this.handleDuplicateModal(item.trainingId)
+      else if (text === labels.Delete) this.handleDeleteModalByType(text, item)
+    },
+    handleEditModalByType(text, item) {
+      if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        this.setNewTrainingModal({
+          status: true,
+          selectedRow: item,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (
+        item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        item.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        this.setNewLearningPathModal({
+          status: true,
+          selectedRow: item,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        this.setNewPosterModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        this.setNewInfographicModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        this.setNewScreensaverModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      }
+    },
+    handleDuplicateModal(trainingId) {
+      AwarenessEducatorService.duplicateTraining(trainingId).then(() => {
+        this.callForTrainingLibrary()
+      })
+    },
+    handleDeleteModalByType(text, item) {
+      //todo
+      if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        this.setNewTrainingModal({
+          status: true,
+          selectedRow: item,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (
+        item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        item.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        this.setNewLearningPathModal({
+          status: true,
+          selectedRow: item,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        this.setNewPosterModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        this.setNewInfographicModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        this.setNewScreensaverModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      }
+    }
   }
 }
 </script>

@@ -585,6 +585,9 @@
     }
   }
 }
+.training-library-card__footer-btn::before{
+  background-color: #fff !important;
+}
 .training-library-long-text-search{
   &__tooltip{
     max-width: 240px;

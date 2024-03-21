@@ -45,7 +45,7 @@
       </div>
       <div v-else>
         <div class="training-library-card-view__cards">
-          <TrainingLibraryCard v-for="(card, index) in []" :key="index" :item="card" />
+          <TrainingLibraryCard v-for="(card, index) in tableData" :key="index" :item="card" />
         </div>
         <div v-if="isRenderEmpty" class="empty-inline training-library-card-view__empty">
           <h2 id="text--empty-table-title" class="people__no-data__header">
@@ -237,6 +237,8 @@ export default {
     handleServerSideSizeChange(pageSize = 10) {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
       this.callForTrainingLibrary()
     },
     handleEmptyButtonClick() {
