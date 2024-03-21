@@ -346,6 +346,16 @@
   gap: 8px;
   flex-wrap:wrap;
 }
+@media (max-width: 1023px) {
+  .training-library-card-view__cards{
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 1280px) and (min-width: 1024px) {
+  .training-library-card-view__cards{
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
 .training-library-card-view{
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 2px 0 rgba(0, 0, 0, 0.12);
   background: white;

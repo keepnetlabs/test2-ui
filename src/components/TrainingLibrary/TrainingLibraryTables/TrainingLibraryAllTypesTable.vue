@@ -72,7 +72,7 @@
         @on-force-update="callForData"
       />
       <TrainingLibraryLearningPathRowActions
-        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH && !isLoading"
+        v-else-if="isLearningPathType(scope.row) && !isLoading"
         :scope="scope"
         @on-force-update="callForData"
       />
@@ -113,7 +113,8 @@ import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/Traini
 import { mapActions, mapGetters } from 'vuex'
 import {
   TRAINING_LIBRARY_MAIN_TABS,
-  TRAINING_LIBRARY_PAYLOAD_TYPES
+  TRAINING_LIBRARY_PAYLOAD_TYPES,
+  TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import useAddTrainingLibraryContent from '@/hooks/useAddTrainingLibraryContent'
 
@@ -131,6 +132,7 @@ export default {
   data() {
     return {
       TRAINING_LIBRARY_PAYLOAD_TYPES,
+      TRAINING_LIBRARY_TYPES,
       addTrainingItems,
       labels,
       CONSTANTS: {
@@ -256,6 +258,12 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.callForData()
+    },
+    isLearningPathType(row) {
+      return [
+        TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH,
+        TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ].includes(row.type)
     }
   }
 }

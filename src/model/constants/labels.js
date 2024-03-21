@@ -15,6 +15,10 @@ export const labels = {
   EmptyEnrollmentLearningPath: 'You do not have any learning path enrollments',
   EmptyEnrollmentInfographic: 'You do not have any infographic enrollments',
   EmptyEnrollmentPoster: 'You do not have any poster enrollments',
+  TrainingLanguage: 'Training Language',
+  PosterLanguage: 'Poster Language',
+  ScreensaverLanguage: 'Screensaver Language',
+  InfographicLanguage: 'Infographic Language',
   EmptyEnrollmentTraining: 'You do not have any training enrollments',
   SMSNotificationSub:
     'In addition to the training enrollment, send an SMS notification with the selected phone number',

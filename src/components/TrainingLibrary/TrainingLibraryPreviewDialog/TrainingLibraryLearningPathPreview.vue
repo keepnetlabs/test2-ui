@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ElTabs v-model="tab">
+    <ElTabs v-model="tab" @tab-click="handleChangeTab">
       <ElTabPane
         :label="labels.LearningPathDetails"
         name="details"
@@ -46,6 +46,19 @@
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>
+              <span class="training-library-preview__title">Compliances: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="(compliance, tIndex) in learningPathParams.complianceNames"
+                :key="tIndex"
+                class="training-library-preview__tag"
+                >{{ compliance }}</span
+              >
+            </div>
+          </div>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
               <span class="training-library-preview__title">Tags: </span>
             </div>
             <div class="d-flex flex-wrap gap-2 ml-2">
@@ -60,7 +73,7 @@
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
             <ul>
-              <li v-for="(behaviour, bIndex) in trainingParams.behaviourNames" :key="bIndex">
+              <li v-for="(behaviour, bIndex) in learningPathParams.behaviourNames" :key="bIndex">
                 {{ behaviour }}
               </li>
             </ul>
@@ -68,45 +81,91 @@
         </template>
       </ElTabPane>
       <ElTabPane
-        v-for="(training, index) in 1"
+        v-for="(training, index) in learningPathParams.trainingGroups"
         id="campaign-manager-info--training-preview-content"
-        name="step 1"
+        :name="training.name"
         :key="index"
-        :label="`Step ${index + 1} ${name}`"
+        :label="`Step ${index + 1}: ${training.name}`"
       >
         <ElTabs v-model="selectedTrainingTab" v-if="!isLoading" class="k-sub-tab mt-4">
           <ElTabPane name="preview" :label="labels.Preview">
             <div class="training-library-preview mt-4 training-library-training-preview">
               <div class="d-flex justify-space-between align-center">
                 <div>
-                  <span class="training-library-preview__title">Training Name: </span>
-                  <span class="training-library-preview__desc">{{ name }}</span>
+                  <span class="training-library-preview__title"
+                    >{{ getActiveMaterialNameLabel }}
+                  </span>
+                  <span class="training-library-preview__desc">{{ training.name }}</span>
+                </div>
+                <div class="d-flex align-center gap-2">
+                  <TrainingLibraryNewBadge
+                    v-if="activeTrainingContentParams && activeTrainingContentParams.isNew"
+                  />
+                  <TrainingLibraryFavoriteButton
+                    v-if="activeTrainingContentParams"
+                    ref="refFavoriteButtonActiveContent"
+                    :is-default-favourite="activeTrainingContentParams.isFavourite"
+                    :training-id="activeTrainingContentId"
+                  />
                 </div>
               </div>
-              <FormGroupHorizontalContent
-                class="mt-4 justify-start"
-                style="max-width: 500px;"
-                label="Training Language:"
-              >
-                <KSelect
-                  v-model="activeLanguage"
-                  dense
-                  outlined
-                  class="max-width-200"
-                  placeholder="Select Option"
-                  :items="languages"
-                  @input="callForData(true)"
-                />
-              </FormGroupHorizontalContent>
-              <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
-              <iframe
-                v-if="activeTemplate && !isTemplateLoading"
-                :key="iframeKey"
-                :class="['training-library-preview__player', iframeClass]"
-                allowfullscreen
-                title="Training Preview"
-                :src="activeTemplate"
-              ></iframe>
+              <div v-if="activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING">
+                <FormGroupHorizontalContent
+                  class="mt-4 justify-start"
+                  style="max-width: 500px;"
+                  :label="getActiveMaterialNameLanguageLabel"
+                >
+                  <KSelect
+                    v-model="activeTrainingLanguageId"
+                    dense
+                    outlined
+                    class="max-width-200"
+                    placeholder="Select Option"
+                    :items="activateTrainingContentLanguages"
+                    @input="callForTemplatePreview(true)"
+                  />
+                </FormGroupHorizontalContent>
+                <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
+                <iframe
+                  v-if="activeTemplate && !isTemplateLoading"
+                  :key="iframeKey"
+                  :class="['training-library-preview__player', iframeClass]"
+                  allowfullscreen
+                  title="Training Preview"
+                  :src="activeTemplate"
+                ></iframe>
+              </div>
+              <div v-else>
+                <hr class="my-4" />
+                <div class="d-flex justify-space-between align-center mb-4">
+                  <div>
+                    <span class="template-preview__text--title text-preview-gray">File Name: </span>
+                    <span class="template-preview__text--body">{{ fileName }}</span>
+                  </div>
+
+                  <VBtn
+                    id="btn-preview-indiviual-printout"
+                    class="white--text btn-util btn-download-add-in"
+                    style="text-transform: none;"
+                    color="#2196F3"
+                    rounded
+                    :style="getDownloadActiveTrainingContentStyle"
+                    @click="handleDownloadActiveTrainingContent"
+                  >
+                    <v-icon left>mdi-download</v-icon>
+                    {{ labels.DownloadPoster }}
+                  </VBtn>
+                </div>
+                <div class="max-w-100 d-flex justify-center w-100">
+                  <img
+                    v-if="!isPdf"
+                    class="max-w-100"
+                    :src="activeTrainingContentSrc"
+                    alt="Poster Preview"
+                  />
+                  <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
+                </div>
+              </div>
             </div>
           </ElTabPane>
           <ElTabPane
@@ -114,31 +173,39 @@
             name="details"
             id="campaign-manager-info--training-details-content"
           >
-            <template v-if="learningPathParams">
+            <template v-if="activeTrainingContentParams">
               <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Training Name: </span>
-                <span class="training-library-preview__desc">{{ learningPathParams.name }}</span>
+                <span class="training-library-preview__title"
+                  >{{ getActiveMaterialNameLabel }}
+                </span>
+                <span class="training-library-preview__desc">{{
+                  activeTrainingContentParams.name
+                }}</span>
               </div>
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Vendor Name: </span>
-                <span class="training-library-preview__desc">{{ learningPathParams.vendor }}</span>
+                <span class="training-library-preview__desc">{{
+                  activeTrainingContentParams.vendor
+                }}</span>
               </div>
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Category Name: </span>
                 <span class="training-library-preview__desc">{{
-                  learningPathParams.categoryName || learningPathParams.category
+                  activeTrainingContentParams.categoryName || activeTrainingContentParams.category
                 }}</span>
               </div>
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Description: </span>
                 <span class="training-library-preview__desc">{{
-                  learningPathParams.description || learningPathParams.trainingDescription
+                  activeTrainingContentParams.description ||
+                  activeTrainingContentParams.trainingDescription
                 }}</span>
               </div>
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Target Audience: </span>
                 <span class="training-library-preview__desc">{{
-                  learningPathParams.targetAudienceName || learningPathParams.targetAudience
+                  activeTrainingContentParams.targetAudienceName ||
+                  activeTrainingContentParams.targetAudience
                 }}</span>
               </div>
               <div class="training-library-preview__details-item align-baseline">
@@ -147,7 +214,7 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="(lang, langIndex) in languages"
+                    v-for="(lang, langIndex) in activateTrainingContentLanguages"
                     :key="langIndex"
                     class="training-library-preview__tag"
                     >{{ lang.code }}</span
@@ -157,7 +224,7 @@
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Created By: </span>
                 <span class="training-library-preview__desc">{{
-                  learningPathParams.createdBy
+                  activeTrainingContentParams.createdBy
                 }}</span>
               </div>
               <div class="training-library-preview__details-item align-baseline">
@@ -166,10 +233,10 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="(tag, tIndex) in learningPathParams.complianceNames"
+                    v-for="(compliance, tIndex) in activeTrainingContentParams.complianceNames"
                     :key="tIndex"
                     class="training-library-preview__tag"
-                    >{{ tag }}</span
+                    >{{ compliance }}</span
                   >
                 </div>
               </div>
@@ -179,18 +246,24 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="(tag, tagIndex) in learningPathParams.tagNames"
+                    v-for="(tag, tagIndex) in activeTrainingContentParams.tagNames"
                     :key="tagIndex"
                     class="training-library-preview__tag"
                     >{{ tag }}</span
                   >
                 </div>
               </div>
+
               <div class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Behaviours: </span>
-                <span class="training-library-preview__desc">{{
-                  learningPathParams.behaviours
-                }}</span>
+                <ul>
+                  <li
+                    v-for="(behaviour, bIndex) in activeTrainingContentParams.behaviourNames"
+                    :key="bIndex"
+                  >
+                    {{ behaviour }}
+                  </li>
+                </ul>
               </div>
             </template>
           </ElTabPane>
@@ -208,6 +281,8 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingLibraryLearningPathPreview',
   components: {
@@ -215,7 +290,8 @@ export default {
     TrainingLibraryNewBadge,
     DatatableLoading,
     FormGroupHorizontalContent,
-    KSelect
+    KSelect,
+    pdf: () => import('vue-pdf')
   },
   props: {
     name: {
@@ -238,38 +314,130 @@ export default {
   data() {
     return {
       labels,
+      TRAINING_LIBRARY_PAYLOAD_TYPES,
       tab: 'details',
+      isPdf: true,
+      isDownloadButtonDisabled: false,
       selectedTrainingTab: 'preview',
-      activeLanguage: '',
+      activeTrainingLanguageId: '',
       isTemplateLoading: false,
       activeTemplate: null,
-      languages: [],
-      iframeKey: `key-${createRandomCryptStringNumber()}`
+      iframeKey: `key-${createRandomCryptStringNumber()}`,
+      activeTrainingContentId: '',
+      activeTrainingContentType: '',
+      activeTrainingContentSrc: '',
+      fileName: '',
+      activeTrainingContentPdfSrc: null,
+      activateTrainingContentLanguages: [],
+      activeTrainingContentParams: {}
     }
   },
-  created() {
-    this.callForData()
+  computed: {
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages'
+    }),
+    getDownloadActiveTrainingContentStyle() {
+      const style = {
+        textTransform: 'none'
+      }
+      if (this.isDownloadButtonDisabled) {
+        style.opacity = '.7'
+        style.pointerEvents = 'none'
+      }
+      return style
+    },
+    getActiveMaterialNameLabel() {
+      if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        return labels.PosterName + ':'
+      } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        return labels.InfoGraphicName + ':'
+      } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        return labels.ScreensaverName + ':'
+      }
+      return labels.TrainingName + ':'
+    },
+    getActiveMaterialNameLanguageLabel() {
+      if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        return labels.PosterLanguage + ':'
+      } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        return labels.InfographicLanguage + ':'
+      } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        return labels.ScreensaverLanguage + ':'
+      }
+      return labels.TrainingLanguage + ':'
+    }
   },
   methods: {
-    callForData(isTemplateLoading = false) {
-      this.$emit('update:isLoading', false)
-      /*
-    if (isTemplateLoading) this.isTemplateLoading = true
-    else this.$emit('update:isLoading', true)
-    AwarenessEducatorService.getTrainingUrlForPreview(this.trainingId, this.activeLanguage)
-      .then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.activeTemplate = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
-        this.iframeKey = `key-${createRandomCryptStringNumber()}`
+    handleChangeTab(training) {
+      if (!training.label.startsWith('Step')) return
+      const trainingGroupIndex = parseInt(training.index, 10) - 1
+      if (trainingGroupIndex < 0) return
+      const trainingGroup = this.learningPathParams.trainingGroups[trainingGroupIndex]
+      console.log('trainingGroup', trainingGroup)
+      this.activeTrainingContentId = trainingGroup.detailTrainingId
+      this.activeTrainingContentType = trainingGroup.type
+      this.callForActiveTrainingDetail()
+    },
+    callForActiveTrainingDetail() {
+      AwarenessEducatorService.getTraining(this.activeTrainingContentId).then((response) => {
+        this.activeTrainingContentParams = response?.data?.data
+        this.activateTrainingContentLanguages = this.activeTrainingContentParams.languages.reduce(
+          (acc, lang) => {
+            const selectedLanguage = this.languages.find((language) => language.code === lang)
+            if (selectedLanguage) acc.push(selectedLanguage)
+            return acc
+          },
+          []
+        )
       })
-      .finally(() => {
-        if (isTemplateLoading) this.isTemplateLoading = false
-        else setTimeout(() => this.$emit('update:isLoading', false), 200)
+    },
+    callForTemplatePreview(isTemplateLoading = false) {
+      if (isTemplateLoading) this.isTemplateLoading = true
+      else this.$emit('update:isLoading', true)
+      AwarenessEducatorService.getTrainingUrlForPreview(
+        this.activeTrainingContentId,
+        this.activeTrainingContentId
+      )
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+            this.activeTemplate = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
+            this.iframeKey = `key-${createRandomCryptStringNumber()}`
+          } else {
+            const splittedUrl = data?.trainingUrl.split('/')
+            this.fileName = splittedUrl[splittedUrl.length - 1]
+            this.isPdf = this.fileName.includes('.pdf')
+            this.posterPreviewSrc = data?.trainingUrl
+            if (this.isPdf) this.handleDownloadActiveTrainingContent()
+          }
+        })
+        .finally(() => {
+          if (isTemplateLoading) this.isTemplateLoading = false
+          else setTimeout(() => this.$emit('update:isLoading', false), 200)
+        })
+    },
+    handleDownloadActiveTrainingContent() {
+      if (this.isPdf && this.activeTrainingContentPdfSrc) {
+        return this.downloadPDFObject(this.activeTrainingContentPdfSrc)
+      }
+      this.isDownloadButtonDisabled = true
+      AwarenessEducatorService.downloadPoster({
+        trainingId: this.selectedRow.trainingId,
+        languageId: this.activeTrainingLanguageId
       })
-
-     */
+        .then((response) => {
+          if (this.isPdf) {
+            this.activeTrainingContentPdfSrc = window.URL.createObjectURL(response.data)
+            return
+          }
+          this.downloadPDFObject(window.URL.createObjectURL(response.data))
+        })
+        .finally(() => {
+          if (this.isPdf) this.isLoading = false
+          this.isDownloadButtonDisabled = false
+        })
     }
   }
 }

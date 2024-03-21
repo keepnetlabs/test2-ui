@@ -1,5 +1,13 @@
 <template>
   <div class="training-library-list-view-first-card-header">
+    <DownloadModal
+      v-if="isShowDownloadModal"
+      :isShow="isShowDownloadModal"
+      :download="download"
+      :title="downloadModalTitle"
+      @downloadEvent="downloadEvent"
+      @changeDownloadModalStatus="toggleDownloadModal"
+    />
     <div>
       <VTextField
         id="input--search-training-library"
@@ -82,21 +90,31 @@ import { downloadButtonOptions } from '@/components/TrainingLibrary/TrainingLibr
 import TrainingLibraryFirstCardSettings from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCardSettings.vue'
 import { mapActions, mapGetters } from 'vuex'
 import useDebounce from '@/hooks/useDebounce'
+import DownloadModal from '@/components/DataTableComponents/DownloadModal.vue'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrainingLibraryFirstCardHeader',
-  components: { TrainingLibraryFirstCardSettings, TrainingLibraryFirstCardNewButton },
+  components: {
+    DownloadModal,
+    TrainingLibraryFirstCardSettings,
+    TrainingLibraryFirstCardNewButton
+  },
   mixins: [useDebounce],
   data() {
     return {
       downloadButtonOptions,
-      isDownloadMenuOpen: false
+      isDownloadMenuOpen: false,
+      downloadModalTitle: '',
+      isShowDownloadModal: false,
+      download: { xls: true, csv: true, pdf: true }
     }
   },
   computed: {
     ...mapGetters({
       search: 'trainingLibrary/getSearch',
       placeholder: 'trainingLibrary/getSearchPlaceholder',
-      isListView: 'trainingLibrary/getIsListView'
+      isListView: 'trainingLibrary/getIsListView',
+      axiosPayload: 'trainingLibrary/getAxiosPayload'
     }),
     getBulletedIcon() {
       return this.isListView
@@ -115,10 +133,40 @@ export default {
       handleSearch: 'trainingLibrary/setSearch',
       setListView: 'trainingLibrary/setListView'
     }),
-    handleDownloadButtonClick(item) {},
     handleDebouncedSearch(event) {
       this.debounce(() => {
         this.handleSearch(event)
+      })
+    },
+    handleDownloadButtonClick(item = '') {
+      this.isShowDownloadModal = true
+      this.downloadModalTitle = item
+    },
+    toggleDownloadModal() {
+      this.isShowDownloadModal = !this.isShowDownloadModal
+    },
+    downloadEvent(downloadTypes) {
+      downloadTypes.forEach((item) => {
+        let payload = {
+          pageNumber: this.axiosPayload.pageNumber,
+          pageSize: this.axiosPayload.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1],
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter,
+          trainingSearchType: this.axiosPayload.trainingSearchType,
+          trainingType: this.axiosPayload.trainingType
+        }
+        AwarenessEducatorService.exportTrainingList(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Training-List.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     }
   }

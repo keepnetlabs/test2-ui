@@ -37,6 +37,7 @@ export default {
         AwarenessEducatorService.removeFromFavorite(this.trainingId)
           .then(() => {
             this.isFavourite = !this.isFavourite
+            this.$emit('on-favorite-remove')
           })
           .finally(() => {
             this.isLoading = false

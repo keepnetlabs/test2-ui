@@ -67,10 +67,7 @@
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <TrainingLibraryLearningPathAvailability
-      ref="refTrainingLibraryLearningPathAvailability"
-      v-model="formData.enrollmentScheduler"
-    />
+    <InputSchedule v-model="formData.enrollmentScheduler" ref="inputSchedule" class="mb-6" />
     <FormGroup
       v-if="!formData.isProxy"
       class="mt-2"
@@ -261,13 +258,13 @@ import {
   enrollmentAutoEnrollTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
-import TrainingLibraryLearningPathAvailability from './TrainingLibraryLearningPathAvailability.vue'
 import { learningPathMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
-
+import InputSchedule from '@/components/Common/Inputs/InputSchedule.vue'
+import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 export default {
   name: 'TrainingLibrarySendLearningPathSettings',
   components: {
-    TrainingLibraryLearningPathAvailability,
+    InputSchedule,
     InputEntityName,
     AlertBox,
     InputDate,
@@ -331,10 +328,9 @@ export default {
         awardCertificate: false,
         isProxy: false,
         enrollmentScheduler: {
-          startDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          dueDate: '',
-          startDateTimezoneId: '',
-          dueDateTimezoneId: ''
+          scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          scheduledDateTimeZoneId: ''
         },
         enrollmentAutoEnroll: {
           type: 'SameDay',

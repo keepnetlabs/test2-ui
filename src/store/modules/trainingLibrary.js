@@ -3,8 +3,7 @@ import {
   TRAINING_LIBRARY_MAIN_TABS,
   TRAINING_LIBRARY_PAYLOAD_TYPES,
   TRAINING_LIBRARY_SETTINGS_COLUMNS,
-  TRAINING_LIBRARY_TYPES,
-  trainingTabContents
+  TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
@@ -222,6 +221,7 @@ const trainingLibrary = {
     },
     SET_TABLE_DATA(state, payload) {
       state.tableData = payload
+      console.log('state.tableData', state.tableData)
     },
     SET_SERVER_SIDE_PROPS(state, payload) {
       state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
@@ -541,7 +541,8 @@ const trainingLibrary = {
       commit('SET_SEARCH_TO_PAYLOAD')
       dispatch('callForTrainingLibrary')
     },
-    setListView({ commit, dispatch }, payload) {
+    setListView({ commit, dispatch, state }, payload) {
+      if (state.isListView === payload) return
       commit('SET_LIST_VIEW', payload)
       dispatch('callForTableData')
     },
@@ -618,12 +619,10 @@ const trainingLibrary = {
     setLearningPathSendModal({ commit }, payload) {
       commit('SET_LEARNING_PATH_SEND_MODAL', payload)
     },
-    setAxiosPayload({ commit }, payload) {
-      commit('SET_AXIOS_PAYLOAD', payload)
-    },
     setFilterType({ commit, dispatch }, payload) {
       commit('SET_FILTER_TYPE', payload)
       commit('SET_FILTER_TYPE_TO_PAYLOAD')
+      commit('RESET_PAGINATION')
       dispatch('callForTableData')
     },
     setFilterItems({ commit }, payload) {
@@ -650,10 +649,12 @@ const trainingLibrary = {
     },
     setFilterToPayload({ commit, dispatch }, payload) {
       commit('SET_FILTER_TO_PAYLOAD', payload)
+      commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
     removeFilterFromPayload({ commit, dispatch }, payload) {
       commit('REMOVE_FILTER_FROM_PAYLOAD', payload)
+      commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
     clearAllFilters({ commit, dispatch }) {

@@ -89,19 +89,24 @@ export default {
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForTrainingDetail() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.trainingDetails = {
-          ...data
-        }
-      })
+      this.isPreviewLoading = true
+      AwarenessEducatorService.getTraining(this.selectedRow.trainingId)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.trainingDetails = {
+            ...data
+          }
+        })
+        .finally(() => {
+          this.isPreviewLoading = false
+        })
     },
     handleClose() {
       if (
-        this.$refs.refTrainingLibraryLearningPathPreview.$refs.refFavoriteButton.isFavourite !==
-        this.trainingDetails.isFavourite
+        this?.$refs?.refTrainingLibraryLearningPathPreview?.$refs?.refFavoriteButton
+          ?.isFavourite !== this.trainingDetails.isFavourite
       ) {
         this.callForTrainingLibrary()
       }

@@ -9,6 +9,7 @@
         class="training-library-card__favorite-btn"
         :is-default-favourite="item.isFavourite"
         :training-id="item.trainingId"
+        @on-favorite-remove="handleFavoriteRemove"
       />
       <img v-if="item.coverImage" :src="item.coverImage.imageUrl" :alt="item.trainingName" />
       <div class="training-library-card__img--no-img" v-else>
@@ -60,14 +61,20 @@
             color="#fff"
             rounded
             :ripple="false"
-            @click="handlePreviewClick"
+            @click="handlePreviewClick(item)"
           >
             <VIcon class="mr-1" left>mdi-eye</VIcon>
             Preview
           </VBtn>
         </div>
         <div class="training-library-card__footer-right-side">
-          <VIcon color="#2196f3" class="training-library-card__footer-btn" small>mdi-send</VIcon>
+          <VIcon
+            color="#2196f3"
+            class="training-library-card__footer-btn"
+            small
+            @click="handleFastLaunchClick(item)"
+            >mdi-send</VIcon
+          >
           <VMenu bottom offset-y>
             <template #activator="{ on }">
               <VIcon v-on="on" color="#2196f3" class="training-library-card__footer-btn" small
@@ -92,7 +99,13 @@
 <script>
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_MAIN_TABS,
+  TRAINING_LIBRARY_PAYLOAD_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { mapActions, mapGetters } from 'vuex'
+import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingLibraryCard',
@@ -104,10 +117,16 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+    }),
     getBgColor() {
       let bgColorClass = ''
       if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) bgColorClass = 'training'
-      else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.item.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         bgColorClass = 'learning-path'
       else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) bgColorClass = 'poster'
       else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
@@ -118,7 +137,122 @@ export default {
     }
   },
   methods: {
-    handlePreviewClick() {},
+    ...mapActions({
+      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
+      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
+      setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
+      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
+      setPosterSendModal: 'trainingLibrary/setPosterSendModal',
+      setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
+    }),
+    handleFavoriteRemove() {
+      if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
+        this.callForTrainingLibrary()
+    },
+    handlePreviewClick(row) {
+      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        this.setTrainingPreviewDialog({
+          status: true,
+          selectedRow: row,
+          showSendButton: true
+        })
+      } else if (
+        row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        this.setLearningPathPreviewDialog({
+          status: true,
+          selectedRow: row,
+          showSendButton: true
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        this.setPosterPreviewDialog({
+          status: true,
+          selectedRow: row,
+          type: 'poster',
+          title: labels.PosterPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showPosterName: true,
+          showFavoriteButton: true,
+          showSendButton: true,
+          icon: 'mdi-eye'
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        this.setInfographicPreviewDialog({
+          status: true,
+          selectedRow: row,
+          type: 'infographic',
+          title: labels.InfographicPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showPosterName: true,
+          showFavoriteButton: true,
+          showSendButton: true,
+          icon: 'mdi-eye'
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        this.setScreenSaverPreviewDialog({
+          status: true,
+          selectedRow: row,
+          type: 'screensaver',
+          title: labels.ScreensaverPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showSendButton: true,
+          showScreensaverName: true,
+          showFavoriteButton: true,
+          icon: 'mdi-eye'
+        })
+      }
+    },
+    handleFastLaunchClick(row) {
+      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        this.setTrainingSendModal({
+          status: true,
+          selectedRow: row
+        })
+      } else if (
+        row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        this.setLearningPathSendModal({
+          status: true,
+          selectedRow: row
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        this.setPosterSendModal({
+          selectedRow: row,
+          status: true
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        this.setInfographicSendModal({
+          status: true,
+          selectedRow: row
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        this.setScreenSaverPreviewDialog({
+          status: true,
+          selectedRow: row,
+          type: 'screensaver',
+          title: labels.ScreensaverPreview,
+          subtitle: '',
+          showDetails: true,
+          showTabs: true,
+          showSendButton: true,
+          showScreensaverName: true,
+          showFavoriteButton: true,
+          icon: 'mdi-eye'
+        })
+      }
+    },
     handleListItemClick() {}
   }
 }

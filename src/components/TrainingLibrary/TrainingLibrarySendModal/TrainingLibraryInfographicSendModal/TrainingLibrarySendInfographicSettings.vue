@@ -129,12 +129,7 @@
         </div>
       </v-radio-group>
     </FormGroup>
-    <FormGroup
-      v-if="!formData.isProxy"
-      class="mt-6"
-      :title="labels.Reminder"
-      style="max-width: 875px;"
-    >
+    <FormGroup v-if="false" class="mt-6" :title="labels.Reminder" style="max-width: 875px;">
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="sendReminderEvery"

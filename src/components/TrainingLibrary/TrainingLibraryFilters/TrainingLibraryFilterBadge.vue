@@ -187,13 +187,13 @@ export default {
         })?.text || category
       )
     },
-    getBehaviourFilterValue(behaviour) {
+    getBehaviourFilterValue(filterVal) {
       return (
         this.behaviours.find((beh) => {
-          if (beh.value === behaviour) {
-            return behaviour
+          if (beh.value === filterVal) {
+            return filterVal
           }
-        })?.text || filter
+        })?.text || filterVal
       )
     },
     getTrainingTypeFilterValue(filterVal) {

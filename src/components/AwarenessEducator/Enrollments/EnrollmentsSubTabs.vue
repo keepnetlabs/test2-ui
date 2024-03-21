@@ -76,7 +76,7 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
-          @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
           @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
@@ -98,7 +98,7 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
-          @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
           @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
@@ -120,7 +120,7 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
-          @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
           @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
@@ -142,7 +142,7 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
-          @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
           @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
@@ -164,7 +164,7 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           @on-restore="handleRestoreRowClick"
-          @on-permanent-delete="toggleShowPermanentlyDeleteDialog"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
           @on-stop-auto-enroll="handleStopAutoEnroll"
           @on-delete="handleDeleteRowClick"
@@ -291,7 +291,7 @@ export default {
     }),
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
-        this.$refs[`refTable${this.tab}`].callForData()
+        this.$refs[`refTable${this.tab}`][0].callForData()
       })
     },
     toggleShowPermanentlyDeleteDialog(forceUpdate = false) {
@@ -302,20 +302,24 @@ export default {
     },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) {
-        this.$refs[`refTable${this.tab}`].unSelectRow(this.selectedRow)
-        this.$refs[`refTable${this.tab}`].callForData()
+        //this.$refs[`refTable${this.tab}`][0].$refs.refTable.unSelectRow(this.selectedRow)
+        this.$refs[`refTable${this.tab}`][0].callForData()
       }
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
       this.isShowDeleteEnrollmentsDialog = !this.isShowDeleteEnrollmentsDialog
     },
     toggleShowStopEnrollmentDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`][0].callForData()
       if (this.isShowStopEnrollmentDialog) this.selectedRow = null
       this.isShowStopEnrollmentDialog = !this.isShowStopEnrollmentDialog
     },
     handleDeleteRowClick(row) {
       this.selectedRow = row
       this.toggleShowDeleteEnrollmentsDialog()
+    },
+    handlePermanentlyDeleteRowClick(row) {
+      this.selectedRow = row
+      this.toggleShowPermanentlyDeleteDialog()
     },
     handleStop(row) {
       this.selectedRow = row
@@ -326,7 +330,7 @@ export default {
       this.toggleShowSendEnrollmentDialog()
     },
     toggleShowEditEnrollmentModal(forceUpdate) {
-      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`][0].callForData()
       if (this.isShowEditEnrollmentModal) this.selectedRow = null
       this.isShowEditEnrollmentModal = !this.isShowEditEnrollmentModal
     },
@@ -381,7 +385,7 @@ export default {
       })
     },
     toggleShowSendEnrollmentDialog(forceUpdate = false) {
-      if (forceUpdate) this.$refs[`refTable${this.tab}`].callForData()
+      if (forceUpdate) this.$refs[`refTable${this.tab}`][0].callForData()
       if (this.isShowSendEnrollmentDialog) this.selectedRow = null
       this.isShowSendEnrollmentDialog = !this.isShowSendEnrollmentDialog
     },
@@ -407,7 +411,7 @@ export default {
       AwarenessEducatorService.stopReminder(this.selectedRow.enrollmentId)
         .then((res) => {
           this.isStopReminderDialogVisible = false
-          this.$refs[`refTable${this.tab}`].callForData()
+          this.$refs[`refTable${this.tab}`][0].callForData()
         })
         .finally(() => {
           this.loading = false
@@ -421,7 +425,7 @@ export default {
       AwarenessEducatorService.stopAutoEnroll(this.selectedRow.enrollmentId)
         .then((res) => {
           this.isStopAutoEnrollDialogVisible = false
-          this.$refs[`refTable${this.tab}`].callForData()
+          this.$refs[`refTable${this.tab}`][0].callForData()
         })
         .finally(() => {
           this.loading = false
