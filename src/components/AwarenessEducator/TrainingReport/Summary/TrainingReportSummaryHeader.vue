@@ -11,10 +11,10 @@
     />
     <div class="training-report-summary-header__left">
       <div class="training-report-summary-header__title">
-        {{ labels.TrainingSummary }}
+        {{ getTitle }}
       </div>
       <div class="training-report-summary-header__subtitle">
-        Summary of this training enrollment
+        {{ getSubtitle }}
       </div>
     </div>
     <div class="training-report-summary-header__right">
@@ -34,7 +34,7 @@
         rounded
         color="#2196f3"
         @click="toggleShowResendDialog"
-        >{{ labels.ResendTraining }}</v-btn
+        >{{ getResendButtonText }}</v-btn
       >
     </div>
   </div>
@@ -44,6 +44,7 @@
 import labels from '@/model/constants/labels'
 import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryResendDialog'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingReportSummaryHeader',
@@ -63,6 +64,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {
@@ -71,6 +75,33 @@ export default {
       isActionButtonDisabled: false,
       isShowResendDialog: false,
       isDownloadReportDisabled: false
+    }
+  },
+  computed: {
+    getTitle() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterSummary
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.InfographicSummary
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return labels.LearningPathSummary
+      return labels.TrainingSummary
+    },
+    getSubtitle() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.PosterSummarySub
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.InfographicSummarySub
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return labels.LearningPathSummarySub
+      return labels.TrainingSummarySub
+    },
+    getResendButtonText() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.ResendPoster
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return labels.ResendLearningPath
+      return labels.ResendTraining
     }
   },
   methods: {

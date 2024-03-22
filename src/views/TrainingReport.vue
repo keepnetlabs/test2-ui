@@ -143,6 +143,7 @@ export default {
         .then((response) => {
           this.trainingSummary = response?.data?.data
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
+          this.$store.dispatch('common/setActiveTrainingType', this.trainingSummary?.trainingTypeId)
         })
         .finally(() => {
           this.isLoading = false

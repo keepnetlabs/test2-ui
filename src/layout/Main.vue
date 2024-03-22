@@ -1180,7 +1180,10 @@ export default {
     },
     getTrainingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Training Report - ${this.$store?.state?.common?.activePageRouterName}`
+        const type = this.$store?.state?.common?.activeTrainingType
+        return `${type.startsWith('SCORM') ? 'Training' : type} Report - ${
+          this.$store?.state?.common?.activePageRouterName
+        }`
       }
       return 'Training Report'
     },

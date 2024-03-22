@@ -1,7 +1,7 @@
 <template>
   <div class="training-library-card">
     <div :class="['training-library-card__type', getBgColor]">
-      {{ item.type }}
+      {{ item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ? 'Training' : item.type }}
     </div>
     <div class="training-library-card__img">
       <TrainingLibraryNewBadge v-if="item.isNew" class="training-library-card__new-btn" />
@@ -94,7 +94,7 @@
                 color="#2196f3"
                 class="training-library-card__footer-btn"
                 small
-                @click="handleDownloadClick(item)"
+                @click="handleDownloadItem(item)"
                 >mdi-download</VIcon
               >
             </template>
@@ -205,7 +205,7 @@ export default {
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
-      setScreensaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
+      setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
       setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
       setPosterSendModal: 'trainingLibrary/setPosterSendModal',
@@ -214,7 +214,8 @@ export default {
       setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
       setNewPosterModal: 'trainingLibrary/setNewPosterModal',
       setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
-      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
+      setDeleteDialog: 'trainingLibrary/setDeleteDialog'
     }),
     handleFavoriteRemove() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
@@ -268,15 +269,14 @@ export default {
         this.setScreenSaverPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'screensaver',
-          title: labels.ScreensaverPreview,
+          type: 'downloadScreensaver',
+          title: labels.DownloadScreensaver,
+          showSendButton: false,
           subtitle: '',
-          showDetails: true,
-          showTabs: true,
-          showSendButton: true,
-          showScreensaverName: true,
-          showFavoriteButton: true,
-          icon: 'mdi-eye'
+          showDetails: false,
+          showTabs: false,
+          showFavoriteButton: false,
+          icon: 'mdi-download'
         })
       }
     },
@@ -320,12 +320,59 @@ export default {
         })
       }
     },
-    handleDownloadClick() {},
+    handleDownloadItem(item) {
+      console.log('item', item)
+      if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
+        this.setInfographicPreviewDialog({
+          status: true,
+          selectedRow: item,
+          type: 'downloadInfographic',
+          title: labels.DownloadInfographic,
+          subtitle: '',
+          showDetails: false,
+          showTabs: false,
+          showFavoriteButton: false,
+          showSendButton: false,
+          icon: 'mdi-download'
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        console.log('iam in', item)
+        this.setPosterPreviewDialog({
+          status: true,
+          selectedRow: item,
+          type: 'downloadPoster',
+          title: labels.DownloadPoster,
+          subtitle: '',
+          showDetails: false,
+          showTabs: false,
+          showSendButton: false,
+          showPosterName: true,
+          showFavoriteButton: false,
+          icon: 'mdi-download'
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
+        this.setScreenSaverPreviewDialog({
+          status: true,
+          selectedRow: item,
+          type: 'downloadScreensaver',
+          title: labels.DownloadScreensaver,
+          showSendButton: false,
+          subtitle: '',
+          showDetails: false,
+          showTabs: false,
+          showFavoriteButton: false,
+          icon: 'mdi-download'
+        })
+      }
+    },
     handleListItemClick(text, item) {
       console.log('item', item)
       if (text === labels.Edit) this.handleEditModalByType(text, item)
       else if (text === labels.Duplicate) this.handleDuplicateModal(item.trainingId)
       else if (text === labels.Delete) this.handleDeleteModalByType(text, item)
+      else if (text === labels.DownloadInfographic) this.handleDownloadItem(item)
+      else if (text === labels.DownloadPoster) this.handleDownloadItem(item)
+      else if (text === labels.DownloadScreensaver) this.handleDownloadItem(item)
     },
     handleEditModalByType(text, item) {
       if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
@@ -374,44 +421,68 @@ export default {
       })
     },
     handleDeleteModalByType(text, item) {
-      //todo
       if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
-        this.setNewTrainingModal({
+        this.setDeleteDialog({
           status: true,
+          title: 'Delete Training Material?',
+          body: 'Are you sure you want to delete this training material?',
           selectedRow: item,
-          isEdit: true,
-          isDuplicate: false
+          type: 'training',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
         })
       } else if (
         item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
         item.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
-        this.setNewLearningPathModal({
+        this.setDeleteDialog({
           status: true,
+          title: 'Delete Learning Path Material?',
+          body: 'Are you sure you want to delete this learning path material?',
           selectedRow: item,
-          isEdit: true,
-          isDuplicate: false
+          type: 'learning-path',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
-        this.setNewPosterModal({
+        this.setDeleteDialog({
           status: true,
-          isEdit: true,
+          title: 'Delete Poster Material?',
+          body: 'Are you sure you want to delete this poster material? ',
           selectedRow: item,
-          isDuplicate: false
+          type: 'poster',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
-        this.setNewInfographicModal({
+        this.setDeleteDialog({
           status: true,
-          isEdit: true,
+          title: 'Delete Infographic Material?',
+          body: 'Are you sure you want to delete this infographic material?',
           selectedRow: item,
-          isDuplicate: false
+          type: 'infographic',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
-        this.setNewScreensaverModal({
+        this.setDeleteDialog({
           status: true,
-          isEdit: true,
+          title: 'Delete Screensaver Material?',
+          body: 'Are you sure you want to delete this screensaver material?',
           selectedRow: item,
-          isDuplicate: false
+          type: 'screensaver',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
         })
       }
     }

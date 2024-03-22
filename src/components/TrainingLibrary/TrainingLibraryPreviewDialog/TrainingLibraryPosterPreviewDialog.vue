@@ -31,7 +31,7 @@
                     <TrainingLibraryFavoriteButton
                       v-if="isShowPosterParams"
                       ref="refFavoriteButton"
-                      :is-default-favourite="posterParams.isFavourite"
+                      :is-default-favourite="posterParams && posterParams.isFavourite"
                       :training-id="selectedRow.trainingId"
                     />
                   </div>
@@ -367,7 +367,10 @@ export default {
       })
     },
     handleClose() {
-      if (this.$refs.refFavoriteButton.isFavourite !== this.posterParams.isFavourite) {
+      if (
+        this?.$refs?.refFavoriteButton?.isFavourite !== this?.posterParams?.isFavourite &&
+        this.showFavoriteButton
+      ) {
         this.callForTrainingLibrary()
       }
       this.setPosterPreviewDialog(emptyPosterPreviewDialogObj)

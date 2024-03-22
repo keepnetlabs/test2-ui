@@ -17,6 +17,7 @@ const common = {
     sessionCheck: false,
     isReCaptcha: false,
     activePageRouterName: '',
+    activeTrainingType: 'Training',
     selectedTimeZone: '',
     selectedTimeZoneName: '',
     isShowLeavingDialog: false,
@@ -96,6 +97,9 @@ const common = {
     },
     SET_ACTIVE_PAGE_ROUTE_NAME(state, payload) {
       state.activePageRouterName = payload
+    },
+    SET_ACTIVE_TRAINING_TYPE(state, payload) {
+      state.activeTrainingType = payload
     }
   },
   actions: {
@@ -156,6 +160,9 @@ const common = {
         dispatch('setSelectedTimeZone', response.data.data.timeZoneId)
         dispatch('setSelectedTimeZoneName', response.data.data.timeZoneName)
       })
+    },
+    setActiveTrainingType({ commit }, payload) {
+      commit('SET_ACTIVE_TRAINING_TYPE', payload)
     }
   }
 }

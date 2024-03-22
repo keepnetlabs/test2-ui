@@ -436,7 +436,7 @@ export default {
     },
     handleRouteToReport(row) {
       this.$router.push({
-        name: this.isScormProxy ? 'Scorm Proxy Report' : 'Training Report',
+        name: row.status === 'SCORM Proxy' ? 'Scorm Proxy Report' : 'Training Report',
         params: {
           id: row.enrollmentId
         }

@@ -9,11 +9,12 @@
       @close="hideAudienceDetailsModal"
     />
     <TrainingReportSummaryHeader
-      :isScormProxy="isScormProxy"
-      :trainingName="trainingName"
+      :is-scorm-proxy="isScormProxy"
+      :training-name="trainingName"
       :resend-dialog-items="getResendDialogItems"
-      :isLoading="isLoading"
+      :is-loading="isLoading"
       :id="id"
+      :training-type="getTrainingType"
     />
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
@@ -22,7 +23,8 @@
         :helper-data="getTrainingInfoHelperData"
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
-        :isLoading="isLoading"
+        :is-loading="isLoading"
+        :training-type="getTrainingType"
         @audienceClick="showAudienceDetailsModal"
       />
       <TrainingReportTrainingDelivery
@@ -126,6 +128,9 @@ export default {
         trainingId: trainingDetails?.id,
         trainingName: trainingDetails?.name
       }
+    },
+    getTrainingType() {
+      return this.trainingSummary?.trainingTypeId
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
