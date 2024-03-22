@@ -1,5 +1,5 @@
 <template>
-  <div class="training-library-list-view-first-card-header">
+  <div>
     <DownloadModal
       v-if="isShowDownloadModal"
       :isShow="isShowDownloadModal"
@@ -8,78 +8,80 @@
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="toggleDownloadModal"
     />
-    <div>
-      <VTextField
-        id="input--search-training-library"
-        class="training-library-list-view-first-card-header__search"
-        ref="searchInput"
-        outlined
-        prepend-inner-icon="mdi-magnify"
-        hide-details
-        :value="search"
-        :placeholder="placeholder"
-        @input="handleDebouncedSearch"
-      />
+    <div class="training-library-list-view-first-card-header">
       <div>
-        <VBtn
-          class="clust-btn btn-hover mr-1 training-library-clust-btn"
-          icon
+        <VTextField
+          id="input--search-training-library"
+          class="training-library-list-view-first-card-header__search"
+          ref="searchInput"
           outlined
-          :style="!isListView && { backgroundColor: '#2196f3' }"
-          :color="!isListView ? '#2196f3' : '#757575'"
-          @click="setListView(false)"
-        >
-          <img :src="getCardViewIcon" alt="icon" />
-        </VBtn>
-        <VBtn
-          class="clust-btn btn-hover training-library-clust-btn"
-          icon
-          :style="isListView && { backgroundColor: '#2196f3' }"
-          :outlined="!isListView"
-          :color="isListView ? '#2196f3' : '#757575'"
-          @click="setListView(true)"
-        >
-          <img :src="getBulletedIcon" alt="icon" />
-        </VBtn>
-      </div>
-    </div>
-    <div class="training-library-list-view-first-card-header__right-side">
-      <TrainingLibraryFirstCardNewButton />
-      <VTooltip bottom opacity="1">
-        <template #activator="{ on }">
-          <VBtn v-on="on" id="`btn-refresh--training-table" icon>
-            <VIcon @click="callForData">mdi-refresh</VIcon>
+          prepend-inner-icon="mdi-magnify"
+          hide-details
+          :value="search"
+          :placeholder="placeholder"
+          @input="handleDebouncedSearch"
+        />
+        <div>
+          <VBtn
+            class="clust-btn btn-hover mr-1 training-library-clust-btn"
+            icon
+            outlined
+            :style="!isListView && { backgroundColor: '#2196f3' }"
+            :color="!isListView ? '#2196f3' : '#757575'"
+            @click="setListView(false)"
+          >
+            <img :src="getCardViewIcon" alt="icon" />
           </VBtn>
-        </template>
-        <span class="tooltip-span">Refresh</span>
-      </VTooltip>
-      <VMenu v-model="isDownloadMenuOpen" bottom offset-y>
-        <template #activator="{ on: menu, attrs }">
-          <VTooltip bottom opacity="1">
-            <template #activator="{ on: tooltip }">
-              <VBtn
-                v-bind="attrs"
-                v-on="{ ...tooltip, ...menu }"
-                id="btn-download--training-library"
-                class="btn-hover"
-                icon
-              >
-                <v-icon>mdi-download</v-icon>
-              </VBtn>
-            </template>
-            <span class="tooltip-span">Download Options</span>
-          </VTooltip>
-        </template>
-        <VListItem
-          v-for="(item, index) in downloadButtonOptions"
-          :id="`item--download-option-${index}`"
-          :key="index"
-          @click="handleDownloadButtonClick(item)"
-        >
-          <VListItemTitle>{{ item }}</VListItemTitle>
-        </VListItem>
-      </VMenu>
-      <TrainingLibraryFirstCardSettings />
+          <VBtn
+            class="clust-btn btn-hover training-library-clust-btn"
+            icon
+            :style="isListView && { backgroundColor: '#2196f3' }"
+            :outlined="!isListView"
+            :color="isListView ? '#2196f3' : '#757575'"
+            @click="setListView(true)"
+          >
+            <img :src="getBulletedIcon" alt="icon" />
+          </VBtn>
+        </div>
+      </div>
+      <div class="training-library-list-view-first-card-header__right-side">
+        <TrainingLibraryFirstCardNewButton />
+        <VTooltip bottom opacity="1">
+          <template #activator="{ on }">
+            <VBtn v-on="on" id="`btn-refresh--training-table" icon>
+              <VIcon @click="callForData">mdi-refresh</VIcon>
+            </VBtn>
+          </template>
+          <span class="tooltip-span">Refresh</span>
+        </VTooltip>
+        <VMenu v-model="isDownloadMenuOpen" bottom offset-y>
+          <template #activator="{ on: menu, attrs }">
+            <VTooltip bottom opacity="1">
+              <template #activator="{ on: tooltip }">
+                <VBtn
+                  v-bind="attrs"
+                  v-on="{ ...tooltip, ...menu }"
+                  id="btn-download--training-library"
+                  class="btn-hover"
+                  icon
+                >
+                  <v-icon>mdi-download</v-icon>
+                </VBtn>
+              </template>
+              <span class="tooltip-span">Download Options</span>
+            </VTooltip>
+          </template>
+          <VListItem
+            v-for="(item, index) in downloadButtonOptions"
+            :id="`item--download-option-${index}`"
+            :key="index"
+            @click="handleDownloadButtonClick(item)"
+          >
+            <VListItemTitle>{{ item }}</VListItemTitle>
+          </VListItem>
+        </VMenu>
+        <TrainingLibraryFirstCardSettings />
+      </div>
     </div>
   </div>
 </template>

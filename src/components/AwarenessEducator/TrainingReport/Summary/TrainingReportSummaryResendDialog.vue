@@ -3,14 +3,14 @@
     title-id="text--training-report-resend-popup-title"
     subtitle-id="text--training-report-resend-popup-subtitle"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="title"
     :subtitle="trainingName"
     :status="status"
     @changeStatus="closeModal"
   >
     <template #app-dialog-body>
       <div>
-        <div class="mb-3">Resend this training to:</div>
+        <div class="mb-3">Resend this {{ getTypeText }} to:</div>
         <div>
           <v-checkbox
             v-model="types"
@@ -94,6 +94,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportSummaryResendDialog',
   components: { AppDialogFooter, AppDialog },
@@ -109,19 +110,33 @@ export default {
     },
     trainingName: {
       type: String
+    },
+    title: {
+      type: String,
+      default: labels.ResendTraining
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {
     return {
       CONSTANTS: {
-        icon: 'mdi-refresh',
-        title: labels.ResendTraining
+        icon: 'mdi-refresh'
       },
       labels,
       types: []
     }
   },
   computed: {
+    getTypeText() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'infographic'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return 'learning path'
+      return 'training'
+    },
     getActionButtonDisabled() {
       return this.isActionButtonDisabled || !this.types.length
     }

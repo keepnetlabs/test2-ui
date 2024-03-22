@@ -16,7 +16,11 @@
       :id="id"
       :training-type="getTrainingType"
     />
-    <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
+    <TrainingReportSummaryCards
+      :items="getCardsData"
+      :is-loading="isLoading"
+      :training-type="getTrainingType"
+    />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <TrainingReportSummaryTrainingInfo
         :items="getTrainingInfoData"
@@ -32,6 +36,7 @@
         :items="getTrainingDeliveryData"
         :helper-data="getTrainingDeliveryHelperData"
         :isLoading="isLoading"
+        :training-type="getTrainingType"
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
@@ -53,6 +58,7 @@
       :isFetchingSummary="isLoading"
       :selected-row="getTrainingMaterialRow"
       :languages="languages"
+      :training-type="getTrainingType"
     />
     <TrainingReportCertificate
       v-if="getCertificateEmailNotificationTemplateTypeResourceId"
@@ -130,7 +136,7 @@ export default {
       }
     },
     getTrainingType() {
-      return this.trainingSummary?.trainingTypeId
+      return this.trainingSummary?.trainingTypeName
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'

@@ -41,6 +41,7 @@ import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/U
 import TrainingReportSendingReport from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReport'
 import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TrainingReport',
@@ -135,15 +136,22 @@ export default {
   created() {
     this.callForFormDetails()
     this.callForSummary()
+    this.callForLanguages()
   },
   methods: {
+    ...mapActions({
+      callForLanguages: 'trainingLibraryHelpers/callForLanguages'
+    }),
     callForSummary() {
       this.isLoading = true
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
           this.trainingSummary = response?.data?.data
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
-          this.$store.dispatch('common/setActiveTrainingType', this.trainingSummary?.trainingTypeId)
+          this.$store.dispatch(
+            'common/setActiveTrainingType',
+            this.trainingSummary?.trainingTypeName
+          )
         })
         .finally(() => {
           this.isLoading = false

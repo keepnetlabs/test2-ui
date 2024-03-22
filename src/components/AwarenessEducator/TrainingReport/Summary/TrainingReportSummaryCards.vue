@@ -51,6 +51,9 @@ export default {
     },
     isAttachment: {
       type: Boolean
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {

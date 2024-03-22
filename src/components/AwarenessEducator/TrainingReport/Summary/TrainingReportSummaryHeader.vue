@@ -6,6 +6,8 @@
       :items="resendDialogItems"
       :trainingName="trainingName"
       :is-action-button-disabled="isActionButtonDisabled"
+      :title="getResendButtonText"
+      :training-type="trainingType"
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />
