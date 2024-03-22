@@ -42,6 +42,7 @@ import TrainingReportSendingReport from '@/components/AwarenessEducator/Training
 import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingReport',
@@ -147,6 +148,21 @@ export default {
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
           this.trainingSummary = response?.data?.data
+          if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+            this.tabItems[2].name = labels.OpenedPosterEmail
+            this.tabItems[2].label = labels.OpenedPosterEmail
+            this.tabItems[3].name = labels.DownloadedPoster
+            this.tabItems[3].label = labels.DownloadedPoster
+            this.tabItems.splice(4, 2)
+          } else if (
+            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+          ) {
+            this.tabItems[2].name = labels.OpenedInfographicEmail
+            this.tabItems[2].label = labels.OpenedInfographicEmail
+            this.tabItems[3].name = labels.DownloadedInfographic
+            this.tabItems[3].label = labels.DownloadedInfographic
+            this.tabItems.splice(4, 2)
+          }
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
           this.$store.dispatch(
             'common/setActiveTrainingType',

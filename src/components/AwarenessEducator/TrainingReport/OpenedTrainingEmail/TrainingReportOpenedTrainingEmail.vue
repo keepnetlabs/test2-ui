@@ -5,6 +5,8 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :title="getResendDialogTitle"
+      :body-training-type="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -18,8 +20,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Opened the training email"
-      subtitle="Users who opened the training email"
+      :title="getHeaderTitle"
+      :subtitle="getHeaderSubtitle"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -71,6 +73,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportOpenedTrainingEmail',
   components: {
@@ -86,6 +89,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -208,8 +214,35 @@ export default {
       tableData: []
     }
   },
-  created() {
-    this.callForData()
+  computed: {
+    getHeaderTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'Opened the poster email'
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Opened the infographic email'
+      return 'Opened the training email'
+    },
+    getHeaderSubtitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'Users who opened the poster email'
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Users who opened the infographic email'
+      return 'Users who opened the training email'
+    },
+    getResendDialogTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+    getBodyTrainingType() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    }
   },
   watch: {
     isScormProxy: {
@@ -225,6 +258,9 @@ export default {
         }
       }
     }
+  },
+  created() {
+    this.callForData()
   },
   methods: {
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
