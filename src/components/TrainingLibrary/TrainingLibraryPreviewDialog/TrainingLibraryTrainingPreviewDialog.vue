@@ -26,7 +26,7 @@
     </template>
     <template #app-dialog-footer>
       <TrainingLibraryPreviewDialogFooter
-        :show-send-button="getTrainingPreviewDialog.showSendButton"
+        :show-send-button="showSendButton"
         @on-close="handleClose"
         @on-send="handleSend"
       />
@@ -56,6 +56,10 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    showSendButton: {
+      type: Boolean,
+      default: true
     },
     trainingParams: {
       type: Object
@@ -137,6 +141,7 @@ export default {
         this.callForTrainingLibrary()
       }
       this.setTrainingPreviewDialog(emptyTrainingPreviewDialogObj)
+      this.$emit('close')
     },
     handleSend() {
       this.handleClose()

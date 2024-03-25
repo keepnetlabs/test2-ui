@@ -123,6 +123,7 @@ export default {
     }
   },
   created() {
+    this.callForLearningPathTrainingLibrary()
     if (this.isEdit) {
       this.trainingId = this.selectedRow.trainingId
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
@@ -159,7 +160,7 @@ export default {
   methods: {
     ...mapActions({
       setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
+      callForLearningPathTrainingLibrary: 'trainingLibrary/callForLearningPathTrainingLibrary'
     }),
     handleClose() {
       this.setNewLearningPathModal(emptyNewLearningPathModalObj)
@@ -175,55 +176,7 @@ export default {
           if (!refMakeAvailableFor.isAvailableForValid) return
         }
         if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
-          if (this.trainingId) {
-            if (refTrainingContent) {
-              this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
-                (content) => content.file && content.languageId
-              )
-            }
-            return this.step++
-          }
-          const { formData } = refTrainingCourseInformation
-          const {
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests,
-            compliances,
-            behaviours
-          } = formData
-          this.isActionButtonDisabled = true
-          AwarenessEducatorService.createDraftTraining({
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests,
-            type: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH,
-            compliances: compliances.map((compliance) => ({ complianceId: compliance })),
-            behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour }))
-          })
-            .then((response) => {
-              this.trainingId = response?.data?.data?.resourceId || ''
-              this.step++
-            })
-            .finally(() => {
-              //checking disability of save button
-              if (refTrainingContent) {
-                this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
-                  (content) => content.file && content.languageId
-                )
-              } else {
-                this.isActionButtonDisabled = false
-              }
-              if (this.step === 1) {
-                this.isActionButtonDisabled = false
-              }
-            })
+          this.step += flag
         }
       } else {
         if (this.step === 2 && flag === -1) {
@@ -282,7 +235,7 @@ export default {
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
           this.handleClose()
-          this.callForTrainingLibrary()
+          this.callForLearningPathTrainingLibrary()
         })
         .finally(() => {
           this.isActionButtonDisabled = false

@@ -87,17 +87,13 @@ import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { Fragment } from 'vue-frag'
 
 export default {
-  name: 'TrainingLibraryFilterBadge',
+  name: 'TrainingLibraryLearningPathFilterBadge',
   components: {
     Fragment
   },
   props: {
     filter: {
       type: Object
-    },
-    isLearningPathModal: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -106,7 +102,7 @@ export default {
       compliances: 'trainingLibraryHelpers/getCompliances',
       categories: 'trainingLibraryHelpers/getCategories',
       behaviours: 'trainingLibraryHelpers/getBehaviours',
-      types: 'trainingLibraryHelpers/getTrainingTypes',
+      types: 'trainingLibraryHelpers/getLearningPathTrainingTypes',
       targetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
       vendors: 'trainingLibraryHelpers/getTrainingVendors'
     }),
@@ -137,8 +133,7 @@ export default {
   methods: {
     ...mapActions({
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
-      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload',
-      removeLearningPathFilterFromPayload: 'trainingLibrary/removeLearningPathFilterFromPayload'
+      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     getFilterValue(filter, filterVal) {
       if (filter.key === PROPERTY_STORE.LANGUAGES) return this.getLanguageFilterValue(filterVal)
@@ -157,21 +152,13 @@ export default {
       this.filter.activeValue = ''
       this.filter.value = ''
       this.filter.isFilterActive = false
-      if (this.isLearningPathModal) {
-        this.removeLearningPathFilterFromPayload(this.filter)
-      } else {
-        this.removeFilterFromPayload(this.filter)
-      }
+      this.removeFilterFromPayload(this.filter)
     },
     removeSearchFilter(value, index) {
       this.filter.activeValue.splice(index, 1)
       this.filter.value = this.filter.activeValue
       this.filter.isFilterActive = !!this.filter.activeValue.length
-      if (this.isLearningPathModal) {
-        this.removeLearningPathFilterFromPayload(this.filter)
-      } else {
-        this.removeFilterFromPayload(this.filter)
-      }
+      this.removeFilterFromPayload(this.filter)
     },
     getLanguageFilterValue(langCode = '') {
       return (
