@@ -14,6 +14,7 @@ export const labels = {
   Infographic: 'Infographic',
   DescriptionScreensaverSub: 'Describe the screensaver briefly',
   InfographicSummary: 'Infographic Summary',
+  LearningPathThatUsersWillBeRedirectTo: 'Learning path that users will be directed to',
   Poster: 'Poster',
   EmptyTrainingSendingReportPoster: 'No one has received the poster, yet',
   EmptyTrainingSendingReportInfographic: 'No one has received the infographic, yet',

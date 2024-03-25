@@ -24,6 +24,7 @@
       <TrainingReportSummaryCards
         :items="getCardsData"
         :is-loading="isLoading"
+        :total-user-count="getTotalUsers"
         :training-type="getTrainingType"
       />
       <div class="campaign-manager-report-summary__general-info mt-6">
@@ -367,8 +368,8 @@ export default {
       return trainingEmailNotificationTemplateTypeResourceId
     },
     getTotalUsers() {
-      const { campaignInfo = {} } = this.trainingSummary
-      return campaignInfo['totalTargetUserCount'] || 0
+      const { reportDetail = {} } = this.trainingSummary || {}
+      return reportDetail['totalTargetUserCount'] || 0
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}

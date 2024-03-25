@@ -78,8 +78,8 @@
       >
         <template #userCount>
           <div class="training-report-summary-info-card-body__content mt-4 mb-7">
-            <span>{{ getOpenedData.userCount }}</span> <span>of</span>
-            <span>{{ getOpenedData.totalUserCount }}</span> <span>target users</span>
+            <span>{{ getOpenedData.userCount }}</span>
+            <span class="ml-1">of {{ totalUserCount }} target users</span>
           </div>
         </template>
         <template #icon>
@@ -97,8 +97,13 @@
       >
         <template #userCount>
           <div class="training-report-summary-info-card-body__content mt-4 mb-7">
-            <span>{{ getCompletedTrainingData.userCount }}</span> <span>of</span>
-            <span>{{ getOpenedData.totalUserCount }}</span> <span>target users</span>
+            <span>{{ getCompletedTrainingData.userCount }}</span>
+            <span class="ml-1">of {{ totalUserCount }} target users</span>
+          </div>
+        </template>
+        <template #icon>
+          <div style="margin-bottom: -11px; margin-right: -10px;">
+            <img :src="noResponseIcon" alt="icon" />
           </div>
         </template>
       </TrainingReportSummaryInfoCard>
@@ -126,6 +131,10 @@ export default {
     },
     trainingType: {
       type: String
+    },
+    totalUserCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
