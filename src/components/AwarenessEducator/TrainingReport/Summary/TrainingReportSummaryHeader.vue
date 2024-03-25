@@ -1,45 +1,47 @@
 <template>
-  <div class="training-report-summary-header">
-    <TrainingReportSummaryResendDialog
-      v-if="isShowResendDialog"
-      :status="isShowResendDialog"
-      :items="resendDialogItems"
-      :trainingName="trainingName"
-      :is-action-button-disabled="isActionButtonDisabled"
-      :title="getResendButtonText"
-      :training-type="trainingType"
-      @on-close="toggleShowResendDialog"
-      @on-confirm="handleOnConfirmResend"
-    />
-    <div class="training-report-summary-header__left">
-      <div class="training-report-summary-header__title">
-        {{ getTitle }}
+  <VSkeletonLoader type="list-item" :loading="isLoading">
+    <div class="training-report-summary-header">
+      <TrainingReportSummaryResendDialog
+        v-if="isShowResendDialog"
+        :status="isShowResendDialog"
+        :items="resendDialogItems"
+        :trainingName="trainingName"
+        :is-action-button-disabled="isActionButtonDisabled"
+        :title="getResendButtonText"
+        :training-type="trainingType"
+        @on-close="toggleShowResendDialog"
+        @on-confirm="handleOnConfirmResend"
+      />
+      <div class="training-report-summary-header__left">
+        <div class="training-report-summary-header__title">
+          {{ getTitle }}
+        </div>
+        <div class="training-report-summary-header__subtitle">
+          {{ getSubtitle }}
+        </div>
       </div>
-      <div class="training-report-summary-header__subtitle">
-        {{ getSubtitle }}
+      <div class="training-report-summary-header__right">
+        <!-- <v-btn
+          class="training-report-summary-header__btn-download-report"
+          rounded
+          outlined
+          color="#2196f3"
+          :disabled="isDownloadReportDisabled"
+          @click="handleDownloadReport"
+          >{{ labels.DownloadReport }}</v-btn
+        >
+        -->
+        <v-btn
+          v-if="!isLoading && !isScormProxy"
+          class="training-report-summary-header__btn-resend-campaign ml-2"
+          rounded
+          color="#2196f3"
+          @click="toggleShowResendDialog"
+          >{{ getResendButtonText }}</v-btn
+        >
       </div>
     </div>
-    <div class="training-report-summary-header__right">
-      <!-- <v-btn
-        class="training-report-summary-header__btn-download-report"
-        rounded
-        outlined
-        color="#2196f3"
-        :disabled="isDownloadReportDisabled"
-        @click="handleDownloadReport"
-        >{{ labels.DownloadReport }}</v-btn
-      >
-      -->
-      <v-btn
-        v-if="!isLoading && !isScormProxy"
-        class="training-report-summary-header__btn-resend-campaign ml-2"
-        rounded
-        color="#2196f3"
-        @click="toggleShowResendDialog"
-        >{{ getResendButtonText }}</v-btn
-      >
-    </div>
-  </div>
+  </VSkeletonLoader>
 </template>
 
 <script>

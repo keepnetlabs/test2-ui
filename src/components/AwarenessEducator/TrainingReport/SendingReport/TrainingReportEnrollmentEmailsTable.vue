@@ -403,9 +403,9 @@ export default {
   methods: {
     getEmptyTableTextMessage() {
       if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-        return labels.EmptyTrainingNoResponsePoster
+        return labels.EmptyTrainingSendingReportPoster
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-        return labels.EmptyTrainingReportInfographic
+        return labels.EmptyTrainingSendingReportInfographic
       return labels.EmptyTrainingReportUsers
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

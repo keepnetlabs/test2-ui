@@ -31,7 +31,8 @@
             :value="2"
           >
             <template #label
-              >Only opened email {{ `(${items.totalUserOpenedCount || 0})` }}</template
+              >Only opened {{ getOnlyOpenedLabel }}
+              {{ `(${items.totalUserOpenedCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
@@ -42,10 +43,11 @@
             :value="3"
           >
             <template #label
-              >Clicked training link {{ `(${items.totalUserClickedCount || 0})` }}</template
+              >{{ getClickedOnlyLabel }} {{ `(${items.totalUserClickedCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
+            v-if="isTrainingTypeTraining"
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
@@ -57,6 +59,7 @@
               {{ `(${items.didNotCompleteTrainingCount || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
+            v-if="isTrainingTypeTraining"
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
@@ -139,6 +142,21 @@ export default {
     },
     getActionButtonDisabled() {
       return this.isActionButtonDisabled || !this.types.length
+    },
+    getOnlyOpenedLabel() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'infographic'
+      return 'email'
+    },
+    getClickedOnlyLabel() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'Downloaded poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Downloaded infographic'
+      return 'Clicked training link'
+    },
+    isTrainingTypeTraining() {
+      return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     }
   },
   methods: {

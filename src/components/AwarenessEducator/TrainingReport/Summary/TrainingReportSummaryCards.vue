@@ -68,6 +68,41 @@
         :icon-src="helpIcon"
       />
     </template>
+    <template v-else-if="isTrainingTypeLearningPath">
+      <TrainingReportSummaryInfoCard
+        v-bind="getOpenedData"
+        background-color="#1173C1"
+        :title="labels.StartedLearningPath"
+        :is-loading="isLoading"
+        :icon-src="learningPathStartingIcon"
+      >
+        <template #userCount>
+          <div class="training-report-summary-info-card-body__content mt-4 mb-7">
+            <span>{{ getOpenedData.userCount }}</span> <span>of</span>
+            <span>{{ getOpenedData.totalUserCount }}</span> <span>target users</span>
+          </div>
+        </template>
+        <template #icon>
+          <div class="training-report-summary-info-card-body__icon--file-download">
+            <img :src="learningPathStartingIcon" alt="icon" />
+          </div>
+        </template>
+      </TrainingReportSummaryInfoCard>
+      <TrainingReportSummaryInfoCard
+        v-bind="getCompletedTrainingData"
+        background-color="#43A047"
+        :title="labels.CompletedTrainingPath"
+        :is-loading="isLoading"
+        :icon-src="noResponseIcon"
+      >
+        <template #userCount>
+          <div class="training-report-summary-info-card-body__content mt-4 mb-7">
+            <span>{{ getCompletedTrainingData.userCount }}</span> <span>of</span>
+            <span>{{ getOpenedData.totalUserCount }}</span> <span>target users</span>
+          </div>
+        </template>
+      </TrainingReportSummaryInfoCard>
+    </template>
   </div>
 </template>
 
@@ -100,7 +135,8 @@ export default {
       openedEmailIcon: require('../../../../assets/img/ic-opened-email.svg'),
       inProgressIcon: require('../../../../assets/img/hourglass.svg'),
       helpIcon: require('../../../../assets/img/help.svg'),
-      fileDownloadIcon: require('../../../../assets/img/ic-file-download.svg')
+      fileDownloadIcon: require('../../../../assets/img/ic-file-download.svg'),
+      learningPathStartingIcon: require('../../../../assets/img/ic-school.svg')
     }
   },
   computed: {
@@ -109,6 +145,9 @@ export default {
         this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER ||
         this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
       )
+    },
+    isTrainingTypeLearningPath() {
+      return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
     },
     isTrainingLibraryTypeTraining() {
       return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING

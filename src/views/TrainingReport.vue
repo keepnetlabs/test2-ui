@@ -162,6 +162,11 @@ export default {
             this.tabItems[3].name = labels.DownloadedInfographic
             this.tabItems[3].label = labels.DownloadedInfographic
             this.tabItems.splice(4, 2)
+          } else if (
+            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+          ) {
+            this.tabItems[0].name = labels.LearningPathSummary
+            this.tabItems[0].label = labels.LearningPathSummary
           }
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
           this.$store.dispatch(

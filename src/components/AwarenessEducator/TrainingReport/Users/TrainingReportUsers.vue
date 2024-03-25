@@ -320,6 +320,10 @@ export default {
         return 'All target users enrolled to this poster'
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return 'All target users enrolled to this infographic'
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+      )
+        return 'All target users enrolled to this learning path'
       return 'All target users enrolled to this training'
     },
     getResendDialogTitle() {
@@ -361,6 +365,11 @@ export default {
         return labels.EmptyTrainingReportTrainingPosters
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.EmptyTrainingReportTrainingInfographics
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+      ) {
+        return labels.EmptyTrainingReportUserLearningPaths
+      }
       return labels.EmptyTrainingReportTrainingUsers
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {

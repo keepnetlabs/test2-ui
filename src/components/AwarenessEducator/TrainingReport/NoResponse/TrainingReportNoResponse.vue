@@ -227,7 +227,7 @@ export default {
         return labels.EmptyTrainingNoResponsePoster
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.EmptyTrainingReportInfographic
-      return labels.EmptyTrainingReportUsers
+      return labels.EmptyTrainingReportNoResponse
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {

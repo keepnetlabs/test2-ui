@@ -269,7 +269,7 @@ export default {
         return labels.EmptyTrainingReportDownloadedPoster
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.EmptyTrainingReportDownloadedInfographic
-      return labels.EmptyTrainingReportTrainingUsers
+      return labels.EmptyTrainingReportClickedTraining
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
