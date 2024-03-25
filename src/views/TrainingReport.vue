@@ -43,7 +43,7 @@ import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-
+import TrainingReportLearningPathContainer from '../components/AwarenessEducator/TrainingReport/TrainingReportLearningPathContainer/TrainingReportLearningPathContainer.vue'
 export default {
   name: 'TrainingReport',
   components: { KContainer },
@@ -147,7 +147,7 @@ export default {
       this.isLoading = true
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
-          //response.data.data.trainingTypeName = 'LearningPath'
+          response.data.data.trainingTypeName = 'LearningPath'
           this.trainingSummary = response?.data?.data
           if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
             this.tabItems[2].label = labels.OpenedPosterEmail
