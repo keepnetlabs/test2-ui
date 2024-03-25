@@ -83,6 +83,34 @@ const trainingLibrary = {
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
     filterType: 'Or',
     sortBy: 'Date Created - New to old',
+    learningPathTableData: [],
+    selectedLearningPathTrainings: [],
+    learningPathServerSideProps: new ServerSideProps(),
+    learningPathAxiosPayload: getDefaultAxiosPayload({
+      pageSize: 100,
+      trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
+      trainingType: null
+    }),
+    learningPathFilterOptionsFilters: [
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED)
+    ],
+    learningPathSearch: '',
+    learningPathSelectedTrainingContent: 'All Materials',
+    learningPathSelectedSubTrainingContent: 'All Types',
+    learningPathFilters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
+    learningPathFilterType: 'Or',
+    learningPathSortBy: 'Date Created - New to old',
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
     learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
@@ -105,12 +133,12 @@ const trainingLibrary = {
     getTableColumns: (state) => state.tableColumns,
     getRenderedColumns: (state) => state.renderedColumns,
     getSearch: (state) => state.search,
+    getLearningPathSearch: (state) => state.learningPathSearch,
     getSearchPlaceholder: (state) => {
       if (state.isTabsLoading) return 'Loading...'
       return `Search in ${state.trainingSubTabs[0].totalCount} training by name`
     },
     getFirstColFixed: (state) => state.firstColFixed,
-    getLastColFixed: (state) => state.lastColFixed,
     getIsListView: (state) => state.isListView,
     getSelectedTrainingContent: (state) => state.selectedTrainingContent,
     getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
@@ -125,7 +153,9 @@ const trainingLibrary = {
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
     getFilterType: (state) => state.filterType,
+    getLearningPathFilterType: (state) => state.learningPathFilterType,
     getSortBy: (state) => state.sortBy,
+    getLearningPathSortBy: (state) => state.learningPathSortBy,
     getTabsLoading: (state) => state.isTabsLoading,
     getFilterOptionsFilters: (state) => state.filterOptionsFilters,
     getNewTrainingModal: (state) => state.newTrainingModal,
@@ -138,7 +168,10 @@ const trainingLibrary = {
     getInfographicSendModal: (state) => state.infographicSendModal,
     getScreensaverSendModal: (state) => state.screensaverSendModal,
     getLearningPathSendModal: (state) => state.learningPathSendModal,
-    getFilters: (state) => state.filters
+    getFilters: (state) => state.filters,
+    getLearningPathFilters: (state) => state.learningPathFilters,
+    getLearningPathTrainings: (state) => state.learningPathTableData,
+    getSelectedLearningPathTrainings: (state) => state.selectedLearningPathTrainings
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -164,6 +197,9 @@ const trainingLibrary = {
     },
     SET_SEARCH(state, payload) {
       state.search = payload
+    },
+    SET_LEARNING_PATH_SEARCH(state, payload) {
+      state.learningPathSearch = payload
     },
     SET_LIST_VIEW(state, payload) {
       if (state.isListView === payload) return
@@ -201,6 +237,9 @@ const trainingLibrary = {
     SET_SORT_BY(state, payload) {
       state.sortBy = payload
     },
+    SET_LEARNING_PATH_SORT_BY(state, payload) {
+      state.learningPathSortBy = payload
+    },
     SET_DELETE_DIALOG(state, payload) {
       state.deleteDialog = payload
     },
@@ -223,10 +262,23 @@ const trainingLibrary = {
       state.tableData = payload
       console.log('state.tableData', state.tableData)
     },
+    SET_LEARNING_PATH_TABLE_DATA(state, payload) {
+      const learningPathTrainingIds = state.selectedLearningPathTrainings.map((t) => t.trainingId)
+      const nonSelectedTrainings = payload.filter(
+        (t) => !learningPathTrainingIds.includes(t.trainingId)
+      )
+      state.learningPathTableData = nonSelectedTrainings
+      console.log('state.learningPathTableData', state.learningPathTableData)
+    },
     SET_SERVER_SIDE_PROPS(state, payload) {
       state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
       state.serverSideProps.totalNumberOfPages = payload.totalNumberOfPages
       state.serverSideProps.pageNumber = payload.pageNumber
+    },
+    SET_LEARNING_PATH_SERVER_SIDE_PROPS(state, payload) {
+      state.learningPathServerSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
+      state.learningPathServerSideProps.totalNumberOfPages = payload.totalNumberOfPages
+      state.learningPathServerSideProps.pageNumber = payload.pageNumber
     },
     SET_TABS_LOADING(state, payload) {
       state.isTabsLoading = payload
@@ -270,10 +322,14 @@ const trainingLibrary = {
     SET_FILTER_ITEMS(state, payload) {
       const filter = state.filters.find((f) => f.key === payload.key)
       filter.items = payload.items
+      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      learningPathFilter.items = payload.items
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
       const filter = state.filters.find((f) => f.key === payload.key)
       filter.show = payload.show
+      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      learningPathFilter.show = payload.show
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
       const filters = localStorage.getItem('training-library-filters')
@@ -335,6 +391,62 @@ const trainingLibrary = {
       ]
       state.renderedColumns = []
     },
+    SELECT_LEARNING_PATH_TRAINING(state, { training = {}, index = 0 }) {
+      state.learningPathTableData.splice(index, 1)
+      state.selectedLearningPathTrainings.push(training)
+      console.log(state.selectedLearningPathTrainings)
+    },
+    REMOVE_TRAINING_FROM_LEARNING_PATH(state, { training = {}, index = 0 }) {
+      state.learningPathTableData.splice(0, 0, training)
+      state.selectedLearningPathTrainings.splice(index, 1)
+      console.log(state.selectedLearningPathTrainings)
+    },
+    RESET_LEARNING_PATH_FILTERS(state) {
+      state.learningPathSelectedTrainingContent = 'All Materials'
+      state.learningPathSelectedSubTrainingContent = 'All Types'
+      state.learningPathAxiosPayload = getDefaultAxiosPayload({
+        pageSize: 100,
+        trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
+        trainingType: null
+      })
+      state.learningPatghServerSideProps = new ServerSideProps()
+      state.learningPatghFilterOptionsFilters = [
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED)
+      ]
+      state.learningPathSearch = ''
+      state.learningPathFilters.forEach((f) => {
+        if (f.filterType === 'search' || f.filterType === 'longTextSearch') {
+          f.value = []
+          f.activeValue = []
+          f.operator = 'Include'
+          f.activeOperator = 'Include'
+        } else if (f.filterType === 'select') {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = 'Contains'
+          f.activeOperator = 'Contains'
+        } else {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = '='
+          f.activeOperator = '='
+        }
+        f.isFilterActive = false
+      })
+      state.learningPathFilterType = 'Or'
+      state.learningPathSortBy = 'Date Created - New to old'
+    },
     RESET_FILTERS(state) {
       state.selectedTrainingContent = 'All Materials'
       state.selectedSubTrainingContent = 'All Types'
@@ -384,6 +496,10 @@ const trainingLibrary = {
       state.axiosPayload.ascending = payload.ascending
       state.axiosPayload.orderBy = payload.orderBy
     },
+    SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD(state, payload) {
+      state.learningPathAxiosPayload.ascending = payload.ascending
+      state.learningPathAxiosPayload.orderBy = payload.orderBy
+    },
     SET_SEARCH_TO_PAYLOAD(state) {
       const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
@@ -399,8 +515,55 @@ const trainingLibrary = {
         })
       }
     },
+    SET_LEARNING_PATH_SEARCH_TO_PAYLOAD(state) {
+      const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[1].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
+      state.learningPathServerSideProps.pageNumber = 1
+      state.learningPathAxiosPayload.pageNumber = 1
+      if (fIndex !== -1) {
+        filterItems[fIndex].Value = state.learningPathSearch
+      } else {
+        filterItems.push({
+          FieldName: 'trainingName',
+          Value: state.learningPathSearch,
+          Operator: 'Contains'
+        })
+      }
+    },
     SET_FILTER_TO_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      let value
+      if (typeof payload.activeValue === 'string') {
+        value = payload.activeValue.trim()
+      } else if (Array.isArray(payload.activeValue)) {
+        if (payload.activeOperator === 'between') {
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[0],
+            Operator: '>='
+          })
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[1],
+            Operator: '<='
+          })
+          return
+        }
+        value = payload.activeValue.join(',')
+      }
+      if (fIndex !== -1) {
+        filterItems[fIndex].Value = value
+      } else {
+        filterItems.push({
+          FieldName: payload.key,
+          Value: value,
+          Operator: payload.activeOperator
+        })
+      }
+    },
+    SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, payload) {
+      const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       let value
       if (typeof payload.activeValue === 'string') {
@@ -444,9 +607,23 @@ const trainingLibrary = {
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       if (fIndex !== -1) filterItems.splice(fIndex, 1)
     },
+    REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, payload) {
+      const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
+      if (payload.filterType === 'date' && payload.activeOperator === 'between') {
+        const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+        if (fIndex !== -1) filterItems.splice(fIndex, 2)
+        return
+      }
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      if (fIndex !== -1) filterItems.splice(fIndex, 1)
+    },
     RESET_PAGINATION(state) {
       state.axiosPayload.pageNumber = 1
       state.serverSideProps.pageNumber = 1
+    },
+    RESET_LEARNING_PATH_PAGINATION(state) {
+      state.learningPathAxiosPayload.pageNumber = 1
+      state.learningPathServerSideProps.pageNumber = 1
     },
     SET_TRAINING_SEARCH_TYPE(state, payload) {
       state.axiosPayload.trainingSearchType = payload
@@ -484,9 +661,31 @@ const trainingLibrary = {
           commit('SET_IS_LOADING', false)
         })
     },
+    callForLearningPathTableData({ commit, state }) {
+      AwarenessEducatorService.searchTraining(state.learningPathAxiosPayload).then((response) => {
+        const {
+          data: { data = {} }
+        } = response
+        const {
+          results = [],
+          totalNumberOfRecords = 0,
+          totalNumberOfPages = 0,
+          pageNumber = 1
+        } = data
+        commit('SET_LEARNING_PATH_TABLE_DATA', results)
+        commit('SET_LEARNING_PATH_SERVER_SIDE_PROPS', {
+          totalNumberOfRecords,
+          totalNumberOfPages,
+          pageNumber
+        })
+      })
+    },
     callForTrainingLibrary({ dispatch }) {
       dispatch('callForSummary')
       dispatch('callForTableData')
+    },
+    callForLearningPathTrainingLibrary({ dispatch }) {
+      dispatch('callForLearningPathTableData')
     },
     callForSummary({ commit, state }) {
       commit('SET_TABS_LOADING', true)
@@ -541,6 +740,11 @@ const trainingLibrary = {
       commit('SET_SEARCH_TO_PAYLOAD')
       dispatch('callForTrainingLibrary')
     },
+    setLearningPathSearch({ commit, dispatch }, payload) {
+      commit('SET_LEARNING_PATH_SEARCH', payload)
+      commit('SET_LEARNING_PATH_SEARCH_TO_PAYLOAD')
+      dispatch('callForLearningPathTrainingLibrary')
+    },
     setListView({ commit, dispatch, state }, payload) {
       if (state.isListView === payload) return
       commit('SET_LIST_VIEW', payload)
@@ -570,6 +774,14 @@ const trainingLibrary = {
       commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
       commit('SET_SORT_BY_TO_PAYLOAD', { ascending: sort.ascending, orderBy: item.orderBy })
       dispatch('callForTableData')
+    },
+    setLearningPathSortBy({ commit, dispatch }, { item, sort }) {
+      commit('SET_LEARNING_PATH_SORT_BY', `${item.text} - ${sort.text}`)
+      commit('SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD', {
+        ascending: sort.ascending,
+        orderBy: item.orderBy
+      })
+      dispatch('callForLearningPathTableData')
     },
     setDeleteDialog({ commit }, payload) {
       commit('SET_DELETE_DIALOG', payload)
@@ -652,14 +864,34 @@ const trainingLibrary = {
       commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
+    setLearningPathFilterToPayload({ commit, dispatch }, payload) {
+      commit('SET_LEARNING_PATH_FILTER_TO_PAYLOAD', payload)
+      commit('RESET_LEARNING_PATH_PAGINATION')
+      dispatch('callForLearningPathTrainingLibrary')
+    },
     removeFilterFromPayload({ commit, dispatch }, payload) {
       commit('REMOVE_FILTER_FROM_PAYLOAD', payload)
       commit('RESET_PAGINATION')
       dispatch('callForTrainingLibrary')
     },
+    removeLearningPathFilterFromPayload({ commit, dispatch }, payload) {
+      commit('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD', payload)
+      commit('RESET_LEARNING_PATH_PAGINATION')
+      dispatch('callForLearningPathTrainingLibrary')
+    },
     clearAllFilters({ commit, dispatch }) {
       commit('RESET_FILTERS')
       dispatch('callForTrainingLibrary')
+    },
+    learningPathClearAllFilters({ commit, dispatch }) {
+      commit('RESET_LEARNING_PATH_FILTERS')
+      dispatch('callForLearningPathTrainingLibrary')
+    },
+    selectLearningPathTraining({ commit }, payload) {
+      commit('SELECT_LEARNING_PATH_TRAINING', payload)
+    },
+    removeTrainingFromLearningPath({ commit }, payload) {
+      commit('REMOVE_TRAINING_FROM_LEARNING_PATH', payload)
     }
   }
 }
