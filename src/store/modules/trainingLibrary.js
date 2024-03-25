@@ -7,6 +7,7 @@ import {
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import {
+  emptyLearningPathModalTrainingPreviewDialogObj,
   emptyInfographicPreviewDialogObj,
   emptyLearningPathPreviewDialogObj,
   emptyNewInfographicModalObj,
@@ -89,7 +90,28 @@ const trainingLibrary = {
     learningPathAxiosPayload: getDefaultAxiosPayload({
       pageSize: 100,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
-      trainingType: null
+      trainingType: null,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'type',
+                Value: '1,3,4',
+                Operator: 'Include'
+              }
+            ],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
     }),
     learningPathFilterOptionsFilters: [
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
@@ -111,6 +133,7 @@ const trainingLibrary = {
     learningPathFilters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
     learningPathFilterType: 'Or',
     learningPathSortBy: 'Date Created - New to old',
+    learningPathModalTrainingPreviewDialog: emptyLearningPathModalTrainingPreviewDialogObj,
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
     learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
@@ -171,7 +194,9 @@ const trainingLibrary = {
     getFilters: (state) => state.filters,
     getLearningPathFilters: (state) => state.learningPathFilters,
     getLearningPathTrainings: (state) => state.learningPathTableData,
-    getSelectedLearningPathTrainings: (state) => state.selectedLearningPathTrainings
+    getSelectedLearningPathTrainings: (state) => state.selectedLearningPathTrainings,
+    getLearningPathModalTrainingPreviewDialog: (state) =>
+      state.learningPathModalTrainingPreviewDialog
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -243,6 +268,9 @@ const trainingLibrary = {
     SET_DELETE_DIALOG(state, payload) {
       state.deleteDialog = payload
     },
+    SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG(state, payload) {
+      state.learningPathModalTrainingPreviewDialog = payload
+    },
     SET_TRAINING_PREVIEW_DIALOG(state, payload) {
       state.trainingPreviewDialog = payload
     },
@@ -260,7 +288,6 @@ const trainingLibrary = {
     },
     SET_TABLE_DATA(state, payload) {
       state.tableData = payload
-      console.log('state.tableData', state.tableData)
     },
     SET_LEARNING_PATH_TABLE_DATA(state, payload) {
       const learningPathTrainingIds = state.selectedLearningPathTrainings.map((t) => t.trainingId)
@@ -268,7 +295,6 @@ const trainingLibrary = {
         (t) => !learningPathTrainingIds.includes(t.trainingId)
       )
       state.learningPathTableData = nonSelectedTrainings
-      console.log('state.learningPathTableData', state.learningPathTableData)
     },
     SET_SERVER_SIDE_PROPS(state, payload) {
       state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
@@ -322,6 +348,11 @@ const trainingLibrary = {
     SET_FILTER_ITEMS(state, payload) {
       const filter = state.filters.find((f) => f.key === payload.key)
       filter.items = payload.items
+      if (payload.key === 'type') return
+      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      learningPathFilter.items = payload.items
+    },
+    SET_LEARNING_PATH_FILTER_ITEMS(state, payload) {
       const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
       learningPathFilter.items = payload.items
     },
@@ -394,12 +425,10 @@ const trainingLibrary = {
     SELECT_LEARNING_PATH_TRAINING(state, { training = {}, index = 0 }) {
       state.learningPathTableData.splice(index, 1)
       state.selectedLearningPathTrainings.push(training)
-      console.log(state.selectedLearningPathTrainings)
     },
     REMOVE_TRAINING_FROM_LEARNING_PATH(state, { training = {}, index = 0 }) {
       state.learningPathTableData.splice(0, 0, training)
       state.selectedLearningPathTrainings.splice(index, 1)
-      console.log(state.selectedLearningPathTrainings)
     },
     RESET_LEARNING_PATH_FILTERS(state) {
       state.learningPathSelectedTrainingContent = 'All Materials'
@@ -407,7 +436,28 @@ const trainingLibrary = {
       state.learningPathAxiosPayload = getDefaultAxiosPayload({
         pageSize: 100,
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
-        trainingType: null
+        trainingType: null,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'type',
+                  Value: '1,3,4',
+                  Operator: 'Include'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       })
       state.learningPatghServerSideProps = new ServerSideProps()
       state.learningPatghFilterOptionsFilters = [
@@ -615,7 +665,17 @@ const trainingLibrary = {
         return
       }
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-      if (fIndex !== -1) filterItems.splice(fIndex, 1)
+      if (fIndex !== -1) {
+        if (payload.key === 'type') {
+          filterItems[fIndex] = {
+            FieldName: 'type',
+            Value: '1,3,4',
+            Operator: 'Include'
+          }
+        } else {
+          filterItems.splice(fIndex, 1)
+        }
+      }
     },
     RESET_PAGINATION(state) {
       state.axiosPayload.pageNumber = 1
@@ -786,6 +846,9 @@ const trainingLibrary = {
     setDeleteDialog({ commit }, payload) {
       commit('SET_DELETE_DIALOG', payload)
     },
+    setLearningPathModalTrainingPreviewDialog({ commit }, payload) {
+      commit('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG', payload)
+    },
     setTrainingPreviewDialog({ commit }, payload) {
       commit('SET_TRAINING_PREVIEW_DIALOG', payload)
     },
@@ -839,6 +902,9 @@ const trainingLibrary = {
     },
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)
+    },
+    setLearningPathFilterItems({ commit }, payload) {
+      commit('SET_LEARNING_PATH_FILTER_ITEMS', payload)
     },
     setFilterItemsShow({ commit }, payload) {
       commit('SET_FILTER_ITEMS_SHOW', payload)

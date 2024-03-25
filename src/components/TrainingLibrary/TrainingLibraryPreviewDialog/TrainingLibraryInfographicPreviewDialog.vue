@@ -232,7 +232,7 @@
     </template>
     <template #app-dialog-footer>
       <TrainingLibraryPreviewDialogFooter
-        :show-send-button="getInfographicPreviewDialog.showSendButton"
+        :show-send-button="showSendButton"
         @on-close="handleClose"
         @on-send="handleSend"
       />
@@ -270,6 +270,10 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    showSendButton: {
+      type: Boolean,
+      default: true
     },
     title: {
       type: String,
@@ -391,6 +395,7 @@ export default {
         this.callForTrainingLibrary()
       }
       this.setInfographicPreviewDialog(emptyInfographicPreviewDialogObj)
+      this.$emit('close')
     },
     handleSend() {
       this.setInfographicSendModal({

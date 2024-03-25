@@ -225,6 +225,12 @@ export const emptyTrainingDeleteDialogObj = {
   type: '',
   onClose: () => {}
 }
+export const emptyLearningPathModalTrainingPreviewDialogObj = {
+  status: false,
+  selectedRow: null,
+  type: 'Training',
+  showSendButton: false
+}
 export const emptyTrainingPreviewDialogObj = {
   status: false,
   selectedRow: null,

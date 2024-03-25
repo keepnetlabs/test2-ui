@@ -6,6 +6,7 @@
         <div class="training-library-filters-badges__container">
           <TrainingLibraryFilterBadge
             v-for="(filter, filterIndex) in getFilters"
+            isLearningPathModal
             :key="filterIndex"
             :filter="filter"
           />

@@ -12,6 +12,7 @@ const trainingLibraryHelpers = {
     compliances: [],
     trainingVendors: [],
     types: [],
+    learningPathTrainingTypes: [],
     behaviours: [],
     enumTypes: {},
     distributionDelayTimeTypes: distributionDelayTimeTypes,
@@ -58,6 +59,9 @@ const trainingLibraryHelpers = {
     },
     getTrainingTypes(state) {
       return state.types
+    },
+    getLearningPathTrainingTypes(state) {
+      return state.learningPathTrainingTypes
     }
   },
   mutations: {
@@ -96,6 +100,9 @@ const trainingLibraryHelpers = {
     },
     SET_TYPES(state, payload) {
       state.types = payload
+    },
+    SET_LEARNING_PATH_TRAINING_TYPES(state, payload) {
+      state.learningPathTrainingTypes = payload
     }
   },
   actions: {
@@ -231,12 +238,24 @@ const trainingLibraryHelpers = {
             text: type.displayName,
             value: type.id
           })) || []
+        const learningPathTrainingTypes = types.filter(
+          (type) => !['Screensaver', 'Learning Path'].includes(type.text)
+        )
         commit('SET_TYPES', types)
+        commit('SET_LEARNING_PATH_TRAINING_TYPES', learningPathTrainingTypes)
         dispatch(
           'trainingLibrary/setFilterItems',
           {
             key: PROPERTY_STORE.TYPE,
             items: types
+          },
+          { root: true }
+        )
+        dispatch(
+          'trainingLibrary/setLearningPathFilterItems',
+          {
+            key: PROPERTY_STORE.TYPE,
+            items: learningPathTrainingTypes
           },
           { root: true }
         )
