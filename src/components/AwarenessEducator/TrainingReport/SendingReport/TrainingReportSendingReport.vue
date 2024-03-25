@@ -5,10 +5,12 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :title="getResendDialogTitle"
+      :body-training-type="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <ElTabs v-model="tab" class="k-sub-tab">
+    <ElTabs v-if="isTrainingLibraryTypeTraining" v-model="tab" class="k-sub-tab">
       <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
@@ -22,6 +24,7 @@
           :isScormProxy="isScormProxy"
           :id="id"
           :form-details="formDetails"
+          :training-summary="trainingSummary"
           @on-resend="handleOnResend"
         />
       </ElTabPane>
@@ -40,6 +43,23 @@
         />
       </ElTabPane>
     </ElTabs>
+    <div v-else-if="isTrainingLibraryTypePosterOrInfographic">
+      <CampaignManagerReportHeader
+        class="mb-6"
+        title="Sending Report"
+        :subtitle="getFirstCardSubtitle"
+      />
+      <TrainingReportEnrollmentEmailsTable
+        v-if="tab === 'enrollment'"
+        ref="refEnrollmentTable"
+        class="mt-6"
+        :isScormProxy="isScormProxy"
+        :id="id"
+        :form-details="formDetails"
+        :training-summary="trainingSummary"
+        @on-resend="handleOnResend"
+      />
+    </div>
   </div>
 </template>
 
@@ -49,6 +69,8 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportEnrollmentEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportEnrollmentEmailsTable'
 import TrainingReportReminderEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportReminderEmailsTable'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'TrainingReportSendingReport',
@@ -67,6 +89,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -75,6 +100,36 @@ export default {
       isShowResendDialog: false,
       isResendActionButtonDisabled: false,
       resendPayload: null
+    }
+  },
+  computed: {
+    getResendDialogTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+    getBodyTrainingType() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    },
+    isTrainingLibraryTypeTraining() {
+      return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+    },
+    isTrainingLibraryTypePosterOrInfographic() {
+      return (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER ||
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
+    },
+    getFirstCardSubtitle() {
+      return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+        ? 'Poster email delivery details'
+        : 'Infographic email delivery details'
     }
   },
   methods: {

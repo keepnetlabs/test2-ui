@@ -159,7 +159,11 @@
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Behaviours: </span>
             <ul>
-              <li v-for="(behaviour, bIndex) in posterParams.behaviourNames" :key="bIndex">
+              <li
+                v-for="(behaviour, bIndex) in posterParams.behaviourNames"
+                :key="bIndex"
+                class="training-library-preview__desc"
+              >
                 {{ behaviour }}
               </li>
             </ul>

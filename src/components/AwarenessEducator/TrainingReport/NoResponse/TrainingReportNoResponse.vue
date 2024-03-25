@@ -5,14 +5,12 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :title="getResendDialogTitle"
+      :body-training-type="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <CampaignManagerReportHeader
-      class="mb-6"
-      title="No Response"
-      subtitle="Users who had no interaction with the training email"
-    />
+    <CampaignManagerReportHeader class="mb-6" title="No Response" :subtitle="getHeaderSubtitle" />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -61,6 +59,7 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingReportExamResults',
@@ -76,6 +75,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -163,7 +165,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.getEmptyTableTextMessage()
         },
         rowActions: [
           {
@@ -178,8 +180,28 @@ export default {
       tableData: []
     }
   },
-  created() {
-    this.callForData()
+  computed: {
+    getHeaderSubtitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'Users who had no interaction with the poster email'
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Users who had no interaction with the infographic email'
+      return 'Users who had no interaction with the training email'
+    },
+    getResendDialogTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+    getBodyTrainingType() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    }
   },
   watch: {
     isScormProxy: {
@@ -196,7 +218,17 @@ export default {
       }
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
+    getEmptyTableTextMessage() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.EmptyTrainingNoResponsePoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.EmptyTrainingReportInfographic
+      return labels.EmptyTrainingReportNoResponse
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)

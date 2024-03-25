@@ -29,7 +29,13 @@
           </div>
           <div class="training-report-training-material__body-header-right">
             <v-btn style="display: none;"></v-btn>
-            <Badge size="mini" color="#2196F3" text="Scorm" :outline="false" />
+            <Badge
+              v-if="isTrainingTypeTraining"
+              size="mini"
+              color="#2196F3"
+              text="Scorm"
+              :outline="false"
+            />
             <Badge
               class-name="training-report-training-material__body-header-right-badge-language"
               size="mini"
@@ -112,16 +118,21 @@ export default {
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicMaterial
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
-        return labels.LearningPathMaterial
+        return labels.LearningPathThatUsersWillBeRedirectTo
       return labels.TrainingMaterial
     },
     getCardIcon() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'mdi-post'
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) return 'mdi-post'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return 'mdi-school'
       return 'mdi-application'
     },
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    isTrainingTypeTraining() {
+      return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     }
   },
   methods: {

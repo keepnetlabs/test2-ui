@@ -1,73 +1,89 @@
 <template>
   <div id="training-report-summary" class="training-report-summary">
-    <TrainingReportSummaryAudienceDetails
-      v-if="isAudienceModalVisible"
-      :status="isAudienceModalVisible"
-      :type="getAudienceDetailsType"
-      :userGroups="getUserGroups"
-      :phishingCampaign="getPhishingCampaign"
-      @close="hideAudienceDetailsModal"
-    />
-    <TrainingReportSummaryHeader
-      :is-scorm-proxy="isScormProxy"
-      :training-name="trainingName"
-      :resend-dialog-items="getResendDialogItems"
-      :is-loading="isLoading"
-      :id="id"
-      :training-type="getTrainingType"
-    />
-    <TrainingReportSummaryCards
-      :items="getCardsData"
-      :is-loading="isLoading"
-      :training-type="getTrainingType"
-    />
-    <div class="campaign-manager-report-summary__general-info mt-6">
-      <TrainingReportSummaryTrainingInfo
-        :items="getTrainingInfoData"
-        :helper-data="getTrainingInfoHelperData"
-        :is-test-training="isTestTraining"
+    <ElTabs v-if="isTrainingTypeLearningPath" v-model="tab" class="k-sub-tab">
+      <ElTabPane label="Summary" name="summary" id="summary-content" />
+      <ElTabPane label="Users" name="users" id="users-content" />
+    </ElTabs>
+    <div v-if="tab === 'summary'">
+      <TrainingReportSummaryAudienceDetails
+        v-if="isAudienceModalVisible"
+        :status="isAudienceModalVisible"
         :type="getAudienceDetailsType"
-        :is-loading="isLoading"
-        :training-type="getTrainingType"
-        @audienceClick="showAudienceDetailsModal"
+        :userGroups="getUserGroups"
+        :phishingCampaign="getPhishingCampaign"
+        @close="hideAudienceDetailsModal"
       />
-      <TrainingReportTrainingDelivery
-        class="ml-4"
-        :items="getTrainingDeliveryData"
-        :helper-data="getTrainingDeliveryHelperData"
-        :isLoading="isLoading"
+      <TrainingReportSummaryHeader
+        :is-scorm-proxy="isScormProxy"
+        :training-name="trainingName"
+        :resend-dialog-items="getResendDialogItems"
+        :is-loading="isLoading"
+        :id="id"
         :training-type="getTrainingType"
+      />
+      <TrainingReportSummaryCards
+        :items="getCardsData"
+        :is-loading="isLoading"
+        :total-user-count="getTotalUsers"
+        :training-type="getTrainingType"
+      />
+      <div class="campaign-manager-report-summary__general-info mt-6">
+        <TrainingReportSummaryTrainingInfo
+          :items="getTrainingInfoData"
+          :helper-data="getTrainingInfoHelperData"
+          :is-test-training="isTestTraining"
+          :type="getAudienceDetailsType"
+          :is-loading="isLoading"
+          :training-type="getTrainingType"
+          @audienceClick="showAudienceDetailsModal"
+        />
+        <TrainingReportTrainingDelivery
+          class="ml-4"
+          :items="getTrainingDeliveryData"
+          :helper-data="getTrainingDeliveryHelperData"
+          :isLoading="isLoading"
+          :training-type="getTrainingType"
+        />
+      </div>
+      <div class="training-report-summary__general-info mt-4"></div>
+      <TrainingReportSMSSummary
+        v-if="isSMSSummaryExist"
+        :isLoading="isLoading"
+        :items="getSMSSummaryData"
+        :helper-data="getSMSSummaryHelperData"
+      />
+      <TrainingReportEnrollmentEmail
+        :form-data="getEnrollmentTemplateData"
+        :isFetchingSummary="isLoading"
+        :training-email-notification-template-type-resource-id="
+          getTrainingEmailNotificationTemplateTypeResourceId
+        "
+      />
+      <TrainingReportTrainingMaterial
+        :form-data="getTrainingMaterialData"
+        :isFetchingSummary="isLoading"
+        :selected-row="getTrainingMaterialRow"
+        :languages="languages"
+        :training-type="getTrainingType"
+      />
+      <TrainingReportCertificate
+        v-if="getCertificateEmailNotificationTemplateTypeResourceId"
+        :form-data="getCertificateData"
+        :isFetchingSummary="isLoading"
+        :certificate-email-notification-template-type-resource-id="
+          getCertificateEmailNotificationTemplateTypeResourceId
+        "
       />
     </div>
-    <div class="training-report-summary__general-info mt-4"></div>
-    <TrainingReportSMSSummary
-      v-if="isSMSSummaryExist"
-      :isLoading="isLoading"
-      :items="getSMSSummaryData"
-      :helper-data="getSMSSummaryHelperData"
-    />
-    <TrainingReportEnrollmentEmail
-      :form-data="getEnrollmentTemplateData"
-      :isFetchingSummary="isLoading"
-      :training-email-notification-template-type-resource-id="
-        getTrainingEmailNotificationTemplateTypeResourceId
-      "
-    />
-    <TrainingReportTrainingMaterial
-      :form-data="getTrainingMaterialData"
-      :isFetchingSummary="isLoading"
-      :selected-row="getTrainingMaterialRow"
-      :languages="languages"
-      :training-type="getTrainingType"
-    />
-    <TrainingReportCertificate
-      v-if="getCertificateEmailNotificationTemplateTypeResourceId"
-      :form-data="getCertificateData"
-      :isFetchingSummary="isLoading"
-      :certificate-email-notification-template-type-resource-id="
-        getCertificateEmailNotificationTemplateTypeResourceId
-      "
-    />
+    <div v-else>
+      <TrainingReportUsers
+        :id="id"
+        :is-loading="isLoading"
+        :training-type="getTrainingType"
+        :training-summary="trainingSummary"
+        :is-scorm-proxy="isScormProxy"
+      />
+    </div>
   </div>
 </template>
 
@@ -83,9 +99,12 @@ import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/Train
 import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
+import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportSummary',
   components: {
+    TrainingReportUsers,
     TrainingReportTrainingDelivery,
     TrainingReportTrainingMaterial,
     TrainingReportSMSSummary,
@@ -112,6 +131,7 @@ export default {
   },
   data() {
     return {
+      tab: 'summary',
       isAudienceModalVisible: false,
       targetGroups: [],
       interval: null,
@@ -121,6 +141,9 @@ export default {
     }
   },
   computed: {
+    isTrainingTypeLearningPath() {
+      return this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+    },
     isSMSSummaryExist() {
       return !!this.trainingSummary?.smsSummary
     },
@@ -345,8 +368,8 @@ export default {
       return trainingEmailNotificationTemplateTypeResourceId
     },
     getTotalUsers() {
-      const { campaignInfo = {} } = this.trainingSummary
-      return campaignInfo['totalTargetUserCount'] || 0
+      const { reportDetail = {} } = this.trainingSummary || {}
+      return reportDetail['totalTargetUserCount'] || 0
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}

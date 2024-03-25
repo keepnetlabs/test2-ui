@@ -110,6 +110,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -134,6 +135,9 @@ export default {
       type: Boolean
     },
     formDetails: {
+      type: Object
+    },
+    trainingSummary: {
       type: Object
     }
   },
@@ -282,7 +286,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.getEmptyTableTextMessage()
         },
         rowActions: [
           {
@@ -397,6 +401,13 @@ export default {
     }
   },
   methods: {
+    getEmptyTableTextMessage() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.EmptyTrainingSendingReportPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.EmptyTrainingSendingReportInfographic
+      return labels.EmptyTrainingReportUsers
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.$emit(
         'on-resend',
