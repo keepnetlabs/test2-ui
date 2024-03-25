@@ -63,9 +63,6 @@
         v-if="formData.isSendSMSNotification"
         ref="refSendTrainingSMSSettings"
         merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {SCREENSAVERURL} for the link to be added to the SMS"
-        default-sms-text-template="Dear {FULLNAME}
-{SCREENSAVERNAME} assigned to you. Please enroll it on {SCREENSAVERURL}"
-        :default-merge-tags="posterMergeTags"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
         :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
         :phoneNumberItems="phoneNumberItems"

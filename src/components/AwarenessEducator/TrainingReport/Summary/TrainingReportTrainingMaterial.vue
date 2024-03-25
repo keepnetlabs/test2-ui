@@ -158,7 +158,6 @@ export default {
           icon: 'mdi-eye'
         })
       } else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
-        console.log('iam infographic', this.selectedRow)
         this.setInfographicPreviewDialog({
           status: true,
           selectedRow: this.selectedRow,

@@ -63,9 +63,6 @@
         v-if="formData.isSendSMSNotification"
         ref="refSendTrainingSMSSettings"
         merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {POSTERURL} for the link to be added to the SMS"
-        default-sms-text-template="Dear {FULLNAME}
-{POSTERNAME} assigned to you. Please enroll it on {POSTERURL}"
-        :default-merge-tags="posterMergeTags"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
         :totalPhoneNumberUserCount="totalPhoneNumberUserCount"
         :phoneNumberItems="phoneNumberItems"

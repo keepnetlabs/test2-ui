@@ -187,6 +187,10 @@ export default {
     isCallback: {
       type: Boolean,
       default: false
+    },
+    overflowCount: {
+      type: Number,
+      default: 5
     }
   },
   data() {
@@ -253,13 +257,13 @@ export default {
       )
     },
     hasOverflowItems() {
-      return this.mergeTags?.length > 5
+      return this.mergeTags?.length > this.overflowCount
     },
     getOverflowItems() {
-      return this.mergeTags?.slice(5)
+      return this.mergeTags?.slice(this.overflowCount)
     },
     getRowMergeTags() {
-      return this.mergeTags?.slice(0, 5)
+      return this.mergeTags?.slice(0, this.overflowCount)
     }
   },
   watch: {

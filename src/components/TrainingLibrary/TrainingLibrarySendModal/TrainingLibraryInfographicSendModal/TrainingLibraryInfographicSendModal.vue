@@ -439,13 +439,13 @@ export default {
           if (
             this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification &&
             !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate.includes(
-              '{INFOGRAPHICURL}'
+              '{TRAININGURL}'
             )
           ) {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-information',
-              message: `You cannot save without adding a {INFOGRAPHICURL} to the SMS text field`
+              message: `You cannot save without adding a {TRAININGURL} to the SMS text field`
             })
             return
           }

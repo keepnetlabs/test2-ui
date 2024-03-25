@@ -436,7 +436,7 @@ export default {
           if (
             this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification &&
             !this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate.includes(
-              '{TRAININGURL}'
+              '{LEARNINGPATHURL}'
             )
           ) {
             this.$store.dispatch('common/createSnackBar', {

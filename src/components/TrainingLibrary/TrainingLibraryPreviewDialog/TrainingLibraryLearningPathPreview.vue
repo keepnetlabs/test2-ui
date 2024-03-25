@@ -378,7 +378,6 @@ export default {
       const trainingGroupIndex = parseInt(training.index, 10) - 1
       if (trainingGroupIndex < 0) return
       const trainingGroup = this.learningPathParams.trainingGroups[trainingGroupIndex]
-      console.log('trainingGroup', trainingGroup)
       this.activeTrainingContentId = trainingGroup.detailTrainingId
       this.activeTrainingContentType = trainingGroup.type
       this.callForActiveTrainingDetail()

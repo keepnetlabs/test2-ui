@@ -36,7 +36,7 @@ export const TRAINING_LIBRARY_SORTING_OPTIONS = [
     orderBy: 'category',
     menu: [
       { text: 'A to Z', ascending: true },
-      { text: 'Z to A', ascending: true }
+      { text: 'Z to A', ascending: false }
     ]
   },
   {
@@ -44,7 +44,7 @@ export const TRAINING_LIBRARY_SORTING_OPTIONS = [
     icon: 'mdi-menu-right',
     orderBy: 'createTime',
     menu: [
-      { text: 'New to old', ascending: true },
+      { text: 'New to old', ascending: false },
       { text: 'Old to new', ascending: true }
     ]
   }
@@ -246,7 +246,15 @@ export const learningPathMergeTags = [
     value: '{LEARNINGPATHNAME}'
   },
   {
+    text: 'Training Name',
+    value: '{TRAININGNAME}'
+  },
+  {
     text: 'Full Name',
+    value: '{FULLNAME}'
+  },
+  {
+    text: 'Learning Path Step',
     value: '{FULLNAME}'
   },
   {
