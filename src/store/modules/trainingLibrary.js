@@ -447,7 +447,11 @@ const trainingLibrary = {
         return
       }
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-      if (fIndex !== -1) filterItems.splice(fIndex, 1)
+      if (fIndex === -1) return
+      if (payload.filterType === 'search' || payload.filterType === 'longTextSearch') {
+        if (!payload.activeValue.length) filterItems.splice(fIndex, 1)
+        else filterItems[fIndex].Value = payload.activeValue.join(',')
+      } else filterItems.splice(fIndex, 1)
     },
     RESET_PAGINATION(state) {
       state.axiosPayload.pageNumber = 1
