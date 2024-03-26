@@ -119,7 +119,6 @@ export default {
       callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     handlePreview(row) {
-      console.log('row', row)
       this.setLearningPathPreviewDialog({
         status: true,
         selectedRow: row,

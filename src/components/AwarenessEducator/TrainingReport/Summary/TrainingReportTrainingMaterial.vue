@@ -23,6 +23,10 @@
           v-if="getInfographicPreviewDialog.status"
           v-bind="getInfographicPreviewDialog"
         />
+        <TrainingLibraryLearningPathPreviewDialog
+          v-if="getLearningPathPreviewDialog.status"
+          v-bind="getLearningPathPreviewDialog"
+        />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}
@@ -73,10 +77,13 @@ import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/Tra
 import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
+    TrainingLibraryLearningPathPreviewDialog,
     TrainingLibraryTrainingPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
@@ -111,20 +118,27 @@ export default {
     ...mapGetters({
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
-      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog'
+      getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
     }),
     getCardTitle() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterMaterial
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicMaterial
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         return labels.LearningPathThatUsersWillBeRedirectTo
       return labels.TrainingMaterial
     },
     getCardIcon() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'mdi-post'
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) return 'mdi-post'
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         return 'mdi-school'
       return 'mdi-application'
     },
@@ -139,7 +153,8 @@ export default {
     ...mapActions({
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
-      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog'
     }),
     handlePreviewClick() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
@@ -170,6 +185,15 @@ export default {
           showFavoriteButton: true,
           showSendButton: false,
           icon: 'mdi-eye'
+        })
+      } else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        this.setLearningPathPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          showSendButton: false
         })
       } else {
         this.setTrainingPreviewDialog({

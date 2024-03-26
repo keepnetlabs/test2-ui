@@ -115,6 +115,7 @@
 import TrainingReportSummaryInfoCard from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryInfoCard'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportSummaryCards',
   components: { TrainingReportSummaryInfoCard },
@@ -156,7 +157,10 @@ export default {
       )
     },
     isTrainingTypeLearningPath() {
-      return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+      return (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
     },
     isTrainingLibraryTypeTraining() {
       return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING

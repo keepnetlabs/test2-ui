@@ -148,7 +148,6 @@ export default {
       this.isLoading = true
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
-          //response.data.data.trainingTypeName = 'LearningPath'
           this.trainingSummary = response?.data?.data
           if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
             this.tabItems[2].label = labels.OpenedPosterEmail

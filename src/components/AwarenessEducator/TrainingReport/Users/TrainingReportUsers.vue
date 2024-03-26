@@ -81,6 +81,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -321,7 +322,8 @@ export default {
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return 'All target users enrolled to this infographic'
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         return 'All target users enrolled to this learning path'
       return 'All target users enrolled to this training'
@@ -366,7 +368,8 @@ export default {
       else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.EmptyTrainingReportTrainingInfographics
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
         return labels.EmptyTrainingReportUserLearningPaths
       }

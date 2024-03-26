@@ -101,6 +101,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -142,7 +143,10 @@ export default {
   },
   computed: {
     isTrainingTypeLearningPath() {
-      return this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+      return (
+        this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.getTrainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
     },
     isSMSSummaryExist() {
       return !!this.trainingSummary?.smsSummary
