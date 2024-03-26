@@ -133,6 +133,14 @@ const trainingLibraryHelpers = {
           },
           { root: true }
         )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
+          {
+            key: PROPERTY_STORE.CATEGORY,
+            items: categories
+          },
+          { root: true }
+        )
       })
     },
     callForScormTypes({ commit }) {
@@ -157,6 +165,14 @@ const trainingLibraryHelpers = {
           },
           { root: true }
         )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
+          {
+            key: PROPERTY_STORE.LANGUAGES,
+            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+          },
+          { root: true }
+        )
       })
     },
     callForTargetAudiences({ commit, dispatch }) {
@@ -169,6 +185,14 @@ const trainingLibraryHelpers = {
         commit('SET_TARGET_AUDIENCES', targetAudience)
         dispatch(
           'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.TARGET_AUDIENCE,
+            items: targetAudience
+          },
+          { root: true }
+        )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
           {
             key: PROPERTY_STORE.TARGET_AUDIENCE,
             items: targetAudience
@@ -193,6 +217,14 @@ const trainingLibraryHelpers = {
           },
           { root: true }
         )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
+          {
+            key: PROPERTY_STORE.COMPLIANCE,
+            items: compliances
+          },
+          { root: true }
+        )
       })
     },
     callForTrainingVendors({ commit, dispatch }) {
@@ -211,6 +243,14 @@ const trainingLibraryHelpers = {
           },
           { root: true }
         )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
+          {
+            key: PROPERTY_STORE.VENDOR,
+            items: vendors
+          },
+          { root: true }
+        )
       })
     },
     callForBehaviours({ commit, dispatch }) {
@@ -223,6 +263,14 @@ const trainingLibraryHelpers = {
         commit('SET_BEHAVIOURS', behaviours)
         dispatch(
           'trainingLibrary/setFilterItems',
+          {
+            key: PROPERTY_STORE.BEHAVIOURS,
+            items: behaviours
+          },
+          { root: true }
+        )
+        dispatch(
+          'learningPath/setLearningPathFilterItems',
           {
             key: PROPERTY_STORE.BEHAVIOURS,
             items: behaviours
@@ -252,7 +300,7 @@ const trainingLibraryHelpers = {
           { root: true }
         )
         dispatch(
-          'trainingLibrary/setLearningPathFilterItems',
+          'learningPath/setLearningPathFilterItems',
           {
             key: PROPERTY_STORE.TYPE,
             items: learningPathTrainingTypes

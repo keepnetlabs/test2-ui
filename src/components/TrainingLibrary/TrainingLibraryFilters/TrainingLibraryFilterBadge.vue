@@ -138,7 +138,7 @@ export default {
     ...mapActions({
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
       removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload',
-      removeLearningPathFilterFromPayload: 'trainingLibrary/removeLearningPathFilterFromPayload'
+      removeLearningPathFilterFromPayload: 'learningPath/removeLearningPathFilterFromPayload'
     }),
     getFilterValue(filter, filterVal) {
       if (filter.key === PROPERTY_STORE.LANGUAGES) return this.getLanguageFilterValue(filterVal)

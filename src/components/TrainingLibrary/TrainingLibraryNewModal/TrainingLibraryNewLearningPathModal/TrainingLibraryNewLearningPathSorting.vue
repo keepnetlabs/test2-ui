@@ -72,11 +72,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      activeSort: 'trainingLibrary/getLearningPathSortBy'
+      activeSort: 'learningPath/getLearningPathSortBy'
     })
   },
   methods: {
-    ...mapActions({ setSortBy: 'trainingLibrary/setLearningPathSortBy' }),
+    ...mapActions({ setSortBy: 'learningPath/setLearningPathSortBy' }),
     handleSortBy(item, sort) {
       this.parentMenu = false
       this.setSortBy({ item, sort })

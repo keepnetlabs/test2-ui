@@ -59,10 +59,10 @@
             />
             <div class="learning-path-content__training--info">
               <span class="learning-path-content__training--info-name">{{
-                training.trainingName
+                training.trainingName || training.name
               }}</span>
               <span class="learning-path-content__training--info-created-by"
-                >{{ training.createdBy }}
+                >{{ training.type }}
                 <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
                 {{ training.category }}</span
               >
@@ -131,10 +131,10 @@
             />
             <div class="learning-path-content__training--info">
               <span class="learning-path-content__training--info-name">{{
-                training.trainingName
+                training.trainingName || training.name
               }}</span>
               <span class="learning-path-content__training--info-created-by"
-                >{{ training.createdBy }}
+                >{{ training.type }}
                 <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
                 {{ training.category }}</span
               >
@@ -207,26 +207,19 @@ export default {
   computed: {
     ...mapGetters({
       getLearningPathModalTrainingPreviewDialog:
-        'trainingLibrary/getLearningPathModalTrainingPreviewDialog',
-      getTrainings: 'trainingLibrary/getLearningPathTrainings',
-      getSelectedTrainings: 'trainingLibrary/getSelectedLearningPathTrainings'
+        'learningPath/getLearningPathModalTrainingPreviewDialog',
+      getTrainings: 'learningPath/getLearningPathTrainings',
+      getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
     })
-  },
-  watch: {
-    getSelectedTrainings: {
-      deep: true,
-      handler(val) {
-        console.log('getSelectedTrainings', val)
-      }
-    }
   },
   methods: {
     ...mapActions({
-      clearAllFilters: 'trainingLibrary/learningPathClearAllFilters',
-      selectLearningPathTraining: 'trainingLibrary/selectLearningPathTraining',
-      removeTrainingFromLearningPath: 'trainingLibrary/removeTrainingFromLearningPath',
+      clearAllFilters: 'learningPath/learningPathClearAllFilters',
+      selectLearningPathTraining: 'learningPath/selectLearningPathTraining',
+      removeTrainingFromLearningPath: 'learningPath/removeTrainingFromLearningPath',
       setLearningPathModalTrainingPreviewDialog:
-        'trainingLibrary/setLearningPathModalTrainingPreviewDialog'
+        'learningPath/setLearningPathModalTrainingPreviewDialog',
+      setSelectedTrainings: 'learningPath/setSelectedLearningPathTrainings'
     }),
     getCoverImage(training) {
       return (

@@ -16,6 +16,7 @@ import widgets from '@/store/modules/widgets'
 import permissions from '@/store/modules/permissions'
 import trainingLibrary from '@/store/modules/trainingLibrary'
 import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
+import learningPath from '@/store/modules/learningPath'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -34,7 +35,8 @@ let store = new Vuex.Store({
     widgets,
     permissions,
     trainingLibrary,
-    trainingLibraryHelpers
+    trainingLibraryHelpers,
+    learningPath
   }
 })
 

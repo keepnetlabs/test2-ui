@@ -603,8 +603,11 @@ const trainingLibrary = {
     setNewTrainingModal({ commit }, payload) {
       commit('SET_NEW_TRAINING_MODAL', payload)
     },
-    setNewLearningPathModal({ commit }, payload) {
+    setNewLearningPathModal({ commit, dispatch }, payload) {
       commit('SET_NEW_LEARNING_PATH_MODAL', payload)
+      if (payload.status === false) {
+        dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, { root: true })
+      }
     },
     setNewPosterModal({ commit }, payload) {
       commit('SET_NEW_POSTER_MODAL', payload)
