@@ -60,6 +60,7 @@
         merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {LEARNINGPATHNAME} for the link to be added to the SMS"
         default-sms-text-template="Dear {FULLNAME}
 {LEARNINGPATHNAME} assigned to you. Please enroll it on {LEARNINGPATHURL}"
+        :over-flow-count="4"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
         :default-merge-tags="learningPathMergeTags"
         :totalPhoneNumberUserCount="totalPhoneNumberUserCount"

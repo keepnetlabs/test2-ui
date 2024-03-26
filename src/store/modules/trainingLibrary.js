@@ -25,7 +25,7 @@ import {
   emptyLearningPathSendModalObj,
   TRAINING_LIBRARY_SEARCH_TYPES
 } from '@/components/TrainingLibrary/utils'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 const trainingLibrary = {
@@ -81,6 +81,7 @@ const trainingLibrary = {
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
+    filtersRenderKey: `filters-key-${createRandomCryptStringNumber()}`,
     filterType: 'Or',
     sortBy: 'Date Created - New to old',
     deleteDialog: emptyTrainingDeleteDialogObj,
@@ -110,6 +111,7 @@ const trainingLibrary = {
       return `Search in ${state.trainingSubTabs[0].totalCount} training by name`
     },
     getFirstColFixed: (state) => state.firstColFixed,
+    getLastColFixed: (state) => state.lastColFixed,
     getIsListView: (state) => state.isListView,
     getSelectedTrainingContent: (state) => state.selectedTrainingContent,
     getSelectedSubTrainingContent: (state) => state.selectedSubTrainingContent,
@@ -137,7 +139,8 @@ const trainingLibrary = {
     getInfographicSendModal: (state) => state.infographicSendModal,
     getScreensaverSendModal: (state) => state.screensaverSendModal,
     getLearningPathSendModal: (state) => state.learningPathSendModal,
-    getFilters: (state) => state.filters
+    getFilters: (state) => state.filters,
+    getFiltersRenderKey: (state) => state.filtersRenderKey
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -300,6 +303,9 @@ const trainingLibrary = {
       state.axiosPayload = axiosPayload
       state.selectedTrainingContent = selectedTrainingContent
       state.selectedSubTrainingContent = selectedSubTrainingContent
+      setTimeout(() => {
+        state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
+      }, 500)
     },
     SET_FILTERS_TO_LOCAL_STORAGE(state) {
       localStorage.setItem(
@@ -377,6 +383,7 @@ const trainingLibrary = {
       })
       state.filterType = 'Or'
       state.sortBy = 'Date Created - New to old'
+      state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
     },
     SET_SORT_BY_TO_PAYLOAD(state, payload) {
       state.axiosPayload.ascending = payload.ascending
@@ -440,7 +447,11 @@ const trainingLibrary = {
         return
       }
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-      if (fIndex !== -1) filterItems.splice(fIndex, 1)
+      if (fIndex === -1) return
+      if (payload.filterType === 'search' || payload.filterType === 'longTextSearch') {
+        if (!payload.activeValue.length) filterItems.splice(fIndex, 1)
+        else filterItems[fIndex].Value = payload.activeValue.join(',')
+      } else filterItems.splice(fIndex, 1)
     },
     RESET_PAGINATION(state) {
       state.axiosPayload.pageNumber = 1
@@ -486,8 +497,9 @@ const trainingLibrary = {
       dispatch('callForSummary')
       dispatch('callForTableData')
     },
-    callForSummary({ commit, state }) {
-      commit('SET_TABS_LOADING', true)
+    callForSummary({ commit, state }, payload) {
+      if (payload?.hideLoader) commit('SET_TABS_LOADING', false)
+      else commit('SET_TABS_LOADING', true)
       const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload))
       copyOfPayload.pageNumber = 1
       AwarenessEducatorService.getTrainingTypeCount(copyOfPayload)
@@ -563,6 +575,7 @@ const trainingLibrary = {
       commit('SET_TRAINING_TYPE', trainingType)
       commit('RESET_PAGINATION')
       dispatch('callForTableData')
+      dispatch('callForSummary', { hideLoader: true })
     },
     setSortBy({ commit, dispatch }, { item, sort }) {
       commit('SET_SORT_BY', `${item.text} - ${sort.text}`)

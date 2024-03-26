@@ -347,7 +347,6 @@ export default {
     }
   },
   created() {
-    console.log('this.languages', this.languages)
     this.selectedLanguages = this.selectedRow.languages.reduce((acc, lang) => {
       const selectedLanguage = this.languages.find((language) => language.code === lang)
       if (selectedLanguage) acc.push(selectedLanguage)

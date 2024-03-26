@@ -42,7 +42,9 @@
           <VIcon>mdi-web</VIcon>
           <div v-for="(language, languageIndex) in item.languages.slice(0, 2)" :key="language">
             {{ language
-            }}<span v-if="item.languages.slice(0, 2).length - 1 > languageIndex">|</span>
+            }}<span v-if="item.languages.slice(0, 2).length - 1 > languageIndex" class="ml-1"
+              >|</span
+            >
           </div>
           <VTooltip v-if="item.languages.length > 3" bottom>
             <template #activator="{ on }">
@@ -70,7 +72,7 @@
                 Preview
               </VBtn>
             </template>
-            <span>{{ item.type }} Preview</span>
+            <span>{{ item.type === 'SCORM' ? 'Training' : item.type }} Preview</span>
           </VTooltip>
         </div>
         <div class="training-library-card__footer-right-side">
@@ -85,7 +87,7 @@
                 >mdi-send</VIcon
               >
             </template>
-            <span>Send {{ item.type }}</span>
+            <span>Send {{ item.type === 'SCORM' ? 'Training' : item.type }}</span>
           </VTooltip>
           <VTooltip v-else bottom>
             <template #activator="{ on }">
@@ -98,7 +100,7 @@
                 >mdi-download</VIcon
               >
             </template>
-            <span>Download {{ item.type }}</span>
+            <span>Download {{ item.type === 'SCORM' ? 'Training' : item.type }}</span>
           </VTooltip>
           <VMenu bottom offset-y min-width="240" max-width="240">
             <template #activator="{ on }">
@@ -321,7 +323,6 @@ export default {
       }
     },
     handleDownloadItem(item) {
-      console.log('item', item)
       if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
         this.setInfographicPreviewDialog({
           status: true,
@@ -336,7 +337,6 @@ export default {
           icon: 'mdi-download'
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
-        console.log('iam in', item)
         this.setPosterPreviewDialog({
           status: true,
           selectedRow: item,
@@ -366,7 +366,6 @@ export default {
       }
     },
     handleListItemClick(text, item) {
-      console.log('item', item)
       if (text === labels.Edit) this.handleEditModalByType(text, item)
       else if (text === labels.Duplicate) this.handleDuplicateModal(item.trainingId)
       else if (text === labels.Delete) this.handleDeleteModalByType(text, item)

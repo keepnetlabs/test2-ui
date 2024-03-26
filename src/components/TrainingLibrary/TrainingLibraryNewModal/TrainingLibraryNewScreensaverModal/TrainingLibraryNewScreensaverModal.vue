@@ -127,7 +127,7 @@ export default {
       this.trainingId = this.selectedRow.trainingId
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
         const {
-          coverImageUrl,
+          coverImage,
           name,
           hasQuiz,
           description,
@@ -143,7 +143,7 @@ export default {
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
           refTrainingCourseInformation.setFormData({
-            coverImageUrl,
+            coverImage,
             name,
             hasQuiz,
             description,

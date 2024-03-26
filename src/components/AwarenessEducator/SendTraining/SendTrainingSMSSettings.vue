@@ -11,7 +11,7 @@
     />
     <FormGroup
       class="mb-4"
-      style="max-width: 585px;"
+      style="max-width: 584px;"
       title="SMS Text"
       :sub-title="mergeTagSubtitle"
     >
@@ -22,6 +22,7 @@
         height="160"
         hint="SMS supports the GSM-7 character set and can contain up to 160 characters"
         required
+        :overflow-count="overFlowCount"
         :mergeTags="mergeTags"
         :initialRules="smsTextRules"
       />
@@ -90,11 +91,16 @@ export default {
     },
     defaultSmsTextTemplate: {
       type: String,
-      default: 'Dear {FULLNAME} {TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}'
+      default:
+        'Dear {FULLNAME}\n' + '{TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}'
     },
     defaultMergeTags: {
       type: Array,
       default: () => trainingMergeTags
+    },
+    overFlowCount: {
+      type: Number,
+      default: 5
     }
   },
   data() {

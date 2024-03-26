@@ -150,7 +150,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      filters: 'trainingLibrary/getFilters'
+      filters: 'trainingLibrary/getFilters',
+      renderKey: 'trainingLibrary/getFiltersRenderKey'
     }),
     getTotalFilterLength() {
       return this.filters.filter((item) => item.show).length
@@ -164,6 +165,11 @@ export default {
       } else {
         return !this.activeFilter.value
       }
+    }
+  },
+  watch: {
+    renderKey() {
+      if (this.filters) this.activeFilter = this.filters[0]
     }
   },
   created() {

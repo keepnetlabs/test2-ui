@@ -44,6 +44,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import TrainingReportLearningPathContainer from '../components/AwarenessEducator/TrainingReport/TrainingReportLearningPathContainer/TrainingReportLearningPathContainer.vue'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReport',
   components: { KContainer },
@@ -160,7 +161,9 @@ export default {
             this.tabItems[3].label = labels.DownloadedInfographic
             this.tabItems.splice(4, 2)
           } else if (
-            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+            this.trainingSummary.trainingTypeName ===
+              TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
           ) {
             this.tabItems[0].label = labels.LearningPathSummary
           }
