@@ -165,8 +165,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      search: 'trainingLibrary/getLearningPathSearch',
-      filters: 'trainingLibrary/getLearningPathFilters'
+      search: 'learningPath/getLearningPathSearch',
+      filters: 'learningPath/getLearningPathFilters'
     }),
     getTotalFilterLength() {
       return this.filters.filter((item) => item.show).length
@@ -187,9 +187,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      setFilterToPayload: 'trainingLibrary/setLearningPathFilterToPayload',
-      handleSearch: 'trainingLibrary/setLearningPathSearch',
-      removeFilterFromPayload: 'trainingLibrary/removeLearningPathFilterFromPayload'
+      setFilterToPayload: 'learningPath/setLearningPathFilterToPayload',
+      handleSearch: 'learningPath/setLearningPathSearch',
+      removeFilterFromPayload: 'learningPath/removeLearningPathFilterFromPayload'
     }),
     handleDebouncedSearch(event) {
       this.debounce(() => {

@@ -40,6 +40,11 @@ const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressC
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
 }
+const createTraining = (payload) => {
+  return testRequest.post(`/trainings`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 const updateTraining = (payload, resourceId) => {
   return testRequest.put(`/trainings/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -499,6 +504,7 @@ export default {
   deleteTraining,
   getTraining,
   createDraftTraining,
+  createTraining,
   updateTraining,
   searchCertificate,
   deleteCertificate,
