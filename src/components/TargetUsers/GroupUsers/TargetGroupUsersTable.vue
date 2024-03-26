@@ -101,6 +101,7 @@ import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
   getTargetUserCustomFieldsByCompanyId,
+  getTargetUsers,
   searchTargetGroupUsers
 } from '@/api/targetUsers'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -154,6 +155,10 @@ export default {
     },
     isServerSide: {
       default: true
+    },
+    isCallTargetUserSearch: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [
@@ -391,42 +396,81 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
-      searchTargetGroupUsers(id, this.axiosPayload)
-        .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
-            response?.data?.data || {}
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          const { data: { data: { results = [] } } = {} } = response
-          this.tableData = results.map((item) => {
-            const { customFieldValues } = item
-            for (let { name, value, dataType, timestampValue } of customFieldValues) {
-              if (dataType === 'Boolean') {
-                if (value === 'True') {
-                  item[name] = 'Yes'
-                } else if (value === 'False') {
-                  item[name] = 'No'
+      if (this.isCallTargetUserSearch) {
+        getTargetUsers(this.axiosPayload)
+          .then((response) => {
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+              response?.data?.data || {}
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { data: { data: { results = [] } } = {} } = response
+            this.tableData = results.map((item) => {
+              const { customFieldValues } = item
+              for (let { name, value, dataType, timestampValue } of customFieldValues) {
+                if (dataType === 'Boolean') {
+                  if (value === 'True') {
+                    item[name] = 'Yes'
+                  } else if (value === 'False') {
+                    item[name] = 'No'
+                  } else {
+                    item[name] = 'No'
+                  }
+                } else if (['Date', 'DateTime'].includes(dataType)) {
+                  item[name] = timestampValue
                 } else {
-                  item[name] = 'No'
+                  item[name] = getValue(value)
                 }
-              } else if (['Date', 'DateTime'].includes(dataType)) {
-                item[name] = timestampValue
-              } else {
-                item[name] = getValue(value)
               }
-            }
-            return item
+              return item
+            })
           })
-        })
-        .catch((err) => {
-          if (err?.response?.status === 404) {
-            this.$emit('handleRouteBackToTargetUsers')
-          }
-        })
-        .finally(() => {
-          this.loading = false
-        })
+          .catch((err) => {
+            if (err?.response?.status === 404) {
+              this.$emit('handleRouteBackToTargetUsers')
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        searchTargetGroupUsers(id, this.axiosPayload)
+          .then((response) => {
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+              response?.data?.data || {}
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { data: { data: { results = [] } } = {} } = response
+            this.tableData = results.map((item) => {
+              const { customFieldValues } = item
+              for (let { name, value, dataType, timestampValue } of customFieldValues) {
+                if (dataType === 'Boolean') {
+                  if (value === 'True') {
+                    item[name] = 'Yes'
+                  } else if (value === 'False') {
+                    item[name] = 'No'
+                  } else {
+                    item[name] = 'No'
+                  }
+                } else if (['Date', 'DateTime'].includes(dataType)) {
+                  item[name] = timestampValue
+                } else {
+                  item[name] = getValue(value)
+                }
+              }
+              return item
+            })
+          })
+          .catch((err) => {
+            if (err?.response?.status === 404) {
+              this.$emit('handleRouteBackToTargetUsers')
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      }
     },
 
     columnFilterChanged(filter) {

@@ -14,11 +14,11 @@
       @closeOverlay="toggleAddUserModal"
       @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
     />
-    <create-new-user-group-modal
+    <AddTargetGroupModal
       v-if="showNewUserGroupModal"
       :status="showNewUserGroupModal"
       :is-create-button-disabled="isCreateButtonDisabled"
-      @changeNewUserGroupStatus="changeNewUserGroupStatus"
+      @closeOverlay="showNewUserGroupModal = false"
       @handleSave="callForCreateNewUserGroup"
     />
     <delete-group-modal
@@ -131,7 +131,6 @@ import {
   searchTargetGroups,
   exportTargetGroups
 } from '@/api/targetUsers'
-import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DeleteGroupModal from './DeleteGroupModal'
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import {
@@ -153,16 +152,17 @@ import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
+import AddTargetGroupModal from '@/components/TargetUsers/AddTargetGroupModal.vue'
 export default {
   name: 'Groups',
   components: {
+    AddTargetGroupModal,
     RowActionsMenu,
     DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetGroupRowActionsDeleteButton,
     TargetUserRowActionsEditButton,
     DeleteGroupModal,
-    CreateNewUserGroupModal,
     TargetGroupUsersAddUsersModal,
     datatable: DataTable
   },
