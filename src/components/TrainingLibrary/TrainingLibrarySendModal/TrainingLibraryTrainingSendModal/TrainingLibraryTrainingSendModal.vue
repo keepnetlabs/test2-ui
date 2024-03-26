@@ -229,6 +229,9 @@ export default {
           'Content Type': this?.selectedRow?.type,
           Languages: languages
         }
+        formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
+        if (formData.selectedStep2)
+          formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
         const isProxy = refSendTrainingSettings?.formData?.isProxy

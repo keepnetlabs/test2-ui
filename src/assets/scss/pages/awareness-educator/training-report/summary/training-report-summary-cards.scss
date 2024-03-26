@@ -168,6 +168,9 @@
         padding-bottom: 8px !important;
         padding-top:16px !important;
     }
+    .campaign-manager-summary-card__body-item:first-child{
+    padding-top:16px !important;
+    }
     .campaign-manager-summary-card__body-item:first-child,.campaign-manager-summary-card__body-item:nth-child(3){
         padding-right: 24px !important;
         border-right:1px solid #F2F2F2;

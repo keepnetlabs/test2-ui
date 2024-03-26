@@ -146,7 +146,10 @@ export default {
     }),
     callForSummary() {
       this.isLoading = true
-      AwarenessEducatorService.getTrainingReportSummary(this.id)
+      AwarenessEducatorService.getTrainingReportSummary(
+        this.id,
+        this.$route?.query?.trainingType || 0
+      )
         .then((response) => {
           this.trainingSummary = response?.data?.data
           if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {

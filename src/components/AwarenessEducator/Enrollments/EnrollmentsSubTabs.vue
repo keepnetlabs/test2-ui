@@ -435,10 +435,22 @@ export default {
       this.isStopAutoEnrollDialogVisible = false
     },
     handleRouteToReport(row) {
+      let type = 0
+      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      else if (
+        row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        type = 4
       this.$router.push({
         name: row.status === 'SCORM Proxy' ? 'Scorm Proxy Report' : 'Training Report',
         params: {
           id: row.enrollmentId
+        },
+        query: {
+          trainingType: type
         }
       })
     }

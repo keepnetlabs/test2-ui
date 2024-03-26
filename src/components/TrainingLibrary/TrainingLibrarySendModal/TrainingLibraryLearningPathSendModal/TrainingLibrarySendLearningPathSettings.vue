@@ -68,7 +68,63 @@
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <InputSchedule v-model="formData.enrollmentScheduler" ref="inputSchedule" class="mb-6" />
+    <FormGroup style="max-width: 600px;" :title="labels.Schedule">
+      <v-radio-group
+        v-model="formData.scheduleTypeId"
+        class="mt-0 campaign-manager-target-groups-radio"
+        hide-details
+      >
+        <v-radio
+          v-for="item in radioItems"
+          :key="item.text"
+          :id="`input--campaign-manager-radio-${item.text}`"
+          style="margin-bottom: 16px;"
+          color="#2196f3"
+          :value="item.value"
+          :label="item.text"
+        ></v-radio>
+        <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+          <v-radio
+            :id="`input--campaign-manager-radio-schedule-to`"
+            style="margin-bottom: 0;"
+            label="Schedule to"
+            color="#2196f3"
+            value="2"
+          />
+          <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+            <InputDate
+              v-model="formData.enrollmentScheduler.scheduledDate"
+              class="date-picker-height-40 ml-2 black-placeholder"
+              type="datetime"
+              ref="refPicker"
+              placeholder="Select Date and Time"
+              style="width: 100%; max-width: 220px;"
+              :format="parsedFormat"
+              :valueFormat="parsedFormat"
+              :picker-options="datePickerOptions"
+              :disabled="isScheduledTimeDisabled"
+            />
+            <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+              <transition appear name="bounce">
+                <div class="v-messages theme--light error--text" role="alert">
+                  <div class="v-messages__wrapper">
+                    <div class="v-messages__message" style="padding-left: 10px;">
+                      Date is required
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+          <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
+          <InputTimezone
+            v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+            class="black-placeholder"
+            :disabled="isScheduledTimeDisabled"
+          />
+        </div>
+      </v-radio-group>
+    </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
       class="mt-2"
@@ -260,12 +316,13 @@ import {
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
 import { learningPathMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
-import InputSchedule from '@/components/Common/Inputs/InputSchedule.vue'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone.vue'
+import { mapGetters } from 'vuex'
+import { getTimeByTimeZone } from '@/api/company'
 export default {
   name: 'TrainingLibrarySendLearningPathSettings',
   components: {
-    InputSchedule,
+    InputTimezone,
     InputEntityName,
     AlertBox,
     InputDate,
@@ -321,6 +378,7 @@ export default {
       },
       formData: {
         name: '',
+        scheduleTypeId: '1',
         isSendSMSNotification: false,
         senderPhoneNumber: '',
         smsText: '',
@@ -329,9 +387,9 @@ export default {
         awardCertificate: false,
         isProxy: false,
         enrollmentScheduler: {
-          scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
           scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          scheduledDateTimeZoneId: ''
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: true
         },
         enrollmentAutoEnroll: {
           type: 'SameDay',
@@ -362,6 +420,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone',
+      timezoneFormat: 'auth/getTimezoneFormat'
+    }),
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
@@ -377,15 +439,60 @@ export default {
           value: type.name
         })) || this.endTypeItems
       )
+    },
+    isScheduledTimeDisabled() {
+      return this.formData.scheduleTypeId !== '2'
     }
+  },
+  watch: {
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
+    'formData.enrollmentScheduler.scheduledTimeZoneId'(val) {
+      if (val) {
+        getTimeByTimeZone(val).then((res) => {
+          if (res?.data?.data) {
+            this.formData.enrollmentScheduler.scheduledDate = res.data.data
+          }
+        })
+      }
+    },
+    selectedTimeZone(val) {
+      this.formData.enrollmentScheduler.scheduledTimeZoneId = val
+    },
+    'formData.enrollmentScheduler.scheduledDate'() {
+      this.checkDateIsValid()
+    },
+    'formData.scheduleTypeId'(val) {
+      if (val !== '2') {
+        this.isDateValid = true
+        if (!this.formData.enrollmentScheduler.scheduledDate) {
+          this.formData.enrollmentScheduler.scheduledDate = this.$moment(Date.now()).format(
+            getTimeZoneForMoment()
+          )
+        }
+        if (!this.formData.enrollmentScheduler.scheduledTimeZoneId) {
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone
+        }
+      }
+    }
+  },
+  created() {
+    this.getSelectedTimeZone()
   },
   methods: {
     checkDateIsValid() {
       let isDateValid
       if (this.formData) {
         isDateValid =
-          this.formData.enrollmentScheduler.dueDate &&
-          this.formData.enrollmentScheduler.dueDate.length > 0
+          this.formData.enrollmentScheduler.scheduledDate &&
+          this.formData.enrollmentScheduler.scheduledDate.length > 0
       } else isDateValid = false
       this.isDateValid = isDateValid
       return this.isDateValid
@@ -407,6 +514,15 @@ export default {
     },
     validateForm() {
       return this.$refs.refForm.validate()
+    },
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formData.enrollmentScheduler.scheduledTimeZoneId = this.$store?.getters[
+          'common/getSelectedTimeZone'
+        ]
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
     }
   }
 }

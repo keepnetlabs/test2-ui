@@ -198,8 +198,10 @@ const lmsFinish = (payload) => {
   return testRequest.post('/scorm/LMSFinish', payload)
 }
 
-const getTrainingReportSummary = (resourceId) => {
-  return testRequest.get(`/training-reports/${resourceId}/summary`)
+const getTrainingReportSummary = (resourceId, trainingType = 0) => {
+  return testRequest.get(
+    `/training-reports/${resourceId}/summary?${`trainingType=${trainingType}`}`
+  )
 }
 
 const getScormProxyTrainingReportSummary = (resourceId) => {

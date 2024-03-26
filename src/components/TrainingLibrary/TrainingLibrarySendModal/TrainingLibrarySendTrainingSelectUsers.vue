@@ -47,7 +47,7 @@
           class="mt-6"
           style="max-width: 640px;"
           :title="labels.TargetUsers"
-          :sub-title="labels.SendTrainingTargetUsersSub"
+          :sub-title="targetUsersSubtitle"
         >
           <div>
             <v-checkbox
@@ -150,6 +150,10 @@ export default {
     campaignResultsSub: {
       type: String,
       default: labels.CampaignResultsSub
+    },
+    targetUsersSubtitle: {
+      type: String,
+      default: labels.SendTrainingTargetUsersSub
     }
   },
   data() {

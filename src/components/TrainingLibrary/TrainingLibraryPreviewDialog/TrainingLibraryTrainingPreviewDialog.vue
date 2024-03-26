@@ -110,7 +110,6 @@ export default {
     }),
     callForLanguages() {
       this.isPreviewLoading = true
-      console.log('selectedRow', this.selectedRow.languages)
       this.selectedRow.languages.forEach((lang) => {
         const language = this.languages.find((item) => item.code === lang)
         if (language)
