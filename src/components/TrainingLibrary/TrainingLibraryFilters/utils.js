@@ -65,7 +65,7 @@ export const trainingLibraryFilters = [
   },
   {
     text: 'Type',
-    icon: 'mdi-format-list-bulleted-triangle',
+    icon: 'mdi-format-list-bulleted-type',
     key: PROPERTY_STORE.TYPE,
     show: true,
     filterType: 'search',
