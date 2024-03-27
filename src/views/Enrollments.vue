@@ -58,12 +58,14 @@ export default {
     this.callForLanguages()
     this.callForCategories()
     this.callForTargetAudiences()
+    this.callForTypes()
   },
   methods: {
     ...mapActions({
       callForLanguages: 'trainingLibraryHelpers/callForLanguages',
       callForCategories: 'trainingLibraryHelpers/callForCategories',
-      callForTargetAudiences: 'trainingLibraryHelpers/callForTargetAudiences'
+      callForTargetAudiences: 'trainingLibraryHelpers/callForTargetAudiences',
+      callForTypes: 'trainingLibraryHelpers/callForTypes'
     }),
     callForFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {

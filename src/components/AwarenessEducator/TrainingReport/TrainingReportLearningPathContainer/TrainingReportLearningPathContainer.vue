@@ -20,7 +20,7 @@
         :isLoading="isLoading"
         :training-name="getTrainingName"
         :form-details="formDetails"
-        :trainingSummary="trainingSummary"
+        :trainingSummary="selectedTrainingSummary"
         :isScormProxy="isScormProxy"
       />
     </ElTabPane>
@@ -40,14 +40,27 @@ import TrainingReportSendingReport from '@/components/AwarenessEducator/Training
 import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_PAYLOAD_TYPES,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingReportLearningPathContainer',
   components: { KContainer },
+  props: {
+    trainingSummary: {
+      type: Object,
+      default: () => ({})
+    },
+    activeStep: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
-      trainingSummary: null,
+      selectedTrainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -113,13 +126,14 @@ export default {
   },
   computed: {
     id() {
-      return this.$route?.params?.id
+      console.log(this.trainingSummary?.steps[this.activeStep].enrollmentId)
+      return this.trainingSummary?.steps[this.activeStep].enrollmentId
     },
     getTrainingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Training Name'
     },
     isScormProxy() {
-      return this.trainingSummary?.isScormProxy || false
+      return this.selectedTrainingSummary?.isScormProxy || false
     }
   },
   created() {
@@ -133,25 +147,34 @@ export default {
     }),
     callForSummary() {
       this.isLoading = true
-      AwarenessEducatorService.getTrainingReportSummary(this.id)
+      let type = 0
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        type = 2
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+        type = 3
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        type = 4
+      AwarenessEducatorService.getTrainingReportSummary(this.id, type)
         .then((response) => {
-          this.trainingSummary = response?.data?.data
-          if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+          this.selectedTrainingSummary = response?.data?.data
+          if (
+            this.selectedTrainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+          ) {
             this.tabItems[2].label = labels.OpenedPosterEmail
             this.tabItems[3].label = labels.DownloadedPoster
             this.tabItems.splice(4, 2)
           } else if (
-            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+            this.selectedTrainingSummary.trainingTypeName ===
+            TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
           ) {
             this.tabItems[2].label = labels.OpenedInfographicEmail
             this.tabItems[3].label = labels.DownloadedInfographic
             this.tabItems.splice(4, 2)
           }
-          this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
-          this.$store.dispatch(
-            'common/setActiveTrainingType',
-            this.trainingSummary?.trainingTypeName
-          )
         })
         .finally(() => {
           this.isLoading = false
