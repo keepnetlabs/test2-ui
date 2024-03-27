@@ -212,8 +212,10 @@ const getTrainingReportFormDetails = () => {
   return testRequest.get('/training-reports/form-details')
 }
 
-const searchTrainingReportUsers = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
+const searchTrainingReportUsers = (payload, resourceId, trainingType) => {
+  let url = `/training-reports/${resourceId}/users/search`
+  if (trainingType) url += `?trainingType=${trainingType}`
+  return testRequest.post(url, payload)
 }
 
 const exportTrainingReportUsers = (payload, resourceId) => {
@@ -306,9 +308,12 @@ const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 
-const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
+const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
-  if (interactionType) url += `?emailEventType=${interactionType}`
+  if (interactionType) {
+    url += `?emailEventType=${interactionType}`
+    if (trainingType) url += `&trainingType=${trainingType}`
+  } else if (trainingType) url += `?trainingType=${trainingType}`
   return testRequest.get(url)
 }
 const getTrainingReportNonTargetUserInteractions = (

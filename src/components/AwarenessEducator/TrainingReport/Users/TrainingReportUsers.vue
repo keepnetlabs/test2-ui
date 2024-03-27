@@ -14,6 +14,8 @@
       v-if="isShowInteractionsModal"
       :status="isShowInteractionsModal"
       :item="selectedRow"
+      :is-add-training-type-key-to-payload="isAddTrainingTypeKeyToPayload"
+      :training-summary="trainingSummary"
       @on-close="toggleIsShowInteractionsModal"
     />
     <CampaignManagerReportHeader class="mb-6" title="Users" :subtitle="getHeaderSubtitle" />
@@ -104,6 +106,10 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    isAddTrainingTypeKeyToPayload: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -404,7 +410,13 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
+      AwarenessEducatorService.searchTrainingReportUsers(
+        this.axiosPayload,
+        this.id,
+        this.isAddTrainingTypeKeyToPayload
+          ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+          : null
+      )
         .then((response) => {
           const {
             data: {

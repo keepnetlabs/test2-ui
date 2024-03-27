@@ -15,8 +15,8 @@
     <AppModal
       :status="status"
       icon-name="mdi-pencil"
-      title="Edit Enrollment"
       title-id="text--edit-enrollments-modal-title"
+      :title="title"
       :saveDisable="loading"
       @closeOverlay="handleClose"
       @submit="handleSubmit"
@@ -253,6 +253,10 @@ export default {
     selectedRow: {
       type: Object,
       default: null
+    },
+    title: {
+      type: String,
+      default: 'Edit Enrollment'
     }
   },
   data() {
