@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     :isLoading="isLoading"
     icon="mdi-information"
-    :title="labels.EnrollmentInfo"
+    :title="getCardTitle"
     :items="getItems"
   >
     <template #TargetUsers="{ props:{ key } }">
@@ -52,6 +52,8 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportSummaryTrainingInfo',
   components: { Badge, CampaignManagerSummaryCard },
@@ -71,6 +73,9 @@ export default {
     },
     type: {
       type: String
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {
@@ -79,6 +84,18 @@ export default {
     }
   },
   computed: {
+    getCardTitle() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.PosterEnrollmentInfo
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.InfographicEnrollmentInfo
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return labels.LearningPathEnrollmentInfo
+      return labels.TrainingEnrollmentInfo
+    },
     getItems() {
       const newItems = { ...this.items }
       Object.keys(this.items).forEach((key) => {

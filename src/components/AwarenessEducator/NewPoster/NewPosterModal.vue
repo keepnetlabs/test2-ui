@@ -76,13 +76,14 @@
 
 <script>
 import AppModal from '@/components/AppModal'
-import { EMITS, TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
+import { EMITS } from '@/components/AwarenessEducator/utils'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import NewPosterInformation from '@/components/AwarenessEducator/NewPoster/NewPosterInformation.vue'
 import NewPosterPosterContent from '@/components/AwarenessEducator/NewPoster/NewPosterPosterContent.vue'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'NewPosterModal',
@@ -185,7 +186,9 @@ export default {
             category,
             targetAudience,
             tagNames,
-            availableForRequests
+            availableForRequests,
+            compliances,
+            behaviours
           } = formData
           this.isActionButtonDisabled = true
           AwarenessEducatorService.createDraftTraining({
@@ -195,14 +198,15 @@ export default {
             targetAudience,
             tagNames,
             availableForRequests,
-            type: TRAINING_TYPES.POSTER
+            compliances: compliances.map((compliance) => ({ complianceId: compliance })),
+            behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour })),
+            type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
               this.step++
             })
             .finally(() => {
-              //checking disability of save button
               if (refTrainingContent) {
                 this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                   (content) => content.file && content.languageId
@@ -233,7 +237,9 @@ export default {
           targetAudience,
           tags,
           availableForRequests,
-          coverImageUrl
+          coverImageUrl,
+          compliances,
+          behaviours
         }
       } = refTrainingCourseInformation
       const {
@@ -249,9 +255,15 @@ export default {
       payload.append('trainingDetail.category', category)
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', TRAINING_TYPES.POSTER)
+      payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
+      })
+      compliances.map((compliance, index) => {
+        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
+      })
+      behaviours.map((behaviour, index) => {
+        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
       })
       availableForRequests.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)

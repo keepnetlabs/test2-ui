@@ -35,6 +35,7 @@
         @on-click="routeToTrainingReport(scope.row)"
       />
       <DefaultMenuRowAction
+        v-if="isShowEdit"
         :id="rowActions[1].id"
         :scope="scope"
         :disabled="rowActions[1].disabled"
@@ -52,7 +53,6 @@
         @on-click="$emit('on-preview', scope.row)"
       />
       <DefaultMenuRowAction
-        v-if="!isScheduled"
         :id="rowActions[3].id"
         :scope="scope"
         :disabled="rowActions[3].disabled"
@@ -61,7 +61,7 @@
         @on-click="$emit('on-delete', scope.row)"
       />
       <DefaultMenuRowAction
-        v-else
+        v-if="false"
         id="btn-stop--row-actions-enrollments-list"
         icon="mdi-stop"
         text="Stop"
@@ -86,6 +86,7 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import { ENROLLMENT_STATUSES } from '@/components/AwarenessEducator/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'EnrollmentsTableRowActions',
   components: {
@@ -106,6 +107,17 @@ export default {
       return [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status)
     },
     isRenderStopReminderButton() {
+      if (
+        [
+          TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
+          TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+        ].includes(this.scope.row.type)
+      )
+        return false
+      if (
+        [ENROLLMENT_STATUSES.FINISHED, ENROLLMENT_STATUSES.STOPPED].includes(this.scope.row.status)
+      )
+        return false
       return this.scope?.row?.isReminderActive
     },
     isScheduled() {
@@ -120,8 +132,12 @@ export default {
         ENROLLMENT_STATUSES.FINISHED,
         ENROLLMENT_STATUSES.ERROR,
         ENROLLMENT_STATUSES.STOPPED,
-        ENROLLMENT_STATUSES.SCORM_PROXY
+        ENROLLMENT_STATUSES.SCORM_PROXY,
+        ENROLLMENT_STATUSES.SENDING
       ].includes(this.scope.row.status)
+    },
+    isShowEdit() {
+      return true
     },
     getFirstActionParams() {
       const status = this.scope.row.status
@@ -132,9 +148,6 @@ export default {
       if (this.isShowReport) {
         obj.icon = 'mdi-text-box'
         obj.text = 'View Report'
-      } else if (status === ENROLLMENT_STATUSES.SENDING) {
-        obj.icon = 'mdi-stop'
-        obj.text = 'Stop'
       } else if (status === ENROLLMENT_STATUSES.SCHEDULED) {
         obj.icon = 'mdi-send'
         obj.text = 'Send Now'
@@ -152,23 +165,17 @@ export default {
           ENROLLMENT_STATUSES.FINISHED,
           ENROLLMENT_STATUSES.ERROR,
           ENROLLMENT_STATUSES.STOPPED,
-          ENROLLMENT_STATUSES.SCORM_PROXY
+          ENROLLMENT_STATUSES.SCORM_PROXY,
+          ENROLLMENT_STATUSES.SENDING
         ].includes(status)
       ) {
         this.routeToTrainingReport(row)
-      } else if (status === ENROLLMENT_STATUSES.SENDING) {
-        this.$emit('on-stop', row)
       } else if (status === ENROLLMENT_STATUSES.SCHEDULED) {
         this.$emit('on-send', row)
       }
     },
     routeToTrainingReport(row) {
-      this.$router.push({
-        name: this.isScormProxy ? 'Scorm Proxy Report' : 'Training Report',
-        params: {
-          id: row.enrollmentId
-        }
-      })
+      this.$emit('on-route-to-report', row)
     }
   }
 }

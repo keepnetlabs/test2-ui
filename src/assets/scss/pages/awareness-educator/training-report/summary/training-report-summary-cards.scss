@@ -115,6 +115,31 @@
         }
     }
 }
+.training-report-summary-cards--poster{
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 1024px) {
+    .training-report-summary-cards--poster{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 768px) {
+  .training-report-summary-cards--poster{
+    grid-template-columns: 1fr ;
+  }
+}
+
+
+.training-report-summary-info-card-body__icon--file-download{
+  border-radius: 6px 0 0 6px;
+  opacity: 0.3;
+  background: #FFF;
+  padding: 8px;
+  margin-top: -61px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .vishing-report-summary-cards{
   display: grid;
   grid-template-columns: 0.33fr 0.33fr 0.34fr;
@@ -142,6 +167,9 @@
         grid-template-columns: 1fr 1fr;
         padding-bottom: 8px !important;
         padding-top:16px !important;
+    }
+    .campaign-manager-summary-card__body-item:first-child{
+    padding-top:16px !important;
     }
     .campaign-manager-summary-card__body-item:first-child,.campaign-manager-summary-card__body-item:nth-child(3){
         padding-right: 24px !important;

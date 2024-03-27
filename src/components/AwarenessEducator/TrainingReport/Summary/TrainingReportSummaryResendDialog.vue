@@ -3,14 +3,14 @@
     title-id="text--training-report-resend-popup-title"
     subtitle-id="text--training-report-resend-popup-subtitle"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="title"
     :subtitle="trainingName"
     :status="status"
     @changeStatus="closeModal"
   >
     <template #app-dialog-body>
       <div>
-        <div class="mb-3">Resend this training to:</div>
+        <div class="mb-3">Resend this {{ getTypeText }} to:</div>
         <div>
           <v-checkbox
             v-model="types"
@@ -31,7 +31,8 @@
             :value="2"
           >
             <template #label
-              >Only opened email {{ `(${items.totalUserOpenedCount || 0})` }}</template
+              >Only opened {{ getOnlyOpenedLabel }}
+              {{ `(${items.totalUserOpenedCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
@@ -42,10 +43,11 @@
             :value="3"
           >
             <template #label
-              >Clicked training link {{ `(${items.totalUserClickedCount || 0})` }}</template
+              >{{ getClickedOnlyLabel }} {{ `(${items.totalUserClickedCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
+            v-if="isTrainingTypeTraining"
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
@@ -57,6 +59,7 @@
               {{ `(${items.didNotCompleteTrainingCount || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
+            v-if="isTrainingTypeTraining"
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
@@ -94,6 +97,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportSummaryResendDialog',
   components: { AppDialogFooter, AppDialog },
@@ -109,21 +113,50 @@ export default {
     },
     trainingName: {
       type: String
+    },
+    title: {
+      type: String,
+      default: labels.ResendTraining
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {
     return {
       CONSTANTS: {
-        icon: 'mdi-refresh',
-        title: labels.ResendTraining
+        icon: 'mdi-refresh'
       },
       labels,
       types: []
     }
   },
   computed: {
+    getTypeText() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'infographic'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+        return 'learning path'
+      return 'training'
+    },
     getActionButtonDisabled() {
       return this.isActionButtonDisabled || !this.types.length
+    },
+    getOnlyOpenedLabel() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'infographic'
+      return 'email'
+    },
+    getClickedOnlyLabel() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'Downloaded poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Downloaded infographic'
+      return 'Clicked training link'
+    },
+    isTrainingTypeTraining() {
+      return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     }
   },
   methods: {

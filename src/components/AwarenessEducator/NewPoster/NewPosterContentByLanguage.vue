@@ -2,13 +2,13 @@
   <div>
     <FormGroupHorizontalContent
       :label="labels.LANGUAGE"
-      class="mb-2"
-      :style="!isRemovable && { justifyContent: 'flex-start', maxWidth: '456px' }"
+      class="mb-2 training-library-content-by-language"
     >
       <InputSelectLanguage
         v-bind="commonRules"
         v-model="value.languageId"
-        style="min-width: 205px !important; max-width: 205px !important;"
+        class="ml-8"
+        style="min-width: 424px !important; max-width: 424px !important;"
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
@@ -27,13 +27,14 @@
       </v-btn>
     </FormGroupHorizontalContent>
     <FormGroupHorizontalContent
-      style="justify-content: flex-start; max-width: 456px;"
+      class="training-library-content-by-language"
       :label="labels.UploadFile"
     >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-poster-content-by-language-file"
-        style="width: 205px !important;"
+        class="ml-8"
+        style="width: 424px !important;"
         :size="100"
         :hint="getHint"
         :isShowFileProgress="true"
@@ -58,7 +59,7 @@ import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import * as Validations from '@/utils/validations'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'NewPosterContentByLanguage',
   components: { KFileUpload, InputSelectLanguage, FormGroupHorizontalContent },
@@ -129,7 +130,8 @@ export default {
       const payload = new FormData()
       payload.append('File', file)
       payload.append('LanguageId', this.value.languageId)
-      payload.append('Type', TRAINING_TYPES.POSTER)
+      payload.append('Type', TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      //payload.append('vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
       this.isDisabled = true
       this.isReadonly = true
       this.isBackendParsed = false

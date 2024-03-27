@@ -12,9 +12,11 @@
         <div class="training-report-summary-info-card-body__header">
           <span>{{ title }}</span>
         </div>
-        <div class="training-report-summary-info-card-body__content mt-4 mb-7">
-          <span>{{ userCount }}</span> <span>users</span>
-        </div>
+        <slot name="userCount">
+          <div class="training-report-summary-info-card-body__content mt-4 mb-7">
+            <span>{{ userCount }}</span> <span>users</span>
+          </div>
+        </slot>
         <div class="training-report-summary-info-card-body__footer">
           <span>{{ userPercent }}%</span> <span> of target users</span>
         </div>

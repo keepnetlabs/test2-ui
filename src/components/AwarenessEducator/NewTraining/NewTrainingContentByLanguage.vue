@@ -2,17 +2,17 @@
   <div>
     <FormGroupHorizontalContent
       :label="labels.LANGUAGE"
-      class="mb-2"
-      :style="!isRemovable && { justifyContent: 'flex-start', maxWidth: '456px' }"
+      class="mb-2 training-library-content-by-language"
     >
       <InputSelectLanguage
         v-bind="commonRules"
         v-model="value.languageId"
-        style="min-width: 205px !important; max-width: 205px !important;"
+        style="min-width: 424px !important; max-width: 424px !important;"
+        class="ml-8"
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isLanguageDisabled"
+        :disabled="isLanguageDisabled || !vendorId"
       />
       <v-btn
         v-if="isRemovable"
@@ -27,13 +27,14 @@
       </v-btn>
     </FormGroupHorizontalContent>
     <FormGroupHorizontalContent
-      style="justify-content: flex-start; max-width: 456px;"
+      class="training-library-content-by-language"
       :label="labels.UploadFile"
     >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-content-by-language-file"
-        style="width: 205px !important;"
+        class="ml-8"
+        style="width: 424px !important;"
         :size="100"
         :hint="getHint"
         :isShowFileProgress="true"
@@ -41,7 +42,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
-        :disabled="!value.languageId"
+        :disabled="!value.languageId || !vendorId"
         :readonly="isReadonly"
         :deletable="false"
         :is-backend-parsed="isBackendParsed"
@@ -88,6 +89,10 @@ export default {
     typeWithDisplayName: {
       type: String,
       default: ''
+    },
+    vendorId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -130,6 +135,7 @@ export default {
       const payload = new FormData()
       payload.append('zipFile', file)
       payload.append('languageId', this.value.languageId)
+      payload.append('vendorId', this.vendorId)
       this.isDisabled = true
       this.isReadonly = true
       this.isBackendParsed = false

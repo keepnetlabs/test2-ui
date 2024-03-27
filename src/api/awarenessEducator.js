@@ -40,6 +40,11 @@ const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressC
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
 }
+const createTraining = (payload) => {
+  return testRequest.post(`/trainings`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 const updateTraining = (payload, resourceId) => {
   return testRequest.put(`/trainings/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -193,8 +198,10 @@ const lmsFinish = (payload) => {
   return testRequest.post('/scorm/LMSFinish', payload)
 }
 
-const getTrainingReportSummary = (resourceId) => {
-  return testRequest.get(`/training-reports/${resourceId}/summary`)
+const getTrainingReportSummary = (resourceId, trainingType = 0) => {
+  return testRequest.get(
+    `/training-reports/${resourceId}/summary?${`trainingType=${trainingType}`}`
+  )
 }
 
 const getScormProxyTrainingReportSummary = (resourceId) => {
@@ -459,16 +466,47 @@ const getProxyTargetUserById = (id) => {
 }
 
 const downloadPoster = (payload) => {
-  return testRequest.post(`/trainings/scorm/download`, payload, {
+  return testRequest.post(`/trainings/download`, payload, {
     responseType: 'blob'
   })
 }
+const getTrainingTypeCount = (payload) => {
+  return testRequest.post('/trainings/get-training-type-count', payload)
+}
+const getVendors = () => {
+  return testRequest.get('/trainings/vendors')
+}
+const getBehaviours = () => {
+  return testRequest.get('/trainings/behaviours')
+}
+const getCompliances = () => {
+  return testRequest.get('/trainings/compliances')
+}
+const getTrainingTypes = () => {
+  return testRequest.get('/trainings/types')
+}
 
+const addToFavorite = (resourceId) => {
+  return testRequest.post(
+    `/trainings/${resourceId}/favourite`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+const removeFromFavorite = (resourceId) => {
+  return testRequest.delete(`/trainings/${resourceId}/favourite`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   searchTraining,
+  getTrainingTypeCount,
   deleteTraining,
   getTraining,
   createDraftTraining,
+  createTraining,
   updateTraining,
   searchCertificate,
   deleteCertificate,
@@ -478,6 +516,9 @@ export default {
   makeDefaultCertificate,
   getCategories,
   getTargetAudiences,
+  getBehaviours,
+  getCompliances,
+  getVendors,
   getLanguages,
   exportTrainingList,
   uploadTrainingContent,
@@ -554,5 +595,8 @@ export default {
   progressNonTargetUsersTrainingReportEmailsDetails,
   getScormProxyTrainingReportSummary,
   uploadPosterContent,
-  downloadPoster
+  downloadPoster,
+  addToFavorite,
+  removeFromFavorite,
+  getTrainingTypes
 }

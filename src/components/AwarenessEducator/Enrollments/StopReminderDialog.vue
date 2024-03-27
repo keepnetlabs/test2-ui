@@ -7,7 +7,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      Are you sure you want to stop this training’s reminder? Once stopped, it cannot be restarted.
+      Are you sure you want to stop the reminder? Once stopped, it cannot be restarted.
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter

@@ -5,6 +5,8 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :title="getResendDialogTitle"
+      :body-training-type="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -14,11 +16,7 @@
       :item="selectedRow"
       @on-close="toggleIsShowInteractionsModal"
     />
-    <CampaignManagerReportHeader
-      class="mb-6"
-      title="Users"
-      subtitle="All target users enrolled to this training"
-    />
+    <CampaignManagerReportHeader class="mb-6" title="Users" :subtitle="getHeaderSubtitle" />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -82,6 +80,8 @@ import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -101,6 +101,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -268,7 +271,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.getEmptyTableTextMessage()
         },
         rowActions: [
           {
@@ -312,8 +315,33 @@ export default {
       tableData: []
     }
   },
-  created() {
-    this.callForData()
+  computed: {
+    getHeaderSubtitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'All target users enrolled to this poster'
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'All target users enrolled to this infographic'
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return 'All target users enrolled to this learning path'
+      return 'All target users enrolled to this training'
+    },
+    getResendDialogTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+    getBodyTrainingType() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    }
   },
   watch: {
     isScormProxy: {
@@ -330,7 +358,23 @@ export default {
       }
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
+    getEmptyTableTextMessage() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.EmptyTrainingReportTrainingPosters
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.EmptyTrainingReportTrainingInfographics
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        return labels.EmptyTrainingReportUserLearningPaths
+      }
+      return labels.EmptyTrainingReportTrainingUsers
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)
