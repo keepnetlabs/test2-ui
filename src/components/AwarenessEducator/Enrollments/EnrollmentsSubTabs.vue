@@ -347,7 +347,10 @@ export default {
             selectedRow: this.selectedRow,
             showSendButton: false
           })
-        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH) {
+        } else if (
+          row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+          row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        ) {
           this.setLearningPathPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
@@ -394,7 +397,7 @@ export default {
         const { data } = response
         const link = document.createElement('a')
         link.href = window.URL.createObjectURL(data)
-        link.download = `${row.enrollmentId}_Scorm.zip`
+        link.download = `${row.enrollmentId}.zip`
         link.click()
       })
     },

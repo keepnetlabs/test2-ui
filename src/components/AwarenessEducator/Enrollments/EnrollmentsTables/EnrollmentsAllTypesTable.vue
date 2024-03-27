@@ -66,6 +66,8 @@ import {
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import { trashRowActions } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
+import { mapGetters } from 'vuex'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'EnrollmentsAllTypesTable',
   components: {
@@ -184,6 +186,11 @@ export default {
   mounted() {
     this.callForData()
   },
+  computed: {
+    ...mapGetters({
+      types: 'trainingLibraryHelpers/getTrainingTypes'
+    })
+  },
   watch: {
     enrollmentStatusEnum(val) {
       const filterableItems = val.map((item) => ({
@@ -223,6 +230,19 @@ export default {
         val
       )
       this?.$refs?.refTable?.reRenderFilters()
+    },
+    types: {
+      immediate: true,
+      handler(val) {
+        if (!val.length) return
+        let types = val.filter((item) => item.text !== TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'type'),
+          'filterableItems',
+          types
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      }
     }
   },
   methods: {
@@ -251,13 +271,14 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          enrollmentType: this.axiosPayload.enrollmentType
         }
         AwarenessEducatorService.exportEnrollments(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-List.${
+          link.download = `All-Types-List.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

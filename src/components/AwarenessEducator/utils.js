@@ -1,6 +1,7 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export const EMITS = {
   ON_ADD: 'on-add',
@@ -231,11 +232,11 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'select',
     filterableItems: [
-      TRAINING_LIBRARY_TYPES.LEARNING_PATH,
-      TRAINING_LIBRARY_TYPES.TRAINING,
-      TRAINING_LIBRARY_TYPES.POSTER,
-      TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
-      TRAINING_LIBRARY_TYPES.SCREENSAVER
+      { text: TRAINING_LIBRARY_TYPES.TRAINING, value: 1 },
+      { text: TRAINING_LIBRARY_TYPES.POSTER, value: 3 },
+      { text: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, value: 4 },
+      { text: TRAINING_LIBRARY_TYPES.SCREENSAVER, value: 5 },
+      { text: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH, value: 6 }
     ]
   },
   CREATE_TIME: {

@@ -23,6 +23,7 @@
           :form-details="formDetails"
           :trainingSummary="trainingSummary"
           :isScormProxy="isScormProxy"
+          :active-step="item.activeStep"
         />
       </el-tab-pane>
     </el-tabs>
@@ -168,6 +169,13 @@ export default {
             this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
           ) {
             this.tabItems[0].label = labels.LearningPathSummary
+            /*
+            this.trainingSummary.steps.forEach((step, index) => {
+              this.tabItems[index + 1].label = `Step ${index + 1}: ${step.trainingName}`
+              this.tabItems[index + 1].activeStep = index
+              this.tabItems[index + 1].component = TrainingReportLearningPathContainer
+            })
+             */
           }
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
           this.$store.dispatch(
