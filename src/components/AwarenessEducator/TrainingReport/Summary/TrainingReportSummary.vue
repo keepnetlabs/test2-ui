@@ -77,6 +77,7 @@
     </div>
     <div v-else>
       <TrainingReportUsers
+        is-add-training-type-key-to-payload
         :id="id"
         :is-loading="isLoading"
         :training-type="getTrainingType"
@@ -102,6 +103,7 @@ import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -136,12 +138,14 @@ export default {
       isAudienceModalVisible: false,
       targetGroups: [],
       interval: null,
-      languages: [],
       enrollmentEmailData: {},
       certificateEmailData: {}
     }
   },
   computed: {
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages'
+    }),
     isTrainingTypeLearningPath() {
       return (
         this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
@@ -414,11 +418,6 @@ export default {
       return certificateAttachmentResourceId
     }
   },
-  mounted() {
-    this.callForLanguages()
-    // this.callForEnrollmentEmail()
-    // this.callForCertificate()
-  },
   beforeDestroy() {
     clearInterval(this.interval)
   },
@@ -464,11 +463,6 @@ export default {
           this.certificateEmailData = data
         })
       }
-    },
-    callForLanguages() {
-      AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages = response?.data?.data
-      })
     },
     showAudienceDetailsModal() {
       this.isAudienceModalVisible = true

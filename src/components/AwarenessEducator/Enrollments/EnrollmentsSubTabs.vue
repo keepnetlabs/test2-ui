@@ -20,6 +20,7 @@
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
       :selected-row="selectedRow"
+      :title="getEditEnrollmentsModalTitle"
       @on-close="toggleShowEditEnrollmentModal"
     />
     <SendEnrollmentDialog
@@ -280,6 +281,18 @@ export default {
       return this.isTrash
         ? AwarenessEducatorService.searchTrash
         : AwarenessEducatorService.searchEnrollments
+    },
+    getEditEnrollmentsModalTitle() {
+      if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'Edit Poster Enrollment'
+      else if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Edit Infographic Enrollment'
+      else if (
+        this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.selectedRow.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return 'Edit Learning Path Enrollment'
+      return 'Edit Training Enrollment'
     }
   },
   methods: {

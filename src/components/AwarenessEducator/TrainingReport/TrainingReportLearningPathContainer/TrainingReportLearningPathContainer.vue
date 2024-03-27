@@ -1,5 +1,12 @@
 <template>
-  <ElTabs v-model="tab" class="k-sub-tab">
+  <ElTabs
+    v-model="tab"
+    :class="[
+      'k-sub-tab training-library-first-card-sub-tabs',
+      isLoading ? 'training-library-first-card-sub-tabs--loading' : ''
+    ]"
+    @tab-click="handleTabClick"
+  >
     <ElTabPane
       v-for="item in tabItems"
       v-if="item.isVisible"
@@ -127,7 +134,13 @@ export default {
   computed: {
     id() {
       console.log(this.trainingSummary?.steps[this.activeStep].enrollmentId)
-      return this.trainingSummary?.steps[this.activeStep].enrollmentId
+      return this.activeTrainingStep?.enrollmentId
+    },
+    activeTrainingStep() {
+      return this.trainingSummary?.steps[this.activeStep]
+    },
+    activeTrainingStepType() {
+      return this.activeTrainingStep?.trainingDetails?.trainingTypeName
     },
     getTrainingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Training Name'
@@ -139,28 +152,28 @@ export default {
   created() {
     this.callForFormDetails()
     this.callForSummary()
-    this.callForLanguages()
   },
   methods: {
-    ...mapActions({
-      callForLanguages: 'trainingLibraryHelpers/callForLanguages'
-    }),
     callForSummary() {
       this.isLoading = true
       let type = 0
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-        type = 2
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
-        type = 3
+      if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.activeTrainingStepType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         type = 4
       AwarenessEducatorService.getTrainingReportSummary(this.id, type)
         .then((response) => {
-          this.selectedTrainingSummary = response?.data?.data
+          const {
+            data: { data }
+          } = response || {}
+          console.log('type', type)
+          data.trainingTypeName = this.activeTrainingStepType
+          this.selectedTrainingSummary = data
+          console.log('this.selectedTrainingSummary', this.selectedTrainingSummary)
           if (
             this.selectedTrainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
           ) {
@@ -184,6 +197,16 @@ export default {
       AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
         this.formDetails = response?.data?.data
       })
+    },
+    handleTabClick(tab) {
+      if (tab.name === labels.Summary) {
+        AwarenessEducatorService.getTrainingReportSummary(
+          this.id,
+          this.$route?.query?.trainingType || 0
+        ).then((response) => {
+          this.trainingSummary = response?.data?.data
+        })
+      }
     }
   }
 }
