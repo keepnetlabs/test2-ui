@@ -32,51 +32,52 @@
         />
         <TrainingLibraryNewLearningPathFilters />
         <TrainingLibraryNewLearningPathFilterBadges />
-        <Draggable
-          v-bind="dragOptions"
-          class="learning-path-content__training-contents"
-          group="a"
-          :list="getTrainings"
-          handle=".learning-path-content__training--handle"
-        >
-          <div
-            v-for="(training, trainingIndex) in getTrainings"
-            :key="training.trainingId"
-            class="learning-path-content__training"
+        <div class="learning-path-content__training-contents" @scroll="handleScroll">
+          <Draggable
+            v-bind="dragOptions"
+            group="a"
+            handle=".learning-path-content__training--handle"
+            :list="getTrainings"
           >
-            <v-icon
-              center
-              medium
-              size="32"
-              color="#757575"
-              class="learning-path-content__training--handle"
-              style="cursor: move;"
-              >mdi-drag-vertical</v-icon
+            <div
+              v-for="(training, trainingIndex) in getTrainings"
+              :key="training.trainingId"
+              class="learning-path-content__training"
             >
-            <img
-              class="learning-path-content__training--cover-image"
-              :src="getCoverImage(training)"
-            />
-            <div class="learning-path-content__training--info">
-              <span class="learning-path-content__training--info-name">{{
-                training.trainingName || training.name
-              }}</span>
-              <span class="learning-path-content__training--info-created-by"
-                >{{ training.type }}
-                <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
-                {{ training.category }}</span
+              <v-icon
+                center
+                medium
+                size="32"
+                color="#757575"
+                class="learning-path-content__training--handle"
+                style="cursor: move;"
+                >mdi-drag-vertical</v-icon
               >
+              <img
+                class="learning-path-content__training--cover-image"
+                :src="getCoverImage(training)"
+              />
+              <div class="learning-path-content__training--info">
+                <span class="learning-path-content__training--info-name">{{
+                  training.trainingName || training.name
+                }}</span>
+                <span class="learning-path-content__training--info-created-by"
+                  >{{ training.type }}
+                  <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
+                  {{ training.category }}</span
+                >
+              </div>
+              <div class="learning-path-content__training--buttons">
+                <v-btn icon color="#757575" @click="onClickPreview(training)">
+                  <v-icon center>mdi-eye</v-icon>
+                </v-btn>
+                <v-btn icon color="#757575" @click="onSelectTraining(training, trainingIndex)">
+                  <v-icon center>mdi-plus-circle</v-icon>
+                </v-btn>
+              </div>
             </div>
-            <div class="learning-path-content__training--buttons">
-              <v-btn icon color="#757575" @click="onClickPreview(training)">
-                <v-icon center>mdi-eye</v-icon>
-              </v-btn>
-              <v-btn icon color="#757575" @click="onSelectTraining(training, trainingIndex)">
-                <v-icon center>mdi-plus-circle</v-icon>
-              </v-btn>
-            </div>
-          </div>
-        </Draggable>
+          </Draggable>
+        </div>
       </div>
       <div class="learning-path-content__learning-path-container">
         <ConfigureCompanyStepHeader
@@ -136,7 +137,7 @@
               <span class="learning-path-content__training--info-created-by"
                 >{{ training.type }}
                 <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
-                {{ training.category }}</span
+                {{ training.categoryName || training.category }}</span
               >
             </div>
             <div class="learning-path-content__training--buttons">
@@ -166,6 +167,7 @@ import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/Tra
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import Draggable from 'vuedraggable'
 import { Fragment } from 'vue-frag'
+import useDebounce from '@/hooks/useDebounce'
 
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
@@ -193,6 +195,7 @@ export default {
       type: Boolean
     }
   },
+  mixins: [useDebounce],
   data() {
     return {
       labels,
@@ -219,8 +222,18 @@ export default {
       removeTrainingFromLearningPath: 'learningPath/removeTrainingFromLearningPath',
       setLearningPathModalTrainingPreviewDialog:
         'learningPath/setLearningPathModalTrainingPreviewDialog',
-      setSelectedTrainings: 'learningPath/setSelectedLearningPathTrainings'
+      setSelectedTrainings: 'learningPath/setSelectedLearningPathTrainings',
+      getDataAfterValidScroll: 'learningPath/getDataAfterValidScroll'
     }),
+    handleScroll(e) {
+      const scrollPosition = e.target.scrollTop + e.target.offsetHeight
+      const scrollHeight = e.target.scrollHeight - 30
+      if (scrollPosition > scrollHeight) {
+        this.debounce(() => {
+          this.getDataAfterValidScroll()
+        }, 250)
+      }
+    },
     getCoverImage(training) {
       return (
         training?.coverImage?.imageUrl ||

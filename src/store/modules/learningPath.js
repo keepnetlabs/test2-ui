@@ -17,17 +17,18 @@ const learningPath = {
       pageSize: 100,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
       trainingType: null,
+      trainingId: '',
       filter: {
         Condition: 'AND',
         FilterGroups: [
           {
             Condition: 'AND',
             FilterItems: [
-              {
-                FieldName: 'type',
-                Value: '1,3,4',
-                Operator: 'Include'
-              }
+              // {
+              //   FieldName: 'type',
+              //   Value: '1,3,4',
+              //   Operator: 'Include'
+              // }
             ],
             FilterGroups: []
           },
@@ -86,7 +87,7 @@ const learningPath = {
       const nonSelectedTrainings = payload.filter(
         (t) => !learningPathTrainingIds.includes(t.trainingId)
       )
-      state.learningPathTableData = nonSelectedTrainings
+      state.learningPathTableData = [...state.learningPathTableData, ...nonSelectedTrainings]
     },
     SET_LEARNING_PATH_SERVER_SIDE_PROPS(state, payload) {
       state.learningPathServerSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
@@ -125,11 +126,11 @@ const learningPath = {
             {
               Condition: 'AND',
               FilterItems: [
-                {
-                  FieldName: 'type',
-                  Value: '1,3,4',
-                  Operator: 'Include'
-                }
+                // {
+                //   FieldName: 'type',
+                //   Value: '1,3,4',
+                //   Operator: 'Include'
+                // }
               ],
               FilterGroups: []
             },
@@ -261,7 +262,10 @@ const learningPath = {
     }
   },
   actions: {
-    callForLearningPathTableData({ commit, state }) {
+    callForLearningPathTableData({ commit, state }, payload) {
+      if (payload) {
+        state.learningPathAxiosPayload.trainingId = payload
+      }
       AwarenessEducatorService.searchTraining(state.learningPathAxiosPayload).then((response) => {
         const {
           data: { data = {} }
@@ -280,8 +284,8 @@ const learningPath = {
         })
       })
     },
-    callForLearningPathTrainingLibrary({ dispatch }) {
-      dispatch('callForLearningPathTableData')
+    callForLearningPathTrainingLibrary({ dispatch }, payload) {
+      dispatch('callForLearningPathTableData', payload)
     },
     setLearningPathSearch({ commit, dispatch }, payload) {
       commit('SET_LEARNING_PATH_SEARCH', payload)
@@ -328,6 +332,16 @@ const learningPath = {
     },
     removeTrainingFromLearningPath({ commit }, payload) {
       commit('REMOVE_TRAINING_FROM_LEARNING_PATH', payload)
+    },
+    getDataAfterValidScroll({ state, dispatch }) {
+      if (
+        state.learningPathAxiosPayload.pageNumber <
+          state.learningPathServerSideProps.totalNumberOfPages &&
+        !state.learningPathSearch
+      ) {
+        state.learningPathAxiosPayload.pageNumber += 1
+        dispatch('callForLearningPathTrainingLibrary')
+      }
     }
   }
 }

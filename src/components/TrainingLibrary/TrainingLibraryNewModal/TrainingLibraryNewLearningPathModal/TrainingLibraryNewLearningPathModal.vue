@@ -137,7 +137,7 @@ export default {
             name,
             tagNames,
             targetAudience,
-            coverImageUrl,
+            coverImage,
             trainingGroups
           } = response?.data?.data || {}
           const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
@@ -150,14 +150,16 @@ export default {
               name,
               tags: tagNames,
               targetAudience,
-              coverImageUrl,
+              coverImage,
               targetAudience
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
             refLearningPathContent.setSelectedTrainings(trainingGroups)
           }
         })
-        .then(this.callForLearningPathTrainingLibrary)
+        .then(() => {
+          this.callForLearningPathTrainingLibrary(this.trainingId)
+        })
     } else {
       this.callForLearningPathTrainingLibrary()
     }
