@@ -11,12 +11,9 @@
   >
     <template #body>
       <div v-if="isFormData" class="training-report-training-material__body pb-4">
-        <TrainingPreviewDialog
-          v-if="isShowPreviewDialog"
-          :status="isShowPreviewDialog"
-          :selected-row="selectedRow"
-          :languages="languages"
-          @on-close="toggleShowPreviewDialog"
+        <TrainingLibraryTrainingPreviewDialog
+          v-if="getTrainingPreviewDialog.status"
+          v-bind="getTrainingPreviewDialog"
         />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
@@ -56,17 +53,14 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
-// import KEmailPreview from '@/components/KEmailPreview'
-// import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
+import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
-    TrainingPreviewDialog,
-    // DatatableLoading,
-    // KEmailPreview,
+    TrainingLibraryTrainingPreviewDialog,
     Badge,
     CampaignManagerSummaryCard
   },
@@ -88,18 +82,27 @@ export default {
   data() {
     return {
       labels,
-      emailTemplate: null,
-      isShowPreviewDialog: false
+      emailTemplate: null
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+    }),
     isFormData() {
       return Object.keys(this.formData).length
     }
   },
   methods: {
+    ...mapActions({
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
+    }),
     handlePreviewClick() {
-      this.toggleShowPreviewDialog()
+      this.setTrainingPreviewDialog({
+        status: true,
+        selectedRow: this.selectedRow,
+        showSendButton: false
+      })
     },
     getBadgeColor(text = '') {
       if (text.toLowerCase() === 'easy') return '#217124'
@@ -109,9 +112,6 @@ export default {
     },
     getBadgeText(text = '') {
       return text
-    },
-    toggleShowPreviewDialog() {
-      this.isShowPreviewDialog = !this.isShowPreviewDialog
     }
   }
 }

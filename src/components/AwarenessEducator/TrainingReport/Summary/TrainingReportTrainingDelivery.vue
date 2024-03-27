@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     :isLoading="isLoading"
     icon="mdi-send"
-    :title="labels.TrainingDelivery"
+    :title="getCardTitle"
     :items="getItems"
   >
     <template #DeliveryStatus="{ props:{ key } }">
@@ -34,6 +34,8 @@
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportTrainingDelivery',
   components: { CampaignManagerSummaryCard },
@@ -47,6 +49,9 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    trainingType: {
+      type: String
     }
   },
   data() {
@@ -55,6 +60,17 @@ export default {
     }
   },
   computed: {
+    getCardTitle() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterDelivery
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.InfographicDelivery
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return labels.LearningPathDelivery
+      return labels.TrainingDelivery
+    },
     getItems() {
       const newItems = { ...this.items }
       Object.keys(this.items).forEach((key) => {

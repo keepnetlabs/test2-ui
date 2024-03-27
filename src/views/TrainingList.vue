@@ -14,13 +14,6 @@
       :selected-row="selectedRow"
       @on-close="toggleShowNewPosterModal"
     />
-    <TrainingPreviewDialog
-      v-if="isShowPreviewDialog"
-      :status="isShowPreviewDialog"
-      :selected-row="selectedRow"
-      :languages="languages"
-      @on-close="toggleShowPreviewDialog"
-    />
     <PosterPreviewDialog
       v-if="isShowPosterPreviewDialog"
       :status="isShowPosterPreviewDialog"
@@ -80,7 +73,6 @@
 import KContainer from '@/components/KContainer/KContainer'
 import TrainingListTable from '@/components/AwarenessEducator/TrainingList/TrainingListTable'
 import DeleteTrainingDialog from '@/components/AwarenessEducator/TrainingList/DeleteTrainingDialog'
-import TrainingPreviewDialog from '@/components/AwarenessEducator/TrainingPreviewDialog'
 import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrainingModal'
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
@@ -98,8 +90,7 @@ export default {
     NewTrainingModal,
     DeleteTrainingDialog,
     TrainingListTable,
-    KContainer,
-    TrainingPreviewDialog
+    KContainer
   },
   mixins: [useAwarenessHelperCalls],
   provide() {
