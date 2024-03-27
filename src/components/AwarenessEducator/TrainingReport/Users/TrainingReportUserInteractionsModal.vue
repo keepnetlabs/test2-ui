@@ -94,6 +94,13 @@ export default {
     firstColumnLabel: {
       type: String,
       default: 'Date'
+    },
+    isAddTrainingTypeKeyToPayload: {
+      type: Boolean,
+      default: false
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -245,7 +252,10 @@ export default {
       AwarenessEducatorService.getTrainingReportInteractions(
         this.item.enrollmentId,
         this.item.targetUserResourceId,
-        this.interactionType
+        this.interactionType,
+        this.isAddTrainingTypeKeyToPayload
+          ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+          : null
       )
         .then((response) => {
           this.tableData = response?.data?.data.map((item) => ({

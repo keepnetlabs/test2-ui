@@ -101,7 +101,7 @@
                   </span>
                   <span class="training-library-preview__desc">{{ training.name }}</span>
                 </div>
-                <div class="d-flex align-center gap-2">
+                <div :key="activeTrainingContentButtonKey" class="d-flex align-center gap-2">
                   <TrainingLibraryNewBadge
                     v-if="activeTrainingContentParams && activeTrainingContentParams.isNew"
                   />
@@ -335,6 +335,7 @@ export default {
       activeTrainingContentId: '',
       activeTrainingContentType: '',
       activeTrainingContentSrc: '',
+      activeTrainingContentButtonKey: `key-${createRandomCryptStringNumber()}`,
       fileName: '',
       activeTrainingContentPdfSrc: null,
       activeTrainingContentLanguages: [],
@@ -398,6 +399,7 @@ export default {
       this.isTemplateLoading = true
       AwarenessEducatorService.getTraining(this.activeTrainingContentId).then((response) => {
         this.activeTrainingContentParams = response?.data?.data
+        this.activeTrainingContentButtonKey = `key-${createRandomCryptStringNumber()}`
         this.activeTrainingContentLanguages = this.activeTrainingContentLanguageCodes
           .reduce((acc, lang) => {
             const selectedLanguage = this.languages.find((language) => language.code === lang)
