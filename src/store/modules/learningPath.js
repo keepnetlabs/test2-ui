@@ -24,11 +24,11 @@ const learningPath = {
           {
             Condition: 'AND',
             FilterItems: [
-              // {
-              //   FieldName: 'type',
-              //   Value: '1,3,4',
-              //   Operator: 'Include'
-              // }
+              {
+                FieldName: 'type',
+                Value: '1,3,4',
+                Operator: 'Include'
+              }
             ],
             FilterGroups: []
           },
@@ -126,11 +126,11 @@ const learningPath = {
             {
               Condition: 'AND',
               FilterItems: [
-                // {
-                //   FieldName: 'type',
-                //   Value: '1,3,4',
-                //   Operator: 'Include'
-                // }
+                {
+                  FieldName: 'type',
+                  Value: '1,3,4',
+                  Operator: 'Include'
+                }
               ],
               FilterGroups: []
             },
