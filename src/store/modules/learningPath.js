@@ -24,11 +24,11 @@ const learningPath = {
           {
             Condition: 'AND',
             FilterItems: [
-              // {
-              //   FieldName: 'type',
-              //   Value: '1,3,4',
-              //   Operator: 'Include'
-              // }
+              {
+                FieldName: 'type',
+                Value: '1,3,4',
+                Operator: 'Include'
+              }
             ],
             FilterGroups: []
           },
@@ -82,12 +82,23 @@ const learningPath = {
     SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG(state, payload) {
       state.learningPathModalTrainingPreviewDialog = payload
     },
-    SET_LEARNING_PATH_TABLE_DATA(state, payload) {
-      const learningPathTrainingIds = state.selectedLearningPathTrainings.map((t) => t.trainingId)
+    APPEND_LEARNING_PATH_TABLE_DATA(state, payload) {
+      const learningPathTrainingIds = state.selectedLearningPathTrainings.map(
+        (t) => t.trainingId || t.detailTrainingId
+      )
       const nonSelectedTrainings = payload.filter(
-        (t) => !learningPathTrainingIds.includes(t.trainingId)
+        (t) => !learningPathTrainingIds.includes(t.trainingId || t.detailTrainingId)
       )
       state.learningPathTableData = [...state.learningPathTableData, ...nonSelectedTrainings]
+    },
+    SET_LEARNING_PATH_TABLE_DATA(state, payload) {
+      const learningPathTrainingIds = state.selectedLearningPathTrainings.map(
+        (t) => t.trainingId || t.detailTrainingId
+      )
+      const nonSelectedTrainings = payload.filter(
+        (t) => !learningPathTrainingIds.includes(t.trainingId || t.detailTrainingId)
+      )
+      state.learningPathTableData = [...nonSelectedTrainings]
     },
     SET_LEARNING_PATH_SERVER_SIDE_PROPS(state, payload) {
       state.learningPathServerSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
@@ -103,6 +114,7 @@ const learningPath = {
       learningPathFilter.show = payload.show
     },
     SET_SELECTED_LEARNING_PATH_TRAININGS(state, payload) {
+      payload.sort((a, b) => (a.trainingOrder > b.trainingOrder ? 1 : -1))
       state.selectedLearningPathTrainings = payload
     },
     SELECT_LEARNING_PATH_TRAINING(state, { training = {}, index = 0 }) {
@@ -126,11 +138,11 @@ const learningPath = {
             {
               Condition: 'AND',
               FilterItems: [
-                // {
-                //   FieldName: 'type',
-                //   Value: '1,3,4',
-                //   Operator: 'Include'
-                // }
+                {
+                  FieldName: 'type',
+                  Value: '1,3,4',
+                  Operator: 'Include'
+                }
               ],
               FilterGroups: []
             },
@@ -182,6 +194,9 @@ const learningPath = {
     },
     RESET_SELECTED_LEARNING_PATH_TRAININGS(state) {
       state.selectedLearningPathTrainings = []
+    },
+    RESET_LEARNING_PATH_DATA(state) {
+      state.learningPathTableData = []
     },
     SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD(state, payload) {
       state.learningPathAxiosPayload.ascending = payload.ascending
@@ -263,8 +278,8 @@ const learningPath = {
   },
   actions: {
     callForLearningPathTableData({ commit, state }, payload) {
-      if (payload) {
-        state.learningPathAxiosPayload.trainingId = payload
+      if (payload?.trainingId) {
+        state.learningPathAxiosPayload.trainingId = payload.trainingId
       }
       AwarenessEducatorService.searchTraining(state.learningPathAxiosPayload).then((response) => {
         const {
@@ -276,7 +291,11 @@ const learningPath = {
           totalNumberOfPages = 0,
           pageNumber = 1
         } = data
-        commit('SET_LEARNING_PATH_TABLE_DATA', results)
+        if (payload?.isAppend) {
+          commit('APPEND_LEARNING_PATH_TABLE_DATA', results)
+        } else {
+          commit('SET_LEARNING_PATH_TABLE_DATA', results)
+        }
         commit('SET_LEARNING_PATH_SERVER_SIDE_PROPS', {
           totalNumberOfRecords,
           totalNumberOfPages,
@@ -316,13 +335,14 @@ const learningPath = {
       commit('RESET_LEARNING_PATH_PAGINATION')
       dispatch('callForLearningPathTrainingLibrary')
     },
-    learningPathClearAllFilters({ commit, dispatch }) {
+    learningPathClearAllFilters({ commit, dispatch }, { isFetch = false }) {
       commit('RESET_LEARNING_PATH_FILTERS')
-      dispatch('callForLearningPathTrainingLibrary')
+      if (isFetch) dispatch('callForLearningPathTrainingLibrary')
     },
     resetSelectedLearningPathTrainings({ commit }) {
       commit('RESET_LEARNING_PATH_FILTERS')
       commit('RESET_SELECTED_LEARNING_PATH_TRAININGS')
+      commit('RESET_LEARNING_PATH_DATA')
     },
     setSelectedLearningPathTrainings({ commit }, payload) {
       commit('SET_SELECTED_LEARNING_PATH_TRAININGS', payload)
@@ -340,7 +360,7 @@ const learningPath = {
         !state.learningPathSearch
       ) {
         state.learningPathAxiosPayload.pageNumber += 1
-        dispatch('callForLearningPathTrainingLibrary')
+        dispatch('callForLearningPathTrainingLibrary', { isAppend: true })
       }
     }
   }

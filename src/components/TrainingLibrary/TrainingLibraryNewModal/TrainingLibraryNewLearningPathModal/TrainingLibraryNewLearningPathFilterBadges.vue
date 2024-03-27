@@ -18,7 +18,7 @@
           color="#2196F3"
           text
           :ripple="false"
-          @click="clearAllFilters"
+          @click="clearAllFilters({ isFetch: true })"
         >
           Clear All
         </VBtn>

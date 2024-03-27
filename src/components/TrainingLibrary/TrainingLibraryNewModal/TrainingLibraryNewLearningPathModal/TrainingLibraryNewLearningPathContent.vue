@@ -264,7 +264,7 @@ export default {
     }
   },
   beforeDestroy() {
-    this.clearAllFilters()
+    this.clearAllFilters({ isFetch: false })
   }
 }
 </script>
