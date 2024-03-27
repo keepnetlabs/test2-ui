@@ -125,8 +125,7 @@ export default {
   },
   created() {
     if (this.isEdit) {
-      this.trainingId = this.selectedRow.trainingId
-      AwarenessEducatorService.getTraining(this.trainingId)
+      AwarenessEducatorService.getTraining(this.selectedRow.trainingId)
         .then((response) => {
           const {
             availableForList,
@@ -158,7 +157,10 @@ export default {
           }
         })
         .then(() => {
-          this.callForLearningPathTrainingLibrary(this.trainingId)
+          this.callForLearningPathTrainingLibrary({
+            trainingId: this.selectedRow.trainingId,
+            isAppend: false
+          })
         })
     } else {
       this.callForLearningPathTrainingLibrary()
@@ -254,7 +256,7 @@ export default {
           payload.append(`TrainingDetail.trainingGroups[${index}].trainingOrder`, index + 1)
         })
         this.isActionButtonDisabled = true
-        AwarenessEducatorService.updateTraining(payload, this.trainingId)
+        AwarenessEducatorService.updateTraining(payload, this.selectedRow.trainingId)
           .then(() => {
             this.handleClose()
             this.callForTrainingLibrary()
