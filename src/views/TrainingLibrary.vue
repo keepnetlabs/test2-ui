@@ -23,9 +23,6 @@ export default {
     TrainingLibraryFirstCard,
     KContainer
   },
-  data() {
-    return {}
-  },
   computed: {
     ...mapGetters({
       isListView: 'trainingLibrary/getIsListView'
