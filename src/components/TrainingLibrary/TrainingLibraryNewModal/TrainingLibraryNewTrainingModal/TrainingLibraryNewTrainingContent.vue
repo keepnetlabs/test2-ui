@@ -2,6 +2,7 @@
   <div>
     <FormGroup has-hint :title="labels.TrainingVendor" :sub-title="labels.TrainingVendorSub">
       <KSelect
+        v-if="canSaveVendor"
         v-model.trim="formData.vendorId"
         persistent-hint
         dense
@@ -85,7 +86,8 @@ export default {
     ...mapGetters({
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getScormTypes: 'trainingLibraryHelpers/getScormTypes',
-      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
+      canSaveVendor: 'trainingLibraryHelpers/getCanSaveVendor'
     }),
     isRenderAddLanguage() {
       return this?.languages?.length !== this?.formData?.contentByLanguage?.length

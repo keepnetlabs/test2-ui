@@ -15,6 +15,7 @@ const trainingLibraryHelpers = {
     learningPathTrainingTypes: [],
     behaviours: [],
     enumTypes: {},
+    canSaveVendor: false,
     distributionDelayTimeTypes: distributionDelayTimeTypes,
     certificateEmailNotificationTemplateTypeResourceId: [],
     reminderEmailNotificationTemplateTypeResourceId: [],
@@ -62,6 +63,9 @@ const trainingLibraryHelpers = {
     },
     getLearningPathTrainingTypes(state) {
       return state.learningPathTrainingTypes
+    },
+    getCanSaveVendor(state) {
+      return state.canSaveVendor
     }
   },
   mutations: {
@@ -103,6 +107,9 @@ const trainingLibraryHelpers = {
     },
     SET_LEARNING_PATH_TRAINING_TYPES(state, payload) {
       state.learningPathTrainingTypes = payload
+    },
+    SET_CAN_SAVE_VENDOR(state, payload) {
+      state.canSaveVendor = payload
     }
   },
   actions: {
@@ -315,7 +322,8 @@ const trainingLibraryHelpers = {
           certificateEmailNotificationTemplateTypeResourceId = '',
           reminderEmailNotificationTemplateTypeResourceId = '',
           trainingEmailNotificationTemplateTypeResourceId = '',
-          enumNameValuePairs = {}
+          enumNameValuePairs = {},
+          canSaveVendor = false
         } = response?.data?.data || {}
         commit('SET_ENUM_TYPES', enumNameValuePairs)
         commit(
@@ -330,6 +338,7 @@ const trainingLibraryHelpers = {
           'SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
           trainingEmailNotificationTemplateTypeResourceId
         )
+        commit('SET_CAN_SAVE_VENDOR', canSaveVendor)
       })
     }
   }
