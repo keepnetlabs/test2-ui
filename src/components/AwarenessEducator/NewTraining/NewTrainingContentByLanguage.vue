@@ -12,7 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isLanguageDisabled || !vendorId"
+        :disabled="isLanguageDisabled || isCheckDisableVendor"
       />
       <v-btn
         v-if="isRemovable"
@@ -42,7 +42,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['.zip']"
         :file-previews="filePreviews"
-        :disabled="!value.languageId || !vendorId"
+        :disabled="!value.languageId || isCheckDisableVendor"
         :readonly="isReadonly"
         :deletable="false"
         :is-backend-parsed="isBackendParsed"
@@ -93,6 +93,10 @@ export default {
     vendorId: {
       type: String,
       default: ''
+    },
+    canSaveVendor: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -115,6 +119,10 @@ export default {
     }
   },
   computed: {
+    isCheckDisableVendor() {
+      if (!this.canSaveVendor) return false
+      return !this.vendorId
+    },
     isLanguageDisabled() {
       return !!this?.filePreviews?.length || this.isDisabled
     },
