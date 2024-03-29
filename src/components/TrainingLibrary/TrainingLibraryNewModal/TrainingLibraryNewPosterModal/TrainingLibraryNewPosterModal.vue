@@ -259,7 +259,6 @@ export default {
       if (coverImageUrl) {
         payload.append('trainingDetail.coverImageUrl', coverImageUrl)
       }
-      //payload.append('trainingDetail.vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
       payload.append('coverImage', coverImage)
       payload.append('trainingDetail.name', name)
       payload.append('trainingDetail.description', description)
