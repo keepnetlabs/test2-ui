@@ -140,38 +140,42 @@
                 ></iframe>
               </div>
               <div v-else>
-                <hr class="my-4" />
-                <div class="d-flex justify-space-between align-center mb-4">
-                  <div>
-                    <span class="template-preview__text--title text-preview-gray">File Name: </span>
-                    <span class="template-preview__text--body">{{ fileName }}</span>
-                  </div>
+                <div v-if="!isTemplateLoading">
+                  <hr class="my-4" />
+                  <div class="d-flex justify-space-between align-center mb-4">
+                    <div>
+                      <span class="template-preview__text--title text-preview-gray"
+                        >File Name:
+                      </span>
+                      <span class="template-preview__text--body">{{ fileName }}</span>
+                    </div>
 
-                  <VBtn
-                    id="btn-preview-indiviual-printout"
-                    class="white--text btn-util btn-download-add-in"
-                    style="text-transform: none;"
-                    color="#2196F3"
-                    rounded
-                    :style="getDownloadActiveTrainingContentStyle"
-                    @click="handleDownloadActiveTrainingContent"
-                  >
-                    <v-icon left>mdi-download</v-icon>
-                    {{
-                      activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
-                        ? labels.DownloadPoster
-                        : labels.DownloadInfographic
-                    }}
-                  </VBtn>
-                </div>
-                <div class="max-w-100 d-flex justify-center w-100">
-                  <img
-                    v-if="!isPdf"
-                    class="max-w-100"
-                    :src="activeTrainingContentSrc"
-                    alt="Preview"
-                  />
-                  <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
+                    <VBtn
+                      id="btn-preview-indiviual-printout"
+                      class="white--text btn-util btn-download-add-in"
+                      style="text-transform: none;"
+                      color="#2196F3"
+                      rounded
+                      :style="getDownloadActiveTrainingContentStyle"
+                      @click="handleDownloadActiveTrainingContent"
+                    >
+                      <v-icon left>mdi-download</v-icon>
+                      {{
+                        activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+                          ? labels.DownloadPoster
+                          : labels.DownloadInfographic
+                      }}
+                    </VBtn>
+                  </div>
+                  <div class="max-w-100 d-flex justify-center w-100">
+                    <img
+                      v-if="!isPdf"
+                      class="max-w-100"
+                      :src="activeTrainingContentSrc"
+                      alt="Preview"
+                    />
+                    <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -190,7 +194,7 @@
                   activeTrainingContentParams.name
                 }}</span>
               </div>
-              <div class="training-library-preview__details-item">
+              <div v-if="isTrainingTypeTraining" class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Vendor Name: </span>
                 <span class="training-library-preview__desc">{{
                   activeTrainingContentParams.vendor
