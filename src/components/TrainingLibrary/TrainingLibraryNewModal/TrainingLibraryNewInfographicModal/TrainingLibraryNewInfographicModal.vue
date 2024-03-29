@@ -266,7 +266,6 @@ export default {
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
       payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-      //payload.append('trainingDetail.vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })

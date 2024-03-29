@@ -131,7 +131,7 @@ export default {
       payload.append('File', file)
       payload.append('LanguageId', this.value.languageId)
       payload.append('Type', TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-      payload.append('vendorId', '68a67ag3-0a3c-4c08-86de-b431425ccc13')
+
       this.isDisabled = true
       this.isReadonly = true
       this.isBackendParsed = false
