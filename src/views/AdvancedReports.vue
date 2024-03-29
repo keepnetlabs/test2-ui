@@ -112,8 +112,7 @@ export default {
         .finally(this.setLoading)
     },
     getReportsByGroup(reportGroup) {
-      const reports = this.reports?.filter((report) => report.reportGroup === reportGroup)
-      return reports
+      return this.reports?.filter((report) => report.reportGroup === reportGroup)
     }
   }
 }
