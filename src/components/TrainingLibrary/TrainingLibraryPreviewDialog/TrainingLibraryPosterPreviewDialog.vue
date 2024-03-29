@@ -92,10 +92,6 @@
             </div>
           </div>
           <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Vendor Name: </span>
-            <span class="training-library-preview__desc">{{ posterParams.vendorName }}</span>
-          </div>
-          <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Category Name: </span>
             <span class="training-library-preview__desc">{{
               posterParams.categoryName || posterParams.category

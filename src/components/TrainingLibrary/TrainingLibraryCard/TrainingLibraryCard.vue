@@ -271,14 +271,15 @@ export default {
         this.setScreenSaverPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'downloadScreensaver',
-          title: labels.DownloadScreensaver,
-          showSendButton: false,
+          type: 'screensaver',
+          title: labels.ScreensaverPreview,
           subtitle: '',
-          showDetails: false,
-          showTabs: false,
-          showFavoriteButton: false,
-          icon: 'mdi-download'
+          showDetails: true,
+          showTabs: true,
+          showSendButton: false,
+          showScreensaverName: true,
+          showFavoriteButton: true,
+          icon: 'mdi-eye'
         })
       }
     },

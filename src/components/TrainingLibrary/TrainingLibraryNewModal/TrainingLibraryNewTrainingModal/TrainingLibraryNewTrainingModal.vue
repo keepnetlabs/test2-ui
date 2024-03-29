@@ -254,7 +254,6 @@ export default {
       const {
         formData: { hasQuiz, type, vendorId }
       } = refTrainingContent
-      if (!vendorId) return
       const payload = new FormData()
       if (coverImageUrl) {
         payload.append('trainingDetail.coverImageUrl', coverImageUrl)
@@ -266,7 +265,7 @@ export default {
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
       payload.append('trainingDetail.type', type)
-      payload.append('trainingDetail.vendorId', vendorId)
+      if (vendorId) payload.append('trainingDetail.vendorId', vendorId)
       tags.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })
