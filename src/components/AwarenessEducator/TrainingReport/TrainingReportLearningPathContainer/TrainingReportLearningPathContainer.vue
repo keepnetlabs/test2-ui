@@ -133,7 +133,6 @@ export default {
   },
   computed: {
     id() {
-      console.log(this.trainingSummary?.steps[this.activeStep].enrollmentId)
       return this.activeTrainingStep?.enrollmentId
     },
     activeTrainingStep() {
@@ -170,10 +169,8 @@ export default {
           const {
             data: { data }
           } = response || {}
-          console.log('type', type)
           data.trainingTypeName = this.activeTrainingStepType
           this.selectedTrainingSummary = data
-          console.log('this.selectedTrainingSummary', this.selectedTrainingSummary)
           if (
             this.selectedTrainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
           ) {

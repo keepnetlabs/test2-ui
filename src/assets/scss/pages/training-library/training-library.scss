@@ -614,7 +614,7 @@
     line-height: 18px;
   }
   .v-chip {
-    margin: 4px;
+    margin: 4px !important;
   }
   .v-chip__content {
     & > span {
@@ -758,4 +758,10 @@
   flex-direction: row;
   align-items: center;
   gap: 8px;
+}
+
+.training-library__badge-select{
+  .v-chip{
+    margin:4px !important;
+  }
 }

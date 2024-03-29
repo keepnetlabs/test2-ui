@@ -99,10 +99,6 @@
             </div>
           </div>
           <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Vendor Name: </span>
-            <span class="training-library-preview__desc">{{ infographicParams.vendorName }}</span>
-          </div>
-          <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Category Name: </span>
             <span class="training-library-preview__desc">{{
               infographicParams.categoryName || infographicParams.category

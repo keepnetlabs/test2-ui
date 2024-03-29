@@ -4,6 +4,7 @@
     <div :style="isLoading ? 'visibility:hidden;max-height:0px' : ''">
       <PowerBIReportEmbed
         v-if="renderReport"
+        :key="renderKey"
         :embed-config="config"
         css-class-name="advanced-report-power-bi-container"
         :event-handlers="eventHandlers"
@@ -18,6 +19,7 @@ import ReportsService from '@/api/reports'
 import { PowerBIReportEmbed } from 'powerbi-client-vue-js'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'AdvancedReport',
@@ -29,6 +31,7 @@ export default {
   data() {
     return {
       renderReport: false,
+      renderKey: `render-key-${createRandomCryptStringNumber()}`,
       config: {
         type: 'report',
         tokenType: 1,
@@ -68,6 +71,7 @@ export default {
           this.config.embedUrl = embedReport.embedUrl
           this.config.id = embedReport.reportId
           this.config.accessToken = embedToken.token
+          this.renderKey = `render-key-${createRandomCryptStringNumber()}`
           this.renderReport = true
         })
         .catch(this.setLoading)
