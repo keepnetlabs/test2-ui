@@ -270,6 +270,9 @@ export default {
       isStopReminderDialogVisible: false
     }
   },
+  created() {
+    this.resetAllModals()
+  },
   computed: {
     ...mapGetters({
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
@@ -300,7 +303,8 @@ export default {
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
-      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      resetAllModals: 'trainingLibrary/resetAllModals'
     }),
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
@@ -470,6 +474,10 @@ export default {
         }
       })
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    this.resetAllModals()
+    next()
   }
 }
 </script>

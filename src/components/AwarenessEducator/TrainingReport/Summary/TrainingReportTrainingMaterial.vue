@@ -154,7 +154,8 @@ export default {
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
-      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog'
+      setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
+      resetAllModals: 'trainingLibrary/resetAllModals'
     }),
     handlePreviewClick() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
@@ -212,6 +213,9 @@ export default {
     getBadgeText(text = '') {
       return text
     }
+  },
+  beforeDestroy() {
+    this.resetAllModals()
   }
 }
 </script>

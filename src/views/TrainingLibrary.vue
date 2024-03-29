@@ -29,6 +29,7 @@ export default {
     })
   },
   created() {
+    this.resetAllModals()
     this.initDefaultTableSettings()
     this.initDefaultTableFilters()
     this.callForTrainingHelpers()
@@ -37,13 +38,18 @@ export default {
   beforeDestroy() {
     this.resetState()
   },
+  beforeRouteLeave(to, from, next) {
+    this.resetAllModals()
+    next()
+  },
   methods: {
     ...mapActions({
       initDefaultTableSettings: 'trainingLibrary/initDefaultTableSettings',
       initDefaultTableFilters: 'trainingLibrary/initDefaultTableFilters',
       callForTrainingHelpers: 'trainingLibraryHelpers/callForTrainingHelpers',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
-      resetState: 'trainingLibrary/resetState'
+      resetState: 'trainingLibrary/resetState',
+      resetAllModals: 'trainingLibrary/resetAllModals'
     })
   }
 }
