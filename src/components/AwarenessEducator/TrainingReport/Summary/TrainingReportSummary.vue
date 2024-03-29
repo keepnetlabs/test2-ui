@@ -343,6 +343,13 @@ export default {
       } = reportDetail
       const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
       return {
+        downloaded: {
+          userCount: totalUserClickedCount,
+          userPercent:
+            totalTargetUserCount === 0
+              ? '0'
+              : ((totalUserClickedCount / totalTargetUserCount) * 100).toFixed()
+        },
         openedEmail: {
           userCount: totalUserOpenedCount,
           userPercent:
