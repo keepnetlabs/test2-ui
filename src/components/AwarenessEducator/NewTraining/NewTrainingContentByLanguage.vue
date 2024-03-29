@@ -120,8 +120,6 @@ export default {
   },
   computed: {
     isCheckDisableVendor() {
-      console.log('!this.vendorId', !this.vendorId)
-      console.log('this.canSaveVendor', this.canSaveVendor)
       if (!this.canSaveVendor) return false
       return !this.vendorId
     },
