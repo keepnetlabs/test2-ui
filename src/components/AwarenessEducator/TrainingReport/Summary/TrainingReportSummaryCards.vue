@@ -49,7 +49,7 @@
         :icon-src="openedEmailIcon"
       />
       <TrainingReportSummaryInfoCard
-        v-bind="getCompletedTrainingData"
+        v-bind="getDownloadedData"
         background-color="#43A047"
         :title="labels.Downloaded"
         :is-loading="isLoading"
@@ -176,6 +176,10 @@ export default {
     getCompletedTrainingData() {
       const { completedTraining } = this.items
       return completedTraining ? completedTraining : {}
+    },
+    getDownloadedData() {
+      const { downloaded } = this.items
+      return downloaded ? downloaded : {}
     },
     getNoResponseData() {
       const { noResponse } = this.items
