@@ -674,6 +674,24 @@ const trainingLibrary = {
     clearAllFilters({ commit, dispatch }) {
       commit('RESET_FILTERS')
       dispatch('callForTrainingLibrary')
+    },
+    resetAllModals({ commit }) {
+      commit('SET_NEW_LEARNING_PATH_MODAL', emptyNewLearningPathModalObj)
+      commit('SET_NEW_INFOGRAPHIC_MODAL', emptyNewInfographicModalObj)
+      commit('SET_NEW_TRAINING_MODAL', emptyNewTrainingModalObj)
+      commit('SET_NEW_SCREENSAVER_MODAL', emptyNewScreensaverModalObj)
+      commit('SET_NEW_POSTER_MODAL', emptyNewPosterModalObj)
+      commit('SET_LEARNING_PATH_SEND_MODAL', emptyLearningPathSendModalObj)
+      commit('SET_INFOGRAPHIC_SEND_MODAL', emptyInfographicSendModalObj)
+      commit('SET_TRAINING_SEND_MODAL', emptyTrainingSendModalObj)
+      commit('SET_SCREENSAVER_SEND_MODAL', emptyScreensaverSendModalObj)
+      commit('SET_POSTER_SEND_MODAL', emptyPosterSendModalObj)
+      commit('SET_LEARNING_PATH_PREVIEW_DIALOG', emptyLearningPathPreviewDialogObj)
+      commit('SET_INFO_GRAPHIC_PREVIEW_DIALOG', emptyInfographicPreviewDialogObj)
+      commit('SET_TRAINING_PREVIEW_DIALOG', emptyTrainingPreviewDialogObj)
+      commit('SET_SCREENSAVER_PREVIEW_DIALOG', emptyScreensaverPreviewDialogObj)
+      commit('SET_POSTER_PREVIEW_DIALOG', emptyPosterPreviewDialogObj)
+      commit('SET_DELETE_DIALOG', emptyTrainingDeleteDialogObj)
     }
   }
 }
