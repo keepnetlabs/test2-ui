@@ -216,37 +216,41 @@ export default {
                 value: item.name
               })) || []
           },
-          {
-            property: 'examStatus',
-            align: 'center',
-            editable: false,
-            label: 'Exam Status',
-            sortable: false,
-            hideSort: true,
-            show: false,
-            type: 'slot',
-            width: 200,
-            props: {
-              style: {
-                maxWidth: '110px !important'
-              }
-            },
-            overrideWidth: true,
-            filterableType: 'select',
-            filterableItems: ['Failed', 'Passed', 'Incomplete']
-          },
-          {
-            property: 'examScore',
-            align: 'right',
-            editable: false,
-            label: 'Exam Score',
-            fixed: false,
-            sortable: true,
-            show: false,
-            type: 'text',
-            width: 160,
-            filterableType: 'text'
-          },
+          ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+            ? [
+                {
+                  property: 'examStatus',
+                  align: 'center',
+                  editable: false,
+                  label: 'Exam Status',
+                  sortable: false,
+                  hideSort: true,
+                  show: false,
+                  type: 'slot',
+                  width: 200,
+                  props: {
+                    style: {
+                      maxWidth: '110px !important'
+                    }
+                  },
+                  overrideWidth: true,
+                  filterableType: 'select',
+                  filterableItems: ['Failed', 'Passed', 'Incomplete']
+                },
+                {
+                  property: 'examScore',
+                  align: 'right',
+                  editable: false,
+                  label: 'Exam Score',
+                  fixed: false,
+                  sortable: true,
+                  show: false,
+                  type: 'text',
+                  width: 160,
+                  filterableType: 'text'
+                }
+              ]
+            : []),
           {
             property: 'lastInteractionDate',
             align: 'left',
