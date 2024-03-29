@@ -11,6 +11,7 @@
       autocomplete="off"
       item-text="text"
       item-value="value"
+      class="training-library__badge-select"
       placeholder="Select compliance"
       :items="getCompliances"
       @input="$emit('input', $event)"

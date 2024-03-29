@@ -1,8 +1,12 @@
 <template>
   <div>
-    <FormGroup has-hint :title="labels.TrainingVendor" :sub-title="labels.TrainingVendorSub">
+    <FormGroup
+      v-if="canSaveVendor"
+      has-hint
+      :title="labels.TrainingVendor"
+      :sub-title="labels.TrainingVendorSub"
+    >
       <KSelect
-        v-if="canSaveVendor"
         v-model.trim="formData.vendorId"
         persistent-hint
         dense
@@ -28,6 +32,7 @@
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
           :vendor-id="formData.vendorId"
+          :can-save-vendor="canSaveVendor"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
