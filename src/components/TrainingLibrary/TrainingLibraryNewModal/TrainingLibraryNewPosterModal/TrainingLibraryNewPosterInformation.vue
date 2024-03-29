@@ -4,7 +4,7 @@
       <InputEntityName
         v-model.trim="formData.name"
         id="input--new-training-training-name"
-        entity-name="poster name"
+        entity-name="Poster name"
         initial-placeholder="Enter a name"
       />
     </FormGroup>

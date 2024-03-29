@@ -675,7 +675,8 @@ const trainingLibrary = {
       commit('RESET_FILTERS')
       dispatch('callForTrainingLibrary')
     },
-    resetAllModals({ commit }) {
+    resetAllModals({ commit, dispatch }) {
+      dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, { root: true })
       commit('SET_NEW_LEARNING_PATH_MODAL', emptyNewLearningPathModalObj)
       commit('SET_NEW_INFOGRAPHIC_MODAL', emptyNewInfographicModalObj)
       commit('SET_NEW_TRAINING_MODAL', emptyNewTrainingModalObj)
