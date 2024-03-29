@@ -17,13 +17,13 @@ export default {
   name: 'AdvancedReport',
   components: { DatatableLoading, KContainer },
   mixins: [useLoading],
-  mounted() {
-    this.callForData()
-  },
   data() {
     return {
       report: null
     }
+  },
+  mounted() {
+    this.callForData()
   },
   methods: {
     callForData() {
