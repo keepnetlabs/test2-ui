@@ -49,7 +49,6 @@
       <DefaultMenuRowAction
         :id="rowActions[5].id"
         :scope="scope"
-        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[5].icon"
         :text="rowActions[5].name"
         @on-click="handleDuplicate(scope.row)"
