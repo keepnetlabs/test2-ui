@@ -18,11 +18,33 @@
       </div>
     </div>
     <div class="training-library-card__body">
-      <div class="training-library-card__body-title">{{ item.trainingName }}</div>
+      <VTooltip v-if="isRenderTitleTooltip" bottom>
+        <template #activator="{ on }">
+          <div v-on="on" ref="refBodyTitle" class="training-library-card__body-title">
+            {{ item.trainingName }}
+          </div>
+        </template>
+        <span>{{ item.trainingName }}</span>
+      </VTooltip>
+      <div v-else class="training-library-card__body-title">{{ item.trainingName }}</div>
       <div class="training-library-card__body-sub">
-        <div>{{ item.createdBy }}</div>
+        <VTooltip v-if="isRenderCreatedByTooltip">
+          <template #activator="{ on }">
+            <div ref="refBodyCreatedBy" v-on="on">{{ item.createdBy }}</div>
+          </template>
+          <span>{{ item.createdBy }}</span>
+        </VTooltip>
+        <div v-else>{{ item.createdBy }}</div>
         <div class="training-library-card__body-sub-bull"></div>
-        <div class="training-library-card__body-sub-category">{{ item.category }}</div>
+        <VTooltip v-if="isRenderCategoryTooltip">
+          <template #activator="{ on }">
+            <div ref="refBodyCategory" v-on="on" class="training-library-card__body-sub-category">
+              {{ item.category }}
+            </div>
+          </template>
+          <span>{{ item.category }}</span>
+        </VTooltip>
+        <div v-else class="training-library-card__body-sub-category">{{ item.category }}</div>
       </div>
       <div class="training-library-card__body-description">
         <div class="d-flex gap-2">
@@ -149,6 +171,13 @@ export default {
       default: () => {}
     }
   },
+  data() {
+    return {
+      isRenderTitleTooltip: true,
+      isRenderCreatedByTooltip: true,
+      isRenderCategoryTooltip: true
+    }
+  },
   computed: {
     getActionsByType() {
       const actions = [
@@ -199,6 +228,17 @@ export default {
         bgColorClass = 'screensaver'
       return `training-library-card__type--${bgColorClass}`
     }
+  },
+  mounted() {
+    const { refBodyTitle, refBodyCreatedBy, refBodyCategory } = this.$refs
+    this.$nextTick(() => {
+      if (!refBodyTitle) return
+      this.isRenderTitleTooltip = refBodyTitle.offsetWidth < refBodyTitle.scrollWidth
+      if (!refBodyCreatedBy) return
+      this.isRenderCreatedByTooltip = refBodyCreatedBy.offsetWidth < refBodyCreatedBy.scrollWidth
+      if (!refBodyCategory) return
+      this.isRenderCategoryTooltip = refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
+    })
   },
   methods: {
     ...mapActions({

@@ -433,6 +433,7 @@
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   background: #fff;
+  overflow:hidden;
   &__type {
     font-size: 12px;
     font-style: normal;
@@ -501,6 +502,9 @@
       font-weight: 600;
       line-height: normal;
       color: #383b41;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     &-sub {
       display: flex;

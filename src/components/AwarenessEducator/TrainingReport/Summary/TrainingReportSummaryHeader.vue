@@ -21,7 +21,8 @@
         </div>
       </div>
       <div class="training-report-summary-header__right">
-        <!-- <v-btn
+        <v-btn
+          v-if="!isLearningPath"
           class="training-report-summary-header__btn-download-report"
           rounded
           outlined
@@ -30,7 +31,6 @@
           @click="handleDownloadReport"
           >{{ labels.DownloadReport }}</v-btn
         >
-        -->
         <v-btn
           v-if="!isLoading && !isScormProxy"
           class="training-report-summary-header__btn-resend-campaign ml-2"
@@ -116,6 +116,12 @@ export default {
       )
         return labels.ResendLearningPath
       return labels.ResendTraining
+    },
+    isLearningPath() {
+      return (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
     }
   },
   methods: {
