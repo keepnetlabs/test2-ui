@@ -26,17 +26,23 @@
         </template>
         <span>{{ item.trainingName }}</span>
       </VTooltip>
-      <div v-else class="training-library-card__body-title">{{ item.trainingName }}</div>
+      <div ref="refBodyTitle" v-else class="training-library-card__body-title">
+        {{ item.trainingName }}
+      </div>
       <div class="training-library-card__body-sub">
-        <VTooltip v-if="isRenderCreatedByTooltip">
+        <VTooltip v-if="isRenderCreatedByTooltip" bottom>
           <template #activator="{ on }">
-            <div ref="refBodyCreatedBy" v-on="on">{{ item.createdBy }}</div>
+            <div ref="refBodyCreatedBy" v-on="on" class="training-library-card__body-sub-category">
+              {{ item.createdBy }}
+            </div>
           </template>
           <span>{{ item.createdBy }}</span>
         </VTooltip>
-        <div v-else>{{ item.createdBy }}</div>
+        <div v-else ref="refBodyCreatedBy" class="training-library-card__body-sub-category">
+          {{ item.createdBy }}
+        </div>
         <div class="training-library-card__body-sub-bull"></div>
-        <VTooltip v-if="isRenderCategoryTooltip">
+        <VTooltip v-if="isRenderCategoryTooltip" bottom>
           <template #activator="{ on }">
             <div ref="refBodyCategory" v-on="on" class="training-library-card__body-sub-category">
               {{ item.category }}
@@ -44,7 +50,9 @@
           </template>
           <span>{{ item.category }}</span>
         </VTooltip>
-        <div v-else class="training-library-card__body-sub-category">{{ item.category }}</div>
+        <div v-else ref="refBodyCategory" class="training-library-card__body-sub-category">
+          {{ item.category }}
+        </div>
       </div>
       <div class="training-library-card__body-description">
         <div class="d-flex gap-2">
@@ -161,7 +169,7 @@ import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
+let that = null
 export default {
   name: 'TrainingLibraryCard',
   components: { TrainingLibraryFavoriteButton, TrainingLibraryNewBadge },
@@ -230,15 +238,12 @@ export default {
     }
   },
   mounted() {
-    const { refBodyTitle, refBodyCreatedBy, refBodyCategory } = this.$refs
-    this.$nextTick(() => {
-      if (!refBodyTitle) return
-      this.isRenderTitleTooltip = refBodyTitle.offsetWidth < refBodyTitle.scrollWidth
-      if (!refBodyCreatedBy) return
-      this.isRenderCreatedByTooltip = refBodyCreatedBy.offsetWidth < refBodyCreatedBy.scrollWidth
-      if (!refBodyCategory) return
-      this.isRenderCategoryTooltip = refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
-    })
+    that = this
+    window.addEventListener('resize', this.checkTooltipStasuses)
+    this.$nextTick(() => this.checkTooltipStasuses())
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkTooltipStasuses)
   },
   methods: {
     ...mapActions({
@@ -259,6 +264,18 @@ export default {
       setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
       setDeleteDialog: 'trainingLibrary/setDeleteDialog'
     }),
+    checkTooltipStasuses() {
+      const { refBodyTitle, refBodyCreatedBy, refBodyCategory } = that.$refs
+      this.isRenderTitleTooltip = refBodyTitle
+        ? refBodyTitle.offsetWidth < refBodyTitle.scrollWidth
+        : false
+      this.isRenderCreatedByTooltip = refBodyCreatedBy
+        ? refBodyCreatedBy.offsetWidth < refBodyCreatedBy.scrollWidth
+        : false
+      this.isRenderCategoryTooltip = refBodyCategory
+        ? refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
+        : false
+    },
     handleFavoriteRemove() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
         this.callForTrainingLibrary()
