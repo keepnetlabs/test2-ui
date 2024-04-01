@@ -110,11 +110,15 @@
           "trailingComma": "none",
           "no-unused-vars": false,
           "vue/require-v-for-key": false,
-          "vue/no-mutating-props": false
+          "vue/no-mutating-props": false,
+          "vue/no-unused-vars": false,
+          "vue/no-dupe-v-else-if": false
         }
       ] ,
       "vue/no-use-v-if-with-v-for": "off",
-      "vue/no-mutating-props": "off"
+      "vue/no-mutating-props": "off",
+      "vue/no-unused-vars": "off",
+      "vue/no-dupe-v-else-if": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint",
