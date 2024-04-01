@@ -14,7 +14,12 @@
         visibility: isProxy ? 'hidden' : 'visible'
       }"
     >
-      <KButtonRadioGroup v-model="selectedRadioGroupIndex" class="mb-8" :items="radioGroupItems" />
+      <KButtonRadioGroup
+        v-if="false"
+        v-model="selectedRadioGroupIndex"
+        class="mb-8"
+        :items="radioGroupItems"
+      />
       <div v-show="selectedRadioGroupIndex === 0">
         <FormGroup :title="labels.TargetUserGroups" :sub-title="targetUsersGroupSub"> </FormGroup>
         <TargetGroups
