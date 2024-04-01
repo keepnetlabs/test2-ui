@@ -1,8 +1,8 @@
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 //trainings
-const searchTraining = (payload) => {
-  return testRequest.post('/trainings/search', payload)
+const searchTraining = (payload, options = {}) => {
+  return testRequest.post('/trainings/search', payload, options)
 }
 const deleteTraining = (resourceId) => {
   return testRequest.delete(`/trainings/${resourceId}`, {
@@ -475,8 +475,8 @@ const downloadPoster = (payload) => {
     responseType: 'blob'
   })
 }
-const getTrainingTypeCount = (payload) => {
-  return testRequest.post('/trainings/get-training-type-count', payload)
+const getTrainingTypeCount = (payload, options = {}) => {
+  return testRequest.post('/trainings/get-training-type-count', payload, options)
 }
 const getVendors = () => {
   return testRequest.get('/trainings/vendors')
