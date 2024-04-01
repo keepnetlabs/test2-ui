@@ -786,8 +786,10 @@ export function cancellableAxiosRequest(fn) {
   let isAborted = false
   let controller = new AbortController()
   return (...params) => {
+    console.log('isAborted', isAborted)
     //that means if there is next call without resolving it would be aborted
     if (isAborted) {
+      console.log('iam aborted')
       controller.abort()
       controller = new AbortController()
     }

@@ -25,9 +25,17 @@ import {
   emptyLearningPathSendModalObj,
   TRAINING_LIBRARY_SEARCH_TYPES
 } from '@/components/TrainingLibrary/utils'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  cancellableAxiosRequest,
+  createRandomCryptStringNumber,
+  getDefaultAxiosPayload
+} from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
+const cancellableSummaryRequest = cancellableAxiosRequest(
+  AwarenessEducatorService.getTrainingTypeCount
+)
+const cancellableDataRequest = cancellableAxiosRequest(AwarenessEducatorService.searchTraining)
 const trainingLibrary = {
   namespaced: true,
   state: {
@@ -471,8 +479,14 @@ const trainingLibrary = {
   actions: {
     callForTableData({ commit, state }) {
       commit('SET_IS_LOADING', true)
-      AwarenessEducatorService.searchTraining(state.axiosPayload)
+      let isAborted = false
+      cancellableDataRequest(state.axiosPayload)
         .then((response) => {
+          if (!Object.keys(response).length) {
+            isAborted = true
+            return
+          }
+          isAborted = false
           const {
             data: { data = {} }
           } = response
@@ -490,7 +504,7 @@ const trainingLibrary = {
           })
         })
         .finally(() => {
-          commit('SET_IS_LOADING', false)
+          if (!isAborted) commit('SET_IS_LOADING', false)
         })
     },
     callForTrainingLibrary({ dispatch }) {
@@ -502,8 +516,14 @@ const trainingLibrary = {
       else commit('SET_TABS_LOADING', true)
       const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload))
       copyOfPayload.pageNumber = 1
-      AwarenessEducatorService.getTrainingTypeCount(copyOfPayload)
+      let isAborted = false
+      cancellableSummaryRequest(copyOfPayload)
         .then((response) => {
+          if (!Object.keys(response).length) {
+            isAborted = true
+            return
+          }
+          isAborted = false
           const { data: { data } = {} } = response || {}
           commit('SET_TRAINING_SUB_TABS', [
             {
@@ -535,7 +555,7 @@ const trainingLibrary = {
           ])
         })
         .finally(() => {
-          commit('SET_TABS_LOADING', false)
+          if (!isAborted) commit('SET_TABS_LOADING', false)
         })
     },
     setChangeVisibilityOfColumn({ commit }) {
