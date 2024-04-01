@@ -68,7 +68,7 @@
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <FormGroup v-if="!formData.isProxy" style="max-width: 650px;" :title="labels.Schedule">
+    <FormGroup style="max-width: 650px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
