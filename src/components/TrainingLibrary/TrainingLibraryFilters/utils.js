@@ -255,7 +255,7 @@ export const learningPathMergeTags = [
   },
   {
     text: 'Learning Path Step',
-    value: '{FULLNAME}'
+    value: '{LEARNINGPATHSTEP}'
   },
   {
     text: 'First Name',
