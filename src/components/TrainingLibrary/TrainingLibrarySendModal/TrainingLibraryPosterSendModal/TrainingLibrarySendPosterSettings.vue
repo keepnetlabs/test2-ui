@@ -69,7 +69,7 @@
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <FormGroup v-if="!formData.isProxy" style="max-width: 600px;" :title="labels.Schedule">
+    <FormGroup v-if="!formData.isProxy" style="max-width: 650px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -95,7 +95,7 @@
           <div :class="[!isDateValid && 'date-picker-error mb-n3']">
             <InputDate
               v-model="formData.enrollmentScheduler.scheduledDate"
-              class="date-picker-height-40 ml-2 black-placeholder"
+              class="date-picker-height-40 ml-2 mx-1 black-placeholder"
               type="datetime"
               ref="refPicker"
               placeholder="Select Date and Time"
@@ -120,7 +120,7 @@
           <span class="v-label theme--light mx-2" style="font-size: 14px;">on</span>
           <InputTimezone
             v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
-            class="black-placeholder"
+            class="black-placeholder ml-1"
             :disabled="isScheduledTimeDisabled"
           />
         </div>
