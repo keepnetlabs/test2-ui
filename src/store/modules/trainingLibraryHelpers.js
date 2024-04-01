@@ -19,7 +19,11 @@ const trainingLibraryHelpers = {
     distributionDelayTimeTypes: distributionDelayTimeTypes,
     certificateEmailNotificationTemplateTypeResourceId: [],
     reminderEmailNotificationTemplateTypeResourceId: [],
-    trainingEmailNotificationTemplateTypeResourceId: []
+    trainingEmailNotificationTemplateTypeResourceId: [],
+    infographicEmailNotificationTemplateTypeResourceId: '',
+learningPathEmailNotificationTemplateTypeResourceId: '',
+posterEmailNotificationTemplateTypeResourceId: '',
+learningPathReminderEmailNotificationTemplateTypeResourceId: '',
   },
   getters: {
     getCategories(state) {
@@ -57,6 +61,18 @@ const trainingLibraryHelpers = {
     },
     getTrainingEmailNotificationTemplateTypeResourceId(state) {
       return state.trainingEmailNotificationTemplateTypeResourceId
+    },
+    getInfographicEmailNotificationTemplateTypeResourceId(state) {
+      return state.infographicEmailNotificationTemplateTypeResourceId
+    },
+    getLearningPathEmailNotificationTemplateTypeResourceId(state) {
+      return state.learningPathEmailNotificationTemplateTypeResourceId
+    },
+    getLearningPathReminderEmailNotificationTemplateTypeResourceId(state) {
+      return state.learningPathReminderEmailNotificationTemplateTypeResourceId
+    },
+    getPosterEmailNotificationTemplateTypeResourceId(state) {
+      return state.posterEmailNotificationTemplateTypeResourceId
     },
     getTrainingTypes(state) {
       return state.types
@@ -101,6 +117,18 @@ const trainingLibraryHelpers = {
     },
     SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.trainingEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_LEARNING_PATH_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.learningPathEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.learningPathReminderEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_POSTER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.posterEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_INFOGRAPHIC_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.infographicEmailNotificationTemplateTypeResourceId = payload
     },
     SET_TYPES(state, payload) {
       state.types = payload
@@ -322,6 +350,10 @@ const trainingLibraryHelpers = {
           certificateEmailNotificationTemplateTypeResourceId = '',
           reminderEmailNotificationTemplateTypeResourceId = '',
           trainingEmailNotificationTemplateTypeResourceId = '',
+          infographicEmailNotificationTemplateTypeResourceId = '',
+          learningPathEmailNotificationTemplateTypeResourceId = '',
+          posterEmailNotificationTemplateTypeResourceId = '',
+          learningPathReminderEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {},
           canSaveVendor = false
         } = response?.data?.data || {}
@@ -337,6 +369,22 @@ const trainingLibraryHelpers = {
         commit(
           'SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
           trainingEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_INFOGRAPHIC_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          infographicEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_LEARNING_PATH_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          learningPathEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_POSTER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          posterEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          learningPathReminderEmailNotificationTemplateTypeResourceId
         )
         commit('SET_CAN_SAVE_VENDOR', canSaveVendor)
       })

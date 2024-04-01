@@ -192,10 +192,10 @@ export default {
       distributionDelayTimeTypes: 'trainingLibraryHelpers/getDistributionDelayTimeTypes',
       certificateEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
-      reminderEmailNotificationTemplateTypeResourceId:
+        reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-      trainingEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId'
+        learningPathEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId'
     }),
     isSmsNotification() {
       if (this.step === 2 || this.step === 3)
@@ -312,7 +312,7 @@ export default {
         }
       )
       //get training email
-      getDefaultEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then(
+      getDefaultEmailTemplate(this.learningPathEmailNotificationTemplateTypeResourceId).then(
         (response) => {
           const {
             data: { data }

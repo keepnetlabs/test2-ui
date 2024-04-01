@@ -195,8 +195,8 @@ export default {
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
       reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-      trainingEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId',
+      infographicEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getInfographicEmailNotificationTemplateTypeResourceId',
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
     isSmsNotification() {
@@ -324,7 +324,7 @@ export default {
         }
       )
       //get training email
-      getDefaultEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then(
+      getDefaultEmailTemplate(this.infographicEmailNotificationTemplateTypeResourceId).then(
         (response) => {
           const {
             data: { data }
