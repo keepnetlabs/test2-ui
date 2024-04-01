@@ -111,4 +111,9 @@ export function getStatusBadgeProps(status) {
       color: '#B83A3A',
       text: 'Not Completed'
     }
+  if (trimmedStatus === 'Downloaded')
+    return {
+      color: '#217124',
+      text: 'Downloaded'
+    }
 }
