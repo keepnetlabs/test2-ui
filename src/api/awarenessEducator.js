@@ -214,7 +214,7 @@ const getTrainingReportFormDetails = () => {
 
 const searchTrainingReportUsers = (payload, resourceId, trainingType) => {
   let url = `/training-reports/${resourceId}/users/search`
-  if (trainingType) url += `?trainingType=${trainingType}`
+  if (trainingType) payload.trainingType = trainingType
   return testRequest.post(url, payload)
 }
 

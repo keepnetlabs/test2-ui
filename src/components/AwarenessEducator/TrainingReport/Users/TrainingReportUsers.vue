@@ -432,19 +432,10 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      let type = 0
       let textType = this.isAddTrainingTypeKeyToPayload
         ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
         : null
-      if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
-      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
-      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
-      else if (
-        textType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        textType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-      )
-        type = 4
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id, type)
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id, textType)
         .then((response) => {
           const {
             data: {
@@ -467,7 +458,10 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          trainingType: this.isAddTrainingTypeKeyToPayload
+            ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+            : null
         }
         AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
           const { data } = response
