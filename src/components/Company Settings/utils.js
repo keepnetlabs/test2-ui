@@ -140,7 +140,7 @@ export const MERGED_TEXTS_MAP = {
   '{TRAININGCOMPLETEDATE}': trainingCompleteDate,
   '{TRAININGCOVERIMAGEURL}': trainingCoverImageUrl,
   '{LEARNINGPATHURL}': learningPathUrl,
-  '{LEARNINGPATHNAME}': learningPathName,
-  '{LEARNINGPATHDESCRIPTION}': learningPathDescription,
-  '{LEARNINGPATHSTEP}': learningPathStep
+  '{LEARNING_PATH_NAME}': learningPathName,
+  '{LEARNING_PATH_DESCRIPTION}': learningPathDescription,
+  '{LEARNING_PATH_STEP}': learningPathStep
 }
