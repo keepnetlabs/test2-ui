@@ -2,7 +2,8 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import {
   emptyLearningPathModalTrainingPreviewDialogObj,
-  TRAINING_LIBRARY_SEARCH_TYPES
+  TRAINING_LIBRARY_SEARCH_TYPES,
+  isInavailable
 } from '@/components/TrainingLibrary/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -14,7 +15,7 @@ const learningPath = {
     selectedLearningPathTrainings: [],
     learningPathServerSideProps: new ServerSideProps(),
     learningPathAxiosPayload: getDefaultAxiosPayload({
-      pageSize: 100,
+      pageSize: 500,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
       trainingType: null,
       trainingId: '',
@@ -129,7 +130,7 @@ const learningPath = {
       state.learningPathSelectedTrainingContent = 'All Materials'
       state.learningPathSelectedSubTrainingContent = 'All Types'
       state.learningPathAxiosPayload = getDefaultAxiosPayload({
-        pageSize: 100,
+        pageSize: 500,
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null,
         filter: {
@@ -194,6 +195,15 @@ const learningPath = {
     },
     RESET_SELECTED_LEARNING_PATH_TRAININGS(state) {
       state.selectedLearningPathTrainings = []
+    },
+    ORDER_LEARNING_PATH_DATA(state, payload) {
+      state.learningPathTableData.sort((a, b) => {
+        return isInavailable(payload, a) === isInavailable(payload, b)
+          ? 0
+          : !isInavailable(payload, a)
+          ? -1
+          : 1
+      })
     },
     RESET_LEARNING_PATH_DATA(state) {
       state.learningPathTableData = []
@@ -352,6 +362,9 @@ const learningPath = {
     },
     removeTrainingFromLearningPath({ commit }, payload) {
       commit('REMOVE_TRAINING_FROM_LEARNING_PATH', payload)
+    },
+    orderLearningPathData({ commit }, payload) {
+      commit('ORDER_LEARNING_PATH_DATA', payload)
     },
     getDataAfterValidScroll({ state, dispatch }) {
       if (

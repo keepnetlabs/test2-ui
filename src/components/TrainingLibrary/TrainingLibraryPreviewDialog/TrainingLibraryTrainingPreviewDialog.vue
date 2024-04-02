@@ -122,7 +122,9 @@ export default {
       this.callForTrainingDetail()
     },
     callForTrainingDetail() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
+      AwarenessEducatorService.getTraining(
+        this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
+      ).then((response) => {
         const {
           data: { data }
         } = response

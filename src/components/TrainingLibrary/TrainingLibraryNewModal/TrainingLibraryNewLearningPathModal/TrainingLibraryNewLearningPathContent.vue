@@ -2,8 +2,9 @@
   <Fragment>
     <TrainingLibraryTrainingPreviewDialog
       v-if="
-        getLearningPathModalTrainingPreviewDialog.status &&
-        getLearningPathModalTrainingPreviewDialog.type === 'SCORM'
+        (getLearningPathModalTrainingPreviewDialog.status &&
+          getLearningPathModalTrainingPreviewDialog.type === 'SCORM') ||
+        getLearningPathModalTrainingPreviewDialog.type === 'SCORM12'
       "
       v-bind="getLearningPathModalTrainingPreviewDialog"
       @close="onClosePreviewModal"
@@ -166,6 +167,16 @@ export default {
       getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
     })
   },
+  watch: {
+    availableForRequests: {
+      deep: true,
+      handler(val) {
+        if (val.length) {
+          this.orderLearningPathData(val)
+        }
+      }
+    }
+  },
   methods: {
     ...mapActions({
       clearAllFilters: 'learningPath/learningPathClearAllFilters',
@@ -174,17 +185,22 @@ export default {
       setLearningPathModalTrainingPreviewDialog:
         'learningPath/setLearningPathModalTrainingPreviewDialog',
       setSelectedTrainings: 'learningPath/setSelectedLearningPathTrainings',
-      getDataAfterValidScroll: 'learningPath/getDataAfterValidScroll'
+      getDataAfterValidScroll: 'learningPath/getDataAfterValidScroll',
+      orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
     isInavailable(training) {
-      if (this.availableForRequests.includes('MyCompanyOnly')) return false
+      if (this.availableForRequests.includes('MyCompanyOnly')) {
+        return false
+      }
       if (this.availableForRequests.every((item) => training?.availableFor?.includes(item))) {
         return false
       }
       return true
     },
     isDisabled(training) {
-      if (this.availableForRequests.includes('MyCompanyOnly')) return false
+      if (training?.availableFor?.includes('AllCompanies')) {
+        return false
+      }
       if (this.availableForRequests.every((item) => training?.availableFor?.includes(item))) {
         return false
       }
