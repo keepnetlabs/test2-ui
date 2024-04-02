@@ -58,6 +58,7 @@
         :training-email-notification-template-type-resource-id="
           getTrainingEmailNotificationTemplateTypeResourceId
         "
+        :training-type="getTrainingType"
       />
       <TrainingReportTrainingMaterial
         :form-data="getTrainingMaterialData"

@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Training enrollment email template &#8226;
+              Infographic enrollment email template &#8226;
               <span class="template-list--item__sub-header--span">by</span>
               {{ formData.enrollmentData.createdBy }}
             </div>
