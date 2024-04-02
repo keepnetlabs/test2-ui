@@ -58,6 +58,7 @@
         :training-email-notification-template-type-resource-id="
           getTrainingEmailNotificationTemplateTypeResourceId
         "
+        :training-type="getTrainingType"
       />
       <TrainingReportTrainingMaterial
         :form-data="getTrainingMaterialData"
@@ -252,20 +253,24 @@ export default {
         reminderDescription: 'No',
         startDate: ''
       }
-      return {
-        'Start Date': {
+      const dateKey = this.isTrainingTypeLearningPath ? 'Delivery Start' : 'Start Date'
+      const obj = {
+        [dateKey]: {
           show: true,
           value: startDate
         },
         'Reminder Options': {
           show: true,
           value: reminderDescription || 'No'
-        },
-        'Delivery Status': {
+        }
+      }
+      if (!this.isTrainingTypeLearningPath) {
+        obj['Delivery Status'] = {
           show: true,
           value: ''
         }
       }
+      return obj
     },
     getResendDialogItems() {
       const [
