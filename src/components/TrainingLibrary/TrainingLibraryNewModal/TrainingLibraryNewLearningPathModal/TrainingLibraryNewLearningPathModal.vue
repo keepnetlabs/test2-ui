@@ -1,77 +1,85 @@
 <template>
-  <AppModal
-    :status="status"
-    icon-name="mdi-book"
-    :title="getTitle"
-    title-id="text--add-or-edit-training-modal-title"
-    @closeOverlay="handleClose"
-  >
-    <template #overlay-body>
-      <v-stepper v-model="step" class="k-stepper">
-        <v-stepper-header class="k-stepper__header">
-          <v-stepper-step
-            id="step--training-add-or-edit-modal-course-info"
-            class="k-stepper__step"
-            :complete="step > 1"
-            :step="1"
-            >{{ labels.LearningPathInfo }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--training-add-or-edit-modal-training-content"
-            class="k-stepper__step"
-            :complete="step > 2"
-            :step="2"
-            >{{ labels.LearningPathContent }}
-          </v-stepper-step>
-        </v-stepper-header>
-        <v-stepper-items class="k-stepper__items">
-          <v-stepper-content class="k-stepper__content" :step="1">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.LearningPathInformation"
-              :subtitle="labels.LearningPathInformationSub"
-            />
-            <TrainingLibraryNewLearningPathInformation ref="refTrainingCourseInformation" />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.LearningPathContent"
-              :subtitle="labels.LearningPathContentSub"
-            />
-            <TrainingLibraryNewLearningPathContent
-              ref="refLearningPathContent"
-              :is-action-button-disabled.sync="isActionButtonDisabled"
-              :resource-id="trainingId"
-              :step="step"
-              :is-edit="isEdit"
-            />
-          </v-stepper-content>
-        </v-stepper-items>
-      </v-stepper>
-    </template>
-    <template #overlay-footer>
-      <StepperFooter
-        max-step="2"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-training-modal',
-          backButton: 'btn-back--add-or-edit-training-modal',
-          nextButton: 'btn-next--add-or-edit-training-modal',
-          saveButton: 'btn-save--add-or-edit-training-modal'
-        }"
-        :step="step"
-        :disabled-statuses="{
-          nextButton: isActionButtonDisabled,
-          submitButton: isActionButtonDisabled
-        }"
-        @on-cancel="handleClose"
-        @on-back="changeStep(-1)"
-        @on-next="changeStep()"
-        @on-submit="handleSubmit"
-      />
-    </template>
-  </AppModal>
+  <Fragment>
+    <TrainingLibraryNewLearningPathCannotSaveModal
+      v-if="isCannotSaveModalActive"
+      :status="isCannotSaveModalActive"
+      @closeOverlay="toggleCannotSaveModal"
+    />
+    <AppModal
+      :status="status"
+      icon-name="mdi-book"
+      :title="getTitle"
+      title-id="text--add-or-edit-training-modal-title"
+      @closeOverlay="handleClose"
+    >
+      <template #overlay-body>
+        <v-stepper v-model="step" class="k-stepper">
+          <v-stepper-header class="k-stepper__header">
+            <v-stepper-step
+              id="step--training-add-or-edit-modal-course-info"
+              class="k-stepper__step"
+              :complete="step > 1"
+              :step="1"
+              >{{ labels.LearningPathInfo }}
+            </v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              id="step--training-add-or-edit-modal-training-content"
+              class="k-stepper__step"
+              :complete="step > 2"
+              :step="2"
+              >{{ labels.LearningPathContent }}
+            </v-stepper-step>
+          </v-stepper-header>
+          <v-stepper-items class="k-stepper__items">
+            <v-stepper-content class="k-stepper__content" :step="1">
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.LearningPathInformation"
+                :subtitle="labels.LearningPathInformationSub"
+              />
+              <TrainingLibraryNewLearningPathInformation ref="refTrainingCourseInformation" />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="2">
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.LearningPathContent"
+                :subtitle="labels.LearningPathContentSub"
+              />
+              <TrainingLibraryNewLearningPathContent
+                ref="refLearningPathContent"
+                :is-action-button-disabled.sync="isActionButtonDisabled"
+                :resource-id="trainingId"
+                :step="step"
+                :is-edit="isEdit"
+                :availableForRequests="availableForRequestIds"
+              />
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </template>
+      <template #overlay-footer>
+        <StepperFooter
+          max-step="2"
+          :ids="{
+            cancelButton: 'btn-cancel--add-or-edit-training-modal',
+            backButton: 'btn-back--add-or-edit-training-modal',
+            nextButton: 'btn-next--add-or-edit-training-modal',
+            saveButton: 'btn-save--add-or-edit-training-modal'
+          }"
+          :step="step"
+          :disabled-statuses="{
+            nextButton: isActionButtonDisabled,
+            submitButton: isActionButtonDisabled
+          }"
+          @on-cancel="handleClose"
+          @on-back="changeStep(-1)"
+          @on-next="changeStep()"
+          @on-submit="handleSubmit"
+        />
+      </template>
+    </AppModal>
+  </Fragment>
 </template>
 
 <script>
@@ -86,15 +94,18 @@ import TrainingLibraryNewLearningPathInformation from '@/components/TrainingLibr
 import TrainingLibraryNewLearningPathContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathContent.vue'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
+import TrainingLibraryNewLearningPathCannotSaveModal from './TrainingLibraryNewLearningPathCannotSaveModal'
+import { Fragment } from 'vue-frag'
 export default {
   name: 'TrainingLibraryNewLearningPathModal',
   components: {
     TrainingLibraryNewLearningPathContent,
     TrainingLibraryNewLearningPathInformation,
+    TrainingLibraryNewLearningPathCannotSaveModal,
     StepperFooter,
     ConfigureCompanyStepHeader,
-    AppModal
+    AppModal,
+    Fragment
   },
   props: {
     status: {
@@ -112,10 +123,12 @@ export default {
   },
   data() {
     return {
+      isCannotSaveModalActive: false,
       labels,
       isActionButtonDisabled: false,
       step: 1,
-      trainingId: this?.selectedRow?.resourceId || ''
+      trainingId: this?.selectedRow?.resourceId || '',
+      availableForRequestIds: []
     }
   },
   computed: {
@@ -172,6 +185,9 @@ export default {
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
       callForLearningPathTrainingLibrary: 'learningPath/callForLearningPathTrainingLibrary'
     }),
+    toggleCannotSaveModal() {
+      this.isCannotSaveModalActive = !this.isCannotSaveModalActive
+    },
     handleClose() {
       this.setNewLearningPathModal(emptyNewLearningPathModalObj)
     },
@@ -184,6 +200,9 @@ export default {
             refTrainingCourseInformation.formData.availableForRequests
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
+          this.availableForRequestIds = refTrainingCourseInformation.formData.availableForRequests.map(
+            (item) => item.id
+          )
         }
         if (refTrainingCourseInformation.validateForm()) {
           this.step += flag
@@ -205,6 +224,10 @@ export default {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert'
         })
+        return
+      }
+      if (document.getElementsByClassName('learning-path-content__training--disabled').length) {
+        this.toggleCannotSaveModal()
         return
       }
       const {

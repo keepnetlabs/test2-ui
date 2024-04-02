@@ -433,7 +433,7 @@
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   background: #fff;
-  overflow:hidden;
+  overflow: hidden;
   &__type {
     font-size: 12px;
     font-style: normal;
@@ -688,6 +688,19 @@
     border-radius: 8px;
     margin-bottom: 8px;
 
+    &--inavailable {
+      border-color: #E6A23C;
+
+      & .learning-path-content__training--handle {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+
+    &--disabled {
+      border-color: #F56C6C;
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -715,7 +728,7 @@
 
     &--cover-image {
       width: 150px;
-      height: 80px;
+      height: 78px;
       flex-shrink: 0;
       margin-right: 1rem;
     }
@@ -724,6 +737,7 @@
       display: flex;
       flex-direction: column;
       margin-right: 1rem;
+      overflow: hidden;
 
       &-name {
         color: #383b41;
@@ -731,7 +745,12 @@
         font-weight: 600;
       }
 
-      &-created-by {
+      &-created-by--container {
+        display: flex;
+        gap: 4px;
+      }
+
+      &-created-by, &-type{
         color: #2196f3;
         font-size: 11px;
         font-weight: 600;
@@ -764,8 +783,8 @@
   gap: 8px;
 }
 
-.training-library__badge-select{
-  .v-chip{
-    margin:4px !important;
+.training-library__badge-select {
+  .v-chip {
+    margin: 4px !important;
   }
 }
