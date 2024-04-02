@@ -1,7 +1,7 @@
 const mergedTextsLearningPathStep = [
   {
     tagName: 'span',
-    content: '{LEARNINGPATHSTEP}'
+    content: '{LEARNING_PATH_STEP}'
   }
 ]
 export default mergedTextsLearningPathStep

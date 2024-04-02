@@ -255,7 +255,7 @@ export const learningPathMergeTags = [
   },
   {
     text: 'Learning Path Step',
-    value: '{LEARNINGPATHSTEP}'
+    value: '{LEARNING_PATH_STEP}'
   },
   {
     text: 'First Name',
@@ -271,7 +271,7 @@ export const learningPathMergeTags = [
   },
   {
     text: 'Learning Path Description',
-    value: '{LEARNINGPATHDESCRIPTION}'
+    value: '{LEARNING_PATH_DESCRIPTION}'
   },
   {
     text: 'Date SMS Sent',

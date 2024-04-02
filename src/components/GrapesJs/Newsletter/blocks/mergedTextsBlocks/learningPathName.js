@@ -1,7 +1,7 @@
 const mergedTextsLearningPathName = [
   {
     tagName: 'span',
-    content: '{LEARNINGPATHNAME}'
+    content: '{LEARNING_PATH_NAME}'
   }
 ]
 export default mergedTextsLearningPathName
