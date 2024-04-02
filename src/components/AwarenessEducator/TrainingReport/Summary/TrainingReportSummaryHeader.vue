@@ -34,7 +34,7 @@
         >
         -->
         <v-btn
-          v-if="!isLoading && !isScormProxy"
+          v-if="!isLoading && !isScormProxy && !isLearningPath"
           class="training-report-summary-header__btn-resend-campaign ml-2"
           rounded
           color="#2196f3"
