@@ -113,6 +113,167 @@ export default {
     }
   },
   data() {
+    const columns = [
+      {
+        property: 'firstName',
+        align: 'left',
+        editable: false,
+        label: 'First Name',
+        fixed: 'left',
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 150
+      },
+      {
+        property: 'lastName',
+        align: 'left',
+        editable: false,
+        label: 'Last Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 150
+      },
+      {
+        property: 'email',
+        align: 'left',
+        editable: false,
+        label: 'Email',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'phoneNumber',
+        align: 'left',
+        editable: false,
+        label: 'Phone Number',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'department',
+        align: 'left',
+        fixed: false,
+        editable: false,
+        label: 'Department',
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'status',
+        align: 'center',
+        editable: false,
+        label: 'Status',
+        sortable: true,
+        show: true,
+        type: 'slot',
+        width: 200,
+        props: {
+          style: {
+            maxWidth: '110px !important'
+          }
+        },
+        overrideWidth: true,
+        filterableType: 'select',
+        filterableItems:
+          this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
+            text: item.displayName || item.name,
+            value: item.name
+          })) || []
+      },
+      ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+        ? [
+            {
+              property: 'examStatus',
+              align: 'center',
+              editable: false,
+              label: 'Exam Status',
+              sortable: false,
+              hideSort: true,
+              show: false,
+              type: 'slot',
+              width: 200,
+              props: {
+                style: {
+                  maxWidth: '110px !important'
+                }
+              },
+              overrideWidth: true,
+              filterableType: 'select',
+              filterableItems: ['Failed', 'Passed', 'Incomplete']
+            },
+            {
+              property: 'examScore',
+              align: 'right',
+              editable: false,
+              label: 'Exam Score',
+              fixed: false,
+              sortable: true,
+              show: false,
+              type: 'text',
+              width: 160,
+              filterableType: 'text'
+            }
+          ]
+        : []),
+      {
+        property: 'lastInteractionDate',
+        align: 'left',
+        editable: false,
+        label: 'Last Interaction',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'date'
+      },
+      {
+        property: 'deliveryType',
+        align: 'left',
+        editable: false,
+        label: 'Delivery Type',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'select',
+        filterableItems: ['Email', 'Email & SMS']
+      }
+    ]
+    if (
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+    ) {
+      columns.splice(4, 0, {
+        property: 'currentStep',
+        align: 'left',
+        fixed: false,
+        editable: false,
+        label: 'Current Step',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 180
+      })
+    }
     return {
       isShowResendDialog: false,
       resendPayload: null,
@@ -133,150 +294,7 @@ export default {
           resend: true,
           clipboard: true
         },
-        columns: [
-          {
-            property: 'firstName',
-            align: 'left',
-            editable: false,
-            label: 'First Name',
-            fixed: 'left',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'lastName',
-            align: 'left',
-            editable: false,
-            label: 'Last Name',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'email',
-            align: 'left',
-            editable: false,
-            label: 'Email',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'phoneNumber',
-            align: 'left',
-            editable: false,
-            label: 'Phone Number',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'department',
-            align: 'left',
-            fixed: false,
-            editable: false,
-            label: 'Department',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'status',
-            align: 'center',
-            editable: false,
-            label: 'Status',
-            sortable: true,
-            show: true,
-            type: 'slot',
-            width: 200,
-            props: {
-              style: {
-                maxWidth: '110px !important'
-              }
-            },
-            overrideWidth: true,
-            filterableType: 'select',
-            filterableItems:
-              this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })) || []
-          },
-          ...(this.trainingSummary?.trainingTypeName === 'SCORM'
-            ? [
-                {
-                  property: 'examStatus',
-                  align: 'center',
-                  editable: false,
-                  label: 'Exam Status',
-                  sortable: false,
-                  hideSort: true,
-                  show: false,
-                  type: 'slot',
-                  width: 200,
-                  props: {
-                    style: {
-                      maxWidth: '110px !important'
-                    }
-                  },
-                  overrideWidth: true,
-                  filterableType: 'select',
-                  filterableItems: ['Failed', 'Passed', 'Incomplete']
-                },
-                {
-                  property: 'examScore',
-                  align: 'right',
-                  editable: false,
-                  label: 'Exam Score',
-                  fixed: false,
-                  sortable: true,
-                  show: false,
-                  type: 'text',
-                  width: 160,
-                  filterableType: 'text'
-                }
-              ]
-            : []),
-          {
-            property: 'lastInteractionDate',
-            align: 'left',
-            editable: false,
-            label: 'Last Interaction',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'date'
-          },
-          {
-            property: 'deliveryType',
-            align: 'left',
-            editable: false,
-            label: 'Delivery Type',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'select',
-            filterableItems: ['Email', 'Email & SMS']
-          }
-        ],
+        columns,
         addButton: {
           show: false
         },
@@ -414,13 +432,19 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(
-        this.axiosPayload,
-        this.id,
-        this.isAddTrainingTypeKeyToPayload
-          ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
-          : null
+      let type = 0
+      let textType = this.isAddTrainingTypeKeyToPayload
+        ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+        : null
+      if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      else if (
+        textType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        textType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
+        type = 4
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id, type)
         .then((response) => {
           const {
             data: {
