@@ -21,6 +21,7 @@
         </div>
       </div>
       <div class="training-report-summary-header__right">
+        <!--
         <v-btn
           v-if="!isLearningPath"
           class="training-report-summary-header__btn-download-report"
@@ -31,6 +32,7 @@
           @click="handleDownloadReport"
           >{{ labels.DownloadReport }}</v-btn
         >
+        -->
         <v-btn
           v-if="!isLoading && !isScormProxy"
           class="training-report-summary-header__btn-resend-campaign ml-2"
