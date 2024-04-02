@@ -350,7 +350,7 @@ export default {
       this.isLoading = true
       this.pdfSrc = ''
       AwarenessEducatorService.getTrainingUrlForPreview(
-        this.selectedRow.trainingId,
+        this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId,
         this.specification
       )
         .then((response) => {
@@ -366,7 +366,9 @@ export default {
         })
     },
     callForPoster() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
+      AwarenessEducatorService.getTraining(
+        this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
+      ).then((response) => {
         this.posterParams = response?.data?.data
       })
     },
@@ -386,7 +388,7 @@ export default {
       }
       this.isDownloadButtonDisabled = true
       AwarenessEducatorService.downloadPoster({
-        trainingId: this.selectedRow.trainingId,
+        trainingId: this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId,
         languageId: this.specification
       })
         .then((response) => {
