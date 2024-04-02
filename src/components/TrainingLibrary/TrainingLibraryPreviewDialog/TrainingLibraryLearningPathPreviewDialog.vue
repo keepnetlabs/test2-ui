@@ -95,6 +95,8 @@ export default {
           const {
             data: { data }
           } = response
+          if (data.trainingGroups)
+            data.trainingGroups.sort((a, b) => a.trainingOrder - b.trainingOrder)
           this.trainingDetails = {
             ...data
           }
