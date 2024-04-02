@@ -176,6 +176,7 @@ export default {
               component: TrainingReportSummary,
               isVisible: true
             })
+            this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
             this.trainingSummary.steps.forEach((step, index) => {
               newTabItems.push({
                 name: step.trainingName,
