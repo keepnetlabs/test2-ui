@@ -2,9 +2,9 @@
   <Fragment>
     <TrainingLibraryTrainingPreviewDialog
       v-if="
-        (getLearningPathModalTrainingPreviewDialog.status &&
-          getLearningPathModalTrainingPreviewDialog.type === 'SCORM') ||
-        getLearningPathModalTrainingPreviewDialog.type === 'SCORM12'
+        getLearningPathModalTrainingPreviewDialog.status &&
+        (getLearningPathModalTrainingPreviewDialog.type === 'SCORM' ||
+          getLearningPathModalTrainingPreviewDialog.type === 'SCORM12')
       "
       v-bind="getLearningPathModalTrainingPreviewDialog"
       @close="onClosePreviewModal"
@@ -114,6 +114,7 @@ import Draggable from 'vuedraggable'
 import { Fragment } from 'vue-frag'
 import useDebounce from '@/hooks/useDebounce'
 import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
+import { isInavailable } from '../../utils'
 
 let that = null
 export default {
@@ -189,19 +190,16 @@ export default {
       orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
     isInavailable(training) {
-      if (this.availableForRequests.includes('MyCompanyOnly')) {
-        return false
-      }
-      if (this.availableForRequests.every((item) => training?.availableFor?.includes(item))) {
-        return false
-      }
-      return true
+      return isInavailable(this.availableForRequests, training)
     },
     isDisabled(training) {
-      if (training?.availableFor?.includes('AllCompanies')) {
+      if (this.availableForRequests?.includes('MyCompanyOnly')) {
+        return
+      } else if (training?.availableFor?.includes('AllCompanies')) {
         return false
-      }
-      if (this.availableForRequests.every((item) => training?.availableFor?.includes(item))) {
+      } else if (
+        this.availableForRequests.every((item) => training?.availableFor?.includes(item))
+      ) {
         return false
       }
       return true
