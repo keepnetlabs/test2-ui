@@ -63,6 +63,10 @@ export default {
     activeStep: {
       type: Number,
       default: 0
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -127,8 +131,7 @@ export default {
           component: TrainingReportSendingReport,
           isVisible: true
         }
-      ],
-      formDetails: null
+      ]
     }
   },
   computed: {
@@ -149,7 +152,6 @@ export default {
     }
   },
   created() {
-    this.callForFormDetails()
     this.callForSummary()
   },
   methods: {
@@ -189,11 +191,6 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
-    },
-    callForFormDetails() {
-      AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
-        this.formDetails = response?.data?.data
-      })
     },
     handleTabClick(tab) {
       if (tab.name === labels.Summary) {
