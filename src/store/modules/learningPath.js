@@ -11,6 +11,7 @@ import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLib
 const learningPath = {
   namespaced: true,
   state: {
+    availableFor: [],
     learningPathTableData: [],
     selectedLearningPathTrainings: [],
     learningPathServerSideProps: new ServerSideProps(),
@@ -197,10 +198,13 @@ const learningPath = {
       state.selectedLearningPathTrainings = []
     },
     ORDER_LEARNING_PATH_DATA(state, payload) {
+      if (payload) {
+        state.availableFor = payload
+      }
       state.learningPathTableData.sort((a, b) => {
-        return isInavailable(payload, a) === isInavailable(payload, b)
+        return isInavailable(state.availableFor, a) === isInavailable(state.availableFor, b)
           ? 0
-          : !isInavailable(payload, a)
+          : !isInavailable(state.availableFor, a)
           ? -1
           : 1
       })
@@ -303,8 +307,10 @@ const learningPath = {
         } = data
         if (payload?.isAppend) {
           commit('APPEND_LEARNING_PATH_TABLE_DATA', results)
+          commit('ORDER_LEARNING_PATH_DATA')
         } else {
           commit('SET_LEARNING_PATH_TABLE_DATA', results)
+          commit('ORDER_LEARNING_PATH_DATA')
         }
         commit('SET_LEARNING_PATH_SERVER_SIDE_PROPS', {
           totalNumberOfRecords,
