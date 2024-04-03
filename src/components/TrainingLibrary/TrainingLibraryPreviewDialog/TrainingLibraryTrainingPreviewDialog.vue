@@ -19,7 +19,7 @@
         ref="refTrainingLibraryTrainingPreview"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
-        :training-id="selectedRow.trainingId"
+        :training-id="getTrainingId"
         :languages="selectedLanguages"
         :training-params="getTrainingParams"
       />
@@ -89,6 +89,9 @@ export default {
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
+    },
+    getTrainingId() {
+      return this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
     }
   },
   watch: {
