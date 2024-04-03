@@ -84,6 +84,7 @@
         :training-type="getTrainingType"
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
+        :form-details="formDetails"
       />
     </div>
   </div>
@@ -131,6 +132,10 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
