@@ -102,7 +102,7 @@ export default {
       const iconName = this.getIconName
       let idStart = ''
       if (iconName === 'mdi-text-box') idStart = 'view-report'
-      else if (iconName === 'mdi-close') idStart = 'stop'
+      else if (iconName === 'mdi-close') idStart = 'cancel'
       else idStart = 'send'
       return `btn-${idStart}--row-action-${createRandomCryptStringNumber()}`
     },

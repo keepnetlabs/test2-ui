@@ -29,7 +29,15 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+    @on-activity="handleActivity"
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportActivityColumn
+        v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+        :scope="scope"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -50,10 +58,13 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+
 export default {
   name: 'CampaignManagerReportOpenedAttachmentTable',
-  components: { DataTable },
-  mixins: [useLoading, useDefaultTableFunctions],
+  components: { DataTable, CampaignManagerReportActivityColumn },
+  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
       type: String
@@ -64,10 +75,15 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-opened-attachment-data-table',
         ascending: 'ascending'
@@ -91,10 +107,17 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
-          COLUMNS.TIMES_OPENED
+          COLUMNS.TIMES_OPENED,
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
-          show: false
+          show: true,
+          icon: null,
+          label: 'HIDE SANDBOX ACTIVITY',
+          action: 'on-activity',
+          hideTooltip: true,
+          type: 'outlined',
+          id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
@@ -119,9 +142,6 @@ export default {
       }
     }
   },
-  created() {
-    this.callForData()
-  },
   watch: {
     customFields: {
       deep: true,
@@ -135,11 +155,18 @@ export default {
           this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
       }
+    },
+    isShowSandbox(val) {
+      this.$emit('update:is-show-sandbox-from-parent', val)
     }
+  },
+  created() {
+    this.callForData()
   },
   methods: {
     callForData() {
       this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
       searchCampaignJobUserAttachmentOpened(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
@@ -169,7 +196,8 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          activityType: this.axiosPayload.activityType
         }
         exportCampaignJobUserAttachmentOpened(payload, this.id, this.instanceGroup).then(
           (response) => {
