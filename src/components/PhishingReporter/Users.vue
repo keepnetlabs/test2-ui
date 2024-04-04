@@ -269,8 +269,8 @@ export default {
   computed: {
     getUserName() {
       if (this.selectedRow) {
-        return this.selectedRow.firstName || this.selectedRow.lastName
-          ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
+        return this.selectedRow?.firstName || this.selectedRow?.lastName
+          ? `${this.selectedRow?.firstName || ''} ${this.selectedRow?.lastName || ''}`
           : `This user`
       }
 
