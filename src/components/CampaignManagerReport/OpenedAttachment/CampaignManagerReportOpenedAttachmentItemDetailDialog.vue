@@ -15,12 +15,14 @@
         v-if="isShowMarkAsHumanActivityDialog"
         :status="isShowMarkAsHumanActivityDialog"
         :selected-row="selectedRow"
+        searchType="attachmentOpened"
         @on-close="toggleShowMarkAsActivityDialog"
       />
       <CampaignManagerReportSandboxActivityDialog
         v-if="isShowMarkAsSandboxActivityDialog"
         :status="isShowMarkAsSandboxActivityDialog"
         :selected-row="selectedRow"
+        searchType="attachmentOpened"
         @on-close="toggleShowSandboxActivityDialog"
       />
       <SandboxDetailDialogAlerts />
