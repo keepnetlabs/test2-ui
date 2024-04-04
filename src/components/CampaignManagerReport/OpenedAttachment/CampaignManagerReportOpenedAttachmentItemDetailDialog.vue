@@ -3,7 +3,7 @@
     title-id="text--campaign-manager-opened-attachment-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-attachment-detail-popup-subtitle"
     maxHeightSize="665"
-    :custom-size="'800'"
+    :custom-size="'1300'"
     :icon="CONSTANTS.icon"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -11,6 +11,19 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
+      <CampaignManagerReportHumanActivityDialog
+        v-if="isShowMarkAsHumanActivityDialog"
+        :status="isShowMarkAsHumanActivityDialog"
+        :selected-row="selectedRow"
+        @on-close="toggleShowMarkAsActivityDialog"
+      />
+      <CampaignManagerReportSandboxActivityDialog
+        v-if="isShowMarkAsSandboxActivityDialog"
+        :status="isShowMarkAsSandboxActivityDialog"
+        :selected-row="selectedRow"
+        @on-close="toggleShowSandboxActivityDialog"
+      />
+      <SandboxDetailDialogAlerts />
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
@@ -19,6 +32,7 @@
         options
         is-server-side
         no-padding-bottom
+        is-custom-overflowed-column
         :show-filter-options="false"
         :is-settings-popup="false"
         :loading="isLoading"
@@ -31,6 +45,8 @@
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
+        :count-row="tableOptions.countRow"
+        :cell-padding="32"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -38,6 +54,7 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
+        @on-activity="handleActivity"
       >
         <template #datatable-custom-column="{ scope, col }">
           <CampaignManagerReportUserAgentColumn
@@ -47,6 +64,21 @@
           <CampaignManagerReportIPColumn
             v-if="col.property === COLUMNS.IP_SLOT.property"
             :scope="scope"
+          />
+          <CampaignManagerReportActivityColumn
+            v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+            :scope="scope"
+            :tooltip-text="getActivityTooltipText(scope.row)"
+          />
+        </template>
+        <template #datatable-row-actions="{ scope }">
+          <DefaultButtonRowAction
+            :id="tableOptions.rowActions[0].id"
+            :icon="getRowActionIcon(scope.row)"
+            :text="getRowActionText(scope.row)"
+            :scope="scope"
+            :disabled="getRowActionDisabledStatus(scope.row)"
+            @on-click="toggleShowMarkAsDialog(scope.row)"
           />
         </template>
       </DataTable>
@@ -64,7 +96,7 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
+import { ACTIVITY_TYPES, COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { searchCampaignJobUserAttachmentOpenedDetaiils } from '@/api/phishingsimulator'
@@ -73,6 +105,13 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
+import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
@@ -80,20 +119,36 @@ export default {
     AppDialogFooterWithClose,
     CampaignManagerReportUserAgentColumn,
     CampaignManagerReportIPColumn,
+    CampaignManagerReportActivityColumn,
+    CampaignManagerReportHumanActivityDialog,
+    CampaignManagerReportSandboxActivityDialog,
+    DefaultButtonRowAction,
+    SandboxDetailDialogAlerts,
     DataTable,
     AppDialog
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     status: {
       type: Boolean
     },
     item: {
       type: Object
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
+    const sandboxText = this.isShowSandboxFromParent
+      ? 'HIDE SANDBOX ACTIVITY'
+      : 'SHOW SANDBOX ACTIVITY'
     return {
+      isShowMarkAsHumanActivityDialog: false,
+      isShowMarkAsSandboxActivityDialog: false,
+      isShowSandbox: this.isShowSandboxFromParent,
+      tableActionLabel: sandboxText,
       COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -109,18 +164,34 @@ export default {
           COLUMNS.USER_AGENT_SLOT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.IP_SLOT
+          COLUMNS.IP_SLOT,
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
-          show: false
+          show: true,
+          icon: null,
+          label: sandboxText,
+          action: 'on-activity',
+          tooltip: sandboxText,
+          hideTooltip: true,
+          type: 'outlined',
+          id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpenedDetail
         },
-        rowActions: [],
+        rowActions: [
+          {
+            name: 'Mark as human activity',
+            id: 'btn-mark-as--row-actions-campaign-manager-report-clicked',
+            icon: 'mdi-account-check',
+            action: 'on-mark-as'
+          }
+        ],
         downloadButton: {
           show: false
-        }
+        },
+        countRow: 5
       },
       tableData: []
     }
@@ -134,11 +205,29 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
+    const index = this.tableOptions.columns.findIndex(
+      (c) => c.property === PROPERTY_STORE.ACTIVITYTYPE
+    )
+    if (index !== -1) {
+      this.$set(
+        this.tableOptions.columns[index],
+        'filterableItems',
+        this.isShowSandboxFromParent
+          ? [
+              { text: 'Human Activity', value: '0' },
+              { text: 'Sandbox Activity', value: '1' }
+            ]
+          : [{ text: 'Human Activity', value: '0' }]
+      )
+    }
     this.callForData()
   },
   methods: {
     callForData() {
       this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined')
+        this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0
       searchCampaignJobUserAttachmentOpenedDetaiils(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {
@@ -152,6 +241,41 @@ export default {
           this.tableData = results
         })
         .finally(this.setLoading)
+    },
+    toggleShowMarkAsActivityDialog(row, forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      this.selectedRow = row
+      this.isShowMarkAsHumanActivityDialog = !this.isShowMarkAsHumanActivityDialog
+    },
+    toggleShowSandboxActivityDialog(row, forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      this.selectedRow = row
+      this.isShowMarkAsSandboxActivityDialog = !this.isShowMarkAsSandboxActivityDialog
+    },
+    toggleShowMarkAsDialog(row, forceUpdate = false) {
+      if (row.isChangedActivity && row.activityType === ACTIVITY_TYPES.HUMAN)
+        this.toggleShowSandboxActivityDialog(row, forceUpdate)
+      else this.toggleShowMarkAsActivityDialog(row, forceUpdate)
+    },
+    getRowActionDisabledStatus(row) {
+      return row.activityType === ACTIVITY_TYPES.HUMAN && !row.isChangedActivity
+    },
+    getRowActionIcon(row) {
+      if (row.isChangedActivity && row.activityType === ACTIVITY_TYPES.HUMAN)
+        return 'mdi-account-cancel'
+      return this.tableOptions.rowActions[0].icon
+    },
+    getRowActionText(row) {
+      if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
+        return 'Mark as sandbox activity'
+      return this.tableOptions.rowActions[0].name
+    },
+    getActivityTooltipText(row) {
+      if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
+        return 'Sandbox activity has been changed to human activity'
+      return row.sandboxType === 1 || row.sandoxType === 2
+        ? 'Sandbox Activity Rules: A1'
+        : 'Sandbox Activity Rules: A2'
     },
     handleClose() {
       this.$emit('on-close')
