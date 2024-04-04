@@ -369,5 +369,21 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+  },
+  ACTIVITY_TYPE: {
+    property: PROPERTY_STORE.ACTIVITYTYPE,
+    align: 'left',
+    label: labels.ActivityType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Human Activity', value: '0' },
+      { text: 'Sandbox Activity', value: '1' }
+    ]
   }
 }
