@@ -31,6 +31,14 @@
         :text="getAwarenessPhoneNumberWarningText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
+      <AlertBox
+        v-if="canRenderNoPhoneNumberAlertBox"
+        class="mt-4"
+        icon-color="#B83A3A"
+        style="background-color: #f56c6c33;"
+        text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -160,6 +168,9 @@ export default {
     },
     canRenderPhoneNumberAwarenessAlertBox() {
       return this.activeUsersWithoutPhoneNumberCount > 0 && this.isAwareness
+    },
+    canRenderNoPhoneNumberAlertBox() {
+      return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
