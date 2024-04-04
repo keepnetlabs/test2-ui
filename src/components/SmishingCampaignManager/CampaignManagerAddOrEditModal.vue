@@ -132,6 +132,7 @@
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
               :language-options="languageOptions"
               :show-schedule="showSchedule"
             />

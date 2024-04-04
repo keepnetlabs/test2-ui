@@ -162,7 +162,9 @@ export default {
       return this.activeUsersWithoutPhoneNumberCount > 0 && this.isAwareness
     },
     getUnverifiedDomainsText() {
-      return `There are ${this.usersFromUnverifiedDomainsCount} active user${
+      return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
+        this.usersFromUnverifiedDomainsCount
+      } active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
       } with unverified domains in this group. Please verify the domains in order to send emails.`
     },
