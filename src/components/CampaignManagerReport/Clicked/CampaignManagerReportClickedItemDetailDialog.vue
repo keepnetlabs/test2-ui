@@ -200,7 +200,7 @@ export default {
       return `Clicked Link ${this.item?.['clickedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     }
   },
   created() {
