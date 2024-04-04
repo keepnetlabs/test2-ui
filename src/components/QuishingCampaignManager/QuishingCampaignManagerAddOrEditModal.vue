@@ -8,6 +8,12 @@
     @closeOverlay="closeOverlay"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -185,6 +191,8 @@ import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import { getErrorMessage } from '@/utils/functions'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -201,6 +209,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
+    DefaultErrorDialog,
     AppModal
   },
   props: {
@@ -223,6 +232,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      createErrorMessage: '',
       SCENARIO_TYPES,
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
@@ -721,11 +731,17 @@ export default {
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
+              })
               .finally(this.setActionButtonDisability)
           } else {
             QuishingService.createCampaignManager(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
+              })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
               })
               .finally(this.setActionButtonDisability)
           }
