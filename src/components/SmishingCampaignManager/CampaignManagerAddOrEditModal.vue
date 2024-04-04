@@ -8,6 +8,12 @@
     @closeOverlay="closeOverlay"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -174,6 +180,8 @@ import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAu
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
+import { getErrorMessage } from '@/utils/functions'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -191,6 +199,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
+    DefaultErrorDialog,
     AppModal
   },
   props: {
@@ -213,6 +222,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,
@@ -652,11 +662,17 @@ export default {
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
+              })
               .finally(this.setActionButtonDisability)
           } else {
             SmishingService.createSmishingCampaign(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
+              })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
               })
               .finally(this.setActionButtonDisability)
           }
