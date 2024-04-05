@@ -196,7 +196,7 @@ export default {
             value: item.name
           })) || []
       },
-      ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         ? [
             {
               property: 'examStatus',
@@ -205,7 +205,7 @@ export default {
               label: 'Exam Status',
               sortable: false,
               hideSort: true,
-              show: false,
+              show: true,
               type: 'slot',
               width: 200,
               props: {
@@ -224,7 +224,7 @@ export default {
               label: 'Exam Score',
               fixed: false,
               sortable: true,
-              show: false,
+              show: true,
               type: 'text',
               width: 160,
               filterableType: 'text'
