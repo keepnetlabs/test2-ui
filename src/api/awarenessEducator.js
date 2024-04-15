@@ -1,8 +1,8 @@
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 //trainings
-const searchTraining = (payload) => {
-  return testRequest.post('/trainings/search', payload)
+const searchTraining = (payload, options = {}) => {
+  return testRequest.post('/trainings/search', payload, options)
 }
 const deleteTraining = (resourceId) => {
   return testRequest.delete(`/trainings/${resourceId}`, {
@@ -39,6 +39,11 @@ const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressC
 
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
+}
+const createTraining = (payload) => {
+  return testRequest.post(`/trainings`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 const updateTraining = (payload, resourceId) => {
   return testRequest.put(`/trainings/${resourceId}`, payload, {
@@ -193,8 +198,10 @@ const lmsFinish = (payload) => {
   return testRequest.post('/scorm/LMSFinish', payload)
 }
 
-const getTrainingReportSummary = (resourceId) => {
-  return testRequest.get(`/training-reports/${resourceId}/summary`)
+const getTrainingReportSummary = (resourceId, trainingType = 0) => {
+  return testRequest.get(
+    `/training-reports/${resourceId}/summary?${`trainingType=${trainingType}`}`
+  )
 }
 
 const getScormProxyTrainingReportSummary = (resourceId) => {
@@ -205,8 +212,10 @@ const getTrainingReportFormDetails = () => {
   return testRequest.get('/training-reports/form-details')
 }
 
-const searchTrainingReportUsers = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
+const searchTrainingReportUsers = (payload, resourceId, trainingType) => {
+  let url = `/training-reports/${resourceId}/users/search`
+  if (trainingType) payload.trainingType = trainingType
+  return testRequest.post(url, payload)
 }
 
 const exportTrainingReportUsers = (payload, resourceId) => {
@@ -299,9 +308,12 @@ const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 
-const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
+const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
-  if (interactionType) url += `?emailEventType=${interactionType}`
+  if (interactionType) {
+    url += `?emailEventType=${interactionType}`
+    if (trainingType) url += `&trainingType=${trainingType}`
+  } else if (trainingType) url += `?trainingType=${trainingType}`
   return testRequest.get(url)
 }
 const getTrainingReportNonTargetUserInteractions = (
@@ -463,8 +475,8 @@ const downloadPoster = (payload) => {
     responseType: 'blob'
   })
 }
-const getTrainingTypeCount = (payload) => {
-  return testRequest.post('/trainings/get-training-type-count', payload)
+const getTrainingTypeCount = (payload, options = {}) => {
+  return testRequest.post('/trainings/get-training-type-count', payload, options)
 }
 const getVendors = () => {
   return testRequest.get('/trainings/vendors')
@@ -499,6 +511,7 @@ export default {
   deleteTraining,
   getTraining,
   createDraftTraining,
+  createTraining,
   updateTraining,
   searchCertificate,
   deleteCertificate,

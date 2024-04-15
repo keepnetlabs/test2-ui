@@ -1,6 +1,11 @@
 <template>
   <div>
-    <FormGroup has-hint :title="labels.TrainingVendor" :sub-title="labels.TrainingVendorSub">
+    <FormGroup
+      v-if="canSaveVendor"
+      has-hint
+      :title="labels.TrainingVendor"
+      :sub-title="labels.TrainingVendorSub"
+    >
       <KSelect
         v-model.trim="formData.vendorId"
         persistent-hint
@@ -27,6 +32,7 @@
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
           :vendor-id="formData.vendorId"
+          :can-save-vendor="canSaveVendor"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
@@ -85,7 +91,8 @@ export default {
     ...mapGetters({
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getScormTypes: 'trainingLibraryHelpers/getScormTypes',
-      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
+      canSaveVendor: 'trainingLibraryHelpers/getCanSaveVendor'
     }),
     isRenderAddLanguage() {
       return this?.languages?.length !== this?.formData?.contentByLanguage?.length

@@ -119,7 +119,7 @@ export default {
     value: {
       type: Array,
       default() {
-        return {}
+        return []
       }
     },
     removeDuplicates: {

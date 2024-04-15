@@ -14,7 +14,8 @@
           {{ formData.name }}
         </div>
         <div class="training-report-enrollment-template__created-by" style="margin-bottom: 0;">
-          Training enrollment email template • <span style="font-weight: 400;">by</span>
+          {{ getEnrollmentTextByTrainingType }} enrollment email template •
+          <span style="font-weight: 400;">by</span>
           {{ formData.createdBy }}
         </div>
       </div>
@@ -35,6 +36,7 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import { useLoading } from '@/hooks/useLoading'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportEnrollmentEmail',
   components: {
@@ -51,6 +53,10 @@ export default {
     },
     trainingEmailNotificationTemplateTypeResourceId: {
       type: String
+    },
+    trainingType: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -62,6 +68,15 @@ export default {
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    getEnrollmentTextByTrainingType() {
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'Poster'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Infographic'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) return 'Training'
+      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+        return 'Screensaver'
+      return 'Learning Path'
     }
   }
 }

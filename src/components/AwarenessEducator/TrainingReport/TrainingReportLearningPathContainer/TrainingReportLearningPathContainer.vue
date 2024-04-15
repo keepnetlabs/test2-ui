@@ -1,5 +1,12 @@
 <template>
-  <ElTabs v-model="tab" class="k-sub-tab">
+  <ElTabs
+    v-model="tab"
+    :class="[
+      'k-sub-tab training-library-first-card-sub-tabs',
+      isLoading ? 'training-library-first-card-sub-tabs--loading' : ''
+    ]"
+    @tab-click="handleTabClick"
+  >
     <ElTabPane
       v-for="item in tabItems"
       v-if="item.isVisible"
@@ -20,7 +27,7 @@
         :isLoading="isLoading"
         :training-name="getTrainingName"
         :form-details="formDetails"
-        :trainingSummary="trainingSummary"
+        :trainingSummary="selectedTrainingSummary"
         :isScormProxy="isScormProxy"
       />
     </ElTabPane>
@@ -40,14 +47,31 @@ import TrainingReportSendingReport from '@/components/AwarenessEducator/Training
 import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import {
+  TRAINING_LIBRARY_PAYLOAD_TYPES,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export default {
   name: 'TrainingReportLearningPathContainer',
   components: { KContainer },
+  props: {
+    trainingSummary: {
+      type: Object,
+      default: () => ({})
+    },
+    activeStep: {
+      type: Number,
+      default: 0
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   data() {
     return {
-      trainingSummary: null,
+      selectedTrainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
       tabItems: [
@@ -107,60 +131,76 @@ export default {
           component: TrainingReportSendingReport,
           isVisible: true
         }
-      ],
-      formDetails: null
+      ]
     }
   },
   computed: {
     id() {
-      return this.$route?.params?.id
+      return this.activeTrainingStep?.enrollmentId
+    },
+    activeTrainingStep() {
+      return this.trainingSummary?.steps[this.activeStep]
+    },
+    activeTrainingStepType() {
+      return this.activeTrainingStep?.trainingDetails?.trainingTypeName
     },
     getTrainingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Training Name'
     },
     isScormProxy() {
-      return this.trainingSummary?.isScormProxy || false
+      return this.selectedTrainingSummary?.isScormProxy || false
     }
   },
   created() {
-    this.callForFormDetails()
     this.callForSummary()
-    this.callForLanguages()
   },
   methods: {
-    ...mapActions({
-      callForLanguages: 'trainingLibraryHelpers/callForLanguages'
-    }),
     callForSummary() {
       this.isLoading = true
-      AwarenessEducatorService.getTrainingReportSummary(this.id)
+      let type = 0
+      if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      else if (
+        this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.activeTrainingStepType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        type = 4
+      AwarenessEducatorService.getTrainingReportSummary(this.id, type)
         .then((response) => {
-          this.trainingSummary = response?.data?.data
-          if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+          const {
+            data: { data }
+          } = response || {}
+          data.trainingTypeName = this.activeTrainingStepType
+          this.selectedTrainingSummary = data
+          if (
+            this.selectedTrainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+          ) {
             this.tabItems[2].label = labels.OpenedPosterEmail
             this.tabItems[3].label = labels.DownloadedPoster
             this.tabItems.splice(4, 2)
           } else if (
-            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+            this.selectedTrainingSummary.trainingTypeName ===
+            TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
           ) {
             this.tabItems[2].label = labels.OpenedInfographicEmail
             this.tabItems[3].label = labels.DownloadedInfographic
             this.tabItems.splice(4, 2)
           }
-          this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
-          this.$store.dispatch(
-            'common/setActiveTrainingType',
-            this.trainingSummary?.trainingTypeName
-          )
         })
         .finally(() => {
           this.isLoading = false
         })
     },
-    callForFormDetails() {
-      AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {
-        this.formDetails = response?.data?.data
-      })
+    handleTabClick(tab) {
+      if (tab.name === labels.Summary) {
+        AwarenessEducatorService.getTrainingReportSummary(
+          this.id,
+          this.$route?.query?.trainingType || 0
+        ).then((response) => {
+          this.trainingSummary = response?.data?.data
+        })
+      }
     }
   }
 }

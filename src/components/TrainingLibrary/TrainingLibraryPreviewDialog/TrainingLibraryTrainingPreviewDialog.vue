@@ -19,7 +19,7 @@
         ref="refTrainingLibraryTrainingPreview"
         :is-loading.sync="isPreviewLoading"
         :name="selectedRow.trainingName"
-        :training-id="selectedRow.trainingId"
+        :training-id="getTrainingId"
         :languages="selectedLanguages"
         :training-params="getTrainingParams"
       />
@@ -89,6 +89,9 @@ export default {
     getTrainingParams() {
       if (!this.trainingParams || this.callApi) return this.trainingDetails
       return this.trainingParams
+    },
+    getTrainingId() {
+      return this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
     }
   },
   watch: {
@@ -110,7 +113,6 @@ export default {
     }),
     callForLanguages() {
       this.isPreviewLoading = true
-      console.log('selectedRow', this.selectedRow.languages)
       this.selectedRow.languages.forEach((lang) => {
         const language = this.languages.find((item) => item.code === lang)
         if (language)
@@ -123,7 +125,9 @@ export default {
       this.callForTrainingDetail()
     },
     callForTrainingDetail() {
-      AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
+      AwarenessEducatorService.getTraining(
+        this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
+      ).then((response) => {
         const {
           data: { data }
         } = response

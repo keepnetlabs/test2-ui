@@ -82,6 +82,7 @@
               :campaign-results-sub="labels.InfographicCampaignResultsSub"
               :is-proxy="isTrainingProxy"
               :is-sms-notification="isSmsNotification"
+              :target-users-subtitle="labels.SendTrainingTargetUsersSubInfographic"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -194,8 +195,8 @@ export default {
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
       reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-      trainingEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId',
+      infographicEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getInfographicEmailNotificationTemplateTypeResourceId',
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
     isSmsNotification() {
@@ -234,6 +235,9 @@ export default {
           'Content Type': this?.selectedRow?.type,
           Languages: languages
         }
+        formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
+        if (formData.selectedStep2)
+          formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
         const isProxy = refSendTrainingSettings?.formData?.isProxy
@@ -320,7 +324,7 @@ export default {
         }
       )
       //get training email
-      getDefaultEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then(
+      getDefaultEmailTemplate(this.infographicEmailNotificationTemplateTypeResourceId).then(
         (response) => {
           const {
             data: { data }

@@ -18,7 +18,7 @@
           color="#2196F3"
           text
           :ripple="false"
-          @click="clearAllFilters"
+          @click="clearAllFilters({ isFetch: true })"
         >
           Clear All
         </VBtn>
@@ -36,8 +36,8 @@ export default {
   components: { TrainingLibraryFilterBadge },
   computed: {
     ...mapGetters({
-      // filterType: 'trainingLibrary/getLearningPathFilterType',
-      getFilters: 'trainingLibrary/getLearningPathFilters'
+      // filterType: 'learningPath/getLearningPathFilterType',
+      getFilters: 'learningPath/getLearningPathFilters'
     }),
     isRenderFilters() {
       return this.getFilters.some((filter) => filter.isFilterActive)
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      clearAllFilters: 'trainingLibrary/learningPathClearAllFilters'
+      clearAllFilters: 'learningPath/learningPathClearAllFilters'
     })
   }
 }

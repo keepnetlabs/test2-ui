@@ -129,7 +129,7 @@ export default {
       return `Opened Attachment ${this.item?.['attachmentOpenedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     }
   },
   created() {

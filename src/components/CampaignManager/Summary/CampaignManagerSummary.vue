@@ -61,6 +61,12 @@
             <AlertBox
               v-if="canRenderPhoneNumberAlertBox"
               class="mt-4"
+              :text="getPhoneNumberWarningText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+            <AlertBox
+              v-if="canRenderNoPhoneNumberAlertBox"
+              class="mt-4"
               icon-color="#B83A3A"
               style="background-color: #f56c6c33;"
               text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
@@ -390,10 +396,28 @@ export default {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     canRenderPhoneNumberAlertBox() {
+      return this.getActiveUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+    },
+    canRenderNoPhoneNumberAlertBox() {
       return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     getUnverifiedDomainsText() {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
+    },
+    getPhoneNumberWarningText() {
+      return `There ${this.getActiveUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithPhoneNumberCount
+      } active user${this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } and ${this.getActiveUsersWithoutPhoneNumberCount} active user${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } without phone number${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } in this group. Only the ${this.getActiveUsersWithPhoneNumberCount} user${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } will receive MFA scenario.`
     },
     getUsersFromUnverifiedDomainsCount() {
       return (
@@ -407,6 +431,13 @@ export default {
         this.formData.userCountDetailResponse?.data?.data
           ?.find((row) => row.status === 'Active')
           ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+      )
+    },
+    getActiveUsersWithoutPhoneNumberCount() {
+      return (
+        this.formData.userCountDetailResponse?.data?.data
+          ?.find((row) => row.status === 'Active')
+          ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
       )
     },
     isFormData() {

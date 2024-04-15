@@ -40,7 +40,6 @@
       <DefaultMenuRowAction
         :id="rowActions[4].id"
         :scope="scope"
-        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
         @on-click="handleDuplicate(scope.row)"
@@ -119,7 +118,6 @@ export default {
       callForData: 'trainingLibrary/callForTrainingLibrary'
     }),
     handlePreview(row) {
-      console.log('row', row)
       this.setLearningPathPreviewDialog({
         status: true,
         selectedRow: row,

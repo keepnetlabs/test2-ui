@@ -4,7 +4,7 @@
       <InputEntityName
         v-model.trim="formData.name"
         id="input--new-training-training-name"
-        entity-name="training name"
+        entity-name="Learning path name"
         initial-placeholder="Enter a name"
       />
     </FormGroup>
@@ -14,8 +14,11 @@
         id="input--new-training-training-description"
         rows="2"
         height="100"
+        hint="*Required"
+        required
         :max-length="300"
         :initial-placeholder="labels.Description"
+        :rules="[(v) => Validations.required(v, labels.Required)]"
       />
     </FormGroup>
     <FormGroup has-hint :title="labels.Category">

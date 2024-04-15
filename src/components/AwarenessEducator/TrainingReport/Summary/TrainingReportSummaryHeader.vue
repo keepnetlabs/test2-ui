@@ -21,7 +21,9 @@
         </div>
       </div>
       <div class="training-report-summary-header__right">
-        <!-- <v-btn
+        <!--
+        <v-btn
+          v-if="!isLearningPath"
           class="training-report-summary-header__btn-download-report"
           rounded
           outlined
@@ -32,7 +34,7 @@
         >
         -->
         <v-btn
-          v-if="!isLoading && !isScormProxy"
+          v-if="!isLoading && !isScormProxy && !isLearningPath"
           class="training-report-summary-header__btn-resend-campaign ml-2"
           rounded
           color="#2196f3"
@@ -49,6 +51,7 @@ import labels from '@/model/constants/labels'
 import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryResendDialog'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingReportSummaryHeader',
@@ -86,7 +89,10 @@ export default {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterSummary
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicSummary
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         return labels.LearningPathSummary
       return labels.TrainingSummary
     },
@@ -95,7 +101,10 @@ export default {
         return labels.PosterSummarySub
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicSummarySub
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         return labels.LearningPathSummarySub
       return labels.TrainingSummarySub
     },
@@ -103,9 +112,18 @@ export default {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.ResendPoster
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.ResendInfographic
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+      else if (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
         return labels.ResendLearningPath
       return labels.ResendTraining
+    },
+    isLearningPath() {
+      return (
+        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
     }
   },
   methods: {

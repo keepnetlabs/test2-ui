@@ -58,6 +58,7 @@
         :training-email-notification-template-type-resource-id="
           getTrainingEmailNotificationTemplateTypeResourceId
         "
+        :training-type="getTrainingType"
       />
       <TrainingReportTrainingMaterial
         :form-data="getTrainingMaterialData"
@@ -77,11 +78,13 @@
     </div>
     <div v-else>
       <TrainingReportUsers
+        is-add-training-type-key-to-payload
         :id="id"
         :is-loading="isLoading"
         :training-type="getTrainingType"
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
+        :form-details="formDetails"
       />
     </div>
   </div>
@@ -101,6 +104,8 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -127,6 +132,10 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -135,14 +144,19 @@ export default {
       isAudienceModalVisible: false,
       targetGroups: [],
       interval: null,
-      languages: [],
       enrollmentEmailData: {},
       certificateEmailData: {}
     }
   },
   computed: {
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages'
+    }),
     isTrainingTypeLearningPath() {
-      return this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+      return (
+        this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.getTrainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
     },
     isSMSSummaryExist() {
       return !!this.trainingSummary?.smsSummary
@@ -244,20 +258,24 @@ export default {
         reminderDescription: 'No',
         startDate: ''
       }
-      return {
-        'Start Date': {
+      const dateKey = this.isTrainingTypeLearningPath ? 'Delivery Start' : 'Start Date'
+      const obj = {
+        [dateKey]: {
           show: true,
           value: startDate
         },
         'Reminder Options': {
           show: true,
           value: reminderDescription || 'No'
-        },
-        'Delivery Status': {
+        }
+      }
+      if (!this.isTrainingTypeLearningPath) {
+        obj['Delivery Status'] = {
           show: true,
           value: ''
         }
       }
+      return obj
     },
     getResendDialogItems() {
       const [
@@ -335,6 +353,13 @@ export default {
       } = reportDetail
       const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
       return {
+        downloaded: {
+          userCount: totalUserClickedCount,
+          userPercent:
+            totalTargetUserCount === 0
+              ? '0'
+              : ((totalUserClickedCount / totalTargetUserCount) * 100).toFixed()
+        },
         openedEmail: {
           userCount: totalUserOpenedCount,
           userPercent:
@@ -410,11 +435,6 @@ export default {
       return certificateAttachmentResourceId
     }
   },
-  mounted() {
-    this.callForLanguages()
-    // this.callForEnrollmentEmail()
-    // this.callForCertificate()
-  },
   beforeDestroy() {
     clearInterval(this.interval)
   },
@@ -460,11 +480,6 @@ export default {
           this.certificateEmailData = data
         })
       }
-    },
-    callForLanguages() {
-      AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages = response?.data?.data
-      })
     },
     showAudienceDetailsModal() {
       this.isAudienceModalVisible = true

@@ -81,6 +81,7 @@
               :campaign-results-sub="labels.LearningPathCampaignResultsSub"
               :is-proxy="isTrainingProxy"
               :is-sms-notification="isSmsNotification"
+              :target-users-subtitle="labels.SendTrainingTargetUsersSubLearningPath"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -191,11 +192,10 @@ export default {
       distributionDelayTimeTypes: 'trainingLibraryHelpers/getDistributionDelayTimeTypes',
       certificateEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
-      reminderEmailNotificationTemplateTypeResourceId:
+        reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-      trainingEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId',
-      languages: 'trainingLibraryHelpers/getLanguages'
+        learningPathEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId'
     }),
     isSmsNotification() {
       if (this.step === 2 || this.step === 3)
@@ -220,30 +220,25 @@ export default {
       let formData = {}
       if (this.step === 3) {
         const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-        const languages = refSendTrainingSettings.formData.languageIds
-          .map(
-            (lang) =>
-              refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
-                (item) => item.value === lang
-              ).text
-          )
-          ?.join(', ')
         formData.trainingInfo = {
           'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
-          'Content Type': this?.selectedRow?.type,
-          Languages: languages
+          'Content Type': this?.selectedRow?.type
         }
+        formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
+        if (formData.selectedStep2)
+          formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
         const isProxy = refSendTrainingSettings?.formData?.isProxy
         const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
         const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
         formData.settings = {
-          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
-          'Start Date': refSendTrainingSettings?.formData?.enrollmentScheduler?.startDate,
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
           Reminder: sendReminderEvery,
-          'Due Date': refSendTrainingSettings?.formData?.enrollmentScheduler?.dueDate,
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
@@ -254,7 +249,7 @@ export default {
           const reminderEndType =
             endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
           formData.settings.Reminder = `Every ${enrollmentReminder.periodCount} ${enrollmentReminder.periodType}. Ends ${reminderEndType}.`
-        } else delete formData.settings['Reminder']
+        } else formData.settings['Reminder'] = 'No'
         if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
           delete formData.settings['Sender Phone Number']
           delete formData.settings['SMS Text']
@@ -317,7 +312,7 @@ export default {
         }
       )
       //get training email
-      getDefaultEmailTemplate(this.trainingEmailNotificationTemplateTypeResourceId).then(
+      getDefaultEmailTemplate(this.learningPathEmailNotificationTemplateTypeResourceId).then(
         (response) => {
           const {
             data: { data }
@@ -329,18 +324,6 @@ export default {
           }
         }
       )
-      //get template
-      const languages = this.languages || []
-      AwarenessEducatorService.getTrainingUrlForPreview(
-        this.selectedRow.trainingId,
-        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
-      ).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.trainingPreviewData.scormPlayerUrl = data.scormPlayerUrl
-        this.trainingPreviewData.trainingUrl = data.trainingUrl
-      })
     },
     handleClose() {
       this.setLearningPathSendModal(emptyLearningPathSendModalObj)

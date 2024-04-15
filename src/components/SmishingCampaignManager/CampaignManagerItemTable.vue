@@ -8,6 +8,14 @@
       @on-close="toggleShowDeleteDialog"
       @on-delete="handleOnDelete"
     />
+    <CommonCampaignManagerCancelCampaignDialog
+      v-if="isShowStopDialog"
+      :status="isShowStopDialog"
+      :is-action-button-disabled="isStopDialogActionButtonDisabled"
+      :item="selectedRow"
+      @on-close="toggleStopCampaignDialog"
+      @on-confirm="handleStopCampaign"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -119,6 +127,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
+import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
+
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -132,6 +142,7 @@ export default {
     Badge,
     CampaignManagerItemDeleteDialog,
     CampaignManagerItemRowActions,
+    CommonCampaignManagerCancelCampaignDialog,
     DataTable
   },
   props: {
@@ -146,6 +157,8 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      isShowStopDialog: false,
+      isStopDialogActionButtonDisabled: false,
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
@@ -186,10 +199,10 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Stop,
+            name: labels.Cancel,
             isNotShow: true,
             id: 'btn-stop--row-actions-campaign-item-manager',
-            icon: 'mdi-stop',
+            icon: 'mdi-close',
             action: 'on-stop',
             disabled: !this.$store.getters['permissions/getSmishingCampaignJobStopPermissions']
           },
@@ -310,10 +323,23 @@ export default {
           this.toggleShowDeleteDialog()
         })
     },
+    toggleStopCampaignDialog() {
+      this.isShowStopDialog = !this.isShowStopDialog
+    },
     handleStop(row = {}) {
-      SmishingService.stopSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
-      })
+      this.selectedRow = row
+      this.toggleStopCampaignDialog()
+    },
+    handleStopCampaign(row = {}) {
+      this.isStopDialogActionButtonDisabled = true
+      SmishingService.stopSmishingCampaign(this.item.resourceId, row.instanceGroup)
+        .then(() => {
+          this.callForData()
+          this.toggleStopCampaignDialog()
+        })
+        .finally(() => {
+          this.isStopDialogActionButtonDisabled = false
+        })
     },
     handleLaunch(row = {}) {
       SmishingService.startSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {

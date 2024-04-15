@@ -1,6 +1,7 @@
 <template>
   <CampaignManagerSummaryCardOneLine
     :isLoading="isLoading"
+    class="training-report-summary__sms"
     icon="mdi-message-processing"
     :title="labels.SMSInfo"
     :items="getItems"

@@ -66,7 +66,10 @@ import trainingEnrollDate from '@/components/GrapesJs/Newsletter/mergedTexts/tra
 import trainingReminderCount from '@/components/GrapesJs/Newsletter/mergedTexts/trainingReminderCount'
 import trainingCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCompleteDate'
 import trainingCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/trainingCoverImageUrl'
-
+import learningPathUrl from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathUrl'
+import learningPathName from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathName'
+import learningPathDescription from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathDescription'
+import learningPathStep from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathStep'
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{FIRSTNAME}': firstName,
@@ -135,5 +138,9 @@ export const MERGED_TEXTS_MAP = {
   '{TRAININGENROLLDATE}': trainingEnrollDate,
   '{TRAININGREMINDERCOUNT}': trainingReminderCount,
   '{TRAININGCOMPLETEDATE}': trainingCompleteDate,
-  '{TRAININGCOVERIMAGEURL}': trainingCoverImageUrl
+  '{TRAININGCOVERIMAGEURL}': trainingCoverImageUrl,
+  '{LEARNINGPATHURL}': learningPathUrl,
+  '{LEARNING_PATH_NAME}': learningPathName,
+  '{LEARNING_PATH_DESCRIPTION}': learningPathDescription,
+  '{LEARNING_PATH_STEP}': learningPathStep
 }

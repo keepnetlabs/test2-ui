@@ -3,7 +3,8 @@
     <TrainingLibraryTrainingPreviewDialog
       v-if="
         getLearningPathModalTrainingPreviewDialog.status &&
-        getLearningPathModalTrainingPreviewDialog.type === 'SCORM'
+        (getLearningPathModalTrainingPreviewDialog.type === 'SCORM' ||
+          getLearningPathModalTrainingPreviewDialog.type === 'SCORM12')
       "
       v-bind="getLearningPathModalTrainingPreviewDialog"
       @close="onClosePreviewModal"
@@ -32,51 +33,26 @@
         />
         <TrainingLibraryNewLearningPathFilters />
         <TrainingLibraryNewLearningPathFilterBadges />
-        <Draggable
-          v-bind="dragOptions"
-          class="learning-path-content__training-contents"
-          group="a"
-          :list="getTrainings"
-          handle=".learning-path-content__training--handle"
-        >
-          <div
-            v-for="(training, trainingIndex) in getTrainings"
-            :key="training.trainingId"
-            class="learning-path-content__training"
+        <div class="learning-path-content__training-contents" @scroll="handleScroll">
+          <Draggable
+            v-bind="dragOptions"
+            group="a"
+            handle=".learning-path-content__training--handle"
+            :list="getTrainings"
           >
-            <v-icon
-              center
-              medium
-              size="32"
-              color="#757575"
-              class="learning-path-content__training--handle"
-              style="cursor: move;"
-              >mdi-drag-vertical</v-icon
-            >
-            <img
-              class="learning-path-content__training--cover-image"
-              :src="getCoverImage(training)"
+            <TrainingLibraryNewLearningPathTraining
+              v-for="(training, trainingIndex) in getTrainings"
+              :key="training.trainingId"
+              :class="[
+                isInavailable(training) ? 'learning-path-content__training--inavailable' : ''
+              ]"
+              :training="training"
+              :isInavailable="isInavailable(training)"
+              @preview="onClickPreview(training)"
+              @select="onSelectTraining(training, trainingIndex)"
             />
-            <div class="learning-path-content__training--info">
-              <span class="learning-path-content__training--info-name">{{
-                training.trainingName
-              }}</span>
-              <span class="learning-path-content__training--info-created-by"
-                >{{ training.createdBy }}
-                <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
-                {{ training.category }}</span
-              >
-            </div>
-            <div class="learning-path-content__training--buttons">
-              <v-btn icon color="#757575" @click="onClickPreview(training)">
-                <v-icon center>mdi-eye</v-icon>
-              </v-btn>
-              <v-btn icon color="#757575" @click="onSelectTraining(training, trainingIndex)">
-                <v-icon center>mdi-plus-circle</v-icon>
-              </v-btn>
-            </div>
-          </div>
-        </Draggable>
+          </Draggable>
+        </div>
       </div>
       <div class="learning-path-content__learning-path-container">
         <ConfigureCompanyStepHeader
@@ -108,46 +84,16 @@
           handle=".learning-path-content__training--handle"
           :list="getSelectedTrainings"
         >
-          <div
+          <TrainingLibraryNewLearningPathTraining
             v-for="(training, trainingIndex) in getSelectedTrainings"
             :key="training.trainingId"
-            class="learning-path-content__training"
-          >
-            <v-icon
-              center
-              medium
-              size="32"
-              color="#757575"
-              class="learning-path-content__training--handle"
-              style="cursor: move;"
-              >mdi-drag-vertical</v-icon
-            >
-            <div class="learning-path-content__training--order">
-              {{ trainingIndex + 1 }}
-            </div>
-            <img
-              class="learning-path-content__training--cover-image"
-              :src="getCoverImage(training)"
-            />
-            <div class="learning-path-content__training--info">
-              <span class="learning-path-content__training--info-name">{{
-                training.trainingName
-              }}</span>
-              <span class="learning-path-content__training--info-created-by"
-                >{{ training.createdBy }}
-                <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
-                {{ training.category }}</span
-              >
-            </div>
-            <div class="learning-path-content__training--buttons">
-              <v-btn icon color="#757575" @click="onClickPreview(training)">
-                <v-icon center>mdi-eye</v-icon>
-              </v-btn>
-              <v-btn icon color="#757575" @click="onRemoveTraining(training, trainingIndex)">
-                <v-icon center>mdi-minus-circle</v-icon>
-              </v-btn>
-            </div>
-          </div>
+            :class="[isDisabled(training) ? 'learning-path-content__training--disabled' : '']"
+            :training="training"
+            :isDisabled="isDisabled(training)"
+            isSelected
+            @preview="onClickPreview(training)"
+            @remove="onRemoveTraining(training, trainingIndex)"
+          />
         </Draggable>
       </div>
     </div>
@@ -166,7 +112,11 @@ import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/Tra
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import Draggable from 'vuedraggable'
 import { Fragment } from 'vue-frag'
+import useDebounce from '@/hooks/useDebounce'
+import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
+import { isInavailable } from '../../utils'
 
+let that = null
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
   components: {
@@ -176,6 +126,7 @@ export default {
     TrainingLibraryInfographicPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryTrainingPreviewDialog,
+    TrainingLibraryNewLearningPathTraining,
     Draggable,
     Fragment
   },
@@ -191,8 +142,13 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    availableForRequests: {
+      type: Array,
+      default: () => []
     }
   },
+  mixins: [useDebounce],
   data() {
     return {
       labels,
@@ -207,27 +163,56 @@ export default {
   computed: {
     ...mapGetters({
       getLearningPathModalTrainingPreviewDialog:
-        'trainingLibrary/getLearningPathModalTrainingPreviewDialog',
-      getTrainings: 'trainingLibrary/getLearningPathTrainings',
-      getSelectedTrainings: 'trainingLibrary/getSelectedLearningPathTrainings'
+        'learningPath/getLearningPathModalTrainingPreviewDialog',
+      getTrainings: 'learningPath/getLearningPathTrainings',
+      getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
     })
   },
   watch: {
-    getSelectedTrainings: {
+    availableForRequests: {
       deep: true,
       handler(val) {
-        console.log('getSelectedTrainings', val)
+        if (val.length) {
+          this.orderLearningPathData(val)
+        }
       }
     }
   },
   methods: {
     ...mapActions({
-      clearAllFilters: 'trainingLibrary/learningPathClearAllFilters',
-      selectLearningPathTraining: 'trainingLibrary/selectLearningPathTraining',
-      removeTrainingFromLearningPath: 'trainingLibrary/removeTrainingFromLearningPath',
+      clearAllFilters: 'learningPath/learningPathClearAllFilters',
+      selectLearningPathTraining: 'learningPath/selectLearningPathTraining',
+      removeTrainingFromLearningPath: 'learningPath/removeTrainingFromLearningPath',
       setLearningPathModalTrainingPreviewDialog:
-        'trainingLibrary/setLearningPathModalTrainingPreviewDialog'
+        'learningPath/setLearningPathModalTrainingPreviewDialog',
+      setSelectedTrainings: 'learningPath/setSelectedLearningPathTrainings',
+      getDataAfterValidScroll: 'learningPath/getDataAfterValidScroll',
+      orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
+    isInavailable(training) {
+      return isInavailable(this.availableForRequests, training)
+    },
+    isDisabled(training) {
+      if (this.availableForRequests?.includes('MyCompanyOnly')) {
+        return
+      } else if (training?.availableFor?.includes('AllCompanies')) {
+        return false
+      } else if (
+        this.availableForRequests.every((item) => training?.availableFor?.includes(item))
+      ) {
+        return false
+      }
+      return true
+    },
+    handleScroll(e) {
+      const scrollPosition = e.target.scrollTop + e.target.offsetHeight
+      const scrollHeight = e.target.scrollHeight - 30
+      if (scrollPosition > scrollHeight) {
+        this.debounce(() => {
+          this.getDataAfterValidScroll()
+        }, 250)
+      }
+    },
     getCoverImage(training) {
       return (
         training?.coverImage?.imageUrl ||
@@ -258,7 +243,7 @@ export default {
     }
   },
   beforeDestroy() {
-    this.clearAllFilters()
+    this.clearAllFilters({ isFetch: false })
   }
 }
 </script>

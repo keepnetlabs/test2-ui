@@ -61,6 +61,7 @@
       @onEmptyBtnClicked="handleSelectPhoneNumbers"
       @selectPhoneNumbers="handleSelectPhoneNumbers"
       @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"

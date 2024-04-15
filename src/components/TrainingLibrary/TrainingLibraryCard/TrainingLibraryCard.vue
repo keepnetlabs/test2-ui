@@ -18,11 +18,41 @@
       </div>
     </div>
     <div class="training-library-card__body">
-      <div class="training-library-card__body-title">{{ item.trainingName }}</div>
+      <VTooltip v-if="isRenderTitleTooltip" bottom>
+        <template #activator="{ on }">
+          <div v-on="on" ref="refBodyTitle" class="training-library-card__body-title">
+            {{ item.trainingName }}
+          </div>
+        </template>
+        <span>{{ item.trainingName }}</span>
+      </VTooltip>
+      <div ref="refBodyTitle" v-else class="training-library-card__body-title">
+        {{ item.trainingName }}
+      </div>
       <div class="training-library-card__body-sub">
-        <div>{{ item.createdBy }}</div>
+        <VTooltip v-if="isRenderCreatedByTooltip" bottom>
+          <template #activator="{ on }">
+            <div ref="refBodyCreatedBy" v-on="on" class="training-library-card__body-sub-category">
+              {{ item.createdBy }}
+            </div>
+          </template>
+          <span>{{ item.createdBy }}</span>
+        </VTooltip>
+        <div v-else ref="refBodyCreatedBy" class="training-library-card__body-sub-category">
+          {{ item.createdBy }}
+        </div>
         <div class="training-library-card__body-sub-bull"></div>
-        <div class="training-library-card__body-sub-category">{{ item.category }}</div>
+        <VTooltip v-if="isRenderCategoryTooltip" bottom>
+          <template #activator="{ on }">
+            <div ref="refBodyCategory" v-on="on" class="training-library-card__body-sub-category">
+              {{ item.category }}
+            </div>
+          </template>
+          <span>{{ item.category }}</span>
+        </VTooltip>
+        <div v-else ref="refBodyCategory" class="training-library-card__body-sub-category">
+          {{ item.category }}
+        </div>
       </div>
       <div class="training-library-card__body-description">
         <div class="d-flex gap-2">
@@ -139,7 +169,7 @@ import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
+let that = null
 export default {
   name: 'TrainingLibraryCard',
   components: { TrainingLibraryFavoriteButton, TrainingLibraryNewBadge },
@@ -147,6 +177,13 @@ export default {
     item: {
       type: Object,
       default: () => {}
+    }
+  },
+  data() {
+    return {
+      isRenderTitleTooltip: true,
+      isRenderCreatedByTooltip: true,
+      isRenderCategoryTooltip: true
     }
   },
   computed: {
@@ -200,6 +237,14 @@ export default {
       return `training-library-card__type--${bgColorClass}`
     }
   },
+  mounted() {
+    that = this
+    window.addEventListener('resize', this.checkTooltipStasuses)
+    this.$nextTick(() => this.checkTooltipStasuses())
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkTooltipStasuses)
+  },
   methods: {
     ...mapActions({
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
@@ -219,6 +264,18 @@ export default {
       setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
       setDeleteDialog: 'trainingLibrary/setDeleteDialog'
     }),
+    checkTooltipStasuses() {
+      const { refBodyTitle, refBodyCreatedBy, refBodyCategory } = that.$refs
+      this.isRenderTitleTooltip = refBodyTitle
+        ? refBodyTitle.offsetWidth < refBodyTitle.scrollWidth
+        : false
+      this.isRenderCreatedByTooltip = refBodyCreatedBy
+        ? refBodyCreatedBy.offsetWidth < refBodyCreatedBy.scrollWidth
+        : false
+      this.isRenderCategoryTooltip = refBodyCategory
+        ? refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
+        : false
+    },
     handleFavoriteRemove() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)
         this.callForTrainingLibrary()
@@ -271,14 +328,15 @@ export default {
         this.setScreenSaverPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'downloadScreensaver',
-          title: labels.DownloadScreensaver,
-          showSendButton: false,
+          type: 'screensaver',
+          title: labels.ScreensaverPreview,
           subtitle: '',
-          showDetails: false,
-          showTabs: false,
-          showFavoriteButton: false,
-          icon: 'mdi-download'
+          showDetails: true,
+          showTabs: true,
+          showSendButton: false,
+          showScreensaverName: true,
+          showFavoriteButton: true,
+          icon: 'mdi-eye'
         })
       }
     },

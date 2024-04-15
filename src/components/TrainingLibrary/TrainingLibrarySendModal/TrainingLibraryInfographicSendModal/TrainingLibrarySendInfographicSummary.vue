@@ -25,7 +25,10 @@
         :title="labels.TargetUsers"
       >
         <template #body>
-          <div class="campaign-manager-last-step__target-users-body pb-4">
+          <div
+            v-if="formData.selectedStep2 === 0"
+            class="campaign-manager-last-step__target-users-body pb-4"
+          >
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
@@ -38,6 +41,14 @@
               :text="getUnverifiedDomainsText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+          </div>
+          <div class="campaign-manager-last-step__target-users-body pb-4" v-else>
+            <span v-if="isRandomlyTargetUser" style="background-color: #e0e0e0; color: #383b41;">
+              {{ getRandomlyTargetUser }}
+            </span>
+            <span style="background-color: #e0e0e0; color: #383b41;">
+              {{ getTotalTargetUserByCampaign }}
+            </span>
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -57,7 +68,7 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Training enrollment email template &#8226;
+              Infographic enrollment email template &#8226;
               <span class="template-list--item__sub-header--span">by</span>
               {{ formData.enrollmentData.createdBy }}
             </div>
@@ -285,6 +296,15 @@ export default {
     },
     isPhoneNumber() {
       return this.getSettingItems && this.getSettingItems['Sender Phone Number']
+    },
+    isRandomlyTargetUser() {
+      return this?.formData?.selectedCampaign?.targetUsers?.sendRandomlyUsers
+    },
+    getRandomlyTargetUser() {
+      return `Randomly selected ${this?.formData?.selectedCampaign?.targetUsers?.targetGroupsCount} from`
+    },
+    getTotalTargetUserByCampaign() {
+      return `${this?.formData?.selectedCampaign?.total} active users from ${this?.formData?.selectedCampaign?.targetUsers?.targetGroupsCount} group(s)`
     }
   },
   watch: {

@@ -14,7 +14,12 @@
         visibility: isProxy ? 'hidden' : 'visible'
       }"
     >
-      <KButtonRadioGroup v-model="selectedRadioGroupIndex" class="mb-8" :items="radioGroupItems" />
+      <KButtonRadioGroup
+        v-if="false"
+        v-model="selectedRadioGroupIndex"
+        class="mb-8"
+        :items="radioGroupItems"
+      />
       <div v-show="selectedRadioGroupIndex === 0">
         <FormGroup :title="labels.TargetUserGroups" :sub-title="targetUsersGroupSub"> </FormGroup>
         <TargetGroups
@@ -47,7 +52,7 @@
           class="mt-6"
           style="max-width: 640px;"
           :title="labels.TargetUsers"
-          :sub-title="labels.SendTrainingTargetUsersSub"
+          :sub-title="targetUsersSubtitle"
         >
           <div>
             <v-checkbox
@@ -150,6 +155,10 @@ export default {
     campaignResultsSub: {
       type: String,
       default: labels.CampaignResultsSub
+    },
+    targetUsersSubtitle: {
+      type: String,
+      default: labels.SendTrainingTargetUsersSub
     }
   },
   data() {

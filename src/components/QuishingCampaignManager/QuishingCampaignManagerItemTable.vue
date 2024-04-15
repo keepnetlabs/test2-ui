@@ -8,6 +8,14 @@
       @on-close="toggleShowDeleteDialog"
       @on-delete="handleOnDelete"
     />
+    <CommonCampaignManagerCancelCampaignDialog
+      v-if="isShowStopDialog"
+      :status="isShowStopDialog"
+      :is-action-button-disabled="isStopDialogActionButtonDisabled"
+      :item="selectedRow"
+      @on-close="toggleStopCampaignDialog"
+      @on-confirm="handleStopCampaign"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -153,6 +161,8 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
+import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
+
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -170,6 +180,7 @@ export default {
     Badge,
     CampaignManagerItemDeleteDialog,
     CampaignManagerItemRowActions,
+    CommonCampaignManagerCancelCampaignDialog,
     DataTable
   },
   props: {
@@ -188,6 +199,8 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      isShowStopDialog: false,
+      isStopDialogActionButtonDisabled: false,
       SCENARIO_TYPES,
       labels,
       isShowDeleteDialog: false,
@@ -232,10 +245,10 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Stop,
+            name: `Cancel`,
             isNotShow: true,
             id: 'btn-stop--row-actions-campaign-item-manager',
-            icon: 'mdi-stop',
+            icon: 'mdi-cancel',
             action: 'on-stop'
           },
           {
@@ -415,10 +428,23 @@ export default {
           this.toggleShowDeleteDialog()
         })
     },
+    toggleStopCampaignDialog() {
+      this.isShowStopDialog = !this.isShowStopDialog
+    },
     handleStop(row = {}) {
-      QuishingService.stopQuishingCampaignJob(this.item.resourceId, row.instanceGroup).then(() => {
-        this.callForData()
-      })
+      this.selectedRow = row
+      this.toggleStopCampaignDialog()
+    },
+    handleStopCampaign(row = {}) {
+      this.isStopDialogActionButtonDisabled = true
+      QuishingService.stopQuishingCampaignJob(this.item.resourceId, row.instanceGroup)
+        .then(() => {
+          this.callForData()
+          this.toggleStopCampaignDialog()
+        })
+        .finally(() => {
+          this.isStopDialogActionButtonDisabled = false
+        })
     },
     handleLaunch(row = {}) {
       QuishingService.launchQuishingCampaignInstanceGroup(

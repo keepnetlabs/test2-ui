@@ -100,6 +100,22 @@
     }
   }
 }
+.campaign-manager-summary-card__body-container-learning-path{
+  &.campaign-manager-summary-card__body-container-phone-number.campaign-manager-summary-card__body-container-reminder{
+    .campaign-manager-summary-card__body-item-one-line:nth-child(3){
+      border-bottom:1px solid #F2F2F2 !important;
+      padding-bottom: 16px;
+    }
+    .campaign-manager-summary-card__body-item-one-line:nth-child(5){
+      border-bottom: none !important;
+      padding-bottom: 0;
+    }
+  }
+  .campaign-manager-summary-card__body-item-one-line:nth-child(3){
+    border-bottom: none !important;
+    padding-bottom: 0;
+  }
+}
 .campaign-manager-summary-card__body-container-poster{
   .campaign-manager-summary-card__body-item-one-line:nth-child(3){
     border-bottom: none;

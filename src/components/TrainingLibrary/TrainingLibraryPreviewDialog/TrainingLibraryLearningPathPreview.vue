@@ -101,7 +101,7 @@
                   </span>
                   <span class="training-library-preview__desc">{{ training.name }}</span>
                 </div>
-                <div class="d-flex align-center gap-2">
+                <div :key="activeTrainingContentButtonKey" class="d-flex align-center gap-2">
                   <TrainingLibraryNewBadge
                     v-if="activeTrainingContentParams && activeTrainingContentParams.isNew"
                   />
@@ -113,23 +113,23 @@
                   />
                 </div>
               </div>
-              <div v-if="activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING">
-                <FormGroupHorizontalContent
-                  class="mt-4 justify-start"
-                  style="max-width: 500px;"
-                  :label="getActiveMaterialNameLanguageLabel"
-                >
-                  <KSelect
-                    v-model="activeTrainingLanguageId"
-                    dense
-                    outlined
-                    class="max-width-200"
-                    placeholder="Select Option"
-                    :items="activateTrainingContentLanguages"
-                    @input="callForTemplatePreview(true)"
-                  />
-                </FormGroupHorizontalContent>
-                <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
+              <FormGroupHorizontalContent
+                class="mt-4 justify-start"
+                style="max-width: 500px;"
+                :label="getActiveMaterialNameLanguageLabel"
+              >
+                <KSelect
+                  v-model="activeTrainingLanguageId"
+                  dense
+                  outlined
+                  class="max-width-200"
+                  placeholder="Select Option"
+                  :items="activeTrainingContentLanguages"
+                  @input="callForTemplatePreview(true)"
+                />
+              </FormGroupHorizontalContent>
+              <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
+              <div v-if="isTrainingTypeTraining">
                 <iframe
                   v-if="activeTemplate && !isTemplateLoading"
                   :key="iframeKey"
@@ -140,34 +140,42 @@
                 ></iframe>
               </div>
               <div v-else>
-                <hr class="my-4" />
-                <div class="d-flex justify-space-between align-center mb-4">
-                  <div>
-                    <span class="template-preview__text--title text-preview-gray">File Name: </span>
-                    <span class="template-preview__text--body">{{ fileName }}</span>
-                  </div>
+                <div v-if="!isTemplateLoading">
+                  <hr class="my-4" />
+                  <div class="d-flex justify-space-between align-center mb-4">
+                    <div>
+                      <span class="template-preview__text--title text-preview-gray"
+                        >File Name:
+                      </span>
+                      <span class="template-preview__text--body">{{ fileName }}</span>
+                    </div>
 
-                  <VBtn
-                    id="btn-preview-indiviual-printout"
-                    class="white--text btn-util btn-download-add-in"
-                    style="text-transform: none;"
-                    color="#2196F3"
-                    rounded
-                    :style="getDownloadActiveTrainingContentStyle"
-                    @click="handleDownloadActiveTrainingContent"
-                  >
-                    <v-icon left>mdi-download</v-icon>
-                    {{ labels.DownloadPoster }}
-                  </VBtn>
-                </div>
-                <div class="max-w-100 d-flex justify-center w-100">
-                  <img
-                    v-if="!isPdf"
-                    class="max-w-100"
-                    :src="activeTrainingContentSrc"
-                    alt="Poster Preview"
-                  />
-                  <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
+                    <VBtn
+                      id="btn-preview-indiviual-printout"
+                      class="white--text btn-util btn-download-add-in"
+                      style="text-transform: none;"
+                      color="#2196F3"
+                      rounded
+                      :style="getDownloadActiveTrainingContentStyle"
+                      @click="handleDownloadActiveTrainingContent"
+                    >
+                      <v-icon left>mdi-download</v-icon>
+                      {{
+                        activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+                          ? labels.DownloadPoster
+                          : labels.DownloadInfographic
+                      }}
+                    </VBtn>
+                  </div>
+                  <div class="max-w-100 d-flex justify-center w-100">
+                    <img
+                      v-if="!isPdf"
+                      class="max-w-100"
+                      :src="activeTrainingContentSrc"
+                      alt="Preview"
+                    />
+                    <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -186,7 +194,7 @@
                   activeTrainingContentParams.name
                 }}</span>
               </div>
-              <div class="training-library-preview__details-item">
+              <div v-if="isTrainingTypeTraining" class="training-library-preview__details-item">
                 <span class="training-library-preview__title">Vendor Name: </span>
                 <span class="training-library-preview__desc">{{
                   activeTrainingContentParams.vendor
@@ -218,10 +226,10 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2 ml-2">
                   <span
-                    v-for="(lang, langIndex) in activateTrainingContentLanguages"
+                    v-for="(lang, langIndex) in activeTrainingContentLanguageCodes"
                     :key="langIndex"
                     class="training-library-preview__tag"
-                    >{{ lang.code }}</span
+                    >{{ lang }}</span
                   >
                 </div>
               </div>
@@ -331,9 +339,11 @@ export default {
       activeTrainingContentId: '',
       activeTrainingContentType: '',
       activeTrainingContentSrc: '',
+      activeTrainingContentButtonKey: `key-${createRandomCryptStringNumber()}`,
       fileName: '',
       activeTrainingContentPdfSrc: null,
-      activateTrainingContentLanguages: [],
+      activeTrainingContentLanguages: [],
+      activeTrainingContentLanguageCodes: [],
       activeTrainingContentParams: {}
     }
   },
@@ -341,6 +351,12 @@ export default {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
+    isTrainingTypeTraining() {
+      return (
+        this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ||
+        this.activeTrainingContentType.startsWith('SCORM')
+      )
+    },
     getDownloadActiveTrainingContentStyle() {
       const style = {
         textTransform: 'none'
@@ -380,19 +396,25 @@ export default {
       const trainingGroup = this.learningPathParams.trainingGroups[trainingGroupIndex]
       this.activeTrainingContentId = trainingGroup.detailTrainingId
       this.activeTrainingContentType = trainingGroup.type
+      this.activeTrainingContentLanguageCodes = trainingGroup.languages
       this.callForActiveTrainingDetail()
     },
     callForActiveTrainingDetail() {
+      this.isTemplateLoading = true
       AwarenessEducatorService.getTraining(this.activeTrainingContentId).then((response) => {
         this.activeTrainingContentParams = response?.data?.data
-        this.activateTrainingContentLanguages = this.activeTrainingContentParams.languages.reduce(
-          (acc, lang) => {
+        this.activeTrainingContentButtonKey = `key-${createRandomCryptStringNumber()}`
+        this.activeTrainingContentLanguages = this.activeTrainingContentLanguageCodes
+          .reduce((acc, lang) => {
             const selectedLanguage = this.languages.find((language) => language.code === lang)
             if (selectedLanguage) acc.push(selectedLanguage)
             return acc
-          },
-          []
-        )
+          }, [])
+          .map((item) => ({ text: item.name, value: item.id }))
+        if (this.activeTrainingContentLanguages.length) {
+          this.activeTrainingLanguageId = this.activeTrainingContentLanguages[0].value
+          this.callForTemplatePreview(true)
+        }
       })
     },
     callForTemplatePreview(isTemplateLoading = false) {
@@ -400,20 +422,20 @@ export default {
       else this.$emit('update:isLoading', true)
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.activeTrainingContentId,
-        this.activeTrainingContentId
+        this.activeTrainingLanguageId
       )
         .then((response) => {
           const {
             data: { data }
           } = response
-          if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+          if (this.isTrainingTypeTraining) {
             this.activeTemplate = `${data.scormPlayerUrl}?isPreview=true&scoAddress=${data.trainingUrl}`
             this.iframeKey = `key-${createRandomCryptStringNumber()}`
           } else {
             const splittedUrl = data?.trainingUrl.split('/')
             this.fileName = splittedUrl[splittedUrl.length - 1]
             this.isPdf = this.fileName.includes('.pdf')
-            this.posterPreviewSrc = data?.trainingUrl
+            this.activeTrainingContentSrc = data?.trainingUrl
             if (this.isPdf) this.handleDownloadActiveTrainingContent()
           }
         })
@@ -428,7 +450,7 @@ export default {
       }
       this.isDownloadButtonDisabled = true
       AwarenessEducatorService.downloadPoster({
-        trainingId: this.selectedRow.trainingId,
+        trainingId: this.activeTrainingContentId,
         languageId: this.activeTrainingLanguageId
       })
         .then((response) => {
@@ -442,6 +464,12 @@ export default {
           if (this.isPdf) this.isLoading = false
           this.isDownloadButtonDisabled = false
         })
+    },
+    downloadPDFObject(data) {
+      const link = document.createElement('a')
+      link.href = data
+      link.download = `${this.fileName}`
+      link.click()
     }
   }
 }

@@ -20,6 +20,7 @@
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
       :selected-row="selectedRow"
+      :title="getEditEnrollmentsModalTitle"
       @on-close="toggleShowEditEnrollmentModal"
     />
     <SendEnrollmentDialog
@@ -269,6 +270,9 @@ export default {
       isStopReminderDialogVisible: false
     }
   },
+  created() {
+    this.resetAllModals()
+  },
   computed: {
     ...mapGetters({
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
@@ -280,6 +284,18 @@ export default {
       return this.isTrash
         ? AwarenessEducatorService.searchTrash
         : AwarenessEducatorService.searchEnrollments
+    },
+    getEditEnrollmentsModalTitle() {
+      if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'Edit Poster Enrollment'
+      else if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'Edit Infographic Enrollment'
+      else if (
+        this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.selectedRow.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return 'Edit Learning Path Enrollment'
+      return 'Edit Training Enrollment'
     }
   },
   methods: {
@@ -287,7 +303,8 @@ export default {
       setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
-      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog'
+      setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      resetAllModals: 'trainingLibrary/resetAllModals'
     }),
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
@@ -347,7 +364,10 @@ export default {
             selectedRow: this.selectedRow,
             showSendButton: false
           })
-        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH) {
+        } else if (
+          row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+          row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        ) {
           this.setLearningPathPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
@@ -394,7 +414,7 @@ export default {
         const { data } = response
         const link = document.createElement('a')
         link.href = window.URL.createObjectURL(data)
-        link.download = `${row.enrollmentId}_Scorm.zip`
+        link.download = `${row.enrollmentId}.zip`
         link.click()
       })
     },
@@ -435,13 +455,29 @@ export default {
       this.isStopAutoEnrollDialogVisible = false
     },
     handleRouteToReport(row) {
+      let type = 0
+      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      else if (
+        row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        row.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        type = 4
       this.$router.push({
         name: row.status === 'SCORM Proxy' ? 'Scorm Proxy Report' : 'Training Report',
         params: {
           id: row.enrollmentId
+        },
+        query: {
+          trainingType: type
         }
       })
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    this.resetAllModals()
+    next()
   }
 }
 </script>

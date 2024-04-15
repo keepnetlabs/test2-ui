@@ -86,22 +86,37 @@
           </span>
         </div>
       </div>
-      <div class="campaign-manager-advanced-settings__distribution-item mb-2">
+      <div
+        :class="[
+          'campaign-manager-advanced-settings__distribution-item',
+          isSendingLimitValid ? 'mb-2' : 'mb-6'
+        ]"
+      >
         <label for="input--campaign-manager-advanced-settings-time">{{
           getDistributionThirdText
         }}</label>
-        <VTextField
-          v-model="value.sendingLimit"
-          v-mask="'###########'"
-          id="input--campaign-manager-advanced-settings-sending-limit"
-          class="ml-6"
-          outlined
-          hide-details
-          placeholder="Enter number"
-          style="max-width: 116px;"
-          :rules="rules.number"
-          @input="callForCalculateSendingInfo"
-        />
+        <div style="position: relative;">
+          <VTextField
+            ref="refSendingLimit"
+            v-model="value.sendingLimit"
+            v-mask="'###########'"
+            id="input--campaign-manager-advanced-settings-sending-limit"
+            class="ml-6"
+            outlined
+            hide-details
+            placeholder="Enter number"
+            style="max-width: 116px;"
+            :error="!isSendingLimitValid"
+            @input="callForCalculateSendingInfo"
+          />
+          <CustomError
+            v-if="!isSendingLimitValid"
+            class="ml-6"
+            style="position: absolute; bottom: -16px; width: 500px;"
+            :is-valid="isSendingLimitValid"
+            :error-message="sendingLimitErrorText"
+          />
+        </div>
       </div>
       <div class="campaign-manager-advanced-settings__distribution-item gap-2">
         <label for="input--campaign-manager-advanced-settings-time"
@@ -148,9 +163,11 @@ import {
   DISTRIBUTION_TYPES
 } from '@/components/SmishingCampaignManager/utils'
 import { sendCallsOnDaysOptionsShort } from '@/components/VishingCampaignManager/utils'
+import CustomError from '@/components/CustomError'
+
 export default {
   name: 'InputDistribution',
-  components: { FormGroup, KSelect },
+  components: { FormGroup, KSelect, CustomError },
   props: {
     value: {
       type: Object,
@@ -184,6 +201,8 @@ export default {
   },
   data() {
     return {
+      isSendingLimitValid: true,
+      sendingLimitErrorText: '',
       DISTRIBUTION_TYPES,
       labels,
       sendCallsOnDaysOptionsShort,
@@ -230,6 +249,30 @@ export default {
     },
     isRenderDistributionStartScheduled() {
       return this.value.distributionStartTypeId === DISTRIBUTION_START_TYPES.SCHEDULED
+    }
+  },
+  watch: {
+    'value.sendingLimit': {
+      immediate: true,
+      handler(val) {
+        if (val <= 0) {
+          this.isSendingLimitValid = false
+          this.sendingLimitErrorText = `Enter a number higher than 0.`
+          return
+        }
+        if (String(val).startsWith('0')) {
+          this.isSendingLimitValid = false
+          this.sendingLimitErrorText = `Cannot start with 0.`
+          return
+        }
+        if (val > 1000000) {
+          this.isSendingLimitValid = false
+          this.sendingLimitErrorText = `Sending limit has exceeded 999,999. Please reduce the sending limit.`
+          return
+        }
+        this.isSendingLimitValid = true
+        this.sendingLimitErrorText = ''
+      }
     }
   },
   methods: {
