@@ -22,6 +22,7 @@
             v-bind="commonRules"
             id="input--notification-template-name"
             initialPlaceholder="Enter template name"
+            entityName="Template Name"
             :initialRules="commonRules.rules"
             :disabled="editItemsDisabled"
           />
@@ -157,8 +158,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.startsWithSpace(v)
         ]
       },
       initialFormValues: null,

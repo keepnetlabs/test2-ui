@@ -205,7 +205,7 @@ export default {
       proxyAddressRules: [
         (v) => validations.required(v),
         (v) =>
-          validations.maxLength(v, 2000, labels.getMaxLengthMessage('Proxy Address or IP', 2000)),
+          validations.maxLength(v, 5000, labels.getMaxLengthMessage('Proxy Address or IP', 5000)),
         (v) => validations.isProxyAddressOrIp(v)
       ],
       portRules: [(v) => validations.required(v), (v) => validations.port(v)]

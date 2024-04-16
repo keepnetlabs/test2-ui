@@ -3,7 +3,7 @@
     type="delete"
     icon="mdi-delete"
     title="Delete Scenario?"
-    subtitle="Scenario will deleted permanently"
+    subtitle="Scenario will be deleted permanently"
     title-id="text--scenario-delete-popup-title"
     subtitle-id="text--scenario-delete-popup-subtitle"
     :status="status"

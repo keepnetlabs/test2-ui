@@ -275,169 +275,161 @@
         </app-dialog>
 
         <div class="investigation-details__container__stats">
-          <div class="investigation-details__container__stats-left-col">
-            <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template #skeleton-content>
-                <div class="investigation-details__container__stats__cards">
-                  <div class="investigation-details__container__stats__cards__card">
-                    <div class="investigation-details__container__stats__cards__card-left">
-                      <div
-                        class="investigation-details__container__stats__cards__card-left__icon"
-                        :class="
-                          statsAndMenuData && statsAndMenuData.status === 'Running'
-                            ? 'bg-blue'
-                            : statsAndMenuData && statsAndMenuData.status === 'Finished'
-                            ? 'bg-green'
-                            : statsAndMenuData &&
-                              (statsAndMenuData.status === 'Expired' ||
-                                statsAndMenuData.status === 'Canceled')
-                            ? 'bg-red'
-                            : 'bg-salmon'
-                        "
-                        :style="getHeaderCardBoxShadow"
-                      >
-                        <v-icon medium left color="white">{{ statusIcon }}</v-icon>
-                      </div>
-                    </div>
-                    <div class="investigation-details__container__stats__cards__card-right">
-                      <h3 class="investigation-details__container__stats__cards__card-right__title">
-                        {{ statsAndMenuData && statsAndMenuData.status }}
-                      </h3>
-                      <div
-                        class="investigation-details__container__stats__cards__card-right__stats"
-                      >
-                        <v-tooltip
-                          v-if="
-                            statsAndMenuData &&
-                            statsAndMenuData.status === 'Running' &&
-                            statsAndMenuData.estimatedTime
-                          "
-                          bottom
-                          opacity="1"
-                          max-width="230"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <div v-on="on">
-                              {{ statsAndMenuData && statsAndMenuData.estimatedTime }}
-                              remaining
-                            </div>
-                          </template>
-                          <p class="tooltip-wrapper">
-                            Actual remaining time may be different from estimated time and is
-                            depended on conditions such as online user count, mailbox size, etc.
-                          </p>
-                        </v-tooltip>
-                        <span v-else>{{ getStatusText('statusTime', null) }}</span>
-                      </div>
-                    </div>
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
+            <template #skeleton-content>
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon"
+                    :class="
+                      statsAndMenuData && statsAndMenuData.status === 'Running'
+                        ? 'bg-blue'
+                        : statsAndMenuData && statsAndMenuData.status === 'Finished'
+                        ? 'bg-green'
+                        : statsAndMenuData &&
+                          (statsAndMenuData.status === 'Expired' ||
+                            statsAndMenuData.status === 'Canceled')
+                        ? 'bg-red'
+                        : 'bg-salmon'
+                    "
+                    :style="getHeaderCardBoxShadow"
+                  >
+                    <v-icon medium left color="white">{{ statusIcon }}</v-icon>
                   </div>
                 </div>
-              </template>
-            </InvestigationDetailsTopBarLoading>
-            <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
-                <div class="investigation-details__container__stats__cards">
-                  <div class="investigation-details__container__stats__cards__card">
-                    <div class="investigation-details__container__stats__cards__card-left">
-                      <div
-                        class="investigation-details__container__stats__cards__card-left__icon"
-                        :class="getHeaderCardBoxClassSecond"
-                        :style="getHeaderCardBoxShadowSecond"
-                      >
-                        <v-icon medium left color="white">mdi-account</v-icon>
-                      </div>
-                    </div>
-                    <div class="investigation-details__container__stats__cards__card-right">
-                      <h3 class="investigation-details__container__stats__cards__card-right__title">
-                        {{
-                          getStatusText(
-                            'onlineUserCount',
-                            statsAndMenuData && statsAndMenuData['onlineUserCount']
-                          )
-                        }}
-                      </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
-                        {{
-                          getStatusText(
-                            'totalUserCount',
-                            statsAndMenuData && statsAndMenuData.totalUserCount
-                          )
-                        }}
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ statsAndMenuData && statsAndMenuData.status }}
+                  </h3>
+                  <div class="investigation-details__container__stats__cards__card-right__stats">
+                    <v-tooltip
+                      v-if="
+                        statsAndMenuData &&
+                        statsAndMenuData.status === 'Running' &&
+                        statsAndMenuData.estimatedTime
+                      "
+                      bottom
+                      opacity="1"
+                      max-width="230"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on">
+                          {{ statsAndMenuData && statsAndMenuData.estimatedTime }}
+                          remaining
+                        </div>
+                      </template>
+                      <p class="tooltip-wrapper">
+                        Actual remaining time may be different from estimated time and is depended
+                        on conditions such as online user count, mailbox size, etc.
                       </p>
-                    </div>
+                    </v-tooltip>
+                    <span v-else>{{ getStatusText('statusTime', null) }}</span>
                   </div>
                 </div>
-              </template>
-            </InvestigationDetailsTopBarLoading>
-          </div>
-          <div class="investigation-details__container__stats-right-col">
-            <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
-                <div class="investigation-details__container__stats__cards">
-                  <div class="investigation-details__container__stats__cards__card">
-                    <div class="investigation-details__container__stats__cards__card-left">
-                      <div
-                        class="investigation-details__container__stats__cards__card-left__icon bg-green"
-                        :style="{
-                          boxShadow:
-                            '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-                        }"
-                      >
-                        <v-icon medium left color="white">mdi-account-circle</v-icon>
-                      </div>
-                    </div>
-                    <div class="investigation-details__container__stats__cards__card-right">
-                      <h3 class="investigation-details__container__stats__cards__card-right__title">
-                        {{
-                          getStatusText(
-                            'scannedUserCount',
-                            statsAndMenuData.completedScannedUserCount
-                          )
-                        }}
-                      </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
-                        {{
-                          getStatusText(
-                            'totalUserCountScannedUser',
-                            statsAndMenuData.totalUserCount
-                          )
-                        }}
-                      </p>
-                    </div>
+              </div>
+            </template>
+          </InvestigationDetailsTopBarLoading>
+          <InvestigationDetailsTopBarLoading
+            v-if="statsAndMenuData.status !== 'Running'"
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
+            <template v-slot:skeleton-content>
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon"
+                    :class="getHeaderCardBoxClassSecond"
+                    :style="getHeaderCardBoxShadowSecond"
+                  >
+                    <v-icon medium left color="white">mdi-account</v-icon>
                   </div>
                 </div>
-              </template>
-            </InvestigationDetailsTopBarLoading>
-            <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
-                <div class="investigation-details__container__stats__cards">
-                  <div class="investigation-details__container__stats__cards__card">
-                    <div class="investigation-details__container__stats__cards__card-left">
-                      <div
-                        class="investigation-details__container__stats__cards__card-left__icon bg-blue"
-                        :style="{
-                          boxShadow:
-                            '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-                        }"
-                      >
-                        <v-icon medium left color="white">mdi-email</v-icon>
-                      </div>
-                    </div>
-                    <div class="investigation-details__container__stats__cards__card-right">
-                      <h3 class="investigation-details__container__stats__cards__card-right__title">
-                        {{ getStatusText('scannedEmailCount', statsAndMenuData.scannedEmailCount) }}
-                      </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
-                        {{ getStatusText('totalEmailCount', statsAndMenuData.totalEmailCount) }}
-                      </p>
-                    </div>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{
+                      getStatusText(
+                        'onlineUserCount',
+                        statsAndMenuData && statsAndMenuData['onlineUserCount']
+                      )
+                    }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{
+                      getStatusText(
+                        'totalUserCount',
+                        statsAndMenuData && statsAndMenuData.totalUserCount
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </template>
+          </InvestigationDetailsTopBarLoading>
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
+            <template v-slot:skeleton-content>
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon bg-green"
+                    :style="{
+                      boxShadow:
+                        '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+                    }"
+                  >
+                    <v-icon medium left color="white">mdi-account-circle</v-icon>
                   </div>
                 </div>
-              </template>
-            </InvestigationDetailsTopBarLoading>
-          </div>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{
+                      getStatusText('scannedUserCount', statsAndMenuData.completedScannedUserCount)
+                    }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{
+                      getStatusText('totalUserCountScannedUser', statsAndMenuData.totalUserCount)
+                    }}
+                  </p>
+                </div>
+              </div>
+            </template>
+          </InvestigationDetailsTopBarLoading>
+          <InvestigationDetailsTopBarLoading
+            :loading="topMenuLoading"
+            :class="topMenuLoading ? 'w-100' : ''"
+          >
+            <template v-slot:skeleton-content>
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon bg-blue"
+                    :style="{
+                      boxShadow:
+                        '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+                    }"
+                  >
+                    <v-icon medium left color="white">mdi-email</v-icon>
+                  </div>
+                </div>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ getStatusText('scannedEmailCount', statsAndMenuData.scannedEmailCount) }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{ getStatusText('totalEmailCount', statsAndMenuData.totalEmailCount) }}
+                  </p>
+                </div>
+              </div>
+            </template>
+          </InvestigationDetailsTopBarLoading>
         </div>
-
         <div class="investigation-details__container__content card v-card v-sheet theme--light">
           <div class="investigation-details__container__content--left-menu">
             <InvestigationDetailsLeftBarLoading :loading="leftMenuLoading">
@@ -500,9 +492,7 @@
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <p class="v-list-item__archived--title pt-4 pb-2">
-                          Folders
-                        </p>
+                        <p class="v-list-item__archived--title pt-4 pb-2">Folders</p>
                         <v-list-item
                           id="btn--investigation-details-inbox"
                           link
@@ -934,7 +924,7 @@
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
               >
-                <template #datatable-row-actions="{scope}">
+                <template #datatable-row-actions="{ scope }">
                   <DefaultButtonRowAction
                     :id="rowActions[0].id"
                     :icon="rowActions[0].icon"
@@ -1092,9 +1082,7 @@
                       "
                     >
                       <slot name="empty-table-inline-sort">
-                        <h2>
-                          Sorry, that search and filter criteria has no results.
-                        </h2>
+                        <h2>Sorry, that search and filter criteria has no results.</h2>
                         <p>Please try adjusting your search or filter</p>
                       </slot>
                     </div>

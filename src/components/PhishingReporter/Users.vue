@@ -42,6 +42,7 @@
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :page-sizes="tableOptions.pageSizes"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
       @columnFilterChanged="columnFilterChanged"
@@ -138,6 +139,7 @@ export default {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.PHISHINGREPORTER,
         table: [],
+        pageSizes: [5, 10, 25, 50, 100],
         selectEvent: {
           clipboard: true,
           edit: false,

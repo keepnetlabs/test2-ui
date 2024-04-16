@@ -108,7 +108,7 @@ import {
 } from '@/model/constants/commonConstants'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
-import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
+import CampaignManagerRowActions from '@/components/SmishingCampaignManager/CampaignManagerRowActions'
 import SmishingService from '@/api/smishing'
 import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
@@ -168,7 +168,7 @@ export default {
           COLUMNS.METHOD,
           COLUMNS.CREATEDBY,
           COLUMNS.CREATE_TIME,
-          COLUMNS.LAST_LAUNCH
+          COLUMNS.LAST_LAUNCH_FILTERED
         ],
         iEmpty: {
           message: labels.EmptyCampaignManager,
@@ -241,7 +241,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

@@ -244,6 +244,11 @@ export function subdomainDash(value, message = 'Invalid Subdomain') {
   return /^[a-z0-9-]*$/gi.test(value) || message
 }
 
+export function startsOrEndsWithHyphen(value, message = 'Cannot start or end with hyphen(-)') {
+  value = getValue(value)
+  return /^(?!-).*[^-]$/gi.test(value) || message
+}
+
 export function subdomainDashDot(value, message = 'Invalid Subdomain') {
   value = getValue(value)
   return /^[a-z0-9.-]*$/gi.test(value) || message

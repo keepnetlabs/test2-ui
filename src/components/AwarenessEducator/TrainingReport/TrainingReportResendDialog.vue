@@ -3,13 +3,13 @@
     title-id="text--training-report-resend-popup-title"
     subtitle-id="text--training-report-resend-popup-subtitle"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="title"
     :subtitle="CONSTANTS.subtitle"
     :status="status"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      You are about to re-send this training to the users you selected. Are you sure?
+      {{ getResendText }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -39,6 +39,17 @@ export default {
     },
     isActionButtonDisabled: {
       type: Boolean
+    },
+    payload: {
+      type: Object
+    },
+    title: {
+      type: String,
+      default: 'Resend the training?'
+    },
+    bodyTrainingType: {
+      type: String,
+      default: 'campaign'
     }
   },
   data() {
@@ -46,9 +57,22 @@ export default {
       CONSTANTS: {
         icon: 'mdi-alert-circle',
         id: 'training-report-resend-dialog',
-        ascending: 'ascending',
-        title: 'Resend the training?'
+        ascending: 'ascending'
       }
+    }
+  },
+  computed: {
+    getResendText() {
+      if (this.payload?.selectAll) {
+        return `You are about to re-send this ${this.bodyTrainingType} to all users. Are you sure?`
+      }
+      if (this.payload?.selectedItems.length) {
+        return `You are about to re-send this ${this.bodyTrainingType} to ${
+          this.payload.selectedItems.length
+        } user${this.payload.selectedItems.length > 1 ? 's' : ''} you’ve selected. Are you sure?`
+      }
+
+      return `You are about to re-send this ${this.bodyTrainingType} to the users you selected. Are you sure?`
     }
   },
   methods: {

@@ -26,6 +26,34 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  IP_SLOT_NON_FIXED: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  ACTIVITY_TYPE: {
+    property: PROPERTY_STORE.ACTIVITYTYPE,
+    align: 'left',
+    label: labels.ActivityType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Human Activity', value: '0' },
+      { text: 'Sandbox Activity', value: '1' }
+    ]
+  },
   PHISHING_SCENARIO_NAME: {
     property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,
     align: 'left',
@@ -544,4 +572,8 @@ export const UNUSUAL_TYPES = {
   USER_AGENT: 0,
   IP: 1,
   HONEYPOT: 2
+}
+export const ACTIVITY_TYPES = {
+  HUMAN: 'Human Activity',
+  SYSTEM: 'Sandbox Activity'
 }

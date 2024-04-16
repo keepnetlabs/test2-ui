@@ -45,7 +45,6 @@ import VishingTemplates from '@/views/VishingTemplates'
 import VishingCampaignManager from '@/views/VishingCampaignManager'
 import TrainingReport from '@/views/TrainingReport'
 import AwarenessEducator from '@/views/AwarenessEducator'
-import TrainingList from '@/views/TrainingList'
 import Enrollments from '@/views/Enrollments'
 import Certificates from '@/views/Certificates'
 import Scorm from '@/views/Scorm'
@@ -64,6 +63,7 @@ import QuishingCampaignManager from '@/views/QuishingCampaignManager.vue'
 import QuishingSettings from '@/views/QuishingSettings.vue'
 import QuishingCampaignManagerReport from '@/views/QuishingCampaignManagerReport.vue'
 import ScormProxyReport from '@/views/ScormProxyReport.vue'
+import TrainingLibrary from '@/views/TrainingLibrary.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -232,14 +232,14 @@ const router = new Router({
           },
           children: [
             {
-              path: 'training-list',
-              name: 'Training List',
+              path: 'training-library',
+              name: 'Training Library',
               meta: {
                 isAuthenticated: true,
                 parentName: 'Awareness Educator',
                 permissionStoreKey: 'permissions/getTrainingSearchPermission'
               },
-              component: TrainingList
+              component: TrainingLibrary
             },
             {
               path: 'enrollments',

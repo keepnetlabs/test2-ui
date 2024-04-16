@@ -26,10 +26,42 @@
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
     @refreshAction="callForData"
-    @onEmptyBtnClicked="handleAdd"
-    @add-item="handleAdd"
     @downloadEvent="exportDirectEmailCreationList"
   >
+    <template #addUsers>
+      <v-menu :offset-y="true" bottom left nudge-right="32" nudge-bottom="4">
+        <template #activator="{ on: menu }">
+          <v-tooltip bottom opacity="1">
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                v-on="{ ...tooltip, ...menu }"
+                :disabled="!$store.getters['permissions/getDirectEmailCreatePermissions']"
+                id="btn-add--dec-configuration"
+                class="button-new"
+                style="margin-right: 10px;"
+                rounded
+                color="#2196f3"
+              >
+                <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+                <span class="button-new__text">NEW</span>
+              </v-btn>
+            </template>
+            <span class="tooltip-span">Create New DEC Configuration</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="item in addConfigurationItems"
+            :key="item.id"
+            :id="item.id"
+            :disabled="item.disabled"
+            @click="handleAddConfiguration(item)"
+          >
+            <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :id="tableOptions.rowActions[0].id"
@@ -76,6 +108,13 @@ export default {
       },
       axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
+      addConfigurationItems: [
+        {
+          text: 'Google Workspace',
+          id: 'btn-add-google-workspace-configuration'
+        },
+        { text: 'Microsoft 365', id: 'btn-add-microsoft-365-configuration' }
+      ],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.DIRECT_EMAIL_CREATION,
@@ -88,9 +127,8 @@ export default {
         },
         columns: [COLUMNS.NAME, COLUMNS.PLATFORM, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
         iEmpty: {
-          btn: labels.CreateDirectEmailCreation,
-          message: labels.EmptyDirectEmailCreation,
-          subMes: labels.CreateNow,
+          message: `You do not have any direct email creation configuration, yet`,
+          subMes: `Click the New button to start creating a new configuration`,
           icon: 'mdi-plus',
           id: 'btn-empty--direct-email-creation-list',
           disabled: !this.$store.getters['permissions/getDirectEmailCreatePermissions']
@@ -154,9 +192,6 @@ export default {
     handleActionDelete(row) {
       this.$emit(EMITS.ON_ACTION_DELETE, row)
     },
-    handleAdd() {
-      this.$emit(EMITS.ON_ADD)
-    },
     exportDirectEmailCreationList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -178,6 +213,14 @@ export default {
           link.click()
         })
       })
+    },
+    handleAddConfiguration(item = { text: '' }) {
+      if (item.text === this.addConfigurationItems[0].text) {
+        this.$emit(EMITS.ON_ADD_GOOGLE_WORKSPACE)
+      }
+      if (item.text === this.addConfigurationItems[1].text) {
+        this.$emit(EMITS.ON_ADD_MICROSOFT_365)
+      }
     }
   }
 }

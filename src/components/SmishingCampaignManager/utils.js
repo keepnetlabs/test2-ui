@@ -190,6 +190,17 @@ export const COLUMNS = {
     show: true,
     width: 160,
     type: 'text'
+  },
+  LAST_LAUNCH_FILTERED: {
+    property: PROPERTY_STORE.LASTLAUNCH,
+    align: 'left',
+    editable: false,
+    label: labels.LastLaunch,
+    sortable: true,
+    show: true,
+    width: 160,
+    type: 'text',
+    filterableType: 'date'
   }
 }
 export const ACTION_STATUSES = {

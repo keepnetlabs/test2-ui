@@ -78,7 +78,7 @@
         />
       </div>
       <div
-        v-if="!getEvents.length"
+        v-if="!getEvents.length && !extendedViewOptions.isErrorState"
         style="
           background-color: #f5f7fa;
           padding: 8px;
@@ -302,7 +302,9 @@ export default {
           }
         ],
         isEditable: false,
-        showFooter: false
+        showFooter: false,
+        errorStateText: `Email delivery information cannot be accessed.`,
+        isErrorState: false
       },
       extendedViewValue: [],
       extendedViewLoading: false,
@@ -404,6 +406,7 @@ export default {
       })
     },
     handleOnDetail(row) {
+      this.extendedViewOptions.isErrorState = false
       this.extendedViewLoading = true
       this.isShowExtendedView = true
       AwarenessEducatorService.getTrainingReportReminderEmailDetails(this.id, row.userEmailId)
@@ -412,7 +415,8 @@ export default {
           this.extendedViewValue = [data]
         })
         .catch(() => {
-          this.isShowExtendedView = false
+          this.extendedViewValue = [{}]
+          this.extendedViewOptions.isErrorState = true
         })
         .finally(() => {
           this.extendedViewLoading = false

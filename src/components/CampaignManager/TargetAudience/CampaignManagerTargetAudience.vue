@@ -93,7 +93,7 @@ import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import * as Validations from '@/utils/validations'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
-import AlertBox from '@/components/AlertBox.vue'
+import AlertBox from '@/components/AlertBox'
 
 export default {
   name: 'CampaignManagerTargetAudience',

@@ -161,6 +161,7 @@ export default {
           COLUMNS.STATUS,
           COLUMNS.SCENARIO_COUNT,
           COLUMNS.METHOD,
+          COLUMNS.HAS_TRAINING,
           COLUMNS.CREATEDBY,
           COLUMNS.EMAIL_DELIVERY,
           COLUMNS.CREATE_TIME,
@@ -235,7 +236,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

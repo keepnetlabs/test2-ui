@@ -1137,7 +1137,7 @@ export default {
             ) || 'Invalid URL'
           )
         },
-        maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000))
+        maxLength: (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage('URL', 5000))
       },
       apiKeyRules: {
         required: (v) => Validations.required(v),
@@ -1690,7 +1690,7 @@ export default {
       }
       delete response['data'].data['apiCredentials']
       this.formValues = response['data'].data
-      if (!this.formValues.proxyResourceId) {
+      if (!this.formValues.proxyResourceId && !this.integrationId) {
         this.formValues.proxyResourceId = this.defaultProxyItems.find(
           (item) => item.isDefault === 'Yes'
         )?.resourceId

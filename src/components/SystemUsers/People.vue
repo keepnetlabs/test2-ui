@@ -6,6 +6,7 @@
         ref="systemUserModal"
         :status="showCreateOrEditSystemUserModal"
         :selectedRow="selectedRow"
+        :isSameUser="isSameUser"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
       />
@@ -56,13 +57,14 @@
         @searchChangedEvent="handleSearchChange"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
       >
-        <template #datatable-row-actions="{scope}">
+        <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
             :icon="tableOptions.rowActions[0].icon"
             :text="tableOptions.rowActions[0].name"
             :scope="scope"
-            :disabled="tableOptions.rowActions[0].disabled"
+            :disabled="tableOptions.rowActions[0].disabled || !scope.row.isEditable"
+            disabledTooltipText="You are not authorized to update this user"
             @on-click="handleEdit(scope.row)"
           />
           <DefaultButtonRowAction
@@ -70,7 +72,12 @@
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
             :scope="scope"
-            :disabled="tableOptions.rowActions[1].disabled || scope.row.email === getUser.email"
+            :disabled="
+              tableOptions.rowActions[1].disabled ||
+              scope.row.email === getUser.email ||
+              !scope.row.isEditable
+            "
+            disabledTooltipText="You are not authorized to delete this user"
             @on-click="handleDelete(scope.row)"
           />
         </template>
@@ -282,7 +289,10 @@ export default {
     ...mapGetters({
       getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission',
       getUser: 'auth/userGetter'
-    })
+    }),
+    isSameUser() {
+      return this.getUser?.email === this.selectedRow?.email
+    }
   },
   mounted() {
     this.callForData()

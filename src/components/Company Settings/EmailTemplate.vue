@@ -59,8 +59,8 @@
         />
       </FormGroup>
     </div>
-    <div class="d-flex mx-4" v-if="isPhishingTemplate && !onlyGrapes">
-      <label>Attach File</label>
+    <div class="d-flex mx-4 align-center" v-if="isPhishingTemplate && !onlyGrapes">
+      <label class="mr-4 mb-6" style="font-weight: 600; font-size: 20px;">Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
         is-stand-alone
@@ -140,6 +140,11 @@
           ref="refPreview"
           :email-template-logo="emailTemplateLogo"
         />
+        <quishing-email-template-default
+          v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
+          ref="refPreview"
+          :email-template-logo="emailTemplateLogo"
+        />
         <email-template-default v-else ref="refPreview" :email-template-logo="emailTemplateLogo" />
       </template>
     </div>
@@ -164,9 +169,11 @@ import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/Indiv
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    QuishingEmailTemplateDefault,
     IndividualPrintOutTemplateDefault,
     EmailTemplateDefault,
     LandingPageTemplateDefault,
@@ -250,7 +257,7 @@ export default {
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320))
+        (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage(labels.Subject, 512))
       ],
       senderNameRules: [
         (v) => Validations.required(v, labels.Required),
@@ -356,7 +363,10 @@ export default {
     },
     saveGrapeJs() {
       const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-      if (this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT) {
+      if (
+        this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT ||
+        this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+      ) {
         if (!template.includes(qrCodeString)) {
           return this.$emit('showErrorDialog')
         }

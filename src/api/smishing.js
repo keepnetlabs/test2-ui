@@ -273,7 +273,10 @@ const resendSmishingCampaignToUsers = (payload, resourceId, instanceGroup) => {
 const resendSmishingCampaignToUserList = (payload, resourceId, instanceGroup) => {
   return testRequest.post(
     `/smishing-simulator/smishing-campaign-job/resend/list/${resourceId}/${instanceGroup}`,
-    payload
+    payload,
+    {
+      snackbar: COMMON_SNACKBAR
+    }
   )
 }
 
@@ -330,7 +333,9 @@ function getDnsServiceList(payload) {
 }
 
 function createDnsServiceList(payload) {
-  return testRequest.post(`smishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post(`smishing-simulator/dns-services`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 function testConnection(payload, id) {

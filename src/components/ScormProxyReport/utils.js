@@ -34,6 +34,18 @@ export function getStatusBadgeProps(status) {
       text: 'Completed'
     }
   }
+  if (trimmedStatus === 'Passed') {
+    return {
+      color: '#217124',
+      text: 'Passed'
+    }
+  }
+  if (trimmedStatus === 'Success') {
+    return {
+      color: '#217124',
+      text: 'Success'
+    }
+  }
 
   if (trimmedStatus === 'InQueue') {
     return {
@@ -55,6 +67,13 @@ export function getStatusBadgeProps(status) {
       color: '#B6791D',
       text: 'Cancelled',
       outline: false
+    }
+  }
+  if (trimmedStatus === 'Failed') {
+    return {
+      color: '#B83A3A',
+      text: 'Failed',
+      outline: true
     }
   }
 
@@ -80,4 +99,16 @@ export function getStatusBadgeProps(status) {
       outline: true
     }
   }
+  if (trimmedStatus === 'Incomplete') {
+    return {
+      color: '#757575',
+      text: 'Incomplete',
+      outline: true
+    }
+  }
+  if (trimmedStatus === 'NotCompleted')
+    return {
+      color: '#B83A3A',
+      text: 'Not Completed'
+    }
 }

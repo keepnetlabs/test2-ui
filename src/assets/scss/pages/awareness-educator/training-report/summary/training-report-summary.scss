@@ -10,8 +10,13 @@
     }
 
     .campaign-manager-summary-card__body-item:first-child {
-        padding: 16px 0 !important;
+        padding: 0 0 16px 0 !important;
     }
+  &__sms{
+    .campaign-manager-summary-card__body-item:first-child {
+      padding: 16px 0 16px 0 !important;
+    }
+  }
 
     &-scenario-stats {
         &__chart {

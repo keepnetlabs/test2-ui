@@ -172,7 +172,7 @@ export default {
       pathRules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
         (v) => Validations.ldapConnectionStringUrl(v, 'Incorrect path format'),
-        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+        (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000)),
         (v) => Validations.noWhitespace(v, labels.InvalidURL)
       ]
     }

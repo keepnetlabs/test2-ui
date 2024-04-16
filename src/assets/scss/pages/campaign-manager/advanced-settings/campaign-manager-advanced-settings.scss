@@ -55,6 +55,11 @@
     line-height: 21px;
     color: #383b41;
 
+    &--disabled{
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
     .v-input--checkbox {
         padding-top: 2px !important;
     }

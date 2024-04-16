@@ -2697,6 +2697,11 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
+    DELETE_NUMBER: {
+      url: 'callback-simulator/settings/delete-number',
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
     EXCHANGE: {
       url:
         'callback-simulator/settings/exchange-number/{oldProviderNumberId}/{newProviderNumberId}',

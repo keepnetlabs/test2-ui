@@ -21,6 +21,10 @@ export function loginAction(payload) {
   params.append('remember_this_device', payload.rememberMeOnThisDevice || '')
   params.append('recovery_code', payload.recovery_code || '')
   params.append('captchaResponse', payload.captchaResponse || '')
+
+  let uuidObj = localStorage.getItem('uuid')
+  if (uuidObj) uuidObj = JSON.parse(uuidObj)
+  if (uuidObj && uuidObj.email === payload.email) params.append('uuid', uuidObj.uuid)
   return authTestRequest.post('connect/token', params, {
     loading: true,
     headers: {

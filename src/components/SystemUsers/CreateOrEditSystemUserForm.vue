@@ -43,6 +43,7 @@
         item-value="resourceId"
         :items="roleItems"
         :rules="[(v) => validations.required(v, 'Required')]"
+        :disabled="isSameUser"
       />
     </form-group>
   </v-form>
@@ -68,6 +69,10 @@ export default {
     },
     statusItems: {
       type: Array
+    },
+    isSameUser: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

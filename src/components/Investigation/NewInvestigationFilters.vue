@@ -61,7 +61,7 @@ export default {
                 { label: 'CC', id: 'cc' },
                 { label: 'BCC', id: 'bcc' },
                 { label: 'Sender Name', id: 'senderName' },
-                { label: 'IP Address', id: 'ip', isDisabled: false }
+                { label: 'Sender IP', id: 'ip', isDisabled: false }
               ]
             },
             {
@@ -127,7 +127,7 @@ export default {
             subject: [
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),
-              (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
+              (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage(labels.Subject, 512))
             ],
             senderName: [
               (v) => Validations.startsWithSpace(v),
@@ -137,7 +137,7 @@ export default {
             url: [
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),
-              (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+              (v) => Validations.maxLength(v, 5000, labels.getMaxLengthMessage(labels.URL, 5000)),
               (v) => Validations.urlOrIpAddress(v)
             ],
             keyword: [

@@ -1,65 +1,92 @@
 <template>
   <div id="training-report-summary" class="training-report-summary">
-    <TrainingReportSummaryAudienceDetails
-      v-if="isAudienceModalVisible"
-      :status="isAudienceModalVisible"
-      :type="getAudienceDetailsType"
-      :userGroups="getUserGroups"
-      :phishingCampaign="getPhishingCampaign"
-      @close="hideAudienceDetailsModal"
-    />
-    <TrainingReportSummaryHeader
-      :isScormProxy="isScormProxy"
-      :trainingName="trainingName"
-      :resend-dialog-items="getResendDialogItems"
-      :isLoading="isLoading"
-      :id="id"
-    />
-    <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
-    <div class="campaign-manager-report-summary__general-info mt-6">
-      <TrainingReportSummaryTrainingInfo
-        :items="getTrainingInfoData"
-        :helper-data="getTrainingInfoHelperData"
-        :is-test-training="isTestTraining"
+    <ElTabs v-if="isTrainingTypeLearningPath" v-model="tab" class="k-sub-tab">
+      <ElTabPane label="Summary" name="summary" id="summary-content" />
+      <ElTabPane label="Users" name="users" id="users-content" />
+    </ElTabs>
+    <div v-if="tab === 'summary'">
+      <TrainingReportSummaryAudienceDetails
+        v-if="isAudienceModalVisible"
+        :status="isAudienceModalVisible"
         :type="getAudienceDetailsType"
-        :isLoading="isLoading"
-        @audienceClick="showAudienceDetailsModal"
+        :userGroups="getUserGroups"
+        :phishingCampaign="getPhishingCampaign"
+        @close="hideAudienceDetailsModal"
       />
-      <TrainingReportTrainingDelivery
-        class="ml-4"
-        :items="getTrainingDeliveryData"
-        :helper-data="getTrainingDeliveryHelperData"
+      <TrainingReportSummaryHeader
+        :is-scorm-proxy="isScormProxy"
+        :training-name="trainingName"
+        :resend-dialog-items="getResendDialogItems"
+        :is-loading="isLoading"
+        :id="id"
+        :training-type="getTrainingType"
+      />
+      <TrainingReportSummaryCards
+        :items="getCardsData"
+        :is-loading="isLoading"
+        :total-user-count="getTotalUsers"
+        :training-type="getTrainingType"
+      />
+      <div class="campaign-manager-report-summary__general-info mt-6">
+        <TrainingReportSummaryTrainingInfo
+          :items="getTrainingInfoData"
+          :helper-data="getTrainingInfoHelperData"
+          :is-test-training="isTestTraining"
+          :type="getAudienceDetailsType"
+          :is-loading="isLoading"
+          :training-type="getTrainingType"
+          @audienceClick="showAudienceDetailsModal"
+        />
+        <TrainingReportTrainingDelivery
+          class="ml-4"
+          :items="getTrainingDeliveryData"
+          :helper-data="getTrainingDeliveryHelperData"
+          :isLoading="isLoading"
+          :training-type="getTrainingType"
+        />
+      </div>
+      <div class="training-report-summary__general-info mt-4"></div>
+      <TrainingReportSMSSummary
+        v-if="isSMSSummaryExist"
         :isLoading="isLoading"
+        :items="getSMSSummaryData"
+        :helper-data="getSMSSummaryHelperData"
+      />
+      <TrainingReportEnrollmentEmail
+        :form-data="getEnrollmentTemplateData"
+        :isFetchingSummary="isLoading"
+        :training-email-notification-template-type-resource-id="
+          getTrainingEmailNotificationTemplateTypeResourceId
+        "
+        :training-type="getTrainingType"
+      />
+      <TrainingReportTrainingMaterial
+        :form-data="getTrainingMaterialData"
+        :isFetchingSummary="isLoading"
+        :selected-row="getTrainingMaterialRow"
+        :languages="languages"
+        :training-type="getTrainingType"
+      />
+      <TrainingReportCertificate
+        v-if="getCertificateEmailNotificationTemplateTypeResourceId"
+        :form-data="getCertificateData"
+        :isFetchingSummary="isLoading"
+        :certificate-email-notification-template-type-resource-id="
+          getCertificateEmailNotificationTemplateTypeResourceId
+        "
       />
     </div>
-    <div class="training-report-summary__general-info mt-4"></div>
-    <TrainingReportSMSSummary
-      v-if="isSMSSummaryExist"
-      :isLoading="isLoading"
-      :items="getSMSSummaryData"
-      :helper-data="getSMSSummaryHelperData"
-    />
-    <TrainingReportEnrollmentEmail
-      :form-data="getEnrollmentTemplateData"
-      :isFetchingSummary="isLoading"
-      :training-email-notification-template-type-resource-id="
-        getTrainingEmailNotificationTemplateTypeResourceId
-      "
-    />
-    <TrainingReportTrainingMaterial
-      :form-data="getTrainingMaterialData"
-      :isFetchingSummary="isLoading"
-      :selected-row="getTrainingMaterialRow"
-      :languages="languages"
-    />
-    <TrainingReportCertificate
-      v-if="getCertificateEmailNotificationTemplateTypeResourceId"
-      :form-data="getCertificateData"
-      :isFetchingSummary="isLoading"
-      :certificate-email-notification-template-type-resource-id="
-        getCertificateEmailNotificationTemplateTypeResourceId
-      "
-    />
+    <div v-else>
+      <TrainingReportUsers
+        is-add-training-type-key-to-payload
+        :id="id"
+        :is-loading="isLoading"
+        :training-type="getTrainingType"
+        :training-summary="trainingSummary"
+        :is-scorm-proxy="isScormProxy"
+        :form-details="formDetails"
+      />
+    </div>
   </div>
 </template>
 
@@ -75,9 +102,14 @@ import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/Train
 import TrainingReportSummaryAudienceDetails from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryAudienceDetails'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
+import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUsers'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingReportSummary',
   components: {
+    TrainingReportUsers,
     TrainingReportTrainingDelivery,
     TrainingReportTrainingMaterial,
     TrainingReportSMSSummary,
@@ -100,19 +132,32 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
     return {
+      tab: 'summary',
       isAudienceModalVisible: false,
       targetGroups: [],
       interval: null,
-      languages: [],
       enrollmentEmailData: {},
       certificateEmailData: {}
     }
   },
   computed: {
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages'
+    }),
+    isTrainingTypeLearningPath() {
+      return (
+        this.getTrainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.getTrainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+    },
     isSMSSummaryExist() {
       return !!this.trainingSummary?.smsSummary
     },
@@ -126,6 +171,9 @@ export default {
         trainingId: trainingDetails?.id,
         trainingName: trainingDetails?.name
       }
+    },
+    getTrainingType() {
+      return this.trainingSummary?.trainingTypeName
     },
     getAudienceDetailsType() {
       return this.isFromPhishingCampaign ? 'phishingCampaign' : 'userGroups'
@@ -210,20 +258,24 @@ export default {
         reminderDescription: 'No',
         startDate: ''
       }
-      return {
-        'Start Date': {
+      const dateKey = this.isTrainingTypeLearningPath ? 'Delivery Start' : 'Start Date'
+      const obj = {
+        [dateKey]: {
           show: true,
           value: startDate
         },
         'Reminder Options': {
           show: true,
           value: reminderDescription || 'No'
-        },
-        'Delivery Status': {
+        }
+      }
+      if (!this.isTrainingTypeLearningPath) {
+        obj['Delivery Status'] = {
           show: true,
           value: ''
         }
       }
+      return obj
     },
     getResendDialogItems() {
       const [
@@ -301,6 +353,13 @@ export default {
       } = reportDetail
       const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
       return {
+        downloaded: {
+          userCount: totalUserClickedCount,
+          userPercent:
+            totalTargetUserCount === 0
+              ? '0'
+              : ((totalUserClickedCount / totalTargetUserCount) * 100).toFixed()
+        },
         openedEmail: {
           userCount: totalUserOpenedCount,
           userPercent:
@@ -334,8 +393,8 @@ export default {
       return trainingEmailNotificationTemplateTypeResourceId
     },
     getTotalUsers() {
-      const { campaignInfo = {} } = this.trainingSummary
-      return campaignInfo['totalTargetUserCount'] || 0
+      const { reportDetail = {} } = this.trainingSummary || {}
+      return reportDetail['totalTargetUserCount'] || 0
     },
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}
@@ -375,11 +434,6 @@ export default {
       const { certificateAttachmentResourceId = '' } = this.trainingSummary || {}
       return certificateAttachmentResourceId
     }
-  },
-  mounted() {
-    this.callForLanguages()
-    // this.callForEnrollmentEmail()
-    // this.callForCertificate()
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -426,11 +480,6 @@ export default {
           this.certificateEmailData = data
         })
       }
-    },
-    callForLanguages() {
-      AwarenessEducatorService.getLanguages().then((response) => {
-        this.languages = response?.data?.data
-      })
     },
     showAudienceDetailsModal() {
       this.isAudienceModalVisible = true

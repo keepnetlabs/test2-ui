@@ -4,12 +4,12 @@
     title-id="text--training-dialog-delete-popup-title"
     subtitle-id="text--training-dialog-delete-popup-subtitle"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="getTitle"
     :status="status"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      Are you sure you want to delete this training content?
+      {{ getBody }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -27,7 +27,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { EMITS } from '../utils'
+import { EMITS, TRAINING_TYPES } from '../utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'DeleteTrainingDialog',
@@ -47,6 +47,18 @@ export default {
         title: 'Delete Training Content?'
       },
       isActionButtonDisabled: false
+    }
+  },
+  computed: {
+    getBody() {
+      return this?.selectedRow?.type === TRAINING_TYPES.POSTER
+        ? 'Are you sure you want to delete this poster content?'
+        : 'Are you sure you want to delete this training content?'
+    },
+    getTitle() {
+      return this?.selectedRow?.type === TRAINING_TYPES.POSTER
+        ? 'Delete Poster Content?'
+        : 'Delete Training Content?'
     }
   },
   methods: {

@@ -9,7 +9,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      You are about to re-send this campaign to the users you selected. Are you sure?
+      {{ getResendText }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -39,6 +39,9 @@ export default {
     },
     isActionButtonDisabled: {
       type: Boolean
+    },
+    payload: {
+      type: Object
     }
   },
   data() {
@@ -49,6 +52,20 @@ export default {
         ascending: 'ascending',
         title: 'Resend the campaign?'
       }
+    }
+  },
+  computed: {
+    getResendText() {
+      if (this.payload?.selectAll) {
+        return `You are about to re-send this campaign to all users. Are you sure?`
+      }
+      if (this.payload?.items.length) {
+        return `You are about to re-send this campaign to ${this.payload.items.length} user${
+          this.payload.items.length > 1 ? 's' : ''
+        } you’ve selected. Are you sure?`
+      }
+
+      return `You are about to re-send this campaign to the users you selected. Are you sure?`
     }
   },
   methods: {

@@ -9,7 +9,8 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      Are you sure you want to delete this training report?
+      Are you sure you want to delete this enrollment? All the reports associated with the
+      enrollment will be deleted. This action cannot be undone.
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter

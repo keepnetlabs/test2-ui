@@ -4,6 +4,7 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -15,6 +16,7 @@
       v-if="isShowDetailDialog"
       :item="selectedRow"
       :status="isShowDetailDialog"
+      :is-show-sandbox-from-parent.sync="isShowSandboxFromParent"
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
@@ -23,6 +25,7 @@
       :id="id"
       :instance-group="instanceGroup"
       :custom-fields="customFields"
+      :is-show-sandbox-from-parent.sync="isShowSandboxFromParent"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -63,11 +66,16 @@ export default {
   data() {
     return {
       labels,
+      isShowSandboxFromParent: true,
       selectedRow: {},
       isShowDetailDialog: false
     }
   },
   methods: {
+    handleOnResend(payload) {
+      this.resendPayload = payload
+      this.toggleIsShowResendDialog()
+    },
     handleOnDetail(row = {}) {
       this.selectedRow = row
       this.toggleShowDetailDialog()

@@ -1,5 +1,7 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export const EMITS = {
   ON_ADD: 'on-add',
@@ -10,7 +12,14 @@ export const EMITS = {
   ON_TRAINING: 'on-training',
   ON_ITEM_CHANGE: 'on-item-change',
   ON_DUPLICATE: 'on-duplicate',
-  ON_DOWNLOAD: 'on-download'
+  ON_DOWNLOAD: 'on-download',
+  ON_ADD_POSTER: 'on-add-poster',
+  ON_DOWNLOAD_POSTER: 'on-download-poster'
+}
+
+export const TRAINING_TYPES = {
+  SCORM: 'SCORM',
+  POSTER: 'Poster'
 }
 
 export const ENROLLMENT_STATUSES = {
@@ -52,6 +61,51 @@ export const COLUMNS = {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
     label: labels.TrainingName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  MATERIAL_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.MaterialName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  POSTER_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.PosterName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  LEARNING_PATH_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.LearningPathName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    overrideWidth: true,
+    width: 200
+  },
+  INFOGRAPHIC_NAME: {
+    property: PROPERTY_STORE.MATERIAL_NAME,
+    align: 'left',
+    label: labels.InfoGraphicName,
     fixed: false,
     sortable: true,
     show: true,
@@ -162,7 +216,28 @@ export const COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 160
+    width: 160,
+    filterableType: 'select',
+    filterableItems: ['SCORM', 'Poster']
+  },
+  ENROLLMENT_TYPE: {
+    property: PROPERTY_STORE.TYPE,
+    align: 'left',
+    editable: false,
+    label: labels.Type,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: [
+      { text: TRAINING_LIBRARY_TYPES.TRAINING, value: 1 },
+      { text: TRAINING_LIBRARY_TYPES.POSTER, value: 3 },
+      { text: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, value: 4 },
+      { text: TRAINING_LIBRARY_TYPES.SCREENSAVER, value: 5 },
+      { text: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH, value: 6 }
+    ]
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,

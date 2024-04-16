@@ -48,6 +48,7 @@
       :selected-row="selectedRow"
       :form-details="formDetails"
       :is-duplicate="isDuplicate"
+      :user="getUser"
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
@@ -173,7 +174,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCallbackCampaignDeletePermissions: 'permissions/getCallbackCampaignDeletePermissions'
+      getUser: 'auth/userGetter',
+      getCampaignManagerParentDeletePermissions:
+        'permissions/getCampaignManagerParentDeletePermissions'
     }),
     getStatusItems() {
       return this.formDetails.status
@@ -381,7 +384,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      if (this.getCallbackCampaignDeletePermissions) {
+      if (this.getCampaignManagerParentDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(item.resourceId)
           .then(() => {

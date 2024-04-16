@@ -96,7 +96,7 @@
           {{ scope.row[col.property] }}
         </span>
       </template>
-      <template #datatable-row-actions="{scope}">
+      <template #datatable-row-actions="{ scope }">
         <TargetUserRowActionsEditButton
           :id="tableOptions.rowActions[0].id"
           type="groups"
@@ -169,6 +169,10 @@ export default {
   props: {
     isLoadState: {
       type: Boolean
+    },
+    isOpenTargetGroupModalOnCreated: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -440,7 +444,7 @@ export default {
     },
     callForUpdateTargetGroup(payload) {
       this.isExtendedViewCancelButtonDisabled = true
-      updateTargetGroup(payload)
+      updateTargetGroup({ ...payload, isActive: true })
         .then(() => {
           this.$refs?.refGroupsTable?.resetSelectableParams()
           this.callForTargetGroups()
@@ -543,6 +547,7 @@ export default {
     if (!this.isLoadState || !tableState) {
       this.callForTargetGroups()
     }
+    this.showNewUserGroupModal = this.isOpenTargetGroupModalOnCreated
   },
   beforeDestroy() {
     const tableState = {

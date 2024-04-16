@@ -4,6 +4,9 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
+      :title="getResendDialogTitle"
+      :body-training-type="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -11,13 +14,11 @@
       v-if="isShowInteractionsModal"
       :status="isShowInteractionsModal"
       :item="selectedRow"
+      :is-add-training-type-key-to-payload="isAddTrainingTypeKeyToPayload"
+      :training-summary="trainingSummary"
       @on-close="toggleIsShowInteractionsModal"
     />
-    <CampaignManagerReportHeader
-      class="mb-6"
-      title="Users"
-      subtitle="All target users enrolled to this training"
-    />
+    <CampaignManagerReportHeader class="mb-6" title="Users" :subtitle="getHeaderSubtitle" />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -51,9 +52,13 @@
       @on-resend="handleOnResend"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
-        <div class="training-report-users__status-column">
+        <div v-if="col.property === 'status'" class="training-report-users__status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
+        </div>
+        <div v-if="col.property === 'examStatus'" class="training-report-users__exam-status-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.examStatus)" :col="col" size="medium" />
         </div>
       </template>
     </DataTable>
@@ -77,6 +82,8 @@ import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -96,9 +103,177 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    trainingSummary: {
+      type: Object
+    },
+    isAddTrainingTypeKeyToPayload: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
+    const columns = [
+      {
+        property: 'firstName',
+        align: 'left',
+        editable: false,
+        label: 'First Name',
+        fixed: 'left',
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 150
+      },
+      {
+        property: 'lastName',
+        align: 'left',
+        editable: false,
+        label: 'Last Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 150
+      },
+      {
+        property: 'email',
+        align: 'left',
+        editable: false,
+        label: 'Email',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'phoneNumber',
+        align: 'left',
+        editable: false,
+        label: 'Phone Number',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'department',
+        align: 'left',
+        fixed: false,
+        editable: false,
+        label: 'Department',
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
+        property: 'status',
+        align: 'center',
+        editable: false,
+        label: 'Status',
+        sortable: true,
+        show: true,
+        type: 'slot',
+        width: 200,
+        props: {
+          style: {
+            maxWidth: '110px !important'
+          }
+        },
+        overrideWidth: true,
+        filterableType: 'select',
+        filterableItems:
+          this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
+            text: item.displayName || item.name,
+            value: item.name
+          })) || []
+      },
+      ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+        ? [
+            {
+              property: 'examStatus',
+              align: 'center',
+              editable: false,
+              label: 'Exam Status',
+              sortable: false,
+              hideSort: true,
+              show: false,
+              type: 'slot',
+              width: 200,
+              props: {
+                style: {
+                  maxWidth: '110px !important'
+                }
+              },
+              overrideWidth: true,
+              filterableType: 'select',
+              filterableItems: ['Failed', 'Passed', 'Incomplete']
+            },
+            {
+              property: 'examScore',
+              align: 'right',
+              editable: false,
+              label: 'Exam Score',
+              fixed: false,
+              sortable: true,
+              show: false,
+              type: 'text',
+              width: 160,
+              filterableType: 'text'
+            }
+          ]
+        : []),
+      {
+        property: 'lastInteractionDate',
+        align: 'left',
+        editable: false,
+        label: 'Last Interaction',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'date'
+      },
+      {
+        property: 'deliveryType',
+        align: 'left',
+        editable: false,
+        label: 'Delivery Type',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'select',
+        filterableItems: ['Email', 'Email & SMS']
+      }
+    ]
+    if (
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+    ) {
+      columns.splice(4, 0, {
+        property: 'currentStep',
+        align: 'left',
+        fixed: false,
+        editable: false,
+        label: 'Current Step',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 180
+      })
+    }
     return {
       isShowResendDialog: false,
       resendPayload: null,
@@ -119,120 +294,12 @@ export default {
           resend: true,
           clipboard: true
         },
-        columns: [
-          {
-            property: 'firstName',
-            align: 'left',
-            editable: false,
-            label: 'First Name',
-            fixed: 'left',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'lastName',
-            align: 'left',
-            editable: false,
-            label: 'Last Name',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          },
-          {
-            property: 'email',
-            align: 'left',
-            editable: false,
-            label: 'Email',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'phoneNumber',
-            align: 'left',
-            editable: false,
-            label: 'Phone Number',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'department',
-            align: 'left',
-            fixed: false,
-            editable: false,
-            label: 'Department',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180
-          },
-          {
-            property: 'status',
-            align: 'center',
-            editable: false,
-            label: 'Status',
-            sortable: true,
-            show: true,
-            type: 'slot',
-            width: 200,
-            props: {
-              style: {
-                maxWidth: '110px !important'
-              }
-            },
-            overrideWidth: true,
-            filterableType: 'select',
-            filterableItems:
-              this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })) || []
-          },
-          {
-            property: 'lastInteractionDate',
-            align: 'left',
-            editable: false,
-            label: 'Last Interaction',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'date'
-          },
-          {
-            property: 'deliveryType',
-            align: 'left',
-            editable: false,
-            label: 'Delivery Type',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 180,
-            filterableType: 'select',
-            filterableItems: ['Email', 'Email & SMS']
-          }
-        ],
+        columns,
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.getEmptyTableTextMessage()
         },
         rowActions: [
           {
@@ -276,8 +343,33 @@ export default {
       tableData: []
     }
   },
-  created() {
-    this.callForData()
+  computed: {
+    getHeaderSubtitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return 'All target users enrolled to this poster'
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return 'All target users enrolled to this infographic'
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        return 'All target users enrolled to this learning path'
+      return 'All target users enrolled to this training'
+    },
+    getResendDialogTitle() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+    getBodyTrainingType() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    }
   },
   watch: {
     isScormProxy: {
@@ -294,7 +386,23 @@ export default {
       }
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
+    getEmptyTableTextMessage() {
+      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.EmptyTrainingReportTrainingPosters
+      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+        return labels.EmptyTrainingReportTrainingInfographics
+      else if (
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        return labels.EmptyTrainingReportUserLearningPaths
+      }
+      return labels.EmptyTrainingReportTrainingUsers
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)
@@ -311,7 +419,8 @@ export default {
       AwarenessEducatorService.resendTrainingToUserList(this.resendPayload, this.id)
         .then(() => {
           this.toggleIsShowResendDialog()
-          this.$refs.refTable.callForData()
+          this.$refs.refTable.resetSelectableParams()
+          this.callForData()
         })
         .finally(() => {
           this.isResendActionButtonDisabled = false
@@ -323,7 +432,10 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
+      let textType = this.isAddTrainingTypeKeyToPayload
+        ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+        : null
+      AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id, textType)
         .then((response) => {
           const {
             data: {
@@ -333,7 +445,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
         })
         .finally(this.setLoading)
     },
@@ -346,7 +458,10 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          trainingType: this.isAddTrainingTypeKeyToPayload
+            ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+            : null
         }
         AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
           const { data } = response

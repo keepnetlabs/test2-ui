@@ -1,6 +1,13 @@
 <template>
   <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="isShowQrCodeErrorDialog"
+        :status="isShowQrCodeErrorDialog"
+        title="Warning"
+        error-message="You must insert {QRCODEURLIMAGE} merge tag to your email design for quishing campaign to work correctly"
+        @on-close="toggleQrCodeErrorDialog"
+      />
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -155,6 +162,7 @@
                       </template>
                       <email-template
                         ref="refEmailTemplate"
+                        :template-type="QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
@@ -175,6 +183,7 @@
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
+                        @showErrorDialog="toggleQrCodeErrorDialog"
                       />
                     </form-group>
                   </v-form>
@@ -220,9 +229,12 @@ import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 export default {
   name: 'NewQuishingEmailTemplatesModal',
   components: {
+    DefaultErrorDialog,
     InputPhishingMethod,
     StepperFooter,
     AppModal,
@@ -252,12 +264,14 @@ export default {
   },
   data() {
     return {
+      QUISHING_EMAIL_TEMPLATE_TYPES,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
         backButton: 'btn-back--add-or-edit-email-templates-modal',
         nextButton: 'btn-next--add-or-edit-email-templates-modal',
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
+      isShowQrCodeErrorDialog: false,
       isAttachmentError: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
@@ -623,6 +637,9 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
+    },
+    toggleQrCodeErrorDialog() {
+      this.isShowQrCodeErrorDialog = !this.isShowQrCodeErrorDialog
     }
   }
 }

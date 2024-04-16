@@ -31,7 +31,7 @@
           <iframe
             v-if="activeTemplate && !isTemplateLoading"
             :key="iframeKey"
-            class="training-library-preview__player"
+            :class="['training-library-preview__player', iframeClass]"
             allowfullscreen
             title="Training Preview"
             :src="activeTemplate"
@@ -80,8 +80,8 @@
             </div>
             <div class="d-flex flex-wrap gap-2">
               <span
-                v-for="tag in trainingParams.tagNames"
-                :key="tag"
+                v-for="(tag, index) in trainingParams.tagNames"
+                :key="index"
                 class="training-library-preview__tag"
                 >{{ tag }}</span
               >
@@ -117,6 +117,10 @@ export default {
     },
     trainingParams: {
       type: Object
+    },
+    iframeClass: {
+      type: String,
+      default: ''
     }
   },
   data() {

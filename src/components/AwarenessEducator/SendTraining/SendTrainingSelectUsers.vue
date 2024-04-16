@@ -37,7 +37,10 @@
         />
       </div>
       <div v-if="selectedRadioGroupIndex === 1">
-        <FormGroup :title="labels.PhishingCampaigns" :sub-title="labels.PhishingCampaignsSub">
+        <FormGroup
+          :title="labels.PhishingCampaigns"
+          sub-title="Select campaign results below to send the training"
+        >
         </FormGroup>
         <SendTrainingSelectUsersByCampaign
           ref="refSendTrainingSelectUsersByCampaign"

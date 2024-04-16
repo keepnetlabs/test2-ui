@@ -1,8 +1,8 @@
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 //trainings
-const searchTraining = (payload) => {
-  return testRequest.post('/trainings/search', payload)
+const searchTraining = (payload, options = {}) => {
+  return testRequest.post('/trainings/search', payload, options)
 }
 const deleteTraining = (resourceId) => {
   return testRequest.delete(`/trainings/${resourceId}`, {
@@ -28,9 +28,22 @@ const uploadTrainingContent = (payload, resourceId, abortSignal, onUploadProgres
     timeout: Infinity
   })
 }
+const uploadPosterContent = (payload, resourceId, abortSignal, onUploadProgressCallback) => {
+  return testRequest.post(`/trainings/${resourceId}/upload-file-content`, payload, {
+    snackbar: COMMON_SNACKBAR,
+    onUploadProgress: onUploadProgressCallback,
+    signal: abortSignal,
+    timeout: Infinity
+  })
+}
 
 const getTraining = (resourceId) => {
   return testRequest.get(`/trainings/${resourceId}`)
+}
+const createTraining = (payload) => {
+  return testRequest.post(`/trainings`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 const updateTraining = (payload, resourceId) => {
   return testRequest.put(`/trainings/${resourceId}`, payload, {
@@ -133,6 +146,18 @@ const getEnrollment = (resourceId) => {
   return testRequest.get(`/enrollments/${resourceId}`)
 }
 
+const stopReminder = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/stop-reminder`, undefined, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+const stopAutoEnroll = (resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/stop-autoenroll`, undefined, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 const updateEnrollment = (payload, resourceId) => {
   return testRequest.put(`/enrollments/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -173,8 +198,10 @@ const lmsFinish = (payload) => {
   return testRequest.post('/scorm/LMSFinish', payload)
 }
 
-const getTrainingReportSummary = (resourceId) => {
-  return testRequest.get(`/training-reports/${resourceId}/summary`)
+const getTrainingReportSummary = (resourceId, trainingType = 0) => {
+  return testRequest.get(
+    `/training-reports/${resourceId}/summary?${`trainingType=${trainingType}`}`
+  )
 }
 
 const getScormProxyTrainingReportSummary = (resourceId) => {
@@ -185,8 +212,10 @@ const getTrainingReportFormDetails = () => {
   return testRequest.get('/training-reports/form-details')
 }
 
-const searchTrainingReportUsers = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/users/search`, payload)
+const searchTrainingReportUsers = (payload, resourceId, trainingType) => {
+  let url = `/training-reports/${resourceId}/users/search`
+  if (trainingType) payload.trainingType = trainingType
+  return testRequest.post(url, payload)
 }
 
 const exportTrainingReportUsers = (payload, resourceId) => {
@@ -279,9 +308,12 @@ const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 
-const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType) => {
+const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
-  if (interactionType) url += `?emailEventType=${interactionType}`
+  if (interactionType) {
+    url += `?emailEventType=${interactionType}`
+    if (trainingType) url += `&trainingType=${trainingType}`
+  } else if (trainingType) url += `?trainingType=${trainingType}`
   return testRequest.get(url)
 }
 const getTrainingReportNonTargetUserInteractions = (
@@ -438,11 +470,48 @@ const getProxyTargetUserById = (id) => {
   return testRequest.get(`/training-reports/anonymous/{enrollmentId}/detail/${id}`)
 }
 
+const downloadPoster = (payload) => {
+  return testRequest.post(`/trainings/download`, payload, {
+    responseType: 'blob'
+  })
+}
+const getTrainingTypeCount = (payload, options = {}) => {
+  return testRequest.post('/trainings/get-training-type-count', payload, options)
+}
+const getVendors = () => {
+  return testRequest.get('/trainings/vendors')
+}
+const getBehaviours = () => {
+  return testRequest.get('/trainings/behaviours')
+}
+const getCompliances = () => {
+  return testRequest.get('/trainings/compliances')
+}
+const getTrainingTypes = () => {
+  return testRequest.get('/trainings/types')
+}
+
+const addToFavorite = (resourceId) => {
+  return testRequest.post(
+    `/trainings/${resourceId}/favourite`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+const removeFromFavorite = (resourceId) => {
+  return testRequest.delete(`/trainings/${resourceId}/favourite`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   searchTraining,
+  getTrainingTypeCount,
   deleteTraining,
   getTraining,
   createDraftTraining,
+  createTraining,
   updateTraining,
   searchCertificate,
   deleteCertificate,
@@ -452,6 +521,9 @@ export default {
   makeDefaultCertificate,
   getCategories,
   getTargetAudiences,
+  getBehaviours,
+  getCompliances,
+  getVendors,
   getLanguages,
   exportTrainingList,
   uploadTrainingContent,
@@ -470,6 +542,8 @@ export default {
   stopEnrollment,
   getEnrollment,
   updateEnrollment,
+  stopReminder,
+  stopAutoEnroll,
   createEnrollment,
   getContentLanguageItems,
   getTrainingUrl,
@@ -524,5 +598,10 @@ export default {
   examTrainingNonTargetUserTrainingDetails,
   progressNonTargetUsersTrainingReportEmails,
   progressNonTargetUsersTrainingReportEmailsDetails,
-  getScormProxyTrainingReportSummary
+  getScormProxyTrainingReportSummary,
+  uploadPosterContent,
+  downloadPoster,
+  addToFavorite,
+  removeFromFavorite,
+  getTrainingTypes
 }

@@ -76,6 +76,8 @@ import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingRepo
 import Badge from '@/components/Badge'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingReportUserInteractionsModal',
@@ -94,6 +96,13 @@ export default {
     firstColumnLabel: {
       type: String,
       default: 'Date'
+    },
+    isAddTrainingTypeKeyToPayload: {
+      type: Boolean,
+      default: false
+    },
+    trainingSummary: {
+      type: Object
     }
   },
   data() {
@@ -172,6 +181,24 @@ export default {
     else {
       columns[columns.length - 1].width = 325
     }
+    if (
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+      this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+    ) {
+      columns[0].fixed = false
+      columns.splice(0, 0, {
+        property: 'currentStep',
+        align: 'left',
+        fixed: 'left',
+        editable: false,
+        label: 'Current Step',
+        sortable: false,
+        hideSort: true,
+        show: true,
+        type: 'text',
+        width: 180
+      })
+    }
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
@@ -242,15 +269,29 @@ export default {
     },
     callForData() {
       this.setLoading(true)
+      let type = 0
+      let textType = this.isAddTrainingTypeKeyToPayload
+        ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+        : null
+      if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      else if (
+        textType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        textType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      )
+        type = 4
       AwarenessEducatorService.getTrainingReportInteractions(
         this.item.enrollmentId,
         this.item.targetUserResourceId,
-        this.interactionType
+        this.interactionType,
+        type
       )
         .then((response) => {
           this.tableData = response?.data?.data.map((item) => ({
             interaction: item.interaction,
             eventTime: item.eventTime,
+            currentStep: item.currentStep,
             ...item.trackingInfo
           }))
         })

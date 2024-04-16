@@ -55,6 +55,27 @@ export const COLUMNS = {
     parentRect: 'reported-email-subject',
     overrideWidth: true
   },
+  HAS_TRAINING: {
+    property: PROPERTY_STORE.HAS_TRAINING,
+    align: 'center',
+    label: labels.Training,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'attachment',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: [
+      {
+        text: 'Yes',
+        value: true
+      },
+      {
+        text: 'No',
+        value: false
+      }
+    ]
+  },
   FREQUENCY: {
     property: PROPERTY_STORE.FREQUENCY_DESCRIPTION,
     align: 'left',
