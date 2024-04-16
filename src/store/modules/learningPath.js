@@ -288,12 +288,26 @@ const learningPath = {
     RESET_LEARNING_PATH_PAGINATION(state) {
       state.learningPathAxiosPayload.pageNumber = 1
       state.learningPathServerSideProps.pageNumber = 1
+    },
+    SET_FILTER_ITEMS_SHOW(state, payload) {
+      const filter = state.learningPathFilters.find((f) => f.key === payload.key)
+      filter.show = payload.show
     }
   },
   actions: {
+    setLearningPathFilterItemsShow({ commit }, payload) {
+      commit('SET_FILTER_ITEMS_SHOW', payload)
+    },
     callForLearningPathTableData({ commit, state }, payload) {
-      if (payload?.trainingId) {
-        state.learningPathAxiosPayload.trainingId = payload.trainingId
+      if (payload?.trainingIds) {
+        state.learningPathAxiosPayload.trainingIds = payload.trainingIds
+      }
+      if (state.selectedLearningPathTrainings?.length) {
+        const trainingIds =
+          state.selectedLearningPathTrainings?.map(
+            (training) => training?.trainingId || training?.detailTrainingId
+          ) || []
+        state.learningPathAxiosPayload.trainingIds = trainingIds
       }
       AwarenessEducatorService.searchTraining(state.learningPathAxiosPayload).then((response) => {
         const {
