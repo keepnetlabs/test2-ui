@@ -85,7 +85,7 @@
         </template>
       </ElTabPane>
       <ElTabPane
-        v-for="(training, index) in learningPathParams.trainingGroups"
+        v-for="(training, index) in getTrainingGroups"
         id="campaign-manager-info--training-preview-content"
         :name="training.name"
         :key="index"
@@ -351,6 +351,9 @@ export default {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
+    getTrainingGroups() {
+      return this.learningPathParams?.trainingGroups || []
+    },
     isTrainingTypeTraining() {
       return (
         this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ||
@@ -393,7 +396,7 @@ export default {
       if (!training.label.startsWith('Step')) return
       const trainingGroupIndex = parseInt(training.index, 10) - 1
       if (trainingGroupIndex < 0) return
-      const trainingGroup = this.learningPathParams.trainingGroups[trainingGroupIndex]
+      const trainingGroup = this.getTrainingGroups?.[trainingGroupIndex] || {}
       this.activeTrainingContentId = trainingGroup.detailTrainingId
       this.activeTrainingContentType = trainingGroup.type
       this.activeTrainingContentLanguageCodes = trainingGroup.languages

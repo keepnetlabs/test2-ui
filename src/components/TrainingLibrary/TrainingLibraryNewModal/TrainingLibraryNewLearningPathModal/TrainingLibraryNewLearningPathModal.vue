@@ -151,7 +151,7 @@ export default {
             tagNames,
             targetAudience,
             coverImage,
-            trainingGroups
+            trainingGroups = []
           } = response?.data?.data || {}
           const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
           if (refTrainingCourseInformation && refLearningPathContent) {
@@ -167,8 +167,8 @@ export default {
               targetAudience
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-            refLearningPathContent.setSelectedTrainings(trainingGroups)
-            this.trainingIds = trainingGroups.map(
+            refLearningPathContent.setSelectedTrainings(trainingGroups || [])
+            this.trainingIds = trainingGroups?.map(
               (training) => training?.trainingId || training?.detailTrainingId
             )
           }

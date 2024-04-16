@@ -51,6 +51,7 @@ const CONSTANTS = {
     'Unexpected token',
     'Failed to fetch dynamically imported module: https://js.userflow.com',
     'Non-Error exception captured with keys: currentTarget, detail, isTrusted, target',
+    'Non-Error exception captured with keys: message',
     'This Userflow.js client has reached a maximum of 100 operations in the last 1 minute'
   ],
   LOGIN_NAVIGATION_DUPLICATED: [
