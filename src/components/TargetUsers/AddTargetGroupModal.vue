@@ -121,7 +121,6 @@ export default {
   },
   methods: {
     handleClose() {
-      console.log('iam canceled')
       this.$emit('closeOverlay')
     },
     handleSelectionChange(

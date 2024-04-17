@@ -16,8 +16,21 @@ const getReportDetail = (resourceId = '') => {
     }/${resourceId}`
   )
 }
+const getExecutiveReports = () => {
+  return Promise.resolve({
+    data: {
+      data: [
+        { name: 'Executive Summary Report' },
+        { name: 'CISO Report' },
+        { name: 'Team Manager Report' },
+        { name: 'SOC Summary Report' }
+      ]
+    }
+  })
+}
 
 export default {
   getReports,
-  getReportDetail
+  getReportDetail,
+  getExecutiveReports
 }

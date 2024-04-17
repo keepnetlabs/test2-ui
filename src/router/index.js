@@ -64,6 +64,8 @@ import QuishingSettings from '@/views/QuishingSettings.vue'
 import QuishingCampaignManagerReport from '@/views/QuishingCampaignManagerReport.vue'
 import ScormProxyReport from '@/views/ScormProxyReport.vue'
 import TrainingLibrary from '@/views/TrainingLibrary.vue'
+import ExecutiveReports from '@/views/ExecutiveReports.vue'
+import NewExecutiveReport from '@/views/NewExecutiveReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -725,6 +727,36 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports',
+          name: 'Executive Reports',
+          component: ExecutiveReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/new',
+          name: 'New Executive Report',
+          component: NewExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/new',
+          name: 'New Executive Report',
+          component: NewExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         },

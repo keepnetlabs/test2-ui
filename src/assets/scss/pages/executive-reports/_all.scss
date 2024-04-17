@@ -1,0 +1,106 @@
+.executive-reports__header{
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  &-search{
+    max-width: 320px;
+  }
+}
+.executive-reports-card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border:1px solid #E0E0E0;
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  &__left{
+    font-size: 18px;
+    font-weight: 600;
+    color: #383B41;
+  }
+  &__right{
+    display: flex;
+    gap:8px;
+    &-btn{
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      border:1px solid #2196F3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &--disabled{
+        opacity:.5;
+        pointer-events: none;
+      }
+    }
+  }
+  &__preview-btn{
+    padding: 12px !important;
+  }
+}
+.executive-reports__body{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.new-executive-report{
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  &__left{
+    box-shadow: 0 3px 18px 0 rgba(56, 59, 65, 0.04), 0 5px 12px 0 rgba(91, 91, 91, 0.12);
+    flex-basis: 25%;
+    border-radius: 12px;
+    background-color: white;
+    padding: 24px;
+  }
+  &__right{
+    border-radius: 12px;
+    background-color: white;
+    padding: 24px;
+    box-shadow: 0 3px 18px 0 rgba(56, 59, 65, 0.04), 0 5px 12px 0 rgba(91, 91, 91, 0.12);
+    flex-basis: 75%;
+  }
+}
+.preview-executive-report{
+  padding: 16px;
+}
+.executive-report-new-card{
+  &__header{
+    display: flex;
+    justify-content: space-between;
+  }
+  &__body{
+    &-new{
+      border:1px solid #E0E0E0;
+      padding: 16px;
+      margin-top:24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      &-image{
+        background: #FFF;
+        border:1px solid #E0E0E0;
+        padding: 16px;
+        width: 210px;
+        height: 88px;
+        position: relative;
+        button{
+          position: absolute !important;
+          right:8px;
+          top:8px;
+          cursor: pointer;
+        }
+        img{
+          object-fit: contain;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
