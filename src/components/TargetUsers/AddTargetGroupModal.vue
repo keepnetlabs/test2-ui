@@ -74,6 +74,7 @@
         :i-empty="iEmpty"
         resource-id="7Tna1kvZXAgX"
         exclude-group-users
+        is-call-target-user-search
         @handleSelectionChange="handleSelectionChange"
       />
     </template>
