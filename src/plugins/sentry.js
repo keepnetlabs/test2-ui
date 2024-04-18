@@ -69,7 +69,9 @@ const CONSTANTS = {
   ANALYTICS: [
     "null is not an object (evaluating 'g.readyState')",
     'Error response received for message <get-frame-manager-configuration>'
-  ]
+  ],
+  POWER_BI: [`Cannot read properties of undefined (reading 'indexOf')`],
+  VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`]
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -102,6 +104,8 @@ export default (router) => {
       if (CONSTANTS.CHART_JS.some((m) => message.includes(m))) return null
       if (CONSTANTS.USER_FLOW.some((m) => message.includes(m))) return null
       if (CONSTANTS.ANALYTICS.some((m) => message.includes(m))) return null
+      if (CONSTANTS.POWER_BI.some((m) => message.includes(m))) return null
+      if (CONSTANTS.VUE_PDF.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.VUE_ROUTER)) return null

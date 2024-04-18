@@ -204,9 +204,9 @@ export default {
             refTrainingCourseInformation.formData.availableForRequests
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
-          this.availableForRequestIds = refTrainingCourseInformation.formData.availableForRequests.map(
-            (item) => item.id
-          )
+          this.availableForRequestIds =
+            refTrainingCourseInformation?.formData?.availableForRequests?.map((item) => item.id) ||
+            []
         }
         if (refTrainingCourseInformation.validateForm()) {
           this.step += flag
