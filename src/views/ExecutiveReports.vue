@@ -1,5 +1,17 @@
 <template>
   <KContainer id="executive-reports" tabless>
+    <ExecutiveReportScheduleReportDialog
+      v-if="isShowScheduleReportDialog"
+      :status="isShowScheduleReportDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowScheduleReportDialog"
+    />
+    <ExecutiveReportDeleteDialog
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowDeleteDialog"
+    />
     <div class="executive-reports__header">
       <VTextField
         id="input--search-training-library"
@@ -30,7 +42,13 @@
       </VTooltip>
     </div>
     <div class="executive-reports__body">
-      <ExecutiveReportsCard v-for="card in cards" :key="card.name" :card="card" />
+      <ExecutiveReportsCard
+        v-for="card in cards"
+        :key="card.name"
+        :card="card"
+        @on-schedule="toggleShowScheduleReportDialog"
+        @on-delete="toggleShowDeleteDialog"
+      />
     </div>
   </KContainer>
 </template>
@@ -40,15 +58,25 @@ import useDebounce from '@/hooks/useDebounce'
 import ExecutiveReportsCard from '@/components/ExecutiveReports/ExecutiveReportsCard.vue'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ReportsService from '@/api/reports'
+import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
+import ExecutiveReportDeleteDialog from '@/components/ExecutiveReports/ExecutiveReportDeleteDialog.vue'
 export default {
   name: 'ExecutiveReports',
-  components: { ExecutiveReportsCard, KContainer },
+  components: {
+    ExecutiveReportDeleteDialog,
+    ExecutiveReportScheduleReportDialog,
+    ExecutiveReportsCard,
+    KContainer
+  },
   mixins: [useDebounce],
   data() {
     return {
       search: '',
       axiosPayload: getDefaultAxiosPayload(),
-      cards: []
+      cards: [],
+      isShowScheduleReportDialog: false,
+      isShowDeleteDialog: false,
+      selectedRow: null
     }
   },
   created() {
@@ -72,6 +100,14 @@ export default {
     handleSearch(value) {},
     routeToNewExecutiveReport() {
       this.$router.push({ name: 'New Executive Report' })
+    },
+    toggleShowScheduleReportDialog(row = {}) {
+      this.selectedRow = row
+      this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
+    },
+    toggleShowDeleteDialog(row = {}) {
+      this.selectedRow = row
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
     }
   }
 }

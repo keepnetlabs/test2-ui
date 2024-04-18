@@ -66,6 +66,7 @@ import ScormProxyReport from '@/views/ScormProxyReport.vue'
 import TrainingLibrary from '@/views/TrainingLibrary.vue'
 import ExecutiveReports from '@/views/ExecutiveReports.vue'
 import NewExecutiveReport from '@/views/NewExecutiveReport.vue'
+import PreviewExecutiveReport from '@/views/PreviewExecutiveReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -754,6 +755,16 @@ const router = new Router({
           path: '/reports/executive-reports/new',
           name: 'New Executive Report',
           component: NewExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/preview/:id',
+          name: 'Preview Executive Report',
+          component: PreviewExecutiveReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Executive Reports',

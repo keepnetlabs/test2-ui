@@ -4,7 +4,6 @@
       <VTextField
         v-model="search"
         id="input--search-training-library"
-        class="executive-reports__header-search"
         ref="searchInput"
         outlined
         hide-details
@@ -12,6 +11,9 @@
         placeholder="Search"
         @input="handleDebouncedSearch"
       />
+      <div class="executive-report-search-card-container mt-4">
+        <ExecutiveReportSearchCard v-for="card in cards" :key="card.name" :card="card" />
+      </div>
     </div>
     <div class="new-executive-report__right">
       <ExecutiveReportNewCard />
@@ -21,13 +23,43 @@
 
 <script>
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
+import ExecutiveReportSearchCard from '@/components/ExecutiveReports/ExecutiveReportSearchCard.vue'
 
 export default {
   name: 'NewExecutiveReport',
-  components: { ExecutiveReportNewCard },
+  components: { ExecutiveReportSearchCard, ExecutiveReportNewCard },
   data() {
     return {
-      search: ''
+      search: '',
+      cards: [
+        {
+          name: 'Phishing Metrics',
+          charts: [
+            {
+              name: 'Phishing Campaign Trends',
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+            },
+            {
+              name: 'Reported Email Trends',
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+            },
+            {
+              name: 'Most Engaged Campaigns',
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+            },
+            {
+              name: 'Recently Posted Threats',
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+            }
+          ]
+        },
+        {
+          name: 'Training Metrics'
+        },
+        {
+          name: 'Vishing Metrics'
+        }
+      ]
     }
   },
   methods: {
