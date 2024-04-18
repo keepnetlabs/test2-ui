@@ -13,6 +13,9 @@
   >
     <template #app-dialog-body>
       <VForm ref="refForm" lazy-validation>
+        <div v-if="isNew" class="executive-report-schedule-dialog-is-new">
+          Your report will be saved as it is to be scheduled
+        </div>
         <FormGroup title="Schedule Name">
           <InputEntityName
             v-model.trim="formData.name"
@@ -129,6 +132,10 @@ export default {
     selectedRow: {
       type: Object,
       default: () => {}
+    },
+    isNew: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

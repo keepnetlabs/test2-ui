@@ -4,6 +4,7 @@
       v-if="isShowScheduleReportDialog"
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
+      :is-new="!isPreview"
       @on-close="toggleShowScheduleReportDialog"
     />
     <div class="executive-report-new-card__header">

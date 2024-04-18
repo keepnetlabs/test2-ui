@@ -63,12 +63,23 @@ export default {
     }
   },
   methods: {
-    handlePreviewClick() {},
-    handleScheduleClick() {},
+    handlePreviewClick() {
+      this.$router.push({
+        name: 'Preview Executive Report',
+        params: {
+          id: this.card.resourceId || 'gürkan'
+        }
+      })
+    },
+    handleScheduleClick() {
+      this.$emit('on-schedule', this.card)
+    },
     handleEditClick() {},
     handleContentDuplicateClick() {},
     handleDownloadClick() {},
-    handleDeleteClick() {}
+    handleDeleteClick() {
+      this.$emit('on-delete', this.card)
+    }
   }
 }
 </script>
