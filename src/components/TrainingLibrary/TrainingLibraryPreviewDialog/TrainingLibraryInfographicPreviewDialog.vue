@@ -33,7 +33,7 @@
                     <TrainingLibraryFavoriteButton
                       v-if="isShowInfographicParams"
                       ref="refFavoriteButton"
-                      :is-default-favourite="infographicParams.isFavourite"
+                      :is-default-favourite="infographicParams && infographicParams.isFavourite"
                       :training-id="selectedRow.trainingId"
                     />
                   </div>

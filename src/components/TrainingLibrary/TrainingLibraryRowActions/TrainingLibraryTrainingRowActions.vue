@@ -87,8 +87,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-training',
-          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this?.scope?.row?.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this?.scope?.row?.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-training',
@@ -130,7 +130,7 @@ export default {
       })
     },
     handleAddFavorite(row) {
-      if (row.isFavourite) {
+      if (row?.isFavourite) {
         AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {
           this.callForData()
         })

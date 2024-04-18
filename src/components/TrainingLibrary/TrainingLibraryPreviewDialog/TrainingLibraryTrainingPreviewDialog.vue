@@ -139,8 +139,8 @@ export default {
     },
     handleClose() {
       if (
-        this.$refs.refTrainingLibraryTrainingPreview.$refs.refFavoriteButton.isFavourite !==
-        this.trainingDetails.isFavourite
+        this?.$refs?.refTrainingLibraryTrainingPreview?.$refs?.refFavoriteButton?.isFavourite !==
+        this.trainingDetails?.isFavourite
       ) {
         this.callForTrainingLibrary()
       }
