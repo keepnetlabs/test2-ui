@@ -52,7 +52,8 @@ const CONSTANTS = {
     'Failed to fetch dynamically imported module: https://js.userflow.com',
     'Non-Error exception captured with keys: currentTarget, detail, isTrusted, target',
     'This Userflow.js client has reached a maximum of 100 operations in the last 1 minute',
-    'Rendering cancelled, page 1'
+    'Rendering cancelled, page 1',
+    'Cannot redefine property: googletag'
   ],
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
