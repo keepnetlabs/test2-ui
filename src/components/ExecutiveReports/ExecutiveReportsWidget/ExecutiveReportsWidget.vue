@@ -1,0 +1,88 @@
+<template>
+  <WidgetLoading :loading="isLoading">
+    <template #skeleton-content>
+      <ExecutiveWidgetContainer>
+        <ExecutiveWidgetHeader
+          :title="card.title"
+          :subtitle="card.subtitle"
+          @on-delete="handleDelete"
+          @on-edit="handleEdit"
+        />
+        <ExecutiveWidgetBody>
+          <template v-if="true">
+            <ExecutiveReportStackedBarChart v-if="card.chartType === 'stackedBar'" />
+            <ExecutiveReportLineChart v-else-if="card.chartType === 'line'" />
+            <ExecutiveReportBarChart v-else-if="card.chartType === 'bar'" />
+            <div class="executive-widget-body-x-axis">Month / Year</div>
+          </template>
+          <div
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+            v-else
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn" @click="onEmptyBtnClicked">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
+        </ExecutiveWidgetBody>
+      </ExecutiveWidgetContainer>
+    </template>
+  </WidgetLoading>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
+import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import ExecutiveReportLineChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportLineChart.vue'
+import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
+import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportStackedBarChart.vue'
+import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportBarChart.vue'
+
+export default {
+  name: 'ExecutiveReportsWidget',
+  components: {
+    ExecutiveReportBarChart,
+    ExecutiveReportStackedBarChart,
+    ExecutiveWidgetBody,
+    ExecutiveReportLineChart,
+    ExecutiveWidgetHeader,
+    ExecutiveWidgetContainer,
+    WidgetLoading
+  },
+  props: {
+    card: {
+      type: Object,
+      default: () => ({
+        title: 'Phishing Campaign Trends',
+        subtitle: 'Phishing Metric'
+      })
+    }
+  },
+  data() {
+    return {
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      empty: {
+        message: 'You do not have any report conclusion'
+      }
+    }
+  },
+  computed: {
+    ...mapGetters({
+      isLoading: 'widgets/getIsLoading'
+    })
+  },
+  methods: {
+    onEmptyBtnClicked() {},
+    handleDelete() {
+      this.$emit('on-delete', this.card)
+    },
+    handleEdit() {
+      this.$emit('on-edit', this.card)
+    }
+  }
+}
+</script>

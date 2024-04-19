@@ -12,11 +12,16 @@
         @input="handleDebouncedSearch"
       />
       <div class="executive-report-search-card-container mt-4">
-        <ExecutiveReportSearchCard v-for="card in cards" :key="card.name" :card="card" />
+        <ExecutiveReportSearchCard
+          v-for="card in cards"
+          :key="card.name"
+          :card="card"
+          @on-add-chart="handleSearchAdd"
+        />
       </div>
     </div>
     <div class="new-executive-report__right">
-      <ExecutiveReportNewCard />
+      <ExecutiveReportNewCard ref="refCharts" />
     </div>
   </div>
 </template>
@@ -37,19 +42,27 @@ export default {
           charts: [
             {
               name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              chartType: 'line',
+              key: 'PhishingCampaignTrends'
             },
             {
               name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              key: 'ReportedEmailTrends',
+              chartType: 'stackedBar'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              key: 'MostEngagedCampaigns',
+              chartType: 'doughnut'
             },
             {
               name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png'
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              key: 'RecentlyPostedThreats',
+              chartType: 'bar'
             }
           ]
         },
@@ -59,11 +72,15 @@ export default {
         {
           name: 'Vishing Metrics'
         }
-      ]
+      ],
+      removedCards: {}
     }
   },
   methods: {
-    handleDebouncedSearch(value) {}
+    handleDebouncedSearch(value) {},
+    handleSearchAdd(chart, charts, index) {
+      this.$refs.refCharts.addWidget(chart)
+    }
   }
 }
 </script>

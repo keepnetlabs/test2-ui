@@ -83,6 +83,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      & > div:first-child {
+        flex-basis: 50%;
+      }
       &-image{
         background: #FFF;
         border:1px solid #E0E0E0;
@@ -129,6 +132,19 @@
         height: 100%;
       }
     }
+  }
+  &__empty{
+    margin-top:24px;
+    border:1px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    color:#383B41;
+    height: 240px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 .executive-report-schedule{
@@ -198,4 +214,99 @@
   background-color: #F1F8FE;
   padding: 16px;
   margin-bottom: 10px;
+}
+.executive-report-new-card-timezone{
+  display: flex;
+  flex-direction: column;
+  & > span:first-child{
+    color: #383B41;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+  & > span:last-child{
+    color: #383B41;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 19px;
+  }
+}
+.executive-report-customize-widget-row{
+  display: flex;
+  justify-content:space-between;
+  gap:16px;
+}
+.executive-report-customize-widget-preview{
+  background-color: #fff;
+  padding: 16px;
+  border: 1px solid #E0E0E0;
+  &-title{
+    color: #383B41;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  &-type{
+    color: #383B41;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
+}
+.new-executive-report-button-disabled{
+  opacity:.5;
+  pointer-events: none;
+}
+.executive-widget-container{
+  border:1px solid #E0E0E0;
+  background-color: #ffffff;
+  padding: 16px;
+  height: 100%;
+}
+.executive-widget-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &__left{
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+    &-title{
+      font-size: 18px;
+      font-weight: 600;
+      color: #383B41;
+    }
+    &-text{
+      font-size: 14px;
+      font-weight: 400;
+      color: #383B41;
+    }
+  }
+  &__right{
+    &-icon{
+      border:1px solid #757575;
+      border-radius: 50%;
+      padding: 8px;
+      font-size: 20px !important;
+    }
+  }
+}
+.executive-report-grid .widget-body__content{
+  border-radius: 0;
+}
+.executive-widget-body{
+  height: 100%;
+  position: relative;
+
+  >div {
+    height: 80%;
+    position: relative;
+  }
+}
+.executive-widget-body-x-axis{
+  text-align: center;
+  margin-top:-8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 19px;
+  color:#383B41;
 }

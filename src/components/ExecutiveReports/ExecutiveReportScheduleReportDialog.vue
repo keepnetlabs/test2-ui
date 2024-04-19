@@ -64,14 +64,20 @@
             :items="scheduledTimeItems"
           />
         </FormGroup>
-        <VCheckbox
+        <VSwitch
           v-model="formData.enableRegionTimezone"
           hide-details
           :ripple="false"
           color="#2196f3"
-          label="Enable region aware timezone delivery"
           @click.stop
-        />
+        >
+          <template #label>
+            <div class="executive-report-new-card-timezone">
+              <span>Enable region aware timezone delivery</span>
+              <span>Deliver report based on the target users' time zone.</span>
+            </div>
+          </template>
+        </VSwitch>
         <FormGroup
           class-name="mb-0 mt-2"
           title="Send to Email or Target Users"

@@ -12,10 +12,10 @@
     </div>
     <div v-if="showBodyDetail" class="executive-report-search-card__content mt-2">
       <div
-        v-for="chart in card.charts"
+        v-for="(chart, index) in card.charts"
         :key="chart.name"
         class="executive-report-search-card__content-chart cursor-pointer"
-        @click="handleChartClick"
+        @click="handleAddChart(chart, card.charts, index)"
       >
         <img
           class="executive-report-search-card__content-chart-image"
@@ -48,7 +48,9 @@ export default {
     }
   },
   methods: {
-    handleChartClick() {}
+    handleAddChart(chart, charts, index) {
+      this.$emit('on-add-chart', chart, charts, index)
+    }
   }
 }
 </script>

@@ -21,9 +21,9 @@ const trainingLibraryHelpers = {
     reminderEmailNotificationTemplateTypeResourceId: [],
     trainingEmailNotificationTemplateTypeResourceId: [],
     infographicEmailNotificationTemplateTypeResourceId: '',
-learningPathEmailNotificationTemplateTypeResourceId: '',
-posterEmailNotificationTemplateTypeResourceId: '',
-learningPathReminderEmailNotificationTemplateTypeResourceId: '',
+    learningPathEmailNotificationTemplateTypeResourceId: '',
+    posterEmailNotificationTemplateTypeResourceId: '',
+    learningPathReminderEmailNotificationTemplateTypeResourceId: ''
   },
   getters: {
     getCategories(state) {

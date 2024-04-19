@@ -7,6 +7,12 @@
       :is-new="!isPreview"
       @on-close="toggleShowScheduleReportDialog"
     />
+    <ExecutiveReportCustomizeWidgetDialog
+      v-if="isShowCustomizeWidgetDialog"
+      :status="isShowCustomizeWidgetDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowCustomizeWidgetDialog"
+    />
     <div class="executive-report-new-card__header">
       <div class="executive-report-new-card__header-left">
         <VBtn
@@ -66,9 +72,9 @@
           </VBtn>
           <VBtn
             id="btn-add--training-library"
-            class="training-library-new-btn ml-2"
             rounded
             color="#2196f3"
+            :class="getPreviewPdfButtonClasses"
             @click="handlePreviewClick"
           >
             <span class="training-library-new-btn__text">PREVIEW PDF</span>
@@ -106,7 +112,7 @@
               outlined
               hide-details
               autocomplete="off"
-              placeholder="Executive Report Name"
+              placeholder="Enter an executive report name"
             />
           </div>
           <div class="d-flex mt-2 gap-2">
@@ -168,19 +174,63 @@
           alt="Logo"
         />
       </div>
+      <div v-if="!isPreview && !layout.length" class="executive-report-new-card__empty">
+        Drag and drop items from left side
+      </div>
+      <k-smart-grid
+        class="executive-report-grid"
+        ref="refGrid"
+        :layout="layout"
+        :col-num="colNum"
+        :is-static="!editMode"
+        :row-height="50"
+        @breakpointChanged="breakpointChanged"
+        @layout-updated="layoutUpdated"
+        @layout-mounted="layoutMounted"
+      >
+        <smart-widget
+          v-for="(item, index) in layout"
+          :key="item.i"
+          :slot="item.i"
+          :padding="[0, 0]"
+          :ref="`ref${item.i}`"
+          :shadow="'never'"
+          :simple="true"
+        >
+          <component
+            :id="item.key"
+            :is="getComponent(item.key)"
+            :resizable="false"
+            :editMode="editMode"
+            :card="item"
+            @on-delete="deleteWidget(item, index)"
+            @on-edit="toggleShowCustomizeWidgetDialog"
+          />
+        </smart-widget>
+      </k-smart-grid>
     </div>
   </div>
 </template>
 
 <script>
-import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
+import { createRandomCryptStringNumber, getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload.vue'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/ExecutiveReportCustomizeWidgetDialog.vue'
+import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
+import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends.vue'
+import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
 
 export default {
   name: 'ExecutiveReportNewCard',
-  components: { InputDate, ExecutiveReportScheduleReportDialog, KFileUpload },
+  components: {
+    KSmartGrid,
+    ExecutiveReportCustomizeWidgetDialog,
+    InputDate,
+    ExecutiveReportScheduleReportDialog,
+    KFileUpload
+  },
   props: {
     isSaveButtonDisabled: {
       type: Boolean,
@@ -197,8 +247,15 @@ export default {
   },
   data() {
     return {
+      activeBreakpoint: 'lg',
+      layout: [],
+      initialLayout: [],
+      colNum: 12,
+      newItemY: 0,
+      editMode: true,
       parsedFormat: getTimeZone(false),
       isShowScheduleReportDialog: false,
+      isShowCustomizeWidgetDialog: false,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -243,13 +300,103 @@ export default {
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 360)
               picker.$emit('pick', [start, end])
             }
+          },
+          {
+            text: 'All time',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 3600)
+              picker.$emit('pick', [start, end])
+            }
           }
         ]
       },
       selectedRow: {},
+      allWidgets: {
+        PhishingCampaignTrends: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Campaign Trends',
+          key: 'PhishingCampaignTrends',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'line'
+        },
+        ReportedEmailTrends: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Reported Email Trends',
+          key: 'ReportedEmailTrends',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar'
+        },
+        MostEngagedCampaigns: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Most Engaged Campaigns',
+          key: 'MostEngagedCampaigns',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'doughnut'
+        },
+        RecentlyPostedThreats: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'bar'
+        }
+      },
+      availableWidgets: [
+        {
+          name: 'Phishing Campaign Trends',
+          key: 'PhishingCampaignTrends',
+          isAllowed: true
+        }
+      ],
       formData: {
         executiveReportDateRange: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        executiveReportName: 'Report Name',
+        executiveReportName: '',
         executiveReportDate: this.$moment(Date.now()).format(getTimeZoneForMoment()).split(' ')[0],
         executiveReportCompanyName: localStorage.getItem('selectedCompanyName'),
         executiveReportLogo:
@@ -262,16 +409,89 @@ export default {
   },
   computed: {
     getSaveButtonClasses() {
-      return 'training-library-new-btn ml-2'
+      let classes = ['training-library-new-btn ml-2']
+      if (!this.formData.executiveReportName) classes.push('new-executive-report-button-disabled')
+      return classes
+    },
+    getPreviewPdfButtonClasses() {
+      let classes = ['training-library-new-btn ml-2']
+      if (!this.formData.executiveReportName) classes.push('new-executive-report-button-disabled')
+      return classes
+    }
+  },
+  watch: {
+    editMode(val) {
+      if (val) {
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
+      }
+    }
+  },
+  async created() {
+    try {
+      /*
+      this.layout.push(this.allWidgets.PhishingCampaignTrends)
+      this.newItemY = this.layout.reduce((acc, item) => {
+        acc += item.h
+        return acc
+      }, 0)
+
+       */
+      setTimeout(() => {
+        this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+      }, 20)
+    } catch (e) {
+      this.layout = this.getDefaultLayoutObject()
+      setTimeout(() => {
+        this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+      }, 20)
     }
   },
   methods: {
+    breakpointChanged({ newBreakpoint }) {
+      this.activeBreakpoint = newBreakpoint
+      const bdCol = this.getBdCol(newBreakpoint)
+      let x = 0,
+        xValue = 0,
+        y = 0
+      this.layout.sort((a, b) => {
+        if (a.y > b.y) {
+          return 1
+        } else if (a.y === b.y) {
+          if (a.x > b.x) {
+            return 1
+          } else if (a.x < b.x) {
+            return -1
+          }
+          return 0
+        } else {
+          return -1
+        }
+      })
+      this.layout = this.layout.map((item) => {
+        const itemWidth = item.w
+        xValue = x
+        x += itemWidth
+        if (x > bdCol) {
+          x = itemWidth
+          y += item.h
+          xValue = 0
+        }
+
+        return { ...item, w: itemWidth, x: xValue, y }
+      })
+    },
+    layoutUpdated(newLayout) {},
+    layoutMounted() {},
     routeToExecutiveReports() {
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
       this.selectedRow = this.isPreview ? this.previewData : {}
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
+    },
+    toggleShowCustomizeWidgetDialog(item) {
+      this.selectedRow = item
+      this.isShowCustomizeWidgetDialog = !this.isShowCustomizeWidgetDialog
     },
     handleDateRangeClick() {
       this.$refs.refInputDate.showPicker()
@@ -294,6 +514,49 @@ export default {
     handleLogoIconClick() {
       const containerEl = this.$refs.refInputLogo.$refs.upload.$el
       containerEl.querySelector('input').click()
+    },
+    getBdCol(newBreakpoint = '') {
+      if (newBreakpoint === 'xs') return 6
+      return newBreakpoint === 'xxs' ? 2 : 12
+    },
+    addWidget(widget) {
+      this.removeAvailableWidget(widget)
+      let newItem
+      const widgetObj = { ...this.allWidgets[widget.key] }
+      if (window.innerWidth < 1100 && window.innerWidth > 900) {
+        widgetObj.w = 6
+      } else if (window.innerWidth < 900) {
+        widgetObj.w = 6
+      } else {
+        this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
+      }
+      newItem = widgetObj
+      newItem['y'] = this.newItemY
+      this.newItemY += newItem.h
+      this.layout.push(widgetObj)
+    },
+    removeAvailableWidget(widget) {
+      this.availableWidgets.splice(
+        this.availableWidgets.findIndex((item) => {
+          return item.key === widget.key
+        }),
+        1
+      )
+    },
+    deleteWidget(item, index) {
+      this.layout.splice(index, 1)
+      this.availableWidgets.push({
+        key: item.key,
+        name: item.title,
+        isAllowed: item.isAllowed
+      })
+      this.$emit('on-delete', item)
+    },
+    getComponent(componentString) {
+      switch (componentString) {
+        default:
+          return ExecutiveReportsWidget
+      }
     }
   }
 }
