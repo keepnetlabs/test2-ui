@@ -107,6 +107,9 @@ export default {
     trainingSummary: {
       type: Object
     },
+    trainingType: {
+      type: String
+    },
     isAddTrainingTypeKeyToPayload: {
       type: Boolean,
       default: false
@@ -190,13 +193,9 @@ export default {
         },
         overrideWidth: true,
         filterableType: 'select',
-        filterableItems:
-          this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-            text: item.displayName || item.name,
-            value: item.name
-          })) || []
+        filterableItems: []
       },
-      ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         ? [
             {
               property: 'examStatus',
@@ -205,7 +204,7 @@ export default {
               label: 'Exam Status',
               sortable: false,
               hideSort: true,
-              show: false,
+              show: true,
               type: 'slot',
               width: 200,
               props: {
@@ -224,7 +223,7 @@ export default {
               label: 'Exam Score',
               fixed: false,
               sortable: true,
-              show: false,
+              show: true,
               type: 'text',
               width: 160,
               filterableType: 'text'
@@ -372,6 +371,85 @@ export default {
     }
   },
   watch: {
+    formDetails: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        let filterableItems = []
+        if (
+          this.trainingSummary.trainingDetails?.trainingTypeName ===
+          TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        ) {
+          const learningPathIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+          )
+          if (learningPathIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[
+              learningPathIndex
+            ]?.enumResults?.map((item) => ({
+              text: item.displayName || item.name,
+              value: item.name
+            })) || []
+        }
+        if (
+          this.trainingSummary.trainingDetails?.trainingTypeName ===
+            TRAINING_LIBRARY_TYPES.TRAINING ||
+          this.trainingSummary.trainingDetails?.trainingTypeName === 'SCORM'
+        ) {
+          const trainingIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) =>
+              type.displayName === TRAINING_LIBRARY_TYPES.TRAINING || type.displayName === 'SCORM'
+          )
+          if (trainingIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[trainingIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        if (
+          this.trainingSummary.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
+        ) {
+          const posterIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.POSTER
+          )
+          if (posterIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[posterIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        if (
+          this.trainingSummary.trainingDetails?.trainingTypeName ===
+          TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+        ) {
+          const infographicIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+          )
+          if (infographicIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[infographicIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'status'),
+          'filterableItems',
+          filterableItems
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {

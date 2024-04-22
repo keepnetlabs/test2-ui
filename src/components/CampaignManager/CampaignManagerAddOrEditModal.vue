@@ -646,7 +646,7 @@ export default {
             },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
-          if (refCampaignManagerSummary?.canRenderPhoneNumberAlertBox) {
+          if (refCampaignManagerSummary?.canRenderNoPhoneNumberAlertBox) {
             this.$store.dispatch('common/createSnackBar', {
               message: 'There are no defined phone numbers for the selected target groups.',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
