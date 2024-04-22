@@ -662,8 +662,9 @@ const trainingLibrary = {
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)
     },
-    setFilterItemsShow({ commit }, payload) {
+    setFilterItemsShow({ commit, dispatch }, payload) {
       commit('SET_FILTER_ITEMS_SHOW', payload)
+      dispatch('learningPath/setLearningPathFilterItemsShow', payload, { root: true })
     },
     initDefaultTableFilters({ commit }) {
       commit('SET_DEFAULT_TABLE_FILTERS')

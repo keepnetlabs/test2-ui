@@ -128,7 +128,8 @@ export default {
       isActionButtonDisabled: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || '',
-      availableForRequestIds: []
+      availableForRequestIds: [],
+      trainingIds: []
     }
   },
   computed: {
@@ -167,11 +168,14 @@ export default {
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
             refLearningPathContent.setSelectedTrainings(trainingGroups)
+            this.trainingIds = trainingGroups.map(
+              (training) => training?.trainingId || training?.detailTrainingId
+            )
           }
         })
         .then(() => {
           this.callForLearningPathTrainingLibrary({
-            trainingId: this.selectedRow.trainingId,
+            trainingIds: this.trainingIds,
             isAppend: false
           })
         })
