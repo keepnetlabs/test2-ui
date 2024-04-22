@@ -708,7 +708,6 @@ const router = new Router({
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         },
-
         {
           path: '/reports/campaign-reports',
           name: 'Campaign Reports',
