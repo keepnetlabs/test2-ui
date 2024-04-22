@@ -362,8 +362,9 @@
                     >
                       <template #text>
                         <p class="mb-0 mb-n1">
-                          There are only <strong>{{ callbackNumberItems.length }}</strong> available
-                          callback phone numbers in the system. If you would like to execute up to
+                          There are only
+                          <strong>{{ callbackNumberItems.length }}</strong> available callback phone
+                          numbers in the system. If you would like to execute up to
                           <strong>12</strong> callback scenarios, then get in touch with your
                           support representative to add more callback phone numbers to the system.
                         </p>
@@ -1103,15 +1104,14 @@ export default {
     },
     handleLicenseTypeChange(resourceId = '') {
       const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
-      this.formData.LicenseModuleResourceIdArray = selectedLicenceType.licenseModules.reduce(
-        (acc, item) => {
-          if (item.isAvailable) {
-            acc.push(item.resourceId)
-          }
-          return acc
-        },
-        []
-      )
+      this.formData.LicenseModuleResourceIdArray = !!selectedLicenceType?.licenseModules
+        ? selectedLicenceType.licenseModules.reduce((acc, item) => {
+            if (item.isAvailable) {
+              acc.push(item.resourceId)
+            }
+            return acc
+          }, [])
+        : []
     },
     nextStep() {
       let isFormValid = true
