@@ -52,7 +52,11 @@ const CONSTANTS = {
     'Failed to fetch dynamically imported module: https://js.userflow.com',
     'Non-Error exception captured with keys: currentTarget, detail, isTrusted, target',
     'Non-Error exception captured with keys: message',
-    'This Userflow.js client has reached a maximum of 100 operations in the last 1 minute'
+    'This Userflow.js client has reached a maximum of 100 operations in the last 1 minute',
+    'Rendering cancelled, page 1',
+    'Cannot redefine property: googletag',
+    'Non-Error promise rejection captured with value: something went wrong',
+    'Invalid embed URL detected. Either URL hostname or protocol are invalid. Please use Power BI REST APIs to get the valid URL'
   ],
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',

@@ -87,8 +87,8 @@ export default {
         },
         {
           id: 'btn-favorite--row-actions-learning-path',
-          name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
-          icon: this.scope.row.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+          name: this?.scope?.row?.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
+          icon: this?.scope?.row?.isFavourite ? 'mdi-bookmark' : 'mdi-bookmark-outline'
         },
         {
           id: 'btn-edit--row-actions-learning-path',

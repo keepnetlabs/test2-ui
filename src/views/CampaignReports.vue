@@ -31,6 +31,9 @@ export default {
       isActionButtonDisabled: false
     }
   },
+  created() {
+    if (this.$route.name === 'Campaign Reports') this.$router.push({ name: 'Dashboard' })
+  },
   methods: {
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
