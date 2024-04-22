@@ -29,10 +29,10 @@
         <VTooltip :disabled="!isRenderCategoryTooltip" right :max-width="300">
           <template #activator="{ on }">
             <div v-on="on" class="learning-path-content__training--info-created-by">
-              {{ truncatedCategory || training.category }}
+              {{ truncatedCategory || training.categoryName }}
             </div>
           </template>
-          <span>{{ training.category }}</span>
+          <span>{{ getCategoryName }}</span>
         </VTooltip>
       </div>
     </div>
@@ -107,6 +107,17 @@ export default {
   computed: {
     getTrainingName() {
       return this.training?.trainingName || this.training?.name || ''
+    },
+    getCategoryName() {
+      return this.training?.categoryName || this.training?.category || ''
+    }
+  },
+  watch: {
+    training: {
+      deep: true,
+      handler() {
+        this.checkTrainingInfoTooltips()
+      }
     }
   },
   methods: {
@@ -124,17 +135,26 @@ export default {
     },
     onRemoveTraining() {
       this.$emit('remove')
+    },
+    checkTrainingInfoTooltips() {
+      if (this.getTrainingName?.length > 20) {
+        this.truncatedTrainingName = this.getTrainingName.substring(0, 20) + '...'
+        this.isRenderTitleTooltip = true
+      } else {
+        this.truncatedTrainingName = ''
+        this.isRenderTitleTooltip = false
+      }
+      if (this.getCategoryName?.length > 14) {
+        this.truncatedCategory = this.getCategoryName.substring(0, 14) + '...'
+        this.isRenderCategoryTooltip = true
+      } else {
+        this.truncatedCategory = ''
+        this.isRenderCategoryTooltip = false
+      }
     }
   },
   mounted() {
-    if (this.getTrainingName?.length > 20) {
-      this.truncatedTrainingName = this.getTrainingName.substring(0, 20) + '...'
-      this.isRenderTitleTooltip = true
-    }
-    if (this.training?.category?.length > 12) {
-      this.truncatedCategory = this.training.category.substring(0, 12) + '...'
-      this.isRenderCategoryTooltip = true
-    }
+    this.checkTrainingInfoTooltips()
   }
 }
 </script>
