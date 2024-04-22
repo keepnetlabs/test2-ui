@@ -190,7 +190,7 @@
       >
         <smart-widget
           v-for="(item, index) in layout"
-          :key="item.i"
+          :key="item.i + index"
           :slot="item.i"
           :padding="[0, 0]"
           :ref="`ref${item.i}`"
@@ -522,7 +522,7 @@ export default {
     addWidget(widget) {
       this.removeAvailableWidget(widget)
       let newItem
-      const widgetObj = { ...this.allWidgets[widget.key] }
+      const widgetObj = { ...this.allWidgets[widget.key], i: createRandomCryptStringNumber() }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
       } else if (window.innerWidth < 900) {

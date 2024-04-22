@@ -11,24 +11,6 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <div class="executive-report-schedule-dialog-is-new mb-4">
-        <VSwitch
-          v-model="formData.overrideSelectedReportSettings"
-          class="mt-0 pt-0"
-          hide-details
-          :ripple="false"
-          color="#2196f3"
-          @click.stop
-        >
-          <template #label>
-            <div class="executive-report-new-card-timezone">
-              <span
-                >Override selected report settings for Target Groups, Start Date, and End Date</span
-              >
-            </div>
-          </template>
-        </VSwitch>
-      </div>
       <div class="executive-report-customize-widget-row mb-4">
         <KSelect
           v-model="formData.valueType"
@@ -67,7 +49,6 @@
           hide-details
           autocomplete="off"
           placeholder="Enter a target group"
-          :disabled="!formData.overrideSelectedReportSettings"
           :items="targetGroups"
         />
         <VTextField
@@ -98,7 +79,6 @@
           style="flex-basis: 32%;"
           :format="parsedFormat"
           :valueFormat="parsedFormat"
-          :disabled="!formData.overrideSelectedReportSettings"
         />
         <InputDate
           v-model="formData.endDate"
@@ -109,7 +89,6 @@
           style="flex-basis: 32%;"
           :format="parsedFormat"
           :valueFormat="parsedFormat"
-          :disabled="!formData.overrideSelectedReportSettings"
         />
         <KSelect
           v-model="formData.dateInterval"
@@ -170,7 +149,6 @@ export default {
       isActionButtonDisabled: false,
       parsedFormat: getTimeZone(false),
       formData: {
-        overrideSelectedReportSettings: false,
         valueType: '',
         category: '',
         groupedBy: '',
