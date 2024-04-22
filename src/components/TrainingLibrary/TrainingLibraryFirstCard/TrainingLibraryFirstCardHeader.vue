@@ -22,26 +22,38 @@
           @input="handleDebouncedSearch"
         />
         <div>
-          <VBtn
-            class="clust-btn btn-hover mr-1 training-library-clust-btn"
-            icon
-            outlined
-            :style="!isListView && { backgroundColor: '#2196f3' }"
-            :color="!isListView ? '#2196f3' : '#757575'"
-            @click="setListView(false)"
-          >
-            <img :src="getCardViewIcon" alt="icon" />
-          </VBtn>
-          <VBtn
-            class="clust-btn btn-hover training-library-clust-btn"
-            icon
-            :style="isListView && { backgroundColor: '#2196f3' }"
-            :outlined="!isListView"
-            :color="isListView ? '#2196f3' : '#757575'"
-            @click="setListView(true)"
-          >
-            <img :src="getBulletedIcon" alt="icon" />
-          </VBtn>
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <VBtn
+                v-on="on"
+                class="clust-btn btn-hover mr-1 training-library-clust-btn"
+                icon
+                outlined
+                :style="!isListView && { backgroundColor: '#2196f3' }"
+                :color="!isListView ? '#2196f3' : '#757575'"
+                @click="setListView(false)"
+              >
+                <img :src="getCardViewIcon" alt="icon" />
+              </VBtn>
+            </template>
+            <span>Grid View</span>
+          </VTooltip>
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <VBtn
+                v-on="on"
+                class="clust-btn btn-hover training-library-clust-btn"
+                icon
+                :style="isListView && { backgroundColor: '#2196f3' }"
+                :outlined="!isListView"
+                :color="isListView ? '#2196f3' : '#757575'"
+                @click="setListView(true)"
+              >
+                <img :src="getBulletedIcon" alt="icon" />
+              </VBtn>
+            </template>
+            <span>List View</span>
+          </VTooltip>
         </div>
       </div>
       <div class="training-library-list-view-first-card-header__right-side">
