@@ -353,9 +353,9 @@ export default {
         MostEngagedCampaigns: {
           x: 0,
           y: 0,
-          w: 12,
+          w: 6,
           minW: 6,
-          defaultW: 12,
+          defaultW: 6,
           midW: 6,
           h: 6,
           defaultH: 6,
@@ -385,6 +385,24 @@ export default {
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'bar'
+        },
+        RiskScore: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Risk Score',
+          key: 'RiskScore',
+          isAllowed: true,
+          parentKey: 'Risk Score',
+          chartType: 'gauge'
         }
       },
       availableWidgets: [

@@ -99,6 +99,10 @@ export default {
           scales: {
             xAxes: [
               {
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Month / Year'
+                },
                 display: true,
                 type: 'time',
                 time: {
@@ -120,6 +124,10 @@ export default {
             ],
             yAxes: [
               {
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Trends'
+                },
                 offset: true,
                 gridLines: {
                   display: true,

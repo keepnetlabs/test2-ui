@@ -273,10 +273,10 @@ export default {
           name: 'Risk Score Trend',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
+              name: 'Risk Score',
               src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              chartType: 'line',
-              key: 'PhishingCampaignTrends'
+              chartType: 'gauge',
+              key: 'RiskScore'
             },
             {
               name: 'Reported Email Trends',

@@ -235,6 +235,9 @@
   display: flex;
   justify-content:space-between;
   gap:16px;
+  .v-select input{
+    margin-bottom: -4px;
+  }
 }
 .executive-report-customize-widget-preview{
   background-color: #fff;
@@ -264,6 +267,7 @@
 }
 .executive-widget-header{
   display: flex;
+  z-index: 99;
   justify-content: space-between;
   align-items: center;
   &__left{
@@ -282,6 +286,7 @@
     }
   }
   &__right{
+    z-index: 99;
     &-icon{
       border:1px solid #757575;
       border-radius: 50%;
@@ -298,7 +303,7 @@
   position: relative;
 
   >div {
-    height: 80%;
+    height: 88%;
     position: relative;
   }
 }
@@ -308,4 +313,24 @@
   font-weight: 400;
   line-height: 19px;
   color:#383B41;
+}
+.vue-gauge-item{
+  margin-bottom: -60px;
+}
+.executive-report-gauge-value{
+  color:#383B41;
+  font-size: 28px;
+  text-align: center;
+  font-weight: 400;
+  margin-top: -16px;
+}
+.executive-report-doughnut-chart{
+  height: 90% !important;
+  margin-top: -12px;
+}
+.executive-report-gauge-chart{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 84% !important;
 }

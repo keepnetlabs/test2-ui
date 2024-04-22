@@ -19,7 +19,7 @@
     "axios": "0.27.2",
     "babel-polyfill": "^6.26.0",
     "chart.js": "^2.9.3",
-    "chartjs-plugin-datalabels": "^0.7.0",
+    "chartjs-plugin-datalabels": "^1.0.0",
     "core-js": "^3.6.5",
     "grapesjs": "0.18.4",
     "grapesjs-blocks-avance": "0.0.32",
@@ -41,6 +41,7 @@
     "vue-clamp": "^0.2.2",
     "vue-custom-element": "^3.2.14",
     "vue-frag": "^1.4.3",
+    "vue-gauge": "^1.0.3",
     "vue-grid-layout": "^2.3.9",
     "vue-moment": "^4.1.0",
     "vue-multipane": "^0.9.5",
@@ -114,7 +115,7 @@
           "vue/no-unused-vars": false,
           "vue/no-dupe-v-else-if": false
         }
-      ] ,
+      ],
       "vue/no-use-v-if-with-v-for": "off",
       "vue/no-mutating-props": "off",
       "vue/no-unused-vars": "off",

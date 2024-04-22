@@ -12,8 +12,12 @@
           <template v-if="true">
             <ExecutiveReportStackedBarChart v-if="card.chartType === 'stackedBar'" />
             <ExecutiveReportLineChart v-else-if="card.chartType === 'line'" />
+            <ExecutiveReportGaugeChart v-else-if="card.chartType === 'gauge'" />
             <ExecutiveReportBarChart v-else-if="card.chartType === 'bar'" />
-            <div class="executive-widget-body-x-axis">Month / Year</div>
+            <ExecutiveReportDoughnutChart v-else-if="card.chartType === 'doughnut'" />
+            <div v-if="card.chartType === 'gauge'" class="executive-report-gauge-value">
+              40
+            </div>
           </template>
           <div
             class="k-widget-list__empty-inline"
@@ -41,10 +45,14 @@ import ExecutiveReportLineChart from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportStackedBarChart.vue'
 import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportBarChart.vue'
+import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportGaugeChart.vue'
+import ExecutiveReportDoughnutChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportDoughnutChart.vue'
 
 export default {
   name: 'ExecutiveReportsWidget',
   components: {
+    ExecutiveReportDoughnutChart,
+    ExecutiveReportGaugeChart,
     ExecutiveReportBarChart,
     ExecutiveReportStackedBarChart,
     ExecutiveWidgetBody,
@@ -64,7 +72,6 @@ export default {
   },
   data() {
     return {
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       empty: {
         message: 'You do not have any report conclusion'
       }
