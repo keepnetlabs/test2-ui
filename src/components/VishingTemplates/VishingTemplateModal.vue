@@ -639,8 +639,12 @@ export default {
           } else {
             step['isExpanded'] = false
           }
-          step['inputDigit'] = 0
-          step['duration'] = 0
+          if (!step['inputDigit']) {
+            step['inputDigit'] = 0
+          }
+          if (!step['duration']) {
+            step['duration'] = 0
+          }
         }
         const invalidDialingNoticeStepIndex = this.formValues.steps.findIndex(
           (step) => step.order === 0
