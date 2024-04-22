@@ -59,6 +59,26 @@
         />
       </FormGroup>
     </div>
+    <div v-if="!onlyGrapes && isNotificationEnrollment" class="mx-4">
+      <FormGroup title="CC" style="max-width: unset;">
+        <KSelect
+          :value="ccAddresses"
+          id="input--threat-sharing-incident-share-email"
+          type="combobox"
+          :items="[]"
+          placeholder="Enter an email address"
+          multiple
+          dense
+          deletable-chips
+          autocomplete="disabled"
+          small-chips
+          outlined
+          class="pop-up-card__invite-member"
+          hint="Press enter to separate email addresses"
+          :rules="[ccEmailRules.email]"
+        ></KSelect>
+      </FormGroup>
+    </div>
     <div class="d-flex mx-4 align-center" v-if="isPhishingTemplate && !onlyGrapes">
       <label class="mr-4 mb-6" style="font-weight: 600; font-size: 20px;">Attach File</label>
       <k-file-upload
@@ -170,9 +190,11 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    KSelect,
     QuishingEmailTemplateDefault,
     IndividualPrintOutTemplateDefault,
     EmailTemplateDefault,
@@ -190,6 +212,7 @@ export default {
     'fromAddress',
     'fromName',
     'subject',
+    'ccAddresses',
     'template',
     'attachmentFiles',
     'activeBlockManagerComponents',
@@ -205,7 +228,8 @@ export default {
     'size',
     'isAttachmentError',
     'isNotificationTemplate',
-    'isEnrollmentCategorySelected'
+    'isEnrollmentCategorySelected',
+    'isNotificationEnrollment'
   ],
   data() {
     return {
@@ -217,6 +241,30 @@ export default {
       grapeJsKey: `${createRandomCryptStringNumber()}-key`,
       Validations,
       attachmentListKey: `${createRandomCryptStringNumber()}-key`,
+      ccEmailRules: {
+        email: (v) => {
+          if (v.length > 0) {
+            let booReturn = true
+            for (let i = 0; i < v.length; i++) {
+              const chip = document.getElementsByClassName('v-chip--select')[i]
+              if (!Validations.email(v[i], '')) {
+                booReturn = false
+                chip.style.borderColor = '#ff5252'
+                chip.style.color = '#ff5252'
+                if (v.length === 1) {
+                  return v[i] + ' email address is not valid'
+                }
+              } else {
+                chip.style.borderColor = ''
+                chip.style.color = 'rgba(0, 0, 0, 0.87)'
+              }
+            }
+            return booReturn ? booReturn : 'One of the email addresses is not valid'
+          } else {
+            return true
+          }
+        }
+      },
       mergeTags: [
         {
           text: 'Enrollment Name',
