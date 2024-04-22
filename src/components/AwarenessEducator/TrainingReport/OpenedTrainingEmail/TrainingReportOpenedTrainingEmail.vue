@@ -216,30 +216,38 @@ export default {
   },
   computed: {
     getHeaderTitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Opened the poster email'
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return 'Opened the infographic email'
       return 'Opened the training email'
     },
     getHeaderSubtitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Users who opened the poster email'
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return 'Users who opened the infographic email'
       return 'Users who opened the training email'
     },
     getResendDialogTitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.ResendInfographic
       return labels.ResendTraining
     },
     getBodyTrainingType() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.Infographic.toLowerCase()
       return labels.Training.toLowerCase()
     }
