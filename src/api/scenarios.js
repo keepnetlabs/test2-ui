@@ -36,6 +36,12 @@ export function deleteScenario(id) {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function bulkDeleteScenarios(payload) {
+  return testRequest.delete(`phishing-simulator/phishing-scenario/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
 export function getSummaryOfScenario(templateId, landingPageId) {
   return testRequest.get(
     `phishing-simulator/phishing-scenario/preview/${templateId}/${landingPageId}`
