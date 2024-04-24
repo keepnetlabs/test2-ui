@@ -29,7 +29,15 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+    @on-activity="handleActivity"
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportActivityColumn
+        v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+        :scope="scope"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -46,10 +54,13 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+
 export default {
   name: 'CampaignManagerReportClickedTable',
-  components: { DataTable },
-  mixins: [useLoading, useDefaultTableFunctions],
+  components: { DataTable, CampaignManagerReportActivityColumn },
+  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
       type: String
@@ -60,6 +71,10 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isShowSandboxFromParent: {
+      type: Boolean,
+      default: true
     }
   },
   inject: ['getQuishingTypePrintOut'],
@@ -97,6 +112,7 @@ export default {
       )
     }
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-clicked-data-table',
         ascending: 'ascending'
@@ -119,10 +135,17 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_SCANNED,
-          COLUMNS.TIMES_SCANNED
+          COLUMNS.TIMES_SCANNED,
+          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ],
         addButton: {
-          show: false
+          show: true,
+          icon: null,
+          label: 'HIDE SANDBOX ACTIVITY',
+          action: 'on-activity',
+          hideTooltip: true,
+          type: 'outlined',
+          id: 'btn-select--hide-sandbox-activity'
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportClicked
@@ -150,11 +173,15 @@ export default {
           this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
       }
+    },
+    isShowSandbox(val) {
+      this.$emit('update:is-show-sandbox-from-parent', val)
     }
   },
   methods: {
     callForData() {
       this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
       QuishingService.searchCampaignJobUserEmailClicked(
         this.axiosPayload,
         this.id,
@@ -188,7 +215,8 @@ export default {
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          filter: this.axiosPayload.filter,
+          activityType: this.axiosPayload.activityType
         }
         QuishingService.exportCampaignJobUserEmailClicked(
           payload,
