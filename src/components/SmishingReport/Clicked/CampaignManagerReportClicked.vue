@@ -16,6 +16,7 @@
       v-if="isShowDetailDialog"
       :item="selectedRow"
       :status="isShowDetailDialog"
+      :is-show-sandbox-from-parent="isShowSandboxFromParent"
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
@@ -24,6 +25,7 @@
       :id="id"
       :instance-group="instanceGroup"
       :custom-fields="customFields"
+      :is-show-sandbox-from-parent.sync="isShowSandboxFromParent"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -65,7 +67,8 @@ export default {
     return {
       labels,
       selectedRow: {},
-      isShowDetailDialog: false
+      isShowDetailDialog: false,
+      isShowSandboxFromParent: true
     }
   },
   methods: {

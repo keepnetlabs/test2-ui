@@ -128,7 +128,15 @@ export default {
         tags = [],
         steps = [],
         vishingLanguageResourceId = ''
-      } = vishingTemplateDto
+      } = vishingTemplateDto || {
+        name: '',
+        description: '',
+        difficulty: '',
+        createTime: '',
+        tags: [],
+        steps: [],
+        vishingLanguageResourceId: ''
+      }
       this.$store.dispatch('common/setActivePageRouterName', campaignName)
       const langaugeIndex = this.languageItems.findIndex(
         (language) => language.resourceId === vishingLanguageResourceId
