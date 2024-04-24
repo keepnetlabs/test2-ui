@@ -13,7 +13,7 @@ export default {
       this.$set(this.tableOptions.addButton, 'label', val)
       this.$set(this.tableOptions.addButton, 'tooltip', val)
       const index = this.tableOptions.columns.findIndex(
-        (c) => c.property === PROPERTY_STORE.ACTIVITYTYPE
+        (c) => c?.property === PROPERTY_STORE.ACTIVITYTYPE
       )
       if (index !== -1) {
         this.$set(
