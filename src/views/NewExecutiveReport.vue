@@ -70,10 +70,10 @@ export default {
           name: 'Training Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
+              name: 'Training Campaign Trends',
               src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
+              key: 'TrainingCampaignTrends'
             },
             {
               name: 'Reported Email Trends',

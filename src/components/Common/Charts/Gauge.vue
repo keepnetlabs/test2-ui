@@ -2,6 +2,8 @@
   <VueGauge :refid="refId" :options="options" />
 </template>
 <script>
+import { createRandomCryptStringNumber } from '@/utils/functions'
+
 export default {
   name: 'Gauge',
   components: {
@@ -9,7 +11,8 @@ export default {
   },
   props: {
     refId: {
-      type: String
+      type: String,
+      default: () => `gauge-key-${createRandomCryptStringNumber()}`
     },
     options: {
       type: Object,

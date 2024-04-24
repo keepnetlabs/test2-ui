@@ -3,7 +3,6 @@
     :status="status"
     icon="mdi-cog"
     title="Customize Widget"
-    :subtitle="selectedRow.name"
     :custom-size="'800'"
     maxHeightSize="804"
     title-id="text--phishing-reporters-download-history-title"
@@ -57,7 +56,7 @@
           outlined
           hide-details
           autocomplete="off"
-          style="flex-basis: 27%;"
+          style="flex-basis: 28%; max-width: 234px;"
           placeholder="Enter a title"
         />
         <KSelect
@@ -67,29 +66,61 @@
           hide-details
           autocomplete="off"
           placeholder="Enter a chartType"
+          style="max-width: 236px;"
+          :items="chartTypes"
         />
       </div>
       <div class="executive-report-customize-widget-row mb-4">
-        <InputDate
-          v-model="formData.startDate"
-          class="date-picker-height-40 black-placeholder"
-          type="datetime"
-          ref="refPicker"
-          placeholder="Select Start Date"
+        <div
+          :class="[
+            'position-relative executive-report-customize-widget-row__datepicker',
+            formData.startDate ? 'executive-report-customize-widget-row__datepicker-active' : ''
+          ]"
           style="flex-basis: 32%;"
-          :format="parsedFormat"
-          :valueFormat="parsedFormat"
-        />
-        <InputDate
-          v-model="formData.endDate"
-          class="date-picker-height-40 black-placeholder"
-          type="datetime"
-          ref="refPicker"
-          placeholder="Select End Date"
+        >
+          <InputDate
+            v-model="formData.startDate"
+            class="date-picker-height-40 black-placeholder"
+            type="date"
+            ref="refPicker"
+            placeholder="Select Start Date"
+            style="width: 238px;"
+            :format="parsedFormat"
+            :picker-options="startDatePickerOptions"
+            :valueFormat="parsedFormat"
+          />
+          <div
+            v-if="formData.startDate"
+            class="executive-report-customize-widget-row__datepicker-text"
+          >
+            Start Date
+          </div>
+        </div>
+        <div
+          :class="[
+            'position-relative executive-report-customize-widget-row__datepicker',
+            formData.endDate ? 'executive-report-customize-widget-row__datepicker-active' : ''
+          ]"
           style="flex-basis: 32%;"
-          :format="parsedFormat"
-          :valueFormat="parsedFormat"
-        />
+        >
+          <InputDate
+            v-model="formData.endDate"
+            class="date-picker-height-40 black-placeholder w-100"
+            type="date"
+            ref="refPicker"
+            placeholder="Select End Date"
+            style="width: 234px;"
+            :picker-options="endDatePickerOptions"
+            :format="parsedFormat"
+            :valueFormat="parsedFormat"
+          />
+          <div
+            v-if="formData.endDate"
+            class="executive-report-customize-widget-row__datepicker-text"
+          >
+            End Date
+          </div>
+        </div>
         <KSelect
           v-model="formData.dateInterval"
           ref="refFiltersInput"
@@ -103,7 +134,39 @@
       </div>
       <div class="executive-report-customize-widget-preview">
         <div class="executive-report-customize-widget-preview-title">{{ formData.title }}</div>
-        <div class="executive-report-customize-widget-preview-type">{{ formData.type }}</div>
+        <div class="executive-report-customize-widget-preview-type">
+          {{ selectedRow.parentKey }}
+        </div>
+        <div
+          :class="[
+            'executive-report-customize-widget-preview-chart',
+            `executive-report-customize-widget-preview-chart-${selectedRow.chartType}`
+          ]"
+        >
+          <ExecutiveReportStackedBarChart
+            v-if="formData.chartType === 'stackedBar'"
+            :time-unit="formData.dateInterval"
+          />
+          <ExecutiveReportLineChart
+            v-else-if="formData.chartType === 'line'"
+            :time-unit="formData.dateInterval"
+          />
+          <ExecutiveReportGaugeChart v-else-if="formData.chartType === 'gauge'" />
+          <ExecutiveReportBarChart
+            v-else-if="formData.chartType === 'bar'"
+            :time-unit="formData.dateInterval"
+          />
+          <ExecutiveReportDoughnutChart v-else-if="formData.chartType === 'doughnut'" />
+          <ExecutiveReportPieChart v-else-if="formData.chartType === 'pie'" />
+          <div v-if="formData.chartType === 'gauge'" style="margin-top: -56px;">
+            <div class="executive-report-gauge-value">
+              32
+            </div>
+            <div class="executive-report-gauge-average" style="margin-top: 0;">
+              Industry Average: 40
+            </div>
+          </div>
+        </div>
       </div>
     </template>
     <template #app-dialog-footer>
@@ -124,12 +187,29 @@ import AppDialog from '@/components/AppDialog.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import ExecutiveReportDoughnutChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportDoughnutChart.vue'
+import ExecutiveReportLineChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportLineChart.vue'
+import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportGaugeChart.vue'
+import ExecutiveReportPieChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPieChart.vue'
+import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportBarChart.vue'
+import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportStackedBarChart.vue'
 
 export default {
   name: 'ExecutiveReportCustomizeWidgetDialog',
-  components: { InputDate, AppDialogFooter, KSelect, AppDialog },
+  components: {
+    ExecutiveReportStackedBarChart,
+    ExecutiveReportBarChart,
+    ExecutiveReportPieChart,
+    ExecutiveReportGaugeChart,
+    ExecutiveReportLineChart,
+    ExecutiveReportDoughnutChart,
+    InputDate,
+    AppDialogFooter,
+    KSelect,
+    AppDialog
+  },
   props: {
     status: {
       type: Boolean,
@@ -147,7 +227,8 @@ export default {
   data() {
     return {
       isActionButtonDisabled: false,
-      parsedFormat: getTimeZone(false),
+      parsedFormat: getTimeZone(false).split(' ')[0],
+      dateFormat: localStorage.getItem('selectedDateFormat'),
       formData: {
         valueType: '',
         category: '',
@@ -155,9 +236,15 @@ export default {
         targetGroups: '',
         title: '',
         chartType: '',
-        startDate: '',
-        endDate: '',
-        dateInterval: ''
+        startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+        endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        dateInterval: 'month'
+      },
+      startDatePickerOptions: {
+        disabledDate: this.disabledStartPickerEndDates
+      },
+      endDatePickerOptions: {
+        disabledDate: this.disableDataPickerEndDates
       }
     }
   },
@@ -175,11 +262,71 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.formData.title = this.selectedRow.title
+      this.formData.chartType = this.selectedRow.chartType
+      this.formData.startDate = this.selectedRow.startDate
+      this.formData.endDate = this.selectedRow.endDate
+      this.formData.valueType = this.selectedRow.valueType
+      this.formData.category = this.selectedRow.category
+      this.formData.groupedBy = this.selectedRow.groupedBy
+      this.formData.targetGroups = this.selectedRow.targetGroups
+      this.formData.dateInterval = this.selectedRow.dateInterval
+    },
     handleClose() {
       this.$emit('on-close')
     },
-    handleConfirm() {}
+    handleConfirm() {},
+    disabledStartPickerEndDates(val) {
+      let selectedEndDate = new Date()
+      if (this.formData.endDate) {
+        const [datePart, timePart] = this.formData?.endDate?.split(' ')
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        let minutes, hours
+        if (this.timeFormat && this.timeFormat === '12h') {
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        } else {
+          const [hoursPart, minutesPart] = timePart?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        }
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          selectedEndDate = new Date(firstPart, secondPart - 1, thirdPart, hours, minutes)
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          selectedEndDate = new Date(thirdPart, firstPart - 1, secondPart, hours, minutes)
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          selectedEndDate = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        }
+      }
+      return selectedEndDate.getTime() < val.getTime()
+    },
+    disableDataPickerEndDates(val) {
+      let selectedStartDate = new Date()
+      if (this.formData.startDate) {
+        const [datePart, timePart] = this.formData?.startDate?.split(' ')
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        let minutes, hours
+        if (this.timeFormat && this.timeFormat === '12h') {
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        } else {
+          const [hoursPart, minutesPart] = timePart?.split(':')
+          minutes = minutesPart
+          hours = hoursPart
+        }
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          selectedStartDate = new Date(firstPart, secondPart - 1, thirdPart, hours, minutes)
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          selectedStartDate = new Date(thirdPart, firstPart - 1, secondPart, hours, minutes)
+        } else if (this.dateFormat === 'DD/MM/YYYY') {
+          selectedStartDate = new Date(thirdPart, secondPart - 1, firstPart, hours, minutes)
+        }
+      }
+      return selectedStartDate.getTime() > val.getTime()
+    }
   }
 }
 </script>

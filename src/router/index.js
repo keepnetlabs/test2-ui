@@ -67,6 +67,7 @@ import TrainingLibrary from '@/views/TrainingLibrary.vue'
 import ExecutiveReports from '@/views/ExecutiveReports.vue'
 import NewExecutiveReport from '@/views/NewExecutiveReport.vue'
 import PreviewExecutiveReport from '@/views/PreviewExecutiveReport.vue'
+import EditExecutiveReport from '@/views/EditExecutiveReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -752,9 +753,9 @@ const router = new Router({
           }
         },
         {
-          path: '/reports/executive-reports/new',
-          name: 'New Executive Report',
-          component: NewExecutiveReport,
+          path: '/reports/executive-reports/preview/:id',
+          name: 'Preview Executive Report',
+          component: PreviewExecutiveReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Executive Reports',
@@ -762,9 +763,9 @@ const router = new Router({
           }
         },
         {
-          path: '/reports/executive-reports/preview/:id',
-          name: 'Preview Executive Report',
-          component: PreviewExecutiveReport,
+          path: '/reports/executive-reports/edit/:id',
+          name: 'Edit Executive Report',
+          component: EditExecutiveReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Executive Reports',

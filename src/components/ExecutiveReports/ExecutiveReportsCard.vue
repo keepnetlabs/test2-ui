@@ -74,7 +74,14 @@ export default {
     handleScheduleClick() {
       this.$emit('on-schedule', this.card)
     },
-    handleEditClick() {},
+    handleEditClick() {
+      this.$router.push({
+        name: 'Edit Executive Report',
+        params: {
+          id: this.card.resourceId || 'gürkan'
+        }
+      })
+    },
     handleContentDuplicateClick() {},
     handleDownloadClick() {},
     handleDeleteClick() {

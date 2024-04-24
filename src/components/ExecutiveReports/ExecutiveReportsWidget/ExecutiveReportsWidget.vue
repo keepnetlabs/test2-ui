@@ -4,19 +4,43 @@
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
           :title="card.title"
-          :subtitle="card.subtitle"
+          :subtitle="card.parentKey"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
           <template v-if="true">
-            <ExecutiveReportStackedBarChart v-if="card.chartType === 'stackedBar'" />
-            <ExecutiveReportLineChart v-else-if="card.chartType === 'line'" />
-            <ExecutiveReportGaugeChart v-else-if="card.chartType === 'gauge'" />
-            <ExecutiveReportBarChart v-else-if="card.chartType === 'bar'" />
-            <ExecutiveReportDoughnutChart v-else-if="card.chartType === 'doughnut'" />
-            <div v-if="card.chartType === 'gauge'" class="executive-report-gauge-value">
-              40
+            <ExecutiveReportStackedBarChart
+              v-if="card.chartType === 'stackedBar'"
+              :time-unit="card.timeUnit"
+            />
+            <ExecutiveReportLineChart
+              v-else-if="card.chartType === 'line'"
+              :time-unit="card.timeUnit"
+            />
+            <ExecutiveReportGaugeChart
+              v-else-if="card.chartType === 'gauge'"
+              :time-unit="card.timeUnit"
+            />
+            <ExecutiveReportBarChart
+              v-else-if="card.chartType === 'bar'"
+              :time-unit="card.timeUnit"
+            />
+            <ExecutiveReportDoughnutChart
+              v-else-if="card.chartType === 'doughnut'"
+              :time-unit="card.timeUnit"
+            />
+            <ExecutiveReportPieChart
+              v-else-if="card.chartType === 'pie'"
+              :time-unit="card.timeUnit"
+            />
+            <div v-if="card.chartType === 'gauge'">
+              <div class="executive-report-gauge-value" style="margin-top: -14px;">
+                32
+              </div>
+              <div class="executive-report-gauge-average" style="margin-top: -2px;">
+                Industry Average: 40
+              </div>
             </div>
           </template>
           <div
@@ -47,10 +71,12 @@ import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/Execut
 import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportBarChart.vue'
 import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportGaugeChart.vue'
 import ExecutiveReportDoughnutChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportDoughnutChart.vue'
+import ExecutiveReportPieChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPieChart.vue'
 
 export default {
   name: 'ExecutiveReportsWidget',
   components: {
+    ExecutiveReportPieChart,
     ExecutiveReportDoughnutChart,
     ExecutiveReportGaugeChart,
     ExecutiveReportBarChart,

@@ -276,7 +276,6 @@ export default {
             data: newData.filter((item) => item.result === itemType)
           })
         }
-        console.log('datasets', datasets)
         this.chartData = {
           datasets
         }

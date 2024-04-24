@@ -5,15 +5,28 @@
 import LineChart from '@/components/Common/Charts/Line.vue'
 import { getDataTableFieldLabel } from '@/utils/functions'
 import { LINE_CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import useTimeUnitLabel from '@/hooks/executive-reports/useTimeUnitLabel'
 
 export default {
   name: 'ExecutiveReportLineChart',
   components: { LineChart },
+  mixins: [useTimeUnitLabel],
+  props: {
+    timeUnit: {
+      type: String,
+      default: 'month'
+    }
+  },
   data() {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {}
+    }
+  },
+  watch: {
+    timeUnit() {
+      this.calculateData()
     }
   },
   created() {
@@ -131,12 +144,12 @@ export default {
               {
                 scaleLabel: {
                   display: true,
-                  labelString: 'Month / Year'
+                  labelString: this.getTimeUnitLabel()
                 },
                 display: true,
                 type: 'time',
                 time: {
-                  unit: 'month'
+                  unit: this.timeUnit
                 },
                 offset: true,
                 gridLines: {

@@ -6,15 +6,28 @@
 import BarChart from '@/components/Common/Charts/Bar.vue'
 import { STACKED_CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import { getDataTableFieldLabel } from '@/utils/functions'
+import useTimeUnitLabel from '@/hooks/executive-reports/useTimeUnitLabel'
 
 export default {
   name: 'ExecutiveReportStackedBarChart',
   components: { BarChart },
+  mixins: [useTimeUnitLabel],
+  props: {
+    timeUnit: {
+      type: String,
+      default: 'month'
+    }
+  },
   data() {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {}
+    }
+  },
+  watch: {
+    timeUnit() {
+      this.calculateData()
     }
   },
   created() {
@@ -105,7 +118,6 @@ export default {
           maxEmailCount += 10 - (maxEmailCount % 10)
         }
         this.chartOptions = {
-          // Look at this bit
           barPercentage: 0.8,
           plugins: {
             datalabels: {
@@ -133,13 +145,13 @@ export default {
               {
                 scaleLabel: {
                   display: true,
-                  labelString: 'Month / Year'
+                  labelString: this.getTimeUnitLabel()
                 },
                 stacked: true,
                 display: true,
                 type: 'time',
                 time: {
-                  unit: 'month'
+                  unit: this.timeUnit
                 },
                 offset: true,
                 gridLines: {

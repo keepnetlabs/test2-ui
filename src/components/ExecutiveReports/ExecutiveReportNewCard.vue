@@ -90,7 +90,15 @@
           </VBtn>
         </template>
         <VIcon
-          v-else
+          v-if="isEdit && !editMode"
+          color="#2196f3"
+          class="executive-reports-card__right-btn"
+          small
+          @click="editMode = true"
+          >mdi-pencil</VIcon
+        >
+        <VIcon
+          v-if="isPreview"
           color="#2196f3"
           class="executive-reports-card__right-btn"
           small
@@ -240,6 +248,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
     previewData: {
       type: Object,
       default: () => ({})
@@ -252,7 +264,7 @@ export default {
       initialLayout: [],
       colNum: 12,
       newItemY: 0,
-      editMode: true,
+      editMode: !this.isPreview,
       parsedFormat: getTimeZone(false),
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
@@ -330,7 +342,10 @@ export default {
           key: 'PhishingCampaignTrends',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'line'
+          chartType: 'line',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
         ReportedEmailTrends: {
           x: 0,
@@ -348,7 +363,10 @@ export default {
           key: 'ReportedEmailTrends',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar'
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
         MostEngagedCampaigns: {
           x: 0,
@@ -366,7 +384,10 @@ export default {
           key: 'MostEngagedCampaigns',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'doughnut'
+          chartType: 'doughnut',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
         RecentlyPostedThreats: {
           x: 0,
@@ -384,7 +405,10 @@ export default {
           key: 'RecentlyPostedThreats',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar'
+          chartType: 'bar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
         RiskScore: {
           x: 0,
@@ -402,7 +426,31 @@ export default {
           key: 'RiskScore',
           isAllowed: true,
           parentKey: 'Risk Score',
-          chartType: 'gauge'
+          chartType: 'gauge',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TrainingCampaignTrends: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Training Campaign Trends',
+          key: 'TrainingCampaignTrends',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'pie',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       availableWidgets: [
@@ -413,7 +461,10 @@ export default {
         }
       ],
       formData: {
-        executiveReportDateRange: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        executiveReportDateRange: [
+          this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          this.$moment(Date.now()).format(getTimeZoneForMoment())
+        ],
         executiveReportName: '',
         executiveReportDate: this.$moment(Date.now()).format(getTimeZoneForMoment()).split(' ')[0],
         executiveReportCompanyName: localStorage.getItem('selectedCompanyName'),

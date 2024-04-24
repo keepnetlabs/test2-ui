@@ -80,15 +80,15 @@
         </VSwitch>
         <FormGroup
           class-name="mb-0 mt-2"
-          title="Send to Email or Target Users"
-          sub-title="Send report to multiple email addresses or target users"
+          title="Send to Email"
+          sub-title="Send report to multiple email addresses"
         >
           <KSelect
             v-model="formData.emailAddresses"
             id="input--threat-sharing-incident-share-email"
             type="combobox"
             :items="[]"
-            placeholder="Enter email address or target users"
+            placeholder="Enter email address"
             multiple
             dense
             deletable-chips

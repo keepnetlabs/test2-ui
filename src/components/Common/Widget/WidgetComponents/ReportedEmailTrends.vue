@@ -86,12 +86,10 @@ export default {
   },
   watch: {
     reportedEmailTrends(data) {
-      console.log('this.reportedEmailTrends', data)
       this.updateReportedEmailTrends(data)
     }
   },
   created() {
-    console.log('this.reportedEmailTrends', this.reportedEmailTrends)
     this.updateReportedEmailTrends(this.reportedEmailTrends)
   },
   methods: {
@@ -259,7 +257,6 @@ export default {
         this.chartData = {
           datasets
         }
-        console.log('this.chartData', this.chartData)
       }
     }
   }
