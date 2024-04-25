@@ -47,6 +47,13 @@ export function deleteLandingPage(id) {
   })
 }
 
+export function bulkDeleteLandingPages(payload) {
+  return testRequest.delete(`phishing-simulator/landing-page-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 export function getLandingPageTemplate(id) {
   return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }

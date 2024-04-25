@@ -28,6 +28,13 @@ const deleteCallbackTemplate = (resourceId) => {
   })
 }
 
+const bulkDeleteCallbackTemplates = (payload) => {
+  return vishingRequest.delete(`/callback-simulator/callback-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 const getCallbackTemplateLanguages = () => {
   return vishingRequest.get(`/callback-simulator/callback-template/language`)
 }
@@ -76,6 +83,13 @@ const deleteEmailTemplate = (resourceId) => {
   })
 }
 
+const bulkDeleteEmailTemplates = (payload) => {
+  return testRequest.delete(`/callback-simulator/email-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 const createEmailTemplate = (payload = {}) => {
   return testRequest.post(`/callback-simulator/email-template`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -109,6 +123,13 @@ const updateCallbackScenario = (resourceId, payload) => {
 const deleteCallbackScenario = (resourceId) => {
   return testRequest.delete(`/callback-simulator/scenario/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+const bulkDeleteCallbackScenarios = (payload) => {
+  return testRequest.delete(`/callback-simulator/scenario/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
   })
 }
 
@@ -341,6 +362,7 @@ export default {
   getCallbackTemplate,
   updateCallbackTemplate,
   deleteCallbackTemplate,
+  bulkDeleteCallbackTemplates,
   getCallbackTemplateLanguages,
   getCallbackTemplatePreview,
   createCallbackTemplate,
@@ -351,6 +373,7 @@ export default {
   getMergeTags,
   updateEmailTemplate,
   deleteEmailTemplate,
+  bulkDeleteEmailTemplates,
   createEmailTemplate,
   searchCallbackScenarios,
   exportCallbackScenarios,
@@ -358,6 +381,7 @@ export default {
   getCallbackScenarioPreview,
   updateCallbackScenario,
   deleteCallbackScenario,
+  bulkDeleteCallbackScenarios,
   createCallbackScenario,
   getUsedCallbackNumbers,
   exportCallbackSettings,

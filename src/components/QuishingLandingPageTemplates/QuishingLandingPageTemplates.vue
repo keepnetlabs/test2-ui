@@ -28,7 +28,12 @@
       :selected-email-template="selectedLandingPageTemplate"
       :api-func="deleteLandingPageTemplate"
       :type="SCENARIO_DELETE_DIALOG_TYPES.LANDING_PAGE"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeleteApiFunc="bulkDeleteLandingPageTemplates"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="toggleDeleteDialog(null, true)"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="toggleDeleteDialog"
     />
     <QuishingLandingPageTemplatesTable
@@ -37,6 +42,7 @@
       @on-edit-or-new="toggleNewLandingPageTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
+      @on-multiple-delete="handleMultipleDelete"
     />
   </div>
 </template>
@@ -70,6 +76,9 @@ export default {
       isShowPreviewDialog: false,
       selectedLandingPageTemplate: null,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedScenariosCount: 0,
+      multipleScenariosPayload: {},
       isEdit: false
     }
   },
@@ -84,6 +93,7 @@ export default {
   methods: {
     getLandingPageTemplate: QuishingService.getLandingPageTemplate,
     deleteLandingPageTemplate: QuishingService.deleteLandingPageTemplate,
+    bulkDeleteLandingPageTemplates: QuishingService.bulkDeleteLandingPageTemplates,
     toggleNewLandingPageTemplateModal(row = null, isDuplicate = false) {
       this.selectedLandingPageTemplate = row
       this.isEdit = !!row
@@ -95,9 +105,28 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleDeleteDialog(row = null, forceUpdate = false) {
+      this.isMultipleDelete = false
       if (forceUpdate) this.$refs.refTable.callForData()
       this.selectedLandingPageTemplate = row
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleMultipleDelete({ selections, excludedItems, selectAll, axiosPayload, serverSideProps }) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: axiosPayload.filter
+      }
+      this.isShowDeleteDialog = true
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refTable?.$refs?.refLandingPageList?.resetSelectableParams()
+      this.isShowDeleteDialog = false
+      this.$refs?.refTable?.callForData()
     },
     callForLookups() {
       QuishingService.getLandingPageFormDetails().then((response) => {

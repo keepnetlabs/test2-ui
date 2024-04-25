@@ -40,7 +40,12 @@
       :status="isShowDeleteDialog"
       :selected-email-template="selectedEmailTemplate"
       :api-func="getDeleteApiFunc"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeleteApiFunc="bulkDeleteQuishingTemplates"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="toggleDeleteDialog(null, true)"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="toggleDeleteDialog"
     />
     <QuishingEmailTemplatesTable
@@ -48,6 +53,7 @@
       @on-edit-or-new="toggleNewEmailTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
+      @on-multiple-delete="handleMultipleDelete"
       @on-add-individual-printout-template="toggleIndividualPrintoutTemplateModal"
     />
   </div>
@@ -80,6 +86,9 @@ export default {
       isShowPreviewDialog: false,
       selectedEmailTemplate: null,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedTemplatesCount: 0,
+      multipleTemplatesPayload: {},
       isShowRenameAttachmentDialog: false,
       isShowIndividualPrintoutTemplateModal: false,
       isEdit: false
@@ -107,6 +116,7 @@ export default {
   },
   methods: {
     getEmailTemplatePreviewContent: QuishingService.getEmailTemplatePreviewContent,
+    bulkDeleteQuishingTemplates: QuishingService.bulkDeleteQuishingTemplates,
     toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
       this.isDuplicate = isDuplicate
@@ -118,9 +128,28 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleDeleteDialog(row = null, forceUpdate) {
+      this.isMultipleDelete = false
       if (forceUpdate) this.$refs.refTable.callForData()
       this.selectedEmailTemplate = row
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refTable?.$refs?.refEmailTemplatesList?.resetSelectableParams()
+      this.isShowDeleteDialog = false
+      this.$refs?.refTable?.callForData()
+    },
+    handleMultipleDelete({ selections, excludedItems, selectAll, axiosPayload, serverSideProps }) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: axiosPayload.filter
+      }
+      this.isShowDeleteDialog = true
     },
     onShowRenameAttachmentModal() {
       this.isShowRenameAttachmentDialog = true
