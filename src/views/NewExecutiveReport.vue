@@ -76,6 +76,12 @@ export default {
               key: 'TrainingCampaignTrends'
             },
             {
+              name: 'Top Riskiest Users',
+              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              chartType: 'table',
+              key: 'TopRiskiestUsers'
+            },
+            {
               name: 'Reported Email Trends',
               src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
               key: 'ReportedEmailTrends',

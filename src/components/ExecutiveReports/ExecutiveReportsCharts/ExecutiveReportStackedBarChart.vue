@@ -117,6 +117,7 @@ export default {
         } else {
           maxEmailCount += 10 - (maxEmailCount % 10)
         }
+        console.log('minDate', minDate)
         this.chartOptions = {
           barPercentage: 0.8,
           plugins: {

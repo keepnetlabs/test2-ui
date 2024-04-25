@@ -158,6 +158,12 @@
           />
           <ExecutiveReportDoughnutChart v-else-if="formData.chartType === 'doughnut'" />
           <ExecutiveReportPieChart v-else-if="formData.chartType === 'pie'" />
+          <ExecutiveReportTable
+            v-else-if="formData.chartType === 'table'"
+            class="d-flex align-items-center mt-4"
+            :columns="executiveReportColumns"
+            :data="executiveReportData"
+          />
           <div v-if="formData.chartType === 'gauge'" style="margin-top: -56px;">
             <div class="executive-report-gauge-value">
               32
@@ -195,10 +201,14 @@ import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveRe
 import ExecutiveReportPieChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPieChart.vue'
 import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportBarChart.vue'
 import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportStackedBarChart.vue'
+import ExecutiveReportTable from '@/components/ExecutiveReports/ExecutiveReportTable.vue'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'ExecutiveReportCustomizeWidgetDialog',
   components: {
+    ExecutiveReportTable,
     ExecutiveReportStackedBarChart,
     ExecutiveReportBarChart,
     ExecutiveReportPieChart,
@@ -229,6 +239,60 @@ export default {
       isActionButtonDisabled: false,
       parsedFormat: getTimeZone(false).split(' ')[0],
       dateFormat: localStorage.getItem('selectedDateFormat'),
+      executiveReportColumns: [
+        {
+          property: PROPERTY_STORE.NAME,
+          label: LABEL_STORE.NAME,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.EMAIL,
+          label: labels.Email,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.DEPARTMENT,
+          label: labels.Department,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.RISK_SCORE,
+          label: labels.RiskScore,
+          align: 'left'
+        }
+      ],
+      executiveReportData: [
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        }
+      ],
       formData: {
         valueType: '',
         category: '',

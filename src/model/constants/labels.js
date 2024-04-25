@@ -18,6 +18,7 @@ export const labels = {
   Poster: 'Poster',
   EmptyTrainingSendingReportPoster: 'No one has received the poster, yet',
   EmptyTrainingSendingReportInfographic: 'No one has received the infographic, yet',
+  RiskScore: 'Risk Score',
   PosterDelivery: 'Poster Delivery',
   StartedLearningPath: 'Started Learning Path',
   CompletedTrainingPath: 'Completed Training Path',

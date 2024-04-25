@@ -34,6 +34,12 @@
               v-else-if="card.chartType === 'pie'"
               :time-unit="card.timeUnit"
             />
+            <ExecutiveReportTable
+              v-else-if="card.chartType === 'table'"
+              class="d-flex align-items-center mt-2"
+              :columns="executiveReportColumns"
+              :data="executiveReportData"
+            />
             <div v-if="card.chartType === 'gauge'">
               <div class="executive-report-gauge-value" style="margin-top: -14px;">
                 32
@@ -72,10 +78,14 @@ import ExecutiveReportBarChart from '@/components/ExecutiveReports/ExecutiveRepo
 import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportGaugeChart.vue'
 import ExecutiveReportDoughnutChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportDoughnutChart.vue'
 import ExecutiveReportPieChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPieChart.vue'
+import ExecutiveReportTable from '@/components/ExecutiveReports/ExecutiveReportTable.vue'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'ExecutiveReportsWidget',
   components: {
+    ExecutiveReportTable,
     ExecutiveReportPieChart,
     ExecutiveReportDoughnutChart,
     ExecutiveReportGaugeChart,
@@ -98,6 +108,60 @@ export default {
   },
   data() {
     return {
+      executiveReportColumns: [
+        {
+          property: PROPERTY_STORE.NAME,
+          label: LABEL_STORE.NAME,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.EMAIL,
+          label: labels.Email,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.DEPARTMENT,
+          label: labels.Department,
+          align: 'left'
+        },
+        {
+          property: PROPERTY_STORE.RISK_SCORE,
+          label: labels.RiskScore,
+          align: 'left'
+        }
+      ],
+      executiveReportData: [
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        },
+        {
+          email: 'nurullah@keepnetlabs.com',
+          name: 'Angel Siphron',
+          department: 'Marketing',
+          riskScore: '80%'
+        }
+      ],
       empty: {
         message: 'You do not have any report conclusion'
       }

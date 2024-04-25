@@ -451,6 +451,27 @@ export default {
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TopRiskiestUsers: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Top Riskiest Users',
+          key: 'TopRiskiestUsers',
+          isAllowed: true,
+          parentKey: 'Training Metrics',
+          chartType: 'table',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       availableWidgets: [
