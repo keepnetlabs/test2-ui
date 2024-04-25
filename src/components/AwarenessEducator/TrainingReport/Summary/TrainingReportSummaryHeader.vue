@@ -21,7 +21,6 @@
         </div>
       </div>
       <div class="training-report-summary-header__right">
-        <!--
         <v-btn
           v-if="!isLearningPath"
           class="training-report-summary-header__btn-download-report"
@@ -32,7 +31,6 @@
           @click="handleDownloadReport"
           >{{ labels.DownloadReport }}</v-btn
         >
-        -->
         <v-btn
           v-if="!isLoading && !isScormProxy && !isLearningPath"
           class="training-report-summary-header__btn-resend-campaign ml-2"
@@ -52,6 +50,7 @@ import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/Tr
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export default {
   name: 'TrainingReportSummaryHeader',
@@ -148,7 +147,7 @@ export default {
             const blob = new Blob([data])
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(blob)
-            link.download = `Training-Report.xlsx`
+            link.download = `Training-Material.xlsx`
             link.click()
           } else if (response.status === 201) {
             this.$store.dispatch('common/createSnackBar', {
