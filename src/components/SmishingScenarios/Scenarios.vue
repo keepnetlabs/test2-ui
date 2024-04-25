@@ -16,7 +16,12 @@
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
       :api-func="deleteScenario"
+      :scenarioCount="multipleDeletedScenariosCount"
+      :multipleDeleteApiFunc="bulkDeleteScenarios"
+      :multipleDeletePayload="multipleScenariosPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
     <SmishingScenarioPreview
@@ -37,12 +42,13 @@
       @handleCloseModal="handleCloseNoLandingPageTemplateModal"
       @handleConfirm="handleConfirmNoLandingPageTemplate"
     />
-    <data-table
+    <DataTable
       v-if="getSmishingScenariosSearchPermissions"
       id="scenarios-data-table"
       class="scenarios"
       ref="refScenariosList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -64,7 +70,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScenarioModalStatus(true)"
       @downloadEvent="exportScenario"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -110,7 +116,7 @@
           />
         </RowActionsMenu>
       </template>
-    </data-table>
+    </DataTable>
   </div>
 </template>
 
@@ -170,6 +176,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedScenariosCount: 0,
+      multipleScenariosPayload: {},
       scenarioId: null,
       labels,
       selectedScenarioURL: '',
@@ -307,7 +316,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -341,6 +350,7 @@ export default {
   },
   methods: {
     deleteScenario: SmishingService.deleteSmishingScenario,
+    bulkDeleteScenarios: SmishingService.bulkDeleteSmishingScenarios,
     callForScenarioDetails() {
       SmishingService.getSmishingScenarioFormDetails()
         .then((response) => {
@@ -372,7 +382,12 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refScenariosList.unSelectRow(row)
+      this.$refs.refScenariosList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refScenariosList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -466,7 +481,21 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedScenariosCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleScenariosPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true
     },

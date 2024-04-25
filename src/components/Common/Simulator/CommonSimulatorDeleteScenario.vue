@@ -79,7 +79,6 @@ export default {
     handleDelete() {
       if (this.isMultiple) {
         this.isActionButtonDisabled = true
-        console.log(this.multipleDeletePayload)
         this.multipleDeleteApiFunc(this.multipleDeletePayload)
           .then(() => {
             this.$emit('on-success-multiple')

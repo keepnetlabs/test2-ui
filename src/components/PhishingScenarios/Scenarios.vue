@@ -24,8 +24,8 @@
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
-      :scenarioCount="multipleDeletedScenariosCount"
       :api-func="deleteScenario"
+      :scenarioCount="multipleDeletedScenariosCount"
       :multipleDeleteApiFunc="bulkDeleteScenarios"
       :multipleDeletePayload="multipleScenariosPayload"
       :isMultiple="isMultipleDelete"
@@ -328,7 +328,7 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refScenariosList.unSelectRow(row)
+      this.$refs.refScenariosList.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -419,6 +419,7 @@ export default {
       this.showDeleteModal = true
     },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true
     }

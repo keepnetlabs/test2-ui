@@ -24,8 +24,13 @@
       :status="showDeleteModal"
       :selected-email-template="selectedEmailTemplate"
       :api-func="deleteLandingPageTemplate"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeleteApiFunc="bulkDeleteLandingPageTemplates"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
       :type="SCENARIO_DELETE_DIALOG_TYPES.LANDING_PAGE"
       @on-success="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
     <app-dialog
@@ -62,12 +67,12 @@
         </div>
       </template>
     </app-dialog>
-
-    <data-table
+    <DataTable
       v-if="getSmishingLandingPageTemplatesSearchPermissions"
       id="landingPage-data-table"
       ref="refLandingPageList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -89,7 +94,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportLandingPage"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -135,7 +140,7 @@
           />
         </RowActionsMenu>
       </template>
-    </data-table>
+    </DataTable>
   </div>
 </template>
 
@@ -190,6 +195,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedTemplatesCount: 0,
+      multipleTemplatesPayload: {},
       emailTemplateId: null,
       landingPageParams: {},
       selectedLandingPageIndex: 0,
@@ -332,7 +340,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -379,6 +387,7 @@ export default {
   },
   methods: {
     deleteLandingPageTemplate: SmishingService.deleteLandingPageTemplate,
+    bulkDeleteLandingPageTemplates: SmishingService.bulkDeleteLandingPageTemplates,
     callForData() {
       this.loading = true
       if (this.getSmishingLandingPageTemplatesSearchPermissions) {
@@ -407,7 +416,12 @@ export default {
       this.selectedLandingPageIndex++
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refLandingPageList.unSelectRow(row)
+      this.$refs.refLandingPageList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refLandingPageList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -485,7 +499,21 @@ export default {
         })
       })
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
     },

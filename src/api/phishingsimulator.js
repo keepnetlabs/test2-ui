@@ -92,7 +92,8 @@ export function deleteEmailTemplate(id) {
 
 export function bulkDeleteEmailTemplates(payload) {
   return testRequest.delete(`phishing-simulator/email-templates/bulk-delete`, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: COMMON_SNACKBAR,
+    data: payload
   })
 }
 
