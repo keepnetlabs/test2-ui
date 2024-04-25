@@ -34,8 +34,6 @@
           :format="parsedFormat"
           :valueFormat="parsedFormat"
           :picker-options="pickerOptions"
-          :rules="[]"
-          :defaultTime="['00:00:00', '23:59:00']"
           :prefix-icon="'el-icon-date'"
         />
         <VBtn
@@ -124,23 +122,34 @@
             />
           </div>
           <div class="d-flex mt-2 gap-2">
-            <VTextField
-              v-model="formData.executiveReportDate"
-              id="input--training-library-sorting"
-              label="Date"
-              style="max-width: 120px;"
-              class="pointer-none"
-              outlined
-              hide-details
-              autocomplete="off"
-              placeholder="Date"
-            />
+            <div class="position-relative" @click="handleExecutiveReportDateClick">
+              <VTextField
+                v-model="formData.executiveReportDate"
+                id="input--training-library-sorting"
+                label="Date Created"
+                class="pointer-none"
+                style="max-width: 124px;"
+                outlined
+                hide-details
+                autocomplete="off"
+                placeholder="Date Created"
+                append-icon="mdi-menu-down"
+              />
+              <InputDate
+                v-model="formData.executiveReportDate"
+                id="input--executive-report-date"
+                type="date"
+                ref="refInputExecutiveReportDate"
+                style="visibility: hidden; position: absolute; min-width: 124px; top: 0;"
+                :format="parsedFormatWithoutTime"
+                :valueFormat="parsedFormatWithoutTime"
+              />
+            </div>
             <VTextField
               v-model="formData.executiveReportCompanyName"
               ref="refFiltersInput"
               id="input--training-library-sorting"
               label="Company Name"
-              class="pointer-none"
               style="max-width: 320px;"
               outlined
               hide-details
@@ -168,18 +177,22 @@
       </div>
       <div v-else class="executive-report-new-card__body-preview">
         <div class="d-flex flex-column">
-          <div class="executive-report-new-card__body-preview-name">{{ editData.name }}</div>
+          <div class="executive-report-new-card__body-preview-name">
+            {{ editData.name }}
+          </div>
           <div>
-            <span class="executive-report-new-card__body-preview-text">{{ editData.date }}</span>
-            <span class="executive-report-new-card__body-preview-text ml-6">{{
-              editData.companyName
-            }}</span>
+            <span class="executive-report-new-card__body-preview-text"
+              >Created on {{ editData.date }}
+            </span>
+            <span class="executive-report-new-card__body-preview-text">
+              by {{ editData.companyName }}</span
+            >
           </div>
         </div>
         <img class="executive-report-new-card__body-preview-img" :src="editData.logo" alt="Logo" />
       </div>
       <div v-if="!isPreview && !layout.length" class="executive-report-new-card__empty">
-        Drag and drop items from left side
+        Choose items from left side
       </div>
       <k-smart-grid
         class="executive-report-grid"
@@ -264,12 +277,13 @@ export default {
       newItemY: 0,
       editMode: !this.isPreview,
       parsedFormat: getTimeZone(false),
+      parsedFormatWithoutTime: getTimeZone(true),
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
-          const refPicker = this.$refs.refPicker
+          const refPicker = this.$refs.refInputDate
           if (maxDate && minDate) {
             this.date = refPicker.formatToValue([minDate, maxDate])
           }
@@ -491,6 +505,27 @@ export default {
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        VishingCampaignTrends: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Vishing Campaign Trends',
+          key: 'VishingCampaignTrends',
+          isAllowed: true,
+          parentKey: 'Vishing Metrics',
+          chartType: 'line',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       availableWidgets: [
@@ -519,7 +554,8 @@ export default {
   computed: {
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn ml-2']
-      if (!this.formData.executiveReportName) classes.push('new-executive-report-button-disabled')
+      if (!this.formData.executiveReportName || !this.layout.length)
+        classes.push('new-executive-report-button-disabled')
       return classes
     },
     getPreviewPdfButtonClasses() {
@@ -608,6 +644,9 @@ export default {
     },
     handleDateRangeClick() {
       this.$refs.refInputDate.showPicker()
+    },
+    handleExecutiveReportDateClick() {
+      this.$refs.refInputExecutiveReportDate.showPicker()
     },
     handlePreviewClick() {},
     handleSaveReportClick() {

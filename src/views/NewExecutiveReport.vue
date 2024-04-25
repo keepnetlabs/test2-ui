@@ -48,7 +48,7 @@ export default {
             },
             {
               name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              src: '/reported-email-trends.svg',
               key: 'ReportedEmailTrends',
               chartType: 'stackedBar'
             },
@@ -60,7 +60,7 @@ export default {
             },
             {
               name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              src: '/recently-posted-threats.svg',
               key: 'RecentlyPostedThreats',
               chartType: 'bar'
             }
@@ -76,22 +76,16 @@ export default {
               key: 'TrainingCompletion'
             },
             {
-              name: 'Top Riskiest Users',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              chartType: 'table',
-              key: 'TopRiskiestUsers'
-            },
-            {
               name: 'Training Enrollments',
               src: '/training-enrollments.svg',
               key: 'TrainingEnrollments',
               chartType: 'line'
             },
             {
-              name: 'Recently Posted Threats',
+              name: 'Top Riskiest Users',
               src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
+              chartType: 'table',
+              key: 'TopRiskiestUsers'
             }
           ]
         },
@@ -99,10 +93,10 @@ export default {
           name: 'Vishing Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Vishing Campaign Trends',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
+              key: 'VishingCampaignTrends'
             },
             {
               name: 'Reported Email Trends',
