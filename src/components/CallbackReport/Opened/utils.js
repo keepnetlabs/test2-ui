@@ -38,6 +38,22 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  ACTIVITY_TYPE: {
+    property: PROPERTY_STORE.ACTIVITYTYPE,
+    align: 'left',
+    label: labels.ActivityType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Human Activity', value: '0' },
+      { text: 'Sandbox Activity', value: '1' }
+    ]
+  },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
     align: 'left',
@@ -298,14 +314,14 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
-  IP: {
+  IP_SLOT_NON_FIXED: {
     property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
-    fixed: 'right',
+    fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'text'
@@ -599,4 +615,9 @@ export const REPORT_TABS = {
   NO_RESPONSE: 'NoResponse',
   FAILED: 'NotDelivered',
   REPORTED: 'Reported'
+}
+
+export const ACTIVITY_TYPES = {
+  HUMAN: 'Human Activity',
+  SYSTEM: 'Sandbox Activity'
 }
