@@ -20,8 +20,13 @@
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selected-email-template="selectedEmailTemplate"
+      :templateCount="multipleDeletedEmailsCount"
       :api-func="deleteEmailTemplate"
+      :multipleDeleteApiFunc="bulkDeleteEmailTemplates"
+      :multipleDeletePayload="multipleEmailsPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
     <CommonSimulatorEmailTemplatePreviewDialog
@@ -35,6 +40,7 @@
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -56,7 +62,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportEmailTemplates"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -112,7 +118,8 @@ import NewEmailTemplates from './NewEmailTemplates'
 import {
   getEmailTemplatesList,
   exportEmailTemplates,
-  deleteEmailTemplate
+  deleteEmailTemplate,
+  bulkDeleteEmailTemplates
 } from '@/api/phishingsimulator'
 import {
   getStoreValue,
@@ -161,6 +168,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedEmailsCount: 0,
+      multipleEmailsPayload: {},
       emailTemplateId: null,
       labels,
       totalNumberOfRecords: 0,
@@ -316,7 +326,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -355,6 +365,7 @@ export default {
   },
   methods: {
     deleteEmailTemplate,
+    bulkDeleteEmailTemplates,
     onShowRenameAttachmentModal() {
       this.isShowRenameAttachmentDialog = true
     },
@@ -391,7 +402,12 @@ export default {
       this.onCloseRenameAttachmentModal()
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refEmailTemplatesList.unSelectRow(row)
+      this.$refs.refEmailTemplatesList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refEmailTemplatesList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -471,7 +487,21 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedEmailsCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleEmailsPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
     }

@@ -3,6 +3,7 @@
     id="quishing-landing-page-data-table"
     ref="refLandingPageList"
     is-server-side
+    is-server-side-selection
     selectable
     filterable
     options
@@ -29,6 +30,7 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
+    @handleMultipleDelete="handleMultipleDelete"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -162,7 +164,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -230,6 +232,15 @@ export default {
     },
     handleDelete(row = {}) {
       this.$emit('on-delete', row)
+    },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.$emit('on-multiple-delete', {
+        selections,
+        excludedItems,
+        selectAll,
+        axiosPayload: this.axiosPayload,
+        serverSideProps: this.serverSideProps
+      })
     },
     exportLandingPageTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
