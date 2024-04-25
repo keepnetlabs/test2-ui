@@ -11,6 +11,12 @@ import DoughnutChart from '@/components/Common/Charts/Doughnut.vue'
 export default {
   name: 'ExecutiveReportDoughnutChart',
   components: { DoughnutChart },
+  props: {
+    rawData: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -57,7 +63,7 @@ export default {
           {
             label: 'Completed',
             backgroundColor: ['#43A047', '#E6A23C'],
-            data: [10, 20]
+            data: this.rawData
           }
         ]
       }

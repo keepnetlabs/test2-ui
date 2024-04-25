@@ -48,6 +48,7 @@
           hide-details
           autocomplete="off"
           placeholder="Enter a target group"
+          style="flex-basis: 33%;"
           :items="targetGroups"
         />
         <VTextField
@@ -56,7 +57,7 @@
           outlined
           hide-details
           autocomplete="off"
-          style="flex-basis: 28%; max-width: 234px;"
+          style="flex-basis: 33%;"
           placeholder="Enter a title"
         />
         <KSelect
@@ -66,7 +67,7 @@
           hide-details
           autocomplete="off"
           placeholder="Enter a chartType"
-          style="max-width: 236px;"
+          style="flex-basis: 33%;"
           :items="chartTypes"
         />
       </div>
@@ -76,7 +77,7 @@
             'position-relative executive-report-customize-widget-row__datepicker',
             formData.startDate ? 'executive-report-customize-widget-row__datepicker-active' : ''
           ]"
-          style="flex-basis: 32%;"
+          style="flex-basis: 33%;"
         >
           <InputDate
             v-model="formData.startDate"
@@ -84,8 +85,8 @@
             type="date"
             ref="refPicker"
             placeholder="Select Start Date"
-            style="width: 238px;"
             :format="parsedFormat"
+            style="width: 100%;"
             :picker-options="startDatePickerOptions"
             :valueFormat="parsedFormat"
           />
@@ -101,7 +102,7 @@
             'position-relative executive-report-customize-widget-row__datepicker',
             formData.endDate ? 'executive-report-customize-widget-row__datepicker-active' : ''
           ]"
-          style="flex-basis: 32%;"
+          style="flex-basis: 33%;"
         >
           <InputDate
             v-model="formData.endDate"
@@ -109,7 +110,7 @@
             type="date"
             ref="refPicker"
             placeholder="Select End Date"
-            style="width: 234px;"
+            style="width: 100%;"
             :picker-options="endDatePickerOptions"
             :format="parsedFormat"
             :valueFormat="parsedFormat"
@@ -129,6 +130,7 @@
           hide-details
           autocomplete="off"
           placeholder="Enter a date interval"
+          style="flex-basis: 33%;"
           :items="dateIntervals"
         />
       </div>
@@ -143,34 +145,56 @@
             `executive-report-customize-widget-preview-chart-${selectedRow.chartType}`
           ]"
         >
-          <ExecutiveReportStackedBarChart
-            v-if="formData.chartType === 'stackedBar'"
-            :time-unit="formData.dateInterval"
-          />
-          <ExecutiveReportLineChart
-            v-else-if="formData.chartType === 'line'"
-            :time-unit="formData.dateInterval"
-          />
-          <ExecutiveReportGaugeChart v-else-if="formData.chartType === 'gauge'" />
-          <ExecutiveReportBarChart
-            v-else-if="formData.chartType === 'bar'"
-            :time-unit="formData.dateInterval"
-          />
-          <ExecutiveReportDoughnutChart v-else-if="formData.chartType === 'doughnut'" />
-          <ExecutiveReportPieChart v-else-if="formData.chartType === 'pie'" />
-          <ExecutiveReportTable
-            v-else-if="formData.chartType === 'table'"
-            class="d-flex align-items-center mt-4"
-            :columns="executiveReportColumns"
-            :data="executiveReportData"
-          />
-          <div v-if="formData.chartType === 'gauge'" style="margin-top: -56px;">
-            <div class="executive-report-gauge-value">
-              32
+          <WidgetLoading v-if="isLoading" :loading="isLoading" />
+          <template v-else-if="!isLoading && hasData">
+            <ExecutiveReportStackedBarChart
+              v-if="formData.chartType === 'stackedBar'"
+              :time-unit="formData.dateInterval"
+              :raw-data="chartData"
+            />
+            <ExecutiveReportLineChart
+              v-else-if="formData.chartType === 'line'"
+              :time-unit="formData.dateInterval"
+              :raw-data="chartData"
+            />
+            <ExecutiveReportGaugeChart
+              v-else-if="formData.chartType === 'gauge'"
+              :raw-data="gaugeChartData"
+            />
+            <ExecutiveReportBarChart
+              v-else-if="formData.chartType === 'bar'"
+              :time-unit="formData.dateInterval"
+              :raw-data="chartData"
+            />
+            <ExecutiveReportDoughnutChart
+              v-else-if="formData.chartType === 'doughnut'"
+              :raw-data="pieChartData"
+            />
+            <ExecutiveReportPieChart
+              v-else-if="formData.chartType === 'pie'"
+              :raw-data="pieChartData"
+            />
+            <ExecutiveReportTable
+              v-else-if="formData.chartType === 'table'"
+              class="d-flex align-items-center mt-4"
+              :columns="executiveReportColumns"
+              :data="executiveReportData"
+            />
+            <div v-if="formData.chartType === 'gauge'" style="margin-top: -56px;">
+              <div class="executive-report-gauge-value">
+                32
+              </div>
+              <div class="executive-report-gauge-average" style="margin-top: 0;">
+                Industry Average: 40
+              </div>
             </div>
-            <div class="executive-report-gauge-average" style="margin-top: 0;">
-              Industry Average: 40
-            </div>
+          </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2>You do not have any report conclusion</h2>
           </div>
         </div>
       </div>
@@ -204,10 +228,13 @@ import ExecutiveReportStackedBarChart from '@/components/ExecutiveReports/Execut
 import ExecutiveReportTable from '@/components/ExecutiveReports/ExecutiveReportTable.vue'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { getExecutiveReportChartData } from '@/api/reports'
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 
 export default {
   name: 'ExecutiveReportCustomizeWidgetDialog',
   components: {
+    WidgetLoading,
     ExecutiveReportTable,
     ExecutiveReportStackedBarChart,
     ExecutiveReportBarChart,
@@ -236,6 +263,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       isActionButtonDisabled: false,
       parsedFormat: getTimeZone(false).split(' ')[0],
       dateFormat: localStorage.getItem('selectedDateFormat'),
@@ -293,6 +321,9 @@ export default {
           riskScore: '80%'
         }
       ],
+      chartData: [],
+      pieChartData: [],
+      gaugeChartData: 0,
       formData: {
         valueType: '',
         category: '',
@@ -320,7 +351,12 @@ export default {
       targetGroups: 'executiveReports/getTargetGroups',
       chartTypes: 'executiveReports/getChartTypes',
       dateIntervals: 'executiveReports/getDateIntervals'
-    })
+    }),
+    hasData() {
+      if (this.formData.chartType === 'gauge') return this.gaugeChartData
+      else if (['doughnut', 'pie'].includes(this.formData.chartType)) return this.pieChartData
+      return this.chartData.length
+    }
   },
   created() {
     this.callForData()
@@ -336,6 +372,20 @@ export default {
       this.formData.groupedBy = this.selectedRow.groupedBy
       this.formData.targetGroups = this.selectedRow.targetGroups
       this.formData.dateInterval = this.selectedRow.dateInterval
+      this.isLoading = true
+      getExecutiveReportChartData()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          if (this.formData.chartType === 'gauge') this.gaugeChartData = 45
+          if (['doughnut', 'pie'].includes(this.formData.chartType)) this.pieChartData = [20, 30]
+          this.chartData = data
+          this.isLoading = false
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
     handleClose() {
       this.$emit('on-close')

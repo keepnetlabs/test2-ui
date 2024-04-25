@@ -4,7 +4,7 @@
       <div class="executive-widget-header__left-title">{{ title }}</div>
       <div class="executive-widget-header__left-text">{{ subtitle }}</div>
     </div>
-    <div class="executive-widget-header__right">
+    <div v-if="editMode" class="executive-widget-header__right">
       <VIcon class="executive-widget-header__right-icon" color="#757575" @click="handleEdit"
         >mdi-cog</VIcon
       >
@@ -24,6 +24,10 @@ export default {
     },
     subtitle: {
       type: String
+    },
+    editMode: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {

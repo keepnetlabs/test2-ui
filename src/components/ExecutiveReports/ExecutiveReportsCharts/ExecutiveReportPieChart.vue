@@ -7,6 +7,12 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'ExecutiveReportPieChart',
   components: { PieChart },
+  props: {
+    rawData: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -73,7 +79,7 @@ export default {
         ],
         showTooltipLine: true
       }
-      this.chartData = [15, 20, 40, 20, 80]
+      this.chartData = this.rawData
     }
   }
 }

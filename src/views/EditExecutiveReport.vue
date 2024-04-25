@@ -1,6 +1,6 @@
 <template>
   <KContainer id="preview-executive-report" tabless>
-    <ExecutiveReportNewCard is-edit :preview-data="previewData" />
+    <ExecutiveReportNewCard is-edit :edit-data="editData" />
   </KContainer>
 </template>
 <script>
@@ -12,7 +12,7 @@ export default {
   components: { ExecutiveReportNewCard, KContainer },
   data() {
     return {
-      previewData: {
+      editData: {
         name: 'System Executive Report',
         date: '02/04/2024',
         companyName: 'Keepnet Labs',

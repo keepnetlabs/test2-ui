@@ -14,6 +14,10 @@ export default {
     timeUnit: {
       type: String,
       default: 'month'
+    },
+    rawData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -33,23 +37,7 @@ export default {
   },
   methods: {
     calculateData() {
-      const data = [
-        {
-          month: '2023-11',
-          result: 'Opened Attachment',
-          emailCount: 58
-        },
-        {
-          month: '2023-12',
-          result: 'Opened Attachment',
-          emailCount: 18
-        },
-        {
-          month: '2024-01',
-          result: 'Opened Attachment',
-          emailCount: 62
-        }
-      ]
+      const data = this.rawData
       if (data.length) {
         let minDate = Date.now(),
           maxDate = null,

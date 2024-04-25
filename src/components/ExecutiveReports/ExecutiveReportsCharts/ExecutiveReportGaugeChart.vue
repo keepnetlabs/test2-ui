@@ -1,6 +1,6 @@
 <template>
   <div class="executive-report-gauge-chart">
-    <Gauge v-if="chartData.datasets" ref="chart" :chart-data="chartData" :options="chartOptions" />
+    <Gauge v-if="rawData" ref="chart" :options="chartOptions" />
   </div>
 </template>
 <script>
@@ -8,6 +8,12 @@ import Gauge from '@/components/Common/Charts/Gauge.vue'
 export default {
   name: 'ExecutiveReportGaugeChart',
   components: { Gauge },
+  props: {
+    rawData: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -24,22 +30,11 @@ export default {
         arcOverEffect: false,
         rangeLabelFontSize: false,
         chartWidth: 650,
-        labelsFont: 'Open Sans'
-      },
-      chartData: {}
+        labelsFont: 'Open Sans',
+        needleValue: this.rawData
+      }
     }
   },
-  created() {
-    //this.calculateData()
-    this.chartData = {
-      labels: ['Veri1', 'Veri2', 'Veri3'], // Dilim etiketleri
-      datasets: [
-        {
-          data: [20, 20, 20, 20, 20],
-          backgroundColor: ['#43A047', '#FBF280', '#E6A23C', '#B6791D', '#B83A3A'] // Dilimlerin arka plan renkleri
-        }
-      ]
-    }
-  }
+  created() {}
 }
 </script>

@@ -42,7 +42,7 @@ export default {
           charts: [
             {
               name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
               key: 'PhishingCampaignTrends'
             },
@@ -54,7 +54,7 @@ export default {
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              src: '/training-completion.svg',
               key: 'MostEngagedCampaigns',
               chartType: 'doughnut'
             },
@@ -70,10 +70,10 @@ export default {
           name: 'Training Metrics',
           charts: [
             {
-              name: 'Training Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              chartType: 'line',
-              key: 'TrainingCampaignTrends'
+              name: 'Training Completion',
+              src: '/training-completion.svg',
+              chartType: 'doughnut',
+              key: 'TrainingCompletion'
             },
             {
               name: 'Top Riskiest Users',
@@ -82,16 +82,10 @@ export default {
               key: 'TopRiskiestUsers'
             },
             {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
-            },
-            {
-              name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
-              chartType: 'doughnut'
+              name: 'Training Enrollments',
+              src: '/training-enrollments.svg',
+              key: 'TrainingEnrollments',
+              chartType: 'line'
             },
             {
               name: 'Recently Posted Threats',

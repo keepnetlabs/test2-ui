@@ -60,13 +60,13 @@
         </VBtn>
       </div>
       <div class="executive-report-new-card__header-right">
-        <template v-if="!isPreview">
+        <template v-if="editMode">
           <VBtn
             class="training-library-card__footer-btn"
             color="#fff"
             rounded
             :ripple="false"
-            @click="routeToExecutiveReports"
+            @click="handleCancelClick"
           >
             CANCEL
           </VBtn>
@@ -90,15 +90,15 @@
           </VBtn>
         </template>
         <VIcon
-          v-if="isEdit && !editMode"
+          v-if="isPreview && !editMode"
           color="#2196f3"
-          class="executive-reports-card__right-btn"
+          class="executive-reports-card__right-btn mr-2"
           small
           @click="editMode = true"
           >mdi-pencil</VIcon
         >
         <VIcon
-          v-if="isPreview"
+          v-if="isPreview && !editMode"
           color="#2196f3"
           class="executive-reports-card__right-btn"
           small
@@ -168,19 +168,15 @@
       </div>
       <div v-else class="executive-report-new-card__body-preview">
         <div class="d-flex flex-column">
-          <div class="executive-report-new-card__body-preview-name">{{ previewData.name }}</div>
+          <div class="executive-report-new-card__body-preview-name">{{ editData.name }}</div>
           <div>
-            <span class="executive-report-new-card__body-preview-text">{{ previewData.date }}</span>
+            <span class="executive-report-new-card__body-preview-text">{{ editData.date }}</span>
             <span class="executive-report-new-card__body-preview-text ml-6">{{
-              previewData.companyName
+              editData.companyName
             }}</span>
           </div>
         </div>
-        <img
-          class="executive-report-new-card__body-preview-img"
-          :src="previewData.logo"
-          alt="Logo"
-        />
+        <img class="executive-report-new-card__body-preview-img" :src="editData.logo" alt="Logo" />
       </div>
       <div v-if="!isPreview && !layout.length" class="executive-report-new-card__empty">
         Drag and drop items from left side
@@ -209,7 +205,7 @@
             :id="item.key"
             :is="getComponent(item.key)"
             :resizable="false"
-            :editMode="editMode"
+            :edit-mode="editMode"
             :card="item"
             @on-delete="deleteWidget(item, index)"
             @on-edit="toggleShowCustomizeWidgetDialog"
@@ -229,6 +225,7 @@ import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
+import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 
 export default {
   name: 'ExecutiveReportNewCard',
@@ -252,12 +249,13 @@ export default {
       type: Boolean,
       default: false
     },
-    previewData: {
+    editData: {
       type: Object,
       default: () => ({})
     }
   },
   data() {
+    console.log('isPreview', this.isPreview)
     return {
       activeBreakpoint: 'lg',
       layout: [],
@@ -431,7 +429,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        TrainingCampaignTrends: {
+        TrainingCompletion: {
           x: 0,
           y: 0,
           w: 6,
@@ -443,11 +441,11 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Training Campaign Trends',
-          key: 'TrainingCampaignTrends',
+          title: 'Training Completion',
+          key: 'TrainingCompletion',
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'pie',
+          parentKey: 'Training Metrics',
+          chartType: 'doughnut',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -469,6 +467,27 @@ export default {
           isAllowed: true,
           parentKey: 'Training Metrics',
           chartType: 'table',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TrainingEnrollments: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Training Enrollments',
+          key: 'TrainingEnrollments',
+          isAllowed: true,
+          parentKey: 'Training Metrics',
+          chartType: 'line',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -526,6 +545,10 @@ export default {
       }, 0)
 
        */
+      if (this.isEdit || this.isPreview) {
+        const report = await getExecutiveReport()
+        this.layout = report.data.data
+      }
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
@@ -576,7 +599,7 @@ export default {
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
-      this.selectedRow = this.isPreview ? this.previewData : {}
+      this.selectedRow = this.isPreview ? this.editData : {}
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
     },
     toggleShowCustomizeWidgetDialog(item) {
@@ -587,8 +610,14 @@ export default {
       this.$refs.refInputDate.showPicker()
     },
     handlePreviewClick() {},
-    handleSaveReportClick() {},
+    handleSaveReportClick() {
+      saveExecutiveReport(this.layout)
+    },
     handleDownloadClick() {},
+    handleCancelClick() {
+      if (this.isPreview) this.editMode = false
+      else this.routeToExecutiveReports()
+    },
     handleLogoChange(file) {
       if (Array.isArray(file) && file.length === 0) {
         this.formData.executiveReportLogo = null
