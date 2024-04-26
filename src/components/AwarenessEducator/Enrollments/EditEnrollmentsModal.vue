@@ -32,6 +32,59 @@
             />
           </FormGroup>
           <FormGroup
+            v-if="selectedRow.status === 'Scheduled'"
+            style="max-width: 600px;"
+            title="Schedule"
+          >
+            <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+              <span>Schedule to:</span>
+              <div :class="['ml-3', !isDateValid && 'date-picker-error mb-n3']">
+                <InputDate
+                  v-model="formData.scheduleDate"
+                  class="date-picker-height-40 black-placeholder"
+                  type="datetime"
+                  ref="refPicker"
+                  placeholder="Select Date and Time"
+                  style="width: 100%; max-width: 220px;"
+                  :format="parsedFormat"
+                  :valueFormat="parsedFormat"
+                  :picker-options="datePickerOptions"
+                  :rules="[(v) => Validations.required(v)]"
+                />
+                <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+                  <transition appear name="bounce">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message" style="padding-left: 10px;">
+                          Date is required
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+              </div>
+              <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
+              <div :class="[!isTimezoneValid && 'date-picker-error mb-n3']">
+                <InputTimezone
+                  v-model="formData.scheduledDateTimeZoneId"
+                  class="black-placeholder"
+                  :rules="[(v) => Validations.required(v)]"
+                />
+                <div class="v-text-field__details checkbox-error" v-if="!isTimezoneValid">
+                  <transition appear name="bounce">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message" style="padding-left: 10px;">
+                          Timezone is required
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+              </div>
+            </div>
+          </FormGroup>
+          <FormGroup
             v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
@@ -233,6 +286,11 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog'
 import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
+import * as Validations from '@/utils/validations'
+import { mapGetters } from 'vuex'
+import { getTimeByTimeZone } from '@/api/company'
 export default {
   name: 'EditEnrollmentsModal',
   components: {
@@ -242,6 +300,7 @@ export default {
     AppModalBodyHeader,
     AppModal,
     InputEntityName,
+    InputTimezone,
     StopReminderDialog,
     StopAutoEnrollDialog
   },
@@ -261,6 +320,7 @@ export default {
   },
   data() {
     return {
+      Validations,
       isAutoEnrollStopped: false,
       isReminderStopped: false,
       loading: false,
@@ -268,9 +328,10 @@ export default {
       isStopAutoEnrollDialogVisible: false,
       labels,
       radioItems: [{ text: 'Send now', value: '1' }],
-      isDateValid: true,
+      isTimezoneValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      parsedFormat: getTimeZone(false),
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
@@ -292,7 +353,9 @@ export default {
           endType: 'TrainingCompleted',
           occurrenceCount: 1,
           stopTime: ''
-        }
+        },
+        scheduleDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        scheduledDateTimeZoneId: ''
       },
       periodTypeItems: [
         { text: 'days', value: 'Day' },
@@ -338,11 +401,46 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone'
+    }),
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
     },
     trainingTimeItems() {
       return this.getDistributionEmailOverTimeTypes()
+    },
+    isDateValid() {
+      return this.selectedRow?.status === 'Scheduled' && !!this.formData?.scheduleDate
+    }
+  },
+  watch: {
+    selectedTimeZone: {
+      immediate: true,
+      handler(val) {
+        if (val) this.formData.scheduledDateTimeZoneId = val
+      }
+    },
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
+    'formData.scheduledDateTimeZoneId': {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          getTimeByTimeZone(val).then((res) => {
+            if (res?.data?.data) {
+              this.formData.scheduleDate = res.data.data
+            }
+          })
+        }
+      }
     }
   },
   created() {
@@ -422,9 +520,14 @@ export default {
       }
     },
     handleSubmit() {
+      if (!this.isDateValid) return
       if (this.$refs.refForm.validate()) {
         this.loading = true
         const payload = JSON.parse(JSON.stringify(this.formData))
+        if (this.selectedRow.status !== 'Scheduled') {
+          delete payload['scheduleDate']
+          delete payload['scheduledDateTimeZoneId']
+        }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
         AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
