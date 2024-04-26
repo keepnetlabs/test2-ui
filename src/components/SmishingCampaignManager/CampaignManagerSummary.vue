@@ -49,7 +49,8 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
+                :items="getTargetGroupItems"
+                isPhoneNumber
               />
             </div>
             <AlertBox
@@ -235,6 +236,9 @@ export default {
     }
   },
   computed: {
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     isRenderTrainingCard() {
       return this.trainingParams
     },
@@ -327,25 +331,27 @@ export default {
       } will receive MFA scenario.`
     },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unVerifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unVerifiedUserCount
+      }, 0)
     },
     getActiveUsersWithPhoneNumberCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getActiveUsersWithoutPhoneNumberCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutPhoneNumberCount =
+          row?.hasPhoneNumber?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutPhoneNumberCount
+      }, 0)
     },
     isFormData() {
       return Object.keys(this.formData).length
@@ -401,11 +407,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -416,11 +422,12 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return (
-        userCountDetailResponse?.data.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      )
+      return userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const verifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+        return acc + verifiedUserCount
+      }, 0)
     },
     getSettingsItems() {
       const { selectedSchedule, duration, senderPhoneNumber } = this.formData

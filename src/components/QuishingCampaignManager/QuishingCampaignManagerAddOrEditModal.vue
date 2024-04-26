@@ -560,11 +560,15 @@ export default {
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
             ) {
-              this.totalTargetUserCount =
-                this.userCountDetailResponse?.data?.data
-                  ?.find((detail) => detail.status === 'Active')
-                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
-                totalTargetUserCount
+              this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+                (acc, row) => {
+                  if (row.status !== 'Active') return acc
+                  const verifiedUserCount =
+                    row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                  return acc + verifiedUserCount
+                },
+                0
+              )
             }
             if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
