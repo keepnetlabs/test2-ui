@@ -13,33 +13,73 @@
       >
         PREVIEW
       </VBtn>
-      <VIcon
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
-        small
-        @click="handleScheduleClick"
-        >mdi-calendar-clock</VIcon
-      >
-      <VIcon color="#2196f3" small :class="getEditButtonClasses" @click="handleEditClick"
-        >mdi-pencil</VIcon
-      >
-      <VIcon
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
-        small
-        @click="handleContentDuplicateClick"
-        >mdi-content-copy</VIcon
-      >
-      <VIcon
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
-        small
-        @click="handleDownloadClick"
-        >mdi-download</VIcon
-      >
-      <VIcon color="#2196f3" small @click="handleDeleteClick" :class="getDeleteButtonClasses"
-        >mdi-delete</VIcon
-      >
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            small
+            @click="handleScheduleClick"
+            >mdi-calendar-clock</VIcon
+          >
+        </template>
+        <span>Schedule Report</span>
+      </VTooltip>
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            small
+            :class="getEditButtonClasses"
+            @click="handleEditClick"
+            >mdi-pencil</VIcon
+          >
+        </template>
+        <span>{{ card.isEditable ? 'Edit' : 'You are not authorized to edit this template' }}</span>
+      </VTooltip>
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            small
+            @click="handleContentDuplicateClick"
+            >mdi-content-copy</VIcon
+          >
+        </template>
+        <span>Duplicate</span>
+      </VTooltip>
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            small
+            @click="handleDownloadClick"
+            >mdi-download</VIcon
+          >
+        </template>
+        <span>Download Report</span>
+      </VTooltip>
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            small
+            @click="handleDeleteClick"
+            :class="getDeleteButtonClasses"
+            >mdi-delete</VIcon
+          >
+        </template>
+        <span>{{
+          card.isDeletable ? 'Delete' : 'You are not authorized to delete this template'
+        }}</span>
+      </VTooltip>
     </div>
   </div>
 </template>
@@ -56,10 +96,14 @@ export default {
   },
   computed: {
     getEditButtonClasses() {
-      return ['executive-reports-card__right-btn']
+      const classes = ['executive-reports-card__right-btn']
+      if (!this.card.isEditable) classes.push('executive-reports-card__right-btn--disabled')
+      return classes
     },
     getDeleteButtonClasses() {
-      return ['executive-reports-card__right-btn']
+      const classes = ['executive-reports-card__right-btn']
+      if (!this.card.isDeletable) classes.push('executive-reports-card__right-btn--disabled')
+      return classes
     }
   },
   methods: {

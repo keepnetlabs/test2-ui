@@ -99,22 +99,10 @@ export default {
               key: 'VishingCampaignTrends'
             },
             {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
-            },
-            {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'VishingMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -122,28 +110,16 @@ export default {
           name: 'Quishing Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Quishing Campaign Trends',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
+              key: 'QuishingCampaignTrends'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'QuishingMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -151,28 +127,16 @@ export default {
           name: 'Callback Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Callback Campaign Trends',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
+              key: 'CallbackCampaignTrends'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'CallbackMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -180,28 +144,16 @@ export default {
           name: 'Smishing Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Smishing Campaign Trends',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
+              key: 'SmishingCampaignTrends'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'SmishingMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -209,28 +161,16 @@ export default {
           name: 'Phishing Reporter Metrics',
           charts: [
             {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Phishing Reporter Trends',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
+              key: 'PhishingReporterTrends'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'PhishingReporterMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -239,27 +179,21 @@ export default {
           charts: [
             {
               name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              src: '/phishing-campaign-trends.svg',
               chartType: 'line',
-              key: 'PhishingCampaignTrends'
+              key: 'IncidentResponderPhishingCampaignTrends'
             },
             {
               name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
+              src: '/reported-email-trends.svg',
+              key: 'IncidentResponderReportedEmailTrends',
               chartType: 'stackedBar'
             },
             {
               name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
+              src: '/training-completion.svg',
+              key: 'IncidentResponderMostEngagedCampaigns',
               chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
@@ -267,59 +201,16 @@ export default {
           name: 'Risk Score Trend',
           charts: [
             {
-              name: 'Risk Score',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+              name: 'Company Risk Score',
+              src: '/company-risk-score.svg',
               chartType: 'gauge',
               key: 'RiskScore'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
-            },
-            {
-              name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
-              chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
             }
           ]
         },
         {
           name: 'Other',
-          charts: [
-            {
-              name: 'Phishing Campaign Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              chartType: 'line',
-              key: 'PhishingCampaignTrends'
-            },
-            {
-              name: 'Reported Email Trends',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
-            },
-            {
-              name: 'Most Engaged Campaigns',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'MostEngagedCampaigns',
-              chartType: 'doughnut'
-            },
-            {
-              name: 'Recently Posted Threats',
-              src: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-              key: 'RecentlyPostedThreats',
-              chartType: 'bar'
-            }
-          ]
+          charts: []
         }
       ],
       removedCards: {}
