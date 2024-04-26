@@ -31,9 +31,7 @@
           >
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
-              <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
-              />
+              <CampaignManagerTargetGroupsAndUserSummaryInfo :items="getTargetGroupItems" />
             </div>
             <AlertBox
               v-if="canRenderAlertbox"
@@ -241,6 +239,9 @@ export default {
     }
   },
   computed: {
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.selectedTargetGroups) {
@@ -256,19 +257,21 @@ export default {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unverifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unverifiedUserCount
+      }, 0)
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      const totalActiveUsersCount =
-        userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      return totalActiveUsersCount
+      return userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const verifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+        return acc + verifiedUserCount
+      }, 0)
     },
     getEnrollmentTemplate() {
       return this.formData?.enrollmentData?.template || ''

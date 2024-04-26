@@ -317,7 +317,10 @@
                     <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
                   </div>
                   <div v-if="isShowTargetUserDetail">
-                    <CampaignManagerTargetGroupsAndUserSummaryInfo :items="selectedTargetGroups" />
+                    <CampaignManagerTargetGroupsAndUserSummaryInfo
+                      :items="getTargetGroupItems"
+                      isPhoneNumber
+                    />
                   </div>
                 </template>
               </CampaignManagerSummaryCard>
@@ -499,6 +502,9 @@ export default {
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
       if (Object.keys(this.formValues)?.length && this.formValues.targetGroupResourceIds) {
@@ -510,11 +516,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      return (
-        this.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getSendCallsText() {
       return `${this.getTotalActiveUsersWithPhoneNumber} user${
