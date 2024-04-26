@@ -105,7 +105,7 @@
         >
       </div>
     </div>
-    <div id="executive-report-new-card-container" style="padding: 4px;">
+    <div id="executive-report-new-card-container" style="padding: 4px; width: 1088px !important;">
       <div class="executive-report-new-card__body">
         <div v-if="!isPreview" class="executive-report-new-card__body-new">
           <div>
@@ -922,7 +922,7 @@ export default {
         margin: {
           top: 24,
           right: 24,
-          bottom: 310,
+          bottom: 32,
           left: 24
         },
         imageType: 'image/jpeg',
