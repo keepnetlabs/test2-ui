@@ -293,12 +293,14 @@
   background-color: #ffffff;
   padding: 16px;
   height: 100%;
+  box-shadow: unset !important;
 }
 .executive-widget-header{
   display: flex;
   z-index: 99;
   justify-content: space-between;
   align-items: center;
+  box-shadow: unset !important;
   &__left{
     display: flex;
     flex-direction: column;
@@ -329,11 +331,16 @@
 .executive-widget-body{
   height: 100%;
   position: relative;
-
+  box-shadow: unset !important;
   >div {
     height: 88%;
     position: relative;
+    box-shadow: unset !important;
   }
+}
+.executive-report-grid .smartwidget{
+  box-shadow: unset !important;
+
 }
 .executive-widget-body-x-axis{
   text-align: center;
