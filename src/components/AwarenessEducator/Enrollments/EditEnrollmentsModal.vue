@@ -40,7 +40,7 @@
               <span>Schedule to:</span>
               <div :class="['ml-3', !isDateValid && 'date-picker-error mb-n3']">
                 <InputDate
-                  v-model="formData.scheduleDate"
+                  v-model="formData.enrollmentScheduler.scheduledDate"
                   class="date-picker-height-40 black-placeholder"
                   type="datetime"
                   ref="refPicker"
@@ -66,7 +66,7 @@
               <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
               <div :class="[!isTimezoneValid && 'date-picker-error mb-n3']">
                 <InputTimezone
-                  v-model="formData.scheduledDateTimeZoneId"
+                  v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
                   class="black-placeholder"
                   :rules="[(v) => Validations.required(v)]"
                 />
@@ -354,8 +354,11 @@ export default {
           occurrenceCount: 1,
           stopTime: ''
         },
-        scheduleDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        scheduledDateTimeZoneId: ''
+        enrollmentScheduler: {
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: false
+        }
       },
       periodTypeItems: [
         { text: 'days', value: 'Day' },
@@ -411,14 +414,17 @@ export default {
       return this.getDistributionEmailOverTimeTypes()
     },
     isDateValid() {
-      return this.selectedRow?.status === 'Scheduled' && !!this.formData?.scheduleDate
+      return (
+        this.selectedRow?.status === 'Scheduled' &&
+        !!this.formData?.enrollmentScheduler?.scheduledDate
+      )
     }
   },
   watch: {
     selectedTimeZone: {
-      immediate: true,
       handler(val) {
-        if (val) this.formData.scheduledDateTimeZoneId = val
+        if (val && !this.formData.enrollmentScheduler.scheduledTimeZoneId)
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = val
       }
     },
     timezoneFormat: {
@@ -430,13 +436,13 @@ export default {
         }
       }
     },
-    'formData.scheduledDateTimeZoneId': {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          getTimeByTimeZone(val).then((res) => {
+    'formData.enrollmentScheduler.scheduledTimeZoneId': {
+      handler(newVal, oldVal) {
+        if (!!oldVal && !!newVal) {
+          this.formData.enrollmentScheduler.useOwnTimeZone = false
+          getTimeByTimeZone(newVal).then((res) => {
             if (res?.data?.data) {
-              this.formData.scheduleDate = res.data.data
+              this.formData.enrollmentScheduler.scheduledDate = res.data.data
             }
           })
         }
@@ -450,8 +456,16 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data || {}
+          const { enrollmentReminder, enrollmentAutoEnroll, enrollmentScheduler } =
+            response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
+          if (this.selectedRow?.status === 'Scheduled') {
+            this.formData.enrollmentScheduler = { ...enrollmentScheduler } || {
+              scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+              scheduledTimeZoneId: '',
+              useOwnTimeZone: false
+            }
+          }
           if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
@@ -526,7 +540,7 @@ export default {
         const payload = JSON.parse(JSON.stringify(this.formData))
         if (this.selectedRow.status !== 'Scheduled') {
           delete payload['scheduleDate']
-          delete payload['scheduledDateTimeZoneId']
+          delete payload['scheduledTimeZoneId']
         }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
