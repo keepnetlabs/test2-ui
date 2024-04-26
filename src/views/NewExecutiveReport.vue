@@ -9,11 +9,11 @@
         hide-details
         prepend-inner-icon="mdi-magnify"
         placeholder="Search"
-        @input="handleDebouncedSearch"
+        @input="handleSearch"
       />
       <div class="executive-report-search-card-container mt-4">
         <ExecutiveReportSearchCard
-          v-for="card in cards"
+          v-for="card in getCards"
           :key="card.name"
           :card="card"
           @on-add-chart="handleSearchAdd"
@@ -216,8 +216,15 @@ export default {
       removedCards: {}
     }
   },
+  computed: {
+    getCards() {
+      return this.search
+        ? this.cards.filter((card) => card.name.toLowerCase().includes(this.search.toLowerCase()))
+        : this.cards
+    }
+  },
   methods: {
-    handleDebouncedSearch(value) {},
+    handleSearch(value) {},
     handleSearchAdd(chart) {
       this.$refs.refCharts.addWidget(chart)
     }
