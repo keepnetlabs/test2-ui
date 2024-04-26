@@ -48,7 +48,8 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
+                :items="getTargetGroupItems"
+                isPhoneNumber
               />
             </div>
             <AlertBox
@@ -248,6 +249,9 @@ export default {
     }
   },
   computed: {
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     isRenderTrainingCard() {
       return this.trainingParams
     },
@@ -312,11 +316,12 @@ export default {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unverifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unverifiedUserCount
+      }, 0)
     },
     isFormData() {
       return Object.keys(this.formData).length
@@ -370,11 +375,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -385,11 +390,11 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return (
-        userCountDetailResponse?.data.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      )
+      return userCountDetailResponse?.data.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const activeUserCount = row?.domainAllowList?.find((r) => r.status === 'Verified')?.count
+        return acc + activeUserCount
+      }, 0)
     },
     getSettingsItems() {
       const { selectedSchedule, sendingLimit, selectedEmailDelivery } = this.formData
@@ -467,7 +472,9 @@ export default {
               difficulty: difficulties[difficultyTypeId - 1]?.text || ''
             }
           }
-          this.callbackTemplate.template.invalidDialingNotice = { ...callbackTemplate.steps[0] }
+          this.callbackTemplate.template.invalidDialingNotice = {
+            ...callbackTemplate.steps[0]
+          }
           this.callbackTemplate.template.callGreeting = { ...callbackTemplate.steps[1] }
           this.callbackTemplate.template.steps.splice(0, 2)
         })

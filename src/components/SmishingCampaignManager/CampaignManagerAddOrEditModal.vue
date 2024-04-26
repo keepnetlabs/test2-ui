@@ -543,10 +543,15 @@ export default {
             this.userCountDetailResponse?.data?.data &&
             this.userCountDetailResponse?.data?.data?.length
           ) {
-            this.totalTargetUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((detail) => detail.status === 'Active')
-                ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
+            this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const phoneNumberCount =
+                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+                return acc + phoneNumberCount
+              },
+              0
+            )
             if (!this.totalTargetUserCount) {
               refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
               refCampaignManagerTargetAudience.isTargetGroupsValid = false
