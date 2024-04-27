@@ -105,7 +105,7 @@
         >
       </div>
     </div>
-    <div id="executive-report-new-card-container" style="padding: 4px; width: 1088px !important;">
+    <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
       <div class="executive-report-new-card__body">
         <div v-if="!isPreview" class="executive-report-new-card__body-new">
           <div>
@@ -275,7 +275,6 @@ export default {
     }
   },
   data() {
-    console.log('isPreview', this.isPreview)
     return {
       activeBreakpoint: 'lg',
       layout: [],
@@ -283,10 +282,12 @@ export default {
       colNum: 12,
       newItemY: 0,
       editMode: !this.isPreview,
+      isPdfDownload: false,
       parsedFormat: getTimeZone(false),
       parsedFormatWithoutTime: getTimeZone(true),
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
+      isShowReprt: false,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -811,6 +812,14 @@ export default {
     }
   },
   computed: {
+    getDownloadPdfStyle() {
+      return this.isPdfDownload
+        ? {
+            padding: '4px',
+            width: '1088px'
+          }
+        : null
+    },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn ml-2']
       if (!this.formData.executiveReportName || !this.layout.length)
@@ -912,22 +921,27 @@ export default {
       saveExecutiveReport(this.layout)
     },
     async handleDownloadClick() {
-      let page = document.querySelector('#executive-report-new-card-container')
-      console.log('page', page)
-      const pdf = await html2PDF(page, {
-        jsPDF: {
-          format: 'a4'
-        },
-        html2canvas: {},
-        margin: {
-          top: 24,
-          right: 24,
-          bottom: 32,
-          left: 24
-        },
-        imageType: 'image/jpeg',
-        output: './pdf/generate.pdf',
-        autoResize: true
+      this.isPdfDownload = true
+      this.$nextTick(async () => {
+        setTimeout(async () => {
+          let page = document.querySelector('#executive-report-new-card-container')
+          const pdf = await html2PDF(page, {
+            jsPDF: {
+              format: 'a4'
+            },
+            html2canvas: {},
+            margin: {
+              top: 24,
+              right: 24,
+              bottom: 32,
+              left: 24
+            },
+            imageType: 'image/jpeg',
+            output: './pdf/generate.pdf',
+            autoResize: true
+          })
+          this.isPdfDownload = false
+        }, 1000)
       })
     },
     handleCancelClick() {
