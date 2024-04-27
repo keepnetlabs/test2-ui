@@ -47,7 +47,7 @@
           DATE RANGE
         </VBtn>
         <VBtn
-          class="training-library-card__footer-btn ml-2"
+          class="training-library-card__footer-btn"
           color="#fff"
           rounded
           :ripple="false"
@@ -821,7 +821,7 @@ export default {
         : null
     },
     getSaveButtonClasses() {
-      let classes = ['training-library-new-btn ml-2']
+      let classes = ['training-library-new-btn']
       if (!this.formData.executiveReportName || !this.layout.length)
         classes.push('new-executive-report-button-disabled')
       return classes

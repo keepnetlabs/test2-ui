@@ -74,6 +74,16 @@
   &__header{
     display: flex;
     justify-content: space-between;
+    &-left{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    &-right{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
   }
   &__body{
     &-new{
@@ -184,7 +194,6 @@
     &-chart{
       border: 1px solid #E0E0E0;
       border-radius: 8px;
-      height: 126px;
       padding:8px;
       margin-bottom: 8px;
       &:last-child{
@@ -194,6 +203,9 @@
         height: 83px;
         object-fit: contain;
         width: 100%;
+        @media (max-width: 1279px){
+          height: auto;
+        }
       }
       &-title{
         font-size: 12px;

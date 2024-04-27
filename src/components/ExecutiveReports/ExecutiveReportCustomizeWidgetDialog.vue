@@ -259,6 +259,10 @@ export default {
     isNew: {
       type: Boolean,
       default: false
+    },
+    defaultDateRange: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -331,8 +335,11 @@ export default {
         targetGroups: '',
         title: '',
         chartType: '',
-        startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-        endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        startDate:
+          this.defaultDateRange[0] ||
+          this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+        endDate:
+          this.defaultDateRange[1] || this.$moment(Date.now()).format(getTimeZoneForMoment()),
         dateInterval: 'month'
       },
       startDatePickerOptions: {

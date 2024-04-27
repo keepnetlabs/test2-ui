@@ -17,11 +17,13 @@
         class="executive-report-search-card__content-chart cursor-pointer"
         @click="handleAddChart(chart, card.charts, index)"
       >
-        <img
-          class="executive-report-search-card__content-chart-image"
-          :src="chart.src"
-          alt="chart"
-        />
+        <div>
+          <img
+            class="executive-report-search-card__content-chart-image"
+            :src="chart.src"
+            alt="chart"
+          />
+        </div>
         <div class="executive-report-search-card__content-chart-title">{{ chart.name }}</div>
       </div>
     </div>
