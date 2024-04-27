@@ -218,9 +218,17 @@ export default {
   },
   computed: {
     getCards() {
-      return this.search
-        ? this.cards.filter((card) => card.name.toLowerCase().includes(this.search.toLowerCase()))
-        : this.cards
+      return this.search ? this.filteredCards : this.cards
+    },
+    filteredCards() {
+      let copyOfCards = JSON.parse(JSON.stringify(this.cards))
+      return copyOfCards.filter((card) => {
+        card.charts = card.charts.filter((chart) => {
+          const isChartNameIncludes = chart.name.toLowerCase().includes(this.search.toLowerCase())
+          if (isChartNameIncludes) return chart
+        })
+        return card.charts.length ? card : null
+      })
     }
   },
   methods: {
