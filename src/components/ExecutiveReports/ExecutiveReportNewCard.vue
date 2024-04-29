@@ -11,6 +11,7 @@
       v-if="isShowCustomizeWidgetDialog"
       :status="isShowCustomizeWidgetDialog"
       :selected-row="selectedRow"
+      :default-date-range="formData.executiveReportDateRange"
       @on-close="toggleShowCustomizeWidgetDialog"
     />
     <div class="executive-report-new-card__header">
