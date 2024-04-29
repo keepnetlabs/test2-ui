@@ -63,6 +63,18 @@ export default {
               src: '/recently-posted-threats.svg',
               key: 'RecentlyPostedThreats',
               chartType: 'bar'
+            },
+            {
+              name: 'Consolidated Phishing Simulation Metrics',
+              src: '/recently-posted-threats.svg',
+              key: 'ConsolidatedPhishingSimulationMetrics',
+              chartType: 'bar'
+            },
+            {
+              name: 'Count Of Phished Campaigns',
+              src: '/count-of-phished-campaigns.svg',
+              key: 'CountOfPhishedCampaigns',
+              chartType: 'area'
             }
           ]
         },

@@ -240,6 +240,7 @@ import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
 import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
+import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 
 export default {
   name: 'ExecutiveReportNewCard',
@@ -419,6 +420,48 @@ export default {
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'bar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        ConsolidatedPhishingSimulationMetrics: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Consolidated PhishingSimulation Metrics',
+          key: 'ConsolidatedPhishingSimulationMetrics',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'bar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        CountOfPhishedCampaigns: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Count Of Phished Campaigns',
+          key: 'CountOfPhishedCampaigns',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'area',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -965,6 +1008,8 @@ export default {
     },
     getComponent(componentString) {
       switch (componentString) {
+        case 'ConsolidatedPhishingSimulationMetrics':
+          return ExecutiveReportsConsolidatedPhishingSimulation
         default:
           return ExecutiveReportsWidget
       }
