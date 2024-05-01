@@ -164,6 +164,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
       SmishingService.searchCampaignJobType(
         'clicked',
         this.axiosPayload,
