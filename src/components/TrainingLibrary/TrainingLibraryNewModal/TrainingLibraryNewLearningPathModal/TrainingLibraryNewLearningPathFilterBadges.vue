@@ -4,7 +4,7 @@
     <div class="training-library-filters-badges mt-0">
       <div class="training-library-filters-badges__left-side">
         <div class="training-library-filters-badges__container">
-          <TrainingLibraryFilterBadge
+          <TrainingLibraryLearningPathFilterBadge
             v-for="(filter, filterIndex) in getFilters"
             isLearningPathModal
             :key="filterIndex"
@@ -29,11 +29,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibraryFilterBadge from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilterBadge'
+import TrainingLibraryLearningPathFilterBadge from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryLearningPathFilterBadge'
 
 export default {
   name: 'TrainingLibraryNewLearningPathFilterBadges',
-  components: { TrainingLibraryFilterBadge },
+  components: { TrainingLibraryLearningPathFilterBadge },
   computed: {
     ...mapGetters({
       // filterType: 'learningPath/getLearningPathFilterType',
