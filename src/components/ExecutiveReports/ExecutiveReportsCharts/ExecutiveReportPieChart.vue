@@ -4,6 +4,7 @@
 <script>
 import PieChart from '@/components/Common/Charts/Pie.vue'
 import labels from '@/model/constants/labels'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportPieChart',
   components: { PieChart },
@@ -11,6 +12,19 @@ export default {
     rawData: {
       type: Array,
       default: () => []
+    },
+    valueEnums: {
+      type: Array,
+      default: () => [
+        labels.NoResponse,
+        labels.ReportedAsSuspicious,
+        labels.OpenedEmail,
+        labels.ClickedThePhishingLink,
+        labels.OpenedAttachment,
+        labels.SubmittedData,
+        labels.SubmittedMFACode,
+        labels.EmailFailedToSend
+      ]
     }
   },
   data() {
@@ -45,8 +59,8 @@ export default {
               const { data } = chart
               return data.datasets[0].data.map((data, index) => {
                 return {
-                  text: `${this.chartOptions.labels[index]} (${data} users)`,
-                  fillStyle: this.chartOptions.backgroundColor[index],
+                  text: `${data.labels[index]} (${d} users)`,
+                  fillStyle: CHART_COLORS[data.labels[index]].backgroundColor,
                   lineWidth: 0,
                   datasetIndex: index
                 }
@@ -55,28 +69,15 @@ export default {
           }
         }
       }
+      console.log('this.valueENums', this.valueEnums)
+      let backgroundColor = []
+      this.valueEnums.forEach((data) => {
+        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+      })
       this.chartOptions = {
         ...chartOptions,
-        backgroundColor: [
-          '#217124',
-          '#43A047',
-          '#E6A23C',
-          '#FF4433',
-          '#913831',
-          '#A52A2A',
-          '#FF0000',
-          '#F56C6C'
-        ],
-        labels: [
-          labels.NoResponse,
-          labels.ReportedAsSuspicious,
-          labels.OpenedEmail,
-          labels.ClickedThePhishingLink,
-          labels.OpenedAttachment,
-          labels.SubmittedData,
-          labels.SubmittedMFACode,
-          labels.EmailFailedToSend
-        ],
+        backgroundColor,
+        labels: this.valueEnums,
         showTooltipLine: true
       }
       this.chartData = this.rawData

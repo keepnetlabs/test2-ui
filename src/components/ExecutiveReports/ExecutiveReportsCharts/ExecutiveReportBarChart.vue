@@ -3,7 +3,7 @@
 </template>
 <script>
 import BarChart from '@/components/Common/Charts/Bar.vue'
-import { STACKED_CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import { getDataTableFieldLabel } from '@/utils/functions'
 import useTimeUnitLabel from '@/hooks/executive-reports/useTimeUnitLabel'
 export default {
@@ -16,8 +16,8 @@ export default {
       default: 'month'
     },
     rawData: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -37,42 +37,9 @@ export default {
   },
   methods: {
     calculateData() {
-      const data = this.rawData
+      const data = this.rawData.datasets
+      const valueEnums = this.rawData.valueEnums
       if (data.length) {
-        let minDate = Date.now(),
-          maxDate = null,
-          minEmailCount = 0,
-          maxEmailCount = 0
-        let itemTypes = new Set()
-        const newData = data.map((row) => {
-          let { month, result, emailCount } = row
-          const splittedDate = month?.split('-')
-          const timeStampOfDate = new Date(splittedDate[0], splittedDate[1] - 1).getTime()
-          if (timeStampOfDate < minDate) {
-            minDate = timeStampOfDate
-          }
-          if (timeStampOfDate > maxDate) {
-            maxDate = timeStampOfDate
-          }
-          if (emailCount < minEmailCount) {
-            minEmailCount = emailCount
-          }
-          if (emailCount > maxEmailCount) {
-            maxEmailCount = emailCount
-          }
-          itemTypes.add(result)
-          return { x: timeStampOfDate, y: emailCount, result }
-        })
-        if (maxEmailCount) {
-          const remainder = Math.floor(maxEmailCount / 50)
-          if (!remainder) {
-            maxEmailCount = 50
-          } else {
-            maxEmailCount = remainder * 50 + 50
-          }
-        } else {
-          maxEmailCount += 10 - (maxEmailCount % 10)
-        }
         this.chartOptions = {
           // Look at this bit
           barPercentage: 0.8,
@@ -117,9 +84,7 @@ export default {
                 },
                 ticks: {
                   fontColor: 'rgba(176, 186, 201)',
-                  lineHeight: 1.58,
-                  min: minDate,
-                  max: maxDate
+                  lineHeight: 1.58
                 }
               }
             ],
@@ -136,15 +101,11 @@ export default {
                   borderDash: [3]
                 },
                 ticks: {
-                  min: minEmailCount,
-                  max: maxEmailCount,
                   labelOffset: 0,
                   beginAtZero: true,
                   padding: -2,
                   fontColor: 'rgba(176, 186, 201)',
-                  lineHeight: 1.58,
-                  maxTicksLimit: 6,
-                  stepSize: maxEmailCount / 5
+                  lineHeight: 1.58
                 }
               }
             ]
@@ -177,16 +138,12 @@ export default {
             }
           }
         }
-        itemTypes = [...itemTypes]
         const datasets = []
-        const colors = {
-          'Opened Attachment': STACKED_CHART_COLORS['Opened Attachment']
-        }
-        for (let itemType of itemTypes) {
+        for (let itemType of valueEnums) {
           datasets.push({
             label: getDataTableFieldLabel(itemType),
-            ...colors[itemType],
-            data: newData.filter((item) => item.result === itemType),
+            ...CHART_COLORS[itemType],
+            data: this.rawData.datasets.filter((item) => item.result === itemType),
             barThickness: 32
           })
         }

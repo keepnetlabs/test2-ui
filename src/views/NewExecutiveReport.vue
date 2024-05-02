@@ -41,16 +41,22 @@ export default {
           name: 'Phishing Metrics',
           charts: [
             {
+              name: 'Phishing Overview',
+              src: '/phishing-overview.svg',
+              chartType: 'line',
+              key: 'PhishingOverview'
+            },
+            {
               name: 'Phishing Campaign Trends',
               src: '/phishing-campaign-trends.svg',
-              chartType: 'line',
+              chartType: 'stackedBar',
               key: 'PhishingCampaignTrends'
             },
             {
-              name: 'Reported Email Trends',
-              src: '/reported-email-trends.svg',
-              key: 'ReportedEmailTrends',
-              chartType: 'stackedBar'
+              name: 'Reported Email Threats (Phishing)',
+              src: '/reported-email-threats.svg',
+              key: 'ReportedEmailThreats(Phishing)',
+              chartType: 'bar'
             },
             {
               name: 'Most Engaged Campaigns',

@@ -189,7 +189,7 @@ export default {
     hasData() {
       if (this.card.chartType === 'gauge') return this.gaugeChartData
       else if (['doughnut', 'pie'].includes(this.card.chartType)) return this.pieChartData
-      return this.chartData.length
+      return this?.chartData?.datasets?.length
     }
   },
   created() {

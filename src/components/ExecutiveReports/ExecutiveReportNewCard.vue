@@ -267,6 +267,10 @@ export default {
     editData: {
       type: Object,
       default: () => ({})
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -340,6 +344,27 @@ export default {
       },
       selectedRow: {},
       allWidgets: {
+        PhishingOverview: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Overview',
+          key: 'PhishingOverview',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'line',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         PhishingCampaignTrends: {
           x: 0,
           y: 0,
@@ -356,12 +381,12 @@ export default {
           key: 'PhishingCampaignTrends',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'line',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        ReportedEmailTrends: {
+        'ReportedEmailThreats(Phishing)': {
           x: 0,
           y: 0,
           w: 12,
@@ -373,11 +398,11 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Reported Email Trends',
-          key: 'ReportedEmailTrends',
+          title: 'Reported Email Threats (Phishing)',
+          key: 'ReportedEmailThreats(Phishing)',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
+          chartType: 'bar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -976,7 +1001,12 @@ export default {
     addWidget(widget) {
       this.removeAvailableWidget(widget)
       let newItem
-      const widgetObj = { ...this.allWidgets[widget.key], i: createRandomCryptStringNumber() }
+      const widgetObj = {
+        ...this.allWidgets[widget.key],
+        i: createRandomCryptStringNumber(),
+        startDate: this.formData.executiveReportDateRange[0],
+        endDate: this.formData.executiveReportDateRange[1]
+      }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
       } else if (window.innerWidth < 900) {

@@ -20,10 +20,10 @@ const getExecutiveReports = () => {
   return Promise.resolve({
     data: {
       data: [
-        { name: 'Executive Summary Report' },
-        { name: 'CISO Report' },
-        { name: 'Team Manager Report' },
-        { name: 'SOC Summary Report' }
+        { name: 'Executive Summary Report', isEditable: false, isDeletable: false },
+        { name: 'CISO Report', isEditable: false, isDeletable: true },
+        { name: 'Team Manager Report', isEditable: true, isDeletable: true },
+        { name: 'SOC Summary Report', isEditable: true, isDeletable: false }
       ]
     }
   })
@@ -31,53 +31,56 @@ const getExecutiveReports = () => {
 export const getExecutiveReportChartData = (resourceId) => {
   return Promise.resolve({
     data: {
-      data: [
-        {
-          month: '2023-11',
-          result: 'Opened Attachment',
-          emailCount: 58
-        },
-        {
-          month: '2023-11',
-          result: 'Submitted',
-          emailCount: 28
-        },
-        {
-          month: '2023-11',
-          result: 'Clicked',
-          emailCount: 3
-        },
-        {
-          month: '2023-12',
-          result: 'Opened Attachment',
-          emailCount: 18
-        },
-        {
-          month: '2023-12',
-          result: 'Submitted',
-          emailCount: 4
-        },
-        {
-          month: '2023-12',
-          result: 'Clicked',
-          emailCount: 9
-        },
-        {
-          month: '2024-01',
-          result: 'Opened Attachment',
-          emailCount: 62
-        },
-        {
-          month: '2024-01',
-          result: 'Submitted',
-          emailCount: 71
-        },
-        {
-          month: '2024-01',
-          result: 'Clicked',
-          emailCount: 0
-        }
-      ]
+      data: {
+        datasets: [
+          {
+            x: 1698786000000,
+            y: 58,
+            result: 'Open Attachment'
+          },
+          {
+            x: 1698786000000,
+            y: 28,
+            result: 'Submitted Data'
+          },
+          {
+            x: 1698786000000,
+            y: 3,
+            result: 'Clicked'
+          },
+          {
+            x: 1701378000000,
+            y: 18,
+            result: 'Open Attachment'
+          },
+          {
+            x: 1701378000000,
+            y: 4,
+            result: 'Submitted Data'
+          },
+          {
+            x: 1701378000000,
+            y: 9,
+            result: 'Clicked'
+          },
+          {
+            x: 1704056400000,
+            y: 62,
+            result: 'Open Attachment'
+          },
+          {
+            x: 1704056400000,
+            y: 71,
+            result: 'Submitted Data'
+          },
+          {
+            x: 1704056400000,
+            y: 0,
+            result: 'Clicked'
+          }
+        ],
+        valueEnums: ['Open Attachment', 'Submitted Data', 'Clicked']
+      }
     }
   })
 }
