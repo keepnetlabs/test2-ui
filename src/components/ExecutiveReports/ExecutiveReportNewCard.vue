@@ -1012,16 +1012,13 @@ export default {
               pdf.save(this.output)
             },
             watermark: ({ pdf, pageNumber, totalPageNumber }) => {
-              // pdf: jsPDF instance
               const lastY = this.layout[this.layout.length - 1].y
               if (lastY % 18 === 0) pdf.deletePage(totalPageNumber)
               pdf.setTextColor('#383B41')
               pdf.setFontSize(8)
-              pdf.text(
-                'Powered By Keepnet',
-                pdf.internal.pageSize.width / 2 - 40,
-                pdf.internal.pageSize.height - 16
-              )
+              const width = pdf?.internal?.pageSize?.width || 297
+              const height = pdf?.internal?.pageSize?.height || 841
+              pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
             },
             margin: {
               top: 24,
@@ -1036,7 +1033,7 @@ export default {
           })
           this.isPdfDownload = false
           this.activatePreview = false
-        }, 1000)
+        }, 500)
       })
     },
     handleCancelClick() {
