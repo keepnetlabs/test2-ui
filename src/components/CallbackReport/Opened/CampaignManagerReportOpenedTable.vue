@@ -100,7 +100,6 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
           COLUMNS.TIMES_OPENED,
           Object.assign({}, COLUMNS.ACTIVITY_TYPE)
@@ -157,6 +156,10 @@ export default {
     }
   },
   methods: {
+    getScope(scope) {
+      console.log('scope', scope)
+      return scope
+    },
     callForData() {
       this.setLoading(true)
       if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
