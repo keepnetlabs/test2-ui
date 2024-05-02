@@ -156,10 +156,6 @@ export default {
     }
   },
   methods: {
-    getScope(scope) {
-      console.log('scope', scope)
-      return scope
-    },
     callForData() {
       this.setLoading(true)
       if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
