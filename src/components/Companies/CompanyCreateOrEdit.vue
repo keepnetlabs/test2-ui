@@ -849,7 +849,9 @@ export default {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
-    this.getAvailableCallbackNumbers()
+    if (this.selectedExtend.licenseModules.includes('AYAPp3vt3SvS')) {
+      this.getAvailableCallbackNumbers()
+    }
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
