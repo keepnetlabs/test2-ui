@@ -120,8 +120,8 @@ export default {
       default: true
     },
     dateRange: {
-      type: Object,
-      default: () => ({})
+      type: Array,
+      default: () => []
     }
   },
   data() {

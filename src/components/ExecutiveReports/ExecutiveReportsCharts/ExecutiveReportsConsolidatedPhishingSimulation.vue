@@ -207,6 +207,12 @@ export default {
           }
         }
       }
+    },
+    handleDelete() {
+      this.$emit('on-delete', this.card)
+    },
+    handleEdit() {
+      this.$emit('on-edit', this.card)
     }
   }
 }

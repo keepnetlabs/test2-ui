@@ -4,7 +4,7 @@
       v-if="isShowScheduleReportDialog"
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
-      :is-new="!isPreview"
+      :is-new="!isShowPreview"
       @on-close="toggleShowScheduleReportDialog"
     />
     <ExecutiveReportCustomizeWidgetDialog
@@ -17,7 +17,7 @@
     <div class="executive-report-new-card__header">
       <div class="executive-report-new-card__header-left">
         <VBtn
-          v-if="isPreview"
+          v-if="isShowPreview"
           id="btn-back--campaign-manager-clustered-table"
           text
           color="#2196f3"
@@ -89,7 +89,7 @@
           </VBtn>
         </template>
         <VIcon
-          v-if="isPreview && !editMode"
+          v-if="isShowPreview && !editMode"
           color="#2196f3"
           class="executive-reports-card__right-btn mr-2"
           small
@@ -97,7 +97,7 @@
           >mdi-pencil</VIcon
         >
         <VIcon
-          v-if="isPreview && !editMode"
+          v-if="isShowPreview && !editMode"
           color="#2196f3"
           class="executive-reports-card__right-btn"
           small
@@ -108,7 +108,7 @@
     </div>
     <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
       <div class="executive-report-new-card__body">
-        <div v-if="!isPreview" class="executive-report-new-card__body-new">
+        <div v-if="!isShowPreview" class="executive-report-new-card__body-new">
           <div>
             <div>
               <VTextField
@@ -180,14 +180,14 @@
         <div v-else class="executive-report-new-card__body-preview">
           <div class="d-flex flex-column">
             <div class="executive-report-new-card__body-preview-name">
-              {{ editData.name }}
+              {{ editData.name || formData.executiveReportName }}
             </div>
             <div>
               <span class="executive-report-new-card__body-preview-text"
-                >Created on {{ editData.date }}
+                >Created on {{ editData.date || formData.executiveReportDate }}
               </span>
               <span class="executive-report-new-card__body-preview-text">
-                by {{ editData.companyName }}</span
+                by {{ editData.companyName || formData.executiveReportCompanyName }}</span
               >
             </div>
           </div>
@@ -197,7 +197,7 @@
             alt="Logo"
           />
         </div>
-        <div v-if="!isPreview && !layout.length" class="executive-report-new-card__empty">
+        <div v-if="!isShowPreview && !layout.length" class="executive-report-new-card__empty">
           Choose items from left side
         </div>
         <k-smart-grid
@@ -205,24 +205,34 @@
           ref="refGrid"
           :layout="layout"
           :col-num="colNum"
-          :is-static="!editMode"
+          :is-static="isShowPreview ? isShowPreview : !editMode"
           :row-height="50"
           @breakpointChanged="breakpointChanged"
           @layout-updated="layoutUpdated"
           @layout-mounted="layoutMounted"
         >
-          <component
-            :id="item.key"
-            :is="getComponent(item.key)"
-            :resizable="false"
-            :edit-mode="editMode"
-            :card="item"
-            :date-range="formData.executiveReportDateRange"
-            @on-delete="deleteWidget(item, index)"
-            @on-edit="toggleShowCustomizeWidgetDialog"
-          />
-        </smart-widget>
-      </k-smart-grid>
+          <smart-widget
+            v-for="(item, index) in layout"
+            :key="item.i + index"
+            :slot="item.i"
+            :padding="[0, 0]"
+            :ref="`ref${item.i}`"
+            :shadow="'never'"
+            :simple="true"
+          >
+            <component
+              :id="item.key"
+              :is="getComponent(item.key)"
+              :resizable="false"
+              :edit-mode="!isShowPreview && editMode"
+              :card="item"
+              :date-range="formData.executiveReportDateRange"
+              @on-delete="deleteWidget(item, index)"
+              @on-edit="toggleShowCustomizeWidgetDialog"
+            />
+          </smart-widget>
+        </k-smart-grid>
+      </div>
     </div>
   </div>
 </template>
@@ -278,6 +288,7 @@ export default {
       initialLayout: [],
       colNum: 12,
       newItemY: 0,
+      activatePreview: this.isPreview,
       editMode: !this.isPreview,
       isPdfDownload: false,
       parsedFormat: getTimeZone(false),
@@ -890,6 +901,9 @@ export default {
       let classes = ['training-library-new-btn ml-2']
       if (!this.formData.executiveReportName) classes.push('new-executive-report-button-disabled')
       return classes
+    },
+    isShowPreview() {
+      return this.isPreview || this.activatePreview
     }
   },
   watch: {
@@ -909,7 +923,7 @@ export default {
       }, 0)
 
        */
-      if (this.isEdit || this.isPreview) {
+      if (this.isEdit || this.activatePreview) {
         const report = await getExecutiveReport()
         this.layout = report.data.data
       }
@@ -963,7 +977,7 @@ export default {
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
-      this.selectedRow = this.isPreview ? this.editData : {}
+      this.selectedRow = this.activatePreview ? this.editData : {}
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
     },
     toggleShowCustomizeWidgetDialog(item) {
@@ -976,10 +990,14 @@ export default {
     handleExecutiveReportDateClick() {
       this.$refs.refInputExecutiveReportDate.showPicker()
     },
-    handlePreviewClick() {},
+    handlePreviewClick() {
+      this.activatePreview = true
+      this.handleDownloadClick()
+    },
     handleSaveReportClick() {
       saveExecutiveReport(this.layout)
     },
+
     async handleDownloadClick() {
       this.isPdfDownload = true
       this.$nextTick(async () => {
@@ -990,22 +1008,39 @@ export default {
               format: 'a4'
             },
             html2canvas: {},
+            success(pdf) {
+              pdf.save(this.output)
+            },
+            watermark: ({ pdf, pageNumber, totalPageNumber }) => {
+              // pdf: jsPDF instance
+              const lastY = this.layout[this.layout.length - 1].y
+              if (lastY % 18 === 0) pdf.deletePage(totalPageNumber)
+              pdf.setTextColor('#383B41')
+              pdf.setFontSize(8)
+              pdf.text(
+                'Powered By Keepnet',
+                pdf.internal.pageSize.width / 2 - 40,
+                pdf.internal.pageSize.height - 16
+              )
+            },
             margin: {
               top: 24,
               right: 24,
               bottom: 32,
               left: 24
             },
+
             imageType: 'image/jpeg',
-            output: './pdf/generate.pdf',
+            output: './pdf/executive-report.pdf',
             autoResize: true
           })
           this.isPdfDownload = false
+          this.activatePreview = false
         }, 1000)
       })
     },
     handleCancelClick() {
-      if (this.isPreview) this.editMode = false
+      if (this.activatePreview) this.editMode = false
       else this.routeToExecutiveReports()
     },
     handleLogoChange(file) {
