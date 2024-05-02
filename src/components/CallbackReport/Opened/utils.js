@@ -384,18 +384,6 @@ export const COLUMNS = {
     width: 225,
     filterableType: 'select'
   },
-  ACTIVITY_TYPE: {
-    property: 'activityType',
-    align: 'left',
-    label: `ActivityType`,
-    fixed: false,
-    sortable: true,
-    show: true,
-    type: 'text',
-    width: 225,
-    filterableType: 'select',
-    filterableItems: ['Human Activity', 'Sandbox Activity']
-  },
   LAST_CALLER_ID: {
     property: 'callbackNumber',
     align: 'left',
