@@ -21,6 +21,9 @@ export default {
     rawData: {
       type: Array,
       default: () => []
+    },
+    valueEnums: {
+      type: Object
     }
   },
   data() {
@@ -36,7 +39,6 @@ export default {
   methods: {
     calculateData() {
       this.chartData = {
-        labels: ['Click Only Campaigns'],
         datasets: [
           {
             label: 'Click Only Campaigns',

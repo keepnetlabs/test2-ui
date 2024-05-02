@@ -221,6 +221,7 @@
             :resizable="false"
             :edit-mode="editMode"
             :card="item"
+            :date-range="formData.executiveReportDateRange"
             @on-delete="deleteWidget(item, index)"
             @on-edit="toggleShowCustomizeWidgetDialog"
           />

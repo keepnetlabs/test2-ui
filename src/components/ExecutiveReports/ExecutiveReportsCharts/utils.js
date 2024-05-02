@@ -160,5 +160,37 @@ export const CHART_COLORS = {
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
+  },
+  'Click Only Campaigns': {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'Data Submission Campaigns': {
+    backgroundColor: 'blue',
+    borderColor: 'blue',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'MFA Campaigns': {
+    backgroundColor: 'red',
+    borderColor: 'red',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'Attachment Campaigns': {
+    backgroundColor: 'yellow',
+    borderColor: 'yellow',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
   }
 }

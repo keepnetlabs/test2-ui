@@ -118,6 +118,10 @@ export default {
     editMode: {
       type: Boolean,
       default: true
+    },
+    dateRange: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -190,6 +194,11 @@ export default {
       if (this.card.chartType === 'gauge') return this.gaugeChartData
       else if (['doughnut', 'pie'].includes(this.card.chartType)) return this.pieChartData
       return this?.chartData?.datasets?.length
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
