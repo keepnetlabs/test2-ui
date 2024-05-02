@@ -5,7 +5,11 @@
       <div class="executive-widget-header__left-text">{{ subtitle }}</div>
     </div>
     <div v-if="editMode" class="executive-widget-header__right">
-      <VIcon class="executive-widget-header__right-icon" color="#757575" @click="handleEdit"
+      <VIcon
+        v-if="false"
+        class="executive-widget-header__right-icon"
+        color="#757575"
+        @click="handleEdit"
         >mdi-cog</VIcon
       >
       <VIcon class="executive-widget-header__right-icon ml-2" color="#757575" @click="handleDelete"

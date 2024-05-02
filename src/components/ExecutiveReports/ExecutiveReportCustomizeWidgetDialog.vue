@@ -386,6 +386,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          console.log('data', data)
           if (this.formData.chartType === 'gauge') this.gaugeChartData = 45
           if (['doughnut', 'pie'].includes(this.formData.chartType)) this.pieChartData = [20, 30]
           this.chartData = data

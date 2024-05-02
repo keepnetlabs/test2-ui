@@ -119,6 +119,7 @@ export default {
       this.$emit('on-schedule', this.card)
     },
     handleEditClick() {
+      if (!this.card.isEditable) return false
       this.$router.push({
         name: 'Edit Executive Report',
         params: {
@@ -126,7 +127,14 @@ export default {
         }
       })
     },
-    handleContentDuplicateClick() {},
+    handleContentDuplicateClick() {
+      this.$router.push({
+        name: 'Duplicate Executive Report',
+        params: {
+          id: this.card.resourceId || 'gürkan'
+        }
+      })
+    },
     handleDownloadClick() {},
     handleDeleteClick() {
       this.$emit('on-delete', this.card)

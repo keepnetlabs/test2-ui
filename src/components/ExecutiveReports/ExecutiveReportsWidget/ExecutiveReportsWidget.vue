@@ -47,6 +47,7 @@
               :columns="executiveReportColumns"
               :data="executiveReportData"
             />
+            <ExecutiveReportsAreaChart v-else-if="card.chartType === 'area'" />
             <div v-if="card.chartType === 'gauge'">
               <div class="executive-report-gauge-value" style="margin-top: -14px;">
                 32
@@ -88,10 +89,12 @@ import ExecutiveReportTable from '@/components/ExecutiveReports/ExecutiveReportT
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getExecutiveReportChartData } from '@/api/reports'
+import ExecutiveReportsAreaChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsAreaChart.vue'
 
 export default {
   name: 'ExecutiveReportsWidget',
   components: {
+    ExecutiveReportsAreaChart,
     ExecutiveReportTable,
     ExecutiveReportPieChart,
     ExecutiveReportDoughnutChart,
@@ -115,6 +118,10 @@ export default {
     editMode: {
       type: Boolean,
       default: true
+    },
+    dateRange: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -186,7 +193,12 @@ export default {
     hasData() {
       if (this.card.chartType === 'gauge') return this.gaugeChartData
       else if (['doughnut', 'pie'].includes(this.card.chartType)) return this.pieChartData
-      return this.chartData.length
+      return this?.chartData?.datasets?.length
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
@@ -202,6 +214,7 @@ export default {
           } = response || {}
           if (this.card.chartType === 'gauge') this.gaugeChartData = 45
           if (['doughnut', 'pie'].includes(this.card.chartType)) this.pieChartData = [20, 30]
+          console.log('this.chartData', data)
           this.chartData = data
           this.isLoading = false
         })

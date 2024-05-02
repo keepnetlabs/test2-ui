@@ -8,6 +8,7 @@
 </template>
 <script>
 import DoughnutChart from '@/components/Common/Charts/Doughnut.vue'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportDoughnutChart',
   components: { DoughnutChart },
@@ -15,13 +16,18 @@ export default {
     rawData: {
       type: Array,
       default: () => []
+    },
+    valueEnums: {
+      type: Array,
+      default: () => ['Open Attachment', 'Clicked']
     }
   },
   data() {
+    console.log('this.valueEnums', this.valueEnums)
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {
-        labels: ['Opened Attachment', 'Clicked'],
+        labels: this.valueEnums,
         cutoutPercentage: 60,
         responsive: true,
         maintainAspectRatio: false,
@@ -39,7 +45,7 @@ export default {
               return data.datasets[0].data.map((d, index) => {
                 return {
                   text: `${data.labels[index]} (${d} users)`,
-                  fillStyle: data.datasets[0].backgroundColor[index],
+                  fillStyle: CHART_COLORS[data.labels[index]].backgroundColor,
                   lineWidth: 0,
                   datasetIndex: index
                 }
@@ -57,13 +63,16 @@ export default {
   mounted() {},
   methods: {
     calculateData() {
+      let backgroundColor = []
+      this.valueEnums.forEach((label) => {
+        backgroundColor.push(CHART_COLORS[label].backgroundColor)
+      })
       this.chartData = {
-        labels: ['Completed', 'Incomplete'],
+        labels: this.valueEnums,
         datasets: [
           {
-            label: 'Completed',
-            backgroundColor: ['#43A047', '#E6A23C'],
-            data: this.rawData
+            data: this.rawData,
+            backgroundColor
           }
         ]
       }

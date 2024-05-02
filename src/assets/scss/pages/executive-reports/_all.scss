@@ -32,6 +32,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      &:after{
+        background-color: transparent !important;
+      }
       &--disabled{
         opacity:.5;
         cursor: default !important;
@@ -397,4 +400,7 @@
     font-size: 12px;
     font-weight: 400;
   }
+}
+.executive-reports-area-chart{
+  margin-top:-4px;
 }

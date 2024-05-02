@@ -773,6 +773,16 @@ const router = new Router({
           }
         },
         {
+          path: '/reports/executive-reports/duplicate/:id',
+          name: 'Duplicate Executive Report',
+          component: EditExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
           path: '/email-threat-simulator',
           name: 'Email Threat Simulator',
           component: EmailThreatSimulator,
