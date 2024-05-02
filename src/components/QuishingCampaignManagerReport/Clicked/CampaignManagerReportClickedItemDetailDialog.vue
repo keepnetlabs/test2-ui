@@ -105,8 +105,9 @@ import QuishingService from '@/api/quishing'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
+import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
 
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
@@ -115,6 +116,8 @@ export default {
     CampaignManagerReportUserAgentColumn,
     CampaignManagerReportIPColumn,
     CampaignManagerReportActivityColumn,
+    CampaignManagerReportHumanActivityDialog,
+    CampaignManagerReportSandboxActivityDialog,
     DataTable,
     AppDialog,
     SandboxDetailDialogAlerts,
