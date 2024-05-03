@@ -40,7 +40,7 @@
         :id="rowActions[4].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled"
+        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
         @on-click="handleEdit(scope.row)"
