@@ -137,6 +137,7 @@ export default {
     },
     handleDownloadClick() {},
     handleDeleteClick() {
+      if (!this.card.isDeletable) return false
       this.$emit('on-delete', this.card)
     }
   }

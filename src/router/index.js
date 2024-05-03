@@ -68,6 +68,8 @@ import ExecutiveReports from '@/views/ExecutiveReports.vue'
 import NewExecutiveReport from '@/views/NewExecutiveReport.vue'
 import PreviewExecutiveReport from '@/views/PreviewExecutiveReport.vue'
 import EditExecutiveReport from '@/views/EditExecutiveReport.vue'
+import DuplicateExecutiveReport from '@/views/DuplicateExecutiveReport.vue'
+import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -103,6 +105,14 @@ const router = new Router({
       path: '/training/scorm/phished-landing-page',
       name: 'scorm',
       component: PhishedLandingPage,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/reports/executive-reports/scheduled-executive-report/:id',
+      name: 'Scheduled Executive Report',
+      component: ScheduledExecutiveReport,
       meta: {
         isAuthenticated: false
       }
@@ -775,7 +785,7 @@ const router = new Router({
         {
           path: '/reports/executive-reports/duplicate/:id',
           name: 'Duplicate Executive Report',
-          component: EditExecutiveReport,
+          component: DuplicateExecutiveReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Executive Reports',

@@ -7,6 +7,13 @@
       :is-new="!isShowPreview"
       @on-close="toggleShowScheduleReportDialog"
     />
+    <ExecutiveReportDownloadModal
+      v-if="isShowDownloadModal"
+      :status="isShowDownloadModal"
+      :is-downloading="isPdfDownload"
+      @on-close="toggleShowDownloadModal"
+      @on-submit="handleDownloadClick"
+    />
     <ExecutiveReportCustomizeWidgetDialog
       v-if="isShowCustomizeWidgetDialog"
       :status="isShowCustomizeWidgetDialog"
@@ -14,7 +21,7 @@
       :default-date-range="formData.executiveReportDateRange"
       @on-close="toggleShowCustomizeWidgetDialog"
     />
-    <div class="executive-report-new-card__header">
+    <div v-if="!isScheduledReport" class="executive-report-new-card__header">
       <div class="executive-report-new-card__header-left">
         <VBtn
           v-if="isShowPreview"
@@ -101,7 +108,7 @@
           color="#2196f3"
           class="executive-reports-card__right-btn"
           small
-          @click="handleDownloadClick"
+          @click="handleDownloadClick('executive-report', false)"
           >mdi-download</VIcon
         >
       </div>
@@ -249,10 +256,12 @@ import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveRepor
 import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
+import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
+    ExecutiveReportDownloadModal,
     KSmartGrid,
     ExecutiveReportCustomizeWidgetDialog,
     InputDate,
@@ -279,6 +288,10 @@ export default {
     isDuplicate: {
       type: Boolean,
       default: false
+    },
+    isScheduledReport: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -295,7 +308,7 @@ export default {
       parsedFormatWithoutTime: getTimeZone(true),
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
-      isShowReprt: false,
+      isShowDownloadModal: false,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -937,6 +950,9 @@ export default {
       }, 20)
     }
   },
+  mounted() {
+    if (this.isScheduledReport) this.handleDownloadClick()
+  },
   methods: {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
@@ -984,6 +1000,9 @@ export default {
       this.selectedRow = item
       this.isShowCustomizeWidgetDialog = !this.isShowCustomizeWidgetDialog
     },
+    toggleShowDownloadModal() {
+      this.isShowDownloadModal = !this.isShowDownloadModal
+    },
     handleDateRangeClick() {
       this.$refs.refInputDate.showPicker()
     },
@@ -992,13 +1011,17 @@ export default {
     },
     handlePreviewClick() {
       this.activatePreview = true
-      this.handleDownloadClick()
+      this.toggleShowDownloadModal()
+      //this.handleDownloadClick()
     },
     handleSaveReportClick() {
       saveExecutiveReport(this.layout)
     },
 
-    async handleDownloadClick() {
+    async handleDownloadClick(
+      fileName = 'executive-report',
+      activatePreview = this.activatePreview
+    ) {
       this.isPdfDownload = true
       this.$nextTick(async () => {
         setTimeout(async () => {
@@ -1007,18 +1030,32 @@ export default {
             jsPDF: {
               format: 'a4'
             },
-            html2canvas: {},
             success(pdf) {
-              pdf.save(this.output)
+              if (activatePreview) {
+                pdf.setProperties({
+                  title: fileName
+                })
+                window.open(pdf.output('bloburl'))
+              } else {
+                pdf.save(this.output)
+              }
             },
             watermark: ({ pdf, pageNumber, totalPageNumber }) => {
-              const lastY = this.layout[this.layout.length - 1].y
+              const lastY = this.layout[this.layout.length - 1]?.y
               if (lastY % 18 === 0) pdf.deletePage(totalPageNumber)
               pdf.setTextColor('#383B41')
               pdf.setFontSize(8)
-              const width = pdf?.internal?.pageSize?.width || 297
-              const height = pdf?.internal?.pageSize?.height || 841
-              pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+              let width, height
+              try {
+                width = pdf?.internal?.pageSize?.width || 297
+                height = pdf?.internal?.pageSize?.height || 841
+              } catch (e) {
+                width = 297
+                height = 841
+              }
+              try {
+                pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+              } catch (e) {}
             },
             margin: {
               top: 24,
@@ -1028,7 +1065,7 @@ export default {
             },
 
             imageType: 'image/jpeg',
-            output: './pdf/executive-report.pdf',
+            output: `./pdf/${fileName}.pdf`,
             autoResize: true
           })
           this.isPdfDownload = false
