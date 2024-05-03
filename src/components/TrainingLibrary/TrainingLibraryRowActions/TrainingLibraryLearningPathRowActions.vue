@@ -13,7 +13,7 @@
       <DefaultMenuRowAction
         :id="rowActions[1].id"
         :scope="scope"
-        :disabled="rowActions[1].disabled || !scope.row.isEditable"
+        :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
