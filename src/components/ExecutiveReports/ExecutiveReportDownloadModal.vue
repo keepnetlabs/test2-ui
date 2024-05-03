@@ -2,7 +2,7 @@
   <AppModal
     v-if="status"
     :status="status"
-    title="Download Executive Report"
+    :title="getTitle"
     icon-name="mdi-send"
     confirm-button-id="btn-save--certificates-template-modal"
     cancel-button-id="btn-cancel--certificates-template-modal"
@@ -12,14 +12,10 @@
     @submit="handleSubmit"
   >
     <template #overlay-body>
-      <AppModalBodyHeader title="Download Executive Report" sub-title="Download Executive Report" />
+      <AppModalBodyHeader :title="getTitle" :sub-title="getSubtitle" />
       <v-form ref="refForm" lazy-validation>
         <FormGroup has-hint title="Pdf Name">
-          <InputEntityName
-            v-model.trim="downloadName"
-            id="input--certificate-name"
-            entity-name="certificate"
-          />
+          <InputEntityName v-model.trim="downloadName" id="input--pdf-name" entity-name="pdf" />
         </FormGroup>
       </v-form>
     </template>
@@ -45,6 +41,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isPreview: {
+      type: Boolean,
+      default: false
+    },
     isDownloading: {
       type: Boolean,
       default: false
@@ -53,6 +53,14 @@ export default {
   data() {
     return {
       downloadName: 'Executive Report'
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.isPreview ? 'Preview Executive Report' : 'Download Executive Report'
+    },
+    getSubtitle() {
+      return this.isPreview ? 'Preview Executive Report' : 'Download Executive Report'
     }
   },
   methods: {

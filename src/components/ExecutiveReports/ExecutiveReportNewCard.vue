@@ -11,6 +11,7 @@
       v-if="isShowDownloadModal"
       :status="isShowDownloadModal"
       :is-downloading="isPdfDownload"
+      :is-preview="isPreviewDownload"
       @on-close="toggleShowDownloadModal"
       @on-submit="handleDownloadClick"
     />
@@ -108,14 +109,14 @@
           color="#2196f3"
           class="executive-reports-card__right-btn"
           small
-          @click="handleDownloadClick('executive-report', false)"
+          @click="handleDownloadButton"
           >mdi-download</VIcon
         >
       </div>
     </div>
     <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
       <div class="executive-report-new-card__body">
-        <div v-if="!isShowPreview" class="executive-report-new-card__body-new">
+        <div v-if="getIsShowEditTopFields" class="executive-report-new-card__body-new">
           <div>
             <div>
               <VTextField
@@ -212,7 +213,7 @@
           ref="refGrid"
           :layout="layout"
           :col-num="colNum"
-          :is-static="isShowPreview ? isShowPreview : !editMode"
+          :is-static="getIsStatic"
           :row-height="50"
           @breakpointChanged="breakpointChanged"
           @layout-updated="layoutUpdated"
@@ -303,7 +304,9 @@ export default {
       newItemY: 0,
       activatePreview: this.isPreview,
       editMode: !this.isPreview,
+      isPreviewDownload: false,
       isPdfDownload: false,
+      justDownload: false,
       parsedFormat: getTimeZone(false),
       parsedFormatWithoutTime: getTimeZone(true),
       isShowScheduleReportDialog: false,
@@ -917,6 +920,15 @@ export default {
     },
     isShowPreview() {
       return this.isPreview || this.activatePreview
+    },
+    getIsStatic() {
+      if (this.$route.name === 'Preview Executive Report') return !this.editMode
+      return this.isShowPreview ? this.isShowPreview : !this.editMode
+    },
+    getIsShowEditTopFields() {
+      if (this.$route.name === 'Preview Executive Report')
+        return this.isPreviewDownload ? false : this.editMode
+      return !this.isShowPreview
     }
   },
   watch: {
@@ -1011,6 +1023,7 @@ export default {
     },
     handlePreviewClick() {
       this.activatePreview = true
+      this.isPreviewDownload = true
       this.toggleShowDownloadModal()
       //this.handleDownloadClick()
     },
@@ -1023,6 +1036,7 @@ export default {
       activatePreview = this.activatePreview
     ) {
       this.isPdfDownload = true
+      const justDownload = this.justDownload
       this.$nextTick(async () => {
         setTimeout(async () => {
           let page = document.querySelector('#executive-report-new-card-container')
@@ -1031,7 +1045,7 @@ export default {
               format: 'a4'
             },
             success(pdf) {
-              if (activatePreview) {
+              if (activatePreview && !justDownload) {
                 pdf.setProperties({
                   title: fileName
                 })
@@ -1070,6 +1084,9 @@ export default {
           })
           this.isPdfDownload = false
           this.activatePreview = false
+          this.isPreviewDownload = false
+          this.justDownload = false
+          this.toggleShowDownloadModal()
         }, 500)
       })
     },
@@ -1142,6 +1159,10 @@ export default {
         default:
           return ExecutiveReportsWidget
       }
+    },
+    handleDownloadButton() {
+      this.justDownload = true
+      this.toggleShowDownloadModal()
     }
   }
 }
