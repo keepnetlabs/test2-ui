@@ -22,7 +22,7 @@
       <DefaultMenuRowAction
         :id="rowActions[2].id"
         :scope="scope"
-        :disabled="rowActions[1].disabled"
+        :disabled="rowActions[2].disabled"
         :icon="rowActions[2].icon"
         :text="rowActions[2].name"
         @on-click="handleDownloadScreensaver(scope.row)"
@@ -41,7 +41,7 @@
         :id="rowActions[4].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled || !scope.row.isEditable"
+        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
         @on-click="handleEdit(scope.row)"
