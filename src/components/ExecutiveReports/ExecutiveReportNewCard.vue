@@ -258,6 +258,7 @@ import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
+import imageToBlob from '@/utils/image-to-blob'
 
 export default {
   name: 'ExecutiveReportNewCard',
@@ -939,6 +940,14 @@ export default {
     }
   },
   async created() {
+    console.log(
+      imageToBlob(
+        'https://dev-api.devkeepnet.com/companylogo/063db798-bca2-4dcb-a4a0-f3c11dc0dd3f.png',
+        (err, blob) => {
+          this.formValues.file = new File([blob], 'defaultlogo.png')
+        }
+      )
+    )
     try {
       /*
       this.layout.push(this.allWidgets.PhishingCampaignTrends)

@@ -198,6 +198,11 @@ export default {
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
+  watch: {
+    selectedTimeZone() {
+      this.formData.scheduledDateTimeZoneId = this.selectedTimeZone
+    }
+  },
   created() {
     this.callForGetTimeZones()
     this.getSelectedTimeZone()
