@@ -182,7 +182,14 @@
               @on-clear="handleLogoClear"
             />
             <VIcon color="#757575" small @click="handleLogoIconClick">mdi-pencil</VIcon>
-            <img :src="formData.executiveReportLogo" alt="logo" />
+            <img
+              :src="
+                formData.executiveReportLogoUrl
+                  ? formData.executiveReportLogoUrl
+                  : formData.executiveReportLogo
+              "
+              alt="logo"
+            />
           </div>
         </div>
         <div v-else class="executive-report-new-card__body-preview">
@@ -201,7 +208,11 @@
           </div>
           <img
             class="executive-report-new-card__body-preview-img"
-            :src="editData.logo"
+            :src="
+              formData.executiveReportLogoUrl
+                ? formData.executiveReportLogoUrl
+                : formData.executiveReportLogo
+            "
             alt="Logo"
           />
         </div>
@@ -258,8 +269,6 @@ import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
-import imageToBlob from '@/utils/image-to-blob'
-
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -937,26 +946,17 @@ export default {
       if (val) {
         this.initialLayout = JSON.parse(JSON.stringify(this.layout))
       }
+    },
+    '$store.state.dashboard.selectedCompanyObject.logoUrl'() {
+      this.formData.executiveReportLogo =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      this.srcToImage()
     }
   },
   async created() {
-    console.log(
-      imageToBlob(
-        'https://dev-api.devkeepnet.com/companylogo/063db798-bca2-4dcb-a4a0-f3c11dc0dd3f.png',
-        (err, blob) => {
-          this.formValues.file = new File([blob], 'defaultlogo.png')
-        }
-      )
-    )
     try {
-      /*
-      this.layout.push(this.allWidgets.PhishingCampaignTrends)
-      this.newItemY = this.layout.reduce((acc, item) => {
-        acc += item.h
-        return acc
-      }, 0)
-
-       */
       if (this.isEdit || this.activatePreview) {
         const report = await getExecutiveReport()
         this.layout = report.data.data
@@ -1050,6 +1050,9 @@ export default {
         setTimeout(async () => {
           let page = document.querySelector('#executive-report-new-card-container')
           const pdf = await html2PDF(page, {
+            html2canvas: {
+              useCORS: true
+            },
             jsPDF: {
               format: 'a4'
             },
@@ -1109,6 +1112,7 @@ export default {
         return
       }
       this.formData.executiveReportLogo = file
+      this.formData.executiveReportLogoUrl = URL.createObjectURL(file)
     },
     handleLogoClear() {
       this.coverImageFilePreview = []
@@ -1172,6 +1176,16 @@ export default {
     handleDownloadButton() {
       this.justDownload = true
       this.toggleShowDownloadModal()
+    },
+    srcToImage() {
+      if (this.formData.executiveReportLogo) {
+        fetch(this.formData.executiveReportLogo).then(async (response) => {
+          const contentType = response.headers.get('content-type')
+          const blob = await response.blob()
+          const file = new File([blob], 'logo.png', { contentType })
+          this.formData.executiveReportLogo = URL.createObjectURL(file)
+        })
+      }
     }
   }
 }

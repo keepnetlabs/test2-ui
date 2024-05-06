@@ -17,6 +17,16 @@
         <FormGroup has-hint title="Pdf Name">
           <InputEntityName v-model.trim="downloadName" id="input--pdf-name" entity-name="pdf" />
         </FormGroup>
+        <div v-if="isDownloading" class="d-flex items-center gap-2">
+          <img
+            src="../../assets/img/spinner-blue.svg"
+            class="add-in-settings__spinner"
+            alt="spinner"
+          />
+          <span style="font-size: 14px; text-transform: capitalize;">
+            Your PDF file is generating...
+          </span>
+        </div>
       </v-form>
     </template>
   </AppModal>
