@@ -58,6 +58,7 @@ export const COMMON_CONSTANTS = {
 }
 
 export const LABEL_STORE = {
+  TIMEZONEID: 'Time Zone',
   CREATEDATE: 'Date Created',
   CREATETIME: 'Date Created',
   FIRSTNAME: 'First Name',
@@ -167,6 +168,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  TIME_ZONE: 'timeZoneId',
   RECIPIENT_TYPE: 'recipientType',
   INFOGRAPHIC_NAME: 'trainingName',
   MATERIAL_NAME: 'trainingName',

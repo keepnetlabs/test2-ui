@@ -332,6 +332,8 @@ export default {
         formData.sendingLimit =
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.isLocalDeliveryEnabled =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.isLocalDeliveryEnabled
         formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups

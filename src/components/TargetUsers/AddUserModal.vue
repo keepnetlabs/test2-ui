@@ -63,6 +63,13 @@
             id="input--target-user-department"
           />
         </form-group>
+        <FormGroup
+          class="mb-6"
+          title="Time Zone"
+          subTitle="By selecting the appropriate time zone, you can send campaigns to the target user in their own time zone."
+        >
+          <InputTimezone v-model="formValues.timeZoneId" class="black-placeholder" isBlock />
+        </FormGroup>
         <FormGroup v-if="!editData" title="Target Group">
           <k-select
             v-infinite-scroll="{
@@ -231,6 +238,7 @@ import labels from '@/model/constants/labels'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
 import {
   getTimeZone,
@@ -258,7 +266,8 @@ export default {
     InputDate,
     InputPhone,
     InputDepartment,
-    TargetUsersCheckLicenseDialog
+    TargetUsersCheckLicenseDialog,
+    InputTimezone
   },
   props: {
     status: {
@@ -296,7 +305,8 @@ export default {
         phoneNumber: '',
         department: '',
         priority: 'Medium',
-        isActive: true
+        isActive: true,
+        timeZoneId: null
       },
       isPickersValidated: {},
       customFieldsModels: {},
