@@ -37,7 +37,16 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope, col }">
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.DATE_REPORTED.property"
+            :scope="scope"
+            :timeKey="COLUMNS.DATE_REPORTED.property"
+            localTimeKey="reportedTimeToLocalUser"
+          />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <AppDialogFooterWithClose
@@ -59,9 +68,15 @@ import labels from '@/model/constants/labels'
 import { searchCampaignJobUserEmailReportedDetails } from '@/api/phishingsimulator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 export default {
   name: 'CampaignManagerReportPhishingReporterItemDetailDialog',
-  components: { AppDialogFooterWithClose, DataTable, AppDialog },
+  components: {
+    AppDialogFooterWithClose,
+    DataTable,
+    AppDialog,
+    CampaignManagerReportTimeZoneColumn
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -73,6 +88,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-phishing-reported-detail-item-data-table',

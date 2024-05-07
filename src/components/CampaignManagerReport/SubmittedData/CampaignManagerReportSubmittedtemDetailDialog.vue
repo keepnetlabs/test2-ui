@@ -48,6 +48,12 @@
             v-if="col.property === COLUMNS.SUBMITTED_DATA_IP_SLOT.property"
             :scope="scope"
           />
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.SUBMITTED_TIME.property"
+            :scope="scope"
+            :timeKey="COLUMNS.SUBMITTED_TIME.property"
+            localTimeKey="submittedTimeToLocalUser"
+          />
         </template>
       </DataTable>
     </template>
@@ -73,12 +79,14 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
 import CampaignManagerReportIPColumn from '@/components/CampaignManagerReport/CampaignManagerReportIPColumn'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 
 export default {
   name: 'CampaignManagerReportSubmittedtemDetailDialog',
   components: {
     AppDialogFooterWithClose,
     CampaignManagerReportUserAgentColumn,
+    CampaignManagerReportTimeZoneColumn,
     CampaignManagerReportIPColumn,
     DataTable,
     AppDialog

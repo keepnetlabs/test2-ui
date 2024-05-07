@@ -10,7 +10,6 @@ export const defaultFieldMappings = [
 export const getDefaultFieldMappingsWithCurrent = (defaultMapping, currentMapping) => {
   const mappingFields = new Map()
   defaultMapping.map((mapping) => mappingFields.set(mapping.customFieldResourceId, mapping))
-  console.log(mappingFields)
   currentMapping.map((mapping) => {
     mappingFields.set(mapping.customFieldResourceId, {
       text:

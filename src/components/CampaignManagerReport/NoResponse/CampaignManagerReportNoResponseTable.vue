@@ -28,7 +28,16 @@
     @downloadEvent="exportCampaignManagerReportNoResponseTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
-  />
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.EMAIL_SEND_DATE.property"
+        :scope="scope"
+        :timeKey="COLUMNS.EMAIL_SEND_DATE.property"
+        localTimeKey="lastSendingTimeToLocalUser"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -48,9 +57,10 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 export default {
   name: 'CampaignManagerReportNoResponseTable',
-  components: { DataTable },
+  components: { DataTable, CampaignManagerReportTimeZoneColumn },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -66,6 +76,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-no-response-data-table',
         ascending: 'ascending'
