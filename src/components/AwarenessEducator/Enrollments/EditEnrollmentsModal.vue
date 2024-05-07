@@ -415,8 +415,9 @@ export default {
     },
     isDateValid() {
       return (
-        this.selectedRow?.status === 'Scheduled' &&
-        !!this.formData?.enrollmentScheduler?.scheduledDate
+        !(this.selectedRow?.status === 'Scheduled') ||
+        (this.selectedRow?.status === 'Scheduled' &&
+          !!this.formData?.enrollmentScheduler?.scheduledDate)
       )
     }
   },
