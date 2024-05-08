@@ -266,7 +266,7 @@ export default {
         ? events.map((event) => ({
             status: event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
             date: event.timestamp,
-            localTime: event?.timestampToLocalUser,
+            localTime: event?.timestamptolocaluser,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
           }))
