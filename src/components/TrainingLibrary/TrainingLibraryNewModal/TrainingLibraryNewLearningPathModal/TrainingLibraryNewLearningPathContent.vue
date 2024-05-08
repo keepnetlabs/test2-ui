@@ -167,9 +167,7 @@ export default {
       getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
     }),
     getCompanyResourceId() {
-      return (
-        localStorage.getItem('companyResourceId') || localStorage.getItem('companyRequestId') || ''
-      )
+      return localStorage.getItem('companyRequestId') || ''
     }
   },
   watch: {
