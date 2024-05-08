@@ -779,7 +779,13 @@
                   id="btn--link-navigator-menu-executive-reports"
                   route-name="Executive Reports"
                   :active-class-comparator="
-                    () => routerName === 'Executive Reports' || routerName === 'Executive Report'
+                    () =>
+                      routerName === 'Executive Reports' ||
+                      routerName === 'Executive Report' ||
+                      routerName === 'New Executive Report' ||
+                      routerName === 'Preview Executive Report' ||
+                      routerName === 'Edit Executive Report' ||
+                      routerName === 'Duplicate Executive Report'
                   "
                 />
               </v-list-item-content>

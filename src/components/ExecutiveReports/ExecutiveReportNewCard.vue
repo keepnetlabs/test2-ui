@@ -101,7 +101,7 @@
           color="#2196f3"
           class="executive-reports-card__right-btn mr-2"
           small
-          @click="editMode = true"
+          @click="handleEditModeClick"
           >mdi-pencil</VIcon
         >
         <VIcon
@@ -243,7 +243,7 @@
               :id="item.key"
               :is="getComponent(item.key)"
               :resizable="false"
-              :edit-mode="!isShowPreview && editMode"
+              :edit-mode="!getIsStatic"
               :card="item"
               :date-range="formData.executiveReportDateRange"
               @on-delete="deleteWidget(item, index)"
@@ -885,13 +885,6 @@ export default {
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
-      availableWidgets: [
-        {
-          name: 'Phishing Campaign Trends',
-          key: 'PhishingCampaignTrends',
-          isAllowed: true
-        }
-      ],
       formData: {
         executiveReportDateRange: [
           this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
@@ -932,6 +925,8 @@ export default {
       return this.isPreview || this.activatePreview
     },
     getIsStatic() {
+      console.log('this.editMode', this.editMode)
+      console.log('this.isShowPreview ', this.isShowPreview)
       if (this.$route.name === 'Preview Executive Report') return !this.editMode
       return this.isShowPreview ? this.isShowPreview : !this.editMode
     },
@@ -1103,8 +1098,13 @@ export default {
       })
     },
     handleCancelClick() {
-      if (this.activatePreview) this.editMode = false
-      else this.routeToExecutiveReports()
+      if (
+        this.activatePreview &&
+        !['Duplicate Executive Report', 'Edit Executive Report'].includes(this.$route.name)
+      ) {
+        this.editMode = false
+        this.$emit('on-edit-cancel')
+      } else this.routeToExecutiveReports()
     },
     handleLogoChange(file) {
       if (Array.isArray(file) && file.length === 0) {
@@ -1128,7 +1128,6 @@ export default {
       return newBreakpoint === 'xxs' ? 2 : 12
     },
     addWidget(widget) {
-      this.removeAvailableWidget(widget)
       let newItem
       const widgetObj = {
         ...this.allWidgets[widget.key],
@@ -1148,21 +1147,8 @@ export default {
       this.newItemY += newItem.h
       this.layout.push(widgetObj)
     },
-    removeAvailableWidget(widget) {
-      this.availableWidgets.splice(
-        this.availableWidgets.findIndex((item) => {
-          return item.key === widget.key
-        }),
-        1
-      )
-    },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({
-        key: item.key,
-        name: item.title,
-        isAllowed: item.isAllowed
-      })
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
@@ -1186,6 +1172,10 @@ export default {
           this.formData.executiveReportLogo = URL.createObjectURL(file)
         })
       }
+    },
+    handleEditModeClick() {
+      this.editMode = true
+      this.$emit('on-edit')
     }
   }
 }

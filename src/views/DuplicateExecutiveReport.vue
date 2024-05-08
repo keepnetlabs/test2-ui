@@ -1,27 +1,16 @@
 <template>
-  <KContainer id="duplicate-executive-report" tabless>
-    <ExecutiveReportNewCard is-edit is-duplicate :edit-data="editData" />
-  </KContainer>
+  <NewExecutiveReportCommonContainer is-edit is-duplicate />
 </template>
 <script>
 import KContainer from '@/components/KContainer/KContainer.vue'
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
+import NewExecutiveReportCommonContainer from '@/components/ExecutiveReports/NewExecutiveReportCommonContainer.vue'
 
 export default {
-  name: 'Duplicate',
-  components: { ExecutiveReportNewCard, KContainer },
+  name: 'DuplicateExecutiveReport',
+  components: { NewExecutiveReportCommonContainer },
   data() {
-    return {
-      editData: {
-        name: 'System Executive Report',
-        date: '02/04/2024',
-        companyName: 'Keepnet Labs',
-        logo:
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl
-      }
-    }
+    return {}
   }
 }
 </script>

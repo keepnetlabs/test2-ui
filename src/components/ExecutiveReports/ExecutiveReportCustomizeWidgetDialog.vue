@@ -365,6 +365,11 @@ export default {
       return this.chartData.length
     }
   },
+  watch: {
+    defaultDateRange() {
+      this.callForData()
+    }
+  },
   created() {
     console.log('this.', this.defaultDateRange)
     this.callForData()

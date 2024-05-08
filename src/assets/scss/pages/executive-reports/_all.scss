@@ -60,6 +60,9 @@
     border-radius: 12px;
     background-color: white;
     padding: 24px;
+    .v-skeleton-loader__table-row{
+      padding-bottom: 10px;
+    }
   }
   &__right{
     border-radius: 12px;
