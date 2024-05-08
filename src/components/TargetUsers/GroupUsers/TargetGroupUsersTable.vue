@@ -116,6 +116,7 @@ import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallCompone
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import { getValue } from '@/utils/validations'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -175,7 +176,9 @@ export default {
   data() {
     return {
       axiosPayload: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
-      defaultRequestBody: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
+      defaultRequestBody: getDefaultAxiosPayload({
+        excludeGroupUsers: this.excludeGroupUsers
+      }),
       defaultColumns: [
         {
           property: PROPERTY_STORE.FIRSTNAME,
@@ -234,6 +237,21 @@ export default {
           type: 'text',
           filterableType: 'text',
           dbName: 'department'
+        },
+        {
+          property: PROPERTY_STORE.TIME_ZONE,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+          sortable: false,
+          hideSort: true,
+          show: true,
+          type: 'text',
+          width: 160,
+          filterableType: 'select',
+          filterableItems: [],
+          dbName: 'TimeZone',
+          filterableCustomFieldName: 'TimeZoneId'
         }
       ],
       lastColumns: [
@@ -307,19 +325,51 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  computed: {
+    ...mapGetters({
+      getTimezones: 'common/getTimezones'
+    })
+  },
   watch: {
     customFields() {
       this.addCustomFieldColumns()
+    },
+    getTimezones: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems()
+      }
     }
   },
-
   created() {
+    this.callForGetTimeZones()
     if (this.resourceId) {
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
-
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    setTimeZoneFilterableItems() {
+      const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      filterableItems.unshift({ text: 'Blank', value: 'Blank' })
+      this.$set(
+        this.defaultColumns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refTargetGroupUsersTable?.reRenderFilters()
+    },
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems

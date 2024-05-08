@@ -332,8 +332,8 @@ export default {
         formData.sendingLimit =
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
-        formData.isLocalDeliveryEnabled =
-          refCampaignManagerDeliverySettings?.inputScheduleFormData?.isLocalDeliveryEnabled
+        formData.useTargetUserTimeZone =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.useTargetUserTimeZone
         formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
@@ -712,6 +712,7 @@ export default {
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : deliverySettingsFormData.scheduledDateTimeZoneId,
+            useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,

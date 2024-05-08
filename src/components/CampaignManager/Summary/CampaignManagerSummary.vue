@@ -414,7 +414,7 @@ export default {
       return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     canRenderTimeZoneAlertBox() {
-      return this.getActiveUsersWithoutTimeZoneCount === 0 && this.formData?.isLocalDeliveryEnabled
+      return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
     },
     getUnverifiedDomainsText() {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
@@ -556,12 +556,12 @@ export default {
         selectedEmailDelivery = {},
         sendingLimit,
         selectedSchedule,
-        isLocalDeliveryEnabled
+        useTargetUserTimeZone
       } = this.formData
       const obj = {
         Starting: selectedSchedule
       }
-      if (selectedSchedule !== 'Later' && isLocalDeliveryEnabled) {
+      if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
         obj['Starting'] = `${selectedSchedule} - Target users’ time zones`
       }
       obj['Sending Limit'] = sendingLimit

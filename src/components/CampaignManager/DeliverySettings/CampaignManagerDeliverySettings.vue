@@ -244,7 +244,7 @@ export default {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
         scheduledDateTimeZoneId: '',
-        isLocalDeliveryEnabled: false
+        useTargetUserTimeZone: false
       },
       commonRules: {
         hint: '*Required',

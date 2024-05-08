@@ -177,13 +177,15 @@ export default {
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 160,
             filterableType: 'select',
             filterableItems: [],
-            dbName: 'TimeZone'
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
           },
           {
             property: PROPERTY_STORE.PRIORITY,

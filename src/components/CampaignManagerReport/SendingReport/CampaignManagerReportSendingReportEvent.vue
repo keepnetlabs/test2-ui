@@ -7,7 +7,7 @@
         <badge :outline="false" :text="getBadgeText" :color="getBadgeColor" />
         <div class="campaign-manager-sending-report-event__date ml-4">
           <span>{{ getDate }}</span>
-          <span style="font-size: 9px;">User's Time: {{ getDate }}</span>
+          <span v-if="getLocalTime" style="font-size: 9px;">User's Time: {{ getLocalTime }}</span>
         </div>
       </div>
       <div class="campaign-manager-sending-report-event__content-right">
@@ -53,6 +53,9 @@ export default {
       const { status, date, attemptNum } = this.item
       if (status === 'deferred') return `${date} - Attempt #${attemptNum}`
       return date
+    },
+    getLocalTime() {
+      return this.item?.localTime || ''
     }
   },
   methods: {

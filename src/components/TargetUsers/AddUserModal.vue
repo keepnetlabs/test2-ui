@@ -344,6 +344,10 @@ export default {
       return this.editData
         ? 'btn-edit--target-users-add-user-to-people-modal'
         : 'btn-save--target-users-add-user-to-people-modal'
+    },
+    getTimeZoneList() {
+      const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
+      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
   created() {
@@ -357,9 +361,18 @@ export default {
         this.$set(this.isPickersValidated, resourceId, false)
       }
     }
+    this.callForGetTimeZones()
     this.setEditData()
   },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
     callForTargetGroups(addPage) {
       if (addPage) {
         this.targetGroupPayload.pageNumber += 1
@@ -598,6 +611,8 @@ export default {
         delete editedData[customFieldProp]
         this.formValues = {
           ...editedData,
+          timeZoneId:
+            this.getTimeZoneList.find((tz) => tz.text === editedData.timeZone)?.value || null,
           isActive: editedData.status === 'Active'
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

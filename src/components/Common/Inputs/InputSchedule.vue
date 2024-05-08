@@ -55,7 +55,7 @@
       </div>
       <VSwitch
         v-if="isPhishing"
-        v-model="value.isLocalDeliveryEnabled"
+        v-model="value.useTargetUserTimeZone"
         hide-details
         color="#2196f3"
         class="ml-10 mt-0"
@@ -72,7 +72,7 @@
           </div>
         </template>
       </VSwitch>
-      <div v-if="value.isLocalDeliveryEnabled" class="alert-box d-block bg-aqua-light">
+      <div v-if="value.useTargetUserTimeZone" class="alert-box d-block bg-aqua-light">
         <div class="alert-box__default-content justify-space-between w-100 d-flex">
           <div class="d-flex" style="align-items: flex-start;">
             <v-icon color="#2196f3">mdi-information</v-icon>
@@ -128,7 +128,7 @@ export default {
         scheduleTypeId: 1,
         scheduledDate: '',
         scheduledDateTimeZoneId: '',
-        isLocalDeliveryEnabled: false
+        useTargetUserTimeZone: false
       })
     },
     isPhishing: {
@@ -188,7 +188,7 @@ export default {
     },
     'value.scheduleTypeId'(val) {
       if (val === SCHEDULE_TYPES.SAVE_FOR_LATER) {
-        this.value.isLocalDeliveryEnabled = false
+        this.value.useTargetUserTimeZone = false
       }
       if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
         this.isDateValid = val !== SCHEDULE_TYPES.SCHEDULE_TO

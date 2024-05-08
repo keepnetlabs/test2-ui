@@ -56,8 +56,8 @@
         v-if="col.property === COLUMNS.DATE_SENT.property"
         :scope="scope"
         :timeKey="COLUMNS.DATE_SENT.property"
+        :isToBeSent="['In Queue', 'Not Delivered'].includes(scope.row.status)"
         localTimeKey="lastSendingTimeToLocalUser"
-        isToBeSent
       />
     </template>
     <template #extended-view-slot>
@@ -266,6 +266,7 @@ export default {
         ? events.map((event) => ({
             status: event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
             date: event.timestamp,
+            localTime: event?.timestampToLocalUser,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
           }))

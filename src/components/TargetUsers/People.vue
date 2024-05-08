@@ -499,13 +499,15 @@ export default {
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'text',
             width: 160,
             filterableType: 'select',
             filterableItems: [],
-            dbName: 'TimeZone'
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
           }
         ],
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
@@ -719,6 +721,9 @@ export default {
     },
     sortChanged({ order, prop } = {}) {
       this.payload.ascending = order === 'ascending'
+      if (prop === 'timeZone') {
+        prop = 'TimeZoneId'
+      }
       this.payload.orderBy = prop
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
