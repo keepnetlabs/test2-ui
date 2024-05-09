@@ -27,6 +27,7 @@
           typeof rule.operators !== 'undefined' &&
           query.operand !== 'SenderIp' &&
           query.operand !== 'AttachmentHash' &&
+          query.operand !== 'TimeZoneId' &&
           rule.operators.length > 1
         "
       >
@@ -109,6 +110,14 @@
             outlined
           />
         </v-col>
+        <v-col md="4" v-if="query.operand === 'TimeZoneId'">
+          <InputTimezone
+            v-model.trim="query.value"
+            class="black-placeholder"
+            isBlock
+            isBlankSelectable
+          />
+        </v-col>
         <v-col
           v-if="
             rule.type === 'conditions' &&
@@ -118,7 +127,8 @@
             query.operand !== 'Keyword' &&
             query.operand !== 'AttachmentName' &&
             query.operand !== 'AttachmentExtension' &&
-            query.operand !== 'AttachmentHash'
+            query.operand !== 'AttachmentHash' &&
+            query.operand !== 'TimeZoneId'
           "
           md=""
           sm="10"
@@ -250,11 +260,13 @@ import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 export default {
   extends: QueryBuilderRule,
   components: {
     InputIpAddress,
-    KSelect
+    KSelect,
+    InputTimezone
   },
   data() {
     return {

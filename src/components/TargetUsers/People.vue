@@ -493,6 +493,21 @@ export default {
             width: 160,
             filterableType: 'text',
             dbName: 'Department'
+          },
+          {
+            property: PROPERTY_STORE.TIME_ZONE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [],
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
           }
         ],
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
@@ -567,7 +582,8 @@ export default {
     ...mapGetters({
       getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions',
       getLDAPCreateConfigPermission: 'permissions/getLDAPCreateConfigPermission',
-      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission'
+      getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
+      getTimezones: 'common/getTimezones'
     }),
     getSelectedRow() {
       if (this.selectedUserToAddToGroup.constructor.name === 'Array') {
@@ -591,9 +607,40 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.callForGetTimeZones()
     if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
+  watch: {
+    getTimezones: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems()
+      }
+    }
+  },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    setTimeZoneFilterableItems() {
+      const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      filterableItems.unshift({ text: 'Blank', value: 'Blank' })
+      this.$set(
+        this.tableOptions.defaultColumns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refPeopleTable?.reRenderFilters()
+    },
     checkIsLDAPConfigured() {
       LDAPService.getLDAPSettingDetailForMyCompany()
         .then((response) => {
@@ -674,6 +721,9 @@ export default {
     },
     sortChanged({ order, prop } = {}) {
       this.payload.ascending = order === 'ascending'
+      if (prop === 'timeZone') {
+        prop = 'TimeZoneId'
+      }
       this.payload.orderBy = prop
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
