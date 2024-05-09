@@ -72,7 +72,7 @@ export default {
   },
   data() {
     const fieldMappings = this.fieldMappings.map((item) => ({
-      text: item.customFieldResourceId,
+      text: item.text,
       value: item.customFieldResourceId
     }))
     this.customFields.map((cField) => {

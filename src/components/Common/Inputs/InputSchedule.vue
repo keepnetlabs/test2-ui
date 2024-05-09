@@ -5,7 +5,7 @@
       class="mt-0 pt-0 campaign-manager-target-groups-radio"
       hide-details
     >
-      <div class="campaign-manager-advanced-settings__distribution-item gap-2 mb-4">
+      <div class="campaign-manager-advanced-settings__distribution-item gap-2">
         <v-radio
           :id="`input--campaign-manager-radio-schedule-to`"
           class="mb-0"
@@ -53,10 +53,54 @@
           :disabled="isScheduledTimeDisabled"
         />
       </div>
+      <VSwitch
+        v-if="isPhishing"
+        v-model="value.useTargetUserTimeZone"
+        hide-details
+        color="#2196f3"
+        class="ml-10 mt-0"
+        :disabled="value.scheduleTypeId !== '3'"
+      >
+        <template v-slot:label>
+          <div class="d-flex flex-column ml-4 mt-0">
+            <p class="mb-0" style="color: #383b41; font-size: 14px; font-weight: 600;">
+              Enable Region-Aware Time Zone Delivery
+            </p>
+            <span style="color: #383b41; font-size: 12px; font-weight: 400;"
+              >Deliver emails based on the target users' time zone.</span
+            >
+          </div>
+        </template>
+      </VSwitch>
+      <div v-if="value.useTargetUserTimeZone" class="alert-box d-block bg-aqua-light">
+        <div class="alert-box__default-content justify-space-between w-100 d-flex">
+          <div class="d-flex" style="align-items: flex-start;">
+            <v-icon color="#2196f3">mdi-information</v-icon>
+            <div class="ml-2">
+              <p class="mb-0">
+                &bull; Target users will receive the campaign at
+                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span>
+                on their time zone.
+              </p>
+              <p class="mb-0">
+                &bull; If target user’s local time is in the past, user will receive the campaign
+                next day at
+                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span
+                >.
+              </p>
+              <p class="mb-0">
+                &bull; You own time zone will be used to send the campaign for target users without
+                defined time zones.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
       <v-radio
         v-for="item in radioItems"
         :key="item.text"
         color="#2196f3"
+        class="mt-4"
         :id="`input--campaign-manager-radio-${item.text}`"
         :value="item.value"
         :label="item.text"
@@ -83,8 +127,13 @@ export default {
       default: () => ({
         scheduleTypeId: 1,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       })
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -138,6 +187,9 @@ export default {
       this.value.scheduledDateTimeZoneId = val
     },
     'value.scheduleTypeId'(val) {
+      if (val === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        this.value.useTargetUserTimeZone = false
+      }
       if (val !== SCHEDULE_TYPES.SCHEDULE_TO) {
         this.isDateValid = val !== SCHEDULE_TYPES.SCHEDULE_TO
         if (!this.value.scheduledDate) {

@@ -29,7 +29,16 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.LAST_REPORTED.property"
+        :scope="scope"
+        :timeKey="COLUMNS.LAST_REPORTED.property"
+        localTimeKey="lastReportedTimeToLocalUser"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -48,10 +57,11 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 export default {
   name: 'CampaignManagerReportPhishingReportTable',
-  components: { DataTable },
+  components: { DataTable, CampaignManagerReportTimeZoneColumn },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -67,6 +77,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-phishing-reporter-data-table',
         ascending: 'ascending'

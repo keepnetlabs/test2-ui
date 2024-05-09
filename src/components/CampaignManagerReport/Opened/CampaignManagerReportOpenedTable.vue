@@ -36,6 +36,12 @@
         v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
         :scope="scope"
       />
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.LAST_OPENED.property"
+        :scope="scope"
+        :timeKey="COLUMNS.LAST_OPENED.property"
+        localTimeKey="lastOpenedTimeToLocalUser"
+      />
     </template>
   </DataTable>
 </template>
@@ -58,11 +64,13 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: {
     CampaignManagerReportActivityColumn,
+    CampaignManagerReportTimeZoneColumn,
     DataTable
   },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],

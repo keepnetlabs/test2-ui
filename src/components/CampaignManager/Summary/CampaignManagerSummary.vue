@@ -73,6 +73,13 @@
               text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderTimeZoneAlertBox"
+              class="mt-4 bg-aqua-light"
+              icon-color="#2196f3"
+              :text="getTimeZoneWarningText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -334,7 +341,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
     getTargetGroupItems() {
       return this.formData?.userCountDetailResponse?.data?.data || []
@@ -405,6 +413,9 @@ export default {
     canRenderNoPhoneNumberAlertBox() {
       return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
+    canRenderTimeZoneAlertBox() {
+      return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
+    },
     getUnverifiedDomainsText() {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
@@ -423,12 +434,28 @@ export default {
         this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
       } will receive MFA scenario.`
     },
+    getTimeZoneWarningText() {
+      return `There ${this.getActiveUsersWithoutTimeZoneCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithoutTimeZoneCount
+      } active user${
+        this.getActiveUsersWithoutTimeZoneCount > 1 ? 's' : ''
+      } without time zone information in the selected groups. They will receive the campaign based on the your own time zone (${
+        this.getSelectedTimeZoneName
+      }).`
+    },
     getUsersFromUnverifiedDomainsCount() {
       return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
         if (row.status !== 'Active') return acc
         const unverifiedUserCount =
           row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
         return acc + unverifiedUserCount
+      }, 0)
+    },
+    getActiveUsersWithoutTimeZoneCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutTimeZoneCount = row?.timeZone?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutTimeZoneCount
       }, 0)
     },
     getActiveUsersWithPhoneNumberCount() {
@@ -525,9 +552,17 @@ export default {
       }, 0)
     },
     getSettingsItems() {
-      const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
+      const {
+        selectedEmailDelivery = {},
+        sendingLimit,
+        selectedSchedule,
+        useTargetUserTimeZone
+      } = this.formData
       const obj = {
         Starting: selectedSchedule
+      }
+      if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
+        obj['Starting'] = `${selectedSchedule} - Target users’ time zones`
       }
       obj['Sending Limit'] = sendingLimit
       obj['Email Delivery'] = `${
