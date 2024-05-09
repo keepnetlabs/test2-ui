@@ -111,7 +111,12 @@
           />
         </v-col>
         <v-col md="4" v-if="query.operand === 'TimeZoneId'">
-          <InputTimezone v-model.trim="query.value" class="black-placeholder" isBlock />
+          <InputTimezone
+            v-model.trim="query.value"
+            class="black-placeholder"
+            isBlock
+            isBlankSelectable
+          />
         </v-col>
         <v-col
           v-if="

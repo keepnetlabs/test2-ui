@@ -44,6 +44,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isBlankSelectable: {
+      type: Boolean,
+      default: false
+    },
     prependInnerIcon: {
       type: String,
       required: false
@@ -59,7 +63,14 @@ export default {
     },
     items() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      const items = timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      if (this.isBlankSelectable) {
+        items.unshift({ text: 'Blank', value: 'Blank' })
+      }
+      return items
     }
   },
   created() {

@@ -90,6 +90,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-submitted-mfa-detail-item-data-table',

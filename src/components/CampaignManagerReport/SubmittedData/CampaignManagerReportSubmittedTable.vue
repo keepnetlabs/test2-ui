@@ -81,6 +81,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-submitted-data-table',
         ascending: 'ascending'
