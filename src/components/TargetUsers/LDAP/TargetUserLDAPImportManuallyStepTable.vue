@@ -182,7 +182,7 @@ export default {
             show: true,
             type: 'text',
             width: 160,
-            filterableType: 'select',
+            filterableType: this.hideFilter ? null : 'select',
             filterableItems: [],
             dbName: 'TimeZone',
             filterableCustomFieldName: 'TimeZoneId'
