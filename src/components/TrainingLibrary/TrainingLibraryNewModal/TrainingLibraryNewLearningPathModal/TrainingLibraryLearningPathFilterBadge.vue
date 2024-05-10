@@ -3,11 +3,7 @@
     <div v-if="isFilterTypeSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <VTooltip
-          :disabled="!shouldRenderTooltip(filter.text, filter.activeValue)"
-          bottom
-          content-class="training-library-long-text-search__tooltip"
-        >
+        <VTooltip :disabled="!shouldRenderTooltip(filter.text, filter.activeValue)" bottom>
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
               getTruncatedFilterValue(filter.text, filter.activeValue)
@@ -37,7 +33,6 @@
         <VTooltip
           :disabled="!shouldRenderTooltip(filter.text, getFilterValue(filter, filterVal))"
           bottom
-          content-class="training-library-long-text-search__tooltip"
         >
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
@@ -65,7 +60,7 @@
     >
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <VTooltip bottom content-class="training-library-long-text-search__tooltip">
+        <VTooltip bottom>
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
               getFilterValue(filter, filterVal)
@@ -87,11 +82,7 @@
     <div v-else-if="isFilterTypeDateSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <VTooltip
-          :disabled="!shouldRenderTooltip(filter.text, getDateFilterValue(filter))"
-          bottom
-          content-class="training-library-long-text-search__tooltip"
-        >
+        <VTooltip :disabled="!shouldRenderTooltip(filter.text, getDateFilterValue(filter))" bottom>
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
               getTruncatedFilterValue(filter.text, getDateFilterValue(filter))
