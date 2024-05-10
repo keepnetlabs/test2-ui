@@ -905,12 +905,16 @@ export default {
   },
   computed: {
     getDownloadPdfStyle() {
+      return {}
+      /*
       return this.isPdfDownload
         ? {
             padding: '4px',
             width: '1088px'
           }
         : null
+
+       */
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
@@ -1030,8 +1034,8 @@ export default {
     handlePreviewClick() {
       this.activatePreview = true
       this.isPreviewDownload = true
-      this.toggleShowDownloadModal()
-      //this.handleDownloadClick()
+      //this.toggleShowDownloadModal()
+      this.handleDownloadClick()
     },
     handleSaveReportClick() {
       saveExecutiveReport(this.layout)
