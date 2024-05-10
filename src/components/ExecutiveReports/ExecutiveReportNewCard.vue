@@ -1030,8 +1030,8 @@ export default {
     handlePreviewClick() {
       this.activatePreview = true
       this.isPreviewDownload = true
-      //this.toggleShowDownloadModal()
-      this.handleDownloadClick()
+      this.toggleShowDownloadModal()
+      //this.handleDownloadClick()
     },
     handleSaveReportClick() {
       saveExecutiveReport(this.layout)
