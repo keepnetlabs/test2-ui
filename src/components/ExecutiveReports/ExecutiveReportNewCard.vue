@@ -1036,7 +1036,6 @@ export default {
     handleSaveReportClick() {
       saveExecutiveReport(this.layout)
     },
-
     async handleDownloadClick(
       fileName = 'executive-report',
       activatePreview = this.activatePreview
@@ -1095,7 +1094,7 @@ export default {
           this.activatePreview = false
           this.isPreviewDownload = false
           this.justDownload = false
-          this.toggleShowDownloadModal()
+          this.isShowDownloadModal = false
         }, 500)
       })
     },
