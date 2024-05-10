@@ -316,6 +316,7 @@
   display: flex;
   gap: 4px;
   background-color: #e0e0e0;
+  max-width: 320px;
   &__left-side {
     display: flex;
     align-items: center;
@@ -326,6 +327,7 @@
     font-weight: 600;
     line-height: 16px;
     color: #757575;
+    flex-shrink: 0;
   }
   &-value {
     font-size: 12px;
