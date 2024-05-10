@@ -4,7 +4,7 @@ export const defaultFieldMappings = [
   { text: 'Last Name', customFieldResourceId: 'LastName', ldapResourceId: '' },
   { text: 'Phone Number', customFieldResourceId: 'PhoneNumber', ldapResourceId: '' },
   { text: 'Department', customFieldResourceId: 'Department', ldapResourceId: '' },
-  { text: 'Time Zone', customFieldResourceId: 'TimeZoneId', ldapResourceId: '' }
+  { text: 'Time Zone', customFieldResourceId: 'TimeZone', ldapResourceId: '' }
 ]
 
 export const getDefaultFieldMappingsWithCurrent = (defaultMapping, currentMapping) => {
