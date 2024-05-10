@@ -119,6 +119,34 @@
                     :rules="[(v) => validations.required(v)]"
                   />
                 </FormGroup>
+                <FormGroup title="Time Format" has-hint>
+                  <k-select
+                    v-model="formData.TimeFormat"
+                    id="input--company-time-format"
+                    :items="timeFormatList"
+                    persistent-hint
+                    outlined
+                    placeholder="Select time format"
+                    hint="*Required"
+                    no-data-text="No data"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
+                <FormGroup title="Date Format" has-hint>
+                  <k-select
+                    v-model="formData.DateFormat"
+                    id="input--company-date-format"
+                    :items="dateFormatList"
+                    persistent-hint
+                    outlined
+                    placeholder="Select date format"
+                    hint="*Required"
+                    no-data-text="No data"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
                 <FormGroup :title="labels.Address">
                   <InputAddress
                     v-model="formData.Address"
@@ -381,7 +409,6 @@
                       hint="*Required"
                       position="top"
                       :menu-props="{ offsetY: true }"
-                      @input="handleLicenseTypeChange"
                       persistent-hint
                     ></k-select>
                   </v-list-item-content>
@@ -597,6 +624,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
+import moment from 'moment'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -626,6 +654,7 @@ export default {
   },
   data() {
     return {
+      moment,
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
       languageItems: [],
@@ -667,8 +696,34 @@ export default {
         ReleaseNotesUrl: '',
         CompanyGroupResourceIdArray: [],
         LicenseModuleResourceIdArray: [],
-        statusId: '1'
+        statusId: '1',
+        DateFormat: 'DD/MM/YYYY',
+        TimeFormat: '24h'
       },
+      dateFormatList: [
+        {
+          text: `DD/MM/YYYY ${moment(new Date()).format('DD/MM/YYYY')}`,
+          value: 'DD/MM/YYYY'
+        },
+        {
+          text: `MM/DD/YYYY ${moment(new Date()).format('MM/DD/YYYY')}`,
+          value: 'MM/DDYYYY'
+        },
+        {
+          text: `YYYY/MM/DD ${moment(new Date()).format('YYYY/MM/DD')}`,
+          value: 'YYYY/MM/DD'
+        }
+      ],
+      timeFormatList: [
+        {
+          text: '24h 18:25',
+          value: '24h'
+        },
+        {
+          text: '12h 06:25 PM',
+          value: '12h'
+        }
+      ],
       defaultFormData: null,
       LicenseDates: [],
       isActive: true,
@@ -762,6 +817,8 @@ export default {
     isCallbackSelected(val) {
       if (!val) {
         this.formData.CallBackNumberBookingCount = null
+      } else {
+        this.getAvailableCallbackNumbers()
       }
     },
     'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
@@ -849,9 +906,6 @@ export default {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
-    if (this.selectedExtend.licenseModules.includes('AYAPp3vt3SvS')) {
-      this.getAvailableCallbackNumbers()
-    }
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
@@ -878,6 +932,8 @@ export default {
       this.formData.IsVersionVisible = this.selectedExtend.isVersionVisible
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
+      this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
+      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'DD/MM/YYYY'
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
