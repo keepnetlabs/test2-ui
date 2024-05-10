@@ -27,7 +27,7 @@
           typeof rule.operators !== 'undefined' &&
           query.operand !== 'SenderIp' &&
           query.operand !== 'AttachmentHash' &&
-          query.operand !== 'TimeZoneId' &&
+          query.operand !== 'TimeZone' &&
           rule.operators.length > 1
         "
       >
@@ -110,7 +110,7 @@
             outlined
           />
         </v-col>
-        <v-col md="4" v-if="query.operand === 'TimeZoneId'">
+        <v-col md="4" v-if="query.operand === 'TimeZone'">
           <InputTimezone
             v-model.trim="query.value"
             class="black-placeholder"
@@ -128,7 +128,7 @@
             query.operand !== 'AttachmentName' &&
             query.operand !== 'AttachmentExtension' &&
             query.operand !== 'AttachmentHash' &&
-            query.operand !== 'TimeZoneId'
+            query.operand !== 'TimeZone'
           "
           md=""
           sm="10"
