@@ -343,6 +343,9 @@
     }
   }
 }
+.chartjs-tooltip * {
+  border-radius: 50% !important; /* Point radius */
+}
 .executive-report-grid .widget-body__content{
   border-radius: 0;
 }
