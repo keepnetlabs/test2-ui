@@ -49,6 +49,7 @@
       :form-details="formDetails"
       :is-duplicate="isDuplicate"
       :user="getUser"
+      :categories="getCategoryItems"
       @on-close="toggleAddCampaignManagerModal"
       @on-submit="handleOnSubmit"
     />
@@ -126,7 +127,7 @@ import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/Ca
 import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
 import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
 import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
-
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 export default {
   name: 'CampaignManager',
   components: {
@@ -142,6 +143,7 @@ export default {
     CampaignManagerNewInstanceModal,
     CampaignManagerFrequencyTable
   },
+  mixins: [useScenarioDetailsLookup],
   data() {
     return {
       instanceResourceId: '',
@@ -180,10 +182,32 @@ export default {
     }),
     getStatusItems() {
       return this.formDetails.status
+    },
+    getCategoryItems() {
+      return (
+        this.scenarioDetailsLookup?.categoryTypes || [
+          'Cyber Spying',
+          'Email Security',
+          'GDPR',
+          'General',
+          'Malware',
+          'Mobile Device Security',
+          'Password Security',
+          'Physical Security',
+          'Removable Media',
+          'Remote Working Security',
+          'Safe Online Shopping',
+          'Social Engineering',
+          'Social Media Security',
+          'Travel Security',
+          'Wi-Fi Security'
+        ]
+      )
     }
   },
   created() {
     this.callForFormDetails()
+    this.callForScenarioDetails()
   },
   beforeRouteLeave(to, from, next) {
     const { refCampaignModal } = this.$refs

@@ -30,6 +30,15 @@
         :isLoading="isLoading"
       />
     </div>
+    <div class="mt-6">
+      <CampaignManagerReportSummaryScenarioInfo
+        v-if="isCategoryBasedDistribution"
+        :items="getScenarioInfoItems"
+        :categories="getCategories"
+        :isLoading="isLoading"
+        :campaignName="getCampaignName"
+      />
+    </div>
     <div class="my-6">
       <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
@@ -97,6 +106,8 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
+import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -107,7 +118,8 @@ export default {
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader,
-    CampaignManagerReportSummaryCategory
+    CampaignManagerReportSummaryCategory,
+    CampaignManagerReportSummaryScenarioInfo
   },
   mixins: [useLoading],
   props: {
@@ -148,6 +160,12 @@ export default {
     }
   },
   computed: {
+    isCategoryBasedDistribution() {
+      return this.campaignSummary?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    getCampaignName() {
+      return this.campaignSummary?.phishingCampaignName || ''
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
@@ -242,6 +260,52 @@ export default {
         'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
         Duration: `${duration || 0} Day(s)`,
         SMTP: smtpName
+      }
+    },
+    getCategories() {
+      const { categories = [] } = this.campaignSummary || {}
+      if (categories?.length) {
+        return categories
+      }
+      return [
+        'Cyber Spying',
+        'Email Security',
+        'GDPR',
+        'General',
+        'Malware',
+        'Mobile Device Security',
+        'Password Security',
+        'Physical Security',
+        'Removable Media',
+        'Remote Working Security',
+        'Safe Online Shopping',
+        'Social Engineering',
+        'Social Media Security',
+        'Travel Security',
+        'Wi-Fi Security'
+      ]
+    },
+    getScenarioInfoItems() {
+      const { scenarioInfo = {} } = this.campaignSummary || {}
+      if (Object.keys(scenarioInfo).length) {
+        const {
+          numberOfCategories = 0,
+          methodText = '',
+          Languages = '',
+          Difficulty = ''
+        } = scenarioInfo
+        return {
+          NumberOfCategories: numberOfCategories,
+          Method: methodText,
+          Languages: Languages,
+          Difficulty: Difficulty
+        }
+      }
+      return {
+        NumberOfCategories: 15,
+        Method: 'Click-Only, Data Submission, Attachment, MFA',
+        Languages: 'EN, TR, DE, FR',
+        Difficulty: 'Easy, Medium, Hard'
       }
     },
     getEmailDeliveryData() {
@@ -446,6 +510,12 @@ export default {
     }
   },
   watch: {
+    isCategoryBasedDistribution: {
+      immediate: true,
+      handler(val) {
+        console.log('isCategoryBasedDistribution', val)
+      }
+    },
     apiResponse(value = {}) {
       this.setCampaignSummary(value)
       setTimeout(() => {

@@ -86,6 +86,7 @@
               :languages="languageOptions"
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
               :is-valid="isPhishingScenariosValid"
+              :categories="categories"
             />
             <CustomError class="mb-6 ml-2" :is-valid="isPhishingScenariosValid" />
           </v-stepper-content>
@@ -228,6 +229,9 @@ export default {
     },
     isDuplicate: {
       type: Boolean
+    },
+    categories: {
+      type: Array
     }
   },
   emits: EMITS,

@@ -80,6 +80,40 @@
                     @change="isShowSelectedScenarios = false"
                   />
                 </div>
+                <div>
+                  <KSelect
+                    v-model="category"
+                    :items="categories"
+                    placeholder="Category"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="text"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="isShowSelectedScenarios = false"
+                  />
+                </div>
+                <div>
+                  <KSelect
+                    v-model="scenarioDistribution"
+                    :items="scenarioDistributionItems"
+                    placeholder="Select scenarios manually"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: unset;
+                      width: 300px;
+                    "
+                    :disabled="!category"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -174,9 +208,7 @@
                           outlined
                           @click="handleClickPreview"
                         >
-                          <VIcon color="#2196f3" medium>
-                            mdi-fullscreen
-                          </VIcon>
+                          <VIcon color="#2196f3" medium> mdi-fullscreen </VIcon>
                         </VBtn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
@@ -250,9 +282,7 @@
                           outlined
                           @click="handleClickPreview"
                         >
-                          <v-icon color="#2196f3" medium>
-                            mdi-fullscreen
-                          </v-icon>
+                          <v-icon color="#2196f3" medium> mdi-fullscreen </v-icon>
                         </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
@@ -343,6 +373,7 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { scenarioDistributionItems } from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -394,10 +425,14 @@ export default {
     isShowReminder: {
       type: Boolean,
       default: false
+    },
+    categories: {
+      type: Array
     }
   },
   data() {
     return {
+      scenarioDistributionItems,
       tab: 'email',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
@@ -413,6 +448,8 @@ export default {
       method: '',
       difficulty: '',
       language: '',
+      category: '',
+      scenarioDistribution: null,
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
@@ -488,6 +525,13 @@ export default {
     }
   },
   watch: {
+    axiosPayload: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        console.log('axiosPayload', val)
+      }
+    },
     defaultPhishingScenariosValuesMapped(val) {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
@@ -535,6 +579,7 @@ export default {
           { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
           { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
+          // { FieldName: 'Category', Operator: 'Contains', Value: val }
         ]
         this.callForPhishingScenarios()
         this.isShowSelectedScenarios = false
@@ -568,7 +613,11 @@ export default {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'LanguageTypeResourceId'
       )
-      const obj = { Value: val, FieldName: 'LanguageTypeResourceId', Operator: 'Contains' }
+      const obj = {
+        Value: val,
+        FieldName: 'LanguageTypeResourceId',
+        Operator: 'Contains'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -576,8 +625,27 @@ export default {
       }
       this.callForPhishingScenarios()
     },
+    category(val) {
+      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => item.FieldName === 'Category'
+      )
+      const obj = {
+        Value: val,
+        FieldName: 'Category',
+        Operator: 'Contains'
+      }
+      if (index > -1) {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+      }
+      // this.callForPhishingScenarios()
+    },
     items(val) {
-      this.phishingScenarioItems = val?.map((item) => ({ ...item, tags: item?.tags || [] }))
+      this.phishingScenarioItems = val?.map((item) => ({
+        ...item,
+        tags: item?.tags || []
+      }))
     },
     value(val = false) {
       if (val.length === 0) this.isShowSelectedScenarios = false
