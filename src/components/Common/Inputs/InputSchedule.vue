@@ -80,17 +80,15 @@
               <p class="mb-0">
                 &bull; Target users will receive the campaign at
                 <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span>
-                on their time zone.
+                local time.
               </p>
               <p class="mb-0">
-                &bull; If target user’s local time is in the past, user will receive the campaign
-                next day at
-                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span
-                >.
+                &bull; If the local time has passed, the campaign will be sent at
+                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span>
+                the following day..
               </p>
               <p class="mb-0">
-                &bull; You own time zone will be used to send the campaign for target users without
-                defined time zones.
+                &bull; We'll use the company's time zone for users whose time zone is not specified.
               </p>
             </div>
           </div>
