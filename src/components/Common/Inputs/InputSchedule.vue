@@ -53,26 +53,28 @@
           :disabled="isScheduledTimeDisabled"
         />
       </div>
-      <VSwitch
-        v-if="isPhishing"
-        v-model="value.useTargetUserTimeZone"
-        hide-details
-        color="#2196f3"
-        class="ml-10 mt-0"
-        :disabled="value.scheduleTypeId !== '3'"
-      >
-        <template v-slot:label>
-          <div class="d-flex flex-column ml-4 mt-0">
-            <p class="mb-0" style="color: #383b41; font-size: 14px; font-weight: 600;">
-              Enable Region-Aware Time Zone Delivery
-            </p>
-            <span style="color: #383b41; font-size: 12px; font-weight: 400;"
-              >Deliver emails based on the target users' time zone.</span
-            >
-          </div>
-        </template>
-      </VSwitch>
-      <div v-if="value.useTargetUserTimeZone" class="alert-box d-block bg-aqua-light">
+      <div class="send-training-settings__lms-switch mt-2">
+        <VSwitch
+          v-if="isPhishing"
+          v-model="value.useTargetUserTimeZone"
+          hide-details
+          color="#2196f3"
+          class="ml-2 mt-0"
+          :disabled="value.scheduleTypeId !== '3'"
+        >
+          <template v-slot:label>
+            <div class="d-flex flex-column ml-4 mt-0">
+              <p class="mb-0" style="color: #383b41; font-size: 14px; font-weight: 600;">
+                Enable Region-Aware Time Zone Delivery
+              </p>
+              <span style="color: #383b41; font-size: 12px; font-weight: 400;"
+                >Deliver emails based on the target users' time zone.</span
+              >
+            </div>
+          </template>
+        </VSwitch>
+      </div>
+      <div v-if="value.useTargetUserTimeZone" class="alert-box d-block bg-aqua-light mt-2">
         <div class="alert-box__default-content justify-space-between w-100 d-flex">
           <div class="d-flex" style="align-items: flex-start;">
             <v-icon color="#2196f3">mdi-information</v-icon>
