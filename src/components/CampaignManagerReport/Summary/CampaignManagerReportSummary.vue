@@ -56,6 +56,10 @@
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
+    <CampaignManagerReportSummaryCategory
+      :category="getScenarioCategory"
+      :isFetchingSummary="isLoading"
+    />
     <CampaignManagerReportSummaryEmail
       :difficulties="difficulties"
       :methods="methods"
@@ -92,6 +96,7 @@ import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerRepo
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
+import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -101,7 +106,8 @@ export default {
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
-    CampaignManagerReportSummaryHeader
+    CampaignManagerReportSummaryHeader,
+    CampaignManagerReportSummaryCategory
   },
   mixins: [useLoading],
   props: {
@@ -399,6 +405,9 @@ export default {
     getTotalUsers() {
       const { campaignInfo = {} } = this.campaignSummary
       return campaignInfo['totalTargetUserCount'] || 0
+    },
+    getScenarioCategory() {
+      return this.getActiveScenario?.scenarioInfo?.category || 'Remote Working'
     },
     getEmailTemplateData() {
       const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {

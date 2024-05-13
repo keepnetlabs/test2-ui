@@ -40,6 +40,22 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
   USERS: '2'
 }
 export const COLUMNS = {
+  SCENARIO_DISTRIBUTION: {
+    property: `scenarioDistribution`,
+    align: 'left',
+    editable: false,
+    label: `Scenario Distribution`,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 240,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Manually', value: 1 },
+      { text: 'Random scenarios for each user', value: 2 },
+      { text: 'Same random scenario for all users', value: 3 }
+    ]
+  },
   CAMPAIGN_NAME: {
     property: PROPERTY_STORE.NAME,
     align: 'left',

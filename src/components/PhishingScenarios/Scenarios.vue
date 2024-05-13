@@ -7,7 +7,6 @@
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
     />
-
     <CommonSimulatorNewScenario
       v-if="modalStatus"
       ref="newScenarioModal"
@@ -198,6 +197,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
           COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
@@ -282,15 +282,39 @@ export default {
     this.callForLanguages('refScenariosList')
     this.callForScenarioDetails().then(() => {
       this.callForData()
+      this.scenarioDetailsLookup['categoryTypes'] = [
+        'Cyber Spying',
+        'Email Security',
+        'GDPR',
+        'General',
+        'Malware',
+        'Mobile Device Security',
+        'Password Security',
+        'Physical Security',
+        'Removable Media',
+        'Remote Working Security',
+        'Safe Online Shopping',
+        'Social Engineering',
+        'Social Media Security',
+        'Travel Security',
+        'Wi-Fi Security'
+      ]
       this.$set(
         this.tableOptions.columns[1],
+        'filterableItems',
+        this.scenarioDetailsLookup?.categoryTypes?.map((item) => {
+          return { text: item, value: item }
+        })
+      )
+      this.$set(
+        this.tableOptions.columns[2],
         'filterableItems',
         this.scenarioDetailsLookup.methodTypes.map((item) => {
           return { text: item.text, value: item.text }
         })
       )
       this.$set(
-        this.tableOptions.columns[3],
+        this.tableOptions.columns[4],
         'filterableItems',
         this.scenarioDetailsLookup.difficultyTypes.map((item) => {
           return { text: item.text, value: item.text }

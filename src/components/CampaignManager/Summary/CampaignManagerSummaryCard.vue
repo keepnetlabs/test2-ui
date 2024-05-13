@@ -2,7 +2,7 @@
   <CardLoading v-if="isLoading" :loading="isLoading" />
   <div class="campaign-manager-summary-card" v-else>
     <slot name="header">
-      <div class="campaign-manager-summary-card__header">
+      <div v-if="!hideHeader" class="campaign-manager-summary-card__header">
         <div class="campaign-manager-summary-card__header-left">
           <v-icon color="#2196f3" medium>
             {{ icon }}
@@ -70,6 +70,10 @@ export default {
       type: Object
     },
     hideLabel: {
+      type: Boolean,
+      default: false
+    },
+    hideHeader: {
       type: Boolean,
       default: false
     },

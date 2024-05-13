@@ -57,6 +57,23 @@
                   />
                 </FormGroup>
                 <FormGroup
+                  v-if="isPhishing"
+                  title="Category"
+                  sub-title="Select the phishing category for this scenario"
+                >
+                  <KSelect
+                    v-model.trim="formValues.category"
+                    id="input--category-scenario"
+                    outlined
+                    dense
+                    persistent-hint
+                    placeholder="Select category"
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    :items="getCategoryItems"
+                  />
+                </FormGroup>
+                <FormGroup
                   v-if="isQuishing"
                   has-hint
                   title="Quishing Type"
@@ -648,6 +665,12 @@ export default {
     getURLText() {
       return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
     },
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
+    },
+    getCategoryItems() {
+      return this.scenarioDetailsLookup?.categoryTypes || []
+    },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
     },
@@ -750,7 +773,8 @@ export default {
       const obj = {
         Name: this.formValues.name,
         Difficulty: this.getDifficultyType,
-        Method: this.getMethodText
+        Method: this.getMethodText,
+        Category: this.formValues.category
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType

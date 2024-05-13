@@ -25,6 +25,10 @@
           :label="template.name"
         />
       </ElTabs>
+      <div v-if="isPhishing && !isLoading" class="my-6">
+        <span class="template-preview__text--title">Category: </span>
+        <span class="template-preview__text--body">{{ category }}</span>
+      </div>
       <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
         <ElTabPane
           id="campaign-manager-info--email-content"
@@ -183,6 +187,7 @@ export default {
       emailTemplateParams: {},
       landingPageParams: {},
       trainingParams: {},
+      category: '',
       tab: 'email',
       isLoading: false,
       labels,
@@ -216,6 +221,9 @@ export default {
     },
     getSubtitle() {
       return this.selectedRow?.name || ''
+    },
+    isPhishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
     },
     isQuishing() {
       return this.type === PREVIEW_DIALOG_TYPES.QUISHING
@@ -277,6 +285,7 @@ export default {
       this.emailTemplate = template
       this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
+      this.category = phishingScenarioPreviewDto?.category || 'Remote Working'
       if (this.isTrainingScenario)
         this.callForTrainingLanguages(this.trainingParams.trainingContents)
       this.emailTemplateParams = {
