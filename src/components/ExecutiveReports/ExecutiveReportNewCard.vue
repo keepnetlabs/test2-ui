@@ -331,51 +331,57 @@ export default {
           if (maxDate && minDate) {
             this.date = refPicker.formatToValue([minDate, maxDate])
           }
+          this.formData.datePeriod = 4
         },
         shortcuts: [
           {
             text: 'Last month',
-            onClick(picker) {
+            onClick: (picker) => {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
               picker.$emit('pick', [start, end])
+              this.formData.datePeriod = 0
             }
           },
           {
             text: 'Last 3 months',
-            onClick(picker) {
+            onClick: (picker) => {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
               picker.$emit('pick', [start, end])
+              this.formData.datePeriod = 1
             }
           },
           {
             text: 'Last 6 months',
-            onClick(picker) {
+            onClick: (picker) => {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
               picker.$emit('pick', [start, end])
+              this.formData.datePeriod = 2
             }
           },
           {
             text: 'Last Year',
-            onClick(picker) {
+            onClick: (picker) => {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 360)
               picker.$emit('pick', [start, end])
+              this.formData.datePeriod = 3
             }
           },
           {
             text: 'All time',
-            onClick(picker) {
+            onClick: (picker) => {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 3600)
               picker.$emit('pick', [start, end])
+              this.formData.datePeriod = 4
             }
           }
         ]
@@ -917,7 +923,8 @@ export default {
           this.$moment(Date.now()).format(getTimeZoneForMoment())
         ],
         name: '',
-        dateCreated: this.$moment(Date.now()).format(getTimeZoneForMoment()).split(' ')[0],
+        datePeriod: 1,
+        dateCreated: this.$moment(Date.now()).format(getTimeZoneForMoment()),
         executiveReportCompanyName: localStorage.getItem('selectedCompanyName'),
         executiveReportLogo:
           localStorage.getItem('isSelectCompany') === 'true'
@@ -1062,14 +1069,21 @@ export default {
         executiveReport: {
           name: this.formData.name,
           dateCreated: this.formData.dateCreated,
-          startDate: this.formData.executiveReportDateRange[0],
-          endDate: this.formData.executiveReportDateRange[1],
-          description: '',
-          datePeriod: 1
+          startDate: '',
+          endDate: '',
+          description: 'Descriptions',
+          datePeriod: this.formData.datePeriod
         },
         widgetLayouts: this.layout
       }
-      if (!this.isShowPreview) payload.scheduling = this.schedulingFormData
+      console.log('this.formData.datePeriod', this.formData.datePeriod)
+      if (this.formData.datePeriod === 4) {
+        payload.executiveReport.startDate = this.formData.executiveReportDateRange[0]
+        payload.executiveReport.endDate = this.formData.executiveReportDateRange[1]
+      }
+      payload.scheduling = Object.keys(this.schedulingFormData).length
+        ? this.schedulingFormData
+        : null
       this.isActionButtonDisabled = true
       saveExecutiveReport(payload).finally(() => {
         this.isActionButtonDisabled = false
