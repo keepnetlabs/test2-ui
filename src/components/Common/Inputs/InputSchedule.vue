@@ -58,7 +58,7 @@
           v-model="value.useTargetUserTimeZone"
           hide-details
           color="#2196f3"
-          class="ml-2 mt-0"
+          class="mt-0"
           :disabled="value.scheduleTypeId !== '3'"
         >
           <template v-slot:label>
