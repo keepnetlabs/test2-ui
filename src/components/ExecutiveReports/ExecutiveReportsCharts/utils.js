@@ -9,6 +9,14 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Attachment Opened': {
+    backgroundColor: '#801717',
+    borderColor: '#801717',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   Vished: {
     backgroundColor: '#801717',
     borderColor: '#801717',
@@ -50,6 +58,14 @@ export const CHART_COLORS = {
     lineTension: 0
   },
   SubmittedMFACode: {
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'MFA Submitted': {
     backgroundColor: '#B83A3A',
     borderColor: '#B83A3A',
     fill: false,

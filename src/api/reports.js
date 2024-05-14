@@ -30,6 +30,7 @@ export const saveExecutiveReport = (payload) => {
   })
 }
 export const getExecutiveReport = (resourceId) => {
+  console.log('resourceId', resourceId)
   return testRequest.get(`/executive-report/${resourceId}`)
 }
 export const getExecutiveReportMetrics = () => {

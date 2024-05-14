@@ -23,7 +23,6 @@ export default {
     }
   },
   data() {
-    console.log('this.valueEnums', this.valueEnums)
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {

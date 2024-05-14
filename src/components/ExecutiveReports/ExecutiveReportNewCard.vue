@@ -23,237 +23,240 @@
       :default-date-range="formData.executiveReportDateRange"
       @on-close="toggleShowCustomizeWidgetDialog"
     />
-    <div v-if="!isScheduledReport" class="executive-report-new-card__header">
-      <div class="executive-report-new-card__header-left">
-        <VBtn
-          v-if="isShowPreview"
-          id="btn-back--campaign-manager-clustered-table"
-          text
-          color="#2196f3"
-          class="clustered-table-back-btn mr-2"
-          @click="routeToExecutiveReports"
-        >
-          <VIcon left>mdi-arrow-left</VIcon>Back</VBtn
-        >
-        <InputDate
-          v-model="formData.executiveReportDateRange"
-          id="input--investigation-email-date-range"
-          type="datetimerange"
-          ref="refInputDate"
-          style="visibility: hidden; position: absolute; min-width: 128px;"
-          :format="parsedFormat"
-          :valueFormat="parsedFormat"
-          :picker-options="pickerOptions"
-          :prefix-icon="'el-icon-date'"
-        />
-        <VBtn
-          class="training-library-card__footer-btn"
-          color="#fff"
-          rounded
-          :ripple="false"
-          @click="handleDateRangeClick"
-        >
-          <VIcon class="mr-1" left>mdi-calendar-range</VIcon>
-          DATE RANGE
-        </VBtn>
-        <VBtn
-          class="training-library-card__footer-btn"
-          color="#fff"
-          rounded
-          :ripple="false"
-          @click="toggleShowScheduleReportDialog"
-        >
-          <VIcon class="mr-1" left>mdi-calendar-clock</VIcon>
-          SCHEDULE
-        </VBtn>
-      </div>
-      <div class="executive-report-new-card__header-right">
-        <template v-if="editMode">
+    <DatatableLoading v-if="isLoading" :loading="isLoading" />
+    <template v-else>
+      <div v-if="!isScheduledReport" class="executive-report-new-card__header">
+        <div class="executive-report-new-card__header-left">
+          <VBtn
+            v-if="isShowPreview"
+            id="btn-back--campaign-manager-clustered-table"
+            text
+            color="#2196f3"
+            class="clustered-table-back-btn mr-2"
+            @click="routeToExecutiveReports"
+          >
+            <VIcon left>mdi-arrow-left</VIcon>Back</VBtn
+          >
+          <InputDate
+            v-model="formData.executiveReportDateRange"
+            id="input--investigation-email-date-range"
+            type="datetimerange"
+            ref="refInputDate"
+            style="visibility: hidden; position: absolute; min-width: 128px;"
+            :format="parsedFormat"
+            :valueFormat="parsedFormat"
+            :picker-options="pickerOptions"
+            :prefix-icon="'el-icon-date'"
+          />
           <VBtn
             class="training-library-card__footer-btn"
             color="#fff"
             rounded
             :ripple="false"
-            @click="handleCancelClick"
+            @click="handleDateRangeClick"
           >
-            CANCEL
+            <VIcon class="mr-1" left>mdi-calendar-range</VIcon>
+            DATE RANGE
           </VBtn>
           <VBtn
-            id="btn-add--training-library"
+            class="training-library-card__footer-btn"
+            color="#fff"
             rounded
-            color="#2196f3"
-            :class="getPreviewPdfButtonClasses"
-            @click="handlePreviewClick"
+            :ripple="false"
+            @click="toggleShowScheduleReportDialog"
           >
-            <span class="training-library-new-btn__text">PREVIEW PDF</span>
+            <VIcon class="mr-1" left>mdi-calendar-clock</VIcon>
+            SCHEDULE
           </VBtn>
-          <VBtn
-            id="btn-add--training-library"
-            :class="getSaveButtonClasses"
-            rounded
+        </div>
+        <div class="executive-report-new-card__header-right">
+          <template v-if="editMode">
+            <VBtn
+              class="training-library-card__footer-btn"
+              color="#fff"
+              rounded
+              :ripple="false"
+              @click="handleCancelClick"
+            >
+              CANCEL
+            </VBtn>
+            <VBtn
+              id="btn-add--training-library"
+              rounded
+              color="#2196f3"
+              :class="getPreviewPdfButtonClasses"
+              @click="handlePreviewClick"
+            >
+              <span class="training-library-new-btn__text">PREVIEW PDF</span>
+            </VBtn>
+            <VBtn
+              id="btn-add--training-library"
+              :class="getSaveButtonClasses"
+              rounded
+              color="#2196f3"
+              @click="handleSaveReportClick"
+            >
+              <span class="training-library-new-btn__text">SAVE REPORT</span>
+            </VBtn>
+          </template>
+          <VIcon
+            v-if="isShowPreview && !editMode"
             color="#2196f3"
-            @click="handleSaveReportClick"
+            class="executive-reports-card__right-btn mr-2"
+            small
+            @click="handleEditModeClick"
+            >mdi-pencil</VIcon
           >
-            <span class="training-library-new-btn__text">SAVE REPORT</span>
-          </VBtn>
-        </template>
-        <VIcon
-          v-if="isShowPreview && !editMode"
-          color="#2196f3"
-          class="executive-reports-card__right-btn mr-2"
-          small
-          @click="handleEditModeClick"
-          >mdi-pencil</VIcon
-        >
-        <VIcon
-          v-if="isShowPreview && !editMode"
-          color="#2196f3"
-          class="executive-reports-card__right-btn"
-          small
-          @click="handleDownloadButton"
-          >mdi-download</VIcon
-        >
+          <VIcon
+            v-if="isShowPreview && !editMode"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            small
+            @click="handleDownloadButton"
+            >mdi-download</VIcon
+          >
+        </div>
       </div>
-    </div>
-    <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
-      <div class="executive-report-new-card__body">
-        <div v-if="getIsShowEditTopFields" class="executive-report-new-card__body-new">
-          <div>
+      <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
+        <div class="executive-report-new-card__body">
+          <div v-if="getIsShowEditTopFields" class="executive-report-new-card__body-new">
             <div>
-              <VTextField
-                v-model="formData.name"
-                ref="refFiltersInput"
-                id="input--training-library-sorting"
-                label="Executive Report Name"
-                style="max-width: 448px;"
-                outlined
-                hide-details
-                autocomplete="off"
-                placeholder="Enter an executive report name"
-              />
-            </div>
-            <div class="d-flex mt-2 gap-2">
-              <div class="position-relative" @click="handleExecutiveReportDateClick">
+              <div>
                 <VTextField
-                  v-model="formData.dateCreated"
+                  v-model="formData.name"
+                  ref="refFiltersInput"
                   id="input--training-library-sorting"
-                  label="Date Created"
-                  class="pointer-none"
-                  style="max-width: 124px;"
+                  label="Executive Report Name"
+                  style="max-width: 448px;"
                   outlined
                   hide-details
                   autocomplete="off"
-                  placeholder="Date Created"
-                  append-icon="mdi-menu-down"
-                />
-                <InputDate
-                  v-model="formData.dateCreated"
-                  id="input--executive-report-date"
-                  type="date"
-                  ref="refInputExecutiveReportDate"
-                  style="visibility: hidden; position: absolute; min-width: 124px; top: 0;"
-                  :format="parsedFormatWithoutTime"
-                  :valueFormat="parsedFormatWithoutTime"
+                  placeholder="Enter an executive report name"
                 />
               </div>
-              <VTextField
-                v-model="formData.executiveReportCompanyName"
-                ref="refFiltersInput"
-                id="input--training-library-sorting"
-                label="Company Name"
-                style="max-width: 320px;"
-                outlined
-                hide-details
-                autocomplete="off"
-                placeholder="Company Name"
+              <div class="d-flex mt-2 gap-2">
+                <div class="position-relative" @click="handleExecutiveReportDateClick">
+                  <VTextField
+                    v-model="formData.dateCreated"
+                    id="input--training-library-sorting"
+                    label="Date Created"
+                    class="pointer-none"
+                    style="max-width: 124px;"
+                    outlined
+                    hide-details
+                    autocomplete="off"
+                    placeholder="Date Created"
+                    append-icon="mdi-menu-down"
+                  />
+                  <InputDate
+                    v-model="formData.dateCreated"
+                    id="input--executive-report-date"
+                    type="date"
+                    ref="refInputExecutiveReportDate"
+                    style="visibility: hidden; position: absolute; min-width: 124px; top: 0;"
+                    :format="parsedFormatWithoutTime"
+                    :valueFormat="parsedFormatWithoutTime"
+                  />
+                </div>
+                <VTextField
+                  v-model="formData.companyName"
+                  ref="refFiltersInput"
+                  id="input--training-library-sorting"
+                  label="Company Name"
+                  style="max-width: 320px;"
+                  outlined
+                  hide-details
+                  autocomplete="off"
+                  placeholder="Company Name"
+                />
+              </div>
+            </div>
+            <div class="executive-report-new-card__body-new-image">
+              <KFileUpload
+                ref="refInputLogo"
+                id="input--new-training-image"
+                class="d-none"
+                show-image-preview
+                hint="Only jpg, png files. Max. file size 2MB"
+                :extensions="['jpg', 'png']"
+                :size="2"
+                :show-file-size="false"
+                @inputFile="handleLogoChange"
+                @on-clear="handleLogoClear"
+              />
+              <VIcon color="#757575" small @click="handleLogoIconClick">mdi-pencil</VIcon>
+              <img
+                :src="
+                  formData.executiveReportLogoUrl
+                    ? formData.executiveReportLogoUrl
+                    : formData.executiveReportLogo
+                "
+                alt="logo"
               />
             </div>
           </div>
-          <div class="executive-report-new-card__body-new-image">
-            <KFileUpload
-              ref="refInputLogo"
-              id="input--new-training-image"
-              class="d-none"
-              show-image-preview
-              hint="Only jpg, png files. Max. file size 2MB"
-              :extensions="['jpg', 'png']"
-              :size="2"
-              :show-file-size="false"
-              @inputFile="handleLogoChange"
-              @on-clear="handleLogoClear"
-            />
-            <VIcon color="#757575" small @click="handleLogoIconClick">mdi-pencil</VIcon>
+          <div v-else class="executive-report-new-card__body-preview">
+            <div class="d-flex flex-column">
+              <div class="executive-report-new-card__body-preview-name">
+                {{ editData.name || formData.name }}
+              </div>
+              <div>
+                <span class="executive-report-new-card__body-preview-text"
+                  >Created on {{ editData.date || formData.dateCreated }}
+                </span>
+                <span class="executive-report-new-card__body-preview-text">
+                  by {{ editData.companyName || formData.companyName }}</span
+                >
+              </div>
+            </div>
             <img
+              class="executive-report-new-card__body-preview-img"
               :src="
                 formData.executiveReportLogoUrl
                   ? formData.executiveReportLogoUrl
                   : formData.executiveReportLogo
               "
-              alt="logo"
+              alt="Logo"
             />
           </div>
-        </div>
-        <div v-else class="executive-report-new-card__body-preview">
-          <div class="d-flex flex-column">
-            <div class="executive-report-new-card__body-preview-name">
-              {{ editData.name || formData.name }}
-            </div>
-            <div>
-              <span class="executive-report-new-card__body-preview-text"
-                >Created on {{ editData.date || formData.dateCreated }}
-              </span>
-              <span class="executive-report-new-card__body-preview-text">
-                by {{ editData.companyName || formData.executiveReportCompanyName }}</span
-              >
-            </div>
+          <div v-if="!isShowPreview && !layout.length" class="executive-report-new-card__empty">
+            Choose items from left side
           </div>
-          <img
-            class="executive-report-new-card__body-preview-img"
-            :src="
-              formData.executiveReportLogoUrl
-                ? formData.executiveReportLogoUrl
-                : formData.executiveReportLogo
-            "
-            alt="Logo"
-          />
-        </div>
-        <div v-if="!isShowPreview && !layout.length" class="executive-report-new-card__empty">
-          Choose items from left side
-        </div>
-        <k-smart-grid
-          class="executive-report-grid"
-          ref="refGrid"
-          :layout="layout"
-          :col-num="colNum"
-          :is-static="getIsStatic"
-          :row-height="50"
-          @breakpointChanged="breakpointChanged"
-          @layout-updated="layoutUpdated"
-          @layout-mounted="layoutMounted"
-        >
-          <smart-widget
-            v-for="(item, index) in layout"
-            :key="item.i + index"
-            :slot="item.i"
-            :padding="[0, 0]"
-            :ref="`ref${item.i}`"
-            :shadow="'never'"
-            :simple="true"
+          <k-smart-grid
+            class="executive-report-grid"
+            ref="refGrid"
+            :layout="layout"
+            :col-num="colNum"
+            :is-static="getIsStatic"
+            :row-height="50"
+            @breakpointChanged="breakpointChanged"
+            @layout-updated="layoutUpdated"
+            @layout-mounted="layoutMounted"
           >
-            <component
-              :id="item.key"
-              :is="getComponent(item.key)"
-              :resizable="false"
-              :edit-mode="!getIsStatic"
-              :card="item"
-              :date-range="formData.executiveReportDateRange"
-              @on-delete="deleteWidget(item, index)"
-              @on-edit="toggleShowCustomizeWidgetDialog"
-            />
-          </smart-widget>
-        </k-smart-grid>
+            <smart-widget
+              v-for="(item, index) in layout"
+              :key="item.i + index"
+              :slot="item.i"
+              :padding="[0, 0]"
+              :ref="`ref${item.i}`"
+              :shadow="'never'"
+              :simple="true"
+            >
+              <component
+                :id="item.key"
+                :is="getComponent(item.key)"
+                :resizable="false"
+                :edit-mode="!getIsStatic"
+                :card="item"
+                :date-range="formData.executiveReportDateRange"
+                @on-delete="deleteWidget(item, index)"
+                @on-edit="toggleShowCustomizeWidgetDialog"
+              />
+            </smart-widget>
+          </k-smart-grid>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -269,9 +272,11 @@ import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
+    DatatableLoading,
     ExecutiveReportDownloadModal,
     KSmartGrid,
     ExecutiveReportCustomizeWidgetDialog,
@@ -323,6 +328,7 @@ export default {
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
       isShowDownloadModal: false,
+      isLoading: false,
       schedulingFormData: {},
       pickerOptions: {
         onPick: (date) => {
@@ -925,7 +931,8 @@ export default {
         name: '',
         datePeriod: 1,
         dateCreated: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        executiveReportCompanyName: localStorage.getItem('selectedCompanyName'),
+        companyName: localStorage.getItem('selectedCompanyName'),
+        description: 'Description',
         executiveReportLogo:
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
@@ -958,8 +965,6 @@ export default {
       return this.isPreview || this.activatePreview
     },
     getIsStatic() {
-      console.log('this.editMode', this.editMode)
-      console.log('this.isShowPreview ', this.isShowPreview)
       if (this.$route.name === 'Preview Executive Report') return !this.editMode
       return this.isShowPreview ? this.isShowPreview : !this.editMode
     },
@@ -986,7 +991,17 @@ export default {
   async created() {
     try {
       if (this.isEdit || this.activatePreview) {
-        const report = await getExecutiveReport()
+        this.isLoading = true
+        const report = await getExecutiveReport(this.$route.params.id)
+        const {
+          data: { data }
+        } = report
+        this.formData.companyName = data.companyName
+        this.formData.dateCreated = data.dateCreated
+        this.formData.datePeriod = data.datePeriod
+        this.formData.description = data.description
+        this.formData.name = data.name
+        this.formData.executiveReportLogo = data.widgetLayout
         this.layout = report.data.data
       }
       setTimeout(() => {
@@ -997,6 +1012,8 @@ export default {
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
+    } finally {
+      this.isLoading = false
     }
   },
   mounted() {
@@ -1071,12 +1088,12 @@ export default {
           dateCreated: this.formData.dateCreated,
           startDate: '',
           endDate: '',
-          description: 'Descriptions',
-          datePeriod: this.formData.datePeriod
+          description: this.formData.description,
+          datePeriod: this.formData.datePeriod,
+          companyName: this.formData.companyName
         },
         widgetLayouts: this.layout
       }
-      console.log('this.formData.datePeriod', this.formData.datePeriod)
       if (this.formData.datePeriod === 4) {
         payload.executiveReport.startDate = this.formData.executiveReportDateRange[0]
         payload.executiveReport.endDate = this.formData.executiveReportDateRange[1]

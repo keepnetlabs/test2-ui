@@ -12,7 +12,7 @@
         <ExecutiveWidgetBody>
           <template v-if="hasData">
             <ExecutiveReportStackedBarChart
-              v-if="card.chartType === 'stackedBar'"
+              v-if="card.chartType === 'stackedBar' || card.chartType === 'Bar'"
               :time-unit="card.timeUnit"
               :raw-data="chartData"
             />
@@ -207,7 +207,6 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      console.log('this.card', this.card)
       const payload = {
         widgetIds: [this.card.resourceId],
         datePeriod: 1,
@@ -219,10 +218,30 @@ export default {
           const {
             data: { data }
           } = response || {}
-          if (this.card.chartType === 'gauge') this.gaugeChartData = 45
-          if (['doughnut', 'pie'].includes(this.card.chartType)) this.pieChartData = [20, 30]
-          console.log('this.chartData', data)
-          this.chartData = data
+          const datasets = []
+          const valueEnums = new Set()
+          data[0].widgetDatas.forEach((dItem) => {
+            const splittedDate = dItem?.date?.split(' ')
+            const lefSideDate = splittedDate[0]
+            const leftSideSplittedDate = lefSideDate?.split('/')
+            const timeStampOfDate = new Date(
+              leftSideSplittedDate[2],
+              leftSideSplittedDate[1] - 1,
+              leftSideSplittedDate[0]
+            ).getTime()
+            dItem.values.forEach((vItem) => {
+              valueEnums.add(vItem.label)
+              datasets.push({
+                x: timeStampOfDate,
+                y: vItem.value,
+                result: vItem.label
+              })
+            })
+          })
+          this.chartData = {
+            datasets,
+            valueEnums: Array.from(valueEnums)
+          }
           this.isLoading = false
         })
         .finally(() => {

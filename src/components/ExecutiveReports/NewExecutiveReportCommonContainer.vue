@@ -38,7 +38,7 @@
 <script>
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
 import ExecutiveReportSearchCard from '@/components/ExecutiveReports/ExecutiveReportSearchCard.vue'
-import { getExecutiveReportMetrics } from '@/api/reports'
+import { getExecutiveReport, getExecutiveReportMetrics } from '@/api/reports'
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {

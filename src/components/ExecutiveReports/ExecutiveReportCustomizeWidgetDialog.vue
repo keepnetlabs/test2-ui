@@ -371,7 +371,6 @@ export default {
     }
   },
   created() {
-    console.log('this.', this.defaultDateRange)
     this.callForData()
   },
   methods: {

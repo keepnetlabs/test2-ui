@@ -41,6 +41,7 @@ export default {
     calculateData() {
       const data = this.rawData.datasets
       const valueEnums = this.rawData.valueEnums
+      console.log('data', data)
       if (data.length) {
         this.chartOptions = {
           barPercentage: 0.8,

@@ -257,6 +257,7 @@ export default {
         this.chartData = {
           datasets
         }
+        console.log('this.chartData', this.chartData)
       }
     }
   }
