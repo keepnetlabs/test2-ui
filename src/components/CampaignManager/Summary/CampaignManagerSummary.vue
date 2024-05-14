@@ -126,6 +126,11 @@
         :label="template.name"
       />
     </ElTabs>
+    <CampaignManagerReportSummaryCategory
+      v-if="type === SCENARIO_TYPES.PHISHING"
+      class="mt-4"
+      :category="category"
+    />
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
@@ -280,6 +285,8 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { mapGetters } from 'vuex'
+import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
+
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -290,6 +297,7 @@ export default {
     CampaignManagerSummaryCard,
     AttachmentsPreview,
     CampaignManagerReportSummaryLandingPage,
+    CampaignManagerReportSummaryCategory,
     AlertBox,
     CampaignManagerScheduleDialog
   },
@@ -332,6 +340,7 @@ export default {
       selectedScenarioName: '',
       emailTemplateParams: {},
       landingPageParams: {},
+      category: '',
       difficulties,
       methods,
       isShowScheduleDialog: false,
@@ -626,7 +635,7 @@ export default {
       apiFunc(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
+          const { emailTemplate, landingPageTemplate, category = '' } = data
           let {
             template,
             fromName,
@@ -678,6 +687,7 @@ export default {
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
+          this.category = category || 'Remote Working'
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },

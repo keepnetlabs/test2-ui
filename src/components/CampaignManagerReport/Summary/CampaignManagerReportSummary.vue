@@ -510,12 +510,6 @@ export default {
     }
   },
   watch: {
-    isCategoryBasedDistribution: {
-      immediate: true,
-      handler(val) {
-        console.log('isCategoryBasedDistribution', val)
-      }
-    },
     apiResponse(value = {}) {
       this.setCampaignSummary(value)
       setTimeout(() => {
