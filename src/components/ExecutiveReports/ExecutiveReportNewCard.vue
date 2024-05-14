@@ -6,6 +6,7 @@
       :selected-row="selectedRow"
       :is-new="!isShowPreview"
       @on-close="toggleShowScheduleReportDialog"
+      @on-submit="schedulingFormData = $event"
     />
     <ExecutiveReportDownloadModal
       v-if="isShowDownloadModal"
@@ -120,7 +121,7 @@
           <div>
             <div>
               <VTextField
-                v-model="formData.executiveReportName"
+                v-model="formData.name"
                 ref="refFiltersInput"
                 id="input--training-library-sorting"
                 label="Executive Report Name"
@@ -134,7 +135,7 @@
             <div class="d-flex mt-2 gap-2">
               <div class="position-relative" @click="handleExecutiveReportDateClick">
                 <VTextField
-                  v-model="formData.executiveReportDate"
+                  v-model="formData.dateCreated"
                   id="input--training-library-sorting"
                   label="Date Created"
                   class="pointer-none"
@@ -146,7 +147,7 @@
                   append-icon="mdi-menu-down"
                 />
                 <InputDate
-                  v-model="formData.executiveReportDate"
+                  v-model="formData.dateCreated"
                   id="input--executive-report-date"
                   type="date"
                   ref="refInputExecutiveReportDate"
@@ -195,11 +196,11 @@
         <div v-else class="executive-report-new-card__body-preview">
           <div class="d-flex flex-column">
             <div class="executive-report-new-card__body-preview-name">
-              {{ editData.name || formData.executiveReportName }}
+              {{ editData.name || formData.name }}
             </div>
             <div>
               <span class="executive-report-new-card__body-preview-text"
-                >Created on {{ editData.date || formData.executiveReportDate }}
+                >Created on {{ editData.date || formData.dateCreated }}
               </span>
               <span class="executive-report-new-card__body-preview-text">
                 by {{ editData.companyName || formData.executiveReportCompanyName }}</span
@@ -263,7 +264,6 @@ import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/E
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/ExecutiveReportCustomizeWidgetDialog.vue'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
-import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
 import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
@@ -314,6 +314,7 @@ export default {
       newItemY: 0,
       activatePreview: this.isPreview,
       editMode: !this.isPreview,
+      isActionButtonDisabled: false,
       isPreviewDownload: false,
       isPdfDownload: false,
       justDownload: false,
@@ -322,6 +323,7 @@ export default {
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
       isShowDownloadModal: false,
+      schedulingFormData: {},
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -401,7 +403,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        PhishingCampaignTrends: {
+        PhishingCampaignTrendWidget: {
           x: 0,
           y: 0,
           w: 12,
@@ -415,11 +417,33 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Phishing Campaign Trends',
           subtitle: '(Phishing)',
-          key: 'PhishingCampaignTrends',
-          name: 'PhishingCampaignTrends',
+          key: 'PhishingCampaignTrendWidget',
+          name: 'Phishing Campaign Trend',
+          widgetType: 'PhishingCampaignTrendWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        PhishingCampaignRiskiestUsersTableWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Campaign Riskiest Users',
+          key: 'PhishingCampaignRiskiestUsersTableWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'table',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -655,7 +679,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        QuishingCampaignTrends: {
+        QuishingCampaignTrendWidget: {
           x: 0,
           y: 0,
           w: 12,
@@ -667,8 +691,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Quishing Campaign Trends',
-          key: 'QuishingCampaignTrends',
+          title: 'Quishing Campaign Trend',
+          key: 'QuishingCampaignTrendWidget',
           isAllowed: true,
           parentKey: 'Quishing Metrics',
           chartType: 'line',
@@ -697,7 +721,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        CallbackCampaignTrends: {
+        CallbackCampaignTrendWidget: {
           x: 0,
           y: 0,
           w: 12,
@@ -709,8 +733,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Callback Campaign Trends',
-          key: 'CallbackCampaignTrends',
+          title: 'Callback Campaign Trend',
+          key: 'CallbackCampaignTrendWidget',
           isAllowed: true,
           parentKey: 'Callback Metrics',
           chartType: 'line',
@@ -739,7 +763,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        SmishingCampaignTrends: {
+        SmishingCampaignTrendWidget: {
           x: 0,
           y: 0,
           w: 12,
@@ -751,8 +775,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Smishing Campaign Trends',
-          key: 'SmishingCampaignTrends',
+          title: 'Smishing Campaign Trend',
+          key: 'SmishingCampaignTrendWidget',
           isAllowed: true,
           parentKey: 'Smishing Metrics',
           chartType: 'line',
@@ -892,8 +916,8 @@ export default {
           this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           this.$moment(Date.now()).format(getTimeZoneForMoment())
         ],
-        executiveReportName: '',
-        executiveReportDate: this.$moment(Date.now()).format(getTimeZoneForMoment()).split(' ')[0],
+        name: '',
+        dateCreated: this.$moment(Date.now()).format(getTimeZoneForMoment()).split(' ')[0],
         executiveReportCompanyName: localStorage.getItem('selectedCompanyName'),
         executiveReportLogo:
           localStorage.getItem('isSelectCompany') === 'true'
@@ -914,13 +938,13 @@ export default {
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
-      if (!this.formData.executiveReportName || !this.layout.length)
+      if (!this.formData.name || !this.layout.length)
         classes.push('new-executive-report-button-disabled')
       return classes
     },
     getPreviewPdfButtonClasses() {
       let classes = ['training-library-new-btn ml-2']
-      if (!this.formData.executiveReportName) classes.push('new-executive-report-button-disabled')
+      if (!this.formData.name) classes.push('new-executive-report-button-disabled')
       return classes
     },
     isShowPreview() {
@@ -949,7 +973,7 @@ export default {
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl
-      this.srcToImage()
+      //this.srcToImage()
     }
   },
   async created() {
@@ -1034,7 +1058,22 @@ export default {
       //this.handleDownloadClick()
     },
     handleSaveReportClick() {
-      saveExecutiveReport(this.layout)
+      const payload = {
+        executiveReport: {
+          name: this.formData.name,
+          dateCreated: this.formData.dateCreated,
+          startDate: this.formData.executiveReportDateRange[0],
+          endDate: this.formData.executiveReportDateRange[1],
+          description: '',
+          datePeriod: 1
+        },
+        widgetLayouts: this.layout
+      }
+      if (!this.isShowPreview) payload.scheduling = this.schedulingFormData
+      this.isActionButtonDisabled = true
+      saveExecutiveReport(payload).finally(() => {
+        this.isActionButtonDisabled = false
+      })
     },
     async handleDownloadClick(
       fileName = 'executive-report',
@@ -1131,17 +1170,18 @@ export default {
     addWidget(widget) {
       let newItem
       const widgetObj = {
-        ...this.allWidgets[widget.key],
+        ...this.allWidgets[widget.widgetType],
         i: createRandomCryptStringNumber(),
         startDate: this.formData.executiveReportDateRange[0],
-        endDate: this.formData.executiveReportDateRange[1]
+        endDate: this.formData.executiveReportDateRange[1],
+        resourceId: widget.resourceId
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
       } else if (window.innerWidth < 900) {
         widgetObj.w = 6
       } else {
-        this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
+        this.allWidgets[widget.widgetType].w = this.allWidgets[widget.widgetType].defaultW
       }
       newItem = widgetObj
       newItem['y'] = this.newItemY

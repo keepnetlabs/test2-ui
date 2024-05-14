@@ -74,11 +74,11 @@ export default {
     filteredCards() {
       let copyOfCards = JSON.parse(JSON.stringify(this.cards))
       return copyOfCards.filter((card) => {
-        card.charts = card.charts.filter((chart) => {
+        card.widgets = card.widgets.filter((chart) => {
           const isChartNameIncludes = chart.name.toLowerCase().includes(this.search.toLowerCase())
           if (isChartNameIncludes) return chart
         })
-        return card.charts.length ? card : null
+        return card.widgets.length ? card : null
       })
     }
   },
@@ -90,8 +90,11 @@ export default {
       this.setLoading(true)
       getExecutiveReportMetrics()
         .then((response) => {
-          console.log('response.data.metrics', response.data.metrics)
-          this.cards = response.data.metrics
+          const {
+            data: { data }
+          } = response || {}
+          this.cards = data.metrics
+          console.log('data.metrics', data.metrics)
         })
         .finally(this.setLoading)
     },

@@ -207,7 +207,14 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      getExecutiveReportChartData()
+      console.log('this.card', this.card)
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: 1,
+        startDate: this.card.startDate,
+        endDate: this.card.endDate
+      }
+      getExecutiveReportChartData(payload)
         .then((response) => {
           const {
             data: { data }

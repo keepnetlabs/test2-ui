@@ -150,7 +150,7 @@ export default {
       frequencyItems,
       formData: {
         name: '',
-        frequency: '',
+        frequency: 0,
         scheduledDateTimeZoneId: '',
         scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
         enableRegionTimezone: false,
@@ -226,7 +226,10 @@ export default {
     handleClose() {
       this.$emit('on-close')
     },
-    handleConfirm() {}
+    handleConfirm() {
+      if (!this.$refs.refForm.validate()) return
+      this.$emit('on-submit', this.formData)
+    }
   }
 }
 </script>

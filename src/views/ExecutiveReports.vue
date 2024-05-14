@@ -42,13 +42,16 @@
       </VTooltip>
     </div>
     <div class="executive-reports__body">
-      <ExecutiveReportsCard
-        v-for="card in cards"
-        :key="card.name"
-        :card="card"
-        @on-schedule="toggleShowScheduleReportDialog"
-        @on-delete="toggleShowDeleteDialog"
-      />
+      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+      <template v-else>
+        <ExecutiveReportsCard
+          v-for="card in cards"
+          :key="card.name"
+          :card="card"
+          @on-schedule="toggleShowScheduleReportDialog"
+          @on-delete="toggleShowDeleteDialog"
+        />
+      </template>
     </div>
   </KContainer>
 </template>
@@ -60,15 +63,18 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import ReportsService from '@/api/reports'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
 import ExecutiveReportDeleteDialog from '@/components/ExecutiveReports/ExecutiveReportDeleteDialog.vue'
+import { useLoading } from '@/hooks/useLoading'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
   name: 'ExecutiveReports',
   components: {
+    DatatableLoading,
     ExecutiveReportDeleteDialog,
     ExecutiveReportScheduleReportDialog,
     ExecutiveReportsCard,
     KContainer
   },
-  mixins: [useDebounce],
+  mixins: [useDebounce, useLoading],
   data() {
     return {
       search: '',
@@ -84,20 +90,22 @@ export default {
   },
   methods: {
     callForData() {
-      ReportsService.getExecutiveReports().then((response) => {
-        const {
-          data: { data }
-        } = response || {}
-        this.cards = data
-      })
+      this.setLoading(true)
+      ReportsService.getExecutiveReports(this.search)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.cards = data
+        })
+        .finally(this.setLoading)
     },
     handleDebouncedSearch(value) {
       this.search = value
       this.debounce(() => {
-        this.handleSearch(value)
+        this.callForData(value)
       })
     },
-    handleSearch(value) {},
     routeToNewExecutiveReport() {
       this.$router.push({ name: 'New Executive Report' })
     },

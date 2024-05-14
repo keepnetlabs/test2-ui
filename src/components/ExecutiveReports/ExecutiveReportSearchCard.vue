@@ -12,16 +12,16 @@
     </div>
     <div v-if="showBodyDetail" class="executive-report-search-card__content mt-2">
       <div
-        v-for="(chart, index) in card.charts"
+        v-for="(chart, index) in card.widgets"
         :key="chart.name"
         class="executive-report-search-card__content-chart cursor-pointer"
-        @click="handleAddChart(chart, card.charts, index)"
+        @click="handleAddChart(chart, card.widgets, index)"
       >
         <div>
           <img
             class="executive-report-search-card__content-chart-image"
-            :src="chart.src"
-            alt="chart"
+            :src="chart.imageUrl"
+            :alt="chart.name"
           />
         </div>
         <div class="executive-report-search-card__content-chart-title">{{ chart.name }}</div>
