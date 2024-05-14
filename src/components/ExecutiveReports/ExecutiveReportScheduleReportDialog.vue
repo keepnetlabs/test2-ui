@@ -44,7 +44,7 @@
           sub-title="Sending date and time of this report"
         >
           <InputDate
-            v-model="formData.scheduledDate"
+            v-model="formData.schedule"
             class="date-picker-height-40 w-100"
             type="datetime"
             ref="refPicker"
@@ -65,7 +65,7 @@
           />
         </FormGroup>
         <VSwitch
-          v-model="formData.enableRegionTimezone"
+          v-model="formData.isRegionAwareTimeZone"
           hide-details
           :ripple="false"
           color="#2196f3"
@@ -106,7 +106,7 @@
       <AppDialogFooter
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
-        action-button-text="SUBMIT"
+        :action-button-text="isNew ? 'SAVE & SUBMIT' : 'SUBMIT'"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleConfirm"
@@ -152,8 +152,8 @@ export default {
         name: '',
         frequency: 0,
         scheduledDateTimeZoneId: '',
-        scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        enableRegionTimezone: false,
+        schedule: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        isRegionAwareTimeZone: false,
         emailAddresses: []
       },
       isActionButtonDisabled: false,

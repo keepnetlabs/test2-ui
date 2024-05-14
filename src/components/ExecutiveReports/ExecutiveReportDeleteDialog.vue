@@ -26,6 +26,7 @@
 <script>
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 import AppDialog from '@/components/AppDialog.vue'
+import { deleteExecutiveReport } from '@/api/reports'
 
 export default {
   name: 'ExecutiveReportDeleteDialog',
@@ -33,6 +34,10 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    selectedRow: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -41,10 +46,17 @@ export default {
     }
   },
   methods: {
-    handleClose() {
-      this.$emit('on-close')
+    handleClose(forceUpdate = false) {
+      this.$emit('on-close', null, forceUpdate)
     },
-    handleConfirm() {}
+    handleConfirm() {
+      this.isActionButtonDisabled = true
+      deleteExecutiveReport(this.selectedRow.resourceId)
+        .then(() => this.handleClose(true))
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
+    }
   }
 }
 </script>

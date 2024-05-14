@@ -1,5 +1,9 @@
 <template>
-  <WidgetLoading :loading="isLoading">
+  <WidgetLoading
+    class="executive-reports-widget-loading"
+    :style="isLoading ? 'border: 1px solid #e0e0e0;' : ''"
+    :loading="isLoading"
+  >
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
@@ -90,6 +94,7 @@ import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getExecutiveReportChartData } from '@/api/reports'
 import ExecutiveReportsAreaChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsAreaChart.vue'
+import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 
 export default {
   name: 'ExecutiveReportsWidget',
@@ -122,6 +127,10 @@ export default {
     dateRange: {
       type: Array,
       default: () => []
+    },
+    defaultWidgetData: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -202,7 +211,8 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    if (Object.keys(this.defaultWidgetData).length) this.chartData = this.defaultWidgetData
+    else this.callForData()
   },
   methods: {
     callForData() {
@@ -218,30 +228,7 @@ export default {
           const {
             data: { data }
           } = response || {}
-          const datasets = []
-          const valueEnums = new Set()
-          data[0].widgetDatas.forEach((dItem) => {
-            const splittedDate = dItem?.date?.split(' ')
-            const lefSideDate = splittedDate[0]
-            const leftSideSplittedDate = lefSideDate?.split('/')
-            const timeStampOfDate = new Date(
-              leftSideSplittedDate[2],
-              leftSideSplittedDate[1] - 1,
-              leftSideSplittedDate[0]
-            ).getTime()
-            dItem.values.forEach((vItem) => {
-              valueEnums.add(vItem.label)
-              datasets.push({
-                x: timeStampOfDate,
-                y: vItem.value,
-                result: vItem.label
-              })
-            })
-          })
-          this.chartData = {
-            datasets,
-            valueEnums: Array.from(valueEnums)
-          }
+          this.chartData = createExecutiveReportChartData(data[0].widgetDatas)
           this.isLoading = false
         })
         .finally(() => {

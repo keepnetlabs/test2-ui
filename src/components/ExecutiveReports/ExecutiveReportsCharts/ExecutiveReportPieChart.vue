@@ -69,7 +69,6 @@ export default {
           }
         }
       }
-      console.log('this.valueENums', this.valueEnums)
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
         backgroundColor.push(CHART_COLORS[data].backgroundColor)

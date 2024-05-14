@@ -45,8 +45,8 @@
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <template v-else>
         <ExecutiveReportsCard
-          v-for="card in cards"
-          :key="card.name"
+          v-for="(card, index) in cards"
+          :key="index"
           :card="card"
           @on-schedule="toggleShowScheduleReportDialog"
           @on-delete="toggleShowDeleteDialog"
@@ -113,9 +113,10 @@ export default {
       this.selectedRow = row
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
     },
-    toggleShowDeleteDialog(row = {}) {
+    toggleShowDeleteDialog(row = {}, forceUpdate = false) {
       this.selectedRow = row
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+      if (forceUpdate) this.callForData()
     }
   }
 }

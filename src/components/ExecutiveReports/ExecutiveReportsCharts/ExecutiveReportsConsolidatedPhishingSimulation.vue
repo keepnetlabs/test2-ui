@@ -204,7 +204,6 @@ export default {
             generateLabels(chart = {}) {
               const { data } = chart
               return data.datasets.map((item, index) => {
-                console.log('item', item)
                 return {
                   text: item.label,
                   fillStyle: item.borderColor,

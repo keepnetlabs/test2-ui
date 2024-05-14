@@ -6,7 +6,7 @@
       :selected-row="selectedRow"
       :is-new="!isShowPreview"
       @on-close="toggleShowScheduleReportDialog"
-      @on-submit="schedulingFormData = $event"
+      @on-submit="handleScheduleReportSubmit"
     />
     <ExecutiveReportDownloadModal
       v-if="isShowDownloadModal"
@@ -249,6 +249,7 @@
                 :edit-mode="!getIsStatic"
                 :card="item"
                 :date-range="formData.executiveReportDateRange"
+                :default-widget-data="defaultWidgetData[item.key]"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
               />
@@ -268,11 +269,15 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/ExecutiveReportCustomizeWidgetDialog.vue'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
-import { getExecutiveReport, saveExecutiveReport } from '@/api/reports'
+import { getExecutiveReport, saveExecutiveReport, updateExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import {
+  createExecutiveReportChartData,
+  DATE_PERIOD_ENUMS
+} from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -938,7 +943,8 @@ export default {
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl,
         executiveReportLogoUrl: ''
-      }
+      },
+      defaultWidgetData: {}
     }
   },
   computed: {
@@ -985,7 +991,6 @@ export default {
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl
-      //this.srcToImage()
     }
   },
   async created() {
@@ -998,11 +1003,29 @@ export default {
         } = report
         this.formData.companyName = data.companyName
         this.formData.dateCreated = data.dateCreated
-        this.formData.datePeriod = data.datePeriod
+        this.formData.datePeriod = DATE_PERIOD_ENUMS[data.datePeriod]
+        const end = new Date()
+        const start = new Date()
+        if (this.formData.datePeriod === 0) {
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+          this.formData.executiveReportDateRange = [start, end]
+        } else if (this.formData.datePeriod === 1) {
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+          this.formData.executiveReportDateRange = [start, end]
+        } else if (this.formData.datePeriod === 2) {
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
+          this.formData.executiveReportDateRange = [start, end]
+        } else if (this.formData.datePeriod === 3) {
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+          this.formData.executiveReportDateRange = [start, end]
+        }
         this.formData.description = data.description
-        this.formData.name = data.name
-        this.formData.executiveReportLogo = data.widgetLayout
-        this.layout = report.data.data
+        this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
+        data.widgets.forEach((widget) => {
+          this.defaultWidgetData[widget.name] = createExecutiveReportChartData(widget.widgetDatas)
+        })
+        this.layout = JSON.parse(data.widgetLayout)
+        console.log('this.layout', this.layout)
       }
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
@@ -1015,9 +1038,6 @@ export default {
     } finally {
       this.isLoading = false
     }
-  },
-  mounted() {
-    if (this.isScheduledReport) this.handleDownloadClick()
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
@@ -1079,7 +1099,6 @@ export default {
       this.activatePreview = true
       this.isPreviewDownload = true
       this.toggleShowDownloadModal()
-      //this.handleDownloadClick()
     },
     handleSaveReportClick() {
       const payload = {
@@ -1102,9 +1121,27 @@ export default {
         ? this.schedulingFormData
         : null
       this.isActionButtonDisabled = true
-      saveExecutiveReport(payload).finally(() => {
-        this.isActionButtonDisabled = false
-      })
+      if (this.isEdit) {
+        updateExecutiveReport(payload, this.$route.params.id)
+          .then(() => {
+            this.activatePreview = true
+            this.editMode = false
+            this.$emit('on-edit-cancel')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      } else {
+        saveExecutiveReport(payload)
+          .then(() => {
+            this.activatePreview = true
+            this.editMode = false
+            this.$emit('on-edit-cancel')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      }
     },
     async handleDownloadClick(
       fileName = 'executive-report',
@@ -1235,19 +1272,13 @@ export default {
       this.justDownload = true
       this.toggleShowDownloadModal()
     },
-    srcToImage() {
-      if (this.formData.executiveReportLogo) {
-        fetch(this.formData.executiveReportLogo).then(async (response) => {
-          const contentType = response.headers.get('content-type')
-          const blob = await response.blob()
-          const file = new File([blob], 'logo.png', { contentType })
-          this.formData.executiveReportLogo = URL.createObjectURL(file)
-        })
-      }
-    },
     handleEditModeClick() {
       this.editMode = true
       this.$emit('on-edit')
+    },
+    handleScheduleReportSubmit(data) {
+      this.isShowScheduleReportDialog = false
+      this.schedulingFormData = data
     }
   }
 }

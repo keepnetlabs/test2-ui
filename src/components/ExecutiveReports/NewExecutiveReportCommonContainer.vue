@@ -94,7 +94,6 @@ export default {
             data: { data }
           } = response || {}
           this.cards = data.metrics
-          console.log('data.metrics', data.metrics)
         })
         .finally(this.setLoading)
     },

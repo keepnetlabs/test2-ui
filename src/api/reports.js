@@ -29,9 +29,18 @@ export const saveExecutiveReport = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const updateExecutiveReport = (payload, resourceId) => {
+  return testRequest.put(`/executive-report/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export const getExecutiveReport = (resourceId) => {
-  console.log('resourceId', resourceId)
   return testRequest.get(`/executive-report/${resourceId}`)
+}
+export const deleteExecutiveReport = (resourceId) => {
+  return testRequest.delete(`/executive-report/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export const getExecutiveReportMetrics = () => {
   return testRequest.get('/executive-report/metrics')
