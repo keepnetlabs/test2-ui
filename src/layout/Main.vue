@@ -318,7 +318,12 @@
                   to="/phishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
-                  :active-class-comparator="() => routerName === 'Campaign Manager'"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Campaign Manager' ||
+                      routerName === 'Campaign Reports' ||
+                      routerName === 'Campaign Report'
+                  "
                   @click="handlePhishingCampaignManagerClick"
                 />
               </v-list-item-content>
@@ -1177,10 +1182,7 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' ||
-        routerName === 'Campaign Report' ||
-        routerName === 'Advanced Reports' ||
-        routerName === 'Advanced Report'
+        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]
@@ -1312,6 +1314,8 @@ export default {
           routerName === 'Email Templates' ||
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
+          routerName === 'Campaign Reports' ||
+          routerName === 'Campaign Report' ||
           routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'

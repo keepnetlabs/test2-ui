@@ -332,6 +332,8 @@ export default {
         formData.sendingLimit =
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.useTargetUserTimeZone =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.useTargetUserTimeZone
         formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
@@ -564,11 +566,15 @@ export default {
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
             ) {
-              this.totalTargetUserCount =
-                this.userCountDetailResponse?.data?.data
-                  ?.find((detail) => detail.status === 'Active')
-                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
-                totalTargetUserCount
+              this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+                (acc, row) => {
+                  if (row.status !== 'Active') return acc
+                  const verifiedUserCount =
+                    row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                  return acc + verifiedUserCount
+                },
+                0
+              )
             }
             if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
@@ -706,6 +712,7 @@ export default {
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : deliverySettingsFormData.scheduledDateTimeZoneId,
+            useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,

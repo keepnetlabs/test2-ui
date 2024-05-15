@@ -33,6 +33,13 @@ function deleteTextMessageTemplate(resourceId) {
   })
 }
 
+function bulkDeleteTextMessageTemplates(payload) {
+  return testRequest.delete(`/smishing-simulator/text-templates/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 const getSummaryTextMessageTemplate = (resourceId, instanceGroup, templateResourceId) => {
   return testRequest.get(
     `/smishing-simulator/smishing-campaign-job-report/summary/${resourceId}/${instanceGroup}/text-templates/${templateResourceId}`
@@ -60,6 +67,13 @@ const exportLandingPageTemplates = (payload) => {
 function deleteLandingPageTemplate(resourceId) {
   return testRequest.delete(`/smishing-simulator/landing-page-template/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+function bulkDeleteLandingPageTemplates(payload) {
+  return testRequest.delete(`/smishing-simulator/landing-page-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
   })
 }
 
@@ -118,6 +132,13 @@ function updateSmishingScenario(resourceId, payload) {
 function deleteSmishingScenario(resourceId) {
   return testRequest.delete(`/smishing-simulator/smishing-scenario/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+function bulkDeleteSmishingScenarios(payload) {
+  return testRequest.delete(`/smishing-simulator/smishing-scenario/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
   })
 }
 
@@ -430,12 +451,14 @@ export default {
   createTextMessageTemplate,
   updateTextMessageTemplate,
   deleteTextMessageTemplate,
+  bulkDeleteTextMessageTemplates,
   getSummaryTextMessageTemplate,
   getLandingPageTemplateFormDetails,
   searchLandingPageTemplates,
   getLandingPageTemplate,
   exportLandingPageTemplates,
   deleteLandingPageTemplate,
+  bulkDeleteLandingPageTemplates,
   createLandingPageTemplate,
   updateLandingPageTemplate,
   getSummaryLandingPageTemplate,
@@ -447,6 +470,7 @@ export default {
   createSmishingScenario,
   updateSmishingScenario,
   deleteSmishingScenario,
+  bulkDeleteSmishingScenarios,
   previewSmishingScenario,
   previewSmishingScenarioUsedTemplates,
   searchSmishingCampaigns,

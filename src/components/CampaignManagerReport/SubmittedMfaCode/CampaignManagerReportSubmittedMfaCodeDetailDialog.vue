@@ -38,7 +38,16 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
-      />
+      >
+        <template #datatable-custom-column="{ scope, col }">
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.SUBMITTED_TIME_MFA.property"
+            :scope="scope"
+            :timeKey="COLUMNS.SUBMITTED_TIME_MFA.property"
+            localTimeKey="submittedTimeToLocalUser"
+          />
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <AppDialogFooterWithClose
@@ -60,9 +69,16 @@ import { searchCampaignJobUserEmailSubmittedDetailsMfa } from '@/api/phishingsim
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+
 export default {
   name: 'CampaignManagerReportSubmittedMfaDetailDialog',
-  components: { AppDialogFooterWithClose, DataTable, AppDialog },
+  components: {
+    AppDialogFooterWithClose,
+    DataTable,
+    AppDialog,
+    CampaignManagerReportTimeZoneColumn
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -74,6 +90,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-submitted-mfa-detail-item-data-table',

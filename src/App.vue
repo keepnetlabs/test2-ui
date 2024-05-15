@@ -49,6 +49,8 @@ export default {
           timeFormat: response?.data?.data?.timeFormat || null
         }
         this.$store.commit('auth/SET_FORMATS', payload)
+        this.$store.commit('common/SET_SELECTED_TIME_ZONE', response.data.data.timeZoneId)
+        this.$store.commit('common/SET_SELECTED_TIME_ZONE_NAME', response.data.data.timeZoneName)
       })
     }
   }

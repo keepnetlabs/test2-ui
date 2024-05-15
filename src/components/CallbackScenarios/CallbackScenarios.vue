@@ -31,7 +31,11 @@
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
+      :scenarioCount="multipleDeletedScenariosCount"
+      :multipleDeletePayload="multipleScenariosPayload"
+      :isMultiple="isMultipleDelete"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @handleCloseModal="showDeleteModal = false"
     />
     <CallbackScenarioPreview
@@ -68,7 +72,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScenarioModalStatus(true)"
       @downloadEvent="exportScenario"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -190,6 +194,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedScenariosCount: 0,
+      multipleScenariosPayload: {},
       scenarioId: null,
       labels,
       selectedScenarioURL: '',
@@ -345,7 +352,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -383,7 +390,12 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refScenariosList.unSelectRow(row)
+      this.$refs.refScenariosList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refScenariosList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -476,7 +488,21 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedScenariosCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleScenariosPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true
     }

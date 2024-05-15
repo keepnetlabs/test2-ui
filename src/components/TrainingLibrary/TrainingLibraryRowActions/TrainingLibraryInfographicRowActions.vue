@@ -13,7 +13,7 @@
       <DefaultMenuRowAction
         :id="rowActions[1].id"
         :scope="scope"
-        :disabled="rowActions[1].disabled || !scope.row.isEditable"
+        :disabled="rowActions[1].disabled"
         :icon="rowActions[1].icon"
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
@@ -40,7 +40,7 @@
         :id="rowActions[4].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled"
+        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
         @on-click="handleEdit(scope.row)"

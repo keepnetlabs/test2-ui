@@ -70,6 +70,12 @@
             :scope="scope"
             :tooltip-text="getActivityTooltipText(scope.row)"
           />
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.DATE_OPENED.property"
+            :scope="scope"
+            :timeKey="COLUMNS.DATE_OPENED.property"
+            localTimeKey="openedTimeToLocalUser"
+          />
         </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
@@ -110,6 +116,7 @@ import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/Sandbo
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
 import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
@@ -117,6 +124,7 @@ export default {
   components: {
     CampaignManagerReportSandboxActivityDialog,
     CampaignManagerReportHumanActivityDialog,
+    CampaignManagerReportTimeZoneColumn,
     DefaultButtonRowAction,
     SandboxDetailDialogAlerts,
     CampaignManagerReportActivityColumn,

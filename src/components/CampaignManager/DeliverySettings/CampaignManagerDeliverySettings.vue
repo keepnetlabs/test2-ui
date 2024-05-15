@@ -101,7 +101,11 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
+    <InputSchedule
+      v-model="inputScheduleFormData"
+      ref="inputSchedule"
+      :isPhishing="type === SCENARIO_TYPES.PHISHING"
+    />
     <InputDistribution
       v-model="inputDistributionFormData"
       :distribution-delay-time-items="getDistributionDelayTimeItems"
@@ -202,6 +206,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       selectedTimeZoneText: '',
       labels,
       isTestingConnection: false,
@@ -238,7 +243,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       commonRules: {
         hint: '*Required',

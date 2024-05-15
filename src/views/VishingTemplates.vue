@@ -12,10 +12,15 @@
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteVishingTemplateDialog
+      v-if="isDeleteModalVisible"
       :status="isDeleteModalVisible"
       :selectedTemplate="selectedTemplate"
-      @onCancel="onCloseDeleteModal"
-      @onConfirm="handleDeleteConfirm"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
+      @handleSuccessDeleteAction="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
+      @handleCloseModal="isDeleteModalVisible = false"
     />
     <VishingTemplateModal
       ref="refVishingTemplateModal"
@@ -34,6 +39,7 @@
       id="vishing-templates-data-table"
       ref="refVishingTemplatesList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -55,7 +61,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewVishingTemplateModalStatus(true)"
       @downloadEvent="exportVishingTemplates"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -163,6 +169,9 @@ export default {
       isPreviewVisible: false,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedTemplatesCount: 0,
+      multipleTemplatesPayload: {},
       tableData: [],
       isDeleteModalVisible: false,
       selectedTemplate: null,
@@ -314,7 +323,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -487,16 +496,31 @@ export default {
         this?.$refs?.refVishingTemplatesList?.reRenderFilters()
       })
     },
-    onCloseDeleteModal() {
-      this.selectedTemplate = null
+    handleSuccessDeleteAction(row) {
+      this.$refs.refVishingTemplatesList?.resetSelectableParams()
       this.isDeleteModalVisible = false
+      this.callForData()
     },
-    handleDeleteConfirm() {
-      deleteVishingTemplate(this.selectedTemplate.resourceId)
-        .then(this.callForData)
-        .finally(this.onCloseDeleteModal)
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refVishingTemplatesList?.resetSelectableParams()
+      this.isDeleteModalVisible = false
+      this.callForData()
+    },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.isDeleteModalVisible = true
     },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedTemplate = row
       this.isDeleteModalVisible = true
     },

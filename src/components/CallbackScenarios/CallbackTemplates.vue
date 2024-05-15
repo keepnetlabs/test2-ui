@@ -9,10 +9,15 @@
       @on-close="onToggleShowPreviewModal"
     />
     <DeleteCallbackTemplateModal
+      v-if="isDeleteModalVisible"
       :status="isDeleteModalVisible"
       :selectedTemplate="selectedTemplate"
-      @onCancel="onCloseDeleteModal"
-      @onConfirm="handleDeleteConfirm"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
+      @handleSuccessDeleteAction="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
+      @handleCloseModal="isDeleteModalVisible = false"
     />
     <CallbackTemplateModal
       ref="refCallbackTemplateModal"
@@ -31,6 +36,7 @@
       id="callback-templates-data-table"
       ref="refCallbackTemplatesTable"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -52,7 +58,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewCallbackTemplateModalStatus(true)"
       @downloadEvent="exportCallbackTemplates"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -147,6 +153,9 @@ export default {
       isPreviewVisible: false,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedTemplatesCount: 0,
+      multipleTemplatesPayload: {},
       tableData: [],
       isDeleteModalVisible: false,
       selectedTemplate: null,
@@ -297,7 +306,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -444,16 +453,35 @@ export default {
         this?.$refs?.refCallbackTemplatesTable?.reRenderFilters()
       })
     },
+    handleSuccessDeleteAction(row) {
+      this.$refs.refCallbackTemplatesTable?.resetSelectableParams()
+      this.isDeleteModalVisible = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refCallbackTemplatesTable?.resetSelectableParams()
+      this.isDeleteModalVisible = false
+      this.callForData()
+    },
     onCloseDeleteModal() {
       this.selectedTemplate = null
       this.isDeleteModalVisible = false
     },
-    handleDeleteConfirm() {
-      CallbackService.deleteCallbackTemplate(this.selectedTemplate.resourceId)
-        .then(this.callForData)
-        .finally(this.onCloseDeleteModal)
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.isDeleteModalVisible = true
     },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedTemplate = row
       this.isDeleteModalVisible = true
     },

@@ -116,7 +116,6 @@ import useDebounce from '@/hooks/useDebounce'
 import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
 import { isInavailable } from '../../utils'
 
-let that = null
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
   components: {
@@ -166,7 +165,10 @@ export default {
         'learningPath/getLearningPathModalTrainingPreviewDialog',
       getTrainings: 'learningPath/getLearningPathTrainings',
       getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
-    })
+    }),
+    getCompanyResourceId() {
+      return localStorage.getItem('companyRequestId') || ''
+    }
   },
   watch: {
     availableForRequests: {
@@ -190,11 +192,15 @@ export default {
       orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
     isInavailable(training) {
-      return isInavailable(this.availableForRequests, training)
+      return isInavailable(this.availableForRequests, training, this.getCompanyResourceId)
     },
     isDisabled(training) {
-      if (this.availableForRequests?.includes('MyCompanyOnly')) {
-        return
+      if (
+        this.availableForRequests?.includes('MyCompanyOnly') &&
+        (training?.availableFor?.includes('MyCompanyOnly') ||
+          training?.availableFor?.includes(this.getCompanyResourceId))
+      ) {
+        return false
       } else if (training?.availableFor?.includes('AllCompanies')) {
         return false
       } else if (

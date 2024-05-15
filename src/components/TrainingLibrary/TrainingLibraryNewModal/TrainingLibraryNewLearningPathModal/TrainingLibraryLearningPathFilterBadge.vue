@@ -3,7 +3,14 @@
     <div v-if="isFilterTypeSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <span class="training-library-filter-badge-value">{{ filter.activeValue }}</span>
+        <VTooltip :disabled="!shouldRenderTooltip(filter.text, filter.activeValue)" bottom>
+          <template #activator="{ on }">
+            <span v-on="on" class="training-library-filter-badge-value">{{
+              getTruncatedFilterValue(filter.text, filter.activeValue)
+            }}</span>
+          </template>
+          <span>{{ filter.activeValue }}</span>
+        </VTooltip>
       </div>
       <div>
         <VIcon
@@ -23,9 +30,17 @@
     >
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <span class="training-library-filter-badge-value">{{
-          getFilterValue(filter, filterVal)
-        }}</span>
+        <VTooltip
+          :disabled="!shouldRenderTooltip(filter.text, getFilterValue(filter, filterVal))"
+          bottom
+        >
+          <template #activator="{ on }">
+            <span v-on="on" class="training-library-filter-badge-value">{{
+              getTruncatedFilterValue(filter.text, getFilterValue(filter, filterVal))
+            }}</span>
+          </template>
+          <span>{{ getFilterValue(filter, filterVal) }}</span>
+        </VTooltip>
       </div>
       <div>
         <VIcon
@@ -45,7 +60,7 @@
     >
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <VTooltip bottom content-class="training-library-long-text-search__tooltip">
+        <VTooltip bottom>
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
               getFilterValue(filter, filterVal)
@@ -67,7 +82,14 @@
     <div v-else-if="isFilterTypeDateSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
-        <span class="training-library-filter-badge-value">{{ getDateFilterValue(filter) }}</span>
+        <VTooltip :disabled="!shouldRenderTooltip(filter.text, getDateFilterValue(filter))" bottom>
+          <template #activator="{ on }">
+            <span v-on="on" class="training-library-filter-badge-value">{{
+              getTruncatedFilterValue(filter.text, getDateFilterValue(filter))
+            }}</span>
+          </template>
+          <span>{{ getDateFilterValue(filter) }}</span>
+        </VTooltip>
       </div>
       <div>
         <VIcon
@@ -228,6 +250,15 @@ export default {
         return `${filter.activeValue[0]} - ${filter.activeValue[1]}`
       }
       return filter.activeValue
+    },
+    shouldRenderTooltip(filterText, filterValue) {
+      return filterText?.length + filterValue?.length > 33
+    },
+    getTruncatedFilterValue(filterText, filterValue) {
+      if (filterText?.length + filterValue?.length > 33) {
+        return `${filterValue.substring(0, 30)}...`
+      }
+      return filterValue
     }
   }
 }

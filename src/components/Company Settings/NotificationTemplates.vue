@@ -219,16 +219,6 @@ export default {
             filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.COMPANYNAME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
-            sortable: true,
-            show: false,
-            type: 'text',
-            filterableType: 'text'
-          },
-          {
             property: PROPERTY_STORE.TAGS,
             align: 'left',
             editable: false,

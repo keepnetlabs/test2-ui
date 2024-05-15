@@ -72,7 +72,7 @@ export default {
   },
   data() {
     const fieldMappings = this.fieldMappings.map((item) => ({
-      text: item.customFieldResourceId,
+      text: item.text,
       value: item.customFieldResourceId
     }))
     this.customFields.map((cField) => {
@@ -169,6 +169,12 @@ export default {
       this.viewUsersTableFilterParams.items = this.transformQuery(this.query.children, [])
       this.viewUsersTableFilterParams.operator =
         this.query.children[0].query.logicalOperator === 'OR'
+      const timeZoneIndex = this.viewUsersTableFilterParams.items.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.viewUsersTableFilterParams.items[timeZoneIndex].FieldName = 'TimeZoneId'
+      }
       return this.viewUsersTableFilterParams
     },
     getPayloadFilter() {
@@ -177,6 +183,7 @@ export default {
       return getAxiosPayloadOfManuallyTable(true, viewUsersTableFilterParams)?.filter
     },
     transformQuery(children, filterItems) {
+      console.log(children)
       children.map((child) => {
         if (child.children) {
           this.transformQuery(child.children, filterItems)

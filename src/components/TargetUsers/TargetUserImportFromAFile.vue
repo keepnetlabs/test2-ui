@@ -488,6 +488,7 @@ import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -522,6 +523,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTimezones: 'common/getTimezones'
+    }),
     getDialogBodyForExceed() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
@@ -559,6 +563,15 @@ export default {
     },
     canPrev() {
       return this.activeStep > 1
+    }
+  },
+  watch: {
+    getTimezones: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems()
+      }
     }
   },
   data() {
@@ -672,6 +685,21 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: PROPERTY_STORE.TIME_ZONE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [],
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
@@ -766,6 +794,21 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: PROPERTY_STORE.TIME_ZONE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [],
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
@@ -833,6 +876,24 @@ export default {
     }
   },
   methods: {
+    setTimeZoneFilterableItems() {
+      const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      filterableItems.unshift({ text: 'Blank', value: 'Blank' })
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this.$set(
+        this.tableOptions.backupColumns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refValidateList?.reRenderFilters()
+    },
     addRowClassName({ row }) {
       return row?.validationDetail?.length > 0 ? ' target-user-import-file__error-row' : ''
     },
@@ -1140,7 +1201,11 @@ export default {
       this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getDatatableList()
     },
     exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {

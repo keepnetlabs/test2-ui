@@ -76,6 +76,7 @@
           class="pop-up-card__invite-member"
           hint="Press enter to separate email addresses"
           :rules="[ccEmailRules.email]"
+          @input="$emit('update:ccAddresses', $event)"
         ></KSelect>
       </FormGroup>
     </div>
