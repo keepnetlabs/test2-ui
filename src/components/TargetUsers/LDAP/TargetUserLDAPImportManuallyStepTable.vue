@@ -280,6 +280,20 @@ export default {
         this.$store.dispatch('common/getTimezone')
       }
     },
+    handleSearchChange(searchFilter = {}) {
+      console.log('handleSearchChange')
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const timeZoneIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     setTimeZoneFilterableItems() {
       const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
         text: item.displayName,
