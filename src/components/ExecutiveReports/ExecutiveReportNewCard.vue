@@ -250,6 +250,7 @@
                 :card="item"
                 :date-range="formData.executiveReportDateRange"
                 :default-widget-data="defaultWidgetData[item.key]"
+                :date-period="formData.datePeriod"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
               />
@@ -1004,20 +1005,35 @@ export default {
         this.formData.companyName = data.companyName
         this.formData.dateCreated = data.dateCreated
         this.formData.datePeriod = DATE_PERIOD_ENUMS[data.datePeriod]
+        console.log('this.formData.datePeriod', this.formData.datePeriod)
         const end = new Date()
         const start = new Date()
         if (this.formData.datePeriod === 0) {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-          this.formData.executiveReportDateRange = [start, end]
+          this.formData.executiveReportDateRange = [
+            this.$moment(start).format(getTimeZoneForMoment()),
+            this.$moment(end).format(getTimeZoneForMoment())
+          ]
         } else if (this.formData.datePeriod === 1) {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-          this.formData.executiveReportDateRange = [start, end]
+          this.formData.executiveReportDateRange = [
+            this.$moment(start).format(getTimeZoneForMoment()),
+            this.$moment(end).format(getTimeZoneForMoment())
+          ]
         } else if (this.formData.datePeriod === 2) {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
-          this.formData.executiveReportDateRange = [start, end]
+          this.formData.executiveReportDateRange = [
+            this.$moment(start).format(getTimeZoneForMoment()),
+            this.$moment(end).format(getTimeZoneForMoment())
+          ]
         } else if (this.formData.datePeriod === 3) {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
-          this.formData.executiveReportDateRange = [start, end]
+          this.formData.executiveReportDateRange = [
+            this.$moment(start).format(getTimeZoneForMoment()),
+            this.$moment(end).format(getTimeZoneForMoment())
+          ]
+        } else {
+          this.formData.executiveReportDateRange = [data.startDate, data.endDate]
         }
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name

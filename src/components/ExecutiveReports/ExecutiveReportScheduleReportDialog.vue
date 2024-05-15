@@ -97,7 +97,7 @@
             outlined
             class="pop-up-card__invite-member"
             hint="Press enter to separate email addresses"
-            :rules="[rules.email]"
+            :rules="[rules.email, rules.required]"
           ></KSelect>
         </FormGroup>
       </VForm>
@@ -127,6 +127,7 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import * as Validations from '@/utils/validations'
+import { createReportScheduling } from '@/api/reports'
 export default {
   name: 'ExecutiveReportScheduleReportDialog',
   components: { InputDate, KSelect, AppDialogFooter, FormGroup, InputEntityName, AppDialog },
@@ -180,7 +181,8 @@ export default {
           } else {
             return true
           }
-        }
+        },
+        required: (v) => v.length > 0 || labels.Required
       },
       parsedFormat: getTimeZone(false),
       datePickerOptions: {
@@ -228,7 +230,18 @@ export default {
     },
     handleConfirm() {
       if (!this.$refs.refForm.validate()) return
-      this.$emit('on-submit', this.formData)
+      if (!this.isNew) {
+        this.isActionButtonDisabled = true
+        createReportScheduling({
+          reportType: '',
+          reportResourceId: this.selectedRow.resourceId,
+          ...this.formData
+        })
+          .then(() => this.handleClose())
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      } else this.$emit('on-submit', this.formData)
     }
   }
 }

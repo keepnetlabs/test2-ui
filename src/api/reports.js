@@ -45,6 +45,11 @@ export const deleteExecutiveReport = (resourceId) => {
 export const getExecutiveReportMetrics = () => {
   return testRequest.get('/executive-report/metrics')
 }
+export const createReportScheduling = (payload) => {
+  return testRequest.post('/report-scheduling', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 export default {
   getReports,
