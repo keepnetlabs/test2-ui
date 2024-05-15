@@ -703,15 +703,15 @@ export default {
       dateFormatList: [
         {
           text: `DD/MM/YYYY ${moment(new Date()).format('DD/MM/YYYY')}`,
-          value: 'DD/MM/YYYY'
+          value: 'dd/MM/yyyy'
         },
         {
           text: `MM/DD/YYYY ${moment(new Date()).format('MM/DD/YYYY')}`,
-          value: 'MM/DDYYYY'
+          value: 'MM/dd/yyyy'
         },
         {
           text: `YYYY/MM/DD ${moment(new Date()).format('YYYY/MM/DD')}`,
-          value: 'YYYY/MM/DD'
+          value: 'yyyy/MM/dd'
         }
       ],
       timeFormatList: [
