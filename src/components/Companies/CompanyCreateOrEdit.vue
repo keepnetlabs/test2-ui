@@ -933,7 +933,7 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
-      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'DD/MM/YYYY'
+      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'dd/MM/yyyy'
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
