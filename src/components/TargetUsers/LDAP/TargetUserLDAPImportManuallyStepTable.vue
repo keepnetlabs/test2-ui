@@ -281,7 +281,6 @@ export default {
       }
     },
     handleSearchChange(searchFilter = {}) {
-      console.log('handleSearchChange')
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
