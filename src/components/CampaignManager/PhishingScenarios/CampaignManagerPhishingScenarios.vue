@@ -18,6 +18,12 @@
       :selected-row="trainingTabModel[selectedTemplateResourceId]"
       @on-close="toggleShowTrainingDialog"
     />
+    <TrainingLibraryPreviewDialog
+      v-if="isShowCategoryTrainingDialog"
+      :status="isShowCategoryTrainingDialog"
+      :selected-row="categoryTrainingTabModel"
+      @on-close="toggleShowCategoryTrainingDialog"
+    />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -194,7 +200,34 @@
               </VBtn>
             </div>
           </div>
-          <multipane class="vertical-panes" layout="vertical" :style="getStyle">
+          <div class="px-6 pt-4">
+            <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
+              <ElTabPane name="scenarios" label="Scenarios" />
+              <ElTabPane
+                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY"
+                name="training"
+                label="Training"
+              >
+                <CampaignManagerPhishingScenariosTrainingTab
+                  v-model="categoryTrainingTabModel"
+                  ref="categoryTrainingTab"
+                  class="pb-4"
+                  :is-show-reminder="isShowReminder"
+                  :type="type"
+                  :is-edit="isEdit"
+                  isCategory
+                  :enum-types="enumTypes"
+                  @on-preview="handleCategoryTrainingPreviewButtonClick"
+                />
+              </ElTabPane>
+            </ElTabs>
+          </div>
+          <multipane
+            v-if="upperTab === 'scenarios'"
+            class="vertical-panes"
+            layout="vertical"
+            :style="getStyle"
+          >
             <template v-if="getItems.length">
               <div
                 class="pane"
@@ -212,7 +245,7 @@
                     hide-details
                     color="#2196f3"
                     :label="getSelectedScenarioSwitchLabel"
-                    :disabled="!value.length"
+                    :disabled="isShowSelectedScenariosSwitchDisabled"
                   />
                 </div>
                 <div
@@ -224,7 +257,7 @@
                   <div class="d-flex justify-space-between mb-2">
                     <div class="d-flex overflow-hidden">
                       <VCheckbox
-                        v-if="!isSingle"
+                        v-if="!isSingle && scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY"
                         v-model="checkboxModel[item.resourceId]"
                         color="#2196f3"
                         hide-details
@@ -384,12 +417,13 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
-                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
+                    v-if="isShowTrainingTab"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
+                      v-if="isShowTrainingTab"
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :is-show-reminder="isShowReminder"
@@ -450,7 +484,10 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { scenarioDistributionItems } from '@/components/CampaignManager/utils'
+import {
+  scenarioDistributionItems,
+  SCENARIO_DISTRIBUTION
+} from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -509,11 +546,14 @@ export default {
   },
   data() {
     return {
+      SCENARIO_DISTRIBUTION,
       scenarioDistributionItems,
       tab: 'email',
+      upperTab: 'scenarios',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
       trainingTabModel: {},
+      categoryTrainingTabModel: new TrainingTabModel(),
       labels,
       quishingMethods,
       difficulties,
@@ -527,7 +567,7 @@ export default {
       language: '',
       languageText: '',
       category: '',
-      scenarioDistribution: null,
+      scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
@@ -536,6 +576,7 @@ export default {
       phishingScenarioItems: [],
       isMethodMfa: false,
       isShowTrainingDialog: false,
+      isShowCategoryTrainingDialog: false,
       enumTypes: {}
     }
   },
@@ -543,6 +584,16 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    isShowTrainingTab() {
+      return (
+        !this.isAttachmentBasedScenario &&
+        this.getTrainingSearchPermission &&
+        this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+      )
+    },
+    isShowSelectedScenariosSwitchDisabled() {
+      return !this.value.length || this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+    },
     getBadges() {
       const badges = []
       if (this.method.length) {
@@ -579,7 +630,9 @@ export default {
       return methods
     },
     getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
+      return !this.isValid && this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+        ? { border: '1px solid #ff5252 !important', borderRadius: '20px' }
+        : {}
     },
     getPhishingFile() {
       return this.emailTemplateParams?.phishingFileName
@@ -637,6 +690,17 @@ export default {
       immediate: true,
       handler(val) {
         console.log('axiosPayload', val)
+      }
+    },
+    scenarioDistribution(val) {
+      this.$emit('distributionChanged', val)
+      if (val === SCENARIO_DISTRIBUTION.MANUALLY) {
+        this.upperTab = 'scenarios'
+      } else {
+        this.tab = 'email'
+        this.isShowSelectedScenarios = false
+        this.$emit('input', [])
+        this.checkboxModel = {}
       }
     },
     defaultPhishingScenariosValuesMapped(val) {
@@ -750,7 +814,7 @@ export default {
     },
     category(val) {
       if (!val.length) {
-        this.scenarioDistribution = null
+        this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
       }
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'Category'
@@ -1021,8 +1085,14 @@ export default {
     handleTrainingPreviewButtonClick() {
       this.toggleShowTrainingDialog()
     },
+    handleCategoryTrainingPreviewButtonClick() {
+      this.toggleShowCategoryTrainingDialog()
+    },
     toggleShowTrainingDialog() {
       this.isShowTrainingDialog = !this.isShowTrainingDialog
+    },
+    toggleShowCategoryTrainingDialog() {
+      this.isShowCategoryTrainingDialog = !this.isShowCategoryTrainingDialog
     }
   }
 }

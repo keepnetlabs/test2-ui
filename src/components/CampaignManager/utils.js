@@ -39,10 +39,15 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
   PERCENTAGE: '1',
   USERS: '2'
 }
-export const scenarioDistributionItems = [
+export const scenarioDistributionFilterItems = [
   { text: 'Manually', value: 1 },
   { text: 'Random scenarios for each user', value: 2 },
   { text: 'Same random scenario for all users', value: 3 }
+]
+export const scenarioDistributionItems = [
+  { text: 'Select scenarios manually', value: 1 },
+  { text: 'Select random scenarios for each user', value: 2 },
+  { text: 'Select same random scenario for all users', value: 3 }
 ]
 export const COLUMNS = {
   SCENARIO_DISTRIBUTION: {
@@ -55,7 +60,7 @@ export const COLUMNS = {
     type: 'text',
     width: 240,
     filterableType: 'select',
-    filterableItems: scenarioDistributionItems
+    filterableItems: scenarioDistributionFilterItems
   },
   CAMPAIGN_NAME: {
     property: PROPERTY_STORE.NAME,

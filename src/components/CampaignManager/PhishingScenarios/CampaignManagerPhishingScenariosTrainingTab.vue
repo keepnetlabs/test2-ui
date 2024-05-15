@@ -225,6 +225,10 @@ export default {
     isShowReminder: {
       type: Boolean,
       default: false
+    },
+    isCategory: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -300,7 +304,7 @@ export default {
       return `A ${scenarioText} scenario should be selected in order to be able to choose a training`
     },
     isInputsEditable() {
-      return this?.value?.isCheckboxSelected
+      return this?.value?.isCheckboxSelected || this.isCategory
     },
     isInputLanguageDisabled() {
       return !this.isInputsEditable || !this.value.trainingId

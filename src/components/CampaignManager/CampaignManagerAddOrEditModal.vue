@@ -87,8 +87,14 @@
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
               :is-valid="isPhishingScenariosValid"
               :categories="categories"
+              @distributionChanged="handleDistributionChanged"
             />
-            <CustomError class="mb-6 ml-2" :is-valid="isPhishingScenariosValid" />
+            <CustomError
+              class="mb-6 ml-2"
+              :is-valid="
+                isPhishingScenariosValid || scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+              "
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -194,6 +200,7 @@ import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getErrorMessage } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -237,6 +244,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
@@ -250,6 +258,7 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
+      scenarioDistribution: null,
       defaultTargetGroupResourceIds: [],
       scheduleInfoResponse: {}
     }
@@ -475,6 +484,9 @@ export default {
     this.initialFormValues = this.getFormValues()
   },
   methods: {
+    handleDistributionChanged(val) {
+      this.scenarioDistribution = val
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
@@ -546,7 +558,12 @@ export default {
           return
         case 2:
           const { refCampaignManagerPhishingScenarios } = this.$refs
-          this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
+          this.isPhishingScenariosValid =
+            refCampaignManagerPhishingScenarios?.scenarioDistribution !==
+              SCENARIO_DISTRIBUTION.MANUALLY ||
+            (refCampaignManagerPhishingScenarios?.scenarioDistribution ===
+              SCENARIO_DISTRIBUTION.MANUALLY &&
+              !!this.selectedPhishingScenarios.length)
           if (!this.isPhishingScenariosValid) return
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
