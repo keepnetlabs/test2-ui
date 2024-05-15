@@ -1038,7 +1038,9 @@ export default {
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         data.widgets.forEach((widget) => {
-          this.defaultWidgetData[widget.name] = createExecutiveReportChartData(widget.widgetDatas)
+          this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
+            widget.widgetDatas
+          )
         })
         this.layout = JSON.parse(data.widgetLayout)
         console.log('this.layout', this.layout)

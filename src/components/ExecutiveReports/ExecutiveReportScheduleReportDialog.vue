@@ -233,7 +233,7 @@ export default {
       if (!this.isNew) {
         this.isActionButtonDisabled = true
         createReportScheduling({
-          reportType: '',
+          reportType: 2,
           reportResourceId: this.selectedRow.resourceId,
           ...this.formData
         })
