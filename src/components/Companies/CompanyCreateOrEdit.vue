@@ -697,7 +697,7 @@ export default {
         CompanyGroupResourceIdArray: [],
         LicenseModuleResourceIdArray: [],
         statusId: '1',
-        DateFormat: 'DD/MM/YYYY',
+        DateFormat: 'dd/MM/yyyy',
         TimeFormat: '24h'
       },
       dateFormatList: [
