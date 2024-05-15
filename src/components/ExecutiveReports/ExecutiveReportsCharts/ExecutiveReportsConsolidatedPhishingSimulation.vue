@@ -218,15 +218,10 @@ export default {
           }
         },
         tooltips: {
-          /*
           enabled: false,
-          custom: function (tooltipModel,obj) {
-            console.log('tooltipModel',tooltipModel)
-            console.log('obj',obj)
-            // Tooltip Element
-            var tooltipEl = document.getElementById('chartjs-tooltip')
+          custom: function (tooltipModel, obj) {
+            let tooltipEl = document.getElementById('chartjs-tooltip')
 
-            // Create element on first render
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
               tooltipEl.id = 'chartjs-tooltip'
@@ -234,13 +229,6 @@ export default {
               document.body.appendChild(tooltipEl)
             }
 
-            // Hide if no tooltip
-            if (tooltipModel.opacity === 0) {
-              tooltipEl.style.opacity = 0
-              return
-            }
-
-            // Set caret Position
             tooltipEl.classList.remove('above', 'below', 'no-transform')
             if (tooltipModel.yAlign) {
               tooltipEl.classList.add(tooltipModel.yAlign)
@@ -248,40 +236,8 @@ export default {
               tooltipEl.classList.add('no-transform')
             }
 
-            function getBody(bodyItem) {
-              return bodyItem.lines
-            }
+            let position = this._chart.canvas.getBoundingClientRect()
 
-            // Set Text
-            if (tooltipModel.body) {
-              var titleLines = tooltipModel.title || []
-              var bodyLines = tooltipModel.body.map(getBody)
-
-              var innerHtml = '<thead>'
-
-              titleLines.forEach(function (title) {
-                innerHtml += '<tr><th>' + title + '</th></tr>'
-              })
-              innerHtml += '</thead><tbody>'
-
-              bodyLines.forEach(function (body, i) {
-                var colors = tooltipModel.labelColors[i]
-                var style = 'background:' + colors.backgroundColor
-                style += '; border-color:' + colors.borderColor
-                style += '; border-width: 2px'
-                var span = '<span style="' + style + '"></span>'
-                innerHtml += '<tr><td>' + span + body + '</td></tr>'
-              })
-              innerHtml += '</tbody>'
-
-              var tableRoot = tooltipEl.querySelector('table')
-              tableRoot.innerHTML = innerHtml
-            }
-
-            // `this` will be the overall tooltip
-            var position = this._chart.canvas.getBoundingClientRect()
-
-            // Display, position, and set styles for font
             tooltipEl.style.opacity = 1
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
@@ -291,8 +247,33 @@ export default {
             tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
             tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
             tooltipEl.style.pointerEvents = 'none'
-          },
-           */
+            tooltipEl.style.background = 'white'
+            tooltipEl.style.border = '1px solid #ccc'
+            tooltipEl.style.borderRadius = '3px'
+            tooltipEl.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipEl.querySelector('table')
+              tableRoot.innerHTML = ''
+
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                let backgroundColor = dataset.backgroundColor || '#000' // Varsayılan bir renk belirleyin veya dataset'in backgroundColor özelliğine bakın
+
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+          <td>
+            <span style="background-color:${backgroundColor}; width: 8px; height: 8px; display: inline-block; margin-right: 5px;"></span>
+            ${datasetLabel}
+          </td>
+          <td>${dataValue}</td>
+        `
+                tableRoot.appendChild(tr)
+              })
+            }
+          }
+          /*
           enabled: true,
           backgroundColor: '#fff',
           xPadding: 16,
@@ -327,6 +308,8 @@ export default {
               return '#543453'
             }
           }
+
+           */
         }
       }
     },
