@@ -279,6 +279,9 @@ import {
   createExecutiveReportChartData,
   DATE_PERIOD_ENUMS
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
+import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
+import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1281,9 +1284,9 @@ export default {
     getComponent(componentString) {
       switch (componentString) {
         case 'ConsolidatedPhishingSimulationMetrics':
-          return ExecutiveReportsConsolidatedPhishingSimulation
+          return ExecutiveReportsRiskScoreTrendAcrossIndustries
         default:
-          return ExecutiveReportsWidget
+          return ExecutiveReportsPhishingSimulationEngagement
       }
     },
     handleDownloadButton() {
