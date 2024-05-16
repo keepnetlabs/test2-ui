@@ -1001,6 +1001,7 @@ export default {
         const {
           data: { data }
         } = report
+        this.selectedRow = data
         this.formData.companyName = data.companyName
         this.formData.dateCreated = data.dateCreated
         this.formData.datePeriod = DATE_PERIOD_ENUMS[data.datePeriod]
@@ -1054,6 +1055,9 @@ export default {
       this.isLoading = false
     }
   },
+  mounted() {
+    if (this.$route.params.showDownloadModal) this.isShowDownloadModal = true
+  },
   methods: {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
@@ -1094,7 +1098,6 @@ export default {
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
-      this.selectedRow = this.activatePreview ? this.editData : {}
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
     },
     toggleShowCustomizeWidgetDialog(item) {
@@ -1102,6 +1105,8 @@ export default {
       this.isShowCustomizeWidgetDialog = !this.isShowCustomizeWidgetDialog
     },
     toggleShowDownloadModal() {
+      if (this.isShowDownloadModal && this.$route.params.showDownloadModal)
+        return this.$router.push({ name: 'Executive Reports' })
       this.isShowDownloadModal = !this.isShowDownloadModal
     },
     handleDateRangeClick() {
@@ -1159,9 +1164,12 @@ export default {
           'Scheduling.IsRegionAwareTimeZone',
           payload.scheduling.isRegionAwareTimeZone
         )
-        formData.append('Scheduling.EmailAddresses', payload.scheduling.emailAddresses)
+        payload.scheduling.emailAddresses.forEach((email, index) => {
+          formData.append(`Scheduling.EmailAddresses[${index}]`, email)
+        })
+        formData.delete('Scheduling.EmailAddresses')
       }
-      if (this.isEdit) {
+      if (this.isEdit || this.$route.name === 'Preview Executive Report') {
         updateExecutiveReport(formData, this.$route.params.id)
           .then(() => {
             this.activatePreview = true
@@ -1189,60 +1197,66 @@ export default {
     ) {
       this.isPdfDownload = true
       const justDownload = this.justDownload
+      const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
       this.$nextTick(async () => {
-        setTimeout(async () => {
-          let page = document.querySelector('#executive-report-new-card-container')
-          const pdf = await html2PDF(page, {
-            html2canvas: {
-              useCORS: true
-            },
-            jsPDF: {
-              format: 'a4'
-            },
-            success(pdf) {
-              if (activatePreview && !justDownload) {
-                pdf.setProperties({
-                  title: fileName
-                })
-                window.open(pdf.output('bloburl'))
-              } else {
-                pdf.save(this.output)
-              }
-            },
-            watermark: ({ pdf, pageNumber, totalPageNumber }) => {
-              const lastY = this.layout[this.layout.length - 1]?.y
-              if (lastY % 18 === 0) pdf.deletePage(totalPageNumber)
-              pdf.setTextColor('#383B41')
-              pdf.setFontSize(8)
-              let width, height
-              try {
-                width = pdf?.internal?.pageSize?.width || 297
-                height = pdf?.internal?.pageSize?.height || 841
-              } catch (e) {
-                width = 297
-                height = 841
-              }
-              try {
-                pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
-              } catch (e) {}
-            },
-            margin: {
-              top: 24,
-              right: 24,
-              bottom: 32,
-              left: 24
-            },
+        setTimeout(
+          async () => {
+            let page = document.querySelector('#executive-report-new-card-container')
+            const pdf = await html2PDF(page, {
+              html2canvas: {
+                useCORS: true
+              },
+              jsPDF: {
+                format: 'a4'
+              },
+              success(pdf) {
+                if (activatePreview && !justDownload) {
+                  pdf.setProperties({
+                    title: fileName
+                  })
+                  window.open(pdf.output('bloburl'))
+                } else {
+                  pdf.save(this.output)
+                }
+              },
+              watermark: ({ pdf, pageNumber, totalPageNumber }) => {
+                const lastY = this.layout[this.layout.length - 1]?.y
+                if (lastY % 18 === 0 && totalPageNumber > 1) pdf.deletePage(totalPageNumber)
+                pdf.setTextColor('#383B41')
+                pdf.setFontSize(8)
+                let width, height
+                try {
+                  width = pdf?.internal?.pageSize?.width || 297
+                  height = pdf?.internal?.pageSize?.height || 841
+                } catch (e) {
+                  width = 297
+                  height = 841
+                }
+                try {
+                  pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+                } catch (e) {}
+              },
+              margin: {
+                top: 24,
+                right: 24,
+                bottom: 32,
+                left: 24
+              },
 
-            imageType: 'image/jpeg',
-            output: `./pdf/${fileName}.pdf`,
-            autoResize: true
-          })
-          this.isPdfDownload = false
-          this.activatePreview = false
-          this.isPreviewDownload = false
-          this.justDownload = false
-          this.isShowDownloadModal = false
-        }, 500)
+              imageType: 'image/jpeg',
+              output: `./pdf/${fileName}.pdf`,
+              autoResize: true
+            })
+            if (isShowDownloadModalFromStart)
+              return this.$router.push({ name: 'Executive Reports' })
+            this.isPdfDownload = false
+            this.activatePreview = false
+            this.isPreviewDownload = false
+            this.justDownload = false
+            this.isShowDownloadModal = false
+          },
+          isShowDownloadModalFromStart ? 1500 : 500
+        )
       })
     },
     handleCancelClick() {
