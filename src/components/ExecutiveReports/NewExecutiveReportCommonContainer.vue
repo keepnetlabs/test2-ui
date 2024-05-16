@@ -28,6 +28,7 @@
         :is-preview="!renderLeftTab"
         :is-edit="isEdit"
         :is-duplicate="isDuplicate"
+        :default-company-logo="defaultCompanyLogo"
         @on-edit="renderLeftTab = true"
         @on-edit-cancel="renderLeftTab = false"
       />
@@ -38,7 +39,7 @@
 <script>
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
 import ExecutiveReportSearchCard from '@/components/ExecutiveReports/ExecutiveReportSearchCard.vue'
-import { getExecutiveReport, getExecutiveReportMetrics } from '@/api/reports'
+import { getExecutiveReportMetrics, getReportSchedulingLogo } from '@/api/reports'
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
@@ -62,6 +63,7 @@ export default {
   data() {
     return {
       renderLeftTab: this.isShowLeftSide,
+      defaultCompanyLogo: null,
       search: '',
       cards: [],
       removedCards: {}
@@ -84,6 +86,7 @@ export default {
   },
   created() {
     this.callForMetrics()
+    this.callForDefaultLogo()
   },
   methods: {
     callForMetrics() {
@@ -96,6 +99,11 @@ export default {
           this.cards = data.metrics
         })
         .finally(this.setLoading)
+    },
+    callForDefaultLogo() {
+      getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId')).then((logo) => {
+        this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', { type: logo.type })
+      })
     },
     handleSearch(value) {},
     handleSearchAdd(chart) {

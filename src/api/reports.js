@@ -24,7 +24,6 @@ export const getExecutiveReportChartData = (payload) => {
   return testRequest.post('/executive-report/get-widget-datas', payload)
 }
 export const saveExecutiveReport = (payload) => {
-  //localStorage.setItem('executiveReport', JSON.stringify(layout))
   return testRequest.post('/executive-report', payload, {
     snackbar: COMMON_SNACKBAR
   })
@@ -50,7 +49,11 @@ export const createReportScheduling = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
-
+export const getReportSchedulingLogo = (resourceId) => {
+  return testRequest.get(`/companies/${resourceId}/logo`, {
+    responseType: 'blob'
+  })
+}
 export default {
   getReports,
   getReportDetail,

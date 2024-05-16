@@ -191,6 +191,7 @@
                     ? formData.executiveReportLogoUrl
                     : formData.executiveReportLogo
                 "
+                :key="imgPreviewKey"
                 alt="logo"
               />
             </div>
@@ -314,6 +315,10 @@ export default {
     isScheduledReport: {
       type: Boolean,
       default: false
+    },
+    defaultCompanyLogo: {
+      type: File,
+      default: () => null
     }
   },
   data() {
@@ -336,6 +341,7 @@ export default {
       isShowDownloadModal: false,
       isLoading: false,
       schedulingFormData: {},
+      imgPreviewKey: `key-${createRandomCryptStringNumber()}`,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -939,11 +945,7 @@ export default {
         dateCreated: this.$moment(Date.now()).format(getTimeZoneForMoment()),
         companyName: localStorage.getItem('selectedCompanyName'),
         description: 'Description',
-        executiveReportLogo:
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl,
-        executiveReportLogoUrl: ''
+        executiveReportLogo: ''
       },
       defaultWidgetData: {}
     }
@@ -987,11 +989,8 @@ export default {
         this.initialLayout = JSON.parse(JSON.stringify(this.layout))
       }
     },
-    '$store.state.dashboard.selectedCompanyObject.logoUrl'() {
-      this.formData.executiveReportLogo =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl
+    defaultCompanyLogo(file) {
+      this.handleLogoChange(file)
     }
   },
   async created() {
@@ -1005,7 +1004,6 @@ export default {
         this.formData.companyName = data.companyName
         this.formData.dateCreated = data.dateCreated
         this.formData.datePeriod = DATE_PERIOD_ENUMS[data.datePeriod]
-        console.log('this.formData.datePeriod', this.formData.datePeriod)
         const end = new Date()
         const start = new Date()
         if (this.formData.datePeriod === 0) {
@@ -1043,7 +1041,6 @@ export default {
           )
         })
         this.layout = JSON.parse(data.widgetLayout)
-        console.log('this.layout', this.layout)
       }
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
@@ -1127,7 +1124,8 @@ export default {
           endDate: '',
           description: this.formData.description,
           datePeriod: this.formData.datePeriod,
-          companyName: this.formData.companyName
+          companyName: this.formData.companyName,
+          companyLogo: this.formData.executiveReportLogo
         },
         widgetLayouts: this.layout
       }
@@ -1139,8 +1137,32 @@ export default {
         ? this.schedulingFormData
         : null
       this.isActionButtonDisabled = true
+      const formData = new FormData()
+      formData.append('ExecutiveReport.Name', payload.executiveReport.name)
+      formData.append('ExecutiveReport.DateCreated', payload.executiveReport.dateCreated)
+      formData.append('ExecutiveReport.StartDate', payload.executiveReport.startDate)
+      formData.append('ExecutiveReport.EndDate', payload.executiveReport.endDate)
+      formData.append('ExecutiveReport.Description', payload.executiveReport.description)
+      formData.append('ExecutiveReport.DatePeriod', payload.executiveReport.datePeriod)
+      formData.append('ExecutiveReport.CompanyName', payload.executiveReport.companyName)
+      formData.append('ExecutiveReport.CompanyLogo', payload.executiveReport.companyLogo)
+      payload.widgetLayouts.forEach((layout, index) => {
+        Object.keys(layout).forEach((key) => {
+          formData.append(`WidgetLayouts[${index}].${key}`, layout[key])
+        })
+      })
+      if (payload.scheduling) {
+        formData.append('Scheduling.Name', payload.scheduling.name)
+        formData.append('Scheduling.Frequency', payload.scheduling.frequency)
+        formData.append('Scheduling.Schedule', payload.scheduling.schedule)
+        formData.append(
+          'Scheduling.IsRegionAwareTimeZone',
+          payload.scheduling.isRegionAwareTimeZone
+        )
+        formData.append('Scheduling.EmailAddresses', payload.scheduling.emailAddresses)
+      }
       if (this.isEdit) {
-        updateExecutiveReport(payload, this.$route.params.id)
+        updateExecutiveReport(formData, this.$route.params.id)
           .then(() => {
             this.activatePreview = true
             this.editMode = false
@@ -1150,7 +1172,7 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else {
-        saveExecutiveReport(payload)
+        saveExecutiveReport(formData)
           .then(() => {
             this.activatePreview = true
             this.editMode = false
@@ -1239,6 +1261,7 @@ export default {
       }
       this.formData.executiveReportLogo = file
       this.formData.executiveReportLogoUrl = URL.createObjectURL(file)
+      this.imgPreviewKey = `key-${createRandomCryptStringNumber()}`
     },
     handleLogoClear() {
       this.coverImageFilePreview = []
