@@ -111,7 +111,7 @@ export default {
       this.$router.push({
         name: 'Preview Executive Report',
         params: {
-          id: this.card.resourceId || 'gürkan'
+          id: this.card.resourceId
         }
       })
     },
@@ -123,7 +123,7 @@ export default {
       this.$router.push({
         name: 'Edit Executive Report',
         params: {
-          id: this.card.resourceId || 'gürkan'
+          id: this.card.resourceId
         }
       })
     },
@@ -131,11 +131,19 @@ export default {
       this.$router.push({
         name: 'Duplicate Executive Report',
         params: {
-          id: this.card.resourceId || 'gürkan'
+          id: this.card.resourceId
         }
       })
     },
-    handleDownloadClick() {},
+    handleDownloadClick() {
+      this.$router.push({
+        name: 'Preview Executive Report',
+        params: {
+          id: this.card.resourceId,
+          showDownloadModal: true
+        }
+      })
+    },
     handleDeleteClick() {
       if (!this.card.isEditable) return false
       this.$emit('on-delete', this.card)
