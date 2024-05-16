@@ -750,6 +750,12 @@ export default {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      const timeZoneIndex = this.payload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.payload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },

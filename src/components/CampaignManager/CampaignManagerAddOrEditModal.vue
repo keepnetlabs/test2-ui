@@ -494,6 +494,10 @@ export default {
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        if (this.$refs?.refCampaignManagerDeliverySettings) {
+          this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.useTargetUserTimeZone =
+            data.useTargetUserTimeZone
+        }
         this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
