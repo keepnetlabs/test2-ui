@@ -229,6 +229,7 @@ export default {
       this.$emit('on-close')
     },
     handleConfirm() {
+      console.log('!this.isNew', this.selectedRow)
       if (!this.$refs.refForm.validate()) return
       if (!this.isNew) {
         this.isActionButtonDisabled = true

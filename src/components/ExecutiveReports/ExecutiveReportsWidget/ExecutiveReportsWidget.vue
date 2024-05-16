@@ -46,8 +46,8 @@
               :raw-data="pieChartData"
             />
             <ExecutiveReportTable
-              v-else-if="card.chartType === 'table'"
-              class="d-flex align-items-center mt-2"
+              v-else-if="isTypeTable"
+              class="mt-2"
               :columns="executiveReportColumns"
               :data="executiveReportData"
             />
@@ -90,8 +90,6 @@ import ExecutiveReportGaugeChart from '@/components/ExecutiveReports/ExecutiveRe
 import ExecutiveReportDoughnutChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportDoughnutChart.vue'
 import ExecutiveReportPieChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPieChart.vue'
 import ExecutiveReportTable from '@/components/ExecutiveReports/ExecutiveReportTable.vue'
-import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import labels from '@/model/constants/labels'
 import { getExecutiveReportChartData } from '@/api/reports'
 import ExecutiveReportsAreaChart from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsAreaChart.vue'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
@@ -140,60 +138,9 @@ export default {
   data() {
     return {
       isLoading: false,
-      executiveReportColumns: [
-        {
-          property: PROPERTY_STORE.NAME,
-          label: LABEL_STORE.NAME,
-          align: 'left'
-        },
-        {
-          property: PROPERTY_STORE.EMAIL,
-          label: labels.Email,
-          align: 'left'
-        },
-        {
-          property: PROPERTY_STORE.DEPARTMENT,
-          label: labels.Department,
-          align: 'left'
-        },
-        {
-          property: PROPERTY_STORE.RISK_SCORE,
-          label: labels.RiskScore,
-          align: 'left'
-        }
-      ],
-      executiveReportData: [
-        {
-          email: 'nurullah@keepnetlabs.com',
-          name: 'Angel Siphron',
-          department: 'Marketing',
-          riskScore: '80%'
-        },
-        {
-          email: 'nurullah@keepnetlabs.com',
-          name: 'Angel Siphron',
-          department: 'Marketing',
-          riskScore: '80%'
-        },
-        {
-          email: 'nurullah@keepnetlabs.com',
-          name: 'Angel Siphron',
-          department: 'Marketing',
-          riskScore: '80%'
-        },
-        {
-          email: 'nurullah@keepnetlabs.com',
-          name: 'Angel Siphron',
-          department: 'Marketing',
-          riskScore: '80%'
-        },
-        {
-          email: 'nurullah@keepnetlabs.com',
-          name: 'Angel Siphron',
-          department: 'Marketing',
-          riskScore: '80%'
-        }
-      ],
+      isTypeTable: false,
+      executiveReportColumns: [],
+      executiveReportData: [],
       chartData: [],
       pieChartData: [],
       gaugeChartData: 0,
@@ -206,6 +153,7 @@ export default {
     hasData() {
       if (this.card.chartType === 'gauge') return this.gaugeChartData
       else if (['doughnut', 'pie'].includes(this.card.chartType)) return this.pieChartData
+      else if (this.isTypeTable) return !!this.executiveReportData.length
       return this?.chartData?.datasets?.length
     }
   },
@@ -221,7 +169,6 @@ export default {
   methods: {
     callForData() {
       this.isLoading = true
-      console.log('this.card', this.card)
       const payload = {
         widgetIds: [this.card.resourceId],
         datePeriod: this.datePeriod,
@@ -233,7 +180,25 @@ export default {
           const {
             data: { data }
           } = response || {}
-          this.chartData = createExecutiveReportChartData(data[0].widgetDatas)
+          if (
+            data[0] &&
+            data[0].widgetDatas &&
+            data[0].widgetDatas[0] &&
+            data[0].widgetDatas[0].tableValues
+          ) {
+            const definitions = data[0].widgetDatas[0].tableDefinitions
+            const values = data[0].widgetDatas[0].tableValues.slice(0, 5)
+            this.executiveReportColumns = definitions.map((definition) => ({
+              property: definition.name,
+              label: definition.label,
+              align: 'left'
+            }))
+            this.executiveReportData = values
+            this.isTypeTable = true
+          } else {
+            this.chartData = createExecutiveReportChartData(data[0].widgetDatas)
+          }
+
           this.isLoading = false
         })
         .finally(() => {
