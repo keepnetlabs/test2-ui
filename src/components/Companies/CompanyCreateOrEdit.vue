@@ -119,7 +119,11 @@
                     :rules="[(v) => validations.required(v)]"
                   />
                 </FormGroup>
-                <FormGroup title="Time Format" has-hint>
+                <FormGroup
+                  title="Time Format"
+                  has-hint
+                  sub-title="Time format in notification templates"
+                >
                   <k-select
                     v-model="formData.TimeFormat"
                     id="input--company-time-format"
@@ -133,7 +137,11 @@
                     :rules="[(v) => validations.required(v)]"
                   ></k-select>
                 </FormGroup>
-                <FormGroup title="Date Format" has-hint>
+                <FormGroup
+                  title="Date Format"
+                  has-hint
+                  sub-title="Date format in notification templates"
+                >
                   <k-select
                     v-model="formData.DateFormat"
                     id="input--company-date-format"
