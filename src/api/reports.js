@@ -54,6 +54,11 @@ export const getReportSchedulingLogo = (resourceId) => {
     responseType: 'blob'
   })
 }
+export const getExecutiveReportLogo = (resourceId) => {
+  return testRequest.get(`/executive-report/${resourceId}/logo`, {
+    responseType: 'blob'
+  })
+}
 export default {
   getReports,
   getReportDetail,

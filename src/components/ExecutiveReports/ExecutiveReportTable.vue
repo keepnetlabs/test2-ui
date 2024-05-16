@@ -124,6 +124,7 @@ export default {
       return this.auto ? 'table-layout:auto' : 'table-layout:fixed'
     },
     getTableStatus() {
+      console.log('this.data', this.data)
       return this.data.length > 0
     }
   },

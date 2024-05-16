@@ -719,7 +719,7 @@ export default {
           key: 'QuishingCampaignTrendWidget',
           isAllowed: true,
           parentKey: 'Quishing Metrics',
-          chartType: 'line',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())

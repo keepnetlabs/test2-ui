@@ -39,7 +39,11 @@
 <script>
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
 import ExecutiveReportSearchCard from '@/components/ExecutiveReports/ExecutiveReportSearchCard.vue'
-import { getExecutiveReportMetrics, getReportSchedulingLogo } from '@/api/reports'
+import {
+  getExecutiveReportLogo,
+  getExecutiveReportMetrics,
+  getReportSchedulingLogo
+} from '@/api/reports'
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
@@ -101,9 +105,19 @@ export default {
         .finally(this.setLoading)
     },
     callForDefaultLogo() {
-      getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId')).then((logo) => {
-        this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', { type: logo.type })
-      })
+      if (this.isEdit) {
+        getExecutiveReportLogo(this.$route.params.id).then((logo) => {
+          this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
+            type: logo.type
+          })
+        })
+      } else {
+        getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId')).then((logo) => {
+          this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
+            type: logo.type
+          })
+        })
+      }
     },
     handleSearch(value) {},
     handleSearchAdd(chart) {
