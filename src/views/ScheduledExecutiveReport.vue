@@ -9,7 +9,7 @@
 </template>
 <script>
 import ExecutiveReportNewCard from '@/components/ExecutiveReports/ExecutiveReportNewCard.vue'
-import { getReportSchedulingLogo } from '../api/reports'
+import { getExecutiveReportLogo } from '@/api/reports'
 
 export default {
   name: 'PreviewExecutiveReport',
@@ -20,8 +20,12 @@ export default {
     }
   },
   created() {
-    getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId')).then((logo) => {
-      this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', { type: logo.type })
+    const { params, query } = this.$route
+    const { id } = params
+    const { token, companyResourceId } = query
+    if (!token || !companyResourceId) return
+    getExecutiveReportLogo(id, token, companyResourceId).then((logo) => {
+      this.defaultCompanyLogo = new File([logo.data], 'Executive Report Logo', { type: logo.type })
     })
   }
 }

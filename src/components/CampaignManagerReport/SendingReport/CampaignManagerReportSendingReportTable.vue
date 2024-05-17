@@ -34,6 +34,27 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[0].id"
+        :icon="tableOptions.rowActions[0].icon"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue'"
+        :checkIsOwnerProperty="false"
+        disabledTooltipText="Can not resend when the status is In Queue."
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[1].id"
+        :icon="tableOptions.rowActions[1].icon"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        :checkIsOwnerProperty="false"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <div
         v-if="col.property === COLUMNS.DELIVERY_STATUS.property"
@@ -120,6 +141,7 @@ import CampaignManagerReportSendingReportEvent from '@/components/CampaignManage
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 import Badge from '@/components/Badge'
 const ENUMS = {
@@ -131,7 +153,8 @@ export default {
     CampaignManagerReportSendingReportEvent,
     DataTable,
     Badge,
-    CampaignManagerReportTimeZoneColumn
+    CampaignManagerReportTimeZoneColumn,
+    DefaultButtonRowAction
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
