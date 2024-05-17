@@ -253,6 +253,7 @@
                 :card="item"
                 :date-range="formData.executiveReportDateRange"
                 :default-widget-data="defaultWidgetData[item.key]"
+                :default-widget-table-definitions="defaultWidgetTableDefinitions[item.key]"
                 :date-period="formData.datePeriod"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
@@ -951,7 +952,8 @@ export default {
         description: 'Description',
         executiveReportLogo: ''
       },
-      defaultWidgetData: {}
+      defaultWidgetData: {},
+      defaultWidgetTableDefinitions: {}
     }
   },
   computed: {
@@ -1045,9 +1047,28 @@ export default {
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         data.widgets.forEach((widget) => {
-          this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
-            widget.widgetDatas
-          )
+          if (
+            widget.widgetDatas &&
+            widget.widgetDatas &&
+            widget.widgetDatas[0] &&
+            widget.widgetDatas[0].tableValues
+          ) {
+            const definitions = widget.widgetDatas[0].tableDefinitions
+            const values = widget.widgetDatas[0].tableValues.slice(0, 5)
+            this.defaultWidgetTableDefinitions[widget.widgetType] = definitions.map(
+              (definition) => ({
+                property: definition.name,
+                label: definition.label,
+                align: 'left'
+              })
+            )
+            this.defaultWidgetData[widget.widgetType] = values
+            this.isTypeTable = true
+          } else {
+            this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
+              widget.widgetDatas
+            )
+          }
         })
         this.layout = JSON.parse(data.widgetLayout)
       }
