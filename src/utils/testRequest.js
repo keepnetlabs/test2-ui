@@ -16,7 +16,9 @@ testService.interceptors.request.use(
       config.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
-      config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
+      config.headers.authorization = `Bearer ${
+        config.overrideToken ? config.customToken : AuthenticationService.getToken()
+      }`
       config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
       config.headers['X-IR-COMPANY-ID'] = config.overrideCompanyId
         ? config.headers['X-IR-COMPANY-ID']

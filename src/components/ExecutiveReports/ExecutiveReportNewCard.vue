@@ -5,6 +5,8 @@
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
       :is-new="!isShowPreview"
+      :is-report-saved="isReportSaved"
+      :saved-report-resource-id="savedReportResourceId"
       @on-close="toggleShowScheduleReportDialog"
       @on-submit="handleScheduleReportSubmit"
     />
@@ -328,6 +330,8 @@ export default {
       initialLayout: [],
       colNum: 12,
       newItemY: 0,
+      isReportSaved: false,
+      savedReportResourceId: '',
       activatePreview: this.isPreview,
       editMode: !this.isPreview,
       isActionButtonDisabled: false,
@@ -997,7 +1001,11 @@ export default {
     try {
       if (this.isEdit || this.activatePreview) {
         this.isLoading = true
-        const report = await getExecutiveReport(this.$route.params.id)
+        const { params, query } = this.$route
+        const { id } = params
+        const { token, companyResourceId } = query
+        if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
+        const report = await getExecutiveReport(id, token, companyResourceId)
         const {
           data: { data }
         } = report
@@ -1161,6 +1169,10 @@ export default {
         formData.append('Scheduling.Frequency', payload.scheduling.frequency)
         formData.append('Scheduling.Schedule', payload.scheduling.schedule)
         formData.append(
+          'Scheduling.ScheduledDateTimeZoneId',
+          payload.scheduling.scheduledDateTimeZoneId
+        )
+        formData.append(
           'Scheduling.IsRegionAwareTimeZone',
           payload.scheduling.isRegionAwareTimeZone
         )
@@ -1169,8 +1181,9 @@ export default {
         })
         formData.delete('Scheduling.EmailAddresses')
       }
-      if (this.isEdit || this.$route.name === 'Preview Executive Report') {
-        updateExecutiveReport(formData, this.$route.params.id)
+      if (this.isEdit || this.$route.name === 'Preview Executive Report' || this.isReportSaved) {
+        const id = this.$route.params.id || this.savedReportResourceId
+        updateExecutiveReport(formData, id)
           .then(() => {
             this.activatePreview = true
             this.editMode = false
@@ -1181,7 +1194,9 @@ export default {
           })
       } else {
         saveExecutiveReport(formData)
-          .then(() => {
+          .then((response) => {
+            this.isReportSaved = true
+            this.savedReportResourceId = response?.data?.data.resourceId
             this.activatePreview = true
             this.editMode = false
             this.$emit('on-edit-cancel')
@@ -1329,6 +1344,7 @@ export default {
     },
     handleEditModeClick() {
       this.editMode = true
+      this.activatePreview = false
       this.$emit('on-edit')
     },
     handleScheduleReportSubmit(data) {

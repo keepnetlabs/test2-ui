@@ -33,8 +33,15 @@ export const updateExecutiveReport = (payload, resourceId) => {
     snackbar: COMMON_SNACKBAR
   })
 }
-export const getExecutiveReport = (resourceId) => {
-  return testRequest.get(`/executive-report/${resourceId}`)
+export const getExecutiveReport = (resourceId, token, companyResourceId) => {
+  const config = {}
+  if (token) {
+    config.overrideToken = true
+    config.overrideCompanyId = true
+    config.headers = { 'X-IR-COMPANY-ID': companyResourceId }
+    config.customToken = token
+  }
+  return testRequest.get(`/executive-report/${resourceId}`, config)
 }
 export const deleteExecutiveReport = (resourceId) => {
   return testRequest.delete(`/executive-report/${resourceId}`, {
@@ -54,10 +61,17 @@ export const getReportSchedulingLogo = (resourceId) => {
     responseType: 'blob'
   })
 }
-export const getExecutiveReportLogo = (resourceId) => {
-  return testRequest.get(`/executive-report/${resourceId}/logo`, {
+export const getExecutiveReportLogo = (resourceId, token, companyResourceId) => {
+  const config = {
     responseType: 'blob'
-  })
+  }
+  if (token) {
+    config.overrideToken = true
+    config.overrideCompanyId = true
+    config.headers = { 'X-IR-COMPANY-ID': companyResourceId }
+    config.customToken = token
+  }
+  return testRequest.get(`/executive-report/${resourceId}/logo`, config)
 }
 export default {
   getReports,
