@@ -277,8 +277,6 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            align: 'right',
-            anchor: 'right',
             offset: 12,
 
             color: '#383B41',
@@ -287,9 +285,21 @@ export default {
                 return '---- Reporting practices have steadily improved'
               }
               if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                return '---- Significant decrease in reporting practices'
+                return 'Significant decrease in reporting practices ----'
               }
               return ''
+            },
+            align: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
+            },
+            anchor: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
             },
             font: {
               size: 10,
