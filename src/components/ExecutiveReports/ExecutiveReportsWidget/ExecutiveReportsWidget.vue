@@ -131,8 +131,11 @@ export default {
       default: 1
     },
     defaultWidgetData: {
-      type: Object,
-      default: () => ({})
+      type: [Object, Array]
+    },
+    defaultWidgetTableDefinitions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -163,8 +166,15 @@ export default {
     }
   },
   created() {
-    if (Object.keys(this.defaultWidgetData).length) this.chartData = this.defaultWidgetData
-    else this.callForData()
+    if (this.defaultWidgetData && Object.keys(this.defaultWidgetData).length) {
+      if (this.defaultWidgetTableDefinitions && this.defaultWidgetTableDefinitions.length) {
+        this.executiveReportColumns = this.defaultWidgetTableDefinitions
+        this.executiveReportData = this.defaultWidgetData
+        this.isTypeTable = true
+      } else {
+        this.chartData = this.defaultWidgetData
+      }
+    } else this.callForData()
   },
   methods: {
     callForData() {

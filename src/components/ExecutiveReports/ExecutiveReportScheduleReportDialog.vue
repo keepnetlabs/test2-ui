@@ -65,6 +65,7 @@
           />
         </FormGroup>
         <VSwitch
+          v-if="false"
           v-model="formData.isRegionAwareTimeZone"
           hide-details
           :ripple="false"
