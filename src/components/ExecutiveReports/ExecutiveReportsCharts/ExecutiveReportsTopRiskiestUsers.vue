@@ -60,11 +60,11 @@ export default {
       this.chartData = {
         xLabels: [0, 100],
         yLabels: [
-          { name: 'Desirae Baptista', email: 'desirae@company.com', department: 'HR' },
-          { name: 'Jakob Dokidis', email: 'jakob.d@company.com', department: 'Finance' },
-          { name: 'Ann Schleifer', email: 'ann@company.com', department: 'Product' },
-          { name: 'Marilyn Geidt', email: 'marilyn@company.com', department: 'Marketing' },
-          { name: 'Jakob Stanton', email: 'jakob.s@company.com', department: 'Marketing' }
+          'Desirae Baptista',
+          'Jakob Dokidis',
+          'Ann Schleifer',
+          'Marilyn Geidt',
+          'Jakob Stanton'
         ],
         datasets: [
           {
@@ -99,9 +99,6 @@ export default {
                 borderDash: [3]
               },
               ticks: {
-                callback: function (data, index, values) {
-                  return `${data.name}\n(${data.email})\n${data.department}`
-                },
                 labelOffset: 0,
                 beginAtZero: true,
                 padding: 0,
