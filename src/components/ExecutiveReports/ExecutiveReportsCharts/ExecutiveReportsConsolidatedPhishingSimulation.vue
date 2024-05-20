@@ -84,7 +84,7 @@ export default {
             order: 2
           },
           {
-            label: 'Stacked Bar Dataset 2',
+            label: 'Stacked Bar Dataset 3',
             type: 'bar',
             data: [20, 30, 40, 50, 60, 70, 80],
             backgroundColor: '#F49A34',
@@ -95,7 +95,7 @@ export default {
             order: 2
           },
           {
-            label: 'Stacked Bar Dataset 2',
+            label: 'Stacked Bar Dataset 4',
             type: 'bar',
             data: [150, 30, 40, 50, 110, 70, 80],
             backgroundColor: '#D6797C',
@@ -106,7 +106,7 @@ export default {
             order: 2
           },
           {
-            label: 'Stacked Bar Dataset 2',
+            label: 'Stacked Bar Dataset 5',
             type: 'bar',
             data: [20, 30, 40, 50, 60, 70, 80],
             backgroundColor: '#F9A7A7',
@@ -117,7 +117,7 @@ export default {
             order: 2
           },
           {
-            label: 'Line Dataset',
+            label: 'Line Dataset 1',
             type: 'line',
             data: [150, 150, 150, 150, 150, 150, 150],
             backgroundColor: '#1173C1',
@@ -129,7 +129,7 @@ export default {
             order: 1
           },
           {
-            label: 'Line Dataset',
+            label: 'Line Dataset 2',
             type: 'line',
             data: [200, 200, 200, 200, 200, 200, 200],
             backgroundColor: '#2196F3',
@@ -141,7 +141,7 @@ export default {
             order: 1
           },
           {
-            label: 'Line Dataset',
+            label: 'Line Dataset 3',
             type: 'line',
             data: [50, 60, 70, 80, 200, 55, 110],
             backgroundColor: '#757575',
@@ -219,13 +219,14 @@ export default {
         },
         tooltips: {
           enabled: false,
-          custom: function (tooltipModel, obj) {
+          custom: function (tooltipModel) {
             let tooltipEl = document.getElementById('chartjs-tooltip')
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
               tooltipEl.id = 'chartjs-tooltip'
-              tooltipEl.innerHTML = '<table></table>'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
             }
 
@@ -242,37 +243,78 @@ export default {
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
-            tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily
-            tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
-            tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
-            tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
             tooltipEl.style.pointerEvents = 'none'
-            tooltipEl.style.background = 'white'
-            tooltipEl.style.border = '1px solid #ccc'
-            tooltipEl.style.borderRadius = '3px'
-            tooltipEl.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
+            tooltipFooter.style.marginTop = '4px'
+            tooltipFooter.style.borderRadius = '8px'
+            tooltipFooter.style.color = '#fff'
+            tooltipFooter.style.padding = '16px'
+            tooltipFooter.style.maxWidth = '280px'
+            tooltipFooter.style.fontWeight = 'normal'
 
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-              let tableRoot = tooltipEl.querySelector('table')
+              let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+
+              let titleValue = this._chart.data.labels[tooltipModel.dataPoints[0].index]
+              let titleRow = document.createElement('tr')
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${titleValue}</th>`
+              tableRoot.appendChild(titleRow)
+
+              let selectedBackgroundColor = ''
 
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor = dataset.backgroundColor || '#000' // Varsayılan bir renk belirleyin veya dataset'in backgroundColor özelliğine bakın
+                let backgroundColor = dataset.backgroundColor || '#000'
 
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
-          <td>
-            <span style="background-color:${backgroundColor}; width: 8px; height: 8px; display: inline-block; margin-right: 5px;"></span>
-            ${datasetLabel}
-          </td>
-          <td>${dataValue}</td>
-        `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:
+                </td>
+                <td>${dataValue}</td>
+            `
+
+                if (
+                  datasetLabel ===
+                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
+                ) {
+                  tr.style.fontWeight = '600'
+                  selectedBackgroundColor = backgroundColor
+                } else {
+                  tr.style.fontWeight = 'normal'
+                }
+
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                tr.style.paddingBottom = '4px'
                 tableRoot.appendChild(tr)
               })
+
+              tooltipFooter.style.background = selectedBackgroundColor
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;">80% of users identifying and reporting phishing in simulation engagements</th>`
             }
-          }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 12,
+          yPadding: 12
           /*
           enabled: true,
           backgroundColor: '#fff',

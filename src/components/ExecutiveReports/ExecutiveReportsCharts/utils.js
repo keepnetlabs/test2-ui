@@ -73,6 +73,14 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Scanned QR Link Count': {
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   'Not Responded Users': {
     backgroundColor: '#43A047',
     borderColor: '#43A047',

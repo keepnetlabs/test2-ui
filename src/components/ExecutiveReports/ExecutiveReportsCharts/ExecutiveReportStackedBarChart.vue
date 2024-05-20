@@ -144,7 +144,7 @@ export default {
         const datasets = []
         for (let itemType of valueEnums) {
           datasets.push({
-            label: getDataTableFieldLabel(itemType),
+            label: itemType,
             ...CHART_COLORS[itemType],
             data: this.rawData.datasets.filter((item) => item.result === itemType),
             barThickness: 32

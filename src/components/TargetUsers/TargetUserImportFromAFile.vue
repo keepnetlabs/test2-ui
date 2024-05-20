@@ -1196,6 +1196,12 @@ export default {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      const timeZoneIndex = this.bodyData.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.bodyData.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()

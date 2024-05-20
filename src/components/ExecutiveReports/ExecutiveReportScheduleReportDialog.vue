@@ -13,7 +13,7 @@
   >
     <template #app-dialog-body>
       <VForm ref="refForm" lazy-validation>
-        <div v-if="isNew" class="executive-report-schedule-dialog-is-new">
+        <div v-if="isNew && !isReportSaved" class="executive-report-schedule-dialog-is-new">
           Your report will be saved as it is to be scheduled
         </div>
         <FormGroup title="Schedule Name">
@@ -65,6 +65,7 @@
           />
         </FormGroup>
         <VSwitch
+          v-if="false"
           v-model="formData.isRegionAwareTimeZone"
           hide-details
           :ripple="false"
@@ -106,7 +107,7 @@
       <AppDialogFooter
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
-        :action-button-text="isNew ? 'SAVE & SUBMIT' : 'SUBMIT'"
+        :action-button-text="isNew && !isReportSaved ? 'SAVE & SUBMIT' : 'SUBMIT'"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleConfirm"
@@ -143,6 +144,13 @@ export default {
     isNew: {
       type: Boolean,
       default: false
+    },
+    isReportSaved: {
+      type: Boolean,
+      default: false
+    },
+    savedReportResourceId: {
+      type: String
     }
   },
   data() {
@@ -230,11 +238,13 @@ export default {
     },
     handleConfirm() {
       if (!this.$refs.refForm.validate()) return
-      if (!this.isNew) {
+      if (!this.isNew || this.isReportSaved) {
         this.isActionButtonDisabled = true
         createReportScheduling({
           reportType: 2,
-          reportResourceId: this.selectedRow.resourceId,
+          reportResourceId: this.savedReportResourceId
+            ? this.savedReportResourceId
+            : this.selectedRow.resourceId,
           ...this.formData
         })
           .then(() => this.handleClose())

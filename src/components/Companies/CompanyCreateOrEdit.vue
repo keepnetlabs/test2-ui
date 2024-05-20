@@ -119,7 +119,11 @@
                     :rules="[(v) => validations.required(v)]"
                   />
                 </FormGroup>
-                <FormGroup title="Time Format" has-hint>
+                <FormGroup
+                  title="Time Format"
+                  has-hint
+                  sub-title="Time format in notification templates"
+                >
                   <k-select
                     v-model="formData.TimeFormat"
                     id="input--company-time-format"
@@ -133,7 +137,11 @@
                     :rules="[(v) => validations.required(v)]"
                   ></k-select>
                 </FormGroup>
-                <FormGroup title="Date Format" has-hint>
+                <FormGroup
+                  title="Date Format"
+                  has-hint
+                  sub-title="Date format in notification templates"
+                >
                   <k-select
                     v-model="formData.DateFormat"
                     id="input--company-date-format"
@@ -697,21 +705,21 @@ export default {
         CompanyGroupResourceIdArray: [],
         LicenseModuleResourceIdArray: [],
         statusId: '1',
-        DateFormat: 'DD/MM/YYYY',
+        DateFormat: 'dd/MM/yyyy',
         TimeFormat: '24h'
       },
       dateFormatList: [
         {
           text: `DD/MM/YYYY ${moment(new Date()).format('DD/MM/YYYY')}`,
-          value: 'DD/MM/YYYY'
+          value: 'dd/MM/yyyy'
         },
         {
           text: `MM/DD/YYYY ${moment(new Date()).format('MM/DD/YYYY')}`,
-          value: 'MM/DDYYYY'
+          value: 'MM/dd/yyyy'
         },
         {
           text: `YYYY/MM/DD ${moment(new Date()).format('YYYY/MM/DD')}`,
-          value: 'YYYY/MM/DD'
+          value: 'yyyy/MM/dd'
         }
       ],
       timeFormatList: [
@@ -933,7 +941,7 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
-      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'DD/MM/YYYY'
+      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'dd/MM/yyyy'
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
