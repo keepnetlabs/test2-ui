@@ -291,6 +291,7 @@ import {
 import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
+import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1375,9 +1376,9 @@ export default {
     getComponent(componentString) {
       switch (componentString) {
         case 'ConsolidatedPhishingSimulationMetrics':
-          return ExecutiveReportsRiskScoreTrendAcrossIndustries
+          return ExecutiveReportsIndustryPhishingRiskScore
         default:
-          return ExecutiveReportsPhishingSimulationEngagement
+          return ExecutiveReportsTopRiskiestUsers
       }
     },
     handleDownloadButton() {

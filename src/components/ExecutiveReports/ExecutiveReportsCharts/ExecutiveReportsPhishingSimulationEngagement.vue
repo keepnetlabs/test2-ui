@@ -294,12 +294,11 @@ export default {
               lastTr.style.paddingTop = '8px'
               tableRoot.appendChild(lastTr)
               tooltipFooter.style.background = selectedBackgroundColor
-              console.log('selectedLabel', selectedLabel)
-              const explainationText =
+              const explanationText =
                 selectedLabel === 'Clicked (%)'
                   ? ' of the users who did click the email also reporting it.'
                   : ' of users identifying and reporting phishing in simulation engagements'
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explainationText}</th>`
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explanationText}</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
