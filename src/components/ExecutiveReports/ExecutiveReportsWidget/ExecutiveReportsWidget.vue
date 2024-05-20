@@ -10,6 +10,7 @@
           :title="card.title"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :last-updated="card.lastUpdated"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
