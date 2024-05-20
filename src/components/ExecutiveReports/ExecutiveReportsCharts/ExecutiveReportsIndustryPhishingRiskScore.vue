@@ -158,6 +158,23 @@ export default {
                 fontColor: '#B6791D',
                 lineHeight: 1.58
               }
+            },
+            {
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Total User Actions'
+              },
+              gridLines: {
+                display: false
+              },
+              position: 'right',
+              ticks: {
+                min: 0,
+                max: 500,
+                stepSize: 100,
+                beginAtZero: true
+              }
             }
           ],
           xAxes: [

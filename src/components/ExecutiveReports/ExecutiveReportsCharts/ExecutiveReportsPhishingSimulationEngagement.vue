@@ -214,29 +214,44 @@ export default {
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
 
             let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
-            tooltipFooter.style.marginTop = '4px'
+            tooltipFooter.style.marginTop = '2px'
+            tooltipFooter.style.fontFamily = 'Open-sans,sans-serif'
+            tooltipFooter.style.fontSize = '14px'
             tooltipFooter.style.borderRadius = '8px'
             tooltipFooter.style.color = '#fff'
             tooltipFooter.style.padding = '16px'
             tooltipFooter.style.maxWidth = '280px'
             tooltipFooter.style.fontWeight = 'normal'
-
+            const monthNamesLong = [
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December'
+            ]
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
-
-              let titleValue = this._chart.data.labels[tooltipModel.dataPoints[0].index]
               let titleRow = document.createElement('tr')
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${titleValue}</th>`
+              const xValue = new Date(tooltipModel.dataPoints[0].xLabel)
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
+                monthNamesLong[xValue.getMonth()]
+              }/${xValue.getFullYear()}</th>`
               tableRoot.appendChild(titleRow)
-
               let selectedBackgroundColor = ''
-
+              let selectedLabel = ''
+              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                console.log('dataValue', dataValue)
                 let backgroundColor = dataset.backgroundColor || '#000'
 
                 let tr = document.createElement('tr')
@@ -253,6 +268,8 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
+                  selectedValue = dataValue
+                  selectedLabel = datasetLabel
                   selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
@@ -260,12 +277,29 @@ export default {
 
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
-                tr.style.paddingBottom = '4px'
+                tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
+              let lastTr = document.createElement('tr')
+              lastTr.innerHTML = `
+                <td>
 
+                    Phishing Report Rate:
+                </td>
+                <td>70</td>
+            `
+              lastTr.style.borderTop = '1px solid #E0E0E0'
+              lastTr.style.display = 'flex'
+              lastTr.style.justifyContent = 'space-between'
+              lastTr.style.paddingTop = '8px'
+              tableRoot.appendChild(lastTr)
               tooltipFooter.style.background = selectedBackgroundColor
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;">80% of users identifying and reporting phishing in simulation engagements</th>`
+              console.log('selectedLabel', selectedLabel)
+              const explainationText =
+                selectedLabel === 'Clicked (%)'
+                  ? ' of the users who did click the email also reporting it.'
+                  : ' of users identifying and reporting phishing in simulation engagements'
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explainationText}</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
