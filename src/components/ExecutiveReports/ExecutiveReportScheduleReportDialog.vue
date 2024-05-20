@@ -65,7 +65,6 @@
           />
         </FormGroup>
         <VSwitch
-          v-if="false"
           v-model="formData.isRegionAwareTimeZone"
           hide-details
           :ripple="false"
@@ -107,7 +106,7 @@
       <AppDialogFooter
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
-        :action-button-text="isNew && !isReportSaved ? 'SAVE & SUBMIT' : 'SUBMIT'"
+        action-button-text="SUBMIT"
         :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleConfirm"

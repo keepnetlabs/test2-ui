@@ -77,7 +77,7 @@
           >
         </template>
         <span>{{
-          card.isEditable ? 'Delete' : 'You are not authorized to delete this template'
+          card.isDeletable ? 'Delete' : 'You are not authorized to delete this template'
         }}</span>
       </VTooltip>
     </div>
@@ -102,7 +102,7 @@ export default {
     },
     getDeleteButtonClasses() {
       const classes = ['executive-reports-card__right-btn']
-      if (!this.card.isEditable) classes.push('executive-reports-card__right-btn--disabled')
+      if (!this.card.isDeletable) classes.push('executive-reports-card__right-btn--disabled')
       return classes
     }
   },
@@ -145,7 +145,7 @@ export default {
       })
     },
     handleDeleteClick() {
-      if (!this.card.isEditable) return false
+      if (!this.card.isDeletable) return false
       this.$emit('on-delete', this.card)
     }
   }

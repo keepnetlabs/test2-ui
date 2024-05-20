@@ -4,7 +4,7 @@
       v-if="isShowScheduleReportDialog"
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
-      :is-new="!isShowPreview"
+      :is-new="isEdit ? false : !isShowPreview"
       :is-report-saved="isReportSaved"
       :saved-report-resource-id="savedReportResourceId"
       @on-close="toggleShowScheduleReportDialog"
@@ -210,6 +210,11 @@
                 <span class="executive-report-new-card__body-preview-text">
                   by {{ editData.companyName || formData.companyName }}</span
                 >
+              </div>
+              <div>
+                <span class="executive-report-new-card__body-preview-text">
+                  Date Range: {{ getDateRangeText }}
+                </span>
               </div>
             </div>
             <img
@@ -987,6 +992,19 @@ export default {
       if (this.$route.name === 'Preview Executive Report')
         return this.isPreviewDownload ? false : this.editMode
       return !this.isShowPreview
+    },
+    getDateRangeText() {
+      const datePeriod = this.formData.datePeriod
+      if (datePeriod === 0) {
+        return 'Last Month'
+      } else if (datePeriod === 1) {
+        return 'Last 3 Months'
+      } else if (datePeriod === 2) {
+        return 'Last 6 Months'
+      } else if (datePeriod === 3) {
+        return 'Last Year'
+      }
+      return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
     }
   },
   watch: {
@@ -1275,7 +1293,7 @@ export default {
               margin: {
                 top: 24,
                 right: 24,
-                bottom: 32,
+                bottom: 24,
                 left: 24
               },
 

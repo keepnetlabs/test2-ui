@@ -1,7 +1,9 @@
 <template>
   <div class="executive-widget-header">
     <div class="executive-widget-header__left">
-      <div class="executive-widget-header__left-title">{{ title }}</div>
+      <div class="d-flex justify-space-between items-center">
+        <div class="executive-widget-header__left-title">{{ title }}</div>
+      </div>
       <div class="executive-widget-header__left-text">{{ subtitle }}</div>
     </div>
     <div v-if="editMode" class="executive-widget-header__right">
@@ -15,6 +17,9 @@
       <VIcon class="executive-widget-header__right-icon ml-2" color="#757575" @click="handleDelete"
         >mdi-close</VIcon
       >
+    </div>
+    <div v-else-if="!editMode && lastUpdated" class="executive-widget-header__right-date">
+      Last Updated: {{ lastUpdated }}
     </div>
   </div>
 </template>
@@ -32,6 +37,10 @@ export default {
     editMode: {
       type: Boolean,
       default: true
+    },
+    lastUpdated: {
+      type: String,
+      default: ''
     }
   },
   methods: {
