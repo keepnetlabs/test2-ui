@@ -166,8 +166,8 @@ export default {
     }
   },
   created() {
-    if (Object.keys(this.defaultWidgetData).length) {
-      if (this.defaultWidgetTableDefinitions.length) {
+    if (this.defaultWidgetData && Object.keys(this.defaultWidgetData).length) {
+      if (this.defaultWidgetTableDefinitions && this.defaultWidgetTableDefinitions.length) {
         this.executiveReportColumns = this.defaultWidgetTableDefinitions
         this.executiveReportData = this.defaultWidgetData
         this.isTypeTable = true
