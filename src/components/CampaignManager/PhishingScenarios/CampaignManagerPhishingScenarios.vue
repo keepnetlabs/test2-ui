@@ -1,5 +1,8 @@
 <template>
-  <div class="emailTemplatePreview pt-0" style="min-height: auto !important;">
+  <div
+    class="emailTemplatePreview campaign-manager-phishing-scenarios pt-0"
+    style="min-height: auto !important;"
+  >
     <CampaignManagerPhishingScenariosPreviewDialog
       v-if="isShowTemplate"
       :status="isShowTemplate"
@@ -14,6 +17,12 @@
       :status="isShowTrainingDialog"
       :selected-row="trainingTabModel[selectedTemplateResourceId]"
       @on-close="toggleShowTrainingDialog"
+    />
+    <TrainingLibraryPreviewDialog
+      v-if="isShowCategoryTrainingDialog"
+      :status="isShowCategoryTrainingDialog"
+      :selected-row="trainingForCategory"
+      @on-close="toggleShowCategoryTrainingDialog"
     />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
@@ -48,9 +57,21 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    customMenuClass="campaign-manager-phishing-scenarios__filter-menu"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: 172px;
+                    "
+                    type="combobox"
+                    multiple
+                    :slots="{ selection: true }"
                     @change="isShowSelectedScenarios = false"
-                  />
+                  >
+                    <template #selection="data">
+                      <span v-show="data.index === 0">Type ({{ method.length }})</span>
+                    </template>
+                  </KSelect>
                 </div>
                 <div>
                   <KSelect
@@ -62,8 +83,13 @@
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
                     :items="languages"
+                    :slots="{ selection: true }"
                     @change="isShowSelectedScenarios = false"
-                  />
+                  >
+                    <template #selection="data">
+                      <span v-show="data.index === 0">Language (1)</span>
+                    </template>
+                  </KSelect>
                 </div>
                 <div>
                   <KSelect
@@ -76,14 +102,132 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: 196px;
+                    "
+                    type="combobox"
+                    multiple
+                    :slots="{ selection: true }"
                     @change="isShowSelectedScenarios = false"
+                  >
+                    <template #selection="data">
+                      <span v-show="data.index === 0">Difficulty ({{ difficulty.length }})</span>
+                    </template>
+                  </KSelect>
+                </div>
+                <div>
+                  <KSelect
+                    v-model="category"
+                    :items="getCategoryItems"
+                    placeholder="Category"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="text"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    customMenuClass="campaign-manager-phishing-scenarios__filter-menu"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: 205px;
+                    "
+                    type="combobox"
+                    multiple
+                    :slots="{ selection: true }"
+                    @change="isShowSelectedScenarios = false"
+                  >
+                    <template #selection="data">
+                      <span v-show="data.index === 0">Category ({{ category.length }})</span>
+                    </template>
+                  </KSelect>
+                </div>
+                <div>
+                  <KSelect
+                    v-model="scenarioDistribution"
+                    :items="scenarioDistributionItems"
+                    placeholder="Select scenarios manually"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      max-width: unset;
+                      width: 300px;
+                    "
+                    :disabled="!category.length"
                   />
                 </div>
               </div>
             </div>
+            <div v-if="getBadges.length" class="campaign-manager-phishing-scenarios__badges">
+              <div class="campaign-manager-phishing-scenarios__badge-container">
+                <div
+                  v-for="(filterBadge, index) in getBadges"
+                  :key="index"
+                  class="campaign-manager-phishing-scenarios__badge"
+                >
+                  <span class="campaign-manager-phishing-scenarios__badge-key"
+                    >{{ filterBadge.key }}:</span
+                  >
+                  <span class="campaign-manager-phishing-scenarios__badge-value">{{
+                    filterBadge.value
+                  }}</span>
+                  <div>
+                    <VIcon
+                      class="fw-600 cursor-pointer"
+                      style="font-size: 20px; margin-top: -2px;"
+                      color="#757575"
+                      @click="handleRemoveFilter(filterBadge)"
+                      >mdi-close</VIcon
+                    >
+                  </div>
+                </div>
+              </div>
+              <VBtn
+                class="campaign-manager-phishing-scenarios__clear-all"
+                color="#2196F3"
+                text
+                :ripple="false"
+                @click="resetFilters"
+              >
+                Clear All
+              </VBtn>
+            </div>
           </div>
-          <multipane class="vertical-panes" layout="vertical" :style="getStyle">
+          <div class="px-6 pt-4">
+            <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
+              <ElTabPane name="scenarios" label="Scenarios" />
+              <ElTabPane
+                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY"
+                name="training"
+                label="Training"
+              >
+                <CampaignManagerPhishingScenariosTrainingTab
+                  v-model="trainingForCategory"
+                  ref="categoryTrainingTab"
+                  class="pb-4"
+                  :is-show-reminder="isShowReminder"
+                  :type="type"
+                  :is-edit="isEdit"
+                  isCategory
+                  :enum-types="enumTypes"
+                  @on-preview="handleCategoryTrainingPreviewButtonClick"
+                />
+              </ElTabPane>
+            </ElTabs>
+          </div>
+          <multipane
+            v-if="upperTab === 'scenarios'"
+            class="vertical-panes"
+            layout="vertical"
+            :style="getStyle"
+          >
             <template v-if="getItems.length">
               <div
                 class="pane"
@@ -101,7 +245,7 @@
                     hide-details
                     color="#2196f3"
                     :label="getSelectedScenarioSwitchLabel"
-                    :disabled="!value.length"
+                    :disabled="isShowSelectedScenariosSwitchDisabled"
                   />
                 </div>
                 <div
@@ -113,7 +257,7 @@
                   <div class="d-flex justify-space-between mb-2">
                     <div class="d-flex overflow-hidden">
                       <VCheckbox
-                        v-if="!isSingle"
+                        v-if="!isSingle && scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY"
                         v-model="checkboxModel[item.resourceId]"
                         color="#2196f3"
                         hide-details
@@ -174,9 +318,7 @@
                           outlined
                           @click="handleClickPreview"
                         >
-                          <VIcon color="#2196f3" medium>
-                            mdi-fullscreen
-                          </VIcon>
+                          <VIcon color="#2196f3" medium> mdi-fullscreen </VIcon>
                         </VBtn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
@@ -250,9 +392,7 @@
                           outlined
                           @click="handleClickPreview"
                         >
-                          <v-icon color="#2196f3" medium>
-                            mdi-fullscreen
-                          </v-icon>
+                          <v-icon color="#2196f3" medium> mdi-fullscreen </v-icon>
                         </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
@@ -277,12 +417,13 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
-                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
+                    v-if="isShowTrainingTab"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
                   >
                     <CampaignManagerPhishingScenariosTrainingTab
+                      v-if="isShowTrainingTab"
                       ref="trainingTab"
                       v-model="trainingTabModel[selectedTemplateResourceId]"
                       :is-show-reminder="isShowReminder"
@@ -343,6 +484,10 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import {
+  scenarioDistributionItems,
+  SCENARIO_DISTRIBUTION
+} from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -394,14 +539,21 @@ export default {
     isShowReminder: {
       type: Boolean,
       default: false
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
     return {
+      SCENARIO_DISTRIBUTION,
+      scenarioDistributionItems,
       tab: 'email',
+      upperTab: 'scenarios',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
       trainingTabModel: {},
+      trainingForCategory: new TrainingTabModel(),
       labels,
       quishingMethods,
       difficulties,
@@ -413,6 +565,10 @@ export default {
       method: '',
       difficulty: '',
       language: '',
+      languageText: '',
+      category: '',
+      totalPhishingScenariosCount: 0,
+      scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
@@ -421,6 +577,7 @@ export default {
       phishingScenarioItems: [],
       isMethodMfa: false,
       isShowTrainingDialog: false,
+      isShowCategoryTrainingDialog: false,
       enumTypes: {}
     }
   },
@@ -428,6 +585,48 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    getCategoryItems() {
+      return this.formDetails?.categories?.map((item) => item.text) || []
+    },
+    isShowTrainingTab() {
+      return (
+        !this.isAttachmentBasedScenario &&
+        this.getTrainingSearchPermission &&
+        this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+      )
+    },
+    isShowSelectedScenariosSwitchDisabled() {
+      return !this.value.length || this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    getBadges() {
+      const badges = []
+      if (this.method.length) {
+        const methodBadges = this.method.map((item) => ({
+          key: 'Type',
+          value: item.text
+        }))
+        badges.push(...methodBadges)
+      }
+      if (this.languageText) {
+        const languageBadge = { key: 'Language', value: this.languageText }
+        badges.push(languageBadge)
+      }
+      if (this.difficulty.length) {
+        const difficultyBadges = this.difficulty.map((item) => ({
+          key: 'Difficulty',
+          value: item.text
+        }))
+        badges.push(...difficultyBadges)
+      }
+      if (this.category.length) {
+        const categoryBadges = this.category.map((item) => ({
+          key: 'Category',
+          value: item
+        }))
+        badges.push(...categoryBadges)
+      }
+      return badges
+    },
     getMethodItems() {
       if (this.type === SCENARIO_TYPES.QUISHING) {
         return quishingMethods
@@ -435,7 +634,9 @@ export default {
       return methods
     },
     getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
+      return !this.isValid && this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+        ? { border: '1px solid #ff5252 !important', borderRadius: '20px' }
+        : {}
     },
     getPhishingFile() {
       return this.emailTemplateParams?.phishingFileName
@@ -488,6 +689,40 @@ export default {
     }
   },
   watch: {
+    axiosPayload: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.$emit('categoryFilterChanged', val)
+      }
+    },
+    phishingScenarioItems: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.$emit('phishingScenarioItemsChanged', val)
+      }
+    },
+    trainingForCategory: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.$emit('trainingForCategoryChanged', val)
+        }
+      }
+    },
+    scenarioDistribution(val) {
+      this.$emit('distributionChanged', val)
+      if (val === SCENARIO_DISTRIBUTION.MANUALLY) {
+        this.upperTab = 'scenarios'
+      } else {
+        this.tab = 'email'
+        this.isShowSelectedScenarios = false
+        this.$emit('input', [])
+        this.checkboxModel = {}
+      }
+    },
     defaultPhishingScenariosValuesMapped(val) {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
@@ -535,6 +770,7 @@ export default {
           { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
           { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
+          // { FieldName: 'Category', Operator: 'Contains', Value: val }
         ]
         this.callForPhishingScenarios()
         this.isShowSelectedScenarios = false
@@ -544,7 +780,11 @@ export default {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'difficulty'
       )
-      const obj = { Value: val, FieldName: 'difficulty', Operator: 'Include' }
+      const obj = {
+        Value: val?.map?.((item) => item.text)?.join(',') || '',
+        FieldName: 'difficulty',
+        Operator: 'Include'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -556,7 +796,11 @@ export default {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'method'
       )
-      const obj = { Value: val, FieldName: 'method', Operator: 'Include' }
+      const obj = {
+        Value: val?.map?.((item) => item.text)?.join(',') || '',
+        FieldName: 'method',
+        Operator: 'Include'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -565,10 +809,41 @@ export default {
       this.callForPhishingScenarios()
     },
     language(val) {
+      if (val) {
+        const languageIndex = this.languages.findIndex((lang) => lang.value === val)
+        if (languageIndex !== -1) {
+          this.languageText = this.languages?.[languageIndex]?.name || ''
+        }
+      } else {
+        this.languageText = ''
+      }
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'LanguageTypeResourceId'
       )
-      const obj = { Value: val, FieldName: 'LanguageTypeResourceId', Operator: 'Contains' }
+      const obj = {
+        Value: val,
+        FieldName: 'LanguageTypeResourceId',
+        Operator: 'Contains'
+      }
+      if (index > -1) {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+      }
+      this.callForPhishingScenarios()
+    },
+    category(val) {
+      if (!val.length) {
+        this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
+      }
+      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => item.FieldName === 'Category'
+      )
+      const obj = {
+        Value: val?.map?.((item) => item)?.join(',') || '',
+        FieldName: 'Category',
+        Operator: 'Include'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -577,7 +852,10 @@ export default {
       this.callForPhishingScenarios()
     },
     items(val) {
-      this.phishingScenarioItems = val?.map((item) => ({ ...item, tags: item?.tags || [] }))
+      this.phishingScenarioItems = val?.map((item) => ({
+        ...item,
+        tags: item?.tags || []
+      }))
     },
     value(val = false) {
       if (val.length === 0) this.isShowSelectedScenarios = false
@@ -593,6 +871,29 @@ export default {
     if (this.getTrainingSearchPermission) this.callForEnrollmentFormDetails()
   },
   methods: {
+    handleRemoveFilter(filter) {
+      if (filter.key === 'Type') {
+        const index = this.method.findIndex((item) => item.text === filter.value)
+        if (index !== -1) {
+          this.method.splice(index, 1)
+        }
+      }
+      if (filter.key === 'Language') {
+        this.language = ''
+      }
+      if (filter.key === 'Difficulty') {
+        const index = this.difficulty.findIndex((item) => item.text === filter.value)
+        if (index !== -1) {
+          this.difficulty.splice(index, 1)
+        }
+      }
+      if (filter.key === 'Category') {
+        const index = this.category.findIndex((item) => item === filter.value)
+        if (index !== -1) {
+          this.category.splice(index, 1)
+        }
+      }
+    },
     callForEnrollmentFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
         const { enumNameValuePairs = {} } = response?.data?.data || {}
@@ -745,6 +1046,8 @@ export default {
           data: { data }
         } = response
         this.phishingScenarioItems = data.results || []
+        this.totalPhishingScenariosCount = data?.totalNumberOfRecords || 0
+        this.$emit('totalPhishingScenariosCountChange', this.totalPhishingScenariosCount)
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return
@@ -794,17 +1097,24 @@ export default {
     },
     resetFilters() {
       this.search = ''
-      this.difficulty = ''
-      this.method = ''
+      this.difficulty = []
+      this.method = []
       this.language = ''
+      this.category = []
       this.axiosPayload = getDefaultAxiosPayload()
       this.callForPhishingScenarios(false)
     },
     handleTrainingPreviewButtonClick() {
       this.toggleShowTrainingDialog()
     },
+    handleCategoryTrainingPreviewButtonClick() {
+      this.toggleShowCategoryTrainingDialog()
+    },
     toggleShowTrainingDialog() {
       this.isShowTrainingDialog = !this.isShowTrainingDialog
+    },
+    toggleShowCategoryTrainingDialog() {
+      this.isShowCategoryTrainingDialog = !this.isShowCategoryTrainingDialog
     }
   }
 }

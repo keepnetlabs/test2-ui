@@ -1106,7 +1106,10 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.params.showDownloadModal) this.isShowDownloadModal = true
+    if (this.$route.params.showDownloadModal) {
+      this.isShowDownloadModal = true
+      this.justDownload = true
+    }
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {

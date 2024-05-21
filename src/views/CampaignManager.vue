@@ -126,7 +126,7 @@ import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/Ca
 import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
 import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
 import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
-
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 export default {
   name: 'CampaignManager',
   components: {
@@ -142,6 +142,7 @@ export default {
     CampaignManagerNewInstanceModal,
     CampaignManagerFrequencyTable
   },
+  mixins: [useScenarioDetailsLookup],
   data() {
     return {
       instanceResourceId: '',

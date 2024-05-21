@@ -85,9 +85,15 @@
               :is-edit="isEdit || isDuplicate"
               :languages="languageOptions"
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
-              :is-valid="isPhishingScenariosValid"
+              :is-valid="getIsPhishingScenariosValid"
+              :form-details="formDetails"
+              @distributionChanged="handleDistributionChanged"
+              @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
+              @trainingForCategoryChanged="handleTrainingForCategoryChanged"
+              @categoryFilterChanged="handleCategoryFilterChanged"
+              @phishingScenarioItemsChanged="handlePhishingScenarioItemsChanged"
             />
-            <CustomError class="mb-6 ml-2" :is-valid="isPhishingScenariosValid" />
+            <CustomError class="mb-6 ml-2" :is-valid="getIsPhishingScenariosValid" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -193,6 +199,7 @@ import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getErrorMessage } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -233,6 +240,8 @@ export default {
   emits: EMITS,
   data() {
     return {
+      isSecondNextClicked: false,
+      SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
@@ -246,11 +255,24 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
+      scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       defaultTargetGroupResourceIds: [],
-      scheduleInfoResponse: {}
+      phishingScenarioItems: [],
+      scheduleInfoResponse: {},
+      trainingForCategory: {},
+      categoryFilter: {},
+      totalPhishingScenariosCount: 0
     }
   },
   computed: {
+    getIsPhishingScenariosValid() {
+      return this.isSecondNextClicked
+        ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+            this.totalPhishingScenariosCount > 0) ||
+            (this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY &&
+              !!this.selectedPhishingScenarios.length)
+        : true
+    },
     isMFAScenarioSelected() {
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
     },
@@ -348,6 +370,12 @@ export default {
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
+        formData.scenarioDistribution = this.scenarioDistribution
+        if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          formData.trainingForCategory = this.trainingForCategory
+          formData.categoryFilter = this.categoryFilter
+          formData.phishingScenarioItems = this.phishingScenarioItems
+        }
       }
       return formData
     },
@@ -471,10 +499,26 @@ export default {
     this.initialFormValues = this.getFormValues()
   },
   methods: {
+    handleTotalPhishingScenariosCountChange(val) {
+      this.totalPhishingScenariosCount = val
+    },
+    handleTrainingForCategoryChanged(training) {
+      this.trainingForCategory = { ...training }
+    },
+    handleDistributionChanged(val) {
+      this.scenarioDistribution = val
+    },
+    handleCategoryFilterChanged(filter) {
+      this.categoryFilter = { ...filter }
+    },
+    handlePhishingScenarioItemsChanged(items) {
+      this.phishingScenarioItems = items
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
+            name: language.name,
             text: language.description,
             value: language.resourceId
           })) || []
@@ -532,6 +576,9 @@ export default {
     },
     changeStep(flag = 1) {
       this.step += flag
+      if (this.step === 2) {
+        this.isSecondNextClicked = false
+      }
     },
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
@@ -544,9 +591,9 @@ export default {
           this.changeStep()
           return
         case 2:
+          this.isSecondNextClicked = true
           const { refCampaignManagerPhishingScenarios } = this.$refs
-          this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
-          if (!this.isPhishingScenariosValid) return
+          if (!this.getIsPhishingScenariosValid) return
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
@@ -701,7 +748,7 @@ export default {
               enrollmentSendTypeId
             })
           })
-          const payload = {
+          let payload = {
             phishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
@@ -736,7 +783,18 @@ export default {
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
+            categoryDistributionType: this.scenarioDistribution
+          }
+          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+            payload = {
+              ...payload,
+              categoryFilter: {
+                Condition: this.categoryFilter.filter.Condition,
+                FilterGroups: this.categoryFilter.filter.FilterGroups
+              },
+              trainingForCategory: this.trainingForCategory
+            }
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {
