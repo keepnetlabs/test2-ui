@@ -4,7 +4,7 @@
       v-if="isShowScheduleReportDialog"
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
-      :is-new="!isShowPreview"
+      :is-new="isEdit ? false : !isShowPreview"
       :is-report-saved="isReportSaved"
       :saved-report-resource-id="savedReportResourceId"
       @on-close="toggleShowScheduleReportDialog"
@@ -14,7 +14,9 @@
       v-if="isShowDownloadModal"
       :status="isShowDownloadModal"
       :is-downloading="isPdfDownload"
+      :is-created="isReportCreated"
       :is-preview="isPreviewDownload"
+      :is-parent-loading="isLoading"
       @on-close="toggleShowDownloadModal"
       @on-submit="handleDownloadClick"
     />
@@ -211,6 +213,11 @@
                   by {{ editData.companyName || formData.companyName }}</span
                 >
               </div>
+              <div>
+                <span class="executive-report-new-card__body-preview-text">
+                  Date Range: {{ getDateRangeText }}
+                </span>
+              </div>
             </div>
             <img
               class="executive-report-new-card__body-preview-img"
@@ -338,6 +345,7 @@ export default {
       isActionButtonDisabled: false,
       isPreviewDownload: false,
       isPdfDownload: false,
+      isReportCreated: false,
       justDownload: false,
       parsedFormat: getTimeZone(false),
       parsedFormatWithoutTime: getTimeZone(true),
@@ -987,6 +995,19 @@ export default {
       if (this.$route.name === 'Preview Executive Report')
         return this.isPreviewDownload ? false : this.editMode
       return !this.isShowPreview
+    },
+    getDateRangeText() {
+      const datePeriod = this.formData.datePeriod
+      if (datePeriod === 0) {
+        return 'Last Month'
+      } else if (datePeriod === 1) {
+        return 'Last 3 Months'
+      } else if (datePeriod === 2) {
+        return 'Last 6 Months'
+      } else if (datePeriod === 3) {
+        return 'Last Year'
+      }
+      return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
     }
   },
   watch: {
@@ -1228,61 +1249,74 @@ export default {
       }
     },
     async handleDownloadClick(
-      fileName = 'executive-report',
+      fileName = this.formData.name,
       activatePreview = this.activatePreview
     ) {
       this.isPdfDownload = true
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
+      const updateReportCreated = () => {
+        this.isReportCreated = true
+      }
       this.$nextTick(async () => {
-        setTimeout(
-          async () => {
-            let page = document.querySelector('#executive-report-new-card-container')
-            const pdf = await html2PDF(page, {
-              html2canvas: {
-                useCORS: true
-              },
-              jsPDF: {
-                format: 'a4'
-              },
-              success(pdf) {
-                if (activatePreview && !justDownload) {
-                  pdf.setProperties({
-                    title: fileName
-                  })
-                  window.open(pdf.output('bloburl'))
-                } else {
+        setTimeout(async () => {
+          let page = document.querySelector('#executive-report-new-card-container')
+          const pdf = await html2PDF(page, {
+            html2canvas: {
+              useCORS: true
+            },
+            jsPDF: {
+              format: 'a4'
+            },
+            success(pdf) {
+              if (activatePreview && !justDownload) {
+                pdf.setProperties({
+                  title: fileName
+                })
+                const blob = pdf.output('blob')
+                const file = new File([blob], `${fileName}.pdf`, {
+                  type: 'application/pdf'
+                })
+                updateReportCreated()
+                setTimeout(() => {
+                  window.open(`${URL.createObjectURL(file)}#toolbar=0`)
+                }, 1000)
+              } else {
+                updateReportCreated()
+                setTimeout(() => {
                   pdf.save(this.output)
-                }
-              },
-              watermark: ({ pdf, pageNumber, totalPageNumber }) => {
-                const lastY = this.layout[this.layout.length - 1]?.y
-                if (lastY % 18 === 0 && totalPageNumber > 1) pdf.deletePage(totalPageNumber)
-                pdf.setTextColor('#383B41')
-                pdf.setFontSize(8)
-                let width, height
-                try {
-                  width = pdf?.internal?.pageSize?.width || 297
-                  height = pdf?.internal?.pageSize?.height || 841
-                } catch (e) {
-                  width = 297
-                  height = 841
-                }
-                try {
-                  pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
-                } catch (e) {}
-              },
-              margin: {
-                top: 24,
-                right: 24,
-                bottom: 32,
-                left: 24
-              },
+                }, 1000)
+              }
+            },
+            watermark: ({ pdf, pageNumber, totalPageNumber }) => {
+              const lastY = this.layout[this.layout.length - 1]?.y
+              if (lastY % 18 === 0 && totalPageNumber > 1) pdf.deletePage(totalPageNumber)
+              pdf.setTextColor('#383B41')
+              pdf.setFontSize(8)
+              let width, height
+              try {
+                width = pdf?.internal?.pageSize?.width || 297
+                height = pdf?.internal?.pageSize?.height || 841
+              } catch (e) {
+                width = 297
+                height = 841
+              }
+              try {
+                pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+              } catch (e) {}
+            },
+            margin: {
+              top: 24,
+              right: 24,
+              bottom: 24,
+              left: 24
+            },
 
-              imageType: 'image/jpeg',
-              output: `./pdf/${fileName}.pdf`,
-              autoResize: true
-            })
+            imageType: 'image/jpeg',
+            output: `./pdf/${fileName}.pdf`,
+            autoResize: true
+          })
+          setTimeout(() => {
             if (isShowDownloadModalFromStart)
               return this.$router.push({ name: 'Executive Reports' })
             this.isPdfDownload = false
@@ -1290,9 +1324,9 @@ export default {
             this.isPreviewDownload = false
             this.justDownload = false
             this.isShowDownloadModal = false
-          },
-          isShowDownloadModalFromStart ? 1500 : 500
-        )
+            this.isReportCreated = false
+          }, 1000)
+        }, 1000)
       })
     },
     handleCancelClick() {
