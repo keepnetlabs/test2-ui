@@ -774,6 +774,27 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              v-if="getAdvancedReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/executive-reports"
+                  id="btn--link-navigator-menu-executive-reports"
+                  route-name="Executive Reports"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Executive Reports' ||
+                      routerName === 'Executive Report' ||
+                      routerName === 'New Executive Report' ||
+                      routerName === 'Preview Executive Report' ||
+                      routerName === 'Edit Executive Report' ||
+                      routerName === 'Duplicate Executive Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
           <v-list-group
             v-if="getCompanyLeftMenuPermissions"
