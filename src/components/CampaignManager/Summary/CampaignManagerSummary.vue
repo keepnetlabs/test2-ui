@@ -87,7 +87,7 @@
     <div class="my-6 d-flex justify-space-between align-center">
       <div>
         <span class="campaign-manager-last-step__phishing-scenario-label">{{
-          type === SCENARIO_TYPES.PHISHING ? 'Phishing Scenarios' : 'Quishing Scenarios'
+          type === SCENARIO_TYPES.PHISHING ? getPhishingScenariosText : 'Quishing Scenarios'
         }}</span>
         <VTooltip v-if="phishingScenarios.length > 5" bottom>
           <template #activator="{ on }">
@@ -113,6 +113,10 @@
         </v-btn>
       </div>
     </div>
+    <CampaignManagerSummaryScenarioInfoTable
+      v-if="isDistributionNotManual"
+      :filterPayload="getScenarioInfoTableFilterPayload"
+    />
     <ElTabs
       v-if="phishingScenarios.length"
       v-model="selectedScenarioResourceId"
@@ -127,12 +131,13 @@
       />
     </ElTabs>
     <CampaignManagerReportSummaryCategory
-      v-if="type === SCENARIO_TYPES.PHISHING"
+      v-if="type === SCENARIO_TYPES.PHISHING && isDistributionManually"
       class="mt-4"
       :category="category"
     />
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
+        v-if="isDistributionManually"
         detailable
         icon="mdi-email"
         :show-body-detail.sync="isShowEmailTemplate"
@@ -246,7 +251,7 @@
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
-        v-if="!isAttachmentBasedScenario"
+        v-if="!isAttachmentBasedScenario && isDistributionManually"
         :type="type"
         :difficulties="difficulties"
         :methods="methods"
@@ -286,11 +291,16 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { mapGetters } from 'vuex'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
-
+import {
+  SCENARIO_DISTRIBUTION,
+  SCENARIO_DISTRIBUTION_TEXTS
+} from '@/components/CampaignManager/utils'
+import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
 export default {
   name: 'CampaignManagerSummary',
   components: {
     CampaignManagerReportSummaryTraining,
+    CampaignManagerSummaryScenarioInfoTable,
     KEmailPreview,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
@@ -328,6 +338,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
       trainingLanguages: [],
       selectedTrainingLanguages: [],
@@ -353,6 +364,27 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getScenarioInfoTableFilterPayload() {
+      return this?.formData?.categoryFilter || null
+    },
+    getPhishingScenariosText() {
+      if (this.isDistributionNotManual) {
+        return `Scenario Info`
+      }
+      return `Phishing Scenarios`
+    },
+    isDistributionManually() {
+      return (
+        !!this.formData?.scenarioDistribution &&
+        this.formData?.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+      )
+    },
+    isDistributionNotManual() {
+      return (
+        !!this.formData?.scenarioDistribution &&
+        this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+      )
+    },
     getTargetGroupItems() {
       return this.formData?.userCountDetailResponse?.data?.data || []
     },
@@ -500,6 +532,24 @@ export default {
     },
     getCampaignInfoItems() {
       const { formData, phishingScenarios } = this
+      if (
+        formData?.scenarioDistribution &&
+        formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+      ) {
+        const methodSet = new Set()
+        const difficultySet = new Set()
+        formData.phishingScenarioItems.forEach((pScenario) => {
+          methodSet.add(pScenario.method)
+          difficultySet.add(pScenario.difficulty)
+        })
+        return {
+          name: formData.name,
+          method: [...methodSet].join(', '),
+          difficulty: [...difficultySet].join(', '),
+          'Tracking Duration': formData.duration,
+          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+        }
+      }
       const methodSet = new Set()
       const difficultySet = new Set()
       phishingScenarios.forEach((pScenario) => {
@@ -510,7 +560,8 @@ export default {
         name: formData.name,
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
-        'Tracking Duration': formData.duration
+        'Tracking Duration': formData.duration,
+        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
       }
     },
     getTotalRandomlySelectedUserCount() {
@@ -603,8 +654,15 @@ export default {
   watch: {
     formData: {
       handler(val) {
-        this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
-        this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        if (this.formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          if (this.formData.trainingForCategory?.trainingId) {
+            this.selectedTraining = this.formData.trainingForCategory
+            this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
+          }
+        } else {
+          this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
+          this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        }
       },
       deep: true,
       immediate: true
@@ -687,7 +745,7 @@ export default {
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
-          this.category = category || 'Remote Working'
+          this.category = category
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },

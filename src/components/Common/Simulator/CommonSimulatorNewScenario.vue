@@ -62,7 +62,7 @@
                   sub-title="Select the phishing category for this scenario"
                 >
                   <KSelect
-                    v-model.trim="formValues.category"
+                    :value="formValues.categoryId"
                     id="input--category-scenario"
                     outlined
                     dense
@@ -71,6 +71,7 @@
                     hint="*Required"
                     :rules="[(v) => Validations.required(v, labels.Required)]"
                     :items="getCategoryItems"
+                    @change="handleCategoryChange"
                   />
                 </FormGroup>
                 <FormGroup
@@ -633,9 +634,11 @@ export default {
       Validations,
       initialFormValues: {},
       quishingType: '',
+      categoryText: '',
       formValues: {
         name: '',
         description: '',
+        categoryId: '',
         methodTypeId: '1',
         difficultyTypeId: '1',
         emailTemplateId: null,
@@ -669,7 +672,7 @@ export default {
       return this.type === SCENARIO_TYPES.PHISHING
     },
     getCategoryItems() {
-      return this.scenarioDetailsLookup?.categoryTypes || []
+      return this.scenarioDetailsLookup?.categories || []
     },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
@@ -774,7 +777,7 @@ export default {
         Name: this.formValues.name,
         Difficulty: this.getDifficultyType,
         Method: this.getMethodText,
-        Category: this.formValues.category
+        Category: this.categoryText
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType
@@ -925,6 +928,12 @@ export default {
   },
   methods: {
     getDifficultyColor,
+    handleCategoryChange(categoryId) {
+      this.formValues.categoryId = categoryId
+      this.categoryText =
+        this.scenarioDetailsLookup?.categories?.find((item) => item.value === categoryId)?.text ||
+        ''
+    },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
         cancelButton: 'btn-cancel--duplicate-scenario-modal',
@@ -939,10 +948,20 @@ export default {
         this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
       apiFunc(this.scenarioId)
         .then((response) => {
-          this.formValues = response.data.data
+          this.formValues = { ...response.data.data }
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          if (this.type === SCENARIO_TYPES.PHISHING) {
+            this.formValues.categoryId = this.scenarioDetailsLookup?.categories?.find(
+              (item) => item.text === response?.data?.data?.category
+            )?.value
+            this.categoryText =
+              this.scenarioDetailsLookup?.categories?.find(
+                (item) => item.value === this.formValues.categoryId
+              )?.text || ''
+            delete this.formValues.category
+          }
           const emailTemplateResourceId = this.isQuishing
             ? response.data.data.templateResourceId
             : response.data.data.emailTemplateResourceId
@@ -1124,6 +1143,10 @@ export default {
         mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
+      }
+      if (!this.isPhishing) {
+        delete payload.categoryId
+        delete payload.category
       }
       if (this.isQuishing) {
         payload.templateType = this.quishingType

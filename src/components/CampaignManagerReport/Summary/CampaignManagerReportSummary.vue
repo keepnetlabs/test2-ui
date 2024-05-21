@@ -30,9 +30,8 @@
         :isLoading="isLoading"
       />
     </div>
-    <div class="mt-6">
+    <div v-if="isCategoryBasedDistribution" class="mt-6">
       <CampaignManagerReportSummaryScenarioInfo
-        v-if="isCategoryBasedDistribution"
         :items="getScenarioInfoItems"
         :categories="getCategories"
         :isLoading="isLoading"
@@ -107,7 +106,10 @@ import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerRe
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
-import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
+import {
+  SCENARIO_DISTRIBUTION,
+  SCENARIO_DISTRIBUTION_TEXTS
+} from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -137,6 +139,9 @@ export default {
     },
     apiResponse: {
       type: Object
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
@@ -161,7 +166,11 @@ export default {
   },
   computed: {
     isCategoryBasedDistribution() {
-      return this.campaignSummary?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+      return (
+        !!this.campaignSummary?.campaignInfo?.categoryDistributionType &&
+        this.campaignSummary?.campaignInfo?.categoryDistributionType !==
+          SCENARIO_DISTRIBUTION_TEXTS.MANUALLY
+      )
     },
     getCampaignName() {
       return this.campaignSummary?.phishingCampaignName || ''
@@ -200,6 +209,9 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     getTrainingInfo() {
+      if (this.isCategoryBasedDistribution) {
+        return this.campaignSummary?.trainingInfoForCategory || null
+      }
       return this?.getActiveScenario?.trainingInfo
     },
     getSelectedRowTrainingInfo() {
@@ -220,9 +232,11 @@ export default {
       return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
+      const { endDate = '0', totalTargetUserCount = 0, categoryDistributionType } = this
+        .campaignSummary?.campaignInfo || {
         endDate: '0',
-        totalTargetUserCount: 0
+        totalTargetUserCount: 0,
+        categoryDistributionType: 'Manually'
       }
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
@@ -232,7 +246,8 @@ export default {
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : ''
+        Languages: languages.size ? [...languages].join(', ') : '',
+        'Scenario Distribution': categoryDistributionType
       }
     },
     getCampaignSummaryHelperData() {
@@ -263,42 +278,31 @@ export default {
       }
     },
     getCategories() {
-      const { categories = [] } = this.campaignSummary || {}
-      if (categories?.length) {
-        return categories
-      }
-      return [
-        'Cyber Spying',
-        'Email Security',
-        'GDPR',
-        'General',
-        'Malware',
-        'Mobile Device Security',
-        'Password Security',
-        'Physical Security',
-        'Removable Media',
-        'Remote Working Security',
-        'Safe Online Shopping',
-        'Social Engineering',
-        'Social Media Security',
-        'Travel Security',
-        'Wi-Fi Security'
-      ]
+      const { scenariosGeneralInfo } = this.campaignSummary || {}
+      return scenariosGeneralInfo?.categories || []
     },
     getScenarioInfoItems() {
-      const { scenarioInfo = {} } = this.campaignSummary || {}
-      if (Object.keys(scenarioInfo).length) {
+      const { scenariosGeneralInfo = {} } = this.campaignSummary || {}
+      if (Object.keys(scenariosGeneralInfo).length) {
         const {
-          numberOfCategories = 0,
-          methodText = '',
-          Languages = '',
-          Difficulty = ''
-        } = scenarioInfo
+          categories,
+          methodTypeId,
+          languageShortCodes,
+          difficultyTypeIds
+        } = scenariosGeneralInfo
+        const methodText =
+          this.formDetails?.methodTypes?.find((item) => parseInt(item.value) === methodTypeId)
+            ?.text || ''
+        const difficultyText =
+          this.formDetails?.difficultyTypess
+            ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
+            ?.map((item) => item.text)
+            ?.join(',') || ''
         return {
-          NumberOfCategories: numberOfCategories,
+          NumberOfCategories: categories.length,
           Method: methodText,
-          Languages: Languages,
-          Difficulty: Difficulty
+          Languages: languageShortCodes.join(','),
+          Difficulty: difficultyText
         }
       }
       return {

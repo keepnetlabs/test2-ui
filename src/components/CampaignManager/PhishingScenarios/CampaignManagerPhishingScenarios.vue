@@ -21,7 +21,7 @@
     <TrainingLibraryPreviewDialog
       v-if="isShowCategoryTrainingDialog"
       :status="isShowCategoryTrainingDialog"
-      :selected-row="categoryTrainingTabModel"
+      :selected-row="trainingForCategory"
       @on-close="toggleShowCategoryTrainingDialog"
     />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
@@ -120,7 +120,7 @@
                 <div>
                   <KSelect
                     v-model="category"
-                    :items="categories"
+                    :items="getCategoryItems"
                     placeholder="Category"
                     item-disabled="disabled"
                     item-text="text"
@@ -209,7 +209,7 @@
                 label="Training"
               >
                 <CampaignManagerPhishingScenariosTrainingTab
-                  v-model="categoryTrainingTabModel"
+                  v-model="trainingForCategory"
                   ref="categoryTrainingTab"
                   class="pb-4"
                   :is-show-reminder="isShowReminder"
@@ -540,8 +540,8 @@ export default {
       type: Boolean,
       default: false
     },
-    categories: {
-      type: Array
+    formDetails: {
+      type: Object
     }
   },
   data() {
@@ -553,7 +553,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
       trainingTabModel: {},
-      categoryTrainingTabModel: new TrainingTabModel(),
+      trainingForCategory: new TrainingTabModel(),
       labels,
       quishingMethods,
       difficulties,
@@ -567,6 +567,7 @@ export default {
       language: '',
       languageText: '',
       category: '',
+      totalPhishingScenariosCount: 0,
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       emailTemplate: null,
       emailTemplateParams: null,
@@ -584,6 +585,9 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    getCategoryItems() {
+      return this.formDetails?.categories?.map((item) => item.text) || []
+    },
     isShowTrainingTab() {
       return (
         !this.isAttachmentBasedScenario &&
@@ -689,7 +693,23 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        console.log('axiosPayload', val)
+        this.$emit('categoryFilterChanged', val)
+      }
+    },
+    phishingScenarioItems: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.$emit('phishingScenarioItemsChanged', val)
+      }
+    },
+    trainingForCategory: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.$emit('trainingForCategoryChanged', val)
+        }
       }
     },
     scenarioDistribution(val) {
@@ -1026,6 +1046,8 @@ export default {
           data: { data }
         } = response
         this.phishingScenarioItems = data.results || []
+        this.totalPhishingScenariosCount = data?.totalNumberOfRecords || 0
+        this.$emit('totalPhishingScenariosCountChange', this.totalPhishingScenariosCount)
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return

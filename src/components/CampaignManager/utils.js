@@ -40,18 +40,18 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
   USERS: '2'
 }
 export const scenarioDistributionFilterItems = [
-  { text: 'Manually', value: 1 },
-  { text: 'Random scenarios for each user', value: 2 },
-  { text: 'Same random scenario for all users', value: 3 }
+  'Manual',
+  'Random scenarios for each user',
+  'Same random scenario for all users'
 ]
 export const scenarioDistributionItems = [
-  { text: 'Select scenarios manually', value: 1 },
-  { text: 'Select random scenarios for each user', value: 2 },
-  { text: 'Select same random scenario for all users', value: 3 }
+  { text: 'Select scenarios manually', value: 0 },
+  { text: 'Select random scenarios for each user', value: 1 },
+  { text: 'Select same random scenario for all users', value: 2 }
 ]
 export const COLUMNS = {
   SCENARIO_DISTRIBUTION: {
-    property: `scenarioDistribution`,
+    property: `categoryDistributionType`,
     align: 'left',
     editable: false,
     label: `Scenario Distribution`,
@@ -60,7 +60,8 @@ export const COLUMNS = {
     type: 'text',
     width: 240,
     filterableType: 'select',
-    filterableItems: scenarioDistributionFilterItems
+    filterableItems: scenarioDistributionFilterItems,
+    filterableCustomFieldName: 'ScenarioDistribution'
   },
   CAMPAIGN_NAME: {
     property: PROPERTY_STORE.NAME,
@@ -391,7 +392,13 @@ export const frequencyItems = [
 ]
 
 export const SCENARIO_DISTRIBUTION = {
-  MANUALLY: 1,
-  RANDOM_SCENARIO_FOR_EACH: 2,
-  SAME_SCENARIO_FOR_ALL: 3
+  MANUALLY: 0,
+  RANDOM_SCENARIO_FOR_EACH: 1,
+  SAME_SCENARIO_FOR_ALL: 2
 }
+
+export const SCENARIO_DISTRIBUTION_TEXTS = [
+  'Manually',
+  'Random scenarios for each user',
+  'Same random scenario for all users'
+]

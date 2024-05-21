@@ -285,7 +285,7 @@ export default {
       this.emailTemplate = template
       this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
-      this.category = phishingScenarioPreviewDto?.category || 'Remote Working'
+      this.category = phishingScenarioPreviewDto?.category
       if (this.isTrainingScenario)
         this.callForTrainingLanguages(this.trainingParams.trainingContents)
       this.emailTemplateParams = {
