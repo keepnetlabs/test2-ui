@@ -2,7 +2,7 @@
   <AppModal
     :status="status"
     icon-name="mdi-calendar-clock"
-    title="Schedule Report"
+    title="New Schedule Report"
     :subtitle="selectedRow.name"
     :custom-size="'480'"
     maxHeightSize="665"
