@@ -14,6 +14,18 @@ export const COMMON_SIMULATOR_COLUMNS = {
     width: 240,
     filterableType: 'text'
   },
+  CATEGORY: {
+    property: PROPERTY_STORE.CATEGORY,
+    align: 'left',
+    editable: false,
+    label: `Category`,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 240,
+    filterableType: 'select',
+    filterableItems: []
+  },
   QUISHING_TYPE: {
     property: 'quishingType',
     align: 'left',

@@ -12,6 +12,10 @@
   >
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
+      <div v-if="isPhishing && !isLoading" class="mb-6">
+        <span class="template-preview__text--title">Category: </span>
+        <span class="template-preview__text--body">{{ category }}</span>
+      </div>
       <ElTabs v-if="!isLoading" v-model="tab">
         <ElTabPane id="campaign-manager-info--email-content" name="email" :label="getFirstTabLabel">
           <div class="template-preview pt-4">
@@ -145,6 +149,7 @@ export default {
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
+      category: '',
       tab: 'email',
       isLoading: false,
       labels,
@@ -170,6 +175,9 @@ export default {
     },
     isQuishing() {
       return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+    },
+    isPhishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
     },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false
@@ -208,8 +216,9 @@ export default {
       this.apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          let { emailTemplate, landingPageTemplate, quishingTemplate } = data
+          let { emailTemplate, landingPageTemplate, quishingTemplate, category = '' } = data
           if (!emailTemplate) emailTemplate = quishingTemplate
+          this.category = category
           let {
             template,
             fromName,

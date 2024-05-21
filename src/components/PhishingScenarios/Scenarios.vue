@@ -7,7 +7,6 @@
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
     />
-
     <CommonSimulatorNewScenario
       v-if="modalStatus"
       ref="newScenarioModal"
@@ -198,6 +197,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
           COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
@@ -280,23 +280,32 @@ export default {
   },
   mounted() {
     this.callForLanguages('refScenariosList')
-    this.callForScenarioDetails().then(() => {
-      this.callForData()
-      this.$set(
-        this.tableOptions.columns[1],
-        'filterableItems',
-        this.scenarioDetailsLookup.methodTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
-      )
-      this.$set(
-        this.tableOptions.columns[3],
-        'filterableItems',
-        this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
-      )
-    })
+    this.callForScenarioDetails()
+      .then(() => {
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          this.scenarioDetailsLookup?.categories?.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          this.scenarioDetailsLookup.methodTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this.$set(
+          this.tableOptions.columns[4],
+          'filterableItems',
+          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this?.$refs?.refScenariosList?.reRenderFilters()
+      })
+      .then(this.callForData)
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,

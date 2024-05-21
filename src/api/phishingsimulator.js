@@ -520,3 +520,7 @@ export const updateSandboxActivity = (resourceId, payload) => {
     }
   )
 }
+
+export const searchScenarioInfo = (payload) => {
+  return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
+}

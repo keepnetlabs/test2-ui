@@ -30,6 +30,14 @@
         :isLoading="isLoading"
       />
     </div>
+    <div v-if="isCategoryBasedDistribution" class="mt-6">
+      <CampaignManagerReportSummaryScenarioInfo
+        :items="getScenarioInfoItems"
+        :categories="getCategories"
+        :isLoading="isLoading"
+        :campaignName="getCampaignName"
+      />
+    </div>
     <div class="my-6">
       <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
@@ -56,6 +64,10 @@
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
+    <CampaignManagerReportSummaryCategory
+      :category="getScenarioCategory"
+      :isFetchingSummary="isLoading"
+    />
     <CampaignManagerReportSummaryEmail
       :difficulties="difficulties"
       :methods="methods"
@@ -92,6 +104,12 @@ import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerRepo
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
+import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
+import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
+import {
+  SCENARIO_DISTRIBUTION,
+  SCENARIO_DISTRIBUTION_TEXTS
+} from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -101,7 +119,9 @@ export default {
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
-    CampaignManagerReportSummaryHeader
+    CampaignManagerReportSummaryHeader,
+    CampaignManagerReportSummaryCategory,
+    CampaignManagerReportSummaryScenarioInfo
   },
   mixins: [useLoading],
   props: {
@@ -118,6 +138,9 @@ export default {
       type: Array
     },
     apiResponse: {
+      type: Object
+    },
+    formDetails: {
       type: Object
     }
   },
@@ -142,6 +165,16 @@ export default {
     }
   },
   computed: {
+    isCategoryBasedDistribution() {
+      return (
+        !!this.campaignSummary?.campaignInfo?.categoryDistributionType &&
+        this.campaignSummary?.campaignInfo?.categoryDistributionType !==
+          SCENARIO_DISTRIBUTION_TEXTS.MANUALLY
+      )
+    },
+    getCampaignName() {
+      return this.campaignSummary?.phishingCampaignName || ''
+    },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
         (acc, pScenario) => {
@@ -176,6 +209,9 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.methodTypeId || ''
     },
     getTrainingInfo() {
+      if (this.isCategoryBasedDistribution) {
+        return this.campaignSummary?.trainingInfoForCategory || null
+      }
       return this?.getActiveScenario?.trainingInfo
     },
     getSelectedRowTrainingInfo() {
@@ -196,9 +232,11 @@ export default {
       return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
+      const { endDate = '0', totalTargetUserCount = 0, categoryDistributionType } = this
+        .campaignSummary?.campaignInfo || {
         endDate: '0',
-        totalTargetUserCount: 0
+        totalTargetUserCount: 0,
+        categoryDistributionType: 'Manually'
       }
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
@@ -208,7 +246,8 @@ export default {
       return {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : ''
+        Languages: languages.size ? [...languages].join(', ') : '',
+        'Scenario Distribution': categoryDistributionType
       }
     },
     getCampaignSummaryHelperData() {
@@ -236,6 +275,41 @@ export default {
         'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
         Duration: `${duration || 0} Day(s)`,
         SMTP: smtpName
+      }
+    },
+    getCategories() {
+      const { scenariosGeneralInfo } = this.campaignSummary || {}
+      return scenariosGeneralInfo?.categories || []
+    },
+    getScenarioInfoItems() {
+      const { scenariosGeneralInfo = {} } = this.campaignSummary || {}
+      if (Object.keys(scenariosGeneralInfo).length) {
+        const {
+          categories,
+          methodTypeId,
+          languageShortCodes,
+          difficultyTypeIds
+        } = scenariosGeneralInfo
+        const methodText =
+          this.formDetails?.methodTypes?.find((item) => parseInt(item.value) === methodTypeId)
+            ?.text || ''
+        const difficultyText =
+          this.formDetails?.difficultyTypess
+            ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
+            ?.map((item) => item.text)
+            ?.join(',') || ''
+        return {
+          NumberOfCategories: categories.length,
+          Method: methodText,
+          Languages: languageShortCodes.join(','),
+          Difficulty: difficultyText
+        }
+      }
+      return {
+        NumberOfCategories: 15,
+        Method: 'Click-Only, Data Submission, Attachment, MFA',
+        Languages: 'EN, TR, DE, FR',
+        Difficulty: 'Easy, Medium, Hard'
       }
     },
     getEmailDeliveryData() {
@@ -399,6 +473,9 @@ export default {
     getTotalUsers() {
       const { campaignInfo = {} } = this.campaignSummary
       return campaignInfo['totalTargetUserCount'] || 0
+    },
+    getScenarioCategory() {
+      return this.getActiveScenario?.scenarioInfo?.category || 'Remote Working'
     },
     getEmailTemplateData() {
       const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
