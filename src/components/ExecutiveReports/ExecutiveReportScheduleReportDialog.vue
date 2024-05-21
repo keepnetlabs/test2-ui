@@ -1,8 +1,8 @@
 <template>
-  <AppDialog
+  <AppModal
     :status="status"
-    icon="mdi-calendar-clock"
-    title="Schedule Report"
+    icon-name="mdi-calendar-clock"
+    title="New Schedule Report"
     :subtitle="selectedRow.name"
     :custom-size="'480'"
     maxHeightSize="665"
@@ -11,12 +11,16 @@
     class-name="executive-report-schedule-dialog"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body>
+    <template #overlay-body>
+      <AppModalBodyHeader
+        title="New Scheduled Report"
+        sub-title="Enter settings for the new scheduled report"
+      />
       <VForm ref="refForm" lazy-validation>
         <div v-if="isNew && !isReportSaved" class="executive-report-schedule-dialog-is-new">
           Your report will be saved as it is to be scheduled
         </div>
-        <FormGroup title="Schedule Name">
+        <FormGroup title="Schedule Name" has-hint>
           <InputEntityName
             v-model.trim="formData.name"
             id="input--schedule-name"
@@ -24,7 +28,11 @@
             initial-placeholder="Enter a name"
           />
         </FormGroup>
-        <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub">
+        <FormGroup
+          has-hint
+          :title="labels.Frequency"
+          sub-title="Select how often you would like to send this report"
+        >
           <KSelect
             v-model.trim="formData.frequency"
             id="input--company-manager-advanced-settings-frequency"
@@ -56,7 +64,7 @@
           <VAutocomplete
             v-model.trim="formData.scheduledDateTimeZoneId"
             id="input--campaign-manager-campaign-info-time-type"
-            style="max-width: 194px; text-overflow: ellipsis;"
+            style="text-overflow: ellipsis;"
             outlined
             dense
             hide-details
@@ -64,20 +72,47 @@
             :items="scheduledTimeItems"
           />
         </FormGroup>
-        <VSwitch
-          v-model="formData.isRegionAwareTimeZone"
-          hide-details
-          :ripple="false"
-          color="#2196f3"
-          @click.stop
-        >
-          <template #label>
-            <div class="executive-report-new-card-timezone">
-              <span>Enable region aware timezone delivery</span>
-              <span>Deliver report based on the target users' time zone.</span>
+        <div class="mb-4">
+          <div class="executive-report-schedule-timezone-container">
+            <VSwitch
+              v-model="formData.isRegionAwareTimeZone"
+              hide-details
+              :ripple="false"
+              color="#2196f3"
+              @click.stop
+            >
+              <template #label>
+                <div class="executive-report-new-card-timezone">
+                  <span>Enable Region-Aware Time Zone Delivery</span>
+                  <span>Deliver emails based on the target users' time zone.</span>
+                </div>
+              </template>
+            </VSwitch>
+          </div>
+          <div
+            v-if="formData.isRegionAwareTimeZone"
+            class="executive-report-schedule-timezone-container"
+          >
+            <div>
+              <VIcon color="#2196f3">mdi-alert-circle</VIcon>
             </div>
-          </template>
-        </VSwitch>
+            <div>
+              <ul class="executive-report-schedule-timezone-container__list">
+                <li>
+                  Target users will receive the report at
+                  <span class="fw-600">{{ getTime }}</span> local time.
+                </li>
+                <li>
+                  If the local time has passed, the report will be sent at
+                  <span class="fw-600">{{ getTime }}</span> the following day.
+                </li>
+                <li>
+                  We'll use the company's time zone for users whose time zone is not specified.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
         <FormGroup
           class-name="mb-0 mt-2"
           title="Send to Email"
@@ -96,30 +131,33 @@
             small-chips
             outlined
             class="pop-up-card__invite-member"
-            hint="Press enter to separate email addresses"
+            persistent-hint
+            :hint="
+              isEmailAddressesFocused ? 'Press enter to separate email addresses' : '*Required'
+            "
+            @focus="isEmailAddressesFocused = true"
+            @blur="isEmailAddressesFocused = false"
             :rules="[rules.email, rules.required]"
           ></KSelect>
         </FormGroup>
       </VForm>
     </template>
-    <template #app-dialog-footer>
-      <AppDialogFooter
+    <template #overlay-footer>
+      <AppModalFooter
         cancel-button-id="btn-cancel--scenario-popup"
         confirm-button-id="btn-delete--scenario-popup"
         action-button-text="SUBMIT"
-        :confirm-button-disabled="isActionButtonDisabled"
-        @handleClose="handleClose"
-        @handleConfirm="handleConfirm"
+        :action-button-disabled="isActionButtonDisabled"
+        @on-cancel="handleClose"
+        @on-save="handleConfirm"
       />
     </template>
-  </AppDialog>
+  </AppModal>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog.vue'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import labels from '@/model/constants/labels'
 import { frequencyItems } from '@/components/CampaignManager/utils'
@@ -128,9 +166,20 @@ import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import * as Validations from '@/utils/validations'
 import { createReportScheduling } from '@/api/reports'
+import AppModal from '@/components/AppModal.vue'
+import AppModalFooter from '@/components/AppModalFooter.vue'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader.vue'
 export default {
   name: 'ExecutiveReportScheduleReportDialog',
-  components: { InputDate, KSelect, AppDialogFooter, FormGroup, InputEntityName, AppDialog },
+  components: {
+    AppModalBodyHeader,
+    AppModalFooter,
+    AppModal,
+    InputDate,
+    KSelect,
+    FormGroup,
+    InputEntityName
+  },
   props: {
     status: {
       type: Boolean,
@@ -156,6 +205,7 @@ export default {
     return {
       labels,
       frequencyItems,
+      isEmailAddressesFocused: false,
       formData: {
         name: '',
         frequency: 0,
@@ -205,6 +255,12 @@ export default {
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+    },
+    getTime() {
+      if (!this.formData.schedule) return ''
+      const splittedDate = this.formData.schedule.split(' ')
+      if (splittedDate.length > 2) return `${splittedDate[1]} ${splittedDate[2]}`
+      return splittedDate[1]
     }
   },
   watch: {
@@ -236,7 +292,12 @@ export default {
       this.$emit('on-close')
     },
     handleConfirm() {
-      if (!this.$refs.refForm.validate()) return
+      if (
+        !this.$refs.refForm.validate() ||
+        !this.formData.schedule ||
+        !this.formData.scheduledDateTimeZoneId
+      )
+        return
       if (!this.isNew || this.isReportSaved) {
         this.isActionButtonDisabled = true
         createReportScheduling({
