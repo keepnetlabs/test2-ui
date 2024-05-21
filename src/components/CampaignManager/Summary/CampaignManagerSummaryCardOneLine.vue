@@ -1,6 +1,6 @@
 <template>
   <CardLoading v-if="isLoading" :loading="isLoading" />
-  <div class="campaign-manager-summary-card" v-else>
+  <div class="campaign-manager-summary-card campaign-manager-summary-card--one-line" v-else>
     <slot name="header">
       <div class="campaign-manager-summary-card__header">
         <div class="campaign-manager-summary-card__header-left">

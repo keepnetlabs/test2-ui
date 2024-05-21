@@ -183,7 +183,6 @@ export default {
       return getAxiosPayloadOfManuallyTable(true, viewUsersTableFilterParams)?.filter
     },
     transformQuery(children, filterItems) {
-      console.log(children)
       children.map((child) => {
         if (child.children) {
           this.transformQuery(child.children, filterItems)
