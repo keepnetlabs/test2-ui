@@ -1,56 +1,113 @@
 .campaign-manager {
-    &__table-all-records {
-        color: #2196f3;
-        font-weight: 600;
-        font-size: 18px;
-        line-height: 25px;
-        margin-left: 24px;
-        margin-bottom: 24px;
-    }
+  &__table-all-records {
+    color: #2196f3;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    margin-left: 24px;
+    margin-bottom: 24px;
+  }
 
-    &__target-groups {
-        max-width: 1100px;
+  &__target-groups {
+    max-width: 1100px;
 
-        .k-form-group__content {
-            display: flex;
-        }
+    .k-form-group__content {
+      display: flex;
     }
+  }
 
-    &__close-advanced-search {
-        font-style: normal;
-        font-weight: 600;
-        font-size: 14px;
-        padding: 0 8px !important;
-        margin-left: 24px;
-        align-self: center;
-        margin-top: -24px;
-    }
-}
-.campaign-manager-last-step__other-settings{
-  .campaign-manager-summary-card__body-item-value{
-    font-weight:600;
+  &__close-advanced-search {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 8px !important;
+    margin-left: 24px;
+    align-self: center;
+    margin-top: -24px;
   }
 }
-.campaign-manager-summary-card__body-item-one-line{
+.campaign-manager-last-step__other-settings {
+  .campaign-manager-summary-card__body-item-value {
+    font-weight: 600;
+  }
+}
+.campaign-manager-summary-card__body-item-one-line {
+}
+.campaign-manager-summary-card__body-container-one-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 48px;
+  padding-top: 16px !important;
+  padding-bottom: 24px !important;
+  position: relative;
+  &:after {
+    content: "";
+    height: 80%;
+    width: 1px;
+    background-color: #f2f2f2;
+    position: absolute;
+    left: 50%;
+    top: 16px;
+  }
+}
+.campaign-manager-summary-card__body-item.campaign-manager-summary-card__body-item-one-line:first-child {
+  padding: 0 !important;
+}
 
-}
-.campaign-manager-summary-card__body-container-one-line{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 48px;
-    padding-top:16px !important;
-    padding-bottom: 24px !important;
-    position:relative;
-    &:after{
-        content: "";
-        height: 80%;
-        width: 1px;
-        background-color: #F2F2F2;
-        position: absolute;
-        left: 50%;
-        top: 16px;
+.campaign-manager-phishing-scenarios {
+  &__filter-menu {
+    max-width: unset;
+  }
+
+  &__badges {
+    margin: 0px 16px 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__badge-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    gap: 4px;
+    background-color: #e0e0e0;
+
+    &-key {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+      color: #757575;
+      flex-shrink: 0;
     }
-}
-.campaign-manager-summary-card__body-item.campaign-manager-summary-card__body-item-one-line:first-child{
-    padding:0 !important;
+
+    &-value {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+      color: #383b41;
+      flex-shrink: 0;
+    }
+  }
+
+  &__clear-all {
+    font-size: 12px;
+    font-weight: 600;
+    .v-btn__content {
+      text-transform: capitalize;
+    }
+  }
+
+  .vertical-panes {
+    border-top: 1px solid #e0e0e0;
+  }
 }
