@@ -1,4 +1,5 @@
 import testRequest from '@/utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const ADVANCED_REPORT_URL = '/pbi/reports'
 
 const getReports = () => {
@@ -16,8 +17,64 @@ const getReportDetail = (resourceId = '') => {
     }/${resourceId}`
   )
 }
-
+const getExecutiveReports = (name) => {
+  return testRequest.post('/executive-report/search', { name })
+}
+export const getExecutiveReportChartData = (payload) => {
+  return testRequest.post('/executive-report/get-widget-datas', payload)
+}
+export const saveExecutiveReport = (payload) => {
+  return testRequest.post('/executive-report', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export const updateExecutiveReport = (payload, resourceId) => {
+  return testRequest.put(`/executive-report/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export const getExecutiveReport = (resourceId, token, companyResourceId) => {
+  const config = {}
+  if (token) {
+    config.overrideToken = true
+    config.overrideCompanyId = true
+    config.headers = { 'X-IR-COMPANY-ID': companyResourceId }
+    config.customToken = token
+  }
+  return testRequest.get(`/executive-report/${resourceId}`, config)
+}
+export const deleteExecutiveReport = (resourceId) => {
+  return testRequest.delete(`/executive-report/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export const getExecutiveReportMetrics = () => {
+  return testRequest.get('/executive-report/metrics')
+}
+export const createReportScheduling = (payload) => {
+  return testRequest.post('/report-scheduling', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export const getReportSchedulingLogo = (resourceId) => {
+  return testRequest.get(`/companies/${resourceId}/logo`, {
+    responseType: 'blob'
+  })
+}
+export const getExecutiveReportLogo = (resourceId, token, companyResourceId) => {
+  const config = {
+    responseType: 'blob'
+  }
+  if (token) {
+    config.overrideToken = true
+    config.overrideCompanyId = true
+    config.headers = { 'X-IR-COMPANY-ID': companyResourceId }
+    config.customToken = token
+  }
+  return testRequest.get(`/executive-report/${resourceId}/logo`, config)
+}
 export default {
   getReports,
-  getReportDetail
+  getReportDetail,
+  getExecutiveReports
 }

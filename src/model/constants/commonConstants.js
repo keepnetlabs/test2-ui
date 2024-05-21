@@ -176,6 +176,7 @@ export const PROPERTY_STORE = {
   BEHAVIOURS: 'behaviours',
   POSTER_NAME: 'trainingName',
   DATE_CREATED: 'dateCreated',
+  RISK_SCORE: 'riskScore',
   VENDOR: 'vendor',
   VENDORNAME: 'vendorName',
   VENDORID: 'vendorId',
