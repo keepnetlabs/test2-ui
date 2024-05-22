@@ -349,6 +349,7 @@ export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
   ENROLLMENTS_POSTER_LIST: 'EnrollmentsPosterListSettings',
+  SCHEDULED_LIST: 'ScheduledListSettings',
   ENROLLMENTS_LEARNING_PATH_LIST: 'EnrollmentsLearningPathListSettings',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTableSettings',
   TRAINING_LIBRARY_SCREENSAVER_TABLE: 'TrainingLibraryScreensaverTableSettings',
@@ -584,6 +585,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
   CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
+  SCHEDULED_LIST: 'ScheduledListTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:
