@@ -1365,12 +1365,15 @@ export default {
     },
     addWidget(widget) {
       let newItem
+      console.log('widget', widget)
       const widgetObj = {
         ...this.allWidgets[widget.widgetType],
         i: createRandomCryptStringNumber(),
         startDate: this.formData.executiveReportDateRange[0],
         endDate: this.formData.executiveReportDateRange[1],
-        resourceId: widget.resourceId
+        resourceId: widget.resourceId,
+        title: widget.name,
+        parentKey: widget.description
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6

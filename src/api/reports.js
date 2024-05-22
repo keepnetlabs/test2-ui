@@ -56,6 +56,10 @@ export const createReportScheduling = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const searchReportScheduling = (payload) => {
+  return testRequest.post('/report-scheduling/search', payload)
+}
+
 export const getReportSchedulingLogo = (resourceId) => {
   return testRequest.get(`/companies/${resourceId}/logo`, {
     responseType: 'blob'
