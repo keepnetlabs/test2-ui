@@ -130,6 +130,128 @@ export default {
         },
         tooltips: {
           enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip')
+
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+              document.body.appendChild(tooltipEl)
+            }
+
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+
+            let position = this._chart.canvas.getBoundingClientRect()
+
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
+            tooltipFooter.style.marginTop = '4px'
+            tooltipFooter.style.borderRadius = '8px'
+            tooltipFooter.style.color = '#fff'
+            tooltipFooter.style.padding = '16px'
+            tooltipFooter.style.maxWidth = '280px'
+            tooltipFooter.style.fontWeight = 'normal'
+            const monthNamesLong = [
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December'
+            ]
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const xValue = new Date(tooltipModel.dataPoints[0].xLabel)
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
+                monthNamesLong[xValue.getMonth()]
+              }/${xValue.getFullYear()}</th>`
+              tableRoot.appendChild(titleRow)
+
+              let selectedBackgroundColor = ''
+              let selectedLabel = ''
+              let selectedValue = ''
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                let backgroundColor = dataset.backgroundColor || '#000'
+
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:
+                </td>
+                <td>${dataValue.y}</td>
+            `
+
+                if (
+                  datasetLabel ===
+                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
+                ) {
+                  tr.style.fontWeight = '600'
+                  selectedValue = dataValue
+                  selectedLabel = datasetLabel
+                  selectedBackgroundColor = backgroundColor
+                } else {
+                  tr.style.fontWeight = 'normal'
+                }
+
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
+              let lastTr = document.createElement('tr')
+              lastTr.innerHTML = `
+                <td>
+                    Phishing Report Rate:
+                </td>
+                <td>70</td>
+            `
+              lastTr.style.borderTop = '1px solid #E0E0E0'
+              lastTr.style.display = 'flex'
+              lastTr.style.justifyContent = 'space-between'
+              lastTr.style.paddingTop = '8px'
+              tableRoot.appendChild(lastTr)
+              tooltipFooter.style.background = selectedBackgroundColor
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;">80% of users identifying and reporting phishing in simulation engagements</th>`
+            }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
           xPadding: 12,
           yPadding: 12
         },

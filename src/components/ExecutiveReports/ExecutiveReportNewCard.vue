@@ -293,6 +293,10 @@ import {
   DATE_PERIOD_ENUMS
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import * as Validations from '@/utils/validations'
+import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
+import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
+import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
+import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1399,9 +1403,19 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
-      switch (componentString) {
+      const randomNumber = Math.floor(Math.random() * 4)
+      console.log('randomNumber', randomNumber)
+      switch (randomNumber) {
         case 'ConsolidatedPhishingSimulationMetrics':
           return ExecutiveReportsConsolidatedPhishingSimulation
+        case 0:
+          return ExecutiveReportsRiskScoreTrendAcrossIndustries
+        case 1:
+          return ExecutiveReportsIndustryPhishingRiskScore
+        case 2:
+          return ExecutiveReportsPhishingSimulationEngagement
+        case 3:
+          return ExecutiveReportsTopRiskiestUsers
         default:
           return ExecutiveReportsWidget
       }
