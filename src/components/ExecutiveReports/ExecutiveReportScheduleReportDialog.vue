@@ -17,9 +17,6 @@
         sub-title="Enter settings for the new scheduled report"
       />
       <VForm ref="refForm" lazy-validation>
-        <div v-if="isNew && !isReportSaved" class="executive-report-schedule-dialog-is-new">
-          Your report will be saved as it is to be scheduled
-        </div>
         <FormGroup title="Schedule Name" has-hint>
           <InputEntityName
             v-model.trim="formData.name"
