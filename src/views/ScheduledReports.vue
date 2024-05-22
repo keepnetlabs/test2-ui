@@ -135,6 +135,7 @@ export default {
         },
         columns: [
           COLUMNS.SCHEDULE_NAME,
+          COLUMNS.REPORT_NAME,
           COLUMNS.FREQUENCY,
           COLUMNS.DATE_CREATED,
           COLUMNS.LAST_SEND_DATE,
@@ -218,7 +219,8 @@ export default {
       this.$router.push({
         name: 'Preview Executive Report',
         params: {
-          id: row.reportResourceId
+          id: row.reportResourceId,
+          isFromScheduledReport: true
         }
       })
     },
