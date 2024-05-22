@@ -70,6 +70,7 @@ import PreviewExecutiveReport from '@/views/PreviewExecutiveReport.vue'
 import EditExecutiveReport from '@/views/EditExecutiveReport.vue'
 import DuplicateExecutiveReport from '@/views/DuplicateExecutiveReport.vue'
 import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
+import ScheduledReports from '@/views/ScheduledReports.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -746,6 +747,16 @@ const router = new Router({
           path: '/reports/executive-reports',
           name: 'Executive Reports',
           component: ExecutiveReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/scheduled-reports',
+          name: 'Scheduled Reports',
+          component: ScheduledReports,
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',
