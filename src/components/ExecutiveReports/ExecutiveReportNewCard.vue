@@ -124,7 +124,7 @@
       <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
         <div class="executive-report-new-card__body">
           <div v-if="getIsShowEditTopFields" class="executive-report-new-card__body-new">
-            <div>
+            <VForm ref="refForm">
               <div>
                 <VTextField
                   v-model="formData.name"
@@ -136,6 +136,7 @@
                   hide-details
                   autocomplete="off"
                   placeholder="Enter an executive report name"
+                  :rules="[rules.required]"
                 />
               </div>
               <div class="d-flex mt-2 gap-2">
@@ -172,9 +173,10 @@
                   hide-details
                   autocomplete="off"
                   placeholder="Company Name"
+                  :rules="[rules.required]"
                 />
               </div>
-            </div>
+            </VForm>
             <div class="executive-report-new-card__body-new-image">
               <KFileUpload
                 ref="refInputLogo"
@@ -290,10 +292,7 @@ import {
   createExecutiveReportChartData,
   DATE_PERIOD_ENUMS
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
-import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
-import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
-import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
+import * as Validations from '@/utils/validations'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -358,6 +357,9 @@ export default {
       isShowDownloadModal: false,
       isLoading: false,
       schedulingFormData: {},
+      rules: {
+        required: (v) => Validations.required(v)
+      },
       imgPreviewKey: `key-${createRandomCryptStringNumber()}`,
       pickerOptions: {
         onPick: (date) => {
@@ -985,7 +987,7 @@ export default {
     },
     getPreviewPdfButtonClasses() {
       let classes = ['training-library-new-btn ml-2']
-      if (!this.formData.name) classes.push('new-executive-report-button-disabled')
+      //if (!this.formData.name) classes.push('new-executive-report-button-disabled')
       return classes
     },
     isShowPreview() {
@@ -1173,11 +1175,13 @@ export default {
       this.$refs.refInputExecutiveReportDate.showPicker()
     },
     handlePreviewClick() {
+      if (!this.$refs.refForm.validate()) return
       this.activatePreview = true
       this.isPreviewDownload = true
       this.toggleShowDownloadModal()
     },
     handleSaveReportClick() {
+      if (!this.$refs.refForm.validate()) return
       const payload = {
         executiveReport: {
           name: this.formData.name,
@@ -1374,7 +1378,9 @@ export default {
         i: createRandomCryptStringNumber(),
         startDate: this.formData.executiveReportDateRange[0],
         endDate: this.formData.executiveReportDateRange[1],
-        resourceId: widget.resourceId
+        resourceId: widget.resourceId,
+        title: widget.name,
+        parentKey: widget.description
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
@@ -1395,9 +1401,9 @@ export default {
     getComponent(componentString) {
       switch (componentString) {
         case 'ConsolidatedPhishingSimulationMetrics':
-          return ExecutiveReportsIndustryPhishingRiskScore
+          return ExecutiveReportsConsolidatedPhishingSimulation
         default:
-          return ExecutiveReportsTopRiskiestUsers
+          return ExecutiveReportsWidget
       }
     },
     handleDownloadButton() {

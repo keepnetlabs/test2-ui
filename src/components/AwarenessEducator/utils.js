@@ -374,5 +374,71 @@ export const COLUMNS = {
     width: 150,
     hasTooltip: true,
     filterableType: 'text'
+  },
+  SCHEDULE_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.ScheduleName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  FREQUENCY: {
+    property: PROPERTY_STORE.FREQUENCY,
+    align: 'left',
+    editable: false,
+    label: labels.Frequency,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'One Time', value: 0 },
+      { text: 'Weekly', value: 1 },
+      { text: 'Every two weeks', value: 2 },
+      { text: 'Monthly', value: 3 },
+      { text: 'Quarterly', value: 4 }
+    ]
+  },
+  DATE_CREATED: {
+    property: 'createTime',
+    align: 'left',
+    label: 'Date Created',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  LAST_SEND_DATE: {
+    property: PROPERTY_STORE.LAST_SEND_DATE,
+    align: 'left',
+    label: labels.LastSendDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  NEXT_SEND_DATE: {
+    property: PROPERTY_STORE.NEXT_SEND_DATE,
+    align: 'left',
+    label: labels.NextSendDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
   }
 }
