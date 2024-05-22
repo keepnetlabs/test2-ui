@@ -775,7 +775,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getAdvancedReportsSearchPermissions"
+              v-if="getExecutiveReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -796,7 +796,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getAdvancedReportsSearchPermissions"
+              v-if="getScheduledReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -1158,6 +1158,8 @@ export default {
       getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
       getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
       getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
+      getExecutiveReportsSearchPermissions: 'permissions/getExecutiveReportsSearchPermissions',
+      getScheduledReportsSearchPermissions: 'permissions/getScheduledReportsSearchPermissions',
       getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions',
       getSmishingSimulatorLeftMenuPermissions:
         'permissions/getSmishingSimulatorLeftMenuPermissions',
