@@ -2,14 +2,18 @@ export const createExecutiveReportChartData = (widgetData) => {
   const datasets = []
   const valueEnums = new Set()
   widgetData.forEach((dItem) => {
-    const splittedDate = dItem?.date?.split(' ')
-    const lefSideDate = splittedDate[0]
-    const leftSideSplittedDate = lefSideDate?.split('/')
-    const timeStampOfDate = new Date(
-      leftSideSplittedDate[2],
-      leftSideSplittedDate[1] - 1,
-      leftSideSplittedDate[0]
-    ).getTime()
+    const dateFormat = localStorage.getItem('selectedDateFormat')
+    const [datePart] = dItem?.date?.split(' ')
+    const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+    let calculatedDate
+    if (dateFormat === 'YYYY/MM/DD') {
+      calculatedDate = new Date(firstPart, secondPart - 1, thirdPart)
+    } else if (dateFormat === 'MM/DD/YYYY') {
+      calculatedDate = new Date(thirdPart, firstPart - 1, secondPart)
+    } else if (dateFormat === 'DD/MM/YYYY') {
+      calculatedDate = new Date(thirdPart, secondPart - 1, firstPart)
+    }
+    const timeStampOfDate = calculatedDate.getTime()
     dItem.values.forEach((vItem) => {
       valueEnums.add(vItem.label)
       datasets.push({
