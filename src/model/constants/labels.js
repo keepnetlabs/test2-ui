@@ -17,6 +17,7 @@ export const labels = {
   ScheduleName: 'Schedule Name',
   LearningPathThatUsersWillBeRedirectTo: 'Learning path that users will be directed to',
   Poster: 'Poster',
+  SetAsInactive: 'Set as inactive',
   EmptyTrainingSendingReportPoster: 'No one has received the poster, yet',
   EmptyTrainingSendingReportInfographic: 'No one has received the infographic, yet',
   EmptyScheduledReport: 'You do not have any scheduled reports',
