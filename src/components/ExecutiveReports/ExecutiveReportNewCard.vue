@@ -1158,6 +1158,8 @@ export default {
     layoutUpdated(newLayout) {},
     layoutMounted() {},
     routeToExecutiveReports() {
+      if (this.$route.params.isFromScheduledReport)
+        return this.$router.push({ name: 'Scheduled Reports' })
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
