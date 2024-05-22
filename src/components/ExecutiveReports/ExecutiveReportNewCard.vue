@@ -1365,7 +1365,6 @@ export default {
     },
     addWidget(widget) {
       let newItem
-      console.log('widget', widget)
       const widgetObj = {
         ...this.allWidgets[widget.widgetType],
         i: createRandomCryptStringNumber(),
