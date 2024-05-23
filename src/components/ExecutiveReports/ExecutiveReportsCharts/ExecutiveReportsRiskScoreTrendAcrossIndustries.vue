@@ -3,8 +3,8 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Consolidated Phishing Simulation Metrics"
-          subtitle="Unified Metrics for SMS, Voice, QR, Callback, and Email Simulations"
+          title="Phishing Risk Score Trend Across Industries"
+          subtitle="Phishing risk trends comparing company scores against selected industry and all-industry averages."
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
@@ -151,6 +151,10 @@ export default {
                 min: 1704056400000,
                 max: 1709240400000
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'Month/Year'
+              },
               gridLines: {
                 display: true,
                 color: 'rgba(128, 151, 177, 0.3)',
@@ -184,11 +188,11 @@ export default {
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip')
+            let tooltipEl = document.getElementById('chartjs-tooltip-risk-score-trend')
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip'
+              tooltipEl.id = 'chartjs-tooltip-risk-score-trend'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
@@ -219,14 +223,6 @@ export default {
             tooltipContent.style.border = '1px solid #ccc'
             tooltipContent.style.borderRadius = '8px'
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
-
-            let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
-            tooltipFooter.style.marginTop = '4px'
-            tooltipFooter.style.borderRadius = '8px'
-            tooltipFooter.style.color = '#fff'
-            tooltipFooter.style.padding = '16px'
-            tooltipFooter.style.maxWidth = '280px'
-            tooltipFooter.style.fontWeight = 'normal'
             const monthNamesLong = [
               'January',
               'February',
@@ -286,21 +282,6 @@ export default {
                 tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
-              let lastTr = document.createElement('tr')
-              lastTr.innerHTML = `
-                <td>
-
-                    Phishing Report Rate:
-                </td>
-                <td>70</td>
-            `
-              lastTr.style.borderTop = '1px solid #E0E0E0'
-              lastTr.style.display = 'flex'
-              lastTr.style.justifyContent = 'space-between'
-              lastTr.style.paddingTop = '8px'
-              tableRoot.appendChild(lastTr)
-              tooltipFooter.style.background = selectedBackgroundColor
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;">80% of users identifying and reporting phishing in simulation engagements</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0

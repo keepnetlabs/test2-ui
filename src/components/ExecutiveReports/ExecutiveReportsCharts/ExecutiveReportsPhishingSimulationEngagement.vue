@@ -3,8 +3,8 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Consolidated Phishing Simulation Metrics"
-          subtitle="Unified Metrics for SMS, Voice, QR, Callback, and Email Simulations"
+          title="Phishing Simulation Engagement and Reporting Trends"
+          subtitle="Reporting rates from phishing simulations by users who clicked versus those who did not."
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
@@ -177,11 +177,13 @@ export default {
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip')
+            let tooltipEl = document.getElementById(
+              'chartjs-tooltip-phishing-simulation-engagement'
+            )
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip'
+              tooltipEl.id = 'chartjs-tooltip-phishing-simulation-engagement'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
