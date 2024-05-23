@@ -546,6 +546,9 @@ export default {
     initialCategoryFilter: {
       type: Object
     },
+    initialTrainingForCategory: {
+      type: Object
+    },
     initialScenarioDistribution: {
       type: Number
     }
@@ -698,38 +701,67 @@ export default {
     }
   },
   watch: {
+    initialTrainingForCategory: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        this.trainingForCategory = { ...new TrainingTabModel(), ...val }
+      }
+    },
     initialCategoryFilter: {
       deep: true,
       immediate: true,
       handler(val) {
-        if (val !== null) {
-          const methodIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
-            (item) => item.FieldName === 'method'
-          )
-          if (methodIndex !== -1) {
-            this.method = val.filter.FilterGroups[0].FilterItems[methodIndex].Value
+        if (!val) return
+        this.search = val.filterGroups?.[1]?.filterItems?.[0]?.value || ''
+        const methodIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'method'
+        )
+        if (methodIndex !== -1) {
+          if (val.filterGroups[0].filterItems[methodIndex].value.includes(',')) {
+            const methodValues = val.filterGroups[0].filterItems[methodIndex].value.split(',')
+            this.method = methodValues.map((item) => ({ text: item, value: item }))
+          } else {
+            const methodValue = val.filterGroups[0].filterItems[methodIndex].value
+            this.method = [{ text: methodValue, value: methodValue }]
           }
-          const languageIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
-            (item) => item.FieldName === 'LanguageTypeResourceId'
-          )
-          if (languageIndex !== -1) {
-            this.language = val.filter.FilterGroups[0].FilterItems[languageIndex].Value
+        }
+        const languageIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'LanguageTypeResourceId'
+        )
+        if (languageIndex !== -1) {
+          this.language = val.filterGroups[0].filterItems[languageIndex].value
+        }
+        const difficultyIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'difficulty'
+        )
+        if (difficultyIndex !== -1) {
+          if (val.filterGroups[0].filterItems[difficultyIndex].value.includes(',')) {
+            const difficultyValues = val.filterGroups[0].filterItems[difficultyIndex].value.split(
+              ','
+            )
+            this.difficulty = difficultyValues.map((item) => ({ text: item, value: item }))
+          } else {
+            const difficultyValue = val.filterGroups[0].filterItems[difficultyIndex].value
+            this.difficulty = [{ text: difficultyValue, value: difficultyValue }]
           }
-          const categoryIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
-            (item) => item.FieldName === 'Category'
-          )
-          if (categoryIndex !== -1) {
-            this.difficulty = val.filter.FilterGroups[0].FilterItems[categoryIndex].Value
-          }
+        }
+        const categoryIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'Category'
+        )
+        if (categoryIndex !== -1) {
+          this.category = val.filterGroups[0].filterItems[categoryIndex].value.includes(',')
+            ? val.filterGroups[0].filterItems[categoryIndex].value.split(',')
+            : [val.filterGroups[0].filterItems[categoryIndex].value]
         }
       }
     },
     initialScenarioDistribution: {
       immediate: true,
       handler(val) {
-        if (val !== null) {
-          this.scenarioDistribution = val
-        }
+        if (!val) return
+        this.scenarioDistribution = val
       }
     },
     axiosPayload: {
@@ -876,7 +908,7 @@ export default {
       this.callForPhishingScenarios()
     },
     category(val) {
-      if (!val.length) {
+      if (!val?.length) {
         this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
       }
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
@@ -1071,13 +1103,17 @@ export default {
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
-        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        if (this.isDistributionManually) {
+          this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        }
         this.axiosPayload.pageSize =
           this.defaultPhishingScenariosValuesMapped.length < 10
             ? 10
             : this.defaultPhishingScenariosValuesMapped.length
       } else if (this.value.length && this.isEdit) {
-        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        if (this.isDistributionManually) {
+          this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        }
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
