@@ -403,6 +403,12 @@
     }
   }
 }
+.executive-reports-empty-table{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
 .chartjs-tooltip * {
   border-radius: 50% !important; /* Point radius */
 }

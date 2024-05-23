@@ -1040,7 +1040,7 @@ export default {
         this.isLoading = true
         const { params, query } = this.$route
         const { id } = params
-        const { token, companyResourceId } = query
+        const { token, companyResourceId, dateFormat } = query
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
@@ -1101,7 +1101,8 @@ export default {
             this.isTypeTable = true
           } else {
             this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
-              widget.widgetDatas
+              widget.widgetDatas,
+              dateFormat
             )
           }
         })
