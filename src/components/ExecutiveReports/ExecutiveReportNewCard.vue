@@ -1038,7 +1038,6 @@ export default {
         const { params, query } = this.$route
         const { id } = params
         const { token, companyResourceId, dateFormat } = query
-        console.log('dateFormat', dateFormat)
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
