@@ -294,6 +294,7 @@ import {
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
+import { fileToBase64 } from '../../utils/functions'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1037,6 +1038,7 @@ export default {
         const { params, query } = this.$route
         const { id } = params
         const { token, companyResourceId, dateFormat } = query
+        console.log('dateFormat', dateFormat)
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
@@ -1187,7 +1189,7 @@ export default {
       this.isPreviewDownload = true
       this.toggleShowDownloadModal()
     },
-    handleSaveReportClick() {
+    async handleSaveReportClick() {
       if (!this.$refs.refForm.validate()) return
       const payload = {
         executiveReport: {
@@ -1197,8 +1199,7 @@ export default {
           endDate: '',
           description: this.formData.description,
           datePeriod: this.formData.datePeriod,
-          companyName: this.formData.companyName,
-          companyLogo: this.formData.executiveReportLogo
+          companyName: this.formData.companyName
         },
         widgetLayouts: this.layout
       }
@@ -1210,40 +1211,10 @@ export default {
         ? this.schedulingFormData
         : null
       this.isActionButtonDisabled = true
-      const formData = new FormData()
-      formData.append('ExecutiveReport.Name', payload.executiveReport.name)
-      formData.append('ExecutiveReport.DateCreated', payload.executiveReport.dateCreated)
-      formData.append('ExecutiveReport.StartDate', payload.executiveReport.startDate)
-      formData.append('ExecutiveReport.EndDate', payload.executiveReport.endDate)
-      formData.append('ExecutiveReport.Description', payload.executiveReport.description)
-      formData.append('ExecutiveReport.DatePeriod', payload.executiveReport.datePeriod)
-      formData.append('ExecutiveReport.CompanyName', payload.executiveReport.companyName)
-      formData.append('ExecutiveReport.CompanyLogo', payload.executiveReport.companyLogo)
-      payload.widgetLayouts.forEach((layout, index) => {
-        Object.keys(layout).forEach((key) => {
-          formData.append(`WidgetLayouts[${index}].${key}`, layout[key])
-        })
-      })
-      if (payload.scheduling) {
-        formData.append('Scheduling.Name', payload.scheduling.name)
-        formData.append('Scheduling.Frequency', payload.scheduling.frequency)
-        formData.append('Scheduling.Schedule', payload.scheduling.schedule)
-        formData.append(
-          'Scheduling.ScheduledDateTimeZoneId',
-          payload.scheduling.scheduledDateTimeZoneId
-        )
-        formData.append(
-          'Scheduling.IsRegionAwareTimeZone',
-          payload.scheduling.isRegionAwareTimeZone
-        )
-        payload.scheduling.emailAddresses.forEach((email, index) => {
-          formData.append(`Scheduling.EmailAddresses[${index}]`, email)
-        })
-        formData.delete('Scheduling.EmailAddresses')
-      }
+      payload.executiveReport.companyLogo = await fileToBase64(this.formData.executiveReportLogo)
       if (this.isEdit || this.$route.name === 'Preview Executive Report' || this.isReportSaved) {
         const id = this.$route.params.id || this.savedReportResourceId
-        updateExecutiveReport(formData, id)
+        updateExecutiveReport(payload, id)
           .then(() => {
             this.activatePreview = true
             this.editMode = false
@@ -1253,7 +1224,7 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else {
-        saveExecutiveReport(formData)
+        saveExecutiveReport(payload)
           .then((response) => {
             this.isReportSaved = true
             this.savedReportResourceId = response?.data?.data.resourceId
