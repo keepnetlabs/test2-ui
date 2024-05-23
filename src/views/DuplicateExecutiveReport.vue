@@ -1,5 +1,5 @@
 <template>
-  <NewExecutiveReportCommonContainer is-edit is-duplicate />
+  <NewExecutiveReportCommonContainer is-duplicate />
 </template>
 <script>
 import NewExecutiveReportCommonContainer from '@/components/ExecutiveReports/NewExecutiveReportCommonContainer.vue'
