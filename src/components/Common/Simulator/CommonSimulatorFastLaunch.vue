@@ -194,6 +194,7 @@ export default {
         }
         formData.frequency = 'One Time'
         formData.templateType = this?.emailTemplateParams?.type
+        formData.scenarioDistribution = 0
       }
       return formData
     }
