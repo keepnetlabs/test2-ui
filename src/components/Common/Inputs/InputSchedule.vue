@@ -53,9 +53,8 @@
           :disabled="isScheduledTimeDisabled"
         />
       </div>
-      <div class="send-training-settings__lms-switch mt-2">
+      <div v-if="isPhishing" class="send-training-settings__lms-switch mt-2">
         <VSwitch
-          v-if="isPhishing"
           v-model="value.useTargetUserTimeZone"
           hide-details
           color="#2196f3"

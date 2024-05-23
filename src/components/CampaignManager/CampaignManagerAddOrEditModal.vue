@@ -89,6 +89,7 @@
               :form-details="formDetails"
               :initialCategoryFilter="initialCategoryFilter"
               :initialScenarioDistribution="initialScenarioDistribution"
+              :initialTrainingForCategory="initialTrainingForCategory"
               @distributionChanged="handleDistributionChanged"
               @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
               @trainingForCategoryChanged="handleTrainingForCategoryChanged"
@@ -265,6 +266,7 @@ export default {
       trainingForCategory: {},
       categoryFilter: {},
       initialCategoryFilter: null,
+      initialTrainingForCategory: null,
       totalPhishingScenariosCount: 0
     }
   },
@@ -542,6 +544,7 @@ export default {
         }
         if (data?.categoryDistributionType !== SCENARIO_DISTRIBUTION.MANUALLY) {
           this.initialCategoryFilter = data?.categoryFilter || null
+          this.initialTrainingForCategory = data?.trainingForCategory || null
         }
         this.initialScenarioDistribution =
           data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
@@ -797,6 +800,7 @@ export default {
           if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
             payload = {
               ...payload,
+              phishingScenarios: [],
               categoryFilter: {
                 Condition: this.categoryFilter.filter.Condition,
                 FilterGroups: this.categoryFilter.filter.FilterGroups
