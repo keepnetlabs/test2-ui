@@ -87,6 +87,8 @@
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
               :is-valid="getIsPhishingScenariosValid"
               :form-details="formDetails"
+              :initialCategoryFilter="initialCategoryFilter"
+              :initialScenarioDistribution="initialScenarioDistribution"
               @distributionChanged="handleDistributionChanged"
               @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
               @trainingForCategoryChanged="handleTrainingForCategoryChanged"
@@ -256,11 +258,13 @@ export default {
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+      initialScenarioDistribution: null,
       defaultTargetGroupResourceIds: [],
       phishingScenarioItems: [],
       scheduleInfoResponse: {},
       trainingForCategory: {},
       categoryFilter: {},
+      initialCategoryFilter: null,
       totalPhishingScenariosCount: 0
     }
   },
@@ -533,6 +537,11 @@ export default {
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
         }
+        if (data?.categoryDistributionType !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          this.initialCategoryFilter = data?.categoryFilter || null
+        }
+        this.initialScenarioDistribution =
+          data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
         this.selectedRowFormData = data
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,

@@ -116,7 +116,7 @@ export default {
           {
             property: 'numberOfScenarios',
             align: 'left',
-            label: 'Number Of Scenarios',
+            label: 'Number of Scenarios',
             sortable: false,
             hideSort: true,
             hideFilter: true,
@@ -143,6 +143,14 @@ export default {
   created() {
     this.serverSideProps.pageSize = 5
     if (!!this.filterPayload) this.callForData()
+  },
+  watch: {
+    filterPayload: {
+      deep: true,
+      handler(val) {
+        if (val) this.callForData()
+      }
+    }
   },
   methods: {
     callForData() {
