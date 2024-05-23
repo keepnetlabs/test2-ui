@@ -1210,7 +1210,8 @@ export default {
         ? this.schedulingFormData
         : null
       this.isActionButtonDisabled = true
-      payload.executiveReport.companyLogo = await fileToBase64(this.formData.executiveReportLogo)
+      const logo = await fileToBase64(this.formData.executiveReportLogo)
+      payload.executiveReport.companyLogo = logo.split(',')[1]
       if (this.isEdit || this.$route.name === 'Preview Executive Report' || this.isReportSaved) {
         const id = this.$route.params.id || this.savedReportResourceId
         updateExecutiveReport(payload, id)
