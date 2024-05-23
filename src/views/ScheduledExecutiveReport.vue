@@ -27,6 +27,11 @@ export default {
     getExecutiveReportLogo(id, token, companyResourceId).then((logo) => {
       this.defaultCompanyLogo = new File([logo.data], 'Executive Report Logo', { type: logo.type })
     })
+  },
+  mounted() {
+    setTimeout(() => {
+      if (window && window.userflow) window.userflow.endAll()
+    }, 3000)
   }
 }
 </script>
