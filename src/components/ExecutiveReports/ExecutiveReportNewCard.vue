@@ -1032,7 +1032,7 @@ export default {
   },
   async created() {
     try {
-      if (this.isEdit || this.activatePreview) {
+      if (this.isEdit || this.activatePreview || this.isDuplicate) {
         this.isLoading = true
         const { params, query } = this.$route
         const { id } = params
