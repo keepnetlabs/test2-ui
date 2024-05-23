@@ -408,7 +408,7 @@ export default {
             onClick: (picker) => {
               const end = new Date()
               const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 360)
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 3
             }
@@ -418,7 +418,7 @@ export default {
             onClick: (picker) => {
               const end = new Date()
               const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 3600)
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1095)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 4
             }
