@@ -278,6 +278,9 @@ export default {
         : true
     },
     isMFAScenarioSelected() {
+      if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+        return this.phishingScenarioItems.some((scenario) => scenario.method === 'MFA')
+      }
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
     },
     getTotalTargetUserCountForTargetAudience() {
@@ -802,7 +805,12 @@ export default {
                 Condition: this.categoryFilter.filter.Condition,
                 FilterGroups: this.categoryFilter.filter.FilterGroups
               },
-              trainingForCategory: this.trainingForCategory
+              trainingForCategory: {
+                ...this.trainingForCategory,
+                trainingLanguageIds: this.trainingForCategory.trainingLanguageIds.filter(
+                  (lang) => lang !== labels.All
+                )
+              }
             }
           }
           this.setActionButtonDisability(true)
