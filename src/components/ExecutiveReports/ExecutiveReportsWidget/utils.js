@@ -1,8 +1,8 @@
-export const createExecutiveReportChartData = (widgetData) => {
+export const createExecutiveReportChartData = (widgetData, dateFormat) => {
   const datasets = []
   const valueEnums = new Set()
   widgetData.forEach((dItem) => {
-    const dateFormat = localStorage.getItem('selectedDateFormat')
+    const dateFormat = dateFormat || localStorage.getItem('selectedDateFormat')
     const [datePart] = dItem?.date?.split(' ')
     const [firstPart, secondPart, thirdPart] = datePart?.split('/')
     let calculatedDate

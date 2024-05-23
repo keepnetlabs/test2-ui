@@ -43,7 +43,7 @@
     </div>
     <div class="executive-reports__body">
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <template v-else>
+      <template v-else-if="cards.length">
         <ExecutiveReportsCard
           v-for="(card, index) in cards"
           :key="index"
@@ -51,6 +51,26 @@
           @on-schedule="toggleShowScheduleReportDialog"
           @on-delete="toggleShowDeleteDialog"
         />
+      </template>
+      <template v-else>
+        <div class="custom-empty-table-message executive-reports-empty-table">
+          <div class="empty-inline">
+            <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
+              {{
+                hasSearch
+                  ? 'Sorry, that search criteria has no results.'
+                  : 'You have not created any report, yet'
+              }}
+            </h2>
+            <p
+              v-if="hasSearch"
+              class="text-center"
+              :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`"
+            >
+              Please try adjusting your search
+            </p>
+          </div>
+        </div>
       </template>
     </div>
   </KContainer>
@@ -82,7 +102,8 @@ export default {
       cards: [],
       isShowScheduleReportDialog: false,
       isShowDeleteDialog: false,
-      selectedRow: null
+      selectedRow: null,
+      hasSearch: false
     }
   },
   created() {
@@ -102,7 +123,9 @@ export default {
     },
     handleDebouncedSearch(value) {
       this.search = value
+      this.hasSearch = true
       this.debounce(() => {
+        if (!value) this.hasSearch = false
         this.callForData(value)
       })
     },
