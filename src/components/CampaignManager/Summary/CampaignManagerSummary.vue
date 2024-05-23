@@ -101,7 +101,7 @@
           </div>
         </VTooltip>
       </div>
-      <div v-if="showSchedule">
+      <div v-if="showSchedule && isDistributionManually">
         <v-btn
           class="campaign-manager-summary-card__button pr-4 mr-6"
           rounded
