@@ -293,6 +293,7 @@ import {
   DATE_PERIOD_ENUMS
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import * as Validations from '@/utils/validations'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -971,6 +972,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      brandName: 'whitelabel/getBrandName'
+    }),
     getDownloadPdfStyle() {
       return this.isPdfDownload
         ? {
@@ -1271,6 +1275,7 @@ export default {
       const updateReportCreated = () => {
         this.isReportCreated = true
       }
+      const brandName = this.brandName
       this.$nextTick(async () => {
         setTimeout(async () => {
           let page = document.querySelector('#executive-report-new-card-container')
@@ -1315,7 +1320,7 @@ export default {
                 height = 841
               }
               try {
-                pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+                pdf.text(`Powered By ${brandName}`, width / 2 - 40, height - 16, {})
               } catch (e) {}
             },
             margin: {
