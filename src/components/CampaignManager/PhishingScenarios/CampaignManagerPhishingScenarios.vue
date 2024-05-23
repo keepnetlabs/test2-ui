@@ -237,7 +237,7 @@
                 }"
                 @scroll="handleScroll"
               >
-                <div v-if="!isSingle" class="my-5 mx-6">
+                <div v-if="!isSingle || !isDistributionManually" class="my-5 mx-6">
                   <VSwitch
                     v-model="isShowSelectedScenarios"
                     id="input--campaign-manager-show-selected-status"
@@ -542,6 +542,12 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    initialCategoryFilter: {
+      type: Object
+    },
+    initialScenarioDistribution: {
+      type: Number
     }
   },
   data() {
@@ -585,6 +591,9 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    isDistributionManually() {
+      return this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+    },
     getCategoryItems() {
       return this.formDetails?.categories?.map((item) => item.text) || []
     },
@@ -689,6 +698,40 @@ export default {
     }
   },
   watch: {
+    initialCategoryFilter: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val !== null) {
+          const methodIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
+            (item) => item.FieldName === 'method'
+          )
+          if (methodIndex !== -1) {
+            this.method = val.filter.FilterGroups[0].FilterItems[methodIndex].Value
+          }
+          const languageIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
+            (item) => item.FieldName === 'LanguageTypeResourceId'
+          )
+          if (languageIndex !== -1) {
+            this.language = val.filter.FilterGroups[0].FilterItems[languageIndex].Value
+          }
+          const categoryIndex = val.filter.FilterGroups[0].FilterItems.findIndex(
+            (item) => item.FieldName === 'Category'
+          )
+          if (categoryIndex !== -1) {
+            this.difficulty = val.filter.FilterGroups[0].FilterItems[categoryIndex].Value
+          }
+        }
+      }
+    },
+    initialScenarioDistribution: {
+      immediate: true,
+      handler(val) {
+        if (val !== null) {
+          this.scenarioDistribution = val
+        }
+      }
+    },
     axiosPayload: {
       deep: true,
       immediate: true,
