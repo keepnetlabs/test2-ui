@@ -809,3 +809,13 @@ export function logFormData(formData) {
     console.log(pair[0] + ', ' + pair[1])
   }
 }
+export function fileToBase64(file) {
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = reject
+    })
+  return toBase64(file)
+}
