@@ -56,6 +56,11 @@ export const createReportScheduling = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const updateReportScheduling = (payload, resourceId) => {
+  return testRequest.put(`/report-scheduling/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export const searchReportScheduling = (payload) => {
   return testRequest.post('/report-scheduling/search', payload)
 }
@@ -100,5 +105,6 @@ export default {
   getExecutiveReports,
   getReportScheduling,
   createReportScheduling,
+  updateReportScheduling,
   setSchedulingReportStatus
 }

@@ -329,7 +329,17 @@ export default {
     },
     callForSelectedSchedule() {
       ReportsService.getReportScheduling(this.selectedRow.resourceId).then((response) => {
-        console.log('response', response)
+        const {
+          data: { data }
+        } = response
+        this.scheduledPageFormData.reportResourceId = data.reportResourceId
+        this.scheduledPageFormData.reportType = data.reportTypeId
+        this.formData.schedule = data.schedule
+        this.formData.scheduledDateTimeZoneId = data.scheduledDateTimeZoneId
+        this.formData.name = data.name
+        this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
+        this.formData.frequency = data.frequencyTypeId
+        this.formData.emailAddresses = data.emailAddresses
       })
     },
     callForGetTimeZones() {
@@ -378,9 +388,15 @@ export default {
         ...this.formData,
         ...this.scheduledPageFormData
       }
-      ReportsService.createReportScheduling(payload).then(() => {
-        this.$emit('on-save-close')
-      })
+      if (!this.isEdit || this.isDuplicate) {
+        ReportsService.createReportScheduling(payload).then(() => {
+          this.$emit('on-save-close')
+        })
+      } else {
+        ReportsService.updateReportScheduling(payload).then(() => {
+          this.$emit('on-save-close')
+        })
+      }
     }
   }
 }
