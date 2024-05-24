@@ -30,7 +30,11 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      if (window && window.userflow) window.userflow.endAll()
+      if (window && window.userflow) {
+        window.userflow.endAll()
+        const userflowIcon = document.querySelector('.userflowjs-icon')
+        if (userflowIcon) userflowIcon.style.display = 'none'
+      }
     }, 3000)
   }
 }
