@@ -393,7 +393,7 @@ export default {
           this.$emit('on-save-close')
         })
       } else {
-        ReportsService.updateReportScheduling(payload).then(() => {
+        ReportsService.updateReportScheduling(payload, this.selectedRow.resourceId).then(() => {
           this.$emit('on-save-close')
         })
       }
