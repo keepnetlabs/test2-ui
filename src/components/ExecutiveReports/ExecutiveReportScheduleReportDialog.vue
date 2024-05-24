@@ -339,7 +339,7 @@ export default {
         this.formData.name = data.name
         this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
         this.formData.frequency = data.frequencyTypeId
-        this.formData.emailAddresses = data.emailAddresses
+        this.formData.emailAddresses = data.emailAddressList
       })
     },
     callForGetTimeZones() {
