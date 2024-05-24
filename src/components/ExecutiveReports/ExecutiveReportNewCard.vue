@@ -209,7 +209,7 @@
               </div>
               <div>
                 <span class="executive-report-new-card__body-preview-text"
-                  >Created on {{ editData.date || formData.dateCreated }}
+                  >Created on {{ editData.date || getCreatedDate }}
                 </span>
                 <span class="executive-report-new-card__body-preview-text">
                   by {{ editData.companyName || formData.companyName }}</span
@@ -976,6 +976,9 @@ export default {
     ...mapGetters({
       brandName: 'whitelabel/getBrandName'
     }),
+    getCreatedDate() {
+      return this?.formData?.dateCreated?.split(' ')[0]
+    },
     getDownloadPdfStyle() {
       return this.isPdfDownload
         ? {
