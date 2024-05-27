@@ -17,6 +17,46 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Repeat Offenders': {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'Simulated Users': {
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'In Progress': {
+    backgroundColor: '#E6A23C',
+    borderColor: '#E6A23C',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  Incomplete: {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'Non-simulated Users': {
+    backgroundColor: '#FBF280',
+    borderColor: '#FBF280',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   Vished: {
     backgroundColor: '#801717',
     borderColor: '#801717',

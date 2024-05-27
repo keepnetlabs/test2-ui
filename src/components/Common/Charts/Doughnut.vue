@@ -1,10 +1,13 @@
 <script>
 import { Doughnut } from 'vue-chartjs'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 export default {
   name: 'Doughnut',
   extends: Doughnut,
-  props: ['chartData', 'options', 'chartOptions'],
+  props: ['chartData', 'options', 'chartOptions', 'addDataLabelPlugin'],
   mounted() {
+    console.log('this.addDataLabelPlugin', this.addDataLabelPlugin)
+    if (this.addDataLabelPlugin) this.addPlugin(ChartDataLabels)
     if (this.chartData) {
       this.renderChart(this.chartData, this.chartOptions)
     }

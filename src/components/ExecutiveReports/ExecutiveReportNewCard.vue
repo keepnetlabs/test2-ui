@@ -298,7 +298,10 @@ import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveRep
 import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 import { mapGetters } from 'vuex'
-import { fileToBase64 } from '../../utils/functions'
+import { fileToBase64 } from '@/utils/functions'
+import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverage.vue'
+import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletion.vue'
+import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1387,6 +1390,7 @@ export default {
     getComponent(componentString) {
       const randomNumber = Math.floor(Math.random() * 4)
       console.log('randomNumber', randomNumber)
+      return ExecutiveReportsRepeatOffendersUsers
       switch (randomNumber) {
         case 'ConsolidatedPhishingSimulationMetrics':
           return ExecutiveReportsConsolidatedPhishingSimulation

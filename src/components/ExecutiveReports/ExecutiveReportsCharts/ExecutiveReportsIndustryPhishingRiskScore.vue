@@ -180,14 +180,14 @@ export default {
               { y: 160, x: 'Meta Login' },
               { y: 160, x: 'Amazon Password' }
             ],
-            backgroundColor: '#71ABDA',
-            borderColor: '#71ABDA',
+            backgroundColor: '#1173C1',
+            borderColor: '#1173C1',
             fill: false,
             pointRadius: 0,
             pointHoverRadius: 0,
-            borderDash: [30, 30],
-            borderWidth: 10,
-            order: 2
+            borderDash: [8, 8],
+            borderWidth: 2,
+            order: 1
           }
         ]
       }

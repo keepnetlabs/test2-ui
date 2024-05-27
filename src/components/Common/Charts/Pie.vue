@@ -1,5 +1,6 @@
 <script>
 import { Pie } from 'vue-chartjs'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 export default {
   name: 'Pie',
   extends: Pie,
@@ -9,9 +10,14 @@ export default {
     },
     data: {
       type: Array
+    },
+    addDataLabelPlugin: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
+    if (this.addDataLabelPlugin) this.addPlugin(ChartDataLabels)
     this.attachToDom()
   },
   methods: {
@@ -19,8 +25,8 @@ export default {
       this.options = {
         plugins: {
           datalabels: {
-            formatter: function () {
-              return ''
+            formatter: function (d) {
+              return d
             },
             color: '#575757'
           }
