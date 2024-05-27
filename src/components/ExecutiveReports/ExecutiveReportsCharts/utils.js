@@ -17,6 +17,27 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Clicked (%)': {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  'Not Clicked (%)': {
+    backgroundColor: '#43A047',
+    borderColor: '#43A047',
+    fill: false,
+    borderDash: [5, 5],
+    borderWidth: 2,
+    lineTension: 0,
+    stack: 1,
+    order: 3
+  },
   'Repeat Offenders': {
     backgroundColor: '#F56C6C',
     borderColor: '#F56C6C',

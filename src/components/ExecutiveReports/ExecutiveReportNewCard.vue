@@ -521,44 +521,23 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        MostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'MostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        RecentlyPostedThreats: {
+        PhishingSimulationEngagementReportingTrendsWidget: {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
-          midW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
+          title: 'Phishing Simulation Reporting Trends',
+          key: 'PhishingSimulationEngagementReportingTrendsWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -1391,6 +1370,8 @@ export default {
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
+        case 'PhishingSimulationEngagementReportingTrendsWidget':
+          return ExecutiveReportsPhishingSimulationEngagement
         default:
           return ExecutiveReportsWidget
       }
