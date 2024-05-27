@@ -12,6 +12,7 @@
       :scheduled-date="getScheduledDate"
       :items="getScheduledDialogItems"
       :scenario-type="type"
+      :isCategoryBasedDistribution="isDistributionNotManual"
       @on-close="toggleScheduleDialog"
     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
@@ -100,7 +101,7 @@
           </div>
         </VTooltip>
       </div>
-      <div v-if="showSchedule">
+      <div v-if="showSchedule && isDistributionManually">
         <v-btn
           class="campaign-manager-summary-card__button pr-4 mr-6"
           rounded
@@ -374,16 +375,10 @@ export default {
       return `Phishing Scenarios`
     },
     isDistributionManually() {
-      return (
-        !!this.formData?.scenarioDistribution &&
-        this.formData?.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
-      )
+      return this.formData?.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
     },
     isDistributionNotManual() {
-      return (
-        !!this.formData?.scenarioDistribution &&
-        this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
-      )
+      return this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
     },
     getTargetGroupItems() {
       return this.formData?.userCountDetailResponse?.data?.data || []
@@ -449,10 +444,16 @@ export default {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     canRenderPhoneNumberAlertBox() {
-      return this.getActiveUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+      return (
+        this.getActiveUsersWithoutPhoneNumberCount > 0 &&
+        (this.isMFAScenarioSelected || this.getCampaignInfoItems.method.includes('MFA'))
+      )
     },
     canRenderNoPhoneNumberAlertBox() {
-      return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+      return (
+        this.getActiveUsersWithPhoneNumberCount === 0 &&
+        (this.isMFAScenarioSelected || this.getCampaignInfoItems.method.includes('MFA'))
+      )
     },
     canRenderTimeZoneAlertBox() {
       return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone

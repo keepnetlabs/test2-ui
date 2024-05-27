@@ -123,6 +123,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
+import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -215,6 +216,29 @@ export default {
     }
   },
   watch: {
+    item: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        if (
+          val.categoryDistributionType !== SCENARIO_DISTRIBUTION_TEXTS[0] &&
+          val.frequency !== 0
+        ) {
+          this.tableOptions.addButton = {
+            ...this.tableOptions.addButton,
+            disabled: true,
+            tooltip: 'A new instance with frequency and random scenarios can’t be created.'
+          }
+        } else {
+          this.tableOptions.addButton = {
+            ...this.tableOptions.addButton,
+            disabled: false,
+            tooltip: 'Add a Campaign'
+          }
+        }
+      }
+    },
     statusItems(val) {
       if (val.length) {
         const col = this.tableOptions.columns.find(

@@ -40,7 +40,7 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
   USERS: '2'
 }
 export const scenarioDistributionFilterItems = [
-  'Manual',
+  'Manually',
   'Random scenarios for each user',
   'Same random scenario for all users'
 ]

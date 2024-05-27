@@ -56,6 +56,20 @@ export const createReportScheduling = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const searchReportScheduling = (payload) => {
+  return testRequest.post('/report-scheduling/search', payload)
+}
+export const deleteReportScheduling = (resourceId, reportType = 2) => {
+  return testRequest.delete(`/report-scheduling/${resourceId}/${reportType}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export const exportReportScheduling = (payload) => {
+  return testRequest.post('/report-scheduling/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export const getReportSchedulingLogo = (resourceId) => {
   return testRequest.get(`/companies/${resourceId}/logo`, {
     responseType: 'blob'
