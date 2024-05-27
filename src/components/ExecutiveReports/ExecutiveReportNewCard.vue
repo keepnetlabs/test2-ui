@@ -1306,7 +1306,7 @@ export default {
             },
 
             imageType: 'image/jpeg',
-            output: `./pdf/${fileName}.pdf`,
+            output: `${fileName}.pdf`,
             autoResize: true
           })
           setTimeout(() => {
