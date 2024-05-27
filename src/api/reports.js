@@ -56,6 +56,11 @@ export const createReportScheduling = (payload) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const updateReportScheduling = (payload, resourceId) => {
+  return testRequest.put(`/report-scheduling/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export const searchReportScheduling = (payload) => {
   return testRequest.post('/report-scheduling/search', payload)
 }
@@ -69,7 +74,9 @@ export const exportReportScheduling = (payload) => {
     responseType: 'blob'
   })
 }
-
+export const getReportScheduling = (resourceId) => {
+  return testRequest.get(`/report-scheduling/${resourceId}`)
+}
 export const getReportSchedulingLogo = (resourceId) => {
   return testRequest.get(`/companies/${resourceId}/logo`, {
     responseType: 'blob'
@@ -87,8 +94,17 @@ export const getExecutiveReportLogo = (resourceId, token, companyResourceId) => 
   }
   return testRequest.get(`/executive-report/${resourceId}/logo`, config)
 }
+export const setSchedulingReportStatus = (resourceId, status) => {
+  return testRequest.put(`/report-scheduling/${resourceId}/status/${status}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   getReports,
   getReportDetail,
-  getExecutiveReports
+  getExecutiveReports,
+  getReportScheduling,
+  createReportScheduling,
+  updateReportScheduling,
+  setSchedulingReportStatus
 }

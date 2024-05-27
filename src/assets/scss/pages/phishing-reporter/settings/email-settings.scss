@@ -119,4 +119,18 @@
     .v-list-item__content>*:not(:last-child) {
         margin-bottom: 0;
     }
+  &__information{
+    display: flex;
+    gap:8px;
+    border-radius: 8px;
+    background-color: #F1F8FE;
+    max-width: 581px;
+    padding: 16px;
+    margin-bottom: 24px;
+    &-text{
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 21px;
+    }
+  }
 }
