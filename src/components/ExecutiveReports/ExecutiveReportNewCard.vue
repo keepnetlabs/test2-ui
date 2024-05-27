@@ -980,12 +980,12 @@ export default {
       return this?.formData?.dateCreated?.split(' ')[0]
     },
     getDownloadPdfStyle() {
-      return this.isPdfDownload
-        ? {
-            padding: '4px',
-            width: '1088px'
-          }
-        : null
+      const style = {
+        padding: '4px',
+        width: '1088px'
+      }
+      if (this.isScheduledReport) return style
+      return this.isPdfDownload ? style : null
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
