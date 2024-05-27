@@ -23,7 +23,7 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
+    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" isPhishing />
     <InputDistribution
       v-model="inputDistributionFormData"
       :type="DISTRIBUTION_TYPES.SMISHING"
@@ -124,7 +124,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       inputDistributionFormData: {
         distributionTypeId: DISTRIBUTION_TYPES.SMISHING,
