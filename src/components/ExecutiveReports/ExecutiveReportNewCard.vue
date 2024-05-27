@@ -124,7 +124,7 @@
       <div id="executive-report-new-card-container" :style="getDownloadPdfStyle">
         <div class="executive-report-new-card__body">
           <div v-if="getIsShowEditTopFields" class="executive-report-new-card__body-new">
-            <div>
+            <VForm ref="refForm">
               <div>
                 <VTextField
                   v-model="formData.name"
@@ -136,6 +136,7 @@
                   hide-details
                   autocomplete="off"
                   placeholder="Enter an executive report name"
+                  :rules="[rules.required]"
                 />
               </div>
               <div class="d-flex mt-2 gap-2">
@@ -172,9 +173,10 @@
                   hide-details
                   autocomplete="off"
                   placeholder="Company Name"
+                  :rules="[rules.required]"
                 />
               </div>
-            </div>
+            </VForm>
             <div class="executive-report-new-card__body-new-image">
               <KFileUpload
                 ref="refInputLogo"
@@ -207,7 +209,7 @@
               </div>
               <div>
                 <span class="executive-report-new-card__body-preview-text"
-                  >Created on {{ editData.date || formData.dateCreated }}
+                  >Created on {{ editData.date || getCreatedDate }}
                 </span>
                 <span class="executive-report-new-card__body-preview-text">
                   by {{ editData.companyName || formData.companyName }}</span
@@ -290,6 +292,9 @@ import {
   createExecutiveReportChartData,
   DATE_PERIOD_ENUMS
 } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import * as Validations from '@/utils/validations'
+import { mapGetters } from 'vuex'
+import { fileToBase64 } from '../../utils/functions'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -354,6 +359,9 @@ export default {
       isShowDownloadModal: false,
       isLoading: false,
       schedulingFormData: {},
+      rules: {
+        required: (v) => Validations.required(v)
+      },
       imgPreviewKey: `key-${createRandomCryptStringNumber()}`,
       pickerOptions: {
         onPick: (date) => {
@@ -400,7 +408,7 @@ export default {
             onClick: (picker) => {
               const end = new Date()
               const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 360)
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 3
             }
@@ -410,7 +418,7 @@ export default {
             onClick: (picker) => {
               const end = new Date()
               const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 3600)
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1095)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 4
             }
@@ -965,13 +973,19 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      brandName: 'whitelabel/getBrandName'
+    }),
+    getCreatedDate() {
+      return this?.formData?.dateCreated?.split(' ')[0]
+    },
     getDownloadPdfStyle() {
-      return this.isPdfDownload
-        ? {
-            padding: '4px',
-            width: '1088px'
-          }
-        : null
+      const style = {
+        padding: '4px',
+        width: '1088px'
+      }
+      if (this.isScheduledReport) return style
+      return this.isPdfDownload ? style : null
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
@@ -981,7 +995,7 @@ export default {
     },
     getPreviewPdfButtonClasses() {
       let classes = ['training-library-new-btn ml-2']
-      if (!this.formData.name) classes.push('new-executive-report-button-disabled')
+      //if (!this.formData.name) classes.push('new-executive-report-button-disabled')
       return classes
     },
     isShowPreview() {
@@ -1022,11 +1036,11 @@ export default {
   },
   async created() {
     try {
-      if (this.isEdit || this.activatePreview) {
+      if (this.isEdit || this.activatePreview || this.isDuplicate) {
         this.isLoading = true
         const { params, query } = this.$route
         const { id } = params
-        const { token, companyResourceId } = query
+        const { token, companyResourceId, dateFormat } = query
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
@@ -1087,7 +1101,8 @@ export default {
             this.isTypeTable = true
           } else {
             this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
-              widget.widgetDatas
+              widget.widgetDatas,
+              dateFormat
             )
           }
         })
@@ -1106,7 +1121,10 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.params.showDownloadModal) this.isShowDownloadModal = true
+    if (this.$route.params.showDownloadModal) {
+      this.isShowDownloadModal = true
+      this.justDownload = true
+    }
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
@@ -1145,6 +1163,8 @@ export default {
     layoutUpdated(newLayout) {},
     layoutMounted() {},
     routeToExecutiveReports() {
+      if (this.$route.params.isFromScheduledReport)
+        return this.$router.push({ name: 'Scheduled Reports' })
       this.$router.push('/reports/executive-reports')
     },
     toggleShowScheduleReportDialog() {
@@ -1166,11 +1186,13 @@ export default {
       this.$refs.refInputExecutiveReportDate.showPicker()
     },
     handlePreviewClick() {
+      if (!this.$refs.refForm.validate()) return
       this.activatePreview = true
       this.isPreviewDownload = true
       this.toggleShowDownloadModal()
     },
-    handleSaveReportClick() {
+    async handleSaveReportClick() {
+      if (!this.$refs.refForm.validate()) return
       const payload = {
         executiveReport: {
           name: this.formData.name,
@@ -1179,8 +1201,7 @@ export default {
           endDate: '',
           description: this.formData.description,
           datePeriod: this.formData.datePeriod,
-          companyName: this.formData.companyName,
-          companyLogo: this.formData.executiveReportLogo
+          companyName: this.formData.companyName
         },
         widgetLayouts: this.layout
       }
@@ -1192,40 +1213,11 @@ export default {
         ? this.schedulingFormData
         : null
       this.isActionButtonDisabled = true
-      const formData = new FormData()
-      formData.append('ExecutiveReport.Name', payload.executiveReport.name)
-      formData.append('ExecutiveReport.DateCreated', payload.executiveReport.dateCreated)
-      formData.append('ExecutiveReport.StartDate', payload.executiveReport.startDate)
-      formData.append('ExecutiveReport.EndDate', payload.executiveReport.endDate)
-      formData.append('ExecutiveReport.Description', payload.executiveReport.description)
-      formData.append('ExecutiveReport.DatePeriod', payload.executiveReport.datePeriod)
-      formData.append('ExecutiveReport.CompanyName', payload.executiveReport.companyName)
-      formData.append('ExecutiveReport.CompanyLogo', payload.executiveReport.companyLogo)
-      payload.widgetLayouts.forEach((layout, index) => {
-        Object.keys(layout).forEach((key) => {
-          formData.append(`WidgetLayouts[${index}].${key}`, layout[key])
-        })
-      })
-      if (payload.scheduling) {
-        formData.append('Scheduling.Name', payload.scheduling.name)
-        formData.append('Scheduling.Frequency', payload.scheduling.frequency)
-        formData.append('Scheduling.Schedule', payload.scheduling.schedule)
-        formData.append(
-          'Scheduling.ScheduledDateTimeZoneId',
-          payload.scheduling.scheduledDateTimeZoneId
-        )
-        formData.append(
-          'Scheduling.IsRegionAwareTimeZone',
-          payload.scheduling.isRegionAwareTimeZone
-        )
-        payload.scheduling.emailAddresses.forEach((email, index) => {
-          formData.append(`Scheduling.EmailAddresses[${index}]`, email)
-        })
-        formData.delete('Scheduling.EmailAddresses')
-      }
+      const logo = await fileToBase64(this.formData.executiveReportLogo)
+      payload.executiveReport.companyLogo = logo.split(',')[1]
       if (this.isEdit || this.$route.name === 'Preview Executive Report' || this.isReportSaved) {
         const id = this.$route.params.id || this.savedReportResourceId
-        updateExecutiveReport(formData, id)
+        updateExecutiveReport(payload, id)
           .then(() => {
             this.activatePreview = true
             this.editMode = false
@@ -1235,7 +1227,7 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else {
-        saveExecutiveReport(formData)
+        saveExecutiveReport(payload)
           .then((response) => {
             this.isReportSaved = true
             this.savedReportResourceId = response?.data?.data.resourceId
@@ -1258,6 +1250,7 @@ export default {
       const updateReportCreated = () => {
         this.isReportCreated = true
       }
+      const brandName = this.brandName
       this.$nextTick(async () => {
         setTimeout(async () => {
           let page = document.querySelector('#executive-report-new-card-container')
@@ -1302,7 +1295,7 @@ export default {
                 height = 841
               }
               try {
-                pdf.text('Powered By Keepnet', width / 2 - 40, height - 16, {})
+                pdf.text(`Powered By ${brandName}`, width / 2 - 40, height - 16, {})
               } catch (e) {}
             },
             margin: {
@@ -1367,7 +1360,9 @@ export default {
         i: createRandomCryptStringNumber(),
         startDate: this.formData.executiveReportDateRange[0],
         endDate: this.formData.executiveReportDateRange[1],
-        resourceId: widget.resourceId
+        resourceId: widget.resourceId,
+        title: widget.name,
+        parentKey: widget.description
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6

@@ -320,6 +320,8 @@ export default {
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
         formData.selectedScheduleId = scheduleTypeId
+        formData.useTargetUserTimeZone =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.useTargetUserTimeZone
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
@@ -477,6 +479,10 @@ export default {
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        if (this.$refs?.refCampaignManagerDeliverySettings) {
+          this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.useTargetUserTimeZone =
+            data.useTargetUserTimeZone
+        }
         this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
@@ -643,6 +649,7 @@ export default {
                 ? null
                 : deliverySettingsFormData.scheduledDate,
             scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
+            useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
             distributionTypeId: parseInt(deliverySettingsFormData.distributionTypeId),
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: parseInt(

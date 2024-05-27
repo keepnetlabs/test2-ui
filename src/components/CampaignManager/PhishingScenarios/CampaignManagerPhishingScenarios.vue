@@ -237,7 +237,7 @@
                 }"
                 @scroll="handleScroll"
               >
-                <div v-if="!isSingle" class="my-5 mx-6">
+                <div v-if="!isSingle || !isDistributionManually" class="my-5 mx-6">
                   <VSwitch
                     v-model="isShowSelectedScenarios"
                     id="input--campaign-manager-show-selected-status"
@@ -542,6 +542,15 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    initialCategoryFilter: {
+      type: Object
+    },
+    initialTrainingForCategory: {
+      type: Object
+    },
+    initialScenarioDistribution: {
+      type: Number
     }
   },
   data() {
@@ -585,6 +594,9 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    isDistributionManually() {
+      return this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+    },
     getCategoryItems() {
       return this.formDetails?.categories?.map((item) => item.text) || []
     },
@@ -689,6 +701,69 @@ export default {
     }
   },
   watch: {
+    initialTrainingForCategory: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        this.trainingForCategory = { ...new TrainingTabModel(), ...val }
+      }
+    },
+    initialCategoryFilter: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        this.search = val.filterGroups?.[1]?.filterItems?.[0]?.value || ''
+        const methodIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'method'
+        )
+        if (methodIndex !== -1) {
+          if (val.filterGroups[0].filterItems[methodIndex].value.includes(',')) {
+            const methodValues = val.filterGroups[0].filterItems[methodIndex].value.split(',')
+            this.method = methodValues.map((item) => ({ text: item, value: item }))
+          } else {
+            const methodValue = val.filterGroups[0].filterItems[methodIndex].value
+            this.method = [{ text: methodValue, value: methodValue }]
+          }
+        }
+        const languageIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'LanguageTypeResourceId'
+        )
+        if (languageIndex !== -1) {
+          this.language = val.filterGroups[0].filterItems[languageIndex].value
+        }
+        const difficultyIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'difficulty'
+        )
+        if (difficultyIndex !== -1) {
+          if (val.filterGroups[0].filterItems[difficultyIndex].value.includes(',')) {
+            const difficultyValues = val.filterGroups[0].filterItems[difficultyIndex].value.split(
+              ','
+            )
+            this.difficulty = difficultyValues.map((item) => ({ text: item, value: item }))
+          } else {
+            const difficultyValue = val.filterGroups[0].filterItems[difficultyIndex].value
+            this.difficulty = [{ text: difficultyValue, value: difficultyValue }]
+          }
+        }
+        const categoryIndex = val.filterGroups[0].filterItems.findIndex(
+          (item) => item.fieldName === 'Category'
+        )
+        if (categoryIndex !== -1) {
+          this.category = val.filterGroups[0].filterItems[categoryIndex].value.includes(',')
+            ? val.filterGroups[0].filterItems[categoryIndex].value.split(',')
+            : [val.filterGroups[0].filterItems[categoryIndex].value]
+        }
+      }
+    },
+    initialScenarioDistribution: {
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        this.scenarioDistribution = val
+      }
+    },
     axiosPayload: {
       deep: true,
       immediate: true,
@@ -833,7 +908,7 @@ export default {
       this.callForPhishingScenarios()
     },
     category(val) {
-      if (!val.length) {
+      if (!val?.length) {
         this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
       }
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
@@ -1028,13 +1103,17 @@ export default {
     },
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
-        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        if (this.isDistributionManually) {
+          this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        }
         this.axiosPayload.pageSize =
           this.defaultPhishingScenariosValuesMapped.length < 10
             ? 10
             : this.defaultPhishingScenariosValuesMapped.length
       } else if (this.value.length && this.isEdit) {
-        this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        if (this.isDistributionManually) {
+          this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
+        }
       }
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios

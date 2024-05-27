@@ -15,7 +15,7 @@
     >
       <template #NumberOfCategories="{ props: { key } }">
         <div class="campaign-manager-summary-card__body-item-key">
-          Number Of Categories
+          Number of Categories
         </div>
         <div class="campaign-manager-summary-card__body-item-value">
           <div class="d-flex align-center">

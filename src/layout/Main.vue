@@ -775,7 +775,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="getAdvancedReportsSearchPermissions"
+              v-if="getExecutiveReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -791,6 +791,21 @@
                       routerName === 'Preview Executive Report' ||
                       routerName === 'Edit Executive Report' ||
                       routerName === 'Duplicate Executive Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getScheduledReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/scheduled-reports"
+                  id="btn--link-navigator-menu-scheduled-reports"
+                  route-name="Scheduled Reports"
+                  :active-class-comparator="
+                    () => routerName === 'Scheduled Reports' || routerName === 'Scheduled Report'
                   "
                 />
               </v-list-item-content>
@@ -1143,6 +1158,8 @@ export default {
       getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
       getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
       getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
+      getExecutiveReportsSearchPermissions: 'permissions/getExecutiveReportsSearchPermissions',
+      getScheduledReportsSearchPermissions: 'permissions/getScheduledReportsSearchPermissions',
       getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions',
       getSmishingSimulatorLeftMenuPermissions:
         'permissions/getSmishingSimulatorLeftMenuPermissions',
