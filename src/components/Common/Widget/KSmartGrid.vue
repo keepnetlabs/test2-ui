@@ -5,7 +5,7 @@
     v-on="gridLayoutEvents"
     @breakpoint-changed="breakPointChanged"
     :breakpoints="{ lg: 1300, sm: 1100, xs: 500, xxs: 200 }"
-    :cols="{ lg: 12, sm: 12, xs: 6, xxs: 2 }"
+    :cols="cols"
     ref="gridLayout"
     :key="keyGrid"
   >
@@ -40,6 +40,12 @@ export default {
     layout: {
       type: Array,
       required: true
+    },
+    cols: {
+      type: Object,
+      default() {
+        return { lg: 12, sm: 12, xs: 6, xxs: 2 }
+      }
     },
     colNum: {
       type: Number,

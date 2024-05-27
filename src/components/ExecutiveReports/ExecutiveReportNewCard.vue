@@ -237,6 +237,7 @@
           <k-smart-grid
             class="executive-report-grid"
             ref="refGrid"
+            :cols="{ lg: 12, sm: 12, xs: 12, xxs: 2 }"
             :layout="layout"
             :col-num="colNum"
             :is-static="getIsStatic"
@@ -1069,7 +1070,7 @@ export default {
         const itemWidth = item.w
         xValue = x
         x += itemWidth
-        if (x > bdCol) {
+        if (x > 12) {
           x = itemWidth
           y += item.h
           xValue = 0
@@ -1224,7 +1225,7 @@ export default {
             },
 
             imageType: 'image/jpeg',
-            output: `./pdf/${fileName}.pdf`,
+            output: `${fileName}.pdf`,
             autoResize: true
           })
           setTimeout(() => {
@@ -1268,7 +1269,7 @@ export default {
       containerEl.querySelector('input').click()
     },
     getBdCol(newBreakpoint = '') {
-      if (newBreakpoint === 'xs') return 6
+      if (newBreakpoint === 'xs') return 12
       return newBreakpoint === 'xxs' ? 2 : 12
     },
     addWidget(widget) {
