@@ -7,6 +7,13 @@ export default {
   props: ['chartData', 'options', 'chartOptions'],
   mounted() {
     this.addPlugin(ChartDataLabels)
+    this.addPlugin({
+      beforeInit: function (chart, options) {
+        chart.legend.afterFit = function () {
+          this.height = this.height + 4
+        }
+      }
+    })
     if (this.chartData) {
       this.renderChart(this.chartData, this.chartOptions)
     }

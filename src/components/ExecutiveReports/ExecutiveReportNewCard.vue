@@ -500,23 +500,23 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        'ReportedEmailThreats(Phishing)': {
+        PhishingRiskScoreAcrossIndustriesWidget: {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
-          midW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Reported Email Threats (Phishing)',
-          key: 'ReportedEmailThreats(Phishing)',
+          title: 'Phishing Risk Score Across Industries',
+          key: 'PhishingRiskScoreAcrossIndustriesWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -1388,20 +1388,9 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
-      const randomNumber = Math.floor(Math.random() * 4)
-      console.log('randomNumber', randomNumber)
-      return ExecutiveReportsRepeatOffendersUsers
-      switch (randomNumber) {
-        case 'ConsolidatedPhishingSimulationMetrics':
-          return ExecutiveReportsConsolidatedPhishingSimulation
-        case 0:
+      switch (componentString) {
+        case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
-        case 1:
-          return ExecutiveReportsIndustryPhishingRiskScore
-        case 2:
-          return ExecutiveReportsPhishingSimulationEngagement
-        case 3:
-          return ExecutiveReportsTopRiskiestUsers
         default:
           return ExecutiveReportsWidget
       }

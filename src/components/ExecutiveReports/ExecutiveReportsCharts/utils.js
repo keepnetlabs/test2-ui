@@ -25,6 +25,36 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Company Phishing Risk Score': {
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    order: 1,
+    pointHoverRadius: 3
+  },
+  'Industry Avg (Technology)': {
+    backgroundColor: '#1173C1',
+    borderColor: '#1173C1',
+    fill: false,
+    borderDash: [5, 5],
+    borderWidth: 2,
+    lineTension: 0,
+    order: 2,
+    pointHoverRadius: 3
+  },
+  'All Industry Avg': {
+    backgroundColor: '#B6791D',
+    borderColor: '#B6791D',
+    fill: false,
+    borderDash: [5, 5],
+    borderWidth: 2,
+    lineTension: 0,
+    order: 3,
+    pointHoverRadius: 3
+  },
   'Simulated Users': {
     backgroundColor: '#00BCD4',
     borderColor: '#00BCD4',
