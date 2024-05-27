@@ -6,7 +6,6 @@ export default {
   extends: Doughnut,
   props: ['chartData', 'options', 'chartOptions', 'addDataLabelPlugin'],
   mounted() {
-    console.log('this.addDataLabelPlugin', this.addDataLabelPlugin)
     if (this.addDataLabelPlugin) this.addPlugin(ChartDataLabels)
     if (this.chartData) {
       this.renderChart(this.chartData, this.chartOptions)

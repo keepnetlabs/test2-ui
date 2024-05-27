@@ -109,8 +109,6 @@ export default {
             const typedItems = datasets.filter((item) => item.result === itemType)
             if (itemType === 'Company Phishing Risk Score') {
               typedItems.forEach((item) => {
-                console.log('item', item)
-                console.log('maxRiskItem', maxRiskItem)
                 if (item.y > maxRiskItem.y) {
                   maxRiskItem.x = item.x
                   maxRiskItem.y = item.y

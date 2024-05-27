@@ -85,9 +85,7 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              console.log('data', data)
               return data.datasets[0].data.map((d, index) => {
-                console.log('data.labels[index]', data.labels[index])
                 return {
                   text: `${data.labels[index]} (${d} users)`,
                   fillStyle: CHART_COLORS[data.labels[index]]
@@ -121,8 +119,6 @@ export default {
           }
         ]
       }
-      console.log('this.chartData', this.chartData)
-      console.log('this.chartOptions', this.chartOptions)
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
