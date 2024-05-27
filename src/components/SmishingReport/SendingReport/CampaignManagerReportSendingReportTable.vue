@@ -35,7 +35,10 @@
     @on-detail="handleOnDetail"
   >
     <template #datatable-custom-column="{ scope, col }">
-      <div class="campaign-report-sending-report-table__status-column">
+      <div
+        v-if="col.property === COLUMNS.DELIVERY_STATUS.property"
+        class="campaign-report-sending-report-table__status-column"
+      >
         <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
           <template v-slot:activator="{ on }">
             <v-btn style="display: none;" />
@@ -49,6 +52,12 @@
           <span>{{ getErrorMessage(scope.row) }}</span>
         </v-tooltip>
       </div>
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.DATE_SENT.property"
+        :scope="scope"
+        :timeKey="COLUMNS.DATE_SENT.property"
+        localTimeKey="lastSendingTimeToLocalUser"
+      />
     </template>
     <template #extended-view-slot>
       <div
@@ -107,12 +116,19 @@ import CampaignManagerReportSendingReportEvent from '@/components/SmishingReport
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
 export default {
   name: 'CampaignManagerReportSendingReportTable',
-  components: { CampaignManagerReportSendingReportEvent, DataTable, Badge },
+  components: {
+    CampaignManagerReportSendingReportEvent,
+    DataTable,
+    Badge,
+    CampaignManagerReportTimeZoneColumn
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -131,6 +147,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'

@@ -67,6 +67,13 @@
               text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderTimeZoneAlertBox"
+              class="mt-4 bg-aqua-light"
+              icon-color="#2196f3"
+              :text="getTimeZoneWarningText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -183,6 +190,7 @@ import CampaignManagerScheduleDialog from '@/components/CampaignManager/Campaign
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -236,6 +244,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
+    }),
+    canRenderTimeZoneAlertBox() {
+      return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
+    },
     getTargetGroupItems() {
       return this.formData?.userCountDetailResponse?.data?.data || []
     },
@@ -329,6 +343,22 @@ export default {
       } with phone number${
         this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
       } will receive MFA scenario.`
+    },
+    getTimeZoneWarningText() {
+      return `There ${this.getActiveUsersWithoutTimeZoneCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithoutTimeZoneCount
+      } active user${
+        this.getActiveUsersWithoutTimeZoneCount > 1 ? 's' : ''
+      } without time zone information in the selected groups. They will receive the campaign based on the your own time zone (${
+        this.getSelectedTimeZoneName
+      }).`
+    },
+    getActiveUsersWithoutTimeZoneCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutTimeZoneCount = row?.timeZone?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutTimeZoneCount
+      }, 0)
     },
     getUsersFromUnverifiedDomainsCount() {
       return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
@@ -430,9 +460,13 @@ export default {
       }, 0)
     },
     getSettingsItems() {
-      const { selectedSchedule, duration, senderPhoneNumber } = this.formData
+      const { selectedSchedule, duration, senderPhoneNumber, useTargetUserTimeZone } = this.formData
+      let startingText = selectedSchedule
+      if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
+        startingText = `${selectedSchedule} - Target users’ time zones`
+      }
       return {
-        Starting: selectedSchedule,
+        Starting: startingText,
         Duration: duration,
         'Sender Phone Number': senderPhoneNumber
       }
