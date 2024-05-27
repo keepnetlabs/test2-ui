@@ -93,7 +93,6 @@ export default {
           const {
             data: { data }
           } = response || {}
-          console.log('data', data)
           data[0].widgetDatas[0].values[0].value = 25
           data[0].widgetDatas[0].values[1].value = 35
           data[0].widgetDatas[1].values[0].value = 40
