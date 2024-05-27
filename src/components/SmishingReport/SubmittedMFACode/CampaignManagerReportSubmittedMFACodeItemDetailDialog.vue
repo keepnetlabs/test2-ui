@@ -38,7 +38,16 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
+      >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.SUBMITTED_TIME_MFA.property"
+        :scope="scope"
+        :timeKey="COLUMNS.SUBMITTED_TIME_MFA.property"
+        localTimeKey="submittedTimeToLocalUser"
       />
+    </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -60,14 +69,15 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/SmishingReport/Opened/utils'
-import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+
 export default {
   name: 'CampaignManagerReportSubmittedtemDetailDialog',
-  components: { DataTable, AppDialog },
+  components: { DataTable, AppDialog, CampaignManagerReportTimeZoneColumn },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -79,6 +89,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-opened-detail-item-data-table',

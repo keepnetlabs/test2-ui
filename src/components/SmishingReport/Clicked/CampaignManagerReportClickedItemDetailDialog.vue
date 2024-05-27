@@ -70,6 +70,12 @@
             :scope="scope"
             :tooltip-text="getActivityTooltipText(scope.row)"
           />
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.DATE_CLICKED.property"
+            :scope="scope"
+            :timeKey="COLUMNS.DATE_CLICKED.property"
+            localTimeKey="clickedTimeToLocalUser"
+          />
         </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
@@ -112,6 +118,7 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue'
 import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
 import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
@@ -125,7 +132,8 @@ export default {
     DefaultButtonRowAction,
     SandboxDetailDialogAlerts,
     CampaignManagerReportHumanActivityDialog,
-    CampaignManagerReportSandboxActivityDialog
+    CampaignManagerReportSandboxActivityDialog,
+    CampaignManagerReportTimeZoneColumn
   },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {

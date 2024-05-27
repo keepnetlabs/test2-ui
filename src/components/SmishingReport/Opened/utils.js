@@ -97,7 +97,7 @@ export const COLUMNS = {
     label: 'Message Send Date',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 200,
     filterableType: 'date'
   },
@@ -145,7 +145,7 @@ export const COLUMNS = {
     label: labels.LastOpened,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 160,
     filterableType: 'date'
   },
@@ -203,7 +203,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -215,7 +215,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -227,7 +227,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 230,
     isEditable: false,
     filterableType: 'date'
@@ -239,7 +239,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -347,7 +347,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -381,7 +381,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -393,7 +393,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 220,
     isEditable: false,
     filterableType: 'date'
@@ -441,7 +441,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
