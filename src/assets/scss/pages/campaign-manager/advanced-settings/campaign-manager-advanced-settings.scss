@@ -46,6 +46,22 @@
         padding: 8px;
         border-radius:8px;
     }
+
+    &-info{
+      margin-top:24px;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 21px;
+      border-radius: 8px;
+      background-color: #F1F8FE;
+      padding:10px;
+      max-width: 554px;
+      a {
+        text-decoration: none;
+        color:#2196F3;
+      }
+    }
 }
 
 .campaign-manager-advanced-settings__other-settings-last {

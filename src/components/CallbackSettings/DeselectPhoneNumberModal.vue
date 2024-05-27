@@ -1,19 +1,20 @@
 <template>
   <AppDialog
     v-if="status"
-    class="deselect-phone-number-modal"
-    className="switch-dialog"
+    className="deselect-phone-number-modal"
     :status="true"
+    custom-size="480"
     icon="mdi-close"
-    title="Deselect Callback Phone Number"
+    title="Unlink Callback Phone Number"
     title-id="text--deselect-phone-number-modal-title"
     dialogBodyClass="deselect-phone-number-modal--body"
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
       <p>
-        Do you want to deselect this callback phone number? You can select other callback phone
-        numbers using the “Select Phone Numbers” button, as many as allowed by your license limit.
+        Do you want to unlink this callback phone number from your profile? You can select other
+        callback phone numbers using the “Select Phone Numbers” button, as many as allowed by your
+        license limit.
       </p>
     </template>
     <template v-slot:app-dialog-footer>
@@ -35,7 +36,7 @@
           style="padding: 0;"
           text
           :disabled="isLoading"
-          >DESELECT</v-btn
+          >UNLINK</v-btn
         >
       </div>
     </template>

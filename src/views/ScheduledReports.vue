@@ -6,6 +6,16 @@
       :selected-row="selectedRow"
       @on-close="toggleShowDeleteDialog"
     />
+    <ExecutiveReportScheduleReportDialog
+      v-if="isShowScheduleReportDialog"
+      is-scheduled-page
+      :status="isShowScheduleReportDialog"
+      :selected-row="selectedRow"
+      :is-duplicate="isDuplicate"
+      :is-edit="isEdit"
+      @on-close="toggleShowScheduleReportDialog"
+      @on-save-close="toggleShowScheduleReportDialog(null, true)"
+    />
     <DataTable
       :id="CONSTANTS.id"
       ref="refTable"
@@ -34,6 +44,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @refreshAction="callForData"
+      @add-scheduled-report="toggleShowScheduleReportDialog"
       @downloadEvent="exportScheduledReportList"
     >
       <template #datatable-row-actions="{ scope }">
@@ -65,12 +76,12 @@
             @on-click="handleEdit(scope.row, true)"
           />
           <DefaultMenuRowAction
-            :icon="tableOptions.rowActions[3].icon"
+            :icon="!scope.row.status ? 'mdi-check-circle' : tableOptions.rowActions[3].icon"
             :id="tableOptions.rowActions[3].id"
-            :text="tableOptions.rowActions[3].name"
+            :text="!scope.row.status ? labels.SetAsActive : tableOptions.rowActions[3].name"
             :scope="scope"
             :disabled="tableOptions.rowActions[3].disabled"
-            @on-click="handleDelete(scope.row)"
+            @on-click="handleActiveStatus(scope.row)"
           />
           <DefaultMenuRowAction
             :icon="tableOptions.rowActions[4].icon"
@@ -99,13 +110,19 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/AwarenessEducator/utils'
 import labels from '@/model/constants/labels'
-import { exportReportScheduling, searchReportScheduling } from '@/api/reports'
+import {
+  exportReportScheduling,
+  searchReportScheduling,
+  setSchedulingReportStatus
+} from '@/api/reports'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import ScheduledReportsDeleteDialog from '@/components/ScheduledReports/ScheduledReportsDeleteDialog.vue'
+import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
 export default {
   name: 'ScheduledReports',
   components: {
+    ExecutiveReportScheduleReportDialog,
     ScheduledReportsDeleteDialog,
     RowActionsMenu,
     DefaultMenuRowAction,
@@ -116,14 +133,18 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      labels,
       CONSTANTS: {
         id: 'awareness-educator-scheduled-list-data-table'
       },
       isShowDeleteDialog: false,
+      isDuplicate: false,
+      isEdit: false,
       selectedRow: null,
       axiosPayload: getDefaultAxiosPayload(),
       tableData: [],
       serverSideProps: new ServerSideProps(),
+      isShowScheduleReportDialog: false,
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.SCHEDULED_LIST,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCHEDULED_LIST,
@@ -147,48 +168,41 @@ export default {
           id: 'btn-empty--scheduled-list'
         },
         addButton: {
-          show: false,
-          action: 'add-certificate',
-          tooltip: labels.AddCertificate,
-          id: 'btn-add--certificate',
-          disabled: !this.$store.getters['permissions/getCreateCertificatePermission']
+          show: true,
+          action: 'add-scheduled-report',
+          tooltip: labels.AddScheduledReport,
+          id: 'btn-add--scheduled-reports'
         },
         downloadButton: {
-          show: true,
-          disabled: !this.$store.getters['permissions/getExportCertificatePermission']
+          show: true
         },
         rowActions: [
           {
             name: labels.ViewReport,
             icon: 'mdi-text-box',
-            id: 'btn-view-report--row-actions-scheduled-list',
-            disabled: false
+            id: 'btn-view-report--row-actions-scheduled-list'
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit',
-            disabled: true
+            action: 'handleEdit'
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'duplicate',
-            id: 'btn-duplicate--row-actions-scheduled-list',
-            disabled: true
+            id: 'btn-duplicate--row-actions-scheduled-list'
           },
           {
             name: labels.SetAsInactive,
             icon: 'mdi-close-circle',
             action: 'close',
-            id: 'btn-cancel--row-actions-scheduled-list',
-            disabled: true
+            id: 'btn-cancel--row-actions-scheduled-list'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
-            id: 'btn-delete--row-actions-scheduled-list',
-            disabled: false
+            id: 'btn-delete--row-actions-scheduled-list'
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -224,9 +238,18 @@ export default {
         }
       })
     },
-    handleEdit(row, isDuplicate = false) {},
+    handleEdit(row, isDuplicate = false) {
+      this.isEdit = true
+      this.isDuplicate = isDuplicate
+      this.toggleShowScheduleReportDialog(row)
+    },
     handleDelete(row) {
       this.toggleShowDeleteDialog(row, false)
+    },
+    handleActiveStatus(row) {
+      setSchedulingReportStatus(row.reportResourceId, Number(!row.status)).then(() => {
+        this.callForData()
+      })
     },
     exportScheduledReportList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -253,6 +276,15 @@ export default {
     toggleShowDeleteDialog(row, forceUpdate = false) {
       if (forceUpdate) this.callForData()
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+      this.selectedRow = row
+    },
+    toggleShowScheduleReportDialog(row, forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      if (this.isShowScheduleReportDialog) {
+        this.isEdit = false
+        this.isDuplicate = false
+      }
+      this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
       this.selectedRow = row
     }
   }
