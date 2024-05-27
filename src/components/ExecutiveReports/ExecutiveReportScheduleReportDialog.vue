@@ -3,7 +3,7 @@
     :status="status"
     icon-name="mdi-calendar-clock"
     title="New Schedule Report"
-    :subtitle="selectedRow.name"
+    :subtitle="getSubtitle"
     :custom-size="'480'"
     maxHeightSize="665"
     title-id="text--phishing-reporters-download-history-title"
@@ -17,9 +17,6 @@
         sub-title="Enter settings for the new scheduled report"
       />
       <VForm ref="refForm" lazy-validation>
-        <div v-if="isNew && !isReportSaved" class="executive-report-schedule-dialog-is-new">
-          Your report will be saved as it is to be scheduled
-        </div>
         <FormGroup title="Schedule Name" has-hint>
           <InputEntityName
             v-model.trim="formData.name"
@@ -44,6 +41,30 @@
             no-data-text="No frequency configuration available"
             :rules="rules.frequency"
             :items="frequencyItems"
+          />
+        </FormGroup>
+        <FormGroup has-hint :title="labels.ReportType" sub-title="Select type of the report">
+          <KSelect
+            v-model.trim="scheduledPageFormData.reportType"
+            id="input--company-manager-advanced-settings-frequency"
+            dense
+            outlined
+            hint="*Required"
+            persistent-hint
+            placeholder="Select Option"
+            :items="reportTypeItems"
+          />
+        </FormGroup>
+        <FormGroup has-hint :title="labels.Report" sub-title="Select a report from the list">
+          <KSelect
+            v-model.trim="scheduledPageFormData.reportResourceId"
+            id="input--company-manager-advanced-settings-frequency"
+            dense
+            outlined
+            hint="*Required"
+            persistent-hint
+            placeholder="Select Option"
+            :items="reportItems"
           />
         </FormGroup>
         <FormGroup
@@ -165,7 +186,7 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import * as Validations from '@/utils/validations'
-import { createReportScheduling } from '@/api/reports'
+import ReportsService, { createReportScheduling } from '@/api/reports'
 import AppModal from '@/components/AppModal.vue'
 import AppModalFooter from '@/components/AppModalFooter.vue'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader.vue'
@@ -199,13 +220,31 @@ export default {
     },
     savedReportResourceId: {
       type: String
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    isScheduledPage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       labels,
       frequencyItems,
+      reportTypeItems: [{ text: 'Executive Report', value: 2 }],
+      reportItems: [],
       isEmailAddressesFocused: false,
+      scheduledPageFormData: {
+        reportType: 2,
+        reportResourceId: ''
+      },
       formData: {
         name: '',
         frequency: 0,
@@ -252,6 +291,9 @@ export default {
       selectedTimeZone: 'common/getSelectedTimeZone',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getSubtitle() {
+      return this.isScheduledPage ? '' : this?.selectedRow?.name
+    },
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
@@ -269,10 +311,37 @@ export default {
     }
   },
   created() {
+    if (this.isScheduledPage) {
+      this.callForReports()
+      if (this.isDuplicate || this.isEdit) this.callForSelectedSchedule()
+    }
     this.callForGetTimeZones()
     this.getSelectedTimeZone()
   },
   methods: {
+    callForReports() {
+      ReportsService.getExecutiveReports(this.search).then((response) => {
+        const {
+          data: { data }
+        } = response || {}
+        this.reportItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+      })
+    },
+    callForSelectedSchedule() {
+      ReportsService.getReportScheduling(this.selectedRow.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.scheduledPageFormData.reportResourceId = data.reportResourceId
+        this.scheduledPageFormData.reportType = data.reportTypeId
+        this.formData.schedule = data.schedule
+        this.formData.scheduledDateTimeZoneId = data.scheduledDateTimeZoneId
+        this.formData.name = data.name
+        this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
+        this.formData.frequency = data.frequencyTypeId
+        this.formData.emailAddresses = data.emailAddressList
+      })
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
@@ -298,6 +367,7 @@ export default {
         !this.formData.scheduledDateTimeZoneId
       )
         return
+      if (this.isScheduledPage) return this.submitScheduled()
       if (!this.isNew || this.isReportSaved) {
         this.isActionButtonDisabled = true
         createReportScheduling({
@@ -312,6 +382,21 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else this.$emit('on-submit', this.formData)
+    },
+    submitScheduled() {
+      const payload = {
+        ...this.formData,
+        ...this.scheduledPageFormData
+      }
+      if (!this.isEdit || this.isDuplicate) {
+        ReportsService.createReportScheduling(payload).then(() => {
+          this.$emit('on-save-close')
+        })
+      } else {
+        ReportsService.updateReportScheduling(payload, this.selectedRow.resourceId).then(() => {
+          this.$emit('on-save-close')
+        })
+      }
     }
   }
 }

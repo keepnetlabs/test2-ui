@@ -27,6 +27,14 @@
             </span>
           </div>
         </div>
+        <AlertBox
+          v-if="isPhishing && isCategoryBasedDistribution"
+          class="bg-aqua-light mt-6"
+          icon-color="#2196F3"
+          icon-name="mdi-information"
+          text="This is not the full list. The campaign will continue to send scenarios with the defined frequency until it’s stopped. "
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        />
       </template>
     </template>
     <template #app-dialog-footer>
@@ -51,9 +59,10 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import { useLoading } from '@/hooks/useLoading'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'CampaignManagerItemDeleteDialog',
-  components: { DatatableLoading, AppDialog },
+  components: { DatatableLoading, AppDialog, AlertBox },
   mixins: [useLoading],
   props: {
     status: {
@@ -95,6 +104,10 @@ export default {
     scenarioType: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isCategoryBasedDistribution: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -116,6 +129,9 @@ export default {
       return this.type === DISTRIBUTION_TYPES.PHISHING
         ? this.CONSTANTS.title
         : 'Smishing Scenarios Frequency Schedule'
+    },
+    isPhishing() {
+      return this.scenarioType === SCENARIO_TYPES.PHISHING
     }
   },
   methods: {

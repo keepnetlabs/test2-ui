@@ -41,7 +41,7 @@
         :is-valid="isTargetGroupsValid"
         :error-message="getTargetGroupErrorMessage"
       />
-      <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
+      <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" isPhishing />
       <InputDistribution
         v-model="inputDistributionFormData"
         :type="DISTRIBUTION_TYPES.SMISHING"
@@ -94,6 +94,7 @@ const defaultFormValues = {
   scheduleTypeId: '1',
   scheduledDate: '',
   scheduledDateTimeZoneId: '',
+  useTargetUserTimeZone: false,
   excludeFromReports: false
 }
 const EMITS = {
@@ -154,7 +155,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       inputDistributionFormData: {
         distributionTypeId: DISTRIBUTION_TYPES.SMISHING,
@@ -390,6 +392,7 @@ export default {
       if (this.isDateValid && this.isTargetGroupsValid) {
         const payload = {
           ...this.formValues,
+          useTargetUserTimeZone: this.inputScheduleFormData?.useTargetUserTimeZone || false,
           scheduledDateTimeZoneId: this.inputScheduleFormData.scheduledDateTimeZoneId,
           scheduleTypeId: this.inputScheduleFormData.scheduleTypeId,
           distributionStartTypeId: this.inputDistributionFormData.distributionStartTypeId,
