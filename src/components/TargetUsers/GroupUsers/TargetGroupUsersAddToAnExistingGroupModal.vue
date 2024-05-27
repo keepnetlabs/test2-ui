@@ -28,6 +28,7 @@
         :axios-payload.sync="axiosPayload"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
+        :getRowIsSelectable="handleRowIsSelectable"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @handleSelectionChange="handleSelectionChange"
@@ -37,7 +38,21 @@
         @refreshAction="callForTargetGroups"
         @searchChangedEvent="handleSearchChange"
         @onEmptyBtnClicked="handleEmptyBtnClicked"
-      />
+      >
+        <template v-slot:datatable-custom-column="{ scope, col }">
+          <div v-if="col.property === PROPERTY_STORE.NAME" class="d-flex align-center">
+            <span>{{ scope.row.name }}</span>
+            <VTooltip :disabled="!scope.row.isScimGroup" bottom>
+              <template #activator="{ on }">
+                <v-icon v-on="on" class="ml-1" style="font-size: 20px;" color="#757575"
+                  >mdi-information</v-icon
+                >
+              </template>
+              <span>This group is created via SCIM integration. Manual addition is disabled.</span>
+            </VTooltip>
+          </div>
+        </template>
+      </DataTable>
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -78,6 +93,7 @@ export default {
   },
   data() {
     return {
+      PROPERTY_STORE,
       axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
       serverSideProps: new ServerSideProps(),
       confirmButtonDisabled: false,
@@ -91,7 +107,7 @@ export default {
             label: 'Group Name',
             fixed: false,
             show: true,
-            type: 'text',
+            type: 'slot',
             width: 200,
             filterableType: 'text'
           },
@@ -179,6 +195,12 @@ export default {
           this.tableData = results?.length ? results : []
         })
         .finally(() => (this.loading = false))
+    },
+    handleRowIsSelectable(row) {
+      if (row?.isScimGroup) {
+        return false
+      }
+      return true
     },
     closeOverlay() {
       this.$emit('closeOverlay')

@@ -51,6 +51,9 @@ export default {
     placeholder: {
       type: String,
       default: 'Select user groups'
+    },
+    payload: {
+      type: Object
     }
   },
   directives: {
@@ -67,6 +70,17 @@ export default {
   },
   created() {
     this.callForTargetGroups()
+  },
+  watch: {
+    payload: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        if (!!val && !!Object.keys(val).length) {
+          this.axiosPayload = { ...val }
+        }
+      }
+    }
   },
   methods: {
     handleInputChange(v) {

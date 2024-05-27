@@ -67,20 +67,44 @@
                   clearable
                   :placeholder="isEdit ? labels.NoneSelected : 'Select user groups'"
                   :manipulate-items="handleManipulateItems"
+                  :payload="targetGroupPayload"
                   :disabled="isEdit"
                 />
               </FormGroup>
-              <FormGroup :title="labels.GroupBy" :sub-title="labels.GroupBySub" has-hint>
-                <KSelect
-                  v-model.trim="formData.groupBySCIMFieldResourceId"
-                  id="input--add-or-edit-scim-group"
-                  outlined
-                  dense
-                  :placeholder="isEdit ? labels.NoneSelected : 'Select a item'"
-                  clearable
-                  :items="groupByItems"
+              <FormGroup title="Grouping Criteria">
+                <VRadioGroup
+                  v-model="formData.syncPlatformGroup"
+                  class="mt-2 mb-3 pt-0 campaign-manager-target-groups-radio"
                   :disabled="isEdit"
-                />
+                  hide-details
+                >
+                  <div>
+                    <VRadio
+                      :id="`input--campaign-manager-radio-distribution-to`"
+                      class="mb-4"
+                      color="#2196f3"
+                      label="Select a SCIM field to determine user groups"
+                      :value="false"
+                    />
+                    <KSelect
+                      v-model.trim="formData.groupBySCIMFieldResourceId"
+                      id="input--add-or-edit-scim-group"
+                      outlined
+                      dense
+                      :placeholder="isEdit ? labels.NoneSelected : 'Select a item'"
+                      clearable
+                      :items="groupByItems"
+                      :disabled="isEdit || formData.syncPlatformGroup"
+                    />
+                  </div>
+                  <VRadio
+                    :id="`input--campaign-manager-radio-distribution-to`"
+                    class="mb-0"
+                    color="#2196f3"
+                    label="Synchronize groups with Identity Management Platform"
+                    :value="true"
+                  />
+                </VRadioGroup>
               </FormGroup>
             </v-form>
           </v-stepper-content>
@@ -130,6 +154,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { isDifferent, copyToClipboard } from '@/utils/functions'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
@@ -166,13 +191,38 @@ export default {
       formData: {
         name: '',
         groupResourceId: '',
-        groupBySCIMFieldResourceId: ''
+        groupBySCIMFieldResourceId: '',
+        syncPlatformGroup: false
       },
       initialFormData: {
         name: '',
         groupResourceId: '',
-        groupBySCIMFieldResourceId: ''
+        groupBySCIMFieldResourceId: '',
+        syncPlatformGroup: false
       },
+      targetGroupPayload: getDefaultAxiosPayload({
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: 'false',
+                  FieldName: 'isscimgroup',
+                  Operator: 'Include'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }),
       Validations,
       labels,
       isLoading: false,
@@ -198,6 +248,13 @@ export default {
     } else {
       this.callForGetSCIMFields()
       this.callForCustomFields()
+    }
+  },
+  watch: {
+    'formData.syncPlatformGroup'(val) {
+      if (val) {
+        this.formData.groupBySCIMFieldResourceId = ''
+      }
     }
   },
   methods: {
@@ -347,7 +404,8 @@ export default {
             name: this.formData.name,
             groupResourceId: this.formData.groupResourceId,
             groupBySCIMFieldResourceId: this.formData.groupBySCIMFieldResourceId,
-            fieldMappings: refMapCustomAndSCIMFields.fieldMappings
+            fieldMappings: refMapCustomAndSCIMFields.fieldMappings,
+            syncPlatformGroup: this.formData.syncPlatformGroup
           }
           if (payload.fieldMappings && payload.fieldMappings.length) {
             payload.fieldMappings = payload.fieldMappings.filter(
