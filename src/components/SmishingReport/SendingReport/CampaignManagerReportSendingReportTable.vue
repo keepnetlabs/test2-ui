@@ -56,6 +56,7 @@
         v-if="col.property === COLUMNS.DATE_SENT.property"
         :scope="scope"
         :timeKey="COLUMNS.DATE_SENT.property"
+        :isToBeSent="['In Queue'].includes(scope.row.status)"
         localTimeKey="lastSendingTimeToLocalUser"
       />
     </template>
