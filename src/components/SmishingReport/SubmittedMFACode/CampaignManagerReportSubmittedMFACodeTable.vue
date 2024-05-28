@@ -35,7 +35,7 @@
         v-if="col.property === COLUMNS.LAST_SUBMISSION_CODE.property"
         :scope="scope"
         :timeKey="COLUMNS.LAST_SUBMISSION_CODE.property"
-        localTimeKey="lastSendingTimeToLocalUser"
+        localTimeKey="mfaLastSubmittedTimeToLocalUser"
       />
     </template>
   </DataTable>

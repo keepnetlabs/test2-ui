@@ -42,7 +42,7 @@
         <template v-slot:datatable-custom-column="{ scope, col }">
           <div v-if="col.property === PROPERTY_STORE.NAME" class="d-flex align-center">
             <span>{{ scope.row.name }}</span>
-            <VTooltip :disabled="!scope.row.isScimGroup" bottom>
+            <VTooltip v-if="scope.row.isScimGroup" bottom>
               <template #activator="{ on }">
                 <v-icon v-on="on" class="ml-1" style="font-size: 20px;" color="#757575"
                   >mdi-information</v-icon
