@@ -90,7 +90,7 @@
           :id="tableOptions.rowActions[1].id"
           :icon="tableOptions.rowActions[1].icon"
           :disabled="tableOptions.rowActions[1].disabled || scope.row.isUsing === 'In Use'"
-          :text="scope.row.isUsing === 'In Use' ? 'Number in use' : 'Deselect'"
+          :text="scope.row.isUsing === 'In Use' ? 'Number in use' : 'Unlink'"
           :checkIsOwnerProperty="false"
           @on-click="handleDeselectNumber(scope.row)"
         />
@@ -235,7 +235,7 @@ export default {
             disabled: !this.$store.getters['permissions/getCallbackSettingsExchangePermissions']
           },
           {
-            name: 'Deselect',
+            name: 'Unlink',
             icon: 'mdi-close',
             action: 'handleDeselectNumber',
             id: 'btn-deselect--callback-settings'
