@@ -491,7 +491,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   LAST_SUBMISSION_CODE: {
-    property: 'lastSendingTime',
+    property: 'mfaLastSubmittedTime',
     align: 'left',
     label: labels.LastSubmittedCode,
     fixed: false,
