@@ -16,7 +16,7 @@ const learningPath = {
     selectedLearningPathTrainings: [],
     learningPathServerSideProps: new ServerSideProps(),
     learningPathAxiosPayload: getDefaultAxiosPayload({
-      pageSize: 500,
+      pageSize: 10,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
       trainingType: null,
       trainingId: '',
@@ -131,7 +131,7 @@ const learningPath = {
       state.learningPathSelectedTrainingContent = 'All Materials'
       state.learningPathSelectedSubTrainingContent = 'All Types'
       state.learningPathAxiosPayload = getDefaultAxiosPayload({
-        pageSize: 500,
+        pageSize: 10,
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null,
         filter: {

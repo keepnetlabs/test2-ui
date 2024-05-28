@@ -1071,7 +1071,7 @@ export default {
         const itemWidth = item.w
         xValue = x
         x += itemWidth
-        if (x > 12) {
+        if (x > bdCol) {
           x = itemWidth
           y += item.h
           xValue = 0

@@ -448,7 +448,7 @@ export const labels = {
   To: 'To',
   GroupBy: 'Group By',
   SIEMIntegrations: 'SIEM Integrations',
-  GroupBySub: 'Select Scim Field to Group By',
+  GroupBySub: 'Select SCIM Field to Group By',
   From: 'From',
   SenderIP: 'Sender IP',
   UserWhoOpened: 'User who opened the email',
