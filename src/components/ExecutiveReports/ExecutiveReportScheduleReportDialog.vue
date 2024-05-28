@@ -163,12 +163,28 @@
             outlined
             class="pop-up-card__invite-member"
             persistent-hint
-            :hint="
-              isEmailAddressesFocused ? 'Press enter to separate email addresses' : '*Required'
-            "
+            :hint="isEmailAddressesFocused ? 'Press enter to separate email addresses' : ''"
             @focus="isEmailAddressesFocused = true"
             @blur="isEmailAddressesFocused = false"
-            :rules="[rules.email, rules.required]"
+            :rules="[rules.email]"
+          ></KSelect>
+        </FormGroup>
+        <FormGroup title="Send to Target Group" sub-title="Send report to multiple target groups ">
+          <KSelect
+            v-model="formData.targetGroupResourceIds"
+            id="input--schedule-report-target-group"
+            type="select"
+            placeholder="Select target group"
+            multiple
+            dense
+            deletable-chips
+            autocomplete="disabled"
+            small-chips
+            outlined
+            class="pop-up-card__invite-member"
+            persistent-hint
+            position="top"
+            :items="targetGroupItems"
           ></KSelect>
         </FormGroup>
       </VForm>
@@ -200,6 +216,7 @@ import ReportsService, { createReportScheduling } from '@/api/reports'
 import AppModal from '@/components/AppModal.vue'
 import AppModalFooter from '@/components/AppModalFooter.vue'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader.vue'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'ExecutiveReportScheduleReportDialog',
   components: {
@@ -250,6 +267,7 @@ export default {
       frequencyItems,
       reportTypeItems: [{ text: 'Executive Report', value: 2 }],
       reportItems: [],
+      targetGroupItems: [],
       isEmailAddressesFocused: false,
       scheduledPageFormData: {
         reportType: 2,
@@ -261,7 +279,8 @@ export default {
         scheduledDateTimeZoneId: '',
         schedule: this.$moment(Date.now()).format(getTimeZoneForMoment()),
         isRegionAwareTimeZone: false,
-        emailAddresses: []
+        emailAddresses: [],
+        targetGroupResourceIds: []
       },
       isActionButtonDisabled: false,
       rules: {
@@ -327,6 +346,7 @@ export default {
     }
     this.callForGetTimeZones()
     this.getSelectedTimeZone()
+    this.callForTargetGroups()
   },
   methods: {
     callForReports() {
@@ -349,7 +369,8 @@ export default {
         this.formData.name = data.name
         this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
         this.formData.frequency = data.frequencyTypeId
-        this.formData.emailAddresses = data.emailAddressList
+        this.formData.emailAddresses = data.emailAddress.split(',')
+        this.formData.targetGroupResourceIds = data.targetGroupResourceIds.split(',')
       })
     },
     callForGetTimeZones() {
@@ -367,6 +388,14 @@ export default {
         this.$store.dispatch('common/callForSettings')
       }
     },
+    callForTargetGroups() {
+      ReportsService.getSchedulingReportTargetGroups().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.targetGroupItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+      })
+    },
     handleClose() {
       this.$emit('on-close')
     },
@@ -377,6 +406,14 @@ export default {
         !this.formData.scheduledDateTimeZoneId
       )
         return
+      if (!this.formData.emailAddresses.length && !this.formData.targetGroupResourceIds.length) {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-information',
+          message: `Please send the report either to email or to a target group. You must choose at least one of these options.`
+        })
+        return
+      }
       if (this.isScheduledPage) return this.submitScheduled()
       if (!this.isNew || this.isReportSaved) {
         this.isActionButtonDisabled = true
