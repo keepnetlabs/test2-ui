@@ -5,6 +5,13 @@
     position: relative;
     height: max-content;
 
+    .el-checkbox.is-disabled {
+      .el-checkbox__inner {
+        opacity: 0.5;
+        background-color: transparent !important;
+      }
+    }
+
     .card {
       border-radius: 12px !important;
       box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
