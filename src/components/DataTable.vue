@@ -511,6 +511,7 @@
               type="selection"
               :reserve-selection="true"
               width="48"
+              :selectable="getRowIsSelectable"
             />
             <el-table-column
               v-for="(col, ind) of columns"
@@ -1366,6 +1367,9 @@ export default {
       default: () => {
         return { menuAttach: '.k-table__wrapper' }
       }
+    },
+    getRowIsSelectable: {
+      type: Function
     }
   },
   computed: {
