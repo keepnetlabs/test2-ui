@@ -113,7 +113,7 @@ export default {
 
            */
           this.chartData = {
-            xLabels: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+            xLabels: [10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
             datasets: [
               {
                 type: 'line',
@@ -139,57 +139,36 @@ export default {
                     y: 10
                   }
                 ],
-                label: '',
+                label: 'Gürkan',
                 backgroundColor: '#B3D4FC',
                 borderColor: '#B3D4FC',
                 fill: false,
-                stack: 2
+                stack: 'Stack 1',
+                order: 1
               },
               {
                 type: 'bar',
                 barThickness: 32,
-                data: [
-                  {
-                    x: 10,
-                    y: 100
-                  },
-                  {
-                    x: 20,
-                    y: 40
-                  },
-                  {
-                    x: 30,
-                    y: 5
-                  },
-                  {
-                    x: 40,
-                    y: 100
-                  },
-                  {
-                    x: 80,
-                    y: 10
-                  }
-                ],
-                label: '',
+                data: [10, 20, 0, 45, 100],
+                label: 'Uğurlu',
                 backgroundColor: '#0198AC',
                 borderColor: '#0198AC',
                 fill: false,
-                stack: 3
+                order: 1,
+                stack: 'Stack 1'
               },
               {
                 type: 'bar',
                 barThickness: 2,
+                categoryPercentage: 0.5,
+                barPercentage: 0.5,
                 label: 'Average Dwell Time: 25 minutes',
-                data: [
-                  {
-                    x: 50,
-                    y: 100
-                  }
-                ],
+                data: [0, 0, 100],
                 backgroundColor: '#B6791D',
                 borderColor: '#B6791D',
                 fill: false,
-                stack: 2
+                order: 3,
+                stack: 'Stack 1'
               }
             ]
           }
@@ -229,6 +208,7 @@ export default {
               ],
               xAxes: [
                 {
+                  position: 'bottom',
                   display: true,
                   offset: true,
                   scaleLabel: {
@@ -239,8 +219,10 @@ export default {
                   ticks: {
                     fontColor: 'rgba(176, 186, 201)',
                     lineHeight: 1.58,
-                    min: 0,
-                    max: 120
+                    padding: -2,
+                    min: 10,
+                    max: 120,
+                    stepSize: 10
                   },
                   gridLines: {
                     display: true,
