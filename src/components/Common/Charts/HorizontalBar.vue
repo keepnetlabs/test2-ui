@@ -30,7 +30,7 @@ export default {
             const fontFamily = 'Open Sans, sans-serif'
             const padding = 24
             //ctx.measureText(text).width;
-            const x = maxData._model.x - 175
+            const x = maxData._model.x / 2 - 24
             const y = maxData._model.y - padding
             ctx.fillStyle = '#383B41'
             ctx.textAlign = 'left'
