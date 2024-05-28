@@ -298,6 +298,7 @@ import ExecutiveReportsPhishingSimulationEngagement from '@/components/Executive
 import { mapGetters } from 'vuex'
 import { fileToBase64 } from '@/utils/functions'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
+import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
