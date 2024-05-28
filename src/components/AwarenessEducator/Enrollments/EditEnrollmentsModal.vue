@@ -85,6 +85,36 @@
             </div>
           </FormGroup>
           <FormGroup
+            v-if="isLearningPath"
+            class="mt-6"
+            title="Distribution"
+            sub-title="Distribute learning path materials with the specified interval days."
+            style="max-width: 875px;"
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="isDistributionEnabled"
+                id="input--campaign-manager-advanced-settings-randomly-selected"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Send training meterials every</span>
+              <v-text-field
+                v-model="formData.distributionDays"
+                v-mask="'#######'"
+                id="input--edit-enrollment-reminder-period-count"
+                placeholder="Enter number"
+                outlined
+                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!isDistributionEnabled"
+                :rules="rules.number"
+              ></v-text-field>
+              <span>days</span>
+            </div>
+          </FormGroup>
+          <FormGroup
             v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
@@ -331,6 +361,7 @@ export default {
       isTimezoneValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      isDistributionEnabled: false,
       parsedFormat: getTimeZone(false),
       rules: {
         number: [
@@ -341,6 +372,7 @@ export default {
       },
       formData: {
         markedAsTest: false,
+        distributionDays: 2,
         enrollmentAutoEnroll: {
           type: 'SameDay',
           dayOfWeek: 0,
@@ -407,6 +439,9 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone'
     }),
+    isLearningPath() {
+      return this.selectedRow?.type === 'Learning Path'
+    },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
     },
@@ -466,6 +501,10 @@ export default {
               scheduledTimeZoneId: '',
               useOwnTimeZone: false
             }
+          }
+          if (this.isLearningPath && !!response.data.data.distributionDays) {
+            this.isDistributionEnabled = true
+            this.formData.distributionDays = response?.data?.data?.distributionDays || 2
           }
           if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
@@ -548,6 +587,9 @@ export default {
         }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+        if (!this.isLearningPath) delete payload.distributionDays
+        if (!!payload?.distributionDays)
+          payload.distributionDays = parseInt(payload.distributionDays)
         AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
           .then(() => {
             this.$emit(EMITS.ON_CLOSE, true)
