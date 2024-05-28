@@ -99,6 +99,9 @@ export const setSchedulingReportStatus = (resourceId, status) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+export const getSchedulingReportTargetGroups = () => {
+  return testRequest.get('/report-scheduling/target-groups')
+}
 export default {
   getReports,
   getReportDetail,
@@ -106,5 +109,6 @@ export default {
   getReportScheduling,
   createReportScheduling,
   updateReportScheduling,
-  setSchedulingReportStatus
+  setSchedulingReportStatus,
+  getSchedulingReportTargetGroups
 }
