@@ -130,7 +130,6 @@
       class="mt-6"
       title="Distribution"
       sub-title="Distribute learning path materials with the specified interval days."
-      style="max-width: 875px;"
     >
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
@@ -154,6 +153,14 @@
         ></v-text-field>
         <span>days</span>
       </div>
+      <AlertBox
+        v-if="isDistributionEnabled"
+        class="bg-aqua-light mt-2"
+        icon-color="#2196F3"
+        icon-name="mdi-information"
+        text="If the delivery time falls on a weekend, it will be sent on the following Monday."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
@@ -337,7 +344,7 @@ import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings.vue'
-import AlertBox from '@/components/AlertBox.vue'
+import AlertBox from '@/components/AlertBox'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import {
   endTypeItems,
