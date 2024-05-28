@@ -43,7 +43,12 @@
             :items="frequencyItems"
           />
         </FormGroup>
-        <FormGroup has-hint :title="labels.ReportType" sub-title="Select type of the report">
+        <FormGroup
+          v-if="isScheduledPage"
+          has-hint
+          :title="labels.ReportType"
+          sub-title="Select type of the report"
+        >
           <KSelect
             v-model.trim="scheduledPageFormData.reportType"
             id="input--company-manager-advanced-settings-frequency"
@@ -55,7 +60,12 @@
             :items="reportTypeItems"
           />
         </FormGroup>
-        <FormGroup has-hint :title="labels.Report" sub-title="Select a report from the list">
+        <FormGroup
+          v-if="isScheduledPage"
+          has-hint
+          :title="labels.Report"
+          sub-title="Select a report from the list"
+        >
           <KSelect
             v-model.trim="scheduledPageFormData.reportResourceId"
             id="input--company-manager-advanced-settings-frequency"
