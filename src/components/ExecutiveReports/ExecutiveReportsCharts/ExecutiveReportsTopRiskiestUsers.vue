@@ -233,7 +233,7 @@ export default {
                 color: 'white',
                 clamp: true,
                 formatter: function (value) {
-                  return value.x
+                  return value.x + '%'
                 },
                 borderRadius: 4,
                 padding: 6
