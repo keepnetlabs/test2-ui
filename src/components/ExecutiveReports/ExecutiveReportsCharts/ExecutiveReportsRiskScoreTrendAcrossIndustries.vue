@@ -107,14 +107,6 @@ export default {
           const maxRiskItem = { x: 0, y: 0 }
           for (let itemType of valueEnums) {
             const typedItems = datasets.filter((item) => item.result === itemType)
-            if (itemType === 'Company Phishing Risk Score') {
-              typedItems.forEach((item) => {
-                if (item.y > maxRiskItem.y) {
-                  maxRiskItem.x = item.x
-                  maxRiskItem.y = item.y
-                }
-              })
-            }
             newDatasets.push({
               type: 'line',
               label: itemType,
@@ -298,13 +290,11 @@ export default {
                 anchor: 'center',
                 color: '#000',
                 formatter: function (value, context) {
-                  const month = new Date(value.x).getMonth()
                   if (
                     context.dataset.label === 'Company Phishing Risk Score' &&
-                    value.x === maxRiskItem.x &&
-                    value.y === maxRiskItem.y
+                    value.annotations
                   ) {
-                    return `Critical Risk Level Reached in ${monthNamesLong[month]}`
+                    return value.annotations.definition
                   }
                   return ''
                 },
