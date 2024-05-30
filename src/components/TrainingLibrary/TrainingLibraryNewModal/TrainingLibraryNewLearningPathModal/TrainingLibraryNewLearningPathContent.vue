@@ -178,13 +178,6 @@ export default {
           this.orderLearningPathData(val)
         }
       }
-    },
-    getTrainings: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('getTrainings', val)
-      }
     }
   },
   methods: {
