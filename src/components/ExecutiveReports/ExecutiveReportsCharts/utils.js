@@ -56,7 +56,7 @@ export const CHART_COLORS = {
     order: 1,
     pointHoverRadius: 3
   },
-  'Industry Avg (Technology)': {
+  'Industry Avg': {
     backgroundColor: '#1173C1',
     borderColor: '#1173C1',
     fill: false,

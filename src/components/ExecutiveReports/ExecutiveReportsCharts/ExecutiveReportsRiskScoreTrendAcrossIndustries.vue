@@ -106,12 +106,21 @@ export default {
           const newDatasets = []
           for (let itemType of valueEnums) {
             const typedItems = datasets.filter((item) => item.result === itemType)
-            newDatasets.push({
-              type: 'line',
-              label: itemType,
-              ...CHART_COLORS[itemType],
-              data: typedItems
-            })
+            if (itemType.includes('Industry Avg (')) {
+              newDatasets.push({
+                type: 'line',
+                label: itemType,
+                ...CHART_COLORS['Industry Avg'],
+                data: typedItems
+              })
+            } else {
+              newDatasets.push({
+                type: 'line',
+                label: itemType,
+                ...CHART_COLORS[itemType],
+                data: typedItems
+              })
+            }
           }
           this.chartData = {
             datasets: newDatasets

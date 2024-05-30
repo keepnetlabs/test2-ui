@@ -86,7 +86,9 @@ export default {
 
           if (maxIndex !== -1) {
             const maxData = meta.data[maxIndex]
-            if (maxData && maxData._model && maxData._model.y > 60) {
+            console.log('maxX', maxX)
+            console.log('maxIndex', maxIndex)
+            if (maxData && maxData._model) {
               const fontSize = 7
               const fontFamily = 'Open Sans, sans-serif'
               const padding = 24
