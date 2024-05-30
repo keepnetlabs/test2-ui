@@ -913,9 +913,7 @@ export default {
       return classes
     },
     getPreviewPdfButtonClasses() {
-      let classes = ['training-library-new-btn ml-2']
-      //if (!this.formData.name) classes.push('new-executive-report-button-disabled')
-      return classes
+      return ['training-library-new-btn ml-2']
     },
     isShowPreview() {
       return this.isPreview || this.activatePreview
