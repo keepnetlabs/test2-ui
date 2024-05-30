@@ -42,7 +42,7 @@
           >
             <TrainingLibraryNewLearningPathTraining
               v-for="(training, trainingIndex) in getTrainings"
-              :key="training.trainingId"
+              :key="trainingIndex"
               :class="[
                 isInavailable(training) ? 'learning-path-content__training--inavailable' : ''
               ]"
@@ -86,7 +86,7 @@
         >
           <TrainingLibraryNewLearningPathTraining
             v-for="(training, trainingIndex) in getSelectedTrainings"
-            :key="training.trainingId"
+            :key="trainingIndex"
             :class="[isDisabled(training) ? 'learning-path-content__training--disabled' : '']"
             :training="training"
             :isDisabled="isDisabled(training)"
