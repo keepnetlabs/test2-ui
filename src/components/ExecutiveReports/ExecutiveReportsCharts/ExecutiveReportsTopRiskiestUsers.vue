@@ -31,8 +31,6 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportsTopRiskiestUsers',
   components: {
@@ -75,35 +73,39 @@ export default {
           const ctx = chart.ctx
           const dataset = chart.data.datasets[0]
           const meta = chart.getDatasetMeta(0)
-          let maxIndex = -1
+          const maxIndexes = []
           let maxX = -Infinity
           for (let i = 0; i < dataset.data.length; i++) {
-            if (dataset.data[i].x > maxX) {
+            if (dataset.data[i].x > 60) {
               maxX = dataset.data[i].x
-              maxIndex = i
+              maxIndexes.push(i)
             }
           }
-
-          if (maxIndex !== -1) {
-            const maxData = meta.data[maxIndex]
-            console.log('maxX', maxX)
-            console.log('maxIndex', maxIndex)
-            if (maxData && maxData._model) {
-              const fontSize = 7
-              const fontFamily = 'Open Sans, sans-serif'
-              const padding = 24
-              //ctx.measureText(text).width;
-              const x = maxData._model.x / 2 - 24
-              const y = maxData._model.y - padding
-              ctx.fillStyle = '#383B41'
-              ctx.textAlign = 'left'
-              ctx.textBaseline = 'bottom'
-              ctx.font = `${fontSize}px ${fontFamily}`
-              ctx.fillText('Critical Risk Level. Immediate training is needed.', x, y)
+          if (maxIndexes.length) {
+            for (let maxIndex of maxIndexes) {
+              const maxData = meta.data[maxIndex]
+              if (maxData && maxData._model) {
+                const fontSize = 7
+                const fontFamily = 'Open Sans, sans-serif'
+                const padding = 18
+                //ctx.measureText(text).width;
+                const x = maxData._model.x / 2 - 24
+                const y = maxData._model.y - padding
+                ctx.fillStyle = '#383B41'
+                ctx.textAlign = 'left'
+                ctx.textBaseline = 'bottom'
+                ctx.font = `${fontSize}px ${fontFamily}`
+                ctx.fillText('Critical Risk Level. Immediate training is needed.', x, y)
+              }
             }
           }
         }
       }
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
@@ -294,8 +296,11 @@ export default {
               {
                 data: dataSetsData,
                 barThickness: 32,
-                backgroundColor: ['#B83A3A', '#F56C6C', '#F56C6C', '#F56C6C', '#F56C6C'],
-                borderColor: ['#B83A3A', '#F56C6C', '#F56C6C', '#F56C6C', '#F56C6C'],
+                backgroundColor: function (context) {
+                  const index = context.dataIndex
+                  const value = context.dataset.data[index].x
+                  return value > 60 ? '#B83A3A' : '#F56C6C'
+                },
                 borderWidth: 1
               }
             ]
