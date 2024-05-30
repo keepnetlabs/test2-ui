@@ -104,7 +104,6 @@ export default {
           } = response || {}
           const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
           const newDatasets = []
-          const maxRiskItem = { x: 0, y: 0 }
           for (let itemType of valueEnums) {
             const typedItems = datasets.filter((item) => item.result === itemType)
             newDatasets.push({

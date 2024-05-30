@@ -15,6 +15,7 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugin"
             />
           </template>
         </ExecutiveWidgetBody>
@@ -67,7 +68,40 @@ export default {
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugin: {
+        id: 'customPlugin',
+        beforeDraw(chart) {
+          const ctx = chart.ctx
+          const dataset = chart.data.datasets[0]
+          const meta = chart.getDatasetMeta(0)
+          let maxIndex = -1
+          let maxX = -Infinity
+          for (let i = 0; i < dataset.data.length; i++) {
+            if (dataset.data[i].x > maxX) {
+              maxX = dataset.data[i].x
+              maxIndex = i
+            }
+          }
+
+          if (maxIndex !== -1) {
+            const maxData = meta.data[maxIndex]
+            if (maxData && maxData._model && maxData._model.y > 60) {
+              const fontSize = 7
+              const fontFamily = 'Open Sans, sans-serif'
+              const padding = 24
+              //ctx.measureText(text).width;
+              const x = maxData._model.x / 2 - 24
+              const y = maxData._model.y - padding
+              ctx.fillStyle = '#383B41'
+              ctx.textAlign = 'left'
+              ctx.textBaseline = 'bottom'
+              ctx.font = `${fontSize}px ${fontFamily}`
+              ctx.fillText('Critical Risk Level. Immediate training is needed.', x, y)
+            }
+          }
+        }
+      }
     }
   },
   created() {

@@ -267,9 +267,18 @@ export default {
                   let selectedBackgroundColor = ''
                   let selectedLabel = ''
                   let selectedValue = ''
+                  const totalPhishingReportRate = this._chart.data.datasets.reduce((acc, item) => {
+                    let val = item.data[tooltipModel.dataPoints[0].index]
+                    return acc + val.y
+                  }, 0)
                   this._chart.data.datasets.forEach((dataset, i) => {
-                    let datasetLabel = dataset.label
+                    let datasetLabel =
+                      dataset.label === 'Clicked (%)'
+                        ? 'Clicked Report Rate'
+                        : 'Not Clicked Report Rate'
+                    console.log('datasetLabel', datasetLabel)
                     let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                    console.log('dataValue', dataValue)
                     let backgroundColor = dataset.backgroundColor || '#000'
 
                     let tr = document.createElement('tr')
@@ -278,7 +287,7 @@ export default {
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:
                 </td>
-                <td>${dataValue.y}</td>
+                <td style="font-weight:600">${dataValue.y}%</td>
             `
 
                     if (
@@ -304,7 +313,7 @@ export default {
 
                     Phishing Report Rate:
                 </td>
-                <td>70</td>
+                <td style="font-weight:600;">${totalPhishingReportRate}%</td>
             `
                   lastTr.style.borderTop = '1px solid #E0E0E0'
                   lastTr.style.display = 'flex'
@@ -331,22 +340,19 @@ export default {
                 offset: 12,
                 color: '#383B41',
                 formatter: function (value, context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return '---- Reporting practices have steadily improved'
-                  }
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                    return 'Significant decrease in reporting practices ----'
+                  if (context.dataset.label === 'Not Clicked (%)' && value.annotations && value.y) {
+                    return value.annotations.definition
                   }
                   return ''
                 },
                 align: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
                     return 'right'
                   }
                   return 'left'
                 },
                 anchor: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
                     return 'right'
                   }
                   return 'left'

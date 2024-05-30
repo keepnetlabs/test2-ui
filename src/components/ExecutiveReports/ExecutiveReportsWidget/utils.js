@@ -16,7 +16,6 @@ export const createExecutiveReportChartData = (widgetData, comingDateFormat) => 
     const timeStampOfDate = calculatedDate.getTime()
     dItem.values.forEach((vItem) => {
       valueEnums.add(vItem.label)
-      console.log('vItem', vItem)
       const obj = {
         x: timeStampOfDate,
         y: vItem.value,
