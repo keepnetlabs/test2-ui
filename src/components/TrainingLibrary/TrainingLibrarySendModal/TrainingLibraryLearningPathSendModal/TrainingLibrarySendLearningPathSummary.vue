@@ -7,12 +7,6 @@
       }"
     >
       <CampaignManagerSummaryCardOneLine
-        :class="{
-          'campaign-manager-summary-card__body-container-learning-path': true,
-          'campaign-manager-summary-card__body-container-reminder': isReminder,
-          'campaign-manager-summary-card__body-container-is-proxy': isProxy,
-          'campaign-manager-summary-card__body-container-phone-number': isPhoneNumber
-        }"
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingItems"
@@ -281,7 +275,7 @@ export default {
       return this?.formData?.settings
     },
     isReminder() {
-      return this.getSettingItems?.Reminder
+      return this.getSettingItems?.Reminder || this.getSettingItems?.Distribution
     },
     isProxy() {
       return this?.formData?.isProxy
