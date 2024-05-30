@@ -239,6 +239,9 @@ export default {
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
           Reminder: sendReminderEvery,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          Distribution: refSendTrainingSettings.isDistributionEnabled
+            ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
+            : 'Off',
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
@@ -256,6 +259,7 @@ export default {
         }
         if (isProxy) {
           delete formData.settings['Auto-enroll']
+          delete formData.settings['Distribution']
           delete formData.settings['Schedule']
         }
 
@@ -473,7 +477,7 @@ export default {
         return this.handleDownloadPackage(this.selectedRow)
       const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
       const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
-      const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
+      const { sendReminderEvery, isAutoEnroll, isDistributionEnabled } = refSendTrainingSettings
       const {
         enrollmentScheduler,
         enrollmentAutoEnroll,
@@ -482,6 +486,7 @@ export default {
         markedAsTest,
         awardCertificate,
         languageIds,
+        distributionDays,
         name
       } = refSendTrainingSettings.formData
       const newLanguageIds = languageIds.filter((languageId) => languageId !== 'All')
@@ -509,7 +514,8 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
-        languageIds: newLanguageIds
+        languageIds: newLanguageIds,
+        distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {

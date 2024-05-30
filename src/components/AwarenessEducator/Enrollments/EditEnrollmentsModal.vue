@@ -85,10 +85,47 @@
             </div>
           </FormGroup>
           <FormGroup
+            v-if="selectedRow.status === 'Scheduled' && isLearningPath"
+            class="mt-2"
+            title="Distribution"
+            sub-title="Distribute learning path materials with the specified interval days."
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="isDistributionEnabled"
+                id="input--campaign-manager-advanced-settings-randomly-selected"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Send training meterials every</span>
+              <v-text-field
+                v-model="formData.distributionDays"
+                v-mask="'#######'"
+                id="input--edit-enrollment-reminder-period-count"
+                placeholder="Enter number"
+                outlined
+                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!isDistributionEnabled"
+                :rules="rules.number"
+              ></v-text-field>
+              <span>days</span>
+            </div>
+            <AlertBox
+              v-if="isDistributionEnabled"
+              class="bg-aqua-light mt-2"
+              icon-color="#2196F3"
+              icon-name="mdi-information"
+              text="If the delivery time falls on a weekend, it will be sent on the following Monday."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+          </FormGroup>
+          <FormGroup
             v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
-            class="mb-2"
+            class="mb-2 mt-6"
           >
             <div
               class="campaign-manager-advanced-settings__other-settings-last campaign-manager-advanced-settings__other-settings-last--disabled"
@@ -291,6 +328,8 @@ import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
 import { getTimeByTimeZone } from '@/api/company'
+import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'EditEnrollmentsModal',
   components: {
@@ -302,7 +341,8 @@ export default {
     InputEntityName,
     InputTimezone,
     StopReminderDialog,
-    StopAutoEnrollDialog
+    StopAutoEnrollDialog,
+    AlertBox
   },
   props: {
     status: {
@@ -331,6 +371,7 @@ export default {
       isTimezoneValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      isDistributionEnabled: false,
       parsedFormat: getTimeZone(false),
       rules: {
         number: [
@@ -341,6 +382,7 @@ export default {
       },
       formData: {
         markedAsTest: false,
+        distributionDays: 2,
         enrollmentAutoEnroll: {
           type: 'SameDay',
           dayOfWeek: 0,
@@ -407,6 +449,9 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone'
     }),
+    isLearningPath() {
+      return this.selectedRow?.type === 'Learning Path'
+    },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
     },
@@ -466,6 +511,10 @@ export default {
               scheduledTimeZoneId: '',
               useOwnTimeZone: false
             }
+          }
+          if (this.isLearningPath && !!response.data.data.distributionDays) {
+            this.isDistributionEnabled = true
+            this.formData.distributionDays = response?.data?.data?.distributionDays || 2
           }
           if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
@@ -548,6 +597,12 @@ export default {
         }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+        if (!this.isLearningPath) delete payload.distributionDays
+        if (this.isDistributionEnabled && !!payload?.distributionDays) {
+          payload.distributionDays = parseInt(payload.distributionDays)
+        } else {
+          payload.distributionDays = null
+        }
         AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
           .then(() => {
             this.$emit(EMITS.ON_CLOSE, true)
