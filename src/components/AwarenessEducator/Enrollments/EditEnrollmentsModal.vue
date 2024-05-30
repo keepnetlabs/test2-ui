@@ -85,8 +85,8 @@
             </div>
           </FormGroup>
           <FormGroup
-            v-if="isLearningPath"
-            class="mt-6"
+            v-if="selectedRow.status === 'Scheduled' && isLearningPath"
+            class="mt-2"
             title="Distribution"
             sub-title="Distribute learning path materials with the specified interval days."
           >
@@ -125,7 +125,7 @@
             v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
-            class="mb-2"
+            class="mb-2 mt-6"
           >
             <div
               class="campaign-manager-advanced-settings__other-settings-last campaign-manager-advanced-settings__other-settings-last--disabled"
@@ -598,8 +598,11 @@ export default {
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
         if (!this.isLearningPath) delete payload.distributionDays
-        if (!!payload?.distributionDays)
+        if (this.isDistributionEnabled && !!payload?.distributionDays) {
           payload.distributionDays = parseInt(payload.distributionDays)
+        } else {
+          payload.distributionDays = null
+        }
         AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
           .then(() => {
             this.$emit(EMITS.ON_CLOSE, true)
