@@ -93,10 +93,6 @@ export default {
           const {
             data: { data }
           } = response || {}
-          data[0].widgetDatas[0].values[0].value = 25
-          data[0].widgetDatas[0].values[1].value = 35
-          data[0].widgetDatas[1].values[0].value = 40
-          data[0].widgetDatas[1].values[1].value = 60
           const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
           const newDatasets = []
           for (let itemType of valueEnums) {
