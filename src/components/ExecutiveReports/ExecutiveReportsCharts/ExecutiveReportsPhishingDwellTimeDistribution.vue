@@ -222,7 +222,10 @@ export default {
                     padding: -2,
                     min: 10,
                     max: 120,
-                    stepSize: 10
+                    stepSize: 10,
+                    callback: (val) => {
+                      return val === 25 ? undefined : val
+                    }
                   },
                   gridLines: {
                     display: true,
