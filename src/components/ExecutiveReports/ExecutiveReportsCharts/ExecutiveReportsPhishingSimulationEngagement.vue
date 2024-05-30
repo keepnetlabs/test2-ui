@@ -327,7 +327,7 @@ export default {
             },
             plugins: {
               datalabels: {
-                display: false,
+                display: true,
                 offset: 12,
                 color: '#383B41',
                 formatter: function (value, context) {
