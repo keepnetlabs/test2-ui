@@ -57,7 +57,7 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return data.datasets[0].data.map((data, index) => {
+              return data.datasets[0].data.map((d, index) => {
                 return {
                   text: `${data.labels[index]} (${d} users)`,
                   fillStyle: CHART_COLORS[data.labels[index]].backgroundColor,
