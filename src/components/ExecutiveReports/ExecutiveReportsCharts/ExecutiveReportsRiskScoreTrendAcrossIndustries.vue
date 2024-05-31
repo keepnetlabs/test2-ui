@@ -126,7 +126,6 @@ export default {
           const maxSecondY = Math.max(...newDatasets[1].data.map((item) => item.y))
           const maxThirdY = Math.max(...newDatasets[2].data.map((item) => item.y))
           const maxY = Math.max(maxFirstY, maxSecondY, maxThirdY)
-          console.log('maxY', maxY)
           this.chartData = {
             datasets: newDatasets
           }

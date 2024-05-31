@@ -125,7 +125,6 @@ export default {
           const {
             data: { data }
           } = response || {}
-          console.log('data', data)
           this.chartOptions = {
             indexAxis: 'y',
             responsive: true,

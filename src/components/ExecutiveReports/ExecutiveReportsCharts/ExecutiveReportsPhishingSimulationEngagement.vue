@@ -272,9 +272,7 @@ export default {
                       dataset.label === 'Clicked (%)'
                         ? 'Clicked Report Rate'
                         : 'Not Clicked Report Rate'
-                    console.log('datasetLabel', datasetLabel)
                     let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                    console.log('dataValue', dataValue)
                     let backgroundColor = dataset.backgroundColor || '#000'
 
                     let tr = document.createElement('tr')

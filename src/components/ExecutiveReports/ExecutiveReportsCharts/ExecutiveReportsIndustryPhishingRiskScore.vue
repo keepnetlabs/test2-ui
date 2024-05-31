@@ -187,8 +187,6 @@ export default {
               }
             ]
           }
-
-          console.log('maxY', maxY)
           this.chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -328,7 +326,6 @@ export default {
 
                   let dataIndex = tooltipModel.dataPoints[0].index
                   let dataPoint = this._chart.data.datasets[0].data[dataIndex]
-                  console.log('dataPoint', dataPoint)
                   let titleRow = document.createElement('div')
                   titleRow.style.fontWeight = 'bold'
                   titleRow.style.paddingBottom = '8px'
