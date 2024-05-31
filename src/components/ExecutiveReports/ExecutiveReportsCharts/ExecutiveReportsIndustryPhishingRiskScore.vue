@@ -99,6 +99,7 @@ export default {
           const phishingSimulationMetricsData = []
           const phishReportersData = []
           const industryAverageData = []
+          let maxY = 0
           data[0].widgetDatas.map((obj) => {
             const generalObj = {
               x: obj.dataObject.name,

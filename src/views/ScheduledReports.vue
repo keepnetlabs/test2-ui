@@ -247,7 +247,7 @@ export default {
       this.toggleShowDeleteDialog(row, false)
     },
     handleActiveStatus(row) {
-      setSchedulingReportStatus(row.reportResourceId, Number(!row.status)).then(() => {
+      setSchedulingReportStatus(row.resourceId, Number(!row.status)).then(() => {
         this.callForData()
       })
     },
