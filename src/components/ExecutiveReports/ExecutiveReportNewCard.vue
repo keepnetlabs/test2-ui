@@ -298,6 +298,7 @@ import ExecutiveReportsPhishingSimulationEngagement from '@/components/Executive
 import { mapGetters } from 'vuex'
 import { fileToBase64 } from '@/utils/functions'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
+import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -510,6 +511,27 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Phishing Simulation Reporting Trends',
           key: 'PhishingSimulationEngagementReportingTrendsWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        IndustryPhishingRiskScoreWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Industry Phishing Risk Score: 62%',
+          key: 'IndustryPhishingRiskScoreWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -1305,6 +1327,8 @@ export default {
           return ExecutiveReportsPhishingSimulationEngagement
         case 'HumanRiskScoreforHighestRiskUsersWidget':
           return ExecutiveReportsTopRiskiestUsers
+        case 'IndustryPhishingRiskScoreWidget':
+          return ExecutiveReportsIndustryPhishingRiskScore
         default:
           return ExecutiveReportsWidget
       }
