@@ -1244,7 +1244,7 @@ export default {
               left: 24
             },
 
-            imageType: 'image/jpeg',
+            imageType: 'image/webp',
             output: `${fileName}.pdf`,
             autoResize: true
           })

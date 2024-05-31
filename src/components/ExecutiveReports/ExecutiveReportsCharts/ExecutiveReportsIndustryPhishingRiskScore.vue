@@ -187,6 +187,8 @@ export default {
               }
             ]
           }
+
+          console.log('maxY', maxY)
           this.chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -209,7 +211,7 @@ export default {
                   ticks: {
                     min: 0,
                     max: maxY,
-                    stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
+                    stepSize: maxY > 100 ? Math.ceil(maxY / 5 / 2) * 2 : 20,
                     labelOffset: 0,
                     beginAtZero: true,
                     padding: -2,
@@ -232,8 +234,8 @@ export default {
                   position: 'right',
                   ticks: {
                     min: 0,
-                    max: 500,
-                    stepSize: 100,
+                    max: Math.round(maxY * (5 / 3)),
+                    stepSize: Math.floor(Math.ceil((maxY * (5 / 3)) / 5)),
                     beginAtZero: true
                   }
                 }
