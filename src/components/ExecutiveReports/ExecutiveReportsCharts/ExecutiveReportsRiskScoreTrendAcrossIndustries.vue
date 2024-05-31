@@ -122,6 +122,11 @@ export default {
               })
             }
           }
+          const maxFirstY = Math.max(...newDatasets[0].data.map((item) => item.y))
+          const maxSecondY = Math.max(...newDatasets[1].data.map((item) => item.y))
+          const maxThirdY = Math.max(...newDatasets[2].data.map((item) => item.y))
+          const maxY = Math.max(maxFirstY, maxSecondY, maxThirdY)
+          console.log('maxY', maxY)
           this.chartData = {
             datasets: newDatasets
           }
@@ -145,15 +150,14 @@ export default {
                   },
                   ticks: {
                     min: 0,
-                    max: 100,
-                    stepSize: 20,
+                    max: maxY > 100 ? maxY : 100,
+                    stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                     labelOffset: 0,
                     beginAtZero: true,
                     padding: -2,
-                    fontColor: 'rgba(176, 186, 201)',
                     lineHeight: 1.58,
                     callback: function (value) {
-                      return ((value / this.max) * 100).toFixed(0) + '%'
+                      return value + '%'
                     }
                   }
                 }
@@ -262,9 +266,9 @@ export default {
                     tr.innerHTML = `
                 <td>
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
-                    ${datasetLabel}:
+                    ${datasetLabel}:&nbsp;
                 </td>
-                <td>${dataValue.y}</td>
+                <td>${dataValue.y}%</td>
             `
                     if (
                       datasetLabel ===
@@ -288,8 +292,8 @@ export default {
                   tooltipEl.style.opacity = 0
                 })
               },
-              xPadding: 12,
-              yPadding: 12
+              xPadding: 16,
+              yPadding: 16
             },
             plugins: {
               datalabels: {

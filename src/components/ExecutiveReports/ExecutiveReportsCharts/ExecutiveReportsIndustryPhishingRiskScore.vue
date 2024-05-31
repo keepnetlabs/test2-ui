@@ -99,8 +99,7 @@ export default {
           const phishingSimulationMetricsData = []
           const phishReportersData = []
           const industryAverageData = []
-          console.log('data[0].widgetDatas', data[0].widgetDatas)
-          console.log('phishReportersData', phishReportersData)
+          let maxY = 100
           data[0].widgetDatas.map((obj) => {
             const generalObj = {
               x: obj.dataObject.name,
@@ -108,7 +107,6 @@ export default {
             }
             obj.values.map((val) => {
               if (val.name === 'RiskScore') {
-                console.log('val', val)
                 phishingRiskScoreData.push({ ...generalObj, y: val.value })
               } else if (val.name === 'TotalMetrics') {
                 phishingSimulationMetricsData.push({ ...generalObj, y: val.value })
@@ -116,6 +114,9 @@ export default {
                 phishReportersData.push({ ...generalObj, y: val.value })
               } else if (val.name === 'IndustryAverage') {
                 industryAverageData.push({ ...generalObj, y: val.value })
+              }
+              if (val.value > maxY) {
+                maxY = val.value
               }
             })
             return {
@@ -207,12 +208,16 @@ export default {
                   },
                   ticks: {
                     min: 0,
-                    stepSize: 60,
+                    max: maxY,
+                    stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                     labelOffset: 0,
                     beginAtZero: true,
                     padding: -2,
                     fontColor: '#B6791D',
-                    lineHeight: 1.58
+                    lineHeight: 1.58,
+                    callback: function (value) {
+                      return value + '%'
+                    }
                   }
                 },
                 {
@@ -258,7 +263,6 @@ export default {
                 generateLabels(chart = {}) {
                   const { data } = chart
                   return data.datasets.map((item, index) => {
-                    console.log('item', item)
                     return {
                       text: item.label,
                       fillStyle: item.borderColor,
@@ -336,18 +340,30 @@ export default {
                     totalClickedCount,
                     totalSubmittedCount,
                     totalMfaSubmittedCount,
-                    totalAttachmentOpenedCount
+                    totalAttachmentOpenedCount,
+                    totalScanQRCount,
+                    totalVishedCount,
+                    totalReportedCount
                   } = dataPoint.dataObject
                   const detailsObj = {}
+                  detailsObj['Campaign Type'] = phishingType
+                  detailsObj['Frequency'] = Frequency
+                  detailsObj['Instances'] = instanceGroupCount
+                  detailsObj['Start Time'] = startDate
                   if (phishingType === 'Phishing') {
-                    detailsObj['Campaign Type'] = phishingType
-                    detailsObj['Frequency'] = Frequency
-                    detailsObj['Instances'] = instanceGroupCount
-                    detailsObj['Start Time'] = startDate
                     detailsObj['Clicked Link'] = totalClickedCount
                     detailsObj['Submitted Data'] = totalSubmittedCount
                     detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
                     detailsObj['Open Attachment'] = totalAttachmentOpenedCount
+                    detailsObj['Report'] = totalReportedCount
+                  } else if (phishingType === 'Quishing') {
+                    detailsObj['Scanned QR Link'] = totalScanQRCount
+                    detailsObj['Submitted Data'] = totalSubmittedCount
+                    detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
+                    detailsObj['Report'] = totalReportedCount
+                  } else if (phishingType === 'Vishing') {
+                    detailsObj['Total Vished Count'] = totalVishedCount
+                    detailsObj['Report'] = totalReportedCount
                   }
                   for (const [key, value] of Object.entries(detailsObj)) {
                     let fieldRow = document.createElement('div')
@@ -383,7 +399,7 @@ export default {
                 offset: -2,
                 color: '#B6791D',
                 formatter: function (value, context) {
-                  if (context.dataset.label.includes('Phishing Risk Score')) {
+                  if (context.dataset.label.includes('Phishing Risk Score') && value.y > 0) {
                     return value.y + '%'
                   }
                   return ''
@@ -714,8 +730,8 @@ export default {
               tooltipEl.style.opacity = 0
             })
           },
-          xPadding: 12,
-          yPadding: 12
+          xPadding: 16,
+          yPadding: 16
         },
         plugins: {
           datalabels: {

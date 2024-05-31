@@ -130,6 +130,12 @@ export default {
             indexAxis: 'y',
             responsive: true,
             padding: 24,
+            layout: {
+              padding: {
+                right: 48,
+                left: 0
+              }
+            },
             maintainAspectRatio: false,
             scales: {
               yAxes: [
@@ -265,12 +271,13 @@ export default {
             plugins: {
               datalabels: {
                 display: true,
-                align: 'center',
-                offset: 12,
-                anchor: 'center',
-                color: 'white',
+                align: 'end',
+                offset: -2,
+                anchor: 'end',
+                color: '#383B41',
                 clamp: true,
                 formatter: function (value) {
+                  if (!value.x) return ''
                   return value.x + '%'
                 },
                 borderRadius: 4,
