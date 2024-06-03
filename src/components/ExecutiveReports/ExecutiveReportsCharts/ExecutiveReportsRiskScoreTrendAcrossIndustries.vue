@@ -142,7 +142,6 @@ export default {
               })
             }
           }
-          console.log('newDatasets', newDatasets)
           const maxFirstY = Math.max(...newDatasets[0].data.map((item) => item.y))
           const maxSecondY = Math.max(...newDatasets[1].data.map((item) => item.y))
           let maxThirdY = 0
@@ -210,7 +209,7 @@ export default {
               position: 'top',
               labels: {
                 usePointStyle: true,
-                fontColor: '#757575',
+                fontColor: '#383B41',
                 generateLabels(chart = {}) {
                   const { data } = chart
                   return data.datasets.map((item, index) => {
@@ -249,10 +248,11 @@ export default {
 
                 let position = this._chart.canvas.getBoundingClientRect()
 
+                let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
                 tooltipEl.style.opacity = 1
                 tooltipEl.style.position = 'absolute'
                 tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+                  position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
                 tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
                 tooltipEl.style.pointerEvents = 'none'
 
