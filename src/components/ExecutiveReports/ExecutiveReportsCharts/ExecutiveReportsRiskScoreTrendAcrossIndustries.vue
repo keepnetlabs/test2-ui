@@ -162,19 +162,20 @@ export default {
                   position: 'left',
                   scaleLabel: {
                     display: true,
-                    labelString: 'Phishing Risk Score'
+                    labelString: 'Phishing Risk Score',
+                    fontColor: '#383B41'
                   },
-                  offset: true,
+                  offset: false,
                   gridLines: {
                     display: true,
-                    color: 'rgba(128, 151, 177, 0.3)',
-                    borderDash: [3]
+                    color: '#F2F2F2'
                   },
                   ticks: {
                     min: 0,
                     max: maxY > 100 ? maxY : 100,
                     stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                     labelOffset: 0,
+                    fontColor: 'rgba(56, 59, 65, 0.72)',
                     beginAtZero: true,
                     padding: -2,
                     lineHeight: 1.58,
@@ -190,16 +191,30 @@ export default {
                   offset: true,
                   type: 'time',
                   time: {
-                    unit: 'month'
+                    unit: 'month',
+                    displayFormats: {
+                      month: 'MM/YYYY'
+                    }
                   },
                   scaleLabel: {
                     display: true,
-                    labelString: 'Month/Year'
+                    labelString: 'Month/Year',
+                    fontColor: '#383B41'
+                  },
+                  ticks: {
+                    fontColor: 'rgba(56, 59, 65, 0.72)',
+                    fontStyle: '600',
+                    fontSize: 9,
+                    callback(value) {
+                      const splittedVal = value.split('/')
+                      const monthName = monthNamesLong[splittedVal[0] - 1]
+                      return `${monthName}/${value.split('/')[1]}`
+                    }
                   },
                   gridLines: {
                     display: true,
-                    color: 'rgba(128, 151, 177, 0.3)',
-                    borderDash: [3]
+                    offsetGridLines: true,
+                    color: '#F2F2F2'
                   }
                 }
               ]
@@ -223,7 +238,8 @@ export default {
                 },
                 fontFamily: 'Open-sans,sans-serif',
                 padding: 16,
-                fontSize: 12
+                fontSize: 12,
+                fontLineHeight: 1.5
               }
             },
             tooltips: {
@@ -334,7 +350,7 @@ export default {
                   return ''
                 },
                 font: {
-                  size: 12,
+                  size: 9,
                   color: '#383B41',
                   weight: 'normal'
                 },
