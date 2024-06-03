@@ -110,7 +110,7 @@ export default {
                 const padding = 18
                 //ctx.measureText(text).width;
                 const x = maxData._model.x / 2 - 24
-                const y = maxData._model.y - padding
+                const y = maxData._model.y - padding + 2
                 ctx.fillStyle = '#383B41'
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
