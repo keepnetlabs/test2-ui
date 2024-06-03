@@ -1022,27 +1022,13 @@ export default {
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         data.widgets.forEach((widget) => {
           if (
-            widget.widgetDatas &&
-            widget.widgetDatas &&
-            widget.widgetDatas[0] &&
-            widget.widgetDatas[0].tableValues
+            widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
+            widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
+            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget'
           ) {
-            const definitions = widget.widgetDatas[0].tableDefinitions
-            const values = widget.widgetDatas[0].tableValues.slice(0, 5)
-            this.defaultWidgetTableDefinitions[widget.widgetType] = definitions.map(
-              (definition) => ({
-                property: definition.name,
-                label: definition.label,
-                align: 'left'
-              })
-            )
-            this.defaultWidgetData[widget.widgetType] = values
-            this.isTypeTable = true
+            this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
-            this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
-              widget.widgetDatas,
-              dateFormat
-            )
+            this.defaultWidgetData[widget.widgetType] = widget.widgetDatas
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
