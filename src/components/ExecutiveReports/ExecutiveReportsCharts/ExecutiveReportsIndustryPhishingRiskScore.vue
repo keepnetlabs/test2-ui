@@ -72,6 +72,10 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {

@@ -265,6 +265,7 @@
                 :default-widget-data="defaultWidgetData[item.key]"
                 :default-widget-table-definitions="defaultWidgetTableDefinitions[item.key]"
                 :date-period="formData.datePeriod"
+                :date-format="dateFormat"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
               />
@@ -288,10 +289,7 @@ import { getExecutiveReport, saveExecutiveReport, updateExecutiveReport } from '
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
-import {
-  createExecutiveReportChartData,
-  DATE_PERIOD_ENUMS
-} from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import * as Validations from '@/utils/validations'
 import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
 import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
@@ -349,6 +347,7 @@ export default {
       newItemY: 0,
       isReportSaved: false,
       savedReportResourceId: '',
+      dateFormat: null,
       activatePreview: this.isPreview,
       editMode: !this.isPreview,
       isActionButtonDisabled: false,
@@ -925,6 +924,7 @@ export default {
         padding: '4px',
         width: '1088px'
       }
+
       if (this.isScheduledReport) return style
       return this.isPdfDownload ? style : null
     },
@@ -980,6 +980,7 @@ export default {
         const { params, query } = this.$route
         const { id } = params
         const { token, companyResourceId, dateFormat } = query
+        if (dateFormat) this.dateFormat = dateFormat
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
@@ -1037,7 +1038,6 @@ export default {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
     } catch (e) {
-      this.layout = this.getDefaultLayoutObject()
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
@@ -1181,7 +1181,8 @@ export default {
           let page = document.querySelector('#executive-report-new-card-container')
           const pdf = await html2PDF(page, {
             html2canvas: {
-              useCORS: true
+              useCORS: true,
+              scale: 2
             },
             jsPDF: {
               format: 'a4'
@@ -1229,10 +1230,8 @@ export default {
               bottom: 24,
               left: 24
             },
-
-            imageType: 'image/webp',
-            output: `${fileName}.pdf`,
-            autoResize: true
+            imageType: 'image/png',
+            output: `${fileName}.pdf`
           })
           setTimeout(() => {
             if (isShowDownloadModalFromStart)
