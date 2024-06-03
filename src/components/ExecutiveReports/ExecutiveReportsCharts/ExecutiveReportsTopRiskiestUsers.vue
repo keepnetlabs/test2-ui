@@ -3,8 +3,8 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Top Riskiest Users"
-          subtitle="Human Risk Score for Highest-Risk Users"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
