@@ -147,6 +147,7 @@ export default {
               }
             }
           })
+          console.log('phishingRiskScoreData', phishingRiskScoreData)
           this.chartData = {
             labels: xLabels,
             datasets: [
@@ -179,7 +180,7 @@ export default {
                 barThickness: 32
               },
               {
-                label: 'All Industry Avg',
+                label: 'Industry Average',
                 type: 'line',
                 data: industryAverageData,
                 backgroundColor: '#1173C1',
@@ -202,7 +203,7 @@ export default {
                 pointRadius: 3,
                 pointHoverRadius: 3,
                 lineTension: 0,
-                order: 3
+                order: 1
               }
             ]
           }
@@ -227,7 +228,7 @@ export default {
                   },
                   ticks: {
                     min: 0,
-                    max: maxY,
+                    max: maxY > 100 ? maxY : 100,
                     stepSize: maxY > 100 ? Math.ceil(maxY / 5 / 2) * 2 : 20,
                     labelOffset: 0,
                     beginAtZero: true,
@@ -251,8 +252,8 @@ export default {
                   position: 'right',
                   ticks: {
                     min: 0,
-                    max: Math.round(maxY * (5 / 3)),
-                    stepSize: Math.floor(Math.ceil((maxY * (5 / 3)) / 5)),
+                    max: Math.round((maxY < 100 ? 100 : maxY) * (5 / 3)),
+                    stepSize: Math.floor(Math.ceil(((maxY < 100 ? 100 : maxY) * (5 / 3)) / 5)),
                     beginAtZero: true
                   }
                 }
@@ -321,10 +322,12 @@ export default {
 
                 let position = this._chart.canvas.getBoundingClientRect()
 
+                let tooltipWidth = tooltipEl.offsetWidth // Tooltip'in genişliğini alın
+
                 tooltipEl.style.opacity = 1
                 tooltipEl.style.position = 'absolute'
                 tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+                  position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
                 tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
                 tooltipEl.style.pointerEvents = 'none'
 
@@ -552,7 +555,7 @@ export default {
             barThickness: 32
           },
           {
-            label: 'All Industry Avg',
+            label: 'Industry Average',
             type: 'line',
             data: [
               { y: 270, x: 'Azure DevOps Mention' },
@@ -760,7 +763,7 @@ export default {
             offset: -2,
             color: '#B6791D',
             formatter: function (value, context) {
-              if (context.dataset.label === 'All Industry Avg') {
+              if (context.dataset.label === 'Industry Average') {
                 return value.y + '%'
               }
               return ''

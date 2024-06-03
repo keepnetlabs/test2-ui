@@ -249,10 +249,12 @@ export default {
 
                 let position = this._chart.canvas.getBoundingClientRect()
 
+                let tooltipWidth = tooltipEl.offsetWidth // Tooltip'in genişliğini alın
+
                 tooltipEl.style.opacity = 1
                 tooltipEl.style.position = 'absolute'
                 tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+                  position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
                 tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
                 tooltipEl.style.pointerEvents = 'none'
 
