@@ -321,7 +321,11 @@ export default {
         this.isEmpty = true
         return
       }
-      const names = data[0].widgetDatas.map((obj) => obj.dataObject.fullName)
+      const names = data[0].widgetDatas.map((obj) => {
+        const arr = [obj.dataObject.fullName, obj.dataObject.email]
+        if (obj.dataObject.department) arr.push(obj.dataObject.department)
+        return arr
+      })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
           x: obj.values[0].value,

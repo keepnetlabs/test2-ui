@@ -24,6 +24,10 @@ export default {
     addCustomLegendLabelHeight: {
       type: Number,
       default: 4
+    },
+    customPlugin: {
+      type: Array,
+      default: () => []
     }
   },
   mounted() {
@@ -36,6 +40,11 @@ export default {
         }
       }
     })
+    if (this.customPlugin.length) {
+      for (let plugin of this.customPlugin) {
+        this.addPlugin(plugin)
+      }
+    }
     if (this.chartData) {
       this.renderChart(this.chartData, this.chartOptions)
     }
