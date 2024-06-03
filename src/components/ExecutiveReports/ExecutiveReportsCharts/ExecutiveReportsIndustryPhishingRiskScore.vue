@@ -16,6 +16,7 @@
               :chart-data="chartData"
               :chart-options="chartOptions"
               :add-custom-legend-label-height="16"
+              :custom-plugin="customPlugin"
             />
           </template>
           <div
@@ -88,7 +89,30 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugin: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                const text = textParts[0]
+                const percentage = textParts[1]
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 10, y + 0.5)
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   computed: {
@@ -335,11 +359,24 @@ export default {
             generateLabels(chart = {}) {
               const { data } = chart
               return data.datasets.map((item, index) => {
-                const label = item.label.includes('Industry Average')
-                  ? industryAverageObj?.label
-                  : item.label
+                if (item.label.includes('Industry Average')) {
+                  const label = item.label.includes('Industry Average')
+                    ? industryAverageObj?.label
+                    : item.label
+                  console.log('label', label)
+                  const splittedLabel = label.split(' ')
+                  return {
+                    text: Array.from(label + label.substring(0, label.length / 1.4))
+                      .fill('')
+                      .join(' '),
+                    fillStyle: item.borderColor,
+                    lineWidth: 0,
+                    datasetIndex: index,
+                    textParts: [splittedLabel[0] + ' ' + splittedLabel[1], splittedLabel[2]]
+                  }
+                }
                 return {
-                  text: label,
+                  text: item.label,
                   fillStyle: item.borderColor,
                   lineWidth: 0,
                   datasetIndex: index
