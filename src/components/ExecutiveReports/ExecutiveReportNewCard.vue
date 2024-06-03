@@ -922,7 +922,8 @@ export default {
     getDownloadPdfStyle() {
       const style = {
         padding: '4px',
-        width: '1088px'
+        width: '1088px',
+        zoom: 0.9
       }
 
       if (this.isScheduledReport) return style
@@ -1182,7 +1183,7 @@ export default {
           const pdf = await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: 2
+              scale: 1.5
             },
             jsPDF: {
               format: 'a4'
@@ -1230,7 +1231,7 @@ export default {
               bottom: 24,
               left: 24
             },
-            imageType: 'image/png',
+            imageType: 'image/webp',
             output: `${fileName}.pdf`
           })
           setTimeout(() => {
