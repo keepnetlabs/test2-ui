@@ -363,7 +363,6 @@ export default {
                   const label = item.label.includes('Industry Average')
                     ? industryAverageObj?.label
                     : item.label
-                  console.log('label', label)
                   const splittedLabel = label.split(' ')
                   return {
                     text: Array.from(label + label.substring(0, label.length / 1.4))
