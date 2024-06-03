@@ -73,6 +73,10 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -131,7 +135,9 @@ export default {
         'November',
         'December'
       ]
-      const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
+      const params = [data[0].widgetDatas]
+      if (this.dateFormat) params.push(this.dateFormat)
+      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
       if (!datasets.length) {
         this.isEmpty = true
         return
