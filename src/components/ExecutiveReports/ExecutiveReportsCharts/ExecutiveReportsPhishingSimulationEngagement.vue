@@ -110,7 +110,6 @@ export default {
             data: { data }
           } = response || {}
           const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
-          console.log('datasets', datasets)
           if (!datasets.length) {
             this.isEmpty = true
             return
@@ -189,7 +188,7 @@ export default {
               position: 'top',
               labels: {
                 usePointStyle: true,
-                fontColor: '#757575',
+                fontColor: '#383B41',
                 generateLabels(chart = {}) {
                   const { data } = chart
                   return data.datasets.map((item, index) => {
@@ -230,10 +229,11 @@ export default {
 
                 let position = this._chart.canvas.getBoundingClientRect()
 
+                let tooltipWidth = tooltipEl.offsetWidth > 300 ? 280 : tooltipEl.offsetWidth
                 tooltipEl.style.opacity = 1
                 tooltipEl.style.position = 'absolute'
                 tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+                  position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
                 tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
                 tooltipEl.style.pointerEvents = 'none'
 
