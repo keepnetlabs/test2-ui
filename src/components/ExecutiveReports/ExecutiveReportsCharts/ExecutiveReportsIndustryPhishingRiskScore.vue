@@ -10,13 +10,26 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :add-custom-legend-label-height="12"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -30,8 +43,6 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
   name: 'ExecutiveReportsIndustryPhishingRiskScore',
@@ -66,6 +77,10 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {}
@@ -94,6 +109,10 @@ export default {
           const {
             data: { data }
           } = response || {}
+          if (!data[0].widgetDatas.length) {
+            this.isEmpty = true
+            return
+          }
           const xLabels = data[0].widgetDatas.map((obj) => obj.dataObject.name)
           const phishingRiskScoreData = []
           const phishingSimulationMetricsData = []
@@ -425,6 +444,7 @@ export default {
               }
             }
           }
+          this.isEmpty = false
           this.isLoading = false
         })
         .finally(() => {

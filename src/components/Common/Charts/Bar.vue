@@ -20,14 +20,19 @@ export default {
     addDataPlugin: {
       type: Boolean,
       default: true
+    },
+    addCustomLegendLabelHeight: {
+      type: Number,
+      default: 4
     }
   },
   mounted() {
     if (this.addDataPlugin) this.addPlugin(ChartDataLabels)
+    const customHeight = this.addCustomLegendLabelHeight
     this.addPlugin({
       beforeInit: function (chart, options) {
         chart.legend.afterFit = function () {
-          this.height = this.height + 4
+          this.height = this.height + customHeight
         }
       }
     })

@@ -10,13 +10,25 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -66,7 +78,11 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       chartOptions: {},
       chartData: {}
     }
@@ -94,6 +110,11 @@ export default {
             data: { data }
           } = response || {}
           const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
+          console.log('datasets', datasets)
+          if (!datasets.length) {
+            this.isEmpty = true
+            return
+          }
           const newDatasets = []
           for (let itemType of valueEnums) {
             const typedItems = datasets.filter((item) => item.result === itemType)
@@ -285,12 +306,12 @@ export default {
             `
 
                     if (
-                      datasetLabel ===
+                      dataset.label ===
                       this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                     ) {
                       tr.style.fontWeight = '600'
                       selectedValue = dataValue
-                      selectedLabel = datasetLabel
+                      selectedLabel = dataset.label
                       selectedBackgroundColor = backgroundColor
                     } else {
                       tr.style.fontWeight = 'normal'
@@ -361,6 +382,7 @@ export default {
               }
             }
           }
+          this.isEmpty = false
           this.isLoading = false
         })
         .finally(() => {
