@@ -115,7 +115,11 @@ export default {
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText('Critical Risk Level. Immediate training is needed.', x, y)
+                ctx.fillText(
+                  'Critical Risk Level. Immediate training is needed.',
+                  x < 176 ? 176 : x,
+                  y
+                )
               }
             }
           }
