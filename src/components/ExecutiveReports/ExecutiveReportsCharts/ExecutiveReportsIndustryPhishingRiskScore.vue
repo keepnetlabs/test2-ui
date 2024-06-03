@@ -125,7 +125,6 @@ export default {
         })
     },
     setChartData(data) {
-      console.log('data', data)
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         this.industryAverageObj = null

@@ -1021,7 +1021,6 @@ export default {
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         data.widgets.forEach((widget) => {
-          console.log('widget', widget)
           if (
             widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
             widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
