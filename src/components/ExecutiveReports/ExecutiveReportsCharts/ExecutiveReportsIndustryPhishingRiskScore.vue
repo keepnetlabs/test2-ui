@@ -3,8 +3,8 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Industry Phishing Risk Score"
-          subtitle="Phishing risk score comparing user responses and report rates against an industry average."
+          :title="getTitle"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
@@ -78,12 +78,21 @@ export default {
     return {
       isLoading: false,
       isEmpty: false,
+      industryAverageObj: null,
       empty: {
         message: 'You do not have any report conclusion'
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {}
+    }
+  },
+  computed: {
+    getTitle() {
+      if (this.industryAverageObj) {
+        return `${this.card.title} : ${this.industryAverageObj.value}%`
+      }
+      return this.card.title
     }
   },
   watch: {
@@ -110,6 +119,7 @@ export default {
           } = response || {}
           if (!data[0].widgetDatas.length) {
             this.isEmpty = true
+            this.industryAverageObj = null
             return
           }
           const xLabels = data[0].widgetDatas.map((obj) => obj.dataObject.name)
@@ -118,9 +128,10 @@ export default {
           const phishReportersData = []
           const industryAverageData = []
           let maxY = 0
-          const industryAvarageObj = data[0]?.widgetDatas[0]?.values?.find(
+          const industryAverageObj = data[0]?.widgetDatas[0]?.values?.find(
             (obj) => obj.name === 'IndustryAverage'
           )
+          this.industryAverageObj = industryAverageObj
           data[0].widgetDatas.map((obj) => {
             const generalObj = {
               x: obj.dataObject.name,
@@ -285,7 +296,7 @@ export default {
                   const { data } = chart
                   return data.datasets.map((item, index) => {
                     const label = item.label.includes('Industry Average')
-                      ? industryAvarageObj?.label
+                      ? industryAverageObj?.label
                       : item.label
                     return {
                       text: label,
