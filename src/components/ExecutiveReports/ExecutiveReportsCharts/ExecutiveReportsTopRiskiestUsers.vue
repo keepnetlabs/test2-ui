@@ -10,7 +10,7 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <HorizontalBarChart
               v-if="chartData.datasets"
               :chart-data="chartData"
@@ -18,6 +18,18 @@
               :custom-plugin="customPlugin"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -64,6 +76,10 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {},
@@ -284,6 +300,10 @@ export default {
               }
             }
           }
+          if (!data[0].widgetDatas.length) {
+            this.isEmpty = true
+            return
+          }
           const names = data[0].widgetDatas.map((obj) => obj.dataObject.fullName)
           const dataSetsData = data[0].widgetDatas.map((obj) => {
             return {
@@ -311,6 +331,7 @@ export default {
               }
             ]
           }
+          this.isEmpty = false
           this.isLoading = false
         })
         .finally(() => {

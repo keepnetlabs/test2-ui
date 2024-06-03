@@ -10,9 +10,21 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions" />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -63,7 +75,11 @@ export default {
     return {
       isLoading: false,
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      }
     }
   },
   watch: {
@@ -103,6 +119,10 @@ export default {
             data: { data }
           } = response || {}
           const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
+          if (!datasets.length) {
+            this.isEmpty = true
+            return
+          }
           const newDatasets = []
           for (let itemType of valueEnums) {
             const typedItems = datasets.filter((item) => item.result === itemType)
@@ -122,9 +142,13 @@ export default {
               })
             }
           }
+          console.log('newDatasets', newDatasets)
           const maxFirstY = Math.max(...newDatasets[0].data.map((item) => item.y))
           const maxSecondY = Math.max(...newDatasets[1].data.map((item) => item.y))
-          const maxThirdY = Math.max(...newDatasets[2].data.map((item) => item.y))
+          let maxThirdY = 0
+          if (newDatasets[2]) {
+            maxThirdY = Math.max(...newDatasets[2].data.map((item) => item.y))
+          }
           const maxY = Math.max(maxFirstY, maxSecondY, maxThirdY)
           this.chartData = {
             datasets: newDatasets
@@ -267,7 +291,7 @@ export default {
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:&nbsp;
                 </td>
-                <td>${dataValue.y}%</td>
+                <td>${(dataValue && dataValue.y) || 0}%</td>
             `
                     if (
                       datasetLabel ===
@@ -331,6 +355,7 @@ export default {
               }
             }
           }
+          this.isEmpty = false
           this.isLoading = false
         })
         .finally(() => {
