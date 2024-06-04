@@ -89,7 +89,7 @@ export default {
       chartData: {},
       customPlugin: {
         id: 'customPlugin',
-        beforeDraw(chart) {
+        afterDraw(chart) {
           const ctx = chart.ctx
           const dataset = chart.data.datasets[0]
           const meta = chart.getDatasetMeta(0)
@@ -123,6 +123,18 @@ export default {
               }
             }
           }
+          ctx.save()
+          ctx.strokeStyle = '#757575' // Kenarlık rengi
+          ctx.lineWidth = 2 // Kenarlık kalınlığı
+          const xAxis = chart.scales['x-axis-0']
+          const yAxis = chart.scales['y-axis-0']
+          const xTickStart = xAxis.left // X ekseninin sol sınırını alın
+          // Çizgiyi çizin
+          ctx.beginPath()
+          ctx.moveTo(xTickStart, yAxis.bottom) // X ekseninin sol ucu ve Y ekseninin altı arasında başlayın
+          ctx.lineTo(xAxis.right, yAxis.bottom) // X ekseninin sağ ucu ve Y ekseninin altı arasında çizgi çizin
+          ctx.stroke()
+          ctx.restore()
         }
       }
     }
@@ -201,8 +213,9 @@ export default {
               },
               gridLines: {
                 display: true,
-                color: 'rgba(128, 151, 177, 0.1)',
-                zeroLineColor: '#F2F2F2'
+                color: 'white',
+                zeroLineColor: '#F2F2F2',
+                z: 1
               },
               ticks: {
                 min: 0,
