@@ -44,7 +44,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 export default {
-  name: 'ExecutiveReportsTopRiskiestUsers',
+  name: 'ExecutiveReportsTopRiskiestDepartments',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -335,24 +335,19 @@ export default {
         this.isEmpty = true
         return
       }
-      const names = data[0].widgetDatas.map((obj) => {
-        const arr = [obj.dataObject.fullName, obj.dataObject.email]
-        if (obj.dataObject.department) arr.push(obj.dataObject.department)
-        return arr
+      const departments = data[0].widgetDatas.map((obj) => {
+        return obj.dataObject.department || 'Deparment'
       })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
           x: obj.values[0].value,
-          y: obj.dataObject.fullName,
-          details: {
-            Email: obj.dataObject.email,
-            Department: obj.dataObject.department
-          }
+          y: obj.dataObject.department || 'Department',
+          details: {}
         }
       })
       this.chartData = {
         xLabels: [0, 100],
-        yLabels: names,
+        yLabels: departments,
         datasets: [
           {
             data: dataSetsData,

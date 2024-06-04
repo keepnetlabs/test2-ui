@@ -417,16 +417,17 @@ export default {
             }
           },
           {
-            text: 'All time',
+            text: 'This Year',
             onClick: (picker) => {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1095)
-              picker.$emit('pick', [start, end])
+              const year = new Date().getFullYear()
+              const firstDayOfYear = new Date(year, 0, 1)
+              const lastDayOfYear = new Date(year, 11, 31)
+              picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
               this.formData.datePeriod = 4
             }
           }
-        ]
+        ],
+        disabledDate: this.disabledDates
       },
       selectedRow: {},
       allWidgets: {
@@ -1331,6 +1332,11 @@ export default {
     handleScheduleReportSubmit(data) {
       this.isShowScheduleReportDialog = false
       this.schedulingFormData = data
+    },
+    disabledDates(date) {
+      const lastYear = new Date()
+      lastYear.setFullYear(lastYear.getFullYear() - 1)
+      return date.getTime() < lastYear.getTime()
     }
   }
 }
