@@ -43,11 +43,11 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [70, 30]
+      default: () => [30, 70]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.RepeatOffenders, labels.SimulatedUsers]
+      default: () => [labels.SimulatedUsers, labels.RepeatOffenders]
     },
     editMode: {
       type: Boolean,
@@ -85,16 +85,24 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return data.datasets[0].data.map((d, index) => {
-                return {
-                  text: `${data.labels[index]} (${d} users)`,
-                  fillStyle: CHART_COLORS[data.labels[index]]
-                    ? CHART_COLORS[data.labels[index]].backgroundColor
+              return [
+                {
+                  text: `Repeat Offenders (${data.datasets[0].data[0]} users)`,
+                  fillStyle: CHART_COLORS[labels.RepeatOffenders]
+                    ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: index
+                  datasetIndex: 0
+                },
+                {
+                  text: `Simulated Users (${data.datasets[1].data[0]} users)`,
+                  fillStyle: CHART_COLORS[labels.SimulatedUsers]
+                    ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 1
                 }
-              })
+              ]
             }
           }
         }
@@ -108,7 +116,17 @@ export default {
         ...chartOptions,
         backgroundColor,
         labels: this.valueEnums,
-        showTooltipLine: true
+        showTooltipLine: true,
+        plugins: {
+          datalabels: {
+            fontColor: '#383B41',
+            fontFamily: 'Open Sans, sans-serif',
+            display: true,
+            formatter(value) {
+              return `${value}%`
+            }
+          }
+        }
       }
       this.chartData = this.rawData
     },

@@ -77,8 +77,8 @@ export const CHART_COLORS = {
     pointHoverRadius: 3
   },
   'Simulated Users': {
-    backgroundColor: '#00BCD4',
-    borderColor: '#00BCD4',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,

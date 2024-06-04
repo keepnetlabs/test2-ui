@@ -297,6 +297,8 @@ import { mapGetters } from 'vuex'
 import { fileToBase64 } from '@/utils/functions'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
+import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'
+import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1307,6 +1309,7 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
+      return ExecutiveReportRepeatOffendersUsersBar
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
