@@ -172,7 +172,7 @@ export default {
         padding: 24,
         layout: {
           padding: {
-            right: 0,
+            right: 48,
             left: 0
           }
         },
@@ -317,10 +317,10 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            align: 'start',
+            align: 'end',
             offset: -2,
             anchor: 'end',
-            color: '#fff',
+            color: '#383B41',
             clamp: true,
             formatter: function (value) {
               if (!value.x) return ''
