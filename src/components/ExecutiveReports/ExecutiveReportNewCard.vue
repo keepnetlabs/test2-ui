@@ -1309,7 +1309,6 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
-      return ExecutiveReportRepeatOffendersUsersBar
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
