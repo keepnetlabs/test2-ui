@@ -214,8 +214,7 @@ export default {
               gridLines: {
                 display: true,
                 color: 'white',
-                zeroLineColor: '#F2F2F2',
-                z: 1
+                zeroLineColor: '#F2F2F2'
               },
               ticks: {
                 min: 0,
