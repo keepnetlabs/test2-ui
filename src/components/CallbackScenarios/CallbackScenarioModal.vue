@@ -102,6 +102,7 @@
                     :defaultBodyData="defaultEmailTemplateBodyData"
                     :languages="languageOptions"
                     isCallback
+                    :type="SCENARIO_TYPES.CALLBACK"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
@@ -351,6 +352,7 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CallbackTemplateSelectList from '@/components/CallbackScenarios/CallbackTemplateSelectList'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'CallbackScenarioModal',
@@ -399,6 +401,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       defaultEmailTemplateBodyData: {
         pageNumber: 1,
         pageSize: 10,

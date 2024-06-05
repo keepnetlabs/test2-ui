@@ -25,7 +25,7 @@
           </v-list-item>
         </slot>
         <slot name="overlay-body"> </slot>
-        <div v-if="showFooter" class="k-overlay__footer">
+        <div v-if="showFooter" :class="getFooterClass">
           <slot name="overlay-footer">
             <v-btn class="k-overlay__btn-cancel" :id="cancelButtonId" rounded @click="closeOverlay">
               {{ labels.Cancel }}
@@ -120,6 +120,9 @@ export default {
     },
     confirmButtonStyle: {
       type: Object
+    },
+    footerClass: {
+      type: String
     }
   },
   emits: ['closeOverlay', 'submit'],
@@ -131,6 +134,14 @@ export default {
   },
   beforeDestroy() {
     if (this.shouldRemoveOverflow) document.querySelector('html').style.overflowY = ''
+  },
+  computed: {
+    getFooterClass() {
+      if (!!this.footerClass) {
+        return `k-overlay__footer ${this.footerClass}`
+      }
+      return `k-overlay__footer`
+    }
   },
   methods: {
     closeOverlay() {
