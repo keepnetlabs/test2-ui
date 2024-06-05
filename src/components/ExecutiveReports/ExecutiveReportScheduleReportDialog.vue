@@ -369,8 +369,18 @@ export default {
         this.formData.name = data.name
         this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
         this.formData.frequency = data.frequencyTypeId
-        this.formData.emailAddresses = data.emailAddress.split(',')
-        this.formData.targetGroupResourceIds = data.targetGroupResourceIds.split(',')
+        const emailAddresses = data.emailAddresses
+        if (emailAddresses) {
+          this.formData.emailAddresses = emailAddresses.includes(',')
+            ? emailAddresses.split(',')
+            : [emailAddresses]
+        }
+        const targetGroupIds = data.targetGroupResourceIds
+        if (targetGroupIds) {
+          this.formData.targetGroupResourceIds = targetGroupIds.includes(',')
+            ? targetGroupIds.split(',')
+            : [targetGroupIds]
+        }
       })
     },
     callForGetTimeZones() {
