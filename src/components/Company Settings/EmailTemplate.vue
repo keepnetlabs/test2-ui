@@ -23,8 +23,34 @@
         />
       </template>
     </app-modal>
-    <div class="mx-4 pt-4" v-if="!onlyGrapes">
-      <FormGroup title="Subject" :sub-title="getSubjectSubtitle" style="max-width: unset;">
+    <div
+      :class="['mx-4', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
+      v-if="!onlyGrapes && showNameField"
+    >
+      <FormGroup
+        title="Template Name:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
+        <InputEntityName
+          id="input--notification-template-name"
+          initialPlaceholder="Enter template name"
+          entityName="template name"
+          :value="name"
+          :disabled="editItemsDisabled"
+          @input="$emit('update:name', $event)"
+        />
+      </FormGroup>
+    </div>
+    <div :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : 'pt-4']" v-if="!onlyGrapes">
+      <FormGroup
+        title="Subject:"
+        :sub-title="getSubjectSubtitle"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
         <InputEntityName
           id="input--notification-template-subject"
           initialPlaceholder="Enter email subject"
@@ -36,8 +62,13 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" class="mx-4">
-      <FormGroup title="From Name" style="max-width: unset;">
+    <div v-if="!onlyGrapes" :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : '']">
+      <FormGroup
+        title="From Name:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
         <InputEntityName
           id="input--notification-template-sender-name"
           initialPlaceholder="Enter sender name"
@@ -49,8 +80,13 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" class="mx-4">
-      <FormGroup title="From Email" style="max-width: unset;">
+    <div v-if="!onlyGrapes" :class="['mx-4', isHorizontalFormGroups ? 'pt-2 pb-4' : '']">
+      <FormGroup
+        title="From Email Address:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
         <InputEmail
           id="input--notification-template-from-email"
           :disabled="editItemsDisabled"
@@ -59,7 +95,10 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes && isNotificationEnrollment" class="mx-4">
+    <div
+      v-if="!onlyGrapes && isNotificationEnrollment"
+      :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : '']"
+    >
       <FormGroup title="CC" style="max-width: unset;">
         <KSelect
           :value="ccAddresses"
@@ -80,58 +119,80 @@
         ></KSelect>
       </FormGroup>
     </div>
-    <div class="d-flex mx-4 align-center" v-if="isPhishingTemplate && !onlyGrapes">
-      <label class="mr-4 mb-6" style="font-weight: 600; font-size: 20px;">Attach File</label>
-      <k-file-upload
-        id="input--email-template-upload"
-        is-stand-alone
-        class="mb-2"
-        ref="refFileUpload"
-        :hint="fileUploadHint"
-        :extensions="attachmentExtensions"
-        :is-show-file-progress="false"
-        :value="attachmentFiles"
-        :is-preview-visible="false"
-        :size="size"
-        :hasError="!!isAttachmentError"
-        :errorText="isAttachmentError || ''"
-        @inputFile="onFileChanged"
-      />
+    <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        class="email-template__attachment-list"
-        style="display: flex; align-self: start; flex-wrap: wrap;"
+        :class="['d-flex mx-4 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
+        v-if="isPhishingTemplate && !onlyGrapes"
       >
-        <div v-for="(item, index) in attachments" :key="index">
-          <div class="attachment-wrapper" style="position: relative;">
-            <div class="attachment blue-attach" :id="'email-template-' + item.name">
-              <AttachmentsPreview
-                :deletable="item.isDeletable"
-                :att="item"
-                :index="index"
-                :isEmailTemplate="true"
-                @on-delete="handleFileDelete"
-              />
-            </div>
-            <div v-if="!item.isDeletable" class="attachment-delete-wrapper">
-              <v-menu bottom left offset-y transition="scale-transition">
-                <template #activator="{ on }">
-                  <v-btn v-on="on" class="btn-hover" icon>
-                    <v-icon>mdi-chevron-down</v-icon>
-                  </v-btn>
-                </template>
-                <v-list class="v-cart-dropdown-list el-table__action-buttons">
-                  <v-list-item class="sub-menu-el datatable-row-action-list">
-                    <v-list-item-title @click="handleRenameItem">
-                      <span>Rename</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item class="sub-menu-el datatable-row-action-list">
-                    <v-list-item-title @click="handleDeleteItem">
-                      <span>Delete</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+        <label
+          :class="[
+            'mr-4',
+            isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
+          ]"
+          style="font-weight: 600; font-size: 20px;"
+          >Attach File:</label
+        >
+        <k-file-upload
+          v-if="!attachments.length"
+          id="input--email-template-upload"
+          is-stand-alone
+          class="mb-2"
+          ref="refFileUpload"
+          :hint="fileUploadHint"
+          :extensions="attachmentExtensions"
+          :is-show-file-progress="false"
+          :value="attachmentFiles"
+          :is-preview-visible="false"
+          :size="size"
+          :hasError="!!isAttachmentError"
+          :errorText="isAttachmentError || ''"
+          @inputFile="onFileChanged"
+        />
+        <div
+          v-else
+          :class="['email-template__attachment-list', isHorizontalFormGroups ? 'ml-0' : '']"
+          :style="
+            isHorizontalFormGroups
+              ? {}
+              : { display: 'flex', 'align-self': 'start', 'flex-wrap': 'wrap' }
+          "
+        >
+          <div v-for="(item, index) in attachments" :key="index">
+            <div class="attachment-wrapper" style="position: relative;">
+              <div
+                :class="['attachment blue-attach mr-2', isHorizontalFormGroups ? 'full-width' : '']"
+                :id="'email-template-' + item.name"
+              >
+                <AttachmentsPreview
+                  :deletable="item.isDeletable"
+                  :att="item"
+                  :index="index"
+                  :isEmailTemplate="true"
+                  :isAttachmentNameFullWidth="isHorizontalFormGroups"
+                  @on-delete="handleFileDelete"
+                />
+              </div>
+              <div v-if="!item.isDeletable" class="attachment-delete-wrapper">
+                <v-menu bottom left offset-y transition="scale-transition">
+                  <template #activator="{ on }">
+                    <v-btn v-on="on" class="btn-hover" icon outlined>
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                    <v-list-item class="sub-menu-el datatable-row-action-list">
+                      <v-list-item-title @click="handleRenameItem">
+                        <span>Rename</span>
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item class="sub-menu-el datatable-row-action-list">
+                      <v-list-item-title @click="handleDeleteItem">
+                        <span>Delete</span>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
             </div>
           </div>
         </div>
@@ -140,14 +201,15 @@
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <v-btn
       id="btn-edit--notification-template-email-template"
+      style="text-transform: none;"
       :disabled="editItemsDisabled"
       rounded
       color="#2196f3"
       class="email-template-preview__button"
       @click="editHtmlTemplate"
     >
-      <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
-    >
+      <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit Content
+    </v-btn>
     <div class="email-template-preview" style="pointer-events: none;">
       <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
       <template v-else>
@@ -210,6 +272,7 @@ export default {
     FormGroup
   },
   props: [
+    'name',
     'fromAddress',
     'fromName',
     'subject',
@@ -230,7 +293,9 @@ export default {
     'isAttachmentError',
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
-    'isNotificationEnrollment'
+    'isNotificationEnrollment',
+    'isHorizontalFormGroups',
+    'showNameField'
   ],
   data() {
     return {
@@ -321,7 +386,18 @@ export default {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
     },
     attachments() {
-      return [...this.attachmentFiles, ...this.importedEmailAttachments]
+      if (
+        !!this.attachmentFiles &&
+        this.attachmentFiles?.length &&
+        !!this.importedEmailAttachments &&
+        this.importedEmailAttachments?.length
+      ) {
+        return [...this.attachmentFiles, ...this.importedEmailAttachments]
+      }
+      if (!!this.attachmentFiles && this.attachmentFiles?.length) {
+        return [...this.attachmentFiles]
+      }
+      return []
     },
     isMergeTagSubject() {
       return this.isNotificationTemplate && this.isEnrollmentCategorySelected
@@ -409,6 +485,7 @@ export default {
     },
     changeGrapesModalStatus() {
       this.showGrapesModal = !this.showGrapesModal
+      this.$emit('template-edit', this.showGrapesModal)
     },
     saveGrapeJs() {
       const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent()

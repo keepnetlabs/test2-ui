@@ -11,12 +11,31 @@
           class="mr-6"
           @click="handleBack"
         />
-        <NextButton
-          v-if="!isStepIsEqualToMax"
-          :id="ids.nextButton"
-          :disabled="disabledStatuses.nextButton"
-          @click="handleNext"
-        />
+        <VTooltip
+          v-if="disabledStatuses.nextButton && !!disabledNextButtonTooltipText"
+          :disabled="!disabledNextButtonTooltipText"
+          top
+          style="z-index: 100000;"
+        >
+          <template #activator="{ on }">
+            <NextButton
+              v-if="!isStepIsEqualToMax"
+              v-on="on"
+              :id="ids.nextButton"
+              :disabled="disabledStatuses.nextButton"
+              @click="handleNext"
+            />
+          </template>
+          <span>{{ disabledNextButtonTooltipText }}</span>
+        </VTooltip>
+        <template v-else>
+          <NextButton
+            v-if="!isStepIsEqualToMax"
+            :id="ids.nextButton"
+            :disabled="disabledStatuses.nextButton"
+            @click="handleNext"
+          />
+        </template>
         <SaveButton
           v-if="isStepIsEqualToMax"
           :id="ids.saveButton"
@@ -54,6 +73,9 @@ export default {
         nextButton: false,
         submitButton: false
       })
+    },
+    disabledNextButtonTooltipText: {
+      type: String
     },
     saveButtonText: {
       type: String,
