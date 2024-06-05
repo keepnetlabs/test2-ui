@@ -967,7 +967,7 @@ export default {
         return 'Last 6 Months'
       } else if (datePeriod === 3) {
         return 'Last Year'
-      } else if (dataPeriod === 5) {
+      } else if (datePeriod === 5) {
         return 'This Year'
       }
       return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
