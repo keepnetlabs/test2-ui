@@ -63,22 +63,62 @@
       </v-menu>
     </template>
     <template #datatable-row-actions="{ scope }">
-      <DefaultButtonRowAction
-        :id="tableOptions.rowActions[0].id"
-        :icon="tableOptions.rowActions[0].icon"
-        :text="tableOptions.rowActions[0].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
-        @on-click="handleEdit(scope.row)"
-      />
-      <DefaultButtonRowAction
-        :id="tableOptions.rowActions[1].id"
-        :icon="tableOptions.rowActions[1].icon"
-        :text="tableOptions.rowActions[1].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[1].disabled"
-        @on-click="handleActionDelete(scope.row)"
-      />
+      <template v-if="scope.row.status === 'Running'">
+        <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEdit(scope.row)"
+        />
+        <RowActionsMenu>
+          <DefaultMenuRowAction
+            :id="tableOptions.rowActions[1].id"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[1].disabled"
+            :icon="tableOptions.rowActions[1].icon"
+            :text="scope.row.isDefault ? 'Remove Default' : tableOptions.rowActions[1].name"
+            @on-click="handleMakeDefault(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :id="tableOptions.rowActions[2].id"
+            :scope="scope"
+            :disabled="tableOptions.rowActions[2].disabled || scope.row.isDefault"
+            :icon="tableOptions.rowActions[2].icon"
+            :text="tableOptions.rowActions[2].name"
+            :disabledTooltipText="
+              scope.row.isDefault
+                ? 'This setting is currently the default and cannot be deleted. Remove it as the default first.'
+                : 'Delete'
+            "
+            @on-click="handleActionDelete(scope.row)"
+          />
+        </RowActionsMenu>
+      </template>
+      <template v-else>
+        <DefaultButtonRowAction
+          :id="tableOptions.rowActions[0].id"
+          :icon="tableOptions.rowActions[0].icon"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleEdit(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :id="tableOptions.rowActions[2].id"
+          :icon="tableOptions.rowActions[2].icon"
+          :text="tableOptions.rowActions[2].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[2].disabled || scope.row.isDefault"
+          :disabledTooltipText="
+            scope.row.isDefault
+              ? 'This setting is currently the default and cannot be deleted. Remove it as the default first.'
+              : 'Delete'
+          "
+          @on-click="handleActionDelete(scope.row)"
+        />
+      </template>
     </template>
   </DataTable>
 </template>
@@ -97,9 +137,11 @@ import { COLUMNS, EMITS } from './utils'
 import DataTable from '@/components/DataTable'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
 import DirectCreationService from '@/api/direct-creation'
+import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
   name: 'DirectEmailCreationTable',
-  components: { DefaultButtonRowAction, DataTable },
+  components: { DefaultButtonRowAction, DataTable, DefaultMenuRowAction, RowActionsMenu },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
@@ -152,6 +194,12 @@ export default {
             disabled: !this.$store.getters['permissions/getDirectEmailUpdatePermissions']
           },
           {
+            id: 'btn-make-default--row-actions-direct-email-creation-list',
+            name: 'Make Default',
+            icon: 'mdi-star-circle',
+            disabled: !this.$store.getters['permissions/getDirectEmailUpdatePermissions']
+          },
+          {
             id: 'btn-delete--row-actions-direct-email-creation-list',
             name: labels.Delete,
             icon: 'mdi-delete',
@@ -191,6 +239,13 @@ export default {
     },
     handleActionDelete(row) {
       this.$emit(EMITS.ON_ACTION_DELETE, row)
+    },
+    handleMakeDefault(row) {
+      if (row.isDefault) {
+        this.$emit(EMITS.ON_REMOVE_DEFAULT, row)
+      } else {
+        this.$emit(EMITS.ON_MAKE_DEFAULT, row)
+      }
     },
     exportDirectEmailCreationList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {

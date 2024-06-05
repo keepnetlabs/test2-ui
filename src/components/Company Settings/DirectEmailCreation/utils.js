@@ -70,5 +70,7 @@ export const EMITS = {
   ON_PREVIEW: 'on-preview',
   ON_ACTION_DELETE: 'on-action-delete',
   ON_EDIT: 'on-edit',
-  ON_CLOSE: 'on-close'
+  ON_CLOSE: 'on-close',
+  ON_REMOVE_DEFAULT: 'on-remove-default',
+  ON_MAKE_DEFAULT: 'on-make-default'
 }
