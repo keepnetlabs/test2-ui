@@ -205,7 +205,6 @@ export default {
       }
     },
     'value.scheduledDate'(val) {
-      console.log('scheduledDate', val)
       this.isDateValid =
         this.value.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO ? val && val.length > 0 : true
     },
