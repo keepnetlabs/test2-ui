@@ -665,7 +665,7 @@ export default {
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then((response) => {
           this.insertTemplate(response?.data?.data?.resourceId, {
-            ...response?.data?.data,
+            ...response?.data?.data?.searchPsEmailTemplate,
             ...payload
           })
         })
@@ -739,6 +739,12 @@ export default {
           ]
         : []
       this.listData.unshift({ resourceId, ...newTemplate })
+      this.listData[0].selected = true
+      this.listData.forEach((item, index) => {
+        if (index !== 0) {
+          item.selected = false
+        }
+      })
       this.setSelectedTemplate({ resourceId, ...newTemplate }, 0)
     },
     validateEditData() {

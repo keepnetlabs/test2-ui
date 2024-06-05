@@ -1044,7 +1044,7 @@ export default {
         .then((response) => {
           this.insertTemplate({
             ...payload,
-            ...response.data.data,
+            ...response.data.data.landingPageTemplate,
             urlTemplate: this.newUrlTemplate
           })
         })
@@ -1102,6 +1102,12 @@ export default {
       this.loadingTemplatePreview = false
       this.selectedLandingPageTab = '1'
       this.listData.unshift(newTemplate)
+      this.listData[0].selected = true
+      this.listData.forEach((item, index) => {
+        if (index !== 0) {
+          item.selected = false
+        }
+      })
       this.setSelectedTemplate(newTemplate, 0)
     },
     getItemDescription(item = {}) {
@@ -1269,7 +1275,6 @@ export default {
         }
         this.selectedPreviousIndex = index
       }
-      this.loadingTemplatePreview = true
       this.$emit('selectedLandingPageChange', item.id)
       this.$emit('selectedLandingPageTemplateResourceId', item.resourceId)
       if (isInitial) {
