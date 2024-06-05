@@ -967,6 +967,8 @@ export default {
         return 'Last 6 Months'
       } else if (datePeriod === 3) {
         return 'Last Year'
+      } else if (dataPeriod === 5) {
+        return 'This Year'
       }
       return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
     }
@@ -1023,6 +1025,13 @@ export default {
           this.formData.executiveReportDateRange = [
             this.$moment(start).format(getTimeZoneForMoment()),
             this.$moment(end).format(getTimeZoneForMoment())
+          ]
+        } else if (this.formData.datePeriod === 5) {
+          const firstDayOfYear = new Date(start.getFullYear(), 0, 1)
+          const lastDayOfYear = new Date(start.getFullYear(), 11, 31)
+          this.formData.executiveReportDateRange = [
+            this.$moment(firstDayOfYear).format(getTimeZoneForMoment()),
+            this.$moment(lastDayOfYear).format(getTimeZoneForMoment())
           ]
         } else {
           this.formData.executiveReportDateRange = [data.startDate, data.endDate]
