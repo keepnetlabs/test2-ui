@@ -87,7 +87,7 @@
       <ElTabPane
         v-for="(training, index) in getTrainingGroups"
         id="campaign-manager-info--training-preview-content"
-        :name="training.name"
+        :name="`${index + 1}`"
         :key="index"
         :label="`Step ${index + 1}: ${training.name}`"
       >
