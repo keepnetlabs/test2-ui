@@ -1,3 +1,8 @@
+.k-form-group--horizontal {
+  .attachment-wrapper {
+    max-width: unset !important;
+  }
+}
 .attachment-wrapper {
   display: flex;
   flex-direction: row;
@@ -55,6 +60,10 @@
 
   .blue-attach {
     background-color: #f1f8fe;
+
+    &.full-width {
+      width: 100% !important;
+    }
   }
 
   .file-name {
@@ -65,5 +74,9 @@
     white-space: nowrap;
     display: inline-block;
     vertical-align: middle;
+
+    &.full-width {
+      max-width: unset !important;
+    }
   }
 }

@@ -32,7 +32,10 @@
         v-on="on"
         v-if="isEmailTemplate"
         id="text--attachment-email-template-preview-name"
-        class="file-name safari-hide-tooltip max-char mx-2"
+        :class="[
+          'file-name safari-hide-tooltip max-char mx-2',
+          isAttachmentNameFullWidth ? 'full-width' : ''
+        ]"
       >
         {{ getFileName }}
       </div>
@@ -54,7 +57,7 @@
 <script>
 export default {
   name: 'AttachmentsPreview',
-  props: ['att', 'isEmailTemplate', 'deletable', 'index'],
+  props: ['att', 'isEmailTemplate', 'deletable', 'index', 'isAttachmentNameFullWidth'],
   computed: {
     getFileName() {
       return this.att.fileName || this.att.name
