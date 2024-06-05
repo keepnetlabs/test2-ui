@@ -281,6 +281,7 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: 'Phishing Risk Score',
+                fontFamily: 'Open-sans,sans-serif',
                 fontColor: '#B6791D'
               },
               offset: false,
@@ -299,6 +300,7 @@ export default {
                 beginAtZero: true,
                 padding: 12,
                 fontColor: '#B6791D',
+                fontFamily: 'Open-sans,sans-serif',
                 lineHeight: 1.58,
                 callback: function (value) {
                   return value + '%'

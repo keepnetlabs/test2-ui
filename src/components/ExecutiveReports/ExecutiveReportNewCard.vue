@@ -299,6 +299,10 @@ import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/Exec
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'
 import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
+import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
+import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
+import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
+import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -425,7 +429,7 @@ export default {
               const firstDayOfYear = new Date(year, 0, 1)
               const lastDayOfYear = new Date(year, 11, 31)
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
-              this.formData.datePeriod = 4
+              this.formData.datePeriod = 5
             }
           }
         ],
@@ -1309,6 +1313,7 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
+      return ExecutiveReportsTrainingCompletionBar
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries

@@ -35,7 +35,7 @@ import { createExecutiveReportChartData } from '@/components/ExecutiveReports/Ex
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
-  name: 'ExecutiveReportsImpactOfPhishingAwarenessTraining',
+  name: 'ExecutiveReportsTrainingCompletionBar',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -111,24 +111,9 @@ export default {
            */
           const industryAverageData = Array(12).fill(30)
           this.chartData = {
-            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            labels: ['Completed', 'In Progress', 'Incomplete'],
             datasets: [
               {
-                type: 'line',
-                label: 'Industry Average (30%)',
-                data: industryAverageData,
-                borderColor: '#007bff',
-                backgroundColor: 'rgba(0,123,255,0.1)',
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0,
-                pointHoverRadius: 0,
-                borderDash: [20, 20],
-                lineTension: 0,
-                order: 1
-              },
-              {
-                type: 'bar',
                 barThickness: 32,
                 label: 'Phishing Risk Score',
                 data: [42, 40, 38, 32, 30, 28, 20, 18, 15, 12, 10, 8],
@@ -160,7 +145,7 @@ export default {
                 {
                   scaleLabel: {
                     display: true,
-                    labelString: 'Months',
+                    labelString: 'Training Status',
                     fontFamily: 'Open-sans,sans-serif',
                     fontColor: '#383B41'
                   },
@@ -173,8 +158,8 @@ export default {
                 {
                   ticks: {
                     min: 0,
-                    max: 50,
-                    stepSize: 10,
+                    max: 100,
+                    stepSize: 20,
                     labelOffset: 0,
                     padding: 12,
                     fontColor: 'rgba(56, 59, 65, 0.72)',
@@ -190,7 +175,7 @@ export default {
                     fontFamily: 'Open-sans,sans-serif',
                     fontSize: 12,
                     fontColor: '#383B41',
-                    labelString: 'Phishing Risk Score'
+                    labelString: 'Percentage Of Users'
                   },
                   gridLines: {
                     display: true,
@@ -203,24 +188,7 @@ export default {
               ]
             },
             legend: {
-              display: true,
-              labels: {
-                usePointStyle: true,
-                fontColor: '#383B41',
-                fontFamily: 'Open-sans,sans-serif',
-                position: 'top',
-                generateLabels(chart) {
-                  const { data } = chart
-                  return [
-                    {
-                      text: 'Industry Average',
-                      fillStyle: '#1173C1',
-                      lineWidth: 0,
-                      datasetIndex: 0
-                    }
-                  ]
-                }
-              }
+              display: false
             },
             tooltips: {
               callbacks: {

@@ -32,7 +32,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 export default {
-  name: 'ExecutiveReportsRepeatOffendersUsers',
+  name: 'ExecutiveReportsTrainingCompletionPie',
   components: {
     ExecutiveWidgetHeader,
     ExecutiveWidgetContainer,
@@ -43,11 +43,11 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [30, 70]
+      default: () => [25, 15, 60]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.SimulatedUsers, labels.RepeatOffenders]
+      default: () => [labels.Incomplete, labels.InProgress, labels.Completed]
     },
     editMode: {
       type: Boolean,
@@ -68,6 +68,11 @@ export default {
   methods: {
     calculateData() {
       const chartOptions = {
+        elements: {
+          arc: {
+            borderWidth: 0
+          }
+        },
         showLabels: true,
         responsive: true,
         maintainAspectRatio: false,
@@ -85,20 +90,27 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              console.log('data', data)
               return [
                 {
-                  text: `Repeat Offenders (${data.datasets[0].data[0]} users)`,
-                  fillStyle: CHART_COLORS[labels.RepeatOffenders]
-                    ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
+                  text: `Completed (${data.datasets[0].data[2]} users)`,
+                  fillStyle: CHART_COLORS[labels.Completed]
+                    ? CHART_COLORS[labels.Completed].backgroundColor
                     : null,
                   lineWidth: 0,
                   datasetIndex: 0
                 },
                 {
-                  text: `Simulated Users (${data.datasets[0].data[1]} users)`,
-                  fillStyle: CHART_COLORS[labels.SimulatedUsers]
-                    ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
+                  text: `In Progress (${data.datasets[0].data[1]} users)`,
+                  fillStyle: CHART_COLORS[labels.InProgress]
+                    ? CHART_COLORS[labels.InProgress].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 1
+                },
+                {
+                  text: `Incomplete (${data.datasets[0].data[1]} users)`,
+                  fillStyle: CHART_COLORS[labels.Incomplete]
+                    ? CHART_COLORS[labels.Incomplete].backgroundColor
                     : null,
                   lineWidth: 0,
                   datasetIndex: 1
