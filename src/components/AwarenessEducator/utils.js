@@ -335,6 +335,20 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ENROLLMENT_STATUSES_FILTER
   },
+  STATUS_SCHEDULED: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 150,
+    filterableItems: [
+      { text: 'Active', value: 1 },
+      { text: 'Inactive', value: 0 }
+    ]
+  },
   STATUS_TRASH: {
     property: PROPERTY_STORE.STATUS,
     align: 'center',
