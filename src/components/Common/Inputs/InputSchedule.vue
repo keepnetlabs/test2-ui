@@ -53,7 +53,7 @@
           :disabled="isScheduledTimeDisabled"
         />
       </div>
-      <div v-if="isPhishing" class="send-training-settings__lms-switch mt-2">
+      <div v-if="canRenderUserTimeZoneSwitch" class="send-training-settings__lms-switch mt-2">
         <VSwitch
           v-model="value.useTargetUserTimeZone"
           hide-details
@@ -66,9 +66,9 @@
               <p class="mb-0" style="color: #383b41; font-size: 14px; font-weight: 600;">
                 Enable Region-Aware Time Zone Delivery
               </p>
-              <span style="color: #383b41; font-size: 12px; font-weight: 400;"
-                >Deliver emails based on the target users' time zone.</span
-              >
+              <span style="color: #383b41; font-size: 12px; font-weight: 400;">{{
+                getUserTimeZoneSwitchDescription
+              }}</span>
             </div>
           </template>
         </VSwitch>
@@ -80,13 +80,13 @@
             <div class="ml-2">
               <p class="mb-0">
                 &bull; Target users will receive the campaign at
-                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span>
+                <span style="font-weight: 600;">{{ getScheduledTime }}</span>
                 local time.
               </p>
               <p class="mb-0">
                 &bull; If the local time has passed, the campaign will be sent at
-                <span style="font-weight: 600;">{{ value.scheduledDate.split(' ')[1] }}</span>
-                the following day..
+                <span style="font-weight: 600;">{{ getScheduledTime }}</span>
+                the following day.
               </p>
               <p class="mb-0">
                 &bull; We'll use the company's time zone for users whose time zone is not specified.
@@ -133,6 +133,10 @@ export default {
     isPhishing: {
       type: Boolean,
       default: false
+    },
+    isSmishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -157,6 +161,28 @@ export default {
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+    },
+    canRenderUserTimeZoneSwitch() {
+      return this.isPhishing || this.isSmishing
+    },
+    getUserTimeZoneSwitchDescription() {
+      if (this.isPhishing) {
+        return `Deliver emails based on the target users' time zone.`
+      }
+      if (this.isSmishing) {
+        return `Deliver SMS based on the target users' time zone.`
+      }
+      return `Deliver emails based on the target users' time zone.`
+    },
+    getScheduledTime() {
+      let scheduledTime = ''
+      if (!!this.value.scheduledDate) {
+        const spaceIndex = this.value.scheduledDate.indexOf(' ')
+        if (spaceIndex !== -1) {
+          scheduledTime = this.value.scheduledDate.slice(spaceIndex)
+        }
+      }
+      return scheduledTime
     }
   },
   watch: {
@@ -179,6 +205,7 @@ export default {
       }
     },
     'value.scheduledDate'(val) {
+      console.log('scheduledDate', val)
       this.isDateValid =
         this.value.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO ? val && val.length > 0 : true
     },
