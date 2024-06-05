@@ -16,6 +16,7 @@ export const labels = {
   DescriptionScreensaverSub: 'Describe the screensaver briefly',
   InfographicSummary: 'Infographic Summary',
   ScheduleName: 'Schedule Name',
+  Inactive: 'Inactive',
   Incomplete: 'Incomplete',
   ReportType: 'Report Type',
   Report: 'Report',

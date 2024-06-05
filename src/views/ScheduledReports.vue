@@ -47,6 +47,12 @@
       @add-scheduled-report="toggleShowScheduleReportDialog"
       @downloadEvent="exportScheduledReportList"
     >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="training-report-progress__progress-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
+        </div>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
@@ -119,9 +125,11 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import ScheduledReportsDeleteDialog from '@/components/ScheduledReports/ScheduledReportsDeleteDialog.vue'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
+import Badge from '@/components/Badge.vue'
 export default {
   name: 'ScheduledReports',
   components: {
+    Badge,
     ExecutiveReportScheduleReportDialog,
     ScheduledReportsDeleteDialog,
     RowActionsMenu,
@@ -158,6 +166,7 @@ export default {
           COLUMNS.SCHEDULE_NAME,
           COLUMNS.REPORT_NAME,
           COLUMNS.FREQUENCY,
+          COLUMNS.STATUS_SCHEDULED,
           COLUMNS.DATE_CREATED,
           COLUMNS.LAST_SEND_DATE,
           COLUMNS.NEXT_SEND_DATE
@@ -185,19 +194,22 @@ export default {
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit'
+            action: 'handleEdit',
+            disabled: true
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'duplicate',
-            id: 'btn-duplicate--row-actions-scheduled-list'
+            id: 'btn-duplicate--row-actions-scheduled-list',
+            disabled: true
           },
           {
             name: labels.SetAsInactive,
             icon: 'mdi-close-circle',
             action: 'close',
-            id: 'btn-cancel--row-actions-scheduled-list'
+            id: 'btn-cancel--row-actions-scheduled-list',
+            disabled: true
           },
           {
             name: labels.Delete,
@@ -228,6 +240,19 @@ export default {
           this.tableData = results || []
         })
         .finally(this.setLoading)
+    },
+    getStatusBadgeProps(status) {
+      if (status) {
+        return {
+          text: labels.Active,
+          color: '#1173C1'
+        }
+      } else {
+        return {
+          text: labels.Inactive,
+          color: '#B83A3A'
+        }
+      }
     },
     handleViewReport(row) {
       this.$router.push({
