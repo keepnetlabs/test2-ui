@@ -216,111 +216,21 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane" :style="{ flexGrow: 1, position: 'relative' }">
-              <div
-                v-if="isPhishing && listData.length"
-                class="emailTemplatePreview__buttons-container"
-              >
-                <template v-if="!isEditMode">
-                  <v-btn
-                    class="emailTemplatePreview__edit-button"
-                    color="#2196F3"
-                    outlined
-                    rounded
-                    @click="handleEdit"
-                  >
-                    <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
-                    <span class="emailTemplatePreview__edit-button-text">Edit Email Template</span>
-                  </v-btn>
-                  <v-btn
-                    v-if="!!templateHTML"
-                    color="#2196F3"
-                    icon
-                    outlined
-                    @click="isTemplateDetails = true"
-                  >
-                    <v-icon color="#2196f3" small> mdi-eye </v-icon>
-                  </v-btn>
-                </template>
-                <template v-else>
-                  <v-btn
-                    class="emailTemplatePreview__exit-editing-button"
-                    color="#F56C6C"
-                    outlined
-                    rounded
-                    :disabled="isSaving"
-                    @click="handleExitEditing"
-                  >
-                    <span class="emailTemplatePreview__exit-editing-text">Exit Editing</span>
-                  </v-btn>
-                  <div>
+              <template v-if="listData.length">
+                <div v-if="isPhishing" class="emailTemplatePreview__buttons-container">
+                  <template v-if="!isEditMode">
                     <v-btn
-                      class="emailTemplatePreview__save-as-new-button mr-4"
+                      class="emailTemplatePreview__edit-button"
                       color="#2196F3"
                       outlined
                       rounded
-                      :disabled="isSaving"
-                      @click="handleSaveAsNew"
+                      @click="handleEdit"
                     >
-                      <span class="emailTemplatePreview__save-as-new-text">Save As New</span>
+                      <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
+                      <span class="emailTemplatePreview__edit-button-text"
+                        >Edit Email Template</span
+                      >
                     </v-btn>
-                    <VTooltip :disabled="emailTemplateData.createdBy !== 'System'" bottom>
-                      <template #activator="{ on }">
-                        <v-btn
-                          v-on="on"
-                          id="emailTemplatePreview__save-changes-button"
-                          class="emailTemplatePreview__save-changes-button mr-4"
-                          color="#2196F3"
-                          rounded
-                          :disabled="isSaving || emailTemplateData.createdBy === 'System'"
-                          @click="handleSaveChanges"
-                        >
-                          <span class="emailTemplatePreview__save-changes-text">Save Changes</span>
-                        </v-btn>
-                      </template>
-                      <span>You are not authorized to edit this template</span>
-                    </VTooltip>
-                    <v-btn
-                      v-if="!!templateHTML"
-                      color="#2196F3"
-                      icon
-                      outlined
-                      :disabled="isSaving"
-                      @click="isTemplateDetails = true"
-                    >
-                      <v-icon color="#2196f3" small> mdi-eye </v-icon>
-                    </v-btn>
-                  </div>
-                </template>
-              </div>
-              <template v-if="isEditMode">
-                <EmailTemplate
-                  ref="refEmailTemplate"
-                  :show-name-field="true"
-                  :active-block-manager-components="activeBlockManagerComponents"
-                  :name.sync="editData.name"
-                  :from-address.sync="editData.fromAddress"
-                  :from-name.sync="editData.fromName"
-                  :subject.sync="editData.subject"
-                  :template.sync="editData.template"
-                  :attachmentFiles.sync="editData.phishingFile"
-                  :isAttachmentError="isAttachmentError"
-                  :is-edit="true"
-                  :is-phishing-template="isAttachmentBasedScenario"
-                  :isNotificationTemplate="true"
-                  :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
-                  :size="5"
-                  fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
-                  :isHorizontalFormGroups="true"
-                  @handleEditHtmlTemplate="editData.template = $event"
-                  @setAttachmentFile="setAttachmentFile"
-                  @handleRenameAttachment="handleShowRenameAttachmentModal"
-                  @handleDeleteAttachment="handleDeleteAttachment"
-                  @template-edit="handleTemplateEdit"
-                />
-              </template>
-              <template v-else>
-                <div class="template-preview">
-                  <div v-if="!isPhishing" class="template-preview__icon">
                     <v-btn
                       v-if="!!templateHTML"
                       color="#2196F3"
@@ -330,47 +240,142 @@
                     >
                       <v-icon color="#2196f3" small> mdi-eye </v-icon>
                     </v-btn>
-                  </div>
-                  <div class="template-preview__text pl-2" v-if="!!templateHTML">
+                  </template>
+                  <template v-else>
+                    <v-btn
+                      class="emailTemplatePreview__exit-editing-button"
+                      color="#F56C6C"
+                      outlined
+                      rounded
+                      :disabled="isSaving"
+                      @click="handleExitEditing"
+                    >
+                      <span class="emailTemplatePreview__exit-editing-text">Exit Editing</span>
+                    </v-btn>
                     <div>
-                      <span class="template-preview__text--title">Template Name: </span>
-                      <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
+                      <v-btn
+                        class="emailTemplatePreview__save-as-new-button mr-4"
+                        color="#2196F3"
+                        outlined
+                        rounded
+                        :disabled="isSaving"
+                        @click="handleSaveAsNew"
+                      >
+                        <span class="emailTemplatePreview__save-as-new-text">Save As New</span>
+                      </v-btn>
+                      <VTooltip :disabled="emailTemplateData.createdBy !== 'System'" bottom>
+                        <template #activator="{ on }">
+                          <v-btn
+                            v-on="on"
+                            id="emailTemplatePreview__save-changes-button"
+                            class="emailTemplatePreview__save-changes-button mr-4"
+                            color="#2196F3"
+                            rounded
+                            :disabled="isSaving || emailTemplateData.createdBy === 'System'"
+                            @click="handleSaveChanges"
+                          >
+                            <span class="emailTemplatePreview__save-changes-text"
+                              >Save Changes</span
+                            >
+                          </v-btn>
+                        </template>
+                        <span>You are not authorized to edit this template</span>
+                      </VTooltip>
+                      <v-btn
+                        v-if="!!templateHTML"
+                        color="#2196F3"
+                        icon
+                        outlined
+                        :disabled="isSaving"
+                        @click="isTemplateDetails = true"
+                      >
+                        <v-icon color="#2196f3" small> mdi-eye </v-icon>
+                      </v-btn>
                     </div>
-                    <div v-if="!isQuishingTypeIndividualPrintOut">
-                      <span class="template-preview__text--title">Subject: </span>
-                      <span class="template-preview__text--body">{{ templateSubject }}</span>
+                  </template>
+                </div>
+                <template v-if="isEditMode">
+                  <EmailTemplate
+                    ref="refEmailTemplate"
+                    :show-name-field="true"
+                    :active-block-manager-components="activeBlockManagerComponents"
+                    :name.sync="editData.name"
+                    :from-address.sync="editData.fromAddress"
+                    :from-name.sync="editData.fromName"
+                    :subject.sync="editData.subject"
+                    :template.sync="editData.template"
+                    :attachmentFiles.sync="editData.phishingFile"
+                    :isAttachmentError="isAttachmentError"
+                    :is-edit="true"
+                    :is-phishing-template="isAttachmentBasedScenario"
+                    :isNotificationTemplate="true"
+                    :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                    :size="5"
+                    fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
+                    :isHorizontalFormGroups="true"
+                    @handleEditHtmlTemplate="editData.template = $event"
+                    @setAttachmentFile="setAttachmentFile"
+                    @handleRenameAttachment="handleShowRenameAttachmentModal"
+                    @handleDeleteAttachment="handleDeleteAttachment"
+                    @template-edit="handleTemplateEdit"
+                  />
+                </template>
+                <template v-else>
+                  <div class="template-preview">
+                    <div v-if="!isPhishing" class="template-preview__icon">
+                      <v-btn
+                        v-if="!!templateHTML"
+                        color="#2196F3"
+                        icon
+                        outlined
+                        @click="isTemplateDetails = true"
+                      >
+                        <v-icon color="#2196f3" small> mdi-eye </v-icon>
+                      </v-btn>
                     </div>
-                    <div v-if="!isQuishingTypeIndividualPrintOut">
-                      <span class="template-preview__text--title">From Name: </span>
-                      <span class="template-preview__text--body">{{ templateFromName }}</span>
-                    </div>
-                    <div v-if="!isQuishingTypeIndividualPrintOut">
-                      <span class="template-preview__text--title">From Email Address: </span>
-                      <span class="template-preview__text--body">{{ templateFromEmail }}</span>
-                    </div>
-                    <div
-                      v-if="phishingFile && phishingFile.length"
-                      class="attachment-wrapper d-flex align-center"
-                      style="position: relative;"
-                    >
-                      <span class="template-preview__text--title mr-2">Attach File: </span>
-                      <div class="attachment blue-attach mb-0">
-                        <AttachmentsPreview
-                          :deletable="false"
-                          :att="phishingFile[0]"
-                          :isEmailTemplate="true"
-                        />
+                    <div class="template-preview__text pl-2" v-if="!!templateHTML">
+                      <div>
+                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--body">{{
+                          selectedTemplateHeader
+                        }}</span>
+                      </div>
+                      <div v-if="!isQuishingTypeIndividualPrintOut">
+                        <span class="template-preview__text--title">Subject: </span>
+                        <span class="template-preview__text--body">{{ templateSubject }}</span>
+                      </div>
+                      <div v-if="!isQuishingTypeIndividualPrintOut">
+                        <span class="template-preview__text--title">From Name: </span>
+                        <span class="template-preview__text--body">{{ templateFromName }}</span>
+                      </div>
+                      <div v-if="!isQuishingTypeIndividualPrintOut">
+                        <span class="template-preview__text--title">From Email Address: </span>
+                        <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                      </div>
+                      <div
+                        v-if="phishingFile && phishingFile.length"
+                        class="attachment-wrapper d-flex align-center"
+                        style="position: relative;"
+                      >
+                        <span class="template-preview__text--title mr-2">Attach File: </span>
+                        <div class="attachment blue-attach mb-0">
+                          <AttachmentsPreview
+                            :deletable="false"
+                            :att="phishingFile[0]"
+                            :isEmailTemplate="true"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <hr v-if="!!templateHTML" />
-                <k-email-preview
-                  v-if="templateHTML"
-                  :key="templateHTML"
-                  :html="templateHTML"
-                  is-extra-height
-                />
+                  <hr v-if="!!templateHTML" />
+                  <k-email-preview
+                    v-if="templateHTML"
+                    :key="templateHTML"
+                    :html="templateHTML"
+                    is-extra-height
+                  />
+                </template>
               </template>
             </div>
           </multipane>
