@@ -381,8 +381,18 @@ export default {
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
         this.formData.frequency = data.frequencyTypeId
-        this.formData.emailAddresses = data.emailAddress.split(',')
-        this.formData.targetGroupResourceIds = data.targetGroupResourceIds.split(',')
+        const emailAddresses = data.emailAddresses
+        if (emailAddresses) {
+          this.formData.emailAddresses = emailAddresses.includes(',')
+            ? emailAddresses.split(',')
+            : [emailAddresses]
+        }
+        const targetGroupResourceIds = data.targetGroupResourceIds
+        if (targetGroupResourceIds) {
+          this.formData.targetGroupResourceIds = targetGroupResourceIds.includes(',')
+            ? targetGroupResourceIds.split(',')
+            : [targetGroupResourceIds]
+        }
       })
     },
     callForGetTimeZones() {
@@ -447,14 +457,19 @@ export default {
         ...this.formData,
         ...this.scheduledPageFormData
       }
+      this.isActionButtonDisabled = true
       if (!this.isEdit || this.isDuplicate) {
-        ReportsService.createReportScheduling(payload).then(() => {
-          this.$emit('on-save-close')
-        })
+        ReportsService.createReportScheduling(payload)
+          .then(() => {
+            this.$emit('on-save-close')
+          })
+          .finally(() => (this.isActionButtonDisabled = false))
       } else {
-        ReportsService.updateReportScheduling(payload, this.selectedRow.resourceId).then(() => {
-          this.$emit('on-save-close')
-        })
+        ReportsService.updateReportScheduling(payload, this.selectedRow.resourceId)
+          .then(() => {
+            this.$emit('on-save-close')
+          })
+          .finally(() => (this.isActionButtonDisabled = false))
       }
     }
   }
