@@ -6,6 +6,12 @@
       :selected-row="selectedRow"
       @on-close="toggleShowDeleteDialog"
     />
+    <ScheduledReportsActivationDialog
+      v-if="isShowActivationDialog"
+      :status="isShowActivationDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowActivationDialog"
+    />
     <ExecutiveReportScheduleReportDialog
       v-if="isShowScheduleReportDialog"
       is-scheduled-page
@@ -126,9 +132,11 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import ScheduledReportsDeleteDialog from '@/components/ScheduledReports/ScheduledReportsDeleteDialog.vue'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
 import Badge from '@/components/Badge.vue'
+import ScheduledReportsActivationDialog from '../components/ScheduledReportsActivationDialog.vue'
 export default {
   name: 'ScheduledReports',
   components: {
+    ScheduledReportsActivationDialog,
     Badge,
     ExecutiveReportScheduleReportDialog,
     ScheduledReportsDeleteDialog,
@@ -146,6 +154,7 @@ export default {
         id: 'awareness-educator-scheduled-list-data-table'
       },
       isShowDeleteDialog: false,
+      isShowActivationDialog: false,
       isDuplicate: false,
       isEdit: false,
       selectedRow: null,
@@ -194,22 +203,19 @@ export default {
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit',
-            disabled: true
+            action: 'handleEdit'
           },
           {
             name: labels.Duplicate,
             icon: 'mdi-content-copy',
             action: 'duplicate',
-            id: 'btn-duplicate--row-actions-scheduled-list',
-            disabled: true
+            id: 'btn-duplicate--row-actions-scheduled-list'
           },
           {
             name: labels.SetAsInactive,
             icon: 'mdi-close-circle',
             action: 'close',
-            id: 'btn-cancel--row-actions-scheduled-list',
-            disabled: true
+            id: 'btn-cancel--row-actions-scheduled-list'
           },
           {
             name: labels.Delete,
@@ -272,9 +278,7 @@ export default {
       this.toggleShowDeleteDialog(row, false)
     },
     handleActiveStatus(row) {
-      setSchedulingReportStatus(row.resourceId, Number(!row.status)).then(() => {
-        this.callForData()
-      })
+      this.toggleShowActivationDialog(row, false)
     },
     exportScheduledReportList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -310,6 +314,11 @@ export default {
         this.isDuplicate = false
       }
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
+      this.selectedRow = row
+    },
+    toggleShowActivationDialog(row, forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      this.isShowActivationDialog = !this.isShowActivationDialog
       this.selectedRow = row
     }
   }
