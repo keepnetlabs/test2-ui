@@ -538,13 +538,6 @@ export default {
     }
   },
   watch: {
-    emailTemplateData: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('emailTemplateData', val)
-      }
-    },
     isEditMode(val) {
       this.$emit('edit-mode', val)
     },
