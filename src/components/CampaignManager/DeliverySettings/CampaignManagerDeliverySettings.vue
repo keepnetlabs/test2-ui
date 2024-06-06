@@ -290,6 +290,13 @@ export default {
     }
   },
   watch: {
+    emailDelivery: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        console.log('emailDelivery', val)
+      }
+    },
     defaultValues(val) {
       for (const key of Object.keys(val)) {
         if (key === 'smtpSetting' && val[key] && typeof val[key] === 'object') {
@@ -412,6 +419,11 @@ export default {
         this.$nextTick(() => {
           //setting default smtp setting
           if (this.isEdit || !this.formData.smtpSettingResourceId) return
+          const defaultDECSettingIndex = deliveries.findIndex((item) => item.isDefault)
+          if (defaultDECSettingIndex !== -1) {
+            this.emailDelivery = deliveries[defaultDECSettingIndex]
+            return
+          }
           this.emailDelivery =
             deliveries.find((item) => item.resourceId === this.formData.smtpSettingResourceId) || {}
         })
