@@ -8,7 +8,7 @@
       max-height-size="900"
       icon="mdi-eye"
       :status="isTemplateDetails"
-      :title="getSelectedTemplateHeader"
+      :title="templateName"
       @changeStatus="isTemplateDetails = false"
     >
       <template #app-dialog-body>
@@ -68,6 +68,22 @@
                     @change="getTemplatesForSearch"
                   />
                 </div>
+                <div style="max-width: 140px;">
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
               </div>
             </div>
           </div>
@@ -104,7 +120,7 @@
                   </div>
                   <div
                     :class="[
-                      'template-list--item template-list--item__difficulty mr-8',
+                      'template-list--item template-list--item__difficulty',
                       getItemDifficultyClass(item.difficulty)
                     ]"
                   >
@@ -115,9 +131,15 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item mt-2">
+                <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                  <div class="d-flex align-center">
+                    <div class="template-list--item__narrator mr-2">
+                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div
@@ -782,6 +804,9 @@ export default {
       type: String,
       default: SCENARIO_TYPES.PHISHING
     },
+    languages: {
+      type: Array
+    },
     apiFuncs: {
       type: Object,
       default: () => ({
@@ -849,11 +874,6 @@ export default {
   computed: {
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
-    },
-    getSelectedTemplateHeader() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.name || ''
-        : this.landingPageTemplates?.[0]?.name || ''
     },
     getSelectedTemplateDetails() {
       return this.landingPageTemplates?.length > 1
@@ -1188,15 +1208,7 @@ export default {
       bodyData = this.bodyData,
       isSearch = false
     ) {
-      this.loadingTemplates = true
-      this.$emit('loading', true)
-      if (isInitial && this.landingPageTemplateResourceId) {
-        this.bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'ResourceId',
-          Operator: 'Include',
-          value: this.landingPageTemplateResourceId
-        })
-      }
+      this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       this.apiFuncs
         .list(this.bodyData)
         .then((response) => {

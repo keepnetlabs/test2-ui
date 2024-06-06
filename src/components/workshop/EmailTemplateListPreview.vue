@@ -76,20 +76,6 @@
                     "
                   />
                 </div>
-                <div v-if="isCallback" style="max-width: 140px;">
-                  <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
-                    :items="languages"
-                    placeholder="Language"
-                    item-disabled="disabled"
-                    outlined
-                    persistent-hint
-                    class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
-                    @change="getTemplatesForSearch"
-                  >
-                  </v-select>
-                </div>
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
@@ -104,6 +90,22 @@
                     :items="difficulties"
                     @change="getTemplatesForSearch"
                   />
+                </div>
+                <div style="max-width: 140px;">
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
                 </div>
               </div>
             </div>
@@ -665,8 +667,8 @@ export default {
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then((response) => {
           this.insertTemplate(response?.data?.data?.resourceId, {
-            ...response?.data?.data?.searchPsEmailTemplate,
-            ...payload
+            ...payload,
+            ...response?.data?.data?.searchPsEmailTemplate
           })
         })
         .finally(() => {
