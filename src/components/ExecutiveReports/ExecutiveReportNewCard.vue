@@ -265,6 +265,7 @@
                 :default-widget-data="defaultWidgetData[item.key]"
                 :default-widget-table-definitions="defaultWidgetTableDefinitions[item.key]"
                 :date-period="formData.datePeriod"
+                :date-format="dateFormat"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
               />
@@ -286,16 +287,16 @@ import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
 import { getExecutiveReport, saveExecutiveReport, updateExecutiveReport } from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
-import ExecutiveReportsConsolidatedPhishingSimulation from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsConsolidatedPhishingSimulation.vue'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
-import {
-  createExecutiveReportChartData,
-  DATE_PERIOD_ENUMS
-} from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import * as Validations from '@/utils/validations'
+import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
+import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
 import { mapGetters } from 'vuex'
-import { fileToBase64 } from '../../utils/functions'
+import { fileToBase64 } from '@/utils/functions'
+import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
+import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -346,6 +347,7 @@ export default {
       newItemY: 0,
       isReportSaved: false,
       savedReportResourceId: '',
+      dateFormat: null,
       activatePreview: this.isPreview,
       editMode: !this.isPreview,
       isActionButtonDisabled: false,
@@ -428,27 +430,6 @@ export default {
       },
       selectedRow: {},
       allWidgets: {
-        PhishingOverview: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Phishing Overview',
-          key: 'PhishingOverview',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
         PhishingCampaignTrendWidget: {
           x: 0,
           y: 0,
@@ -494,65 +475,65 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        'ReportedEmailThreats(Phishing)': {
+        PhishingRiskScoreAcrossIndustriesWidget: {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
-          midW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Reported Email Threats (Phishing)',
-          key: 'ReportedEmailThreats(Phishing)',
+          title: 'Phishing Risk Score Across Industries',
+          key: 'PhishingRiskScoreAcrossIndustriesWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        MostEngagedCampaigns: {
+        PhishingSimulationEngagementReportingTrendsWidget: {
           x: 0,
           y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'MostEngagedCampaigns',
+          title: 'Phishing Simulation Reporting Trends',
+          key: 'PhishingSimulationEngagementReportingTrendsWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'doughnut',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        RecentlyPostedThreats: {
+        IndustryPhishingRiskScoreWidget: {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
-          midW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
+          title: 'Industry Phishing Risk Score: 62%',
+          key: 'IndustryPhishingRiskScoreWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -578,23 +559,23 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        CountOfPhishedCampaigns: {
+        HumanRiskScoreforHighestRiskUsersWidget: {
           x: 0,
           y: 0,
           w: 6,
           minW: 6,
           defaultW: 6,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Count Of Phished Campaigns',
-          key: 'CountOfPhishedCampaigns',
+          title: 'Users with Highest Risk Scores',
+          key: 'HumanRiskScoreforHighestRiskUsersWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'area',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -658,48 +639,6 @@ export default {
           isAllowed: true,
           parentKey: 'Training Metrics',
           chartType: 'table',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        TrainingEnrollments: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Training Enrollments',
-          key: 'TrainingEnrollments',
-          isAllowed: true,
-          parentKey: 'Training Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        VishingCampaignTrends: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Vishing Campaign Trends',
-          key: 'VishingCampaignTrends',
-          isAllowed: true,
-          parentKey: 'Vishing Metrics',
-          chartType: 'line',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -983,8 +922,10 @@ export default {
     getDownloadPdfStyle() {
       const style = {
         padding: '4px',
-        width: '1088px'
+        width: '1088px',
+        zoom: 0.9
       }
+
       if (this.isScheduledReport) return style
       return this.isPdfDownload ? style : null
     },
@@ -995,9 +936,7 @@ export default {
       return classes
     },
     getPreviewPdfButtonClasses() {
-      let classes = ['training-library-new-btn ml-2']
-      //if (!this.formData.name) classes.push('new-executive-report-button-disabled')
-      return classes
+      return ['training-library-new-btn ml-2']
     },
     isShowPreview() {
       return this.isPreview || this.activatePreview
@@ -1042,6 +981,7 @@ export default {
         const { params, query } = this.$route
         const { id } = params
         const { token, companyResourceId, dateFormat } = query
+        if (dateFormat) this.dateFormat = dateFormat
         if (this.isScheduledReport && (!id || !token || !companyResourceId)) return
         const report = await getExecutiveReport(id, token, companyResourceId)
         const {
@@ -1084,27 +1024,13 @@ export default {
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         data.widgets.forEach((widget) => {
           if (
-            widget.widgetDatas &&
-            widget.widgetDatas &&
-            widget.widgetDatas[0] &&
-            widget.widgetDatas[0].tableValues
+            widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
+            widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
+            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget'
           ) {
-            const definitions = widget.widgetDatas[0].tableDefinitions
-            const values = widget.widgetDatas[0].tableValues.slice(0, 5)
-            this.defaultWidgetTableDefinitions[widget.widgetType] = definitions.map(
-              (definition) => ({
-                property: definition.name,
-                label: definition.label,
-                align: 'left'
-              })
-            )
-            this.defaultWidgetData[widget.widgetType] = values
-            this.isTypeTable = true
+            this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
-            this.defaultWidgetData[widget.widgetType] = createExecutiveReportChartData(
-              widget.widgetDatas,
-              dateFormat
-            )
+            this.defaultWidgetData[widget.widgetType] = widget.widgetDatas
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
@@ -1113,7 +1039,6 @@ export default {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
     } catch (e) {
-      this.layout = this.getDefaultLayoutObject()
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
@@ -1257,7 +1182,8 @@ export default {
           let page = document.querySelector('#executive-report-new-card-container')
           const pdf = await html2PDF(page, {
             html2canvas: {
-              useCORS: true
+              useCORS: true,
+              scale: 1.5
             },
             jsPDF: {
               format: 'a4'
@@ -1305,10 +1231,8 @@ export default {
               bottom: 24,
               left: 24
             },
-
-            imageType: 'image/jpeg',
-            output: `${fileName}.pdf`,
-            autoResize: true
+            imageType: 'image/webp',
+            output: `${fileName}.pdf`
           })
           setTimeout(() => {
             if (isShowDownloadModalFromStart)
@@ -1383,8 +1307,14 @@ export default {
     },
     getComponent(componentString) {
       switch (componentString) {
-        case 'ConsolidatedPhishingSimulationMetrics':
-          return ExecutiveReportsConsolidatedPhishingSimulation
+        case 'PhishingRiskScoreAcrossIndustriesWidget':
+          return ExecutiveReportsRiskScoreTrendAcrossIndustries
+        case 'PhishingSimulationEngagementReportingTrendsWidget':
+          return ExecutiveReportsPhishingSimulationEngagement
+        case 'HumanRiskScoreforHighestRiskUsersWidget':
+          return ExecutiveReportsTopRiskiestUsers
+        case 'IndustryPhishingRiskScoreWidget':
+          return ExecutiveReportsIndustryPhishingRiskScore
         default:
           return ExecutiveReportsWidget
       }

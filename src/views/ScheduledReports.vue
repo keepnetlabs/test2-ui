@@ -6,6 +6,12 @@
       :selected-row="selectedRow"
       @on-close="toggleShowDeleteDialog"
     />
+    <ScheduledReportsActivationDialog
+      v-if="isShowActivationDialog"
+      :status="isShowActivationDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleShowActivationDialog"
+    />
     <ExecutiveReportScheduleReportDialog
       v-if="isShowScheduleReportDialog"
       is-scheduled-page
@@ -47,6 +53,12 @@
       @add-scheduled-report="toggleShowScheduleReportDialog"
       @downloadEvent="exportScheduledReportList"
     >
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <div class="training-report-progress__progress-column">
+          <v-btn style="display: none;" />
+          <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
+        </div>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
@@ -119,9 +131,13 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import ScheduledReportsDeleteDialog from '@/components/ScheduledReports/ScheduledReportsDeleteDialog.vue'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
+import Badge from '@/components/Badge.vue'
+import ScheduledReportsActivationDialog from '../components/ScheduledReportsActivationDialog.vue'
 export default {
   name: 'ScheduledReports',
   components: {
+    ScheduledReportsActivationDialog,
+    Badge,
     ExecutiveReportScheduleReportDialog,
     ScheduledReportsDeleteDialog,
     RowActionsMenu,
@@ -138,6 +154,7 @@ export default {
         id: 'awareness-educator-scheduled-list-data-table'
       },
       isShowDeleteDialog: false,
+      isShowActivationDialog: false,
       isDuplicate: false,
       isEdit: false,
       selectedRow: null,
@@ -158,6 +175,7 @@ export default {
           COLUMNS.SCHEDULE_NAME,
           COLUMNS.REPORT_NAME,
           COLUMNS.FREQUENCY,
+          COLUMNS.STATUS_SCHEDULED,
           COLUMNS.DATE_CREATED,
           COLUMNS.LAST_SEND_DATE,
           COLUMNS.NEXT_SEND_DATE
@@ -229,6 +247,19 @@ export default {
         })
         .finally(this.setLoading)
     },
+    getStatusBadgeProps(status) {
+      if (status) {
+        return {
+          text: labels.Active,
+          color: '#1173C1'
+        }
+      } else {
+        return {
+          text: labels.Inactive,
+          color: '#B83A3A'
+        }
+      }
+    },
     handleViewReport(row) {
       this.$router.push({
         name: 'Preview Executive Report',
@@ -247,9 +278,7 @@ export default {
       this.toggleShowDeleteDialog(row, false)
     },
     handleActiveStatus(row) {
-      setSchedulingReportStatus(row.reportResourceId, Number(!row.status)).then(() => {
-        this.callForData()
-      })
+      this.toggleShowActivationDialog(row, false)
     },
     exportScheduledReportList(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -285,6 +314,11 @@ export default {
         this.isDuplicate = false
       }
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
+      this.selectedRow = row
+    },
+    toggleShowActivationDialog(row, forceUpdate = false) {
+      if (forceUpdate) this.callForData()
+      this.isShowActivationDialog = !this.isShowActivationDialog
       this.selectedRow = row
     }
   }
