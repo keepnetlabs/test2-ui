@@ -133,7 +133,6 @@ export default {
                 label: 'Phishing Risk Score',
                 data: [42, 40, 38, 32, 30, 28, 20, 18, 15, 12, 10, 8],
                 backgroundColor: function (context) {
-                  console.log('context', context)
                   const index = context.dataIndex
                   const value = context.dataset.data[index]
                   let color = '#43A047'

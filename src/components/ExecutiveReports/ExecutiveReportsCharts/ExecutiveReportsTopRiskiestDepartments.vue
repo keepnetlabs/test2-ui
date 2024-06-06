@@ -287,7 +287,6 @@ export default {
               titleRow.textContent = dataPoint.y
               tableRoot.appendChild(titleRow)
               dataPoint.details.Score = dataPoint.x
-              dataPoint.details['Number of Users'] = dataPoint.details.numberOfUsers
               for (const [key, value] of Object.entries(dataPoint.details)) {
                 let fieldRow = document.createElement('div')
                 fieldRow.style.display = 'flex'
@@ -342,7 +341,10 @@ export default {
         return {
           x: obj.values[0].value,
           y: obj.dataObject.department,
-          details: {}
+          details: {
+            Score: obj.values[0].value,
+            'Number of Users': obj.dataObject.totalCount
+          }qq
         }
       })
       this.chartData = {

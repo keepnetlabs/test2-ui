@@ -13,8 +13,10 @@
           <template v-if="true">
             <PieChart
               v-if="chartData"
+              style="margin-top: -8px;"
               :data="chartData"
               :chart-options="chartOptions"
+              :custom-plugins="customPlugins"
               add-data-label-plugin
             />
           </template>
@@ -59,7 +61,17 @@ export default {
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: []
+      chartData: [],
+      customPlugins: [
+        {
+          id: 'height-plugin',
+          beforeInit: function (chart) {
+            chart.legend.afterFit = function () {
+              this.height = this.height + 8
+            }
+          }
+        }
+      ]
     }
   },
   created() {
@@ -68,6 +80,11 @@ export default {
   methods: {
     calculateData() {
       const chartOptions = {
+        elements: {
+          arc: {
+            borderWidth: 0
+          }
+        },
         showLabels: true,
         responsive: true,
         maintainAspectRatio: false,
@@ -79,29 +96,28 @@ export default {
           position: 'top',
           labels: {
             usePointStyle: true,
-            color: '#383B41',
+            fontColor: '#383B41',
             font: 'Open-sans,sans-serif',
             padding: 32,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              console.log('data', data)
               return [
                 {
-                  text: `Repeat Offenders (${data.datasets[0].data[0]} users)`,
+                  text: `Repeat Offenders (${data.datasets[0].data[1]} users)`,
                   fillStyle: CHART_COLORS[labels.RepeatOffenders]
                     ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 0
+                  datasetIndex: 1
                 },
                 {
-                  text: `Simulated Users (${data.datasets[0].data[1]} users)`,
+                  text: `Simulated Users (${data.datasets[0].data[0]} users)`,
                   fillStyle: CHART_COLORS[labels.SimulatedUsers]
                     ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 1
+                  datasetIndex: 0
                 }
               ]
             }
@@ -120,9 +136,14 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            fontColor: '#383B41',
-            fontFamily: 'Open Sans, sans-serif',
+            color: '#383B41',
+            anchor: 'center',
+            align: 'center',
             display: true,
+            font: {
+              size: 12,
+              family: 'Open Sans, sans-serif'
+            },
             formatter(value) {
               return `${value}%`
             }
