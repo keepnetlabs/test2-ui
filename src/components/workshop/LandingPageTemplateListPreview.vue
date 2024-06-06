@@ -1113,7 +1113,6 @@ export default {
       }
     },
     insertTemplate(newTemplate) {
-      this.landingPageTemplateData = { ...newTemplate }
       this.templateURL = newTemplate.urlTemplate || ''
       this.templateName = newTemplate.name
       this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
@@ -1128,6 +1127,7 @@ export default {
           item.selected = false
         }
       })
+      this.landingPageTemplateData = { ...newTemplate }
       this.setSelectedTemplate(newTemplate, 0)
     },
     getItemDescription(item = {}) {

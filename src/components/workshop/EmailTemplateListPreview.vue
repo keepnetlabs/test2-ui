@@ -538,6 +538,13 @@ export default {
     }
   },
   watch: {
+    emailTemplateData: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        console.log('emailTemplateData', val)
+      }
+    },
     isEditMode(val) {
       this.$emit('edit-mode', val)
     },
@@ -747,6 +754,7 @@ export default {
           item.selected = false
         }
       })
+      this.emailTemplateData = { resourceId, ...newTemplate }
       this.setSelectedTemplate({ resourceId, ...newTemplate }, 0)
     },
     validateEditData() {
