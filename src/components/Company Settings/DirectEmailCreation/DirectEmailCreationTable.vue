@@ -28,6 +28,17 @@
     @refreshAction="callForData"
     @downloadEvent="exportDirectEmailCreationList"
   >
+    <template #datatable-custom-column="{ scope, col }">
+      <span class="direct-email-creation__name-column">
+        <span>{{ scope.row.name }}</span>
+        <v-tooltip v-if="scope.row.isDefault" bottom>
+          <template #activator="{ on }">
+            <v-icon v-on="on" size="20" color="#1173C1" class="pl-2">mdi-star-circle</v-icon>
+          </template>
+          <span>Default Setting</span>
+        </v-tooltip>
+      </span>
+    </template>
     <template #addUsers>
       <v-menu :offset-y="true" bottom left nudge-right="32" nudge-bottom="4">
         <template #activator="{ on: menu }">
@@ -87,6 +98,7 @@
             :disabled="tableOptions.rowActions[2].disabled || scope.row.isDefault"
             :icon="tableOptions.rowActions[2].icon"
             :text="tableOptions.rowActions[2].name"
+            :showTooltip="tableOptions.rowActions[2].disabled || scope.row.isDefault"
             :disabledTooltipText="
               scope.row.isDefault
                 ? 'This setting is currently the default and cannot be deleted. Remove it as the default first.'
@@ -242,9 +254,21 @@ export default {
     },
     handleMakeDefault(row) {
       if (row.isDefault) {
-        this.$emit(EMITS.ON_REMOVE_DEFAULT, row)
+        this.setLoading(true)
+        DirectCreationService.removeDefault(row.resourceId)
+          .then(() => {
+            this.$refs?.refTable?.resetSelectableParams?.()
+            this.callForData()
+          })
+          .finally(this.setLoading)
       } else {
-        this.$emit(EMITS.ON_MAKE_DEFAULT, row)
+        this.setLoading(true)
+        DirectCreationService.makeDefault(row.resourceId)
+          .then(() => {
+            this.$refs?.refTable?.resetSelectableParams?.()
+            this.callForData()
+          })
+          .finally(this.setLoading)
       }
     },
     exportDirectEmailCreationList(downloadTypes) {

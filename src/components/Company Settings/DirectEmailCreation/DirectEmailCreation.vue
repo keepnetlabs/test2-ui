@@ -32,8 +32,6 @@
       @on-add-google-workspace="toggleNewGoogleWorkspaceDECModal"
       @on-edit="handleEditRowClick"
       @on-action-delete="handleDeleteRowClick"
-      @on-make-default="handleMakeDefault"
-      @on-remove-default="handleRemoveDefault"
     />
   </div>
 </template>
@@ -143,12 +141,6 @@ export default {
       if (row.type === DEC_PLATFORMS.GOOGLE_WORKSPACE) {
         this.toggleNewGoogleWorkspaceDECModal()
       }
-    },
-    handleMakeDefault(row) {
-      this.selectedRow = row
-    },
-    handleRemoveDefault(row) {
-      this.selectedRow = row
     }
   }
 }
