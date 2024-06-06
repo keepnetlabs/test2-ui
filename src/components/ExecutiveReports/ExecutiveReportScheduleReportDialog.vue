@@ -2,7 +2,7 @@
   <AppModal
     :status="status"
     icon-name="mdi-calendar-clock"
-    title="New Schedule Report"
+    :title="getTitle"
     :subtitle="getSubtitle"
     :custom-size="'480'"
     maxHeightSize="665"
@@ -12,10 +12,7 @@
     @changeStatus="handleClose"
   >
     <template #overlay-body>
-      <AppModalBodyHeader
-        title="New Scheduled Report"
-        sub-title="Enter settings for the new scheduled report"
-      />
+      <AppModalBodyHeader :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <VForm ref="refForm" lazy-validation>
         <FormGroup title="Schedule Name" has-hint>
           <InputEntityName
@@ -320,8 +317,23 @@ export default {
       selectedTimeZone: 'common/getSelectedTimeZone',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getTitle() {
+      if (this.isDuplicate) return 'Duplicate Schedule Report'
+      if (this.isEdit) return 'Edit Schedule Report'
+      return 'New Schedule Report'
+    },
     getSubtitle() {
       return this.isScheduledPage ? '' : this?.selectedRow?.name
+    },
+    getBodyTitle() {
+      if (this.isDuplicate) return 'Duplicate Schedule Report'
+      if (this.isEdit) return 'Edit Schedule Report'
+      return 'New Schedule Report'
+    },
+    getBodySubtitle() {
+      if (this.isDuplicate) return 'Enter settings for the duplicated scheduled report'
+      if (this.isEdit) return 'Enter settings for the scheduled report'
+      return 'Enter settings for the new scheduled report'
     },
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
@@ -366,7 +378,7 @@ export default {
         this.scheduledPageFormData.reportType = data.reportTypeId
         this.formData.schedule = data.schedule
         this.formData.scheduledDateTimeZoneId = data.scheduledDateTimeZoneId
-        this.formData.name = data.name
+        this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
         this.formData.isRegionAwareTimeZone = data.isRegionAwareTimeZone
         this.formData.frequency = data.frequencyTypeId
         this.formData.emailAddresses = data.emailAddress.split(',')
