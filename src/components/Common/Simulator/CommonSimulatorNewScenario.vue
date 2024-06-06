@@ -1,5 +1,12 @@
 <template>
-  <AppModal :status="status" :icon-name="getModalIcon" :title="getModalTitle">
+  <AppModal
+    :status="status"
+    :icon-name="getModalIcon"
+    :title="getModalTitle"
+    class="common-simulator-new-scenario"
+    footer-class="common-simulator-new-scenario__footer"
+    :showFooter="!isTemplateEditing"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -140,16 +147,20 @@
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
+                    ref="refEmailTemplateListPreview"
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :api-funcs="getEmailTemplateApiFuncs"
                     :quishing-type="quishingType"
+                    :isAttachmentBasedScenario="isAttachmentBasedScenario"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
+                    @template-edit="handleTemplateEdit"
+                    @edit-mode="handleEditModeChange"
                   />
                 </v-list-item-content>
               </v-list-item>
@@ -178,6 +189,8 @@
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
+                    @template-edit="handleTemplateEdit"
+                    @edit-mode="handleLandingPageEditModeChange"
                 /></v-list-item-content>
               </v-list-item>
             </div>
@@ -253,7 +266,9 @@
                             <div class="attachment blue-attach mb-0">
                               <AttachmentsPreview
                                 :deletable="false"
-                                :att="{ name: summaryData.emailTemplate.phishingFileName }"
+                                :att="{
+                                  name: summaryData.emailTemplate.phishingFileName
+                                }"
                                 :isEmailTemplate="true"
                               />
                             </div>
@@ -513,7 +528,17 @@
       <StepperFooter
         :max-step="maxStep"
         :step.sync="step"
-        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :disabled-statuses="{
+          nextButton:
+            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
+          submitButton:
+            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+        }"
+        :disabledNextButtonTooltipText="
+          isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+            ? 'You’re editing a template. Exit editing to continue.'
+            : ''
+        "
         :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
@@ -610,6 +635,9 @@ export default {
   },
   data() {
     return {
+      isTemplateEditing: false,
+      isEmailTemplateInEditMode: false,
+      isLandingPageTemplateInEditMode: false,
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
@@ -928,6 +956,15 @@ export default {
   },
   methods: {
     getDifficultyColor,
+    handleTemplateEdit(val) {
+      this.isTemplateEditing = val
+    },
+    handleEditModeChange(val) {
+      this.isEmailTemplateInEditMode = val
+    },
+    handleLandingPageEditModeChange(val) {
+      this.isLandingPageTemplateInEditMode = val
+    },
     handleCategoryChange(categoryId) {
       this.formValues.categoryId = categoryId
       this.categoryText =
@@ -1129,8 +1166,58 @@ export default {
       }
     },
     backStep() {
-      this.step -= 1
-      this.isSubmitDisabled = false
+      if (this.step === 2 && this.isEmailTemplateInEditMode) {
+        const { editData, initialEditData } = this.$refs.refEmailTemplateListPreview
+        const isChanged = isDifferent(editData, initialEditData)
+        if (!isChanged) {
+          if (this.$refs?.refEmailTemplateListPreview)
+            this.$refs.refEmailTemplateListPreview.isEditMode = false
+          this.isSubmitDisabled = false
+          this.isEmailTemplateInEditMode = false
+          this.step -= 1
+          return
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            if (this.$refs?.refEmailTemplateListPreview)
+              this.$refs.refEmailTemplateListPreview.isEditMode = false
+            this.isSubmitDisabled = false
+            this.isEmailTemplateInEditMode = false
+            this.step -= 1
+            return
+          }
+        })
+      } else if (
+        !this.isAttachmentBasedScenario &&
+        this.step === 3 &&
+        this.isLandingPageTemplateInEditMode
+      ) {
+        const { editData, initialEditData } = this.$refs.refLandingPageTemplateListPreview
+        const isChanged = isDifferent(editData, initialEditData)
+        if (!isChanged) {
+          if (this.$refs?.refLandingPageTemplateListPreview)
+            this.$refs.refLandingPageTemplateListPreview.isEditMode = false
+          this.isSubmitDisabled = false
+          this.isLandingPageTemplateInEditMode = false
+          this.step -= 1
+          return
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            if (this.$refs?.refLandingPageTemplateListPreview)
+              this.$refs.refLandingPageTemplateListPreview.isEditMode = false
+            this.isSubmitDisabled = false
+            this.isLandingPageTemplateInEditMode = false
+            this.step -= 1
+            return
+          }
+        })
+      } else {
+        this.step -= 1
+        this.isSubmitDisabled = false
+      }
     },
     submit() {
       this.isSubmitDisabled = true

@@ -26,6 +26,34 @@
         </div>
       </template>
     </app-dialog>
+    <AppDialog
+      :status="isRenameAttachmentModalVisible"
+      title="Rename The Attachment"
+      @changeStatus="handleCloseRenameAttachmentModal"
+    >
+      <template #app-dialog-body>
+        <v-form ref="refAttachmentNameForm" @submit.prevent>
+          <v-text-field
+            v-model.trim="attachmentName"
+            v-bind="commonRules"
+            id="input--new-email-templates-template-name"
+            placeholder="Enter a name"
+            hint="*Required"
+            required
+            outlined
+            dense
+            persistent-hint
+            @keyup.enter="handleConfirmRenameAttachment"
+          />
+        </v-form>
+      </template>
+      <template #app-dialog-footer>
+        <AppDialogFooter
+          @handleClose="handleCloseRenameAttachmentModal"
+          @handleConfirm="handleConfirmRenameAttachment"
+        />
+      </template>
+    </AppDialog>
     <div class="emailTemplatePreview__container" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main">
         <div class="emailTemplatePreview-content">
@@ -95,7 +123,8 @@
                 :key="item.name + index"
                 :class="{
                   'template-list': true,
-                  'template-list--selected': item['selected']
+                  'template-list--selected': item['selected'],
+                  'template-list--editing': isEditMode
                 }"
                 @click="setSelectedTemplate(item, index)"
               >
@@ -184,9 +213,22 @@
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
-            <div class="pane" :style="{ flexGrow: 1 }">
-              <div class="template-preview">
-                <div class="template-preview__icon">
+            <div class="pane" :style="{ flexGrow: 1, position: 'relative' }">
+              <div
+                v-if="isPhishing && listData.length"
+                class="emailTemplatePreview__buttons-container"
+              >
+                <template v-if="!isEditMode">
+                  <v-btn
+                    class="emailTemplatePreview__edit-button"
+                    color="#2196F3"
+                    outlined
+                    rounded
+                    @click="handleEdit"
+                  >
+                    <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
+                    <span class="emailTemplatePreview__edit-button-text">Edit Email Template</span>
+                  </v-btn>
                   <v-btn
                     v-if="!!templateHTML"
                     color="#2196F3"
@@ -194,48 +236,140 @@
                     outlined
                     @click="isTemplateDetails = true"
                   >
-                    <v-icon color="#2196f3" medium> mdi-fullscreen </v-icon>
+                    <v-icon color="#2196f3" small> mdi-eye </v-icon>
                   </v-btn>
-                </div>
-                <div class="template-preview__text pl-2" v-if="!!templateHTML">
-                  <div>
-                    <span class="template-preview__text--title">Template Name: </span>
-                    <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
-                  </div>
-                  <div v-if="!isQuishingTypeIndividualPrintOut">
-                    <span class="template-preview__text--title">Subject: </span>
-                    <span class="template-preview__text--body">{{ templateSubject }}</span>
-                  </div>
-                  <div v-if="!isQuishingTypeIndividualPrintOut">
-                    <span class="template-preview__text--title">From Name: </span>
-                    <span class="template-preview__text--body">{{ templateFromName }}</span>
-                  </div>
-                  <div v-if="!isQuishingTypeIndividualPrintOut">
-                    <span class="template-preview__text--title">From Email Address: </span>
-                    <span class="template-preview__text--body">{{ templateFromEmail }}</span>
-                  </div>
-                  <div
-                    v-if="phishingFile"
-                    class="attachment-wrapper mt-2"
-                    style="position: relative;"
+                </template>
+                <template v-else>
+                  <v-btn
+                    class="emailTemplatePreview__exit-editing-button"
+                    color="#F56C6C"
+                    outlined
+                    rounded
+                    :disabled="isSaving"
+                    @click="handleExitEditing"
                   >
-                    <div class="attachment blue-attach mb-0">
-                      <AttachmentsPreview
-                        :deletable="false"
-                        :att="phishingFile"
-                        :isEmailTemplate="true"
-                      />
+                    <span class="emailTemplatePreview__exit-editing-text">Exit Editing</span>
+                  </v-btn>
+                  <div>
+                    <v-btn
+                      class="emailTemplatePreview__save-as-new-button mr-4"
+                      color="#2196F3"
+                      outlined
+                      rounded
+                      :disabled="isSaving"
+                      @click="handleSaveAsNew"
+                    >
+                      <span class="emailTemplatePreview__save-as-new-text">Save As New</span>
+                    </v-btn>
+                    <VTooltip :disabled="emailTemplateData.createdBy !== 'System'" bottom>
+                      <template #activator="{ on }">
+                        <v-btn
+                          v-on="on"
+                          id="emailTemplatePreview__save-changes-button"
+                          class="emailTemplatePreview__save-changes-button mr-4"
+                          color="#2196F3"
+                          rounded
+                          :disabled="isSaving || emailTemplateData.createdBy === 'System'"
+                          @click="handleSaveChanges"
+                        >
+                          <span class="emailTemplatePreview__save-changes-text">Save Changes</span>
+                        </v-btn>
+                      </template>
+                      <span>You are not authorized to edit this template</span>
+                    </VTooltip>
+                    <v-btn
+                      v-if="!!templateHTML"
+                      color="#2196F3"
+                      icon
+                      outlined
+                      :disabled="isSaving"
+                      @click="isTemplateDetails = true"
+                    >
+                      <v-icon color="#2196f3" small> mdi-eye </v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+              </div>
+              <template v-if="isEditMode">
+                <EmailTemplate
+                  ref="refEmailTemplate"
+                  :show-name-field="true"
+                  :active-block-manager-components="activeBlockManagerComponents"
+                  :name.sync="editData.name"
+                  :from-address.sync="editData.fromAddress"
+                  :from-name.sync="editData.fromName"
+                  :subject.sync="editData.subject"
+                  :template.sync="editData.template"
+                  :attachmentFiles.sync="editData.phishingFile"
+                  :isAttachmentError="isAttachmentError"
+                  :is-edit="true"
+                  :is-phishing-template="isAttachmentBasedScenario"
+                  :isNotificationTemplate="true"
+                  :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                  :size="5"
+                  fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
+                  :isHorizontalFormGroups="true"
+                  @handleEditHtmlTemplate="editData.template = $event"
+                  @setAttachmentFile="setAttachmentFile"
+                  @handleRenameAttachment="handleShowRenameAttachmentModal"
+                  @handleDeleteAttachment="handleDeleteAttachment"
+                  @template-edit="handleTemplateEdit"
+                />
+              </template>
+              <template v-else>
+                <div class="template-preview">
+                  <div v-if="!isPhishing" class="template-preview__icon">
+                    <v-btn
+                      v-if="!!templateHTML"
+                      color="#2196F3"
+                      icon
+                      outlined
+                      @click="isTemplateDetails = true"
+                    >
+                      <v-icon color="#2196f3" small> mdi-eye </v-icon>
+                    </v-btn>
+                  </div>
+                  <div class="template-preview__text pl-2" v-if="!!templateHTML">
+                    <div>
+                      <span class="template-preview__text--title">Template Name: </span>
+                      <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
+                    </div>
+                    <div v-if="!isQuishingTypeIndividualPrintOut">
+                      <span class="template-preview__text--title">Subject: </span>
+                      <span class="template-preview__text--body">{{ templateSubject }}</span>
+                    </div>
+                    <div v-if="!isQuishingTypeIndividualPrintOut">
+                      <span class="template-preview__text--title">From Name: </span>
+                      <span class="template-preview__text--body">{{ templateFromName }}</span>
+                    </div>
+                    <div v-if="!isQuishingTypeIndividualPrintOut">
+                      <span class="template-preview__text--title">From Email Address: </span>
+                      <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                    </div>
+                    <div
+                      v-if="phishingFile && phishingFile.length"
+                      class="attachment-wrapper d-flex align-center"
+                      style="position: relative;"
+                    >
+                      <span class="template-preview__text--title mr-2">Attach File: </span>
+                      <div class="attachment blue-attach mb-0">
+                        <AttachmentsPreview
+                          :deletable="false"
+                          :att="phishingFile[0]"
+                          :isEmailTemplate="true"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <hr class="mt-4" v-if="!!templateHTML" />
+                <hr v-if="!!templateHTML" />
                 <k-email-preview
                   v-if="templateHTML"
                   :key="templateHTML"
                   :html="templateHTML"
                   is-extra-height
                 />
-              </div>
+              </template>
             </div>
           </multipane>
         </div>
@@ -245,8 +379,14 @@
 </template>
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import AppDialog from '../AppDialog'
-import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import AppDialog from '@/components/AppDialog'
+import {
+  getEmailTemplatePreviewContent,
+  getEmailTemplatesList,
+  getMergedTextForPhishing,
+  updatePhishingEmailTemplate,
+  createPhishingEmailTemplate
+} from '@/api/phishingsimulator'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
@@ -261,6 +401,12 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import EmailTemplate from '@/components/Company Settings/EmailTemplate'
+import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
+import { isDifferent } from '@/utils/functions'
+import * as Validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -288,6 +434,9 @@ export default {
       type: Boolean,
       default: false
     },
+    isAttachmentBasedScenario: {
+      type: Boolean
+    },
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
@@ -303,11 +452,24 @@ export default {
     Multipane,
     MultipaneResizer,
     AppDialog,
-    AttachmentsPreview
+    AttachmentsPreview,
+    EmailTemplate,
+    AppDialogFooter
   },
   mixins: [useDebounce],
   data() {
     return {
+      labels,
+      isSaving: false,
+      emailTemplateData: {},
+      attachmentName: '',
+      isRenameAttachmentModalVisible: false,
+      isAttachmentError: false,
+      isPhishingFileModified: false,
+      isAddedNewPhishingFile: false,
+      activeBlockManagerComponents: {},
+      blockManagerComponents: {},
+      isEditMode: false,
       phishingFile: null,
       search: null,
       listData: [],
@@ -326,7 +488,25 @@ export default {
       selectedTemplateHeader: null,
       loadingTemplates: false,
       selectedTemplateId: null,
-      selectedPreviousIndex: 0
+      selectedPreviousIndex: 0,
+      initialEditData: {},
+      editData: {
+        name: '',
+        fromAddress: null,
+        fromName: null,
+        subject: null,
+        template: null,
+        phishingFile: null,
+        phishingFileName: ''
+      },
+      commonRules: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
+      }
     }
   },
   computed: {
@@ -339,6 +519,9 @@ export default {
     },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
     },
     isQuishingTypeEmail() {
       if (!this.isQuishing) return false
@@ -353,6 +536,9 @@ export default {
     }
   },
   watch: {
+    isEditMode(val) {
+      this.$emit('edit-mode', val)
+    },
     search(newVal, oldVal) {
       if (!newVal) {
         if (
@@ -375,9 +561,238 @@ export default {
     }
   },
   mounted() {
+    this.callForMergedTags()
     this.getTemplates(true, this.emailTemplateResourceId)
   },
   methods: {
+    handleShowRenameAttachmentModal() {
+      this.isRenameAttachmentModalVisible = true
+    },
+    handleCloseRenameAttachmentModal() {
+      this.attachmentName = ''
+      this.isRenameAttachmentModalVisible = false
+    },
+    handleConfirmRenameAttachment() {
+      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
+        let fileExtension = ''
+        const type = this.editData.phishingFile[0].type
+        if (this.editData.phishingFile[0].name) {
+          fileExtension = this.editData.phishingFile?.[0]?.name.split('.')[1]
+          const file = this.editData.phishingFile[0]
+          this.editData.phishingFile = [
+            new File([file], `${this.attachmentName}.${fileExtension}`, {
+              type
+            })
+          ]
+        } else {
+          fileExtension = this.editData.phishingFile?.[0]?.fileName?.split('.')?.[1]
+          this.editData.phishingFile = [
+            {
+              ...this.editData.phishingFile[0],
+              fileName: `${this.attachmentName}.${fileExtension}`
+            }
+          ]
+        }
+        this.isPhishingFileModified = true
+        this.handleCloseRenameAttachmentModal()
+      }
+    },
+    callForMergedTags() {
+      getMergedTextForPhishing().then((response) => {
+        this.blockManagerComponents = response.data.data['mergeTags']
+        this.setActiveBlockManagerComponents(this.blockManagerComponents)
+      })
+    },
+    setActiveBlockManagerComponents(activeComponent = []) {
+      this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {
+        acc[item] = this.getTagsComponent(item)
+        return acc
+      }, {})
+    },
+    getTagsComponent(item) {
+      return MERGED_TEXTS[item]
+    },
+    handleEdit() {
+      this.initialEditData = {
+        name: this.selectedTemplateHeader,
+        fromAddress: this.templateFromEmail,
+        fromName: this.templateFromName,
+        subject: this.templateSubject,
+        template: this.templateHTML,
+        phishingFile: this.phishingFile
+      }
+      this.editData = { ...this.initialEditData }
+      this.isEditMode = true
+    },
+    handleExitEditing() {
+      const isChanged = isDifferent(this.editData, this.initialEditData)
+      if (!isChanged) {
+        this.isEditMode = false
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.isEditMode = false
+        }
+      })
+    },
+    handleSaveAsNew() {
+      if (!this.validateEditData()) return
+      this.isSaving = true
+      let payload = {
+        ...this.emailTemplateData,
+        ...this.editData,
+        name:
+          this.editData.name !== this.emailTemplateData.name
+            ? this.editData.name
+            : `${this.editData.name} - Copy`,
+        isDuplicated: true,
+        duplicatedTemplateResourceId: this.emailTemplateData.resourceId,
+        availableForRequests: this.emailTemplateData.availableForList,
+        isAttachmentBasedTemplate: this.isAttachmentBasedScenario,
+        isPhishingFileModified: this.isPhishingFileModified,
+        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+        attachmentFiles: this.editData.phishingFile,
+        importedEmailAttachments: this.editData.phishingFile,
+        phishingFileName:
+          !this.isAddedNewPhishingFile && !!this.editData?.phishingFile?.length
+            ? this.editData.phishingFile[0]?.fileName
+            : null
+      }
+      delete payload.attachments
+      delete payload.resourceId
+      createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
+        .then((response) => {
+          this.insertTemplate(response?.data?.data?.resourceId, {
+            ...response?.data?.data?.searchPsEmailTemplate,
+            ...payload
+          })
+        })
+        .finally(() => {
+          this.isSaving = false
+          this.isEditMode = false
+        })
+    },
+    handleSaveChanges() {
+      if (!this.validateEditData()) return
+      this.isSaving = true
+      let payload = {
+        ...this.emailTemplateData,
+        ...this.editData,
+        isDuplicated: false,
+        duplicatedTemplateResourceId: null,
+        availableForRequests: this.emailTemplateData.availableForList,
+        isAttachmentBasedTemplate: this.isAttachmentBasedScenario,
+        isPhishingFileModified: this.isPhishingFileModified,
+        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+        attachmentFiles: this.editData.phishingFile,
+        importedEmailAttachments: this.editData.phishingFile,
+        phishingFileName:
+          !this.isAddedNewPhishingFile && !!this.editData?.phishingFile?.length
+            ? this.editData.phishingFile[0]?.fileName
+            : null
+      }
+      delete payload.attachments
+      updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
+        .then(() => {
+          this.updateTemplate(this.emailTemplateData.resourceId, payload)
+        })
+        .finally(() => {
+          this.isSaving = false
+          this.isEditMode = false
+        })
+    },
+    updateTemplate(resourceId, newTemplate) {
+      const templateIndex = this.listData.findIndex(
+        (template) => template.resourceId === resourceId
+      )
+      if (templateIndex !== -1) {
+        this.listData[templateIndex] = { ...this.listData[templateIndex], ...newTemplate }
+        this.selectedTemplateHeader = this.listData[templateIndex].name || ''
+        this.templateHTML = this.listData[templateIndex].template
+        this.templateFromName = this.listData[templateIndex].fromName || ''
+        this.templateSubject = this.listData[templateIndex].subject || ''
+        this.templateFromEmail = this.listData[templateIndex].fromAddress || ''
+        this.phishingFile = this.listData[templateIndex].phishingFileName
+          ? [
+              {
+                fileName: this.listData[templateIndex].phishingFileName,
+                url: this.listData[templateIndex].phishingFileUrl
+              }
+            ]
+          : []
+      }
+    },
+    insertTemplate(resourceId, newTemplate) {
+      this.selectedTemplateHeader = newTemplate.name || ''
+      this.templateHTML = newTemplate.template
+      this.templateFromName = newTemplate.fromName || ''
+      this.templateSubject = newTemplate.subject || ''
+      this.templateFromEmail = newTemplate.fromAddress || ''
+      this.phishingFile = newTemplate.phishingFileName
+        ? [
+            {
+              fileName: newTemplate.phishingFileName,
+              url: newTemplate.phishingFileUrl
+            }
+          ]
+        : []
+      this.listData.unshift({ resourceId, ...newTemplate })
+      this.listData[0].selected = true
+      this.listData.forEach((item, index) => {
+        if (index !== 0) {
+          item.selected = false
+        }
+      })
+      this.setSelectedTemplate({ resourceId, ...newTemplate }, 0)
+    },
+    validateEditData() {
+      if (!this.editData.name) return false
+      if (!this.editData.subject) return false
+      if (!this.editData.fromName) return false
+      if (!this.editData.fromAddress || Validations.email(this.editData.fromAddress) !== true)
+        return false
+      if (!this.editData.template) return false
+      if (this.isAttachmentBasedScenario && !this.editData.phishingFile) return false
+      return true
+    },
+    setAttachmentFile(file) {
+      if (Array.isArray(file) && file.length === 0) return
+      if (file && !file.type) {
+        let newFile = null
+        let fileExtension = ''
+        if (file?.name.includes('.')) {
+          fileExtension = file?.name?.split('.')?.pop()
+        }
+        if (fileExtension === '.doc') {
+          newFile = new File([file], file.name, { type: 'application/msword' })
+        } else if (fileExtension === 'docx') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          })
+        } else if (fileExtension === 'ppt') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.ms-powerpoint'
+          })
+        } else if (fileExtension === 'pptx') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+          })
+        }
+        this.editData.phishingFile = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.isAttachmentError = false
+      } else {
+        this.editData.phishingFile = Array.isArray(file) ? file : [file] || []
+        this.isAttachmentError = false
+      }
+      this.isPhishingFileModified = true
+      this.isAddedNewPhishingFile = true
+    },
+    handleDeleteAttachment() {
+      this.editData.phishingFile = null
+      this.isAddedNewPhishingFile = false
+    },
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
@@ -520,7 +935,17 @@ export default {
         this.getTemplates()
       }
     },
+    handleTemplateEdit(val) {
+      this.$emit('template-edit', val)
+    },
     setSelectedTemplate(item, index, isInitial = false) {
+      if (this.isSaving) return
+      const isChanged = isDifferent(this.editData, this.initialEditData)
+      if (this.isEditMode && isChanged) {
+        this.handleExitEditing()
+        return
+      }
+      this.isEditMode = false
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
@@ -541,16 +966,20 @@ export default {
         .then((response) => {
           let template = response?.data?.data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+          this.emailTemplateData = { ...item, ...response?.data?.data } || {}
           this.selectedTemplateHeader = response?.data?.data?.name || ''
           this.templateHTML = template
           this.templateFromName = response?.data?.data?.fromName || ''
           this.templateSubject = response?.data?.data?.subject || ''
           this.templateFromEmail = response?.data?.data?.fromAddress || ''
           this.phishingFile = response?.data?.data?.phishingFileName
-            ? {
-                name: response?.data?.data?.phishingFileName
-              }
-            : null
+            ? [
+                {
+                  fileName: response?.data?.data?.phishingFileName,
+                  url: response?.data?.data?.phishingFileUrl
+                }
+              ]
+            : []
         })
         .finally(() => {
           this.loadingTemplatePreview = false

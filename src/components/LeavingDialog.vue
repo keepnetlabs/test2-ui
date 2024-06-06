@@ -13,7 +13,7 @@
       <AppDialogFooter
         cancel-button-id="btn-continue-editing--leaving-popup"
         confirm-button-id="btn-quit--leaving-popup"
-        action-button-text="Quit"
+        action-button-text="Quit Editing"
         action-button-color="#F56C6C"
         cancel-button-text="Continue Editing"
         cancel-button-color="#383B41"

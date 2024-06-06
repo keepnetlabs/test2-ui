@@ -172,3 +172,17 @@
     }
   }
 }
+
+.common-simulator-new-scenario {
+  &__footer {
+    z-index: 10;
+  }
+}
+
+#btn-next--add-or-edit-scenario-modal:disabled {
+  opacity: 0.5;
+  background-color: #2195f3 !important;
+  color: #FFFFFF !important;
+  pointer-events: auto;
+  cursor: auto;
+}
