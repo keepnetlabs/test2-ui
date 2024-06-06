@@ -287,6 +287,7 @@ export default {
               titleRow.textContent = dataPoint.y
               tableRoot.appendChild(titleRow)
               dataPoint.details.Score = dataPoint.x
+              dataPoint.details['Number of Users'] = dataPoint.details.numberOfUsers
               for (const [key, value] of Object.entries(dataPoint.details)) {
                 let fieldRow = document.createElement('div')
                 fieldRow.style.display = 'flex'
@@ -335,12 +336,12 @@ export default {
         return
       }
       const departments = data[0].widgetDatas.map((obj) => {
-        return obj.dataObject.department || 'Deparment'
+        return obj.dataObject.department
       })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
           x: obj.values[0].value,
-          y: obj.dataObject.department || 'Department',
+          y: obj.dataObject.department,
           details: {}
         }
       })
