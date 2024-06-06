@@ -95,9 +95,13 @@ export const getExecutiveReportLogo = (resourceId, token, companyResourceId) => 
   return testRequest.get(`/executive-report/${resourceId}/logo`, config)
 }
 export const setSchedulingReportStatus = (resourceId, status) => {
-  return testRequest.put(`/report-scheduling/${resourceId}/status/${status}`, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.put(
+    `/report-scheduling/${resourceId}/status/${status}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 export const getSchedulingReportTargetGroups = () => {
   return testRequest.get('/report-scheduling/target-groups')
