@@ -290,13 +290,6 @@ export default {
     }
   },
   watch: {
-    emailDelivery: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        console.log('emailDelivery', val)
-      }
-    },
     defaultValues(val) {
       for (const key of Object.keys(val)) {
         if (key === 'smtpSetting' && val[key] && typeof val[key] === 'object') {
