@@ -8,9 +8,9 @@
     :status="status"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body>
-      Are you sure you want to delete this enrollment? All the reports associated with the
-      enrollment will be deleted. This action cannot be undone.
+    <template #app-dialog-body
+      >Deleting this enrollment will disable sending certificates, reminders, and automatic
+      re-enrollment.<br /><br />Are you sure you want to proceed?
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
