@@ -245,13 +245,17 @@ export default {
         this.isEmpty = true
         return
       }
+      const { values } = data[0].widgetDatas[0]
+      console.log('values', values)
+      const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
+      const simulated = values.find((data) => data.name === 'CountSimulated')?.value
       this.chartData = {
         xLabels: [0, 100],
         yLabels: ['Users'],
         datasets: [
           {
             label: 'Repeat Offenders',
-            data: [70],
+            data: [offenders],
             barThickness: 150,
             backgroundColor: '#F56C6C',
             borderWidth: 1,
@@ -259,7 +263,7 @@ export default {
           },
           {
             label: 'Simulated Users',
-            data: [30],
+            data: [simulated],
             barThickness: 150,
             backgroundColor: '#2196F3',
             borderWidth: 1,

@@ -3,14 +3,14 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Repeat Offenders Users (Threshold: 2)"
-          subtitle="Percentage of users who are repeat offenders"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <PieChart
               v-if="chartData"
               style="margin-top: -8px;"
@@ -20,6 +20,18 @@
               add-data-label-plugin
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -33,6 +45,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
 export default {
   name: 'ExecutiveReportsRepeatOffendersUsers',
   components: {
@@ -54,6 +67,25 @@ export default {
     editMode: {
       type: Boolean,
       default: true
+    },
+    dateRange: {
+      type: Array,
+      default: () => []
+    },
+    datePeriod: {
+      type: Number,
+      default: 1
+    },
+    defaultWidgetData: {
+      type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
+    },
+    card: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -62,6 +94,10 @@ export default {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       customPlugins: [
         {
           id: 'height-plugin',
@@ -74,11 +110,40 @@ export default {
       ]
     }
   },
+  watch: {
+    dateRange() {
+      this.callForData()
+    }
+  },
   created() {
-    this.calculateData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
-    calculateData() {
+    callForData() {
+      this.isLoading = true
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: this.datePeriod,
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1]
+      }
+      getExecutiveReportChartData(payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.setChartData(data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
       const chartOptions = {
         elements: {
           arc: {
@@ -129,6 +194,9 @@ export default {
         if (!CHART_COLORS[data]) return
         backgroundColor.push(CHART_COLORS[data].backgroundColor)
       })
+      const { values } = data[0].widgetDatas[0]
+      const offenders = values.find((data) => data.name === 'RepeatOffenderPercentage')?.value
+      const simulated = values.find((data) => data.name === 'PercentageSimulated')?.value
       this.chartOptions = {
         ...chartOptions,
         backgroundColor,
@@ -137,20 +205,34 @@ export default {
         plugins: {
           datalabels: {
             color: '#383B41',
-            anchor: 'center',
-            align: 'center',
+            anchor: function (context) {
+              if (context.dataset.data.includes(0)) return 'start'
+              return 'top'
+            },
+            align: function (context) {
+              if (context.dataset.data.includes(0)) return 'center'
+              if (context.dataset.data[1] > context.dataset.data[0]) {
+                if (context.dataIndex === 0) {
+                  return 'center'
+                }
+                return 'top'
+              }
+              return 'center'
+            },
             display: true,
             font: {
               size: 12,
               family: 'Open Sans, sans-serif'
             },
             formatter(value) {
-              return `${value}%`
+              if (value) return `${value}%`
+              return ``
             }
           }
         }
       }
-      this.chartData = this.rawData
+      this.chartData = [simulated, offenders]
+      this.isEmpty = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)

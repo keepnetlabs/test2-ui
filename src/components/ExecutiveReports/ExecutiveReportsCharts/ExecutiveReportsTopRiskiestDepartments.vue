@@ -344,7 +344,7 @@ export default {
           details: {
             Score: obj.values[0].value,
             'Number of Users': obj.dataObject.totalCount
-          }qq
+          }
         }
       })
       this.chartData = {
