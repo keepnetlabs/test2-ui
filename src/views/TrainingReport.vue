@@ -179,7 +179,7 @@ export default {
             this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
             this.trainingSummary.steps.forEach((step, index) => {
               newTabItems.push({
-                name: step.trainingName,
+                name: `${index + 1}`,
                 id: `training-report-learning-path-${step.trainingName}-${index}`,
                 label: `Step ${index + 1}: ${step.trainingName}`,
                 component: TrainingReportLearningPathContainer,
