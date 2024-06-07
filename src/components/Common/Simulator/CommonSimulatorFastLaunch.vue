@@ -242,8 +242,10 @@ export default {
       getDefaultEmailDeliverySetting().then((res) => {
         if (res?.data?.data?.type === 2) {
           this.directEmailSettingResourceId = res?.data?.data?.resourceId
+          this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
         } else {
           this.smtpSettingResourceId = res?.data?.data?.resourceId
+          this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
         }
       })
     },
@@ -419,9 +421,12 @@ export default {
           sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
           sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
-          smtpSettingResourceId: this.smtpSettingResourceId,
-          directEmailSettingResourceId: '',
-          emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP
+          emailDeliverySettingType: this.emailDeliverySettingType
+        }
+        if (this.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
+          payload['smtpSettingResourceId'] = this.smtpSettingResourceId
+        } else {
+          payload['directEmailSettingResourceId'] = this.directEmailSettingResourceId
         }
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING
