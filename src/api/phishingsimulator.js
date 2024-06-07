@@ -197,6 +197,10 @@ export function getDefaultCompanySmtpSetting() {
   )
 }
 
+export function getDefaultEmailDeliverySetting() {
+  return testRequest.get('/phishing-simulator/phishing-campaign/default-email-delivery-setting')
+}
+
 export function searchCampaignJobUserEmailClicked(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/clicked/search/${id}/${instanceGroup}`,
