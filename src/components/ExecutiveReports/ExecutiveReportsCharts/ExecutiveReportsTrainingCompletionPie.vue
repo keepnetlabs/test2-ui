@@ -132,8 +132,8 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            fontColor: '#383B41',
-            fontFamily: 'Open Sans, sans-serif',
+            color: '#383B41',
+            font: { family: 'Open Sans, sans-serif' },
             display: true,
             formatter(value) {
               return `${value}%`

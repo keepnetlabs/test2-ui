@@ -301,6 +301,7 @@ import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/
 import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
 import ExecutiveReportsTopRiskiestDepartments from './ExecutiveReportsCharts/ExecutiveReportsTopRiskiestDepartments.vue'
+import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletion.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1002,6 +1003,7 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString) {
+      return ExecutiveReportsTrainingCompletion
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries

@@ -16,6 +16,7 @@
               :chart-data="chartData"
               :chart-options="chartOptions"
               :addDataLabelPlugin="true"
+              :custom-plugins="customPlugins"
             />
           </template>
         </ExecutiveWidgetBody>
@@ -43,11 +44,11 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [60, 25, 15]
+      default: () => [15, 25, 60]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.Completed, labels.InProgress, labels.Incomplete]
+      default: () => [labels.Incomplete, labels.InProgress, labels.Completed]
     },
     editMode: {
       type: Boolean,
@@ -59,7 +60,8 @@ export default {
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: []
+      chartData: [],
+      customPlugins: []
     }
   },
   created() {
@@ -81,7 +83,7 @@ export default {
             usePointStyle: true,
             color: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: 32,
+            padding: 16,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
@@ -95,6 +97,16 @@ export default {
                   datasetIndex: index
                 }
               })
+            }
+          }
+        },
+        plugins: {
+          datalabels: {
+            color: '#383B41',
+            font: { family: 'Open Sans, sans-serif' },
+            display: true,
+            formatter(value) {
+              return `${value}%`
             }
           }
         }
