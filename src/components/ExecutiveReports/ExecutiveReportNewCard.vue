@@ -724,7 +724,10 @@ export default {
           if (
             widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
             widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
-            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget'
+            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget' ||
+            widget.widgetType === 'RepeatOffendersUsersThresholdWidget' ||
+            widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
+            widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {

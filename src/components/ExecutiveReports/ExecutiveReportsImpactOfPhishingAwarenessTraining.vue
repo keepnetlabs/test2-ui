@@ -153,7 +153,6 @@ export default {
         return wData.values.find((v) => v.name === 'Percentage')?.annotations
       })
       const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
-      console.log('maxTick', maxTick)
       this.chartData = {
         labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         datasets: [
