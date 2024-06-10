@@ -45,6 +45,14 @@ export default {
         this.axiosPayload.showByExamStatus = val
         this.callForData()
       }
+    },
+    axiosPayload: {
+      deep: true,
+      handler(val) {
+        if (!!val.showByExamStatus) {
+          this.selectedExamStatusFilter = val.showByExamStatus
+        }
+      }
     }
   }
 }
