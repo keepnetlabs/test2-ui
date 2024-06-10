@@ -51,7 +51,46 @@
       @on-interactions="handleInteractions"
       @on-resend="handleOnResend"
     >
-      <template v-slot:datatable-custom-column="{ scope, col }">
+      <template v-if="canRenderExamStatusFilter" #addUsers>
+        <v-menu
+          v-model="isExamStatusFilterMenuActive"
+          :offset-y="true"
+          bottom
+          left
+          nudge-right="4"
+          nudge-bottom="4"
+        >
+          <template #activator="{ on: menu }">
+            <v-btn v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+              <span style="font-weight: 600;">show by exam status</span>
+              <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
+                isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
+              }}</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <VRadioGroup v-model="selectedExamStatusFilter" hide-details class="mt-0">
+              <v-list-item v-for="filterItem in examStatusFilters" :key="filterItem.value">
+                <VRadio
+                  class="mb-0 mr-auto"
+                  color="#2196f3"
+                  :label="filterItem.text"
+                  :value="filterItem.value"
+                />
+                <div class="d-flex justify-items-end">
+                  <VTooltip bottom>
+                    <template #activator="{ on }">
+                      <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
+                    </template>
+                    <span>{{ filterItem.tooltipText }}</span>
+                  </VTooltip>
+                </div>
+              </v-list-item>
+            </VRadioGroup>
+          </v-list>
+        </v-menu>
+      </template>
+      <template #datatable-custom-column="{ scope, col }">
         <div v-if="col.property === 'status'" class="training-report-users__status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
@@ -59,6 +98,15 @@
         <div v-if="col.property === 'examStatus'" class="training-report-users__exam-status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.examStatus)" :col="col" size="medium" />
+        </div>
+        <div v-if="col.property === 'examScore'" class="training-report-users__exam-score-column">
+          <v-icon
+            v-if="scope.row.examScore !== undefined && scope.row.isMainScore"
+            color="#0198AC"
+            class="mr-1"
+            >mdi-sync</v-icon
+          >
+          <span>{{ scope.row.examScore }}</span>
         </div>
       </template>
     </DataTable>
@@ -75,6 +123,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
+import useExamStatusFilter from '@/hooks/awareness-educator/useExamStatusFilter'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
@@ -93,7 +142,7 @@ export default {
     TrainingReportUserInteractionsModal,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useExamStatusFilter],
   props: {
     id: {
       type: String
@@ -206,7 +255,7 @@ export default {
               hideSort: true,
               show: true,
               type: 'slot',
-              width: 200,
+              width: 275,
               props: {
                 style: {
                   maxWidth: '110px !important'
@@ -224,7 +273,7 @@ export default {
               fixed: false,
               sortable: true,
               show: true,
-              type: 'text',
+              type: 'slot',
               width: 160,
               filterableType: 'text'
             }
@@ -464,9 +513,6 @@ export default {
       }
     }
   },
-  created() {
-    this.callForData()
-  },
   methods: {
     getEmptyTableTextMessage() {
       if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
@@ -523,7 +569,11 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
+          this.tableData =
+            results.map((row) => ({
+              ...row,
+              examStatus: row.examStatusName
+            })) || []
         })
         .finally(this.setLoading)
     },

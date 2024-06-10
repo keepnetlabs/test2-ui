@@ -95,6 +95,7 @@ import {
   createCampaignManager,
   getCampaignManagerFormDetails,
   getDefaultCompanySmtpSetting,
+  getDefaultEmailDeliverySetting,
   getPhishingScenarioLandingPageAndEmailTemplate
 } from '@/api/phishingsimulator'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
@@ -137,6 +138,7 @@ export default {
       isActionButtonDisabled: false,
       formDetails: {},
       smtpSettingResourceId: '',
+      directEmailSettingResourceId: '',
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
@@ -187,10 +189,18 @@ export default {
         }
         formData.selectedPhishingScenarios = [this.selectedScenario]
         formData.selectedSchedule = 'Now'
-        formData.selectedEmailDelivery = {
-          resourceId: this.smtpSettingResourceId,
-          name: 'Default',
-          type: EMAIL_DELIVERY_TYPES.SMTP
+        if (this.directEmailSettingResourceId) {
+          formData.selectedEmailDelivery = {
+            resourceId: this.directEmailSettingResourceId,
+            name: 'Default',
+            type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+          }
+        } else {
+          formData.selectedEmailDelivery = {
+            resourceId: this.smtpSettingResourceId,
+            name: 'Default',
+            type: EMAIL_DELIVERY_TYPES.SMTP
+          }
         }
         formData.frequency = 'One Time'
         formData.templateType = this?.emailTemplateParams?.type
@@ -207,7 +217,11 @@ export default {
           value: language.resourceId
         })) || []
     })
-    this.callForDefaultSmtpSetting()
+    if (this.type === SCENARIO_TYPES.PHISHING) {
+      this.callForDefaultEmailDeliverySetting()
+    } else {
+      this.callForDefaultSmtpSetting()
+    }
     this.callForFormDetails()
     this.callForGetPhishingScenario()
   },
@@ -222,6 +236,17 @@ export default {
           data: { data }
         } = response
         this.smtpSettingResourceId = data.resourceId
+      })
+    },
+    callForDefaultEmailDeliverySetting() {
+      getDefaultEmailDeliverySetting().then((res) => {
+        if (res?.data?.data?.type === 2) {
+          this.directEmailSettingResourceId = res?.data?.data?.resourceId
+          this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        } else {
+          this.smtpSettingResourceId = res?.data?.data?.resourceId
+          this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        }
       })
     },
     callForFormDetails() {
@@ -396,9 +421,12 @@ export default {
           sendRandomlyUsers: refFastLaunch.formData.sendRandomlyUsers,
           sendRandomlyUsersCount: refFastLaunch.formData.sendRandomlyUsersCount,
           sendRandomlyUsersCalculateTypeId: refFastLaunch.formData.sendRandomlyUsersCalculateTypeId,
-          smtpSettingResourceId: this.smtpSettingResourceId,
-          directEmailSettingResourceId: '',
-          emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP
+          emailDeliverySettingType: this.emailDeliverySettingType
+        }
+        if (this.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
+          payload['smtpSettingResourceId'] = this.smtpSettingResourceId
+        } else {
+          payload['directEmailSettingResourceId'] = this.directEmailSettingResourceId
         }
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING

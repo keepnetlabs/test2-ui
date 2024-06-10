@@ -182,7 +182,12 @@ export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
               FieldName: 'CategoryResourceId',
               Operator: 'Include'
             },
-            { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+            { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' },
+            {
+              value: '',
+              FieldName: 'LanguageTypeResourceId',
+              Operator: 'Include'
+            }
           ],
           FilterGroups: []
         },
@@ -219,7 +224,12 @@ export const getDefaultLandingPageTemplatePayload = (method = '') => {
               FieldName: 'Method',
               Operator: '='
             },
-            { Value: '', FieldName: 'difficulty', Operator: 'Include' }
+            { Value: '', FieldName: 'difficulty', Operator: 'Include' },
+            {
+              value: '',
+              FieldName: 'LanguageTypeResourceId',
+              Operator: 'Include'
+            }
           ],
           FilterGroups: []
         },

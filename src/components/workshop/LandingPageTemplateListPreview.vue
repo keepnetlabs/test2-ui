@@ -8,7 +8,7 @@
       max-height-size="900"
       icon="mdi-eye"
       :status="isTemplateDetails"
-      :title="getSelectedTemplateHeader"
+      :title="templateName"
       @changeStatus="isTemplateDetails = false"
     >
       <template #app-dialog-body>
@@ -68,6 +68,22 @@
                     @change="getTemplatesForSearch"
                   />
                 </div>
+                <div style="max-width: 140px;">
+                  <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="getTemplatesForSearch"
+                  >
+                  </v-select>
+                </div>
               </div>
             </div>
           </div>
@@ -104,7 +120,7 @@
                   </div>
                   <div
                     :class="[
-                      'template-list--item template-list--item__difficulty mr-8',
+                      'template-list--item template-list--item__difficulty',
                       getItemDifficultyClass(item.difficulty)
                     ]"
                   >
@@ -115,9 +131,15 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item mt-2">
+                <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
+                  <div class="d-flex align-center">
+                    <div class="template-list--item__narrator mr-2">
+                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div
@@ -147,15 +169,324 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane" :style="{ flexGrow: 1 }">
-              <ElTabs
-                v-if="isMethodMfa"
-                v-model="selectedTab"
-                class="landingPagePreview__upper-tabs"
-              >
-                <ElTabPane name="landingPage" label="Landing Page">
+              <template v-if="listData.length">
+                <ElTabs
+                  v-if="isMethodMfa"
+                  v-model="selectedTab"
+                  class="landingPagePreview__upper-tabs"
+                >
+                  <ElTabPane name="landingPage" label="Landing Page">
+                    <div
+                      v-if="isPhishing && listData.length"
+                      class="landingPagePreview__buttons-container landingPagePreview__buttons-container--under-tabs"
+                    >
+                      <template v-if="!isEditMode">
+                        <v-btn
+                          class="landingPagePreview__edit-button"
+                          color="#2196F3"
+                          outlined
+                          rounded
+                          @click="handleEdit"
+                        >
+                          <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
+                          <span class="landingPagePreview__edit-button-text"
+                            >Edit Landing Page</span
+                          >
+                        </v-btn>
+                        <VBtn
+                          v-if="!!getSingleTemplateDetails"
+                          icon
+                          outlined
+                          color="#2196f3"
+                          @click="isTemplateDetails = true"
+                        >
+                          <VIcon color="#2196f3" small> mdi-eye </VIcon>
+                        </VBtn>
+                      </template>
+                      <template v-else>
+                        <v-btn
+                          class="landingPagePreview__exit-editing-button"
+                          color="#F56C6C"
+                          outlined
+                          rounded
+                          :disabled="isSaving"
+                          @click="handleExitEditing"
+                        >
+                          <span class="landingPagePreview__exit-editing-text">Exit Editing</span>
+                        </v-btn>
+                        <div>
+                          <v-btn
+                            class="landingPagePreview__save-as-new-button mr-4"
+                            color="#2196F3"
+                            outlined
+                            rounded
+                            :disabled="isSaving"
+                            @click="handleSaveAsNew"
+                          >
+                            <span class="landingPagePreview__save-as-new-text">Save As New</span>
+                          </v-btn>
+                          <VTooltip
+                            :disabled="landingPageTemplateData.createdBy !== 'System'"
+                            bottom
+                          >
+                            <template #activator="{ on }">
+                              <v-btn
+                                v-on="on"
+                                id="landingPagePreview__save-changes-button"
+                                class="landingPagePreview__save-changes-button mr-4"
+                                color="#2196F3"
+                                rounded
+                                :disabled="
+                                  isSaving || landingPageTemplateData.createdBy === 'System'
+                                "
+                                @click="handleSaveChanges"
+                              >
+                                <span class="landingPagePreview__save-changes-text"
+                                  >Save Changes</span
+                                >
+                              </v-btn>
+                            </template>
+                            <span>You are not authorized to edit this template</span>
+                          </VTooltip>
+                          <VBtn
+                            v-if="!!getSingleTemplateDetails"
+                            icon
+                            outlined
+                            color="#2196f3"
+                            @click="isTemplateDetails = true"
+                          >
+                            <VIcon color="#2196f3" small> mdi-eye </VIcon>
+                          </VBtn>
+                        </div>
+                      </template>
+                    </div>
+                    <v-list-item v-if="isEditMode" class="mt-4">
+                      <v-list-item-content>
+                        <v-form ref="refEmailTemplateContent">
+                          <div class="px-4 py-4">
+                            <FormGroup
+                              title="Template Name:"
+                              style="max-width: unset;"
+                              className="k-form-group--horizontal"
+                              labelClassName="k-form-group__title--horizontal mb-5"
+                            >
+                              <InputEntityName
+                                v-model="editData.name"
+                                id="input--notification-template-name"
+                                initialPlaceholder="Enter template name"
+                                entityName="template name"
+                              />
+                            </FormGroup>
+                            <InputPhishingLink
+                              ref="refInputPhishingLink"
+                              v-model="editData.phishingLink"
+                              :isEdit="true"
+                              :url-schema-types="getUrlSchemaTypes"
+                              :domain-records="getDomainRecordTypes"
+                              :extension-types="getExtensionTypes"
+                              :parameter-types="getParameterTypes"
+                              :path-types="getPathTypes"
+                              @link-change="handleLinkChange"
+                            />
+                          </div>
+                          <ElTabs
+                            v-model="selectedEditLandingPageTab"
+                            class="landing-page-tab-content k-sub-tab py-0 px-0"
+                            id="landing-page-tab-content"
+                          >
+                            <ElTabPane
+                              v-for="(page, index) in editData.landingPages"
+                              :key="`page-${index + 1}`"
+                              :label="`Page ${index + 1}`"
+                              :name="`${index + 1}`"
+                              :id="`landingPage-content-${index + 1}`"
+                            >
+                              <template #label>
+                                <div
+                                  style="display: flex;"
+                                  :style="editData.landingPages.length > 1 && { width: '68px' }"
+                                >
+                                  <span class="landing-page-tab__label">
+                                    {{ `Page ${index + 1}` }}
+                                  </span>
+                                  <v-menu
+                                    v-if="editData.landingPages.length > 1"
+                                    :min-width="128"
+                                    :offset-y="true"
+                                    nudge-left="50"
+                                    bottom
+                                  >
+                                    <template v-slot:activator="{ on }">
+                                      <v-icon
+                                        v-ripple="false"
+                                        v-on="on"
+                                        class="landing-page-tab-content__button"
+                                        >mdi-dots-horizontal</v-icon
+                                      >
+                                    </template>
+                                    <v-list>
+                                      <v-list-item
+                                        style="cursor: pointer;"
+                                        @click="handleDeleteLandingPage(index)"
+                                      >
+                                        <v-list-item-title>Delete</v-list-item-title>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-menu>
+                                </div>
+                              </template>
+                              <EmailTemplate
+                                ref="refEmailTemplate"
+                                template-type="landing"
+                                :active-block-manager-components="activeBlockManagerComponents"
+                                :edit-items-disabled="false"
+                                :template.sync="page.content"
+                                :is-edit="true"
+                                :is-phishing-template="true"
+                                :onlyGrapes="true"
+                                @template-edit="handleTemplateEdit"
+                              />
+                            </ElTabPane>
+                            <ElTabPane v-if="editData.landingPages.length <= 1" name="addPage">
+                              <template #label>
+                                <v-menu
+                                  :min-width="128"
+                                  :nudge-right="83"
+                                  :nudge-bottom="240"
+                                  id="add-page-menu"
+                                  attach="#landing-page-tab-content"
+                                  :z-index="10000"
+                                >
+                                  <template v-slot:activator="{ on: menu }">
+                                    <v-btn v-on="menu" text color="#2196f3">
+                                      <v-icon class="mr-2" size="18" color="#2196f3"
+                                        >mdi-plus-circle-outline</v-icon
+                                      >
+                                      <span class="landing-page-tab__label">
+                                        Add page
+                                      </span>
+                                    </v-btn>
+                                  </template>
+                                  <v-list>
+                                    <v-list-item
+                                      class="px-4"
+                                      style="cursor: pointer;"
+                                      @click="handleAddBlankPage"
+                                    >
+                                      <v-list-item-title>Blank page</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                      class="px-4"
+                                      style="cursor: pointer;"
+                                      @click="handleUploadHTML"
+                                    >
+                                      <v-list-item-title>Upload HTML</v-list-item-title>
+                                    </v-list-item>
+                                    <input
+                                      v-show="false"
+                                      ref="refHtmlFile"
+                                      type="file"
+                                      @change="handleHTMLUploadChange"
+                                    />
+                                  </v-list>
+                                </v-menu>
+                              </template>
+                            </ElTabPane>
+                          </ElTabs>
+                        </v-form>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <template v-else>
+                      <div class="template-preview px-4 py-4 mx-0">
+                        <div class="template-preview__text pl-2">
+                          <div>
+                            <span class="template-preview__text--title">Template Name: </span>
+                            <span class="template-preview__text--body">{{ templateName }}</span>
+                          </div>
+                          <div>
+                            <span class="template-preview__text--title"
+                              >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
+                              URL:
+                            </span>
+                            <span class="template-preview__text--body">{{ templateURL }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <ElTabs
+                        v-if="landingPageTemplates.length > 1"
+                        v-model="selectedLandingPageTab"
+                        class="k-sub-tab"
+                      >
+                        <ElTabPane
+                          v-for="(template, index) in landingPageTemplates"
+                          :key="index"
+                          :name="`${index + 1}`"
+                          :label="`Page ${index + 1}`"
+                          class="mx-4"
+                        >
+                          <KEmailPreview
+                            v-if="!!template.content"
+                            is-extra-height
+                            :key="template.content"
+                            :html="template.content"
+                          />
+                        </ElTabPane>
+                      </ElTabs>
+                      <template v-else>
+                        <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
+                        <KEmailPreview
+                          v-if="!!getSingleTemplateDetails"
+                          is-extra-height
+                          :html="getSingleTemplateDetails"
+                          :key="getLandingPageHtmlKey"
+                        />
+                      </template>
+                    </template>
+                  </ElTabPane>
+                  <ElTabPane v-if="isMethodMfa" label="MFA Settings" name="mfaSettings">
+                    <div class="ml-6 mt-4">
+                      <ConfigureCompanyStepHeader
+                        class="mb-6"
+                        :title="labels.MultiFactorAuthentication"
+                        :subtitle="labels.MultiFactorAuthenticationSub"
+                      />
+                      <VForm ref="refMfaForm">
+                        <InputCallerPhoneNumber
+                          v-model="mfaData.mfaSenderNumberResourceId"
+                          select-first-item
+                          is-phishing-scenario
+                          :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
+                          :title="labels.SenderPhoneNumber"
+                          :sub-title="labels.SenderPhoneNumberSub"
+                        />
+                        <FormGroup
+                          :title="labels.VerificationMessage"
+                          :sub-title="labels.VerificationMessageSub"
+                        >
+                          <div class="d-flex mt-2">
+                            <span class="mr-4 fs-4">SMS Message</span>
+                            <VTextarea
+                              v-model.trim="mfaData.mfaTextTemplate"
+                              outlined
+                              dense
+                              no-resize
+                              persistent-hint
+                              rows="2"
+                              height="76"
+                              hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
+                              placeholder="Enter your SMS message"
+                              :rules="mfaMessageRules"
+                            />
+                          </div>
+                        </FormGroup>
+                      </VForm>
+                    </div>
+                  </ElTabPane>
+                </ElTabs>
+                <div v-else>
                   <div
                     v-if="isPhishing && listData.length"
-                    class="landingPagePreview__buttons-container landingPagePreview__buttons-container--under-tabs"
+                    class="landingPagePreview__buttons-container"
                   >
                     <template v-if="!isEditMode">
                       <v-btn
@@ -332,9 +663,7 @@
                                     <v-icon class="mr-2" size="18" color="#2196f3"
                                       >mdi-plus-circle-outline</v-icon
                                     >
-                                    <span class="landing-page-tab__label">
-                                      Add page
-                                    </span>
+                                    <span class="landing-page-tab__label"> Add page </span>
                                   </v-btn>
                                 </template>
                                 <v-list>
@@ -366,26 +695,24 @@
                       </v-form>
                     </v-list-item-content>
                   </v-list-item>
-                  <template v-else>
-                    <div class="template-preview px-4 py-4 mx-0">
-                      <div class="template-preview__text pl-2">
-                        <div>
-                          <span class="template-preview__text--title">Template Name: </span>
-                          <span class="template-preview__text--body">{{ templateName }}</span>
-                        </div>
-                        <div>
-                          <span class="template-preview__text--title"
-                            >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
-                            URL:
-                          </span>
-                          <span class="template-preview__text--body">{{ templateURL }}</span>
-                        </div>
+                  <div v-else class="template-preview pt-4 mx-0" style="max-width: unset;">
+                    <div class="template-preview__text px-4" v-if="!!getSingleTemplateDetails">
+                      <div>
+                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--body">{{ templateName }}</span>
+                      </div>
+                      <div>
+                        <span class="template-preview__text--title"
+                          >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
+                          URL:
+                        </span>
+                        <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
                     </div>
                     <ElTabs
                       v-if="landingPageTemplates.length > 1"
                       v-model="selectedLandingPageTab"
-                      class="k-sub-tab"
+                      class="k-sub-tab mt-4"
                     >
                       <ElTabPane
                         v-for="(template, index) in landingPageTemplates"
@@ -411,303 +738,9 @@
                         :key="getLandingPageHtmlKey"
                       />
                     </template>
-                  </template>
-                </ElTabPane>
-                <ElTabPane v-if="isMethodMfa" label="MFA Settings" name="mfaSettings">
-                  <div class="ml-6 mt-4">
-                    <ConfigureCompanyStepHeader
-                      class="mb-6"
-                      :title="labels.MultiFactorAuthentication"
-                      :subtitle="labels.MultiFactorAuthenticationSub"
-                    />
-                    <VForm ref="refMfaForm">
-                      <InputCallerPhoneNumber
-                        v-model="mfaData.mfaSenderNumberResourceId"
-                        select-first-item
-                        is-phishing-scenario
-                        :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
-                        :title="labels.SenderPhoneNumber"
-                        :sub-title="labels.SenderPhoneNumberSub"
-                      />
-                      <FormGroup
-                        :title="labels.VerificationMessage"
-                        :sub-title="labels.VerificationMessageSub"
-                      >
-                        <div class="d-flex mt-2">
-                          <span class="mr-4 fs-4">SMS Message</span>
-                          <VTextarea
-                            v-model.trim="mfaData.mfaTextTemplate"
-                            outlined
-                            dense
-                            no-resize
-                            persistent-hint
-                            rows="2"
-                            height="76"
-                            hint="SMS supports the GSM-7 character set and can contain up to 148 characters"
-                            placeholder="Enter your SMS message"
-                            :rules="mfaMessageRules"
-                          />
-                        </div>
-                      </FormGroup>
-                    </VForm>
                   </div>
-                </ElTabPane>
-              </ElTabs>
-              <div v-else>
-                <div
-                  v-if="isPhishing && listData.length"
-                  class="landingPagePreview__buttons-container"
-                >
-                  <template v-if="!isEditMode">
-                    <v-btn
-                      class="landingPagePreview__edit-button"
-                      color="#2196F3"
-                      outlined
-                      rounded
-                      @click="handleEdit"
-                    >
-                      <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
-                      <span class="landingPagePreview__edit-button-text">Edit Landing Page</span>
-                    </v-btn>
-                    <VBtn
-                      v-if="!!getSingleTemplateDetails"
-                      icon
-                      outlined
-                      color="#2196f3"
-                      @click="isTemplateDetails = true"
-                    >
-                      <VIcon color="#2196f3" small> mdi-eye </VIcon>
-                    </VBtn>
-                  </template>
-                  <template v-else>
-                    <v-btn
-                      class="landingPagePreview__exit-editing-button"
-                      color="#F56C6C"
-                      outlined
-                      rounded
-                      :disabled="isSaving"
-                      @click="handleExitEditing"
-                    >
-                      <span class="landingPagePreview__exit-editing-text">Exit Editing</span>
-                    </v-btn>
-                    <div>
-                      <v-btn
-                        class="landingPagePreview__save-as-new-button mr-4"
-                        color="#2196F3"
-                        outlined
-                        rounded
-                        :disabled="isSaving"
-                        @click="handleSaveAsNew"
-                      >
-                        <span class="landingPagePreview__save-as-new-text">Save As New</span>
-                      </v-btn>
-                      <VTooltip :disabled="landingPageTemplateData.createdBy !== 'System'" bottom>
-                        <template #activator="{ on }">
-                          <v-btn
-                            v-on="on"
-                            id="landingPagePreview__save-changes-button"
-                            class="landingPagePreview__save-changes-button mr-4"
-                            color="#2196F3"
-                            rounded
-                            :disabled="isSaving || landingPageTemplateData.createdBy === 'System'"
-                            @click="handleSaveChanges"
-                          >
-                            <span class="landingPagePreview__save-changes-text">Save Changes</span>
-                          </v-btn>
-                        </template>
-                        <span>You are not authorized to edit this template</span>
-                      </VTooltip>
-                      <VBtn
-                        v-if="!!getSingleTemplateDetails"
-                        icon
-                        outlined
-                        color="#2196f3"
-                        @click="isTemplateDetails = true"
-                      >
-                        <VIcon color="#2196f3" small> mdi-eye </VIcon>
-                      </VBtn>
-                    </div>
-                  </template>
                 </div>
-                <v-list-item v-if="isEditMode" class="mt-4">
-                  <v-list-item-content>
-                    <v-form ref="refEmailTemplateContent">
-                      <div class="px-4 py-4">
-                        <FormGroup
-                          title="Template Name:"
-                          style="max-width: unset;"
-                          className="k-form-group--horizontal"
-                          labelClassName="k-form-group__title--horizontal mb-5"
-                        >
-                          <InputEntityName
-                            v-model="editData.name"
-                            id="input--notification-template-name"
-                            initialPlaceholder="Enter template name"
-                            entityName="template name"
-                          />
-                        </FormGroup>
-                        <InputPhishingLink
-                          ref="refInputPhishingLink"
-                          v-model="editData.phishingLink"
-                          :isEdit="true"
-                          :url-schema-types="getUrlSchemaTypes"
-                          :domain-records="getDomainRecordTypes"
-                          :extension-types="getExtensionTypes"
-                          :parameter-types="getParameterTypes"
-                          :path-types="getPathTypes"
-                          @link-change="handleLinkChange"
-                        />
-                      </div>
-                      <ElTabs
-                        v-model="selectedEditLandingPageTab"
-                        class="landing-page-tab-content k-sub-tab py-0 px-0"
-                        id="landing-page-tab-content"
-                      >
-                        <ElTabPane
-                          v-for="(page, index) in editData.landingPages"
-                          :key="`page-${index + 1}`"
-                          :label="`Page ${index + 1}`"
-                          :name="`${index + 1}`"
-                          :id="`landingPage-content-${index + 1}`"
-                        >
-                          <template #label>
-                            <div
-                              style="display: flex;"
-                              :style="editData.landingPages.length > 1 && { width: '68px' }"
-                            >
-                              <span class="landing-page-tab__label">
-                                {{ `Page ${index + 1}` }}
-                              </span>
-                              <v-menu
-                                v-if="editData.landingPages.length > 1"
-                                :min-width="128"
-                                :offset-y="true"
-                                nudge-left="50"
-                                bottom
-                              >
-                                <template v-slot:activator="{ on }">
-                                  <v-icon
-                                    v-ripple="false"
-                                    v-on="on"
-                                    class="landing-page-tab-content__button"
-                                    >mdi-dots-horizontal</v-icon
-                                  >
-                                </template>
-                                <v-list>
-                                  <v-list-item
-                                    style="cursor: pointer;"
-                                    @click="handleDeleteLandingPage(index)"
-                                  >
-                                    <v-list-item-title>Delete</v-list-item-title>
-                                  </v-list-item>
-                                </v-list>
-                              </v-menu>
-                            </div>
-                          </template>
-                          <EmailTemplate
-                            ref="refEmailTemplate"
-                            template-type="landing"
-                            :active-block-manager-components="activeBlockManagerComponents"
-                            :edit-items-disabled="false"
-                            :template.sync="page.content"
-                            :is-edit="true"
-                            :is-phishing-template="true"
-                            :onlyGrapes="true"
-                            @template-edit="handleTemplateEdit"
-                          />
-                        </ElTabPane>
-                        <ElTabPane v-if="editData.landingPages.length <= 1" name="addPage">
-                          <template #label>
-                            <v-menu
-                              :min-width="128"
-                              :nudge-right="83"
-                              :nudge-bottom="240"
-                              id="add-page-menu"
-                              attach="#landing-page-tab-content"
-                              :z-index="10000"
-                            >
-                              <template v-slot:activator="{ on: menu }">
-                                <v-btn v-on="menu" text color="#2196f3">
-                                  <v-icon class="mr-2" size="18" color="#2196f3"
-                                    >mdi-plus-circle-outline</v-icon
-                                  >
-                                  <span class="landing-page-tab__label"> Add page </span>
-                                </v-btn>
-                              </template>
-                              <v-list>
-                                <v-list-item
-                                  class="px-4"
-                                  style="cursor: pointer;"
-                                  @click="handleAddBlankPage"
-                                >
-                                  <v-list-item-title>Blank page</v-list-item-title>
-                                </v-list-item>
-                                <v-list-item
-                                  class="px-4"
-                                  style="cursor: pointer;"
-                                  @click="handleUploadHTML"
-                                >
-                                  <v-list-item-title>Upload HTML</v-list-item-title>
-                                </v-list-item>
-                                <input
-                                  v-show="false"
-                                  ref="refHtmlFile"
-                                  type="file"
-                                  @change="handleHTMLUploadChange"
-                                />
-                              </v-list>
-                            </v-menu>
-                          </template>
-                        </ElTabPane>
-                      </ElTabs>
-                    </v-form>
-                  </v-list-item-content>
-                </v-list-item>
-                <div v-else class="template-preview pt-4 mx-0" style="max-width: unset;">
-                  <div class="template-preview__text px-4" v-if="!!getSingleTemplateDetails">
-                    <div>
-                      <span class="template-preview__text--title">Template Name: </span>
-                      <span class="template-preview__text--body">{{ templateName }}</span>
-                    </div>
-                    <div>
-                      <span class="template-preview__text--title"
-                        >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
-                        URL:
-                      </span>
-                      <span class="template-preview__text--body">{{ templateURL }}</span>
-                    </div>
-                  </div>
-                  <ElTabs
-                    v-if="landingPageTemplates.length > 1"
-                    v-model="selectedLandingPageTab"
-                    class="k-sub-tab mt-4"
-                  >
-                    <ElTabPane
-                      v-for="(template, index) in landingPageTemplates"
-                      :key="index"
-                      :name="`${index + 1}`"
-                      :label="`Page ${index + 1}`"
-                      class="mx-4"
-                    >
-                      <KEmailPreview
-                        v-if="!!template.content"
-                        is-extra-height
-                        :key="template.content"
-                        :html="template.content"
-                      />
-                    </ElTabPane>
-                  </ElTabs>
-                  <template v-else>
-                    <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
-                    <KEmailPreview
-                      v-if="!!getSingleTemplateDetails"
-                      is-extra-height
-                      :html="getSingleTemplateDetails"
-                      :key="getLandingPageHtmlKey"
-                    />
-                  </template>
-                </div>
-              </div>
+              </template>
             </div>
           </multipane>
         </div>
@@ -782,6 +815,9 @@ export default {
       type: String,
       default: SCENARIO_TYPES.PHISHING
     },
+    languages: {
+      type: Array
+    },
     apiFuncs: {
       type: Object,
       default: () => ({
@@ -849,11 +885,6 @@ export default {
   computed: {
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
-    },
-    getSelectedTemplateHeader() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.name || ''
-        : this.landingPageTemplates?.[0]?.name || ''
     },
     getSelectedTemplateDetails() {
       return this.landingPageTemplates?.length > 1
@@ -1093,7 +1124,6 @@ export default {
       }
     },
     insertTemplate(newTemplate) {
-      this.landingPageTemplateData = { ...newTemplate }
       this.templateURL = newTemplate.urlTemplate || ''
       this.templateName = newTemplate.name
       this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
@@ -1108,6 +1138,7 @@ export default {
           item.selected = false
         }
       })
+      this.landingPageTemplateData = { ...newTemplate }
       this.setSelectedTemplate(newTemplate, 0)
     },
     getItemDescription(item = {}) {
@@ -1188,15 +1219,7 @@ export default {
       bodyData = this.bodyData,
       isSearch = false
     ) {
-      this.loadingTemplates = true
-      this.$emit('loading', true)
-      if (isInitial && this.landingPageTemplateResourceId) {
-        this.bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'ResourceId',
-          Operator: 'Include',
-          value: this.landingPageTemplateResourceId
-        })
-      }
+      this.checkAndAddResourceIdToPayload(isInitial, bodyData)
       this.apiFuncs
         .list(this.bodyData)
         .then((response) => {
