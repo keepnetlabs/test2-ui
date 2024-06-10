@@ -456,6 +456,8 @@ export default {
                 totalAttachmentOpenedCount,
                 totalScanQRCount,
                 totalVishedCount,
+                totalCalledCount,
+                totalEnteredCount,
                 totalReportedCount
               } = dataPoint.dataObject
               const detailsObj = {}
@@ -468,15 +470,24 @@ export default {
                 detailsObj['Submitted Data'] = totalSubmittedCount
                 detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
                 detailsObj['Open Attachment'] = totalAttachmentOpenedCount
-                detailsObj['Report'] = totalReportedCount
+                detailsObj['Reports'] = totalReportedCount
               } else if (phishingType === 'Quishing') {
                 detailsObj['Scanned QR Link'] = totalScanQRCount
                 detailsObj['Submitted Data'] = totalSubmittedCount
                 detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
-                detailsObj['Report'] = totalReportedCount
+                detailsObj['Reports'] = totalReportedCount
               } else if (phishingType === 'Vishing') {
                 detailsObj['Total Vished Count'] = totalVishedCount
-                detailsObj['Report'] = totalReportedCount
+                detailsObj['Reports'] = totalReportedCount
+              } else if (phishingType === 'Smishing') {
+                detailsObj['Clicked Link'] = totalClickedCount
+                detailsObj['Submitted Data'] = totalSubmittedCount
+                detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
+                detailsObj['Reports'] = totalReportedCount
+              } else if (phishingType === 'Callback') {
+                detailsObj['Called Back'] = totalCalledCount
+                detailsObj['Entered Digits'] = totalEnteredCount
+                detailsObj['Reports'] = totalReportedCount
               }
               for (const [key, value] of Object.entries(detailsObj)) {
                 let fieldRow = document.createElement('div')

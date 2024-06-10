@@ -152,15 +152,17 @@ export default {
       const annotations = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'Percentage')?.annotations
       })
+      const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      console.log('maxTick', maxTick)
       this.chartData = {
         labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         datasets: [
           {
             type: 'line',
-            label: 'Industry Average',
+            label: 'Industry Avg',
             data: industryAverageData,
             borderColor: '#007bff',
-            backgroundColor: 'rgba(0,123,255,0.1)',
+            backgroundColor: '#1173C1',
             borderWidth: 2,
             fill: false,
             pointRadius: 0,
@@ -220,8 +222,8 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: 100,
-                stepSize: 20,
+                max: maxTick < 50 ? 50 : 100,
+                stepSize: maxTick < 50 ? 10 : 20,
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',
@@ -271,12 +273,100 @@ export default {
           }
         },
         tooltips: {
-          callbacks: {
-            label: function (tooltipItem, data) {
-              const datasetLabel = data.datasets[tooltipItem.datasetIndex].label || ''
-              return datasetLabel + ': ' + tooltipItem.yLabel + '%'
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById(
+              'chartjs-tooltip-impact-of-phishing-awareness-training'
+            )
+
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-impact-of-phishing-awareness-training'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+              document.body.appendChild(tooltipEl)
             }
-          }
+
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+
+            let position = this._chart.canvas.getBoundingClientRect()
+
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left =
+              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let selectedBackgroundColor = ''
+              let selectedLabel = ''
+              let selectedValue = ''
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                let backgroundColor = datasetLabel.includes('Industry') ? '#1173C1' : '#F56C6C'
+                if (!datasetLabel.includes('Industry')) {
+                  if (dataValue - industryAverageData[0] >= 0) {
+                    backgroundColor = '#F56C6C'
+                  } else if (
+                    value - industryAverageData[0] < 0 &&
+                    value - industryAverageData[0] > -10
+                  ) {
+                    backgroundColor = '#D1AD0C'
+                  }
+                }
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:&nbsp;
+                </td>
+                <td>${dataValue || 0}%</td>
+            `
+                if (
+                  datasetLabel ===
+                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
+                ) {
+                  tr.style.fontWeight = '600'
+                  selectedValue = dataValue
+                  selectedLabel = datasetLabel
+                  selectedBackgroundColor = backgroundColor
+                } else {
+                  tr.style.fontWeight = 'normal'
+                }
+
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (i === 0) tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
+            }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 16,
+          yPadding: 16
         },
         plugins: {
           datalabels: {
@@ -286,7 +376,7 @@ export default {
             anchor: 'end',
             color: '#000',
             formatter: function (value, context) {
-              if (context.dataset.label === 'Industry Average') return ''
+              if (context.dataset.label === 'Industry Avg') return ''
               if (annotations[context.dataIndex]) {
                 return annotations[context.dataIndex].definition
               }
@@ -296,18 +386,6 @@ export default {
               size: 9,
               color: '#383B41',
               weight: 'normal'
-            },
-            backgroundColor: function (context) {
-              /*
-              if (
-                context.dataset.label === 'Company Phishing Risk Score' &&
-                context.dataIndex === 1
-              ) {
-                return 'rgba(231,76,60,0.8)'
-              }
-              return 'rgba(0,0,0,0)'
-
-               */
             },
             borderRadius: 4,
             padding: 6

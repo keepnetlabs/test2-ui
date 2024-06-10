@@ -188,11 +188,11 @@ export default {
             tooltips: {
               enabled: false,
               custom: function (tooltipModel) {
-                let tooltipEl = document.getElementById('chartjs-tooltip-risk-score-trend')
+                let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-bar')
 
                 if (!tooltipEl) {
                   tooltipEl = document.createElement('div')
-                  tooltipEl.id = 'chartjs-tooltip-risk-score-trend'
+                  tooltipEl.id = 'chartjs-tooltip-training-completion-bar'
                   tooltipEl.innerHTML =
                     '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
                   document.body.appendChild(tooltipEl)

@@ -363,7 +363,7 @@ export default {
             display: true,
             align: 'end',
             anchor: 'center',
-            color: '#383B41',
+            color: '#000',
             formatter: function (value, context) {
               if (context.dataset.label === 'Company Phishing Risk Score' && value.annotations) {
                 return value.annotations.definition
