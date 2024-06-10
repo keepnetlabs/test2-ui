@@ -298,7 +298,6 @@ export default {
         return
       }
       const { values } = data[0].widgetDatas[0]
-      console.log('values', values)
       const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
       const simulated = values.find((data) => data.name === 'CountSimulated')?.value
       this.chartData = {

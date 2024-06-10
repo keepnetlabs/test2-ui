@@ -16,6 +16,7 @@
               add-data-plugin
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugins"
             />
           </template>
           <div
@@ -85,7 +86,30 @@ export default {
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                const text = textParts[0]
+                const percentage = `(${textParts[1]}%)`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -102,7 +126,7 @@ export default {
       this.isLoading = true
       const payload = {
         widgetIds: [this.card.resourceId],
-        datePeriod: this.datePeriod,
+        datePeriod: 3,
         startDate: this.dateRange[0],
         endDate: this.dateRange[1]
       }
@@ -122,11 +146,9 @@ export default {
         this.isEmpty = true
         return
       }
-      console.log('data[0].widgetDatas', data[0].widgetDatas)
       const industryAverageData = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0
       })
-      console.log('industryAverageData', industryAverageData)
       const companyPhishingRiskScoreData = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'Percentage')?.value
       })
@@ -159,7 +181,6 @@ export default {
               const index = context.dataIndex
               const value = context.dataset.data[index]
               let color = '#43A047'
-              console.log('value', value, industryAverageData[index])
               if (value - industryAverageData[index] >= 0) {
                 color = '#F56C6C'
               } else if (
@@ -232,14 +253,15 @@ export default {
             fontColor: '#383B41',
             fontFamily: 'Open-sans,sans-serif',
             position: 'top',
-            generateLabels(chart) {
-              const { data } = chart
+            generateLabels() {
               return [
                 {
-                  text: 'Industry Average',
+                  text: '',
                   fillStyle: '#1173C1',
                   lineWidth: 0,
-                  datasetIndex: 0
+                  datasetIndex: 0,
+                  industryAverage: industryAverageData[0],
+                  textParts: ['Industry Avg', industryAverageData[0]]
                 }
               ]
             }
@@ -261,7 +283,6 @@ export default {
             anchor: 'end',
             color: '#000',
             formatter: function (value, context) {
-              console.log('context', context)
               if (context.dataset.label === 'Industry Average') return ''
               if (annotations[context.dataIndex]) {
                 return annotations[context.dataIndex].definition

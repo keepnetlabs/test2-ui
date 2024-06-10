@@ -169,6 +169,16 @@ export default {
         this.isEmpty = true
         return
       }
+      let backgroundColor = []
+      this.valueEnums.forEach((data) => {
+        if (!CHART_COLORS[data]) return
+        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+      })
+      const { values } = data[0].widgetDatas[0]
+      const offendersUsers = values.find((data) => data.name === 'CountRepeatOffender')?.value
+      const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
+      const offenders = values.find((data) => data.name === 'RepeatOffenderPercentage')?.value
+      const simulated = values.find((data) => data.name === 'PercentageSimulated')?.value
       const chartOptions = {
         elements: {
           arc: {
@@ -211,7 +221,7 @@ export default {
                   datasetIndex: 1,
                   textParts: [
                     splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
-                    data.datasets[0].data[1]
+                    offendersUsers
                   ],
                   customMarginLeft: 8
                 },
@@ -231,7 +241,7 @@ export default {
                   datasetIndex: 0,
                   textParts: [
                     splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
-                    data.datasets[0].data[0]
+                    simulatedUsers
                   ],
                   customMarginLeft: 2
                 }
@@ -240,14 +250,6 @@ export default {
           }
         }
       }
-      let backgroundColor = []
-      this.valueEnums.forEach((data) => {
-        if (!CHART_COLORS[data]) return
-        backgroundColor.push(CHART_COLORS[data].backgroundColor)
-      })
-      const { values } = data[0].widgetDatas[0]
-      const offenders = values.find((data) => data.name === 'RepeatOffenderPercentage')?.value
-      const simulated = values.find((data) => data.name === 'PercentageSimulated')?.value
       this.chartOptions = {
         ...chartOptions,
         backgroundColor,
