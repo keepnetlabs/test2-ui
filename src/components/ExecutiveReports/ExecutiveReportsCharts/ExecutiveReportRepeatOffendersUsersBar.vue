@@ -16,6 +16,7 @@
               :chart-data="chartData"
               :chart-options="chartOptions"
               :custom-plugin="customPlugin"
+              :another-custom-plugin="anotherCustomPlugin"
             />
           </template>
           <div
@@ -104,6 +105,31 @@ export default {
           ctx.lineTo(xAxis.right, yAxis.bottom)
           ctx.stroke()
           ctx.restore()
+        }
+      },
+      anotherCustomPlugin: {
+        afterDraw: (chart) => {
+          const ctx = chart.chart.ctx
+          const fontSize = 12
+          const fontFamily = 'Open Sans, sans-serif'
+          chart.legend.legendItems.forEach((legendItem, index) => {
+            const textParts = legendItem.textParts
+            if (textParts) {
+              const text = textParts[0]
+              const percentage = `(${textParts[1]} users)`
+              const x = chart.legend.legendHitBoxes[index].left + 17
+              const y = chart.legend.legendHitBoxes[index].top + 6
+              ctx.fillStyle = '#383B41'
+              ctx.fillText(text, x, y)
+              ctx.font = `bold ${fontSize}px ${fontFamily}`
+              ctx.fillText(
+                percentage,
+                x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                y + 0.5
+              )
+              ctx.font = `${fontSize}px ${fontFamily}`
+            }
+          })
         }
       }
     }
@@ -211,22 +237,48 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
+              const splittedRepeatOffenders = labels.RepeatOffenders.split(' ')
+              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
               return [
                 {
-                  text: `Repeat Offenders (${data.datasets[0].data[0]} users)`,
+                  text: Array.from(
+                    labels.RepeatOffenders +
+                      labels.RepeatOffenders +
+                      data.datasets[0].data[0] +
+                      ' (users) '
+                  )
+                    .fill('')
+                    .join(' '),
                   fillStyle: CHART_COLORS[labels.RepeatOffenders]
                     ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 0
+                  datasetIndex: 1,
+                  textParts: [
+                    splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
+                    data.datasets[0].data[0]
+                  ],
+                  customMarginLeft: 8
                 },
                 {
-                  text: `Simulated Users (${data.datasets[1].data[0]} users)`,
+                  text: Array.from(
+                    labels.SimulatedUsers +
+                      labels.SimulatedUsers +
+                      data.datasets[1].data[0] +
+                      ' (users) '
+                  )
+                    .fill('')
+                    .join(' '),
                   fillStyle: CHART_COLORS[labels.SimulatedUsers]
                     ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 1
+                  datasetIndex: 0,
+                  textParts: [
+                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
+                    data.datasets[1].data[0]
+                  ],
+                  customMarginLeft: 2
                 }
               ]
             }

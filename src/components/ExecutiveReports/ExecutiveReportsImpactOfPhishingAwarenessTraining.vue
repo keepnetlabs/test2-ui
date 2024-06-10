@@ -10,14 +10,26 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
-              :add-data-plugin="false"
+              add-data-plugin
               :chart-data="chartData"
               :chart-options="chartOptions"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -66,6 +78,10 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
@@ -78,7 +94,8 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
     callForData() {
@@ -94,147 +111,187 @@ export default {
           const {
             data: { data }
           } = response || {}
-          /*
-          const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
-          const newDatasets = []
-          for (let itemType of valueEnums) {
-            const typedItems = datasets.filter((item) => item.result === itemType)
-            newDatasets.push({
-              type: 'bar',
-              barThickness: 32,
-              label: itemType,
-              ...CHART_COLORS[itemType],
-              data: typedItems
-            })
-          }
-
-           */
-          const industryAverageData = Array(12).fill(30)
-          this.chartData = {
-            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-            datasets: [
-              {
-                type: 'line',
-                label: 'Industry Average (30%)',
-                data: industryAverageData,
-                borderColor: '#007bff',
-                backgroundColor: 'rgba(0,123,255,0.1)',
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0,
-                pointHoverRadius: 0,
-                borderDash: [20, 20],
-                lineTension: 0,
-                order: 1
-              },
-              {
-                type: 'bar',
-                barThickness: 32,
-                label: 'Phishing Risk Score',
-                data: [42, 40, 38, 32, 30, 28, 20, 18, 15, 12, 10, 8],
-                backgroundColor: function (context) {
-                  const index = context.dataIndex
-                  const value = context.dataset.data[index]
-                  let color = '#43A047'
-                  if (value - industryAverageData[index] >= 0) {
-                    color = '#F56C6C'
-                  } else if (
-                    value - industryAverageData[index] < 0 &&
-                    value - industryAverageData[index] > -10
-                  ) {
-                    color = '#D1AD0C'
-                  }
-                  return color
-                },
-                borderWidth: 1,
-                order: 2
-              }
-            ]
-          }
-          this.chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              xAxes: [
-                {
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Months',
-                    fontFamily: 'Open-sans,sans-serif',
-                    fontColor: '#383B41'
-                  },
-                  gridLines: {
-                    display: false
-                  }
-                }
-              ],
-              yAxes: [
-                {
-                  ticks: {
-                    min: 0,
-                    max: 50,
-                    stepSize: 10,
-                    labelOffset: 0,
-                    padding: 12,
-                    fontColor: 'rgba(56, 59, 65, 0.72)',
-                    lineHeight: 1.58,
-                    fontFamily: 'Open-sans,sans-serif',
-                    beginAtZero: true,
-                    callback: function (value) {
-                      return value + '%'
-                    }
-                  },
-                  scaleLabel: {
-                    display: true,
-                    fontFamily: 'Open-sans,sans-serif',
-                    fontSize: 12,
-                    fontColor: '#383B41',
-                    labelString: 'Phishing Risk Score'
-                  },
-                  gridLines: {
-                    display: true,
-                    color: '#F2F2F2',
-                    drawBorder: false,
-                    zeroLineColor: '#757575',
-                    zeroLineWidth: 2
-                  }
-                }
-              ]
-            },
-            legend: {
-              display: true,
-              labels: {
-                usePointStyle: true,
-                fontColor: '#383B41',
-                fontFamily: 'Open-sans,sans-serif',
-                position: 'top',
-                generateLabels(chart) {
-                  const { data } = chart
-                  return [
-                    {
-                      text: 'Industry Average',
-                      fillStyle: '#1173C1',
-                      lineWidth: 0,
-                      datasetIndex: 0
-                    }
-                  ]
-                }
-              }
-            },
-            tooltips: {
-              callbacks: {
-                label: function (tooltipItem, data) {
-                  const datasetLabel = data.datasets[tooltipItem.datasetIndex].label || ''
-                  return datasetLabel + ': ' + tooltipItem.yLabel + '%'
-                }
-              }
-            }
-          }
-          this.isLoading = false
+          this.setChartData(data)
         })
         .finally(() => {
           this.isLoading = false
         })
+    },
+    setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      console.log('data[0].widgetDatas', data[0].widgetDatas)
+      const industryAverageData = data[0].widgetDatas.map((wData) => {
+        return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0
+      })
+      console.log('industryAverageData', industryAverageData)
+      const companyPhishingRiskScoreData = data[0].widgetDatas.map((wData) => {
+        return wData.values.find((v) => v.name === 'Percentage')?.value
+      })
+      const annotations = data[0].widgetDatas.map((wData) => {
+        return wData.values.find((v) => v.name === 'Percentage')?.annotations
+      })
+      this.chartData = {
+        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        datasets: [
+          {
+            type: 'line',
+            label: 'Industry Average',
+            data: industryAverageData,
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0,123,255,0.1)',
+            borderWidth: 2,
+            fill: false,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            borderDash: [20, 20],
+            lineTension: 0,
+            order: 1
+          },
+          {
+            type: 'bar',
+            barThickness: 32,
+            label: 'Phishing Risk Score',
+            data: companyPhishingRiskScoreData,
+            backgroundColor: function (context) {
+              const index = context.dataIndex
+              const value = context.dataset.data[index]
+              let color = '#43A047'
+              console.log('value', value, industryAverageData[index])
+              if (value - industryAverageData[index] >= 0) {
+                color = '#F56C6C'
+              } else if (
+                value - industryAverageData[index] < 0 &&
+                value - industryAverageData[index] > -10
+              ) {
+                color = '#D1AD0C'
+              }
+              return color
+            },
+            borderWidth: 1,
+            order: 2
+          }
+        ]
+      }
+      this.chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [
+            {
+              scaleLabel: {
+                display: true,
+                labelString: 'Months',
+                fontFamily: 'Open-sans,sans-serif',
+                fontColor: '#383B41'
+              },
+              gridLines: {
+                display: false
+              }
+            }
+          ],
+          yAxes: [
+            {
+              ticks: {
+                min: 0,
+                max: 50,
+                stepSize: 10,
+                labelOffset: 0,
+                padding: 12,
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                lineHeight: 1.58,
+                fontFamily: 'Open-sans,sans-serif',
+                beginAtZero: true,
+                callback: function (value) {
+                  return value + '%'
+                }
+              },
+              scaleLabel: {
+                display: true,
+                fontFamily: 'Open-sans,sans-serif',
+                fontSize: 12,
+                fontColor: '#383B41',
+                labelString: 'Phishing Risk Score'
+              },
+              gridLines: {
+                display: true,
+                color: '#F2F2F2',
+                drawBorder: false,
+                zeroLineColor: '#757575',
+                zeroLineWidth: 2
+              }
+            }
+          ]
+        },
+        legend: {
+          display: true,
+          labels: {
+            usePointStyle: true,
+            fontColor: '#383B41',
+            fontFamily: 'Open-sans,sans-serif',
+            position: 'top',
+            generateLabels(chart) {
+              const { data } = chart
+              return [
+                {
+                  text: 'Industry Average',
+                  fillStyle: '#1173C1',
+                  lineWidth: 0,
+                  datasetIndex: 0
+                }
+              ]
+            }
+          }
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItem, data) {
+              const datasetLabel = data.datasets[tooltipItem.datasetIndex].label || ''
+              return datasetLabel + ': ' + tooltipItem.yLabel + '%'
+            }
+          }
+        },
+        plugins: {
+          datalabels: {
+            display: true,
+            align: 'start',
+            offset: -20,
+            anchor: 'end',
+            color: '#000',
+            formatter: function (value, context) {
+              console.log('context', context)
+              if (context.dataset.label === 'Industry Average') return ''
+              if (annotations[context.dataIndex]) {
+                return annotations[context.dataIndex].definition
+              }
+              return ''
+            },
+            font: {
+              size: 9,
+              color: '#383B41',
+              weight: 'normal'
+            },
+            backgroundColor: function (context) {
+              /*
+              if (
+                context.dataset.label === 'Company Phishing Risk Score' &&
+                context.dataIndex === 1
+              ) {
+                return 'rgba(231,76,60,0.8)'
+              }
+              return 'rgba(0,0,0,0)'
+
+               */
+            },
+            borderRadius: 4,
+            padding: 6
+          }
+        }
+      }
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)

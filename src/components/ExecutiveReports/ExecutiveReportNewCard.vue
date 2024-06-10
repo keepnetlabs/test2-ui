@@ -299,10 +299,7 @@ import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/Exec
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'
 import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
-import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
-import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
-import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
 import ExecutiveReportsTopRiskiestDepartments from './ExecutiveReportsCharts/ExecutiveReportsTopRiskiestDepartments.vue'
 export default {
   name: 'ExecutiveReportNewCard',
@@ -557,6 +554,27 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Repeat Offenders Users Threshold',
           key: 'RepeatOffendersUsersThresholdWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        ImpactOfPhishingAwarenessTrainingWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Impact of Phishing Awareness Training',
+          key: 'ImpactOfPhishingAwarenessTrainingWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -996,7 +1014,9 @@ export default {
         case 'IndustryPhishingRiskScoreWidget':
           return ExecutiveReportsIndustryPhishingRiskScore
         case 'RepeatOffendersUsersThresholdWidget':
-          return ExecutiveReportRepeatOffendersUsersBar
+          return ExecutiveReportsRepeatOffendersUsers
+        case 'ImpactOfPhishingAwarenessTrainingWidget':
+          return ExecutiveReportsImpactOfPhishingAwarenessTraining
         default:
           return ExecutiveReportsWidget
       }

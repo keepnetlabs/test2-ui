@@ -67,8 +67,8 @@ export const CHART_COLORS = {
     pointHoverRadius: 3
   },
   'All Industry Avg': {
-    backgroundColor: '#B6791D',
-    borderColor: '#B6791D',
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
     fill: false,
     borderDash: [5, 5],
     borderWidth: 2,

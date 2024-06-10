@@ -182,7 +182,7 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: 'Phishing Risk Score',
-                fontColor: '#383B41'
+                fontColor: '#B6791D'
               },
               offset: false,
               gridLines: {
@@ -197,7 +197,7 @@ export default {
                 max: maxY > 100 ? maxY : 100,
                 stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                 labelOffset: 0,
-                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontColor: '#B6791D',
                 fontFamily: 'Open Sans, sans-serif',
                 beginAtZero: true,
                 padding: 12,
@@ -363,7 +363,7 @@ export default {
             display: true,
             align: 'end',
             anchor: 'center',
-            color: '#000',
+            color: '#383B41',
             formatter: function (value, context) {
               if (context.dataset.label === 'Company Phishing Risk Score' && value.annotations) {
                 return value.annotations.definition
@@ -373,6 +373,7 @@ export default {
             font: {
               size: 9,
               color: '#383B41',
+              family: 'Open Sans, sans-serif',
               weight: 'normal'
             },
             backgroundColor: function (context) {
