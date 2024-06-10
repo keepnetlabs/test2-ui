@@ -109,28 +109,14 @@ export default {
           }
 
            */
-          const industryAverageData = Array(12).fill(30)
           this.chartData = {
             labels: ['Completed', 'In Progress', 'Incomplete'],
             datasets: [
               {
                 barThickness: 32,
-                label: 'Phishing Risk Score',
-                data: [42, 40, 38, 32, 30, 28, 20, 18, 15, 12, 10, 8],
-                backgroundColor: function (context) {
-                  const index = context.dataIndex
-                  const value = context.dataset.data[index]
-                  let color = '#43A047'
-                  if (value - industryAverageData[index] >= 0) {
-                    color = '#F56C6C'
-                  } else if (
-                    value - industryAverageData[index] < 0 &&
-                    value - industryAverageData[index] > -10
-                  ) {
-                    color = '#D1AD0C'
-                  }
-                  return color
-                },
+                label: 'Percentage Of Users',
+                data: [65, 25, 15],
+                backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
                 borderWidth: 1,
                 order: 2
               }
@@ -139,6 +125,11 @@ export default {
           this.chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 24
+              }
+            },
             scales: {
               xAxes: [
                 {
@@ -150,6 +141,11 @@ export default {
                   },
                   gridLines: {
                     display: false
+                  },
+                  ticks: {
+                    fontColor: '#383B41',
+                    fontSize: 9,
+                    fontFamily: 'Open-sans,sans-serif'
                   }
                 }
               ],
@@ -190,12 +186,97 @@ export default {
               display: false
             },
             tooltips: {
-              callbacks: {
-                label: function (tooltipItem, data) {
-                  const datasetLabel = data.datasets[tooltipItem.datasetIndex].label || ''
-                  return datasetLabel + ': ' + tooltipItem.yLabel + '%'
+              enabled: false,
+              custom: function (tooltipModel) {
+                let tooltipEl = document.getElementById('chartjs-tooltip-risk-score-trend')
+
+                if (!tooltipEl) {
+                  tooltipEl = document.createElement('div')
+                  tooltipEl.id = 'chartjs-tooltip-risk-score-trend'
+                  tooltipEl.innerHTML =
+                    '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+                  document.body.appendChild(tooltipEl)
                 }
-              }
+
+                tooltipEl.classList.remove('above', 'below', 'no-transform')
+                if (tooltipModel.yAlign) {
+                  tooltipEl.classList.add(tooltipModel.yAlign)
+                } else {
+                  tooltipEl.classList.add('no-transform')
+                }
+
+                let position = this._chart.canvas.getBoundingClientRect()
+
+                let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
+                tooltipEl.style.opacity = 1
+                tooltipEl.style.position = 'absolute'
+                tooltipEl.style.left =
+                  position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
+                tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+                tooltipEl.style.pointerEvents = 'none'
+
+                let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+                tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+                tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+                tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+                tooltipContent.style.padding =
+                  tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+                tooltipContent.style.background = 'white'
+                tooltipContent.style.border = '1px solid #ccc'
+                tooltipContent.style.borderRadius = '8px'
+                tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+                if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+                  let tableRoot = tooltipContent.querySelector('table')
+                  tableRoot.innerHTML = ''
+                  tableRoot.style.width = '100%'
+                  let titleRow = document.createElement('tr')
+                  const xValue = tooltipModel.dataPoints[0].xLabel
+                  titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
+                  tableRoot.appendChild(titleRow)
+                  let selectedBackgroundColor = ''
+                  let selectedLabel = ''
+                  let selectedValue = ''
+                  this._chart.data.datasets.forEach((dataset) => {
+                    let datasetLabel = dataset.label
+                    let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                    let backgroundColor =
+                      tooltipModel.dataPoints[0].label === 'Completed'
+                        ? '#43A047'
+                        : tooltipModel.dataPoints[0].label === 'Incomplete'
+                        ? '#F56C6C'
+                        : '#E6A23C'
+                    let tr = document.createElement('tr')
+                    tr.innerHTML = `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:&nbsp;
+                </td>
+                <td>${dataValue}%</td>
+            `
+                    if (
+                      datasetLabel ===
+                      this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
+                    ) {
+                      tr.style.fontWeight = '600'
+                      selectedValue = dataValue
+                      selectedLabel = datasetLabel
+                      selectedBackgroundColor = backgroundColor
+                    } else {
+                      tr.style.fontWeight = 'normal'
+                    }
+
+                    tr.style.display = 'flex'
+                    tr.style.justifyContent = 'space-between'
+                    tr.style.paddingBottom = '6px'
+                    tableRoot.appendChild(tr)
+                  })
+                }
+                this._chart.canvas.addEventListener('mouseout', () => {
+                  tooltipEl.style.opacity = 0
+                })
+              },
+              xPadding: 16,
+              yPadding: 16
             }
           }
           this.isLoading = false

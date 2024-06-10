@@ -44,15 +44,34 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [15, 25, 60]
+      default: () => [60, 25, 15]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.Incomplete, labels.InProgress, labels.Completed]
+      default: () => [labels.Completed, labels.InProgress, labels.Incomplete]
     },
     editMode: {
       type: Boolean,
       default: true
+    },
+    card: {
+      type: Object,
+      default: () => {}
+    },
+    dateRange: {
+      type: Array,
+      default: () => []
+    },
+    datePeriod: {
+      type: Number,
+      default: 1
+    },
+    defaultWidgetData: {
+      type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -61,17 +80,50 @@ export default {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
-      customPlugins: []
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]}%)`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
     this.calculateData()
   },
   methods: {
+    callForData() {},
     calculateData() {
       const chartOptions = {
         showLabels: true,
         responsive: true,
+        rotation: 45,
         maintainAspectRatio: false,
         tooltips: {
           enabled: false
@@ -88,13 +140,26 @@ export default {
             generateLabels: (chart = {}) => {
               const { data } = chart
               return data.datasets[0].data.map((d, index) => {
+                const label = data.labels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = label === 'Completed' ? 2 : 4
                 return {
-                  text: `${data.labels[index]} (${d} users)`,
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
+                  )
+                    .fill('')
+                    .join(' '),
                   fillStyle: CHART_COLORS[data.labels[index]]
                     ? CHART_COLORS[data.labels[index]].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: index
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft: label === 'Completed' ? 4 : 0
                 }
               })
             }
@@ -118,6 +183,12 @@ export default {
       })
       this.chartOptions = {
         ...chartOptions,
+        cutoutPercentage: 60,
+        elements: {
+          arc: {
+            borderWidth: 0
+          }
+        },
         backgroundColor,
         labels: this.valueEnums,
         showTooltipLine: true

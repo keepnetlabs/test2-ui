@@ -44,9 +44,6 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
-
 export default {
   name: 'ExecutiveReportsImpactOfPhishingAwarenessTraining',
   components: {
@@ -210,6 +207,12 @@ export default {
               },
               gridLines: {
                 display: false
+              },
+              ticks: {
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontStyle: '600',
+                fontSize: 9,
+                fontFamily: 'Open-sans,sans-serif'
               }
             }
           ],
@@ -217,8 +220,8 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: 50,
-                stepSize: 10,
+                max: 100,
+                stepSize: 20,
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',

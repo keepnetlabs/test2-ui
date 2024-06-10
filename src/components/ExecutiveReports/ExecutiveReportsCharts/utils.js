@@ -85,16 +85,16 @@ export const CHART_COLORS = {
     lineTension: 0
   },
   'In Progress': {
-    backgroundColor: '#E6A23C',
-    borderColor: '#E6A23C',
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   Incomplete: {
-    backgroundColor: '#F56C6C',
-    borderColor: '#F56C6C',
+    backgroundColor: '#E6A23C',
+    borderColor: '#E6A23C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,

@@ -15,6 +15,7 @@
               v-if="chartData"
               :data="chartData"
               :chart-options="chartOptions"
+              :custom-plugins="customPlugins"
               add-data-label-plugin
             />
           </template>
@@ -43,15 +44,34 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [25, 15, 60]
+      default: () => [60, 25, 15]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.Incomplete, labels.InProgress, labels.Completed]
+      default: () => [labels.Completed, labels.InProgress, labels.Incomplete]
     },
     editMode: {
       type: Boolean,
       default: true
+    },
+    card: {
+      type: Object,
+      default: () => {}
+    },
+    dateRange: {
+      type: Array,
+      default: () => []
+    },
+    datePeriod: {
+      type: Number,
+      default: 1
+    },
+    defaultWidgetData: {
+      type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -59,13 +79,46 @@ export default {
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: []
+      chartData: [],
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]}%)`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
     this.calculateData()
   },
   methods: {
+    callForData() {},
     calculateData() {
       const chartOptions = {
         elements: {
@@ -73,7 +126,9 @@ export default {
             borderWidth: 0
           }
         },
+        rotation: 45,
         showLabels: true,
+        labels: this.valueEnums,
         responsive: true,
         maintainAspectRatio: false,
         tooltips: {
@@ -86,36 +141,33 @@ export default {
             usePointStyle: true,
             color: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: 32,
+            padding: 16,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return [
-                {
-                  text: `Completed (${data.datasets[0].data[2]} users)`,
-                  fillStyle: CHART_COLORS[labels.Completed]
-                    ? CHART_COLORS[labels.Completed].backgroundColor
+              return data.datasets[0].data.map((d, index) => {
+                const label = data.labels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = label === 'Completed' ? 2 : 4
+                return {
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[data.labels[index]]
+                    ? CHART_COLORS[data.labels[index]].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 0
-                },
-                {
-                  text: `In Progress (${data.datasets[0].data[1]} users)`,
-                  fillStyle: CHART_COLORS[labels.InProgress]
-                    ? CHART_COLORS[labels.InProgress].backgroundColor
-                    : null,
-                  lineWidth: 0,
-                  datasetIndex: 1
-                },
-                {
-                  text: `Incomplete (${data.datasets[0].data[1]} users)`,
-                  fillStyle: CHART_COLORS[labels.Incomplete]
-                    ? CHART_COLORS[labels.Incomplete].backgroundColor
-                    : null,
-                  lineWidth: 0,
-                  datasetIndex: 1
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft: label === 'Completed' ? 4 : 0
                 }
-              ]
+              })
             }
           }
         }
@@ -128,13 +180,15 @@ export default {
       this.chartOptions = {
         ...chartOptions,
         backgroundColor,
-        labels: this.valueEnums,
         showTooltipLine: true,
         plugins: {
           datalabels: {
             color: '#383B41',
             font: { family: 'Open Sans, sans-serif' },
             display: true,
+            clamp: true,
+            align: 'center',
+            anchor: 'center',
             formatter(value) {
               return `${value}%`
             }
