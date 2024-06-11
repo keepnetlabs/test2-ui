@@ -262,8 +262,7 @@ export default {
             },
             fontFamily: 'Open-sans,sans-serif',
             padding: 16,
-            fontSize: 12,
-            fontLineHeight: 1.5
+            fontSize: 12
           }
         },
         tooltips: {
@@ -372,21 +371,8 @@ export default {
             },
             font: {
               size: 9,
-              color: '#383B41',
               family: 'Open Sans, sans-serif',
               weight: 'normal'
-            },
-            backgroundColor: function (context) {
-              /*
-              if (
-                context.dataset.label === 'Company Phishing Risk Score' &&
-                context.dataIndex === 1
-              ) {
-                return 'rgba(231,76,60,0.8)'
-              }
-              return 'rgba(0,0,0,0)'
-
-               */
             },
             borderRadius: 4,
             padding: 6

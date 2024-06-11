@@ -3,14 +3,14 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Repeat Offenders Users (Threshold: 2)"
-          subtitle="Percentage of users who are repeat offenders"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <PieChart
               v-if="chartData"
               :data="chartData"
@@ -19,6 +19,18 @@
               add-data-label-plugin
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -32,6 +44,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
 export default {
   name: 'ExecutiveReportsTrainingCompletionPie',
   components: {
@@ -77,6 +90,10 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
@@ -115,11 +132,38 @@ export default {
     }
   },
   created() {
-    this.calculateData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
-    callForData() {},
-    calculateData() {
+    callForData() {
+      this.isLoading = true
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: this.datePeriod,
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1]
+      }
+      getExecutiveReportChartData(payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.setChartData(data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const { values } = data[0].widgetDatas[0]
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
         elements: {
           arc: {
@@ -187,15 +231,26 @@ export default {
             font: { family: 'Open Sans, sans-serif' },
             display: true,
             clamp: true,
-            align: 'center',
-            anchor: 'center',
+            anchor: function (context) {
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'start'
+              return 'center'
+            },
+            align: function (context) {
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'center'
+              return 'center'
+            },
             formatter(value) {
+              if (value === 0) return ''
               return `${value}%`
             }
           }
         }
       }
-      this.chartData = this.rawData
+      this.chartData = [completed, inProgress, incomplete]
+      this.isLoading = false
+      this.isEmpty = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)

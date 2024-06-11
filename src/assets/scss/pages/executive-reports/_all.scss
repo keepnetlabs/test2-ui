@@ -375,6 +375,9 @@
       font-size: 18px;
       font-weight: 600;
       color: #2196F3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     &-text{
       font-size: 14px;

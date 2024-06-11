@@ -303,6 +303,7 @@ import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/Exec
 import ExecutiveReportsTopRiskiestDepartments from './ExecutiveReportsCharts/ExecutiveReportsTopRiskiestDepartments.vue'
 import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletion.vue'
 import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
+import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -355,6 +356,7 @@ export default {
       savedReportResourceId: '',
       dateFormat: null,
       activatePreview: this.isPreview,
+      forcePreview: false,
       editMode: !this.isPreview,
       isActionButtonDisabled: false,
       isPreviewDownload: false,
@@ -583,6 +585,27 @@ export default {
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TrainingCompletionWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Training Completion',
+          key: 'TrainingCompletionWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       formData: {
@@ -631,7 +654,8 @@ export default {
       return this.isPreview || this.activatePreview
     },
     getIsStatic() {
-      if (this.$route.name === 'Preview Executive Report') return !this.editMode
+      if (this.$route.name === 'Preview Executive Report')
+        return !this.editMode || this.forcePreview
       return this.isShowPreview ? this.isShowPreview : !this.editMode
     },
     getIsShowEditTopFields() {
@@ -727,7 +751,8 @@ export default {
             widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget' ||
             widget.widgetType === 'RepeatOffendersUsersThresholdWidget' ||
             widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
-            widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget'
+            widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget' ||
+            widget.widgetType === 'TrainingCompletionWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -816,6 +841,7 @@ export default {
       if (!this.$refs.refForm.validate()) return
       this.activatePreview = true
       this.isPreviewDownload = true
+      this.forcePreview = true
       this.toggleShowDownloadModal()
     },
     async handleSaveReportClick() {
@@ -911,7 +937,8 @@ export default {
             },
             watermark: ({ pdf, pageNumber, totalPageNumber }) => {
               const lastY = this.layout[this.layout.length - 1]?.y
-              if (lastY % 18 === 0 && totalPageNumber > 1) pdf.deletePage(totalPageNumber)
+              if (lastY === 18 && lastY % 18 === 0 && totalPageNumber > 1)
+                pdf.deletePage(totalPageNumber)
               pdf.setTextColor('#383B41')
               pdf.setFontSize(8)
               let width, height
@@ -944,6 +971,7 @@ export default {
             this.justDownload = false
             this.isShowDownloadModal = false
             this.isReportCreated = false
+            this.forcePreview = false
           }, 1000)
         }, 1000)
       })
@@ -1008,7 +1036,6 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
-      console.log('item', item)
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
@@ -1026,6 +1053,15 @@ export default {
           return ExecutiveReportsRepeatOffendersUsers
         case 'ImpactOfPhishingAwarenessTrainingWidget':
           return ExecutiveReportsImpactOfPhishingAwarenessTraining
+        case 'TrainingCompletionWidget':
+          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportsTrainingCompletionBar
+          else if (
+            name?.toLowerCase()?.includes('pie') ||
+            item?.title?.toLowerCase()?.includes('pie')
+          )
+            return ExecutiveReportsTrainingCompletionPie
+          return ExecutiveReportsTrainingCompletion
         default:
           return ExecutiveReportsWidget
       }

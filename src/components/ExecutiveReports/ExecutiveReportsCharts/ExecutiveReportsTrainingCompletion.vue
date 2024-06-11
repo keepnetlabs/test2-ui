@@ -10,7 +10,7 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <DoughnutChart
               v-if="chartData"
               :chart-data="chartData"
@@ -19,6 +19,18 @@
               :custom-plugins="customPlugins"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -32,6 +44,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
 export default {
   name: 'ExecutiveReportsTrainingCompletion',
   components: {
@@ -77,6 +90,10 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
@@ -115,11 +132,38 @@ export default {
     }
   },
   created() {
-    this.calculateData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
-    callForData() {},
-    calculateData() {
+    callForData() {
+      this.isLoading = true
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: this.datePeriod,
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1]
+      }
+      getExecutiveReportChartData(payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.setChartData(data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const { values } = data[0].widgetDatas[0]
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
         showLabels: true,
         responsive: true,
@@ -171,6 +215,7 @@ export default {
             font: { family: 'Open Sans, sans-serif' },
             display: true,
             formatter(value) {
+              if (value === 0) return ''
               return `${value}%`
             }
           }
@@ -197,11 +242,13 @@ export default {
         labels: this.valueEnums,
         datasets: [
           {
-            data: this.rawData,
+            data: [completed, inProgress, incomplete],
             backgroundColor
           }
         ]
       }
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
