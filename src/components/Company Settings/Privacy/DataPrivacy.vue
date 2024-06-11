@@ -46,9 +46,7 @@
               <p class="mb-0 font-italic">
                 For an email address like alex@company.com, it will be shown as is
               </p>
-              <p class="mb-0 font-italic">
-                only to your company’s system users.
-              </p>
+              <p class="mb-0 font-italic">only to your company’s system users.</p>
             </div>
           </template>
         </VRadio>
@@ -85,7 +83,7 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
-
+import { mapGetters } from 'vuex'
 import { getCompanyDataPrivacy, saveCompanyDataPrivacy } from '@/api/company'
 import PrivacyOptionsDialog from '@/components/Company Settings/Privacy/PrivacyOptionsDialog.vue'
 export default {
@@ -105,10 +103,14 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getUserRole: 'auth/getUserRole'
+    }),
     isReturnMainAccountVisible() {
       return (
         localStorage.getItem('companyResourceId') !==
-        localStorage.getItem('selectedCompanyRequestId')
+          localStorage.getItem('selectedCompanyRequestId') &&
+        ['Root', 'Company Admin', 'Reseller'].includes(this.getUserRole)
       )
     },
     isActionButtonDisabled() {
