@@ -587,6 +587,7 @@ export default {
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter,
+          showByExamStatus: this.selectedExamStatusFilter,
           trainingType: this.isAddTrainingTypeKeyToPayload
             ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
             : null
