@@ -56,7 +56,7 @@ export default {
     },
     getBody() {
       if (this.selectedRow.status)
-        return 'This action will deactivate the scheduled report, making it unavailable for further scheduling. You can reactivate it at any time.'
+        return 'This action will inactive the scheduled report, making it unavailable for further scheduling. You can reactivate it at any time.'
       return 'This action will activate the scheduled report, making it available for scheduling.'
     }
   },
