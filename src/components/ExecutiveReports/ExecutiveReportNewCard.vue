@@ -634,8 +634,7 @@ export default {
     getDownloadPdfStyle() {
       const style = {
         padding: '4px',
-        width: '1088px',
-        zoom: 0.9
+        width: '1088px'
       }
 
       if (this.isScheduledReport) return style
