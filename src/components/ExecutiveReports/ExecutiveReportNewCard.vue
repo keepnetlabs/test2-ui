@@ -257,7 +257,7 @@
             >
               <component
                 :id="item.key"
-                :is="getComponent(item.key)"
+                :is="getComponent(item.key, item.name, item)"
                 :resizable="false"
                 :edit-mode="!getIsStatic"
                 :card="item"
@@ -379,7 +379,7 @@ export default {
           if (maxDate && minDate) {
             this.date = refPicker.formatToValue([minDate, maxDate])
           }
-          this.formData.datePeriod = 4
+          this.formData.datePeriod = 5
         },
         shortcuts: [
           {
@@ -429,7 +429,7 @@ export default {
               const firstDayOfYear = new Date(year, 0, 1)
               const lastDayOfYear = new Date(year, 11, 31)
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
-              this.formData.datePeriod = 5
+              this.formData.datePeriod = 4
             }
           }
         ],
@@ -649,7 +649,7 @@ export default {
         return 'Last 6 Months'
       } else if (datePeriod === 3) {
         return 'Last Year'
-      } else if (datePeriod === 5) {
+      } else if (datePeriod === 4) {
         return 'This Year'
       }
       return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
@@ -708,7 +708,7 @@ export default {
             this.$moment(start).format(getTimeZoneForMoment()),
             this.$moment(end).format(getTimeZoneForMoment())
           ]
-        } else if (this.formData.datePeriod === 5) {
+        } else if (this.formData.datePeriod === 4) {
           const firstDayOfYear = new Date(start.getFullYear(), 0, 1)
           const lastDayOfYear = new Date(start.getFullYear(), 11, 31)
           this.formData.executiveReportDateRange = [
@@ -832,7 +832,7 @@ export default {
         },
         widgetLayouts: this.layout
       }
-      if (this.formData.datePeriod === 4) {
+      if (this.formData.datePeriod === 5) {
         payload.executiveReport.startDate = this.formData.executiveReportDateRange[0]
         payload.executiveReport.endDate = this.formData.executiveReportDateRange[1]
       }
@@ -988,7 +988,8 @@ export default {
         endDate: this.formData.executiveReportDateRange[1],
         resourceId: widget.resourceId,
         title: widget.name,
-        parentKey: widget.description
+        parentKey: widget.description,
+        name: widget.name
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
@@ -1006,7 +1007,8 @@ export default {
       this.layout.splice(index, 1)
       this.$emit('on-delete', item)
     },
-    getComponent(componentString) {
+    getComponent(componentString, name, item) {
+      console.log('item', item)
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
@@ -1019,6 +1021,8 @@ export default {
         case 'IndustryPhishingRiskScoreWidget':
           return ExecutiveReportsIndustryPhishingRiskScore
         case 'RepeatOffendersUsersThresholdWidget':
+          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportRepeatOffendersUsersBar
           return ExecutiveReportsRepeatOffendersUsers
         case 'ImpactOfPhishingAwarenessTrainingWidget':
           return ExecutiveReportsImpactOfPhishingAwarenessTraining
