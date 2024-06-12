@@ -164,6 +164,16 @@ export default {
         })
     },
     setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const { values } = data[0].widgetDatas[0]
+      const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
+      const simulated = values.find((data) => data.name === 'CountSimulated')?.value
+      const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
+        ?.value
+      const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
       this.chartOptions = {
         indexAxis: 'y',
         devicePixelRatio: 2,
@@ -204,7 +214,7 @@ export default {
               offset: false,
               scaleLabel: {
                 display: true,
-                labelString: 'Percentage Of Users',
+                labelString: 'Percentage of Users',
                 fontColor: '#383B41'
               },
               gridLines: {
@@ -254,10 +264,10 @@ export default {
                     ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 1,
+                  datasetIndex: 0,
                   textParts: [
                     splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
-                    data.datasets[0].data[0]
+                    offenders
                   ],
                   customMarginLeft: 8
                 },
@@ -274,10 +284,10 @@ export default {
                     ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 0,
+                  datasetIndex: 1,
                   textParts: [
                     splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
-                    data.datasets[1].data[0]
+                    simulated
                   ],
                   customMarginLeft: 2
                 }
@@ -286,7 +296,74 @@ export default {
           }
         },
         tooltips: {
-          enabled: false
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-repeat-offenders-users-bar')
+
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-repeat-offenders-users-bar'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+              document.body.appendChild(tooltipEl)
+            }
+
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+
+            let position = this._chart.canvas.getBoundingClientRect()
+
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left =
+              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[0]
+                let backgroundColor = dataset.backgroundColor
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:&nbsp;
+                </td>
+                <td style="font-weight: 600">${dataValue || 0}%</td>
+            `
+
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (i === 0) tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
+            }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 12,
+          yPadding: 12
         },
         plugins: {
           datalabels: {
@@ -294,20 +371,13 @@ export default {
           }
         }
       }
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
-      }
-      const { values } = data[0].widgetDatas[0]
-      const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
-      const simulated = values.find((data) => data.name === 'CountSimulated')?.value
       this.chartData = {
         xLabels: [0, 100],
         yLabels: ['Users'],
         datasets: [
           {
             label: 'Repeat Offenders',
-            data: [offenders],
+            data: [offendersPercentage],
             barThickness: 150,
             backgroundColor: '#F56C6C',
             borderWidth: 1,
@@ -315,7 +385,7 @@ export default {
           },
           {
             label: 'Simulated Users',
-            data: [simulated],
+            data: [simulatedPercentage],
             barThickness: 150,
             backgroundColor: '#2196F3',
             borderWidth: 1,
