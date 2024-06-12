@@ -68,6 +68,7 @@ export default {
   methods: {
     calculateData() {
       const chartOptions = {
+        devicePixelRatio: 2,
         showLabels: true,
         responsive: true,
         maintainAspectRatio: false,

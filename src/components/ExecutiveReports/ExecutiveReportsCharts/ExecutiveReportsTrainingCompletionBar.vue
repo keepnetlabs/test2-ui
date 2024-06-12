@@ -141,6 +141,7 @@ export default {
         ]
       }
       this.chartOptions = {
+        devicePixelRatio: 2,
         responsive: true,
         maintainAspectRatio: false,
         layout: {

@@ -165,6 +165,7 @@ export default {
       const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
       const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
+        devicePixelRatio: 2,
         elements: {
           arc: {
             borderWidth: 0
