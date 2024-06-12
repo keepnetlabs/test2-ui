@@ -185,6 +185,7 @@ export default {
             borderWidth: 0
           }
         },
+        devicePixelRatio: 2,
         showLabels: true,
         responsive: true,
         maintainAspectRatio: false,

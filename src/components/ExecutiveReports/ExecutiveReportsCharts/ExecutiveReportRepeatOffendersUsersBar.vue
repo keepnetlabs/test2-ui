@@ -166,6 +166,7 @@ export default {
     setChartData(data) {
       this.chartOptions = {
         indexAxis: 'y',
+        devicePixelRatio: 2,
         responsive: true,
         padding: 24,
         layout: {

@@ -173,6 +173,7 @@ export default {
       }
       this.chartOptions = {
         responsive: true,
+        devicePixelRatio: 2,
         maintainAspectRatio: false,
         scales: {
           yAxes: [

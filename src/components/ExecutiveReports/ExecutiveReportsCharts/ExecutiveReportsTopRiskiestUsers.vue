@@ -112,7 +112,7 @@ export default {
                 //ctx.measureText(text).width;
                 const x = Math.floor(maxData._model.x / 2.3)
                 const y = maxData._model.y - padding + 2
-                ctx.fillStyle = '#383B41'
+                ctx.fillStyle = '#000'
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
@@ -167,6 +167,7 @@ export default {
     },
     setChartData(data) {
       this.chartOptions = {
+        devicePixelRatio: 2,
         indexAxis: 'y',
         responsive: true,
         padding: 24,
