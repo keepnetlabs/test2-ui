@@ -938,7 +938,8 @@ export default {
           const pdf = await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: 2
+              scale: window.devicePixelRatio * 2,
+              logging: false
             },
             jsPDF: {
               format: 'a4'
