@@ -21,6 +21,9 @@ export const createExecutiveReportChartData = (widgetData, comingDateFormat) => 
         y: vItem.value,
         result: vItem.label
       }
+      if (vItem.name) {
+        obj['name'] = vItem.name
+      }
       if (vItem.annotations) {
         obj['annotations'] = vItem.annotations
       }

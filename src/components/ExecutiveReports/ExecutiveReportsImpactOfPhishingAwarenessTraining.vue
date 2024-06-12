@@ -44,6 +44,7 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 export default {
   name: 'ExecutiveReportsImpactOfPhishingAwarenessTraining',
   components: {
@@ -143,6 +144,24 @@ export default {
         this.isEmpty = true
         return
       }
+      const monthNamesLong = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ]
+      const params = [data[0].widgetDatas]
+      if (this.dateFormat) params.push(this.dateFormat)
+      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
+
       const industryAverageData = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0
       })
@@ -152,14 +171,15 @@ export default {
       const annotations = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'Percentage')?.annotations
       })
+      const companyPhishingRiskScoreDataset = datasets.filter((d) => d.name === 'Percentage')
+      const industryAverageDataset = datasets.filter((d) => d.name === 'IndustryAverage')
       const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
       this.chartData = {
-        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         datasets: [
           {
             type: 'line',
             label: 'Industry Avg',
-            data: industryAverageData,
+            data: industryAverageDataset,
             borderColor: '#007bff',
             backgroundColor: '#1173C1',
             borderWidth: 2,
@@ -174,10 +194,10 @@ export default {
             type: 'bar',
             barThickness: 32,
             label: 'Phishing Risk Score',
-            data: companyPhishingRiskScoreData,
+            data: companyPhishingRiskScoreDataset,
             backgroundColor: function (context) {
               const index = context.dataIndex
-              const value = context.dataset.data[index]
+              const value = context.dataset.data[index].y
               let color = '#43A047'
               if (value - industryAverageData[index] >= 0) {
                 color = '#F56C6C'
@@ -197,6 +217,11 @@ export default {
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
+        layout: {
+          padding: {
+            right: 36
+          }
+        },
         maintainAspectRatio: false,
         scales: {
           xAxes: [
@@ -214,7 +239,19 @@ export default {
                 fontColor: 'rgba(56, 59, 65, 0.72)',
                 fontStyle: '600',
                 fontSize: 9,
-                fontFamily: 'Open-sans,sans-serif'
+                fontFamily: 'Open-sans,sans-serif',
+                callback(value) {
+                  const splittedVal = value.split('/')
+                  const monthName = monthNamesLong[splittedVal[0] - 1]
+                  return `${monthName}/${value.split('/')[1]}`
+                }
+              },
+              type: 'time',
+              time: {
+                unit: 'month',
+                displayFormats: {
+                  month: 'MM/YYYY'
+                }
               }
             }
           ],
@@ -323,7 +360,7 @@ export default {
               let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
-                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index].y
                 let backgroundColor = datasetLabel.includes('Industry') ? '#1173C1' : '#F56C6C'
                 if (!datasetLabel.includes('Industry')) {
                   if (dataValue - industryAverageData[0] >= 0) {
