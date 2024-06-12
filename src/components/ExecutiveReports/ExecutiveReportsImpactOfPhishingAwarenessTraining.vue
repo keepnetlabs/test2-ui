@@ -228,7 +228,7 @@ export default {
             {
               scaleLabel: {
                 display: true,
-                labelString: 'Months',
+                labelString: 'Month/Year',
                 fontFamily: 'Open-sans,sans-serif',
                 fontColor: '#383B41'
               },
