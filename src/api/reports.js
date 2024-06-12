@@ -74,6 +74,9 @@ export const exportReportScheduling = (payload) => {
     responseType: 'blob'
   })
 }
+export const uploadExecutiveReportPdf = (formData, resourceId) => {
+  return testRequest.post(`/executive-report/${resourceId}/upload`, formData)
+}
 export const getReportScheduling = (resourceId) => {
   return testRequest.get(`/report-scheduling/${resourceId}`)
 }

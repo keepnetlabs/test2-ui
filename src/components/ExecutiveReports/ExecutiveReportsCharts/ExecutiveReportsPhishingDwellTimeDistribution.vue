@@ -183,7 +183,7 @@ export default {
                   position: 'left',
                   scaleLabel: {
                     display: true,
-                    labelString: 'Percentage Of Users',
+                    labelString: 'Percentage of Users',
                     fontColor: '#383B41'
                   },
                   offset: true,
