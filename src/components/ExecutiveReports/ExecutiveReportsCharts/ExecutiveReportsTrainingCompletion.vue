@@ -3,8 +3,8 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Training Completion"
-          subtitle="Measure the training coverage across the company"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
