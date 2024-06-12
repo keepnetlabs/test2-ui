@@ -222,8 +222,8 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: maxTick < 50 ? 50 : 100,
-                stepSize: maxTick < 50 ? 10 : 20,
+                max: maxTick < 50 ? 50 : maxTick,
+                stepSize: maxTick < 50 ? 10 : maxTick <= 100 ? 20 : maxTick / 5,
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',
