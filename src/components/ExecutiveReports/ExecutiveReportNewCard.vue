@@ -304,6 +304,7 @@ import ExecutiveReportsTopRiskiestDepartments from './ExecutiveReportsCharts/Exe
 import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletion.vue'
 import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
 import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
+import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsEmptyWidget.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -606,6 +607,27 @@ export default {
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        EmptyWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 2,
+          defaultH: 2,
+          minH: 2,
+          maxH: 2,
+          i: createRandomCryptStringNumber(),
+          title: 'EmptyWidget',
+          key: 'EmptyWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       formData: {
@@ -781,9 +803,11 @@ export default {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
+      if (bdCol > 2) return
       let x = 0,
         xValue = 0,
         y = 0
+
       this.layout.sort((a, b) => {
         if (a.y > b.y) {
           return 1
@@ -896,11 +920,16 @@ export default {
       fileName = this.formData.name,
       activatePreview = this.activatePreview
     ) {
+      let emptyWidgetIndex = this.addEmptyWidget()
       this.isPdfDownload = true
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
       const updateReportCreated = () => {
         this.isReportCreated = true
+      }
+      const removeEmptyWidget = () => {
+        if (!emptyWidgetIndex) return
+        this.layout.splice(emptyWidgetIndex, 1)
       }
       const brandName = this.brandName
       this.$nextTick(async () => {
@@ -909,7 +938,7 @@ export default {
           const pdf = await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: 1.5
+              scale: 2
             },
             jsPDF: {
               format: 'a4'
@@ -964,6 +993,7 @@ export default {
           setTimeout(() => {
             if (isShowDownloadModalFromStart)
               return this.$router.push({ name: 'Executive Reports' })
+            if (emptyWidgetIndex) removeEmptyWidget()
             this.isPdfDownload = false
             this.activatePreview = false
             this.isPreviewDownload = false
@@ -974,6 +1004,41 @@ export default {
           }, 1000)
         }, 1000)
       })
+    },
+    addEmptyWidget() {
+      let updatedIndex = 0
+      let maxY = 0
+      this.layout.sort((a, b) => a.y - b.y)
+      this.layout.forEach((item, index) => {
+        if (item.y === 42 && updatedIndex === 0) {
+          updatedIndex = index
+        }
+        maxY = item.y
+      })
+      if (updatedIndex && maxY > 42) {
+        this.layout.splice(updatedIndex, 0, {
+          x: 0,
+          y: 48,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: createRandomCryptStringNumber(),
+          title: 'EmptyWidget',
+          key: 'EmptyWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        })
+      }
+      return updatedIndex
     },
     handleCancelClick() {
       if (
@@ -1061,6 +1126,8 @@ export default {
           )
             return ExecutiveReportsTrainingCompletionPie
           return ExecutiveReportsTrainingCompletion
+        case 'EmptyWidget':
+          return ExecutiveReportsEmptyWidget
         default:
           return ExecutiveReportsWidget
       }
