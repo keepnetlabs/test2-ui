@@ -38,5 +38,6 @@ export const DATE_PERIOD_ENUMS = {
   Last3Months: 1,
   Last6Months: 2,
   LastYear: 3,
-  Custom: 4
+  ThisYear: 4,
+  Custom: 5
 }

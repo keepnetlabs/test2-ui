@@ -1,5 +1,10 @@
 <template>
-  <PieChart v-if="chartData" :data="chartData" :chart-options="chartOptions" />
+  <PieChart
+    v-if="chartData"
+    :data="chartData"
+    :chart-options="chartOptions"
+    :custom-plugins="customPlugins"
+  />
 </template>
 <script>
 import PieChart from '@/components/Common/Charts/Pie.vue'
@@ -24,6 +29,19 @@ export default {
         labels.SubmittedData,
         labels.SubmittedMFACode,
         labels.EmailFailedToSend
+      ]
+    },
+    customPlugins: {
+      type: Array,
+      default: () => [
+        {
+          id: 'height-plugin',
+          beforeInit: function (chart) {
+            chart.legend.afterFit = function () {
+              this.height = this.height + 24
+            }
+          }
+        }
       ]
     }
   },

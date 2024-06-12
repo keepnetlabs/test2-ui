@@ -13,7 +13,6 @@
           <template v-if="!isEmpty">
             <PieChart
               v-if="chartData"
-              style="margin-top: -8px;"
               :data="chartData"
               :chart-options="chartOptions"
               :custom-plugins="customPlugins"
@@ -47,7 +46,7 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 export default {
-  name: 'ExecutiveReportsRepeatOffendersUsers',
+  name: 'ExecutiveReportsTrainingCompletionPie',
   components: {
     ExecutiveWidgetHeader,
     ExecutiveWidgetContainer,
@@ -58,15 +57,19 @@ export default {
   props: {
     rawData: {
       type: Array,
-      default: () => [30, 70]
+      default: () => [60, 25, 15]
     },
     valueEnums: {
       type: Array,
-      default: () => [labels.SimulatedUsers, labels.RepeatOffenders]
+      default: () => [labels.Completed, labels.InProgress, labels.Incomplete]
     },
     editMode: {
       type: Boolean,
       default: true
+    },
+    card: {
+      type: Object,
+      default: () => {}
     },
     dateRange: {
       type: Array,
@@ -82,31 +85,19 @@ export default {
     dateFormat: {
       type: String,
       default: ''
-    },
-    card: {
-      type: Object,
-      default: () => {}
     }
   },
   data() {
     return {
       isLoading: false,
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      chartOptions: {},
-      chartData: [],
       isEmpty: false,
       empty: {
         message: 'You do not have any report conclusion'
       },
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      chartOptions: {},
+      chartData: [],
       customPlugins: [
-        {
-          id: 'height-plugin',
-          beforeInit: function (chart) {
-            chart.legend.afterFit = function () {
-              this.height = this.height + 8
-            }
-          }
-        },
         {
           afterDraw: (chart) => {
             const ctx = chart.chart.ctx
@@ -115,8 +106,8 @@ export default {
             chart.legend.legendItems.forEach((legendItem, index) => {
               const textParts = legendItem.textParts
               if (textParts) {
-                const text = textParts[0]
-                const percentage = `(${textParts[1]} users)`
+                let text = textParts[0]
+                let percentage = `(${textParts[1]}%)`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -169,23 +160,19 @@ export default {
         this.isEmpty = true
         return
       }
-      let backgroundColor = []
-      this.valueEnums.forEach((data) => {
-        if (!CHART_COLORS[data]) return
-        backgroundColor.push(CHART_COLORS[data].backgroundColor)
-      })
       const { values } = data[0].widgetDatas[0]
-      const offendersUsers = values.find((data) => data.name === 'CountRepeatOffender')?.value
-      const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
-      const offenders = values.find((data) => data.name === 'RepeatOffenderPercentage')?.value
-      const simulated = values.find((data) => data.name === 'PercentageSimulated')?.value
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
         elements: {
           arc: {
             borderWidth: 0
           }
         },
+        rotation: 45,
         showLabels: true,
+        labels: this.valueEnums,
         responsive: true,
         maintainAspectRatio: false,
         tooltips: {
@@ -196,95 +183,73 @@ export default {
           position: 'top',
           labels: {
             usePointStyle: true,
-            fontColor: '#383B41',
+            color: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: 32,
+            padding: 16,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              const splittedRepeatOffenders = labels.RepeatOffenders.split(' ')
-              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
-              return [
-                {
+              return data.datasets[0].data.map((d, index) => {
+                const label = data.labels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = label === 'Completed' ? 2 : 4
+                return {
                   text: Array.from(
-                    labels.RepeatOffenders +
-                      labels.RepeatOffenders +
-                      data.datasets[0].data[1] +
-                      ' (users) '
+                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
                   )
                     .fill('')
                     .join(' '),
-                  fillStyle: CHART_COLORS[labels.RepeatOffenders]
-                    ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
+                  fillStyle: CHART_COLORS[data.labels[index]]
+                    ? CHART_COLORS[data.labels[index]].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: 1,
-                  textParts: [
-                    splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
-                    offendersUsers
-                  ],
-                  customMarginLeft: 8
-                },
-                {
-                  text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[0].data[0] +
-                      ' (users) '
-                  )
-                    .fill('')
-                    .join(' '),
-                  fillStyle: CHART_COLORS[labels.SimulatedUsers]
-                    ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
-                    : null,
-                  lineWidth: 0,
-                  datasetIndex: 0,
-                  textParts: [
-                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
-                    simulatedUsers
-                  ],
-                  customMarginLeft: 2
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft: label === 'Completed' ? 4 : 0
                 }
-              ]
+              })
             }
           }
         }
       }
+      let backgroundColor = []
+      this.valueEnums.forEach((data) => {
+        if (!CHART_COLORS[data]) return
+        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+      })
       this.chartOptions = {
         ...chartOptions,
         backgroundColor,
-        labels: this.valueEnums,
         showTooltipLine: true,
         plugins: {
           datalabels: {
             color: '#383B41',
+            font: { family: 'Open Sans, sans-serif' },
+            display: true,
+            clamp: true,
             anchor: function (context) {
-              if (context.dataset.data.includes(0)) return 'start'
-              return 'top'
-            },
-            align: function (context) {
-              if (context.dataset.data.includes(0)) return 'center'
-              if (context.dataset.data[1] > context.dataset.data[0]) {
-                if (context.dataIndex === 0) {
-                  return 'center'
-                }
-                return 'top'
-              }
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'start'
               return 'center'
             },
-            display: true,
-            font: {
-              size: 12,
-              family: 'Open Sans, sans-serif'
+            align: function (context) {
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'center'
+              return 'center'
             },
             formatter(value) {
-              if (value) return `${value}%`
-              return ``
+              if (value === 0) return ''
+              return `${value}%`
             }
           }
         }
       }
-      this.chartData = [simulated, offenders]
+      this.chartData = [completed, inProgress, incomplete]
+      this.isLoading = false
       this.isEmpty = false
     },
     handleDelete() {

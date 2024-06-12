@@ -257,7 +257,7 @@
             >
               <component
                 :id="item.key"
-                :is="getComponent(item.key)"
+                :is="getComponent(item.key, item.name, item)"
                 :resizable="false"
                 :edit-mode="!getIsStatic"
                 :card="item"
@@ -297,6 +297,14 @@ import { mapGetters } from 'vuex'
 import { fileToBase64 } from '@/utils/functions'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
+import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'
+import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
+import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
+import ExecutiveReportsTopRiskiestDepartments from './ExecutiveReportsCharts/ExecutiveReportsTopRiskiestDepartments.vue'
+import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletion.vue'
+import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
+import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
+import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsEmptyWidget.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -349,6 +357,7 @@ export default {
       savedReportResourceId: '',
       dateFormat: null,
       activatePreview: this.isPreview,
+      forcePreview: false,
       editMode: !this.isPreview,
       isActionButtonDisabled: false,
       isPreviewDownload: false,
@@ -372,7 +381,7 @@ export default {
           if (maxDate && minDate) {
             this.date = refPicker.formatToValue([minDate, maxDate])
           }
-          this.formData.datePeriod = 4
+          this.formData.datePeriod = 5
         },
         shortcuts: [
           {
@@ -416,64 +425,20 @@ export default {
             }
           },
           {
-            text: 'All time',
+            text: 'This Year',
             onClick: (picker) => {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1095)
-              picker.$emit('pick', [start, end])
+              const year = new Date().getFullYear()
+              const firstDayOfYear = new Date(year, 0, 1)
+              const lastDayOfYear = new Date(year, 11, 31)
+              picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
               this.formData.datePeriod = 4
             }
           }
-        ]
+        ],
+        disabledDate: this.disabledDates
       },
       selectedRow: {},
       allWidgets: {
-        PhishingCampaignTrendWidget: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Phishing Campaign Trends',
-          subtitle: '(Phishing)',
-          key: 'PhishingCampaignTrendWidget',
-          name: 'Phishing Campaign Trend',
-          widgetType: 'PhishingCampaignTrendWidget',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        PhishingCampaignRiskiestUsersTableWidget: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Phishing Campaign Riskiest Users',
-          key: 'PhishingCampaignRiskiestUsersTableWidget',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'table',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
         PhishingRiskScoreAcrossIndustriesWidget: {
           x: 0,
           y: 0,
@@ -537,27 +502,6 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        ConsolidatedPhishingSimulationMetrics: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Consolidated PhishingSimulation Metrics',
-          key: 'ConsolidatedPhishingSimulationMetrics',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'bar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
         HumanRiskScoreforHighestRiskUsersWidget: {
           x: 0,
           y: 0,
@@ -579,317 +523,107 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        RiskScore: {
+        HumanRiskScoreforHighestRiskDepartmentsWidget: {
           x: 0,
           y: 0,
           w: 6,
           minW: 6,
           defaultW: 6,
-          midW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Risk Score',
-          key: 'RiskScore',
+          title: 'Department with Highest Risk Scores',
+          key: 'HumanRiskScoreforHighestRiskDepartmentsWidget',
           isAllowed: true,
-          parentKey: 'Risk Score',
-          chartType: 'gauge',
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        TrainingCompletion: {
+        RepeatOffendersUsersThresholdWidget: {
           x: 0,
           y: 0,
           w: 6,
           minW: 6,
           defaultW: 6,
-          midW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Repeat Offenders Users Threshold',
+          key: 'RepeatOffendersUsersThresholdWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        ImpactOfPhishingAwarenessTrainingWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Impact of Phishing Awareness Training',
+          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TrainingCompletionWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
           h: 6,
           defaultH: 6,
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
           title: 'Training Completion',
-          key: 'TrainingCompletion',
+          key: 'TrainingCompletionWidget',
           isAllowed: true,
-          parentKey: 'Training Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        TopRiskiestUsers: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Top Riskiest Users',
-          key: 'TopRiskiestUsers',
-          isAllowed: true,
-          parentKey: 'Training Metrics',
-          chartType: 'table',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        VishingMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'VishingMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Vishing Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        QuishingCampaignTrendWidget: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Quishing Campaign Trend',
-          key: 'QuishingCampaignTrendWidget',
-          isAllowed: true,
-          parentKey: 'Quishing Metrics',
+          parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        QuishingMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'QuishingMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Quishing Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        CallbackCampaignTrendWidget: {
+        EmptyWidget: {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
+          midW: 12,
+          h: 2,
+          defaultH: 2,
+          minH: 2,
+          maxH: 2,
           i: createRandomCryptStringNumber(),
-          title: 'Callback Campaign Trend',
-          key: 'CallbackCampaignTrendWidget',
-          isAllowed: true,
-          parentKey: 'Callback Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        CallbackMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'CallbackMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Callback Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        SmishingCampaignTrendWidget: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Smishing Campaign Trend',
-          key: 'SmishingCampaignTrendWidget',
-          isAllowed: true,
-          parentKey: 'Smishing Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        SmishingMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'SmishingMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Smishing Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        PhishingReporterTrends: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Phishing Campaign Trends',
-          key: 'PhishingReporterTrends',
+          title: 'EmptyWidget',
+          key: 'EmptyWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        PhishingReporterMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'PhishingReporterMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'doughnut',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        IncidentResponderPhishingCampaignTrends: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Phishing Campaign Trends',
-          key: 'IncidentResponderPhishingCampaignTrends',
-          isAllowed: true,
-          parentKey: 'Incident Responder Metrics',
-          chartType: 'line',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        IncidentResponderReportedEmailTrends: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 6,
-          defaultW: 12,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Reported Email Trends',
-          key: 'IncidentResponderReportedEmailTrends',
-          isAllowed: true,
-          parentKey: 'Incident Responder Metrics',
           chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        IncidentResponderMostEngagedCampaigns: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Most Engaged Campaigns',
-          key: 'IncidentResponderMostEngagedCampaigns',
-          isAllowed: true,
-          parentKey: 'Incident Responder Metrics',
-          chartType: 'doughnut',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -921,8 +655,7 @@ export default {
     getDownloadPdfStyle() {
       const style = {
         padding: '4px',
-        width: '1088px',
-        zoom: 0.9
+        width: '1088px'
       }
 
       if (this.isScheduledReport) return style
@@ -941,7 +674,8 @@ export default {
       return this.isPreview || this.activatePreview
     },
     getIsStatic() {
-      if (this.$route.name === 'Preview Executive Report') return !this.editMode
+      if (this.$route.name === 'Preview Executive Report')
+        return !this.editMode || this.forcePreview
       return this.isShowPreview ? this.isShowPreview : !this.editMode
     },
     getIsShowEditTopFields() {
@@ -959,6 +693,8 @@ export default {
         return 'Last 6 Months'
       } else if (datePeriod === 3) {
         return 'Last Year'
+      } else if (datePeriod === 4) {
+        return 'This Year'
       }
       return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
     }
@@ -1016,6 +752,13 @@ export default {
             this.$moment(start).format(getTimeZoneForMoment()),
             this.$moment(end).format(getTimeZoneForMoment())
           ]
+        } else if (this.formData.datePeriod === 4) {
+          const firstDayOfYear = new Date(start.getFullYear(), 0, 1)
+          const lastDayOfYear = new Date(start.getFullYear(), 11, 31)
+          this.formData.executiveReportDateRange = [
+            this.$moment(firstDayOfYear).format(getTimeZoneForMoment()),
+            this.$moment(lastDayOfYear).format(getTimeZoneForMoment())
+          ]
         } else {
           this.formData.executiveReportDateRange = [data.startDate, data.endDate]
         }
@@ -1025,7 +768,11 @@ export default {
           if (
             widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
             widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
-            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget'
+            widget.widgetType === 'HumanRiskScoreforHighestRiskUsersWidget' ||
+            widget.widgetType === 'RepeatOffendersUsersThresholdWidget' ||
+            widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
+            widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget' ||
+            widget.widgetType === 'TrainingCompletionWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1055,9 +802,11 @@ export default {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
+      if (bdCol > 2) return
       let x = 0,
         xValue = 0,
         y = 0
+
       this.layout.sort((a, b) => {
         if (a.y > b.y) {
           return 1
@@ -1114,6 +863,7 @@ export default {
       if (!this.$refs.refForm.validate()) return
       this.activatePreview = true
       this.isPreviewDownload = true
+      this.forcePreview = true
       this.toggleShowDownloadModal()
     },
     async handleSaveReportClick() {
@@ -1130,7 +880,7 @@ export default {
         },
         widgetLayouts: this.layout
       }
-      if (this.formData.datePeriod === 4) {
+      if (this.formData.datePeriod === 5) {
         payload.executiveReport.startDate = this.formData.executiveReportDateRange[0]
         payload.executiveReport.endDate = this.formData.executiveReportDateRange[1]
       }
@@ -1169,11 +919,16 @@ export default {
       fileName = this.formData.name,
       activatePreview = this.activatePreview
     ) {
+      let emptyWidgetIndex = this.addEmptyWidget()
       this.isPdfDownload = true
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
       const updateReportCreated = () => {
         this.isReportCreated = true
+      }
+      const removeEmptyWidget = () => {
+        if (!emptyWidgetIndex) return
+        this.layout.splice(emptyWidgetIndex, 1)
       }
       const brandName = this.brandName
       this.$nextTick(async () => {
@@ -1182,7 +937,8 @@ export default {
           const pdf = await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: 1.5
+              scale: window.devicePixelRatio * 2 > 4 ? 4 : window.devicePixelRatio * 2,
+              logging: false
             },
             jsPDF: {
               format: 'a4'
@@ -1209,7 +965,8 @@ export default {
             },
             watermark: ({ pdf, pageNumber, totalPageNumber }) => {
               const lastY = this.layout[this.layout.length - 1]?.y
-              if (lastY % 18 === 0 && totalPageNumber > 1) pdf.deletePage(totalPageNumber)
+              if (lastY === 18 && lastY % 18 === 0 && totalPageNumber > 1)
+                pdf.deletePage(totalPageNumber)
               pdf.setTextColor('#383B41')
               pdf.setFontSize(8)
               let width, height
@@ -1230,21 +987,59 @@ export default {
               bottom: 24,
               left: 24
             },
-            imageType: 'image/webp',
+            imageType: 'image/jpeg',
+            imageQuality: 1.0,
             output: `${fileName}.pdf`
           })
           setTimeout(() => {
             if (isShowDownloadModalFromStart)
               return this.$router.push({ name: 'Executive Reports' })
+            if (emptyWidgetIndex) removeEmptyWidget()
             this.isPdfDownload = false
             this.activatePreview = false
             this.isPreviewDownload = false
             this.justDownload = false
             this.isShowDownloadModal = false
             this.isReportCreated = false
+            this.forcePreview = false
           }, 1000)
         }, 1000)
       })
+    },
+    addEmptyWidget() {
+      let updatedIndex = 0
+      let maxY = 0
+      this.layout.sort((a, b) => a.y - b.y)
+      this.layout.forEach((item, index) => {
+        if (item.y === 42 && updatedIndex === 0) {
+          updatedIndex = index
+        }
+        maxY = item.y
+      })
+      if (updatedIndex && maxY > 42) {
+        this.layout.splice(updatedIndex, 0, {
+          x: 0,
+          y: 48,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: createRandomCryptStringNumber(),
+          title: 'EmptyWidget',
+          key: 'EmptyWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        })
+      }
+      return updatedIndex
     },
     handleCancelClick() {
       if (
@@ -1286,7 +1081,8 @@ export default {
         endDate: this.formData.executiveReportDateRange[1],
         resourceId: widget.resourceId,
         title: widget.name,
-        parentKey: widget.description
+        parentKey: widget.description,
+        name: widget.name
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
@@ -1304,7 +1100,7 @@ export default {
       this.layout.splice(index, 1)
       this.$emit('on-delete', item)
     },
-    getComponent(componentString) {
+    getComponent(componentString, name, item) {
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
@@ -1312,8 +1108,27 @@ export default {
           return ExecutiveReportsPhishingSimulationEngagement
         case 'HumanRiskScoreforHighestRiskUsersWidget':
           return ExecutiveReportsTopRiskiestUsers
+        case 'HumanRiskScoreforHighestRiskDepartmentsWidget':
+          return ExecutiveReportsTopRiskiestDepartments
         case 'IndustryPhishingRiskScoreWidget':
           return ExecutiveReportsIndustryPhishingRiskScore
+        case 'RepeatOffendersUsersThresholdWidget':
+          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportRepeatOffendersUsersBar
+          return ExecutiveReportsRepeatOffendersUsers
+        case 'ImpactOfPhishingAwarenessTrainingWidget':
+          return ExecutiveReportsImpactOfPhishingAwarenessTraining
+        case 'TrainingCompletionWidget':
+          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportsTrainingCompletionBar
+          else if (
+            name?.toLowerCase()?.includes('pie') ||
+            item?.title?.toLowerCase()?.includes('pie')
+          )
+            return ExecutiveReportsTrainingCompletionPie
+          return ExecutiveReportsTrainingCompletion
+        case 'EmptyWidget':
+          return ExecutiveReportsEmptyWidget
         default:
           return ExecutiveReportsWidget
       }
@@ -1330,6 +1145,11 @@ export default {
     handleScheduleReportSubmit(data) {
       this.isShowScheduleReportDialog = false
       this.schedulingFormData = data
+    },
+    disabledDates(date) {
+      const lastYear = new Date()
+      lastYear.setFullYear(lastYear.getFullYear() - 1)
+      return date.getTime() < lastYear.getTime()
     }
   }
 }

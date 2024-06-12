@@ -13,10 +13,9 @@
           <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
-              add-data-plugin
+              :add-data-plugin="false"
               :chart-data="chartData"
               :chart-options="chartOptions"
-              :custom-plugin="customPlugins"
             />
           </template>
           <div
@@ -44,8 +43,11 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+
 export default {
-  name: 'ExecutiveReportsImpactOfPhishingAwarenessTraining',
+  name: 'ExecutiveReportsTrainingCompletionBar',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -76,37 +78,14 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       isEmpty: false,
       empty: {
         message: 'You do not have any report conclusion'
       },
-      isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {},
-      customPlugins: [
-        {
-          afterDraw: (chart) => {
-            const ctx = chart.chart.ctx
-            const fontSize = 12
-            const fontFamily = 'Open Sans, sans-serif'
-            chart.legend.legendItems.forEach((legendItem, index) => {
-              const textParts = legendItem.textParts
-              if (textParts) {
-                const text = textParts[0]
-                const percentage = `(${textParts[1]}%)`
-                const x = chart.legend.legendHitBoxes[index].left + 17
-                const y = chart.legend.legendHitBoxes[index].top + 6
-                ctx.fillStyle = '#383B41'
-                ctx.fillText(text, x, y)
-                ctx.font = `bold ${fontSize}px ${fontFamily}`
-                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
-                ctx.font = `${fontSize}px ${fontFamily}`
-              }
-            })
-          }
-        }
-      ]
+      chartData: {}
     }
   },
   watch: {
@@ -123,7 +102,7 @@ export default {
       this.isLoading = true
       const payload = {
         widgetIds: [this.card.resourceId],
-        datePeriod: 3,
+        datePeriod: this.datePeriod,
         startDate: this.dateRange[0],
         endDate: this.dateRange[1]
       }
@@ -141,54 +120,21 @@ export default {
     setChartData(data) {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
+        this.industryAverageObj = null
         return
       }
-      const industryAverageData = data[0].widgetDatas.map((wData) => {
-        return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0
-      })
-      const companyPhishingRiskScoreData = data[0].widgetDatas.map((wData) => {
-        return wData.values.find((v) => v.name === 'Percentage')?.value
-      })
-      const annotations = data[0].widgetDatas.map((wData) => {
-        return wData.values.find((v) => v.name === 'Percentage')?.annotations
-      })
-      const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      const { values } = data[0].widgetDatas[0]
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       this.chartData = {
-        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        labels: ['Completed', 'In Progress', 'Incomplete'],
         datasets: [
           {
-            type: 'line',
-            label: 'Industry Avg',
-            data: industryAverageData,
-            borderColor: '#007bff',
-            backgroundColor: '#1173C1',
-            borderWidth: 2,
-            fill: false,
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderDash: [20, 20],
-            lineTension: 0,
-            order: 1
-          },
-          {
-            type: 'bar',
             barThickness: 32,
-            label: 'Phishing Risk Score',
-            data: companyPhishingRiskScoreData,
-            backgroundColor: function (context) {
-              const index = context.dataIndex
-              const value = context.dataset.data[index]
-              let color = '#43A047'
-              if (value - industryAverageData[index] >= 0) {
-                color = '#F56C6C'
-              } else if (
-                value - industryAverageData[index] < 0 &&
-                value - industryAverageData[index] > -10
-              ) {
-                color = '#D1AD0C'
-              }
-              return color
-            },
+            label: 'Percentage Of Users',
+            data: [completed, inProgress, incomplete],
+            backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
             borderWidth: 1,
             order: 2
           }
@@ -197,12 +143,17 @@ export default {
       this.chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 24
+          }
+        },
         scales: {
           xAxes: [
             {
               scaleLabel: {
                 display: true,
-                labelString: 'Months',
+                labelString: 'Training Status',
                 fontFamily: 'Open-sans,sans-serif',
                 fontColor: '#383B41'
               },
@@ -210,8 +161,7 @@ export default {
                 display: false
               },
               ticks: {
-                fontColor: 'rgba(56, 59, 65, 0.72)',
-                fontStyle: '600',
+                fontColor: '#383B41',
                 fontSize: 9,
                 fontFamily: 'Open-sans,sans-serif'
               }
@@ -221,8 +171,8 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: maxTick < 50 ? 50 : 100,
-                stepSize: maxTick < 50 ? 10 : 20,
+                max: 100,
+                stepSize: 20,
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',
@@ -238,7 +188,7 @@ export default {
                 fontFamily: 'Open-sans,sans-serif',
                 fontSize: 12,
                 fontColor: '#383B41',
-                labelString: 'Phishing Risk Score'
+                labelString: 'Percentage Of Users'
               },
               gridLines: {
                 display: true,
@@ -251,36 +201,15 @@ export default {
           ]
         },
         legend: {
-          display: true,
-          labels: {
-            usePointStyle: true,
-            fontColor: '#383B41',
-            fontFamily: 'Open-sans,sans-serif',
-            position: 'top',
-            generateLabels() {
-              return [
-                {
-                  text: '',
-                  fillStyle: '#1173C1',
-                  lineWidth: 0,
-                  datasetIndex: 0,
-                  industryAverage: industryAverageData[0],
-                  textParts: ['Industry Avg', industryAverageData[0]]
-                }
-              ]
-            }
-          }
+          display: false
         },
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById(
-              'chartjs-tooltip-impact-of-phishing-awareness-training'
-            )
-
+            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-bar')
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-impact-of-phishing-awareness-training'
+              tooltipEl.id = 'chartjs-tooltip-training-completion-bar'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
@@ -317,30 +246,29 @@ export default {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const xValue = tooltipModel.dataPoints[0].xLabel
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
+              tableRoot.appendChild(titleRow)
               let selectedBackgroundColor = ''
               let selectedLabel = ''
               let selectedValue = ''
-              this._chart.data.datasets.forEach((dataset, i) => {
+              this._chart.data.datasets.forEach((dataset) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor = datasetLabel.includes('Industry') ? '#1173C1' : '#F56C6C'
-                if (!datasetLabel.includes('Industry')) {
-                  if (dataValue - industryAverageData[0] >= 0) {
-                    backgroundColor = '#F56C6C'
-                  } else if (
-                    value - industryAverageData[0] < 0 &&
-                    value - industryAverageData[0] > -10
-                  ) {
-                    backgroundColor = '#D1AD0C'
-                  }
-                }
+                let backgroundColor =
+                  tooltipModel.dataPoints[0].label === 'Completed'
+                    ? '#43A047'
+                    : tooltipModel.dataPoints[0].label === 'Incomplete'
+                    ? '#F56C6C'
+                    : '#E6A23C'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:&nbsp;
                 </td>
-                <td>${dataValue || 0}%</td>
+                <td>${dataValue}%</td>
             `
                 if (
                   datasetLabel ===
@@ -356,7 +284,7 @@ export default {
 
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
-                if (i === 0) tr.style.paddingBottom = '6px'
+                tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
             }
@@ -366,29 +294,6 @@ export default {
           },
           xPadding: 16,
           yPadding: 16
-        },
-        plugins: {
-          datalabels: {
-            display: true,
-            align: 'start',
-            offset: -20,
-            anchor: 'end',
-            color: '#000',
-            formatter: function (value, context) {
-              if (context.dataset.label === 'Industry Avg') return ''
-              if (annotations[context.dataIndex]) {
-                return annotations[context.dataIndex].definition
-              }
-              return ''
-            },
-            font: {
-              size: 9,
-              color: '#383B41',
-              weight: 'normal'
-            },
-            borderRadius: 4,
-            padding: 6
-          }
         }
       }
       this.isEmpty = false
