@@ -180,7 +180,7 @@ export default {
     formData: {
       handler(data) {
         const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = data
-        this.formValues.companyKey = companyKey
+        this.formValues.companyKey = companyKey || ''
         this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
         this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl || false
         this.enterpriseVaultDisabled = !enterpriseVaultUrl
@@ -269,7 +269,7 @@ export default {
   created() {
     if (this.formData) {
       const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = this.formData
-      this.formValues.companyKey = companyKey
+      this.formValues.companyKey = companyKey || ''
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
       this.formValues.enableEnterpriseVault = enterpriseVaultUrl || false
       this.enterpriseVaultDisabled = !enterpriseVaultUrl

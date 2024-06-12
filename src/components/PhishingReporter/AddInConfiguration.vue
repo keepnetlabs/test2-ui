@@ -352,16 +352,105 @@ export default {
       this.otherSettings = {}
     },
     callForCreatePhishingReporter() {
+      const otherSettings = {
+        companyKey: localStorage.getItem('companyId'),
+        enableEnterpriseVault: false,
+        apiKey: APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
+        apiUrl:
+          APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api',
+        ...this.otherSettings
+      }
       const payload = {
         ...this.addingSettings,
         ...this.emailSettings,
-        ...this.otherSettings,
+        ...otherSettings,
         ...this.diagnosticTool,
         isProcessAttachmentOnTheFly: true
       }
       const formData = new FormData()
       Object.keys(payload).forEach((key) => {
-        formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
+        if (key === 'dialogBoxSettings') {
+          for (let i = 0; i < payload.dialogBoxSettings.length; i++) {
+            formData.append(
+              `DialogBoxSettings[${i}].LanguageName`,
+              payload?.dialogBoxSettings?.[i]?.languageName || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].LanguageResourceId`,
+              payload?.dialogBoxSettings?.[i]?.languageResourceId || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxTitle`,
+              payload?.dialogBoxSettings?.[i]?.msgBoxTitle || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnCancelText`,
+              payload?.dialogBoxSettings?.[i]?.msgBoxBtnCancelText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisConfirmationMessage`,
+              payload?.dialogBoxSettings?.[i]?.analysisConfirmationMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsConfirmationBeforeAnalysis`,
+              payload?.dialogBoxSettings?.[i]?.isConfirmationBeforeAnalysis || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisEmailDeleteMessage`,
+              payload?.dialogBoxSettings?.[i]?.analysisEmailDeleteMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisThankYouMessage`,
+              payload?.dialogBoxSettings?.[i]?.analysisThankYouMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsDeleteEmailBeforeAnalysis`,
+              payload?.dialogBoxSettings?.[i]?.isDeleteEmailBeforeAnalysis || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnYesText`,
+              payload?.dialogBoxSettings?.[i]?.msgBoxBtnYesText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnNoText`,
+              payload?.dialogBoxSettings?.[i]?.msgBoxBtnNoText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnOkText`,
+              payload?.dialogBoxSettings?.[i]?.msgBoxBtnOkText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].EmailSendingErrorMessage`,
+              payload?.dialogBoxSettings?.[i]?.emailSendingErrorMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].NoInternetConnectionMessage`,
+              payload?.dialogBoxSettings?.[i]?.noInternetConnectionMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].EmailSelectionErrorMessage`,
+              payload?.dialogBoxSettings?.[i]?.emailSelectionErrorMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].BadFormatEmailMessage`,
+              payload?.dialogBoxSettings?.[i]?.badFormatEmailMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsSendSimulationMails`,
+              payload?.dialogBoxSettings?.[i]?.isSendSimulationMails || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].SimulationMailMessage`,
+              payload?.dialogBoxSettings?.[i]?.simulationMailMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsDefault`,
+              payload?.dialogBoxSettings?.[i]?.isDefault || false
+            )
+          }
+        } else {
+          formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
+        }
       })
       createPhishingReporter(formData).then(() => {
         this.showModal = true
