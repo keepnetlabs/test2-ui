@@ -159,8 +159,8 @@
                     type="date"
                     ref="refInputExecutiveReportDate"
                     style="visibility: hidden; position: absolute; min-width: 124px; top: 0;"
-                    :format="parsedFormatWithoutTime"
-                    :valueFormat="parsedFormatWithoutTime"
+                    :format="parsedFormat"
+                    :valueFormat="parsedFormat"
                   />
                 </div>
                 <VTextField
@@ -365,7 +365,6 @@ export default {
       isReportCreated: false,
       justDownload: false,
       parsedFormat: getTimeZone(false),
-      parsedFormatWithoutTime: getTimeZone(true),
       isShowScheduleReportDialog: false,
       isShowCustomizeWidgetDialog: false,
       isShowDownloadModal: false,
