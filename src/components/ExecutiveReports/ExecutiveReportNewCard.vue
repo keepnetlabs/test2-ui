@@ -285,7 +285,12 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/ExecutiveReportCustomizeWidgetDialog.vue'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
-import { getExecutiveReport, saveExecutiveReport, updateExecutiveReport } from '@/api/reports'
+import {
+  getExecutiveReport,
+  saveExecutiveReport,
+  updateExecutiveReport,
+  uploadExecutiveReportPdf
+} from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
@@ -781,6 +786,11 @@ export default {
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
+        if (this.isScheduledReport) {
+          setTimeout(() => {
+            this.handleDownloadClick()
+          }, 5000)
+        }
       }
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
@@ -924,6 +934,7 @@ export default {
       this.isPdfDownload = true
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
+      const isScheduledReport = this.isScheduledReport
       const updateReportCreated = () => {
         this.isReportCreated = true
       }
@@ -945,7 +956,7 @@ export default {
               format: 'a4'
             },
             success(pdf) {
-              if (activatePreview && !justDownload) {
+              if ((activatePreview && !justDownload) || isScheduledReport) {
                 pdf.setProperties({
                   title: fileName
                 })
@@ -953,10 +964,16 @@ export default {
                 const file = new File([blob], `${fileName}.pdf`, {
                   type: 'application/pdf'
                 })
-                updateReportCreated()
-                setTimeout(() => {
-                  window.open(`${URL.createObjectURL(file)}#toolbar=0`)
-                }, 1000)
+                if (isScheduledReport) {
+                  const formData = new FormData()
+                  formData.append('ExecutiveReportPdf', file)
+                  uploadExecutiveReportPdf(formData)
+                } else {
+                  updateReportCreated()
+                  setTimeout(() => {
+                    window.open(`${URL.createObjectURL(file)}#toolbar=0`)
+                  }, 1000)
+                }
               } else {
                 updateReportCreated()
                 setTimeout(() => {
