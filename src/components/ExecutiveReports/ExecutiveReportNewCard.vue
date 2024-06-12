@@ -427,9 +427,10 @@ export default {
           {
             text: 'This Year',
             onClick: (picker) => {
-              const year = new Date().getFullYear()
+              const today = new Date()
+              const year = today.getFullYear()
               const firstDayOfYear = new Date(year, 0, 1)
-              const lastDayOfYear = new Date(year, 11, 31)
+              const lastDayOfYear = new Date(year, today.getMonth(), today.getDate())
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
               this.formData.datePeriod = 4
             }
@@ -1147,7 +1148,7 @@ export default {
     disabledDates(date) {
       const lastYear = new Date()
       lastYear.setFullYear(lastYear.getFullYear() - 1)
-      return date.getTime() < lastYear.getTime()
+      return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
     }
   }
 }
