@@ -14,10 +14,15 @@ export default {
     addDataLabelPlugin: {
       type: Boolean,
       default: false
+    },
+    customPlugins: {
+      type: Array,
+      default: () => []
     }
   },
   mounted() {
     if (this.addDataLabelPlugin) this.addPlugin(ChartDataLabels)
+    this.customPlugins.forEach((plugin) => this.addPlugin(plugin))
     this.attachToDom()
   },
   methods: {

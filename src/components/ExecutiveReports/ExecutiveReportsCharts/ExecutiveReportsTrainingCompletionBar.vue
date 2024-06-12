@@ -13,6 +13,7 @@
           <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
+              :add-data-plugin="false"
               :chart-data="chartData"
               :chart-options="chartOptions"
             />
@@ -46,7 +47,7 @@ import { createExecutiveReportChartData } from '@/components/ExecutiveReports/Ex
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
-  name: 'ExecutiveReportsPhishingSimulationEngagement',
+  name: 'ExecutiveReportsTrainingCompletionBar',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -73,20 +74,16 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
-    },
-    dateFormat: {
-      type: String,
-      default: ''
     }
   },
   data() {
     return {
       isLoading: false,
       isEmpty: false,
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       empty: {
         message: 'You do not have any report conclusion'
       },
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {}
     }
@@ -121,160 +118,99 @@ export default {
         })
     },
     setChartData(data) {
-      const monthNamesLong = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
-      const params = [data[0].widgetDatas]
-      if (this.dateFormat) params.push(this.dateFormat)
-      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
-      if (!datasets.length) {
+      if (!data[0].widgetDatas.length) {
         this.isEmpty = true
+        this.industryAverageObj = null
         return
       }
-      const newDatasets = []
-      valueEnums.sort((a, b) => (b > a ? 1 : -1))
-      for (let itemType of valueEnums) {
-        const typedItems = datasets.filter((item) => item.result === itemType)
-        newDatasets.push({
-          type: 'bar',
-          barThickness: 32,
-          label: itemType,
-          ...CHART_COLORS[itemType],
-          data: typedItems
-        })
-      }
-      const maxYData = []
-      for (let i = 0; i < newDatasets[0].data.length; i++) {
-        maxYData.push(newDatasets[0].data[i].y + newDatasets[1].data[i].y)
-      }
-      let maxY = Math.max(...maxYData)
-      if (maxY < 20) {
-        maxY = 40
-      } else if (maxY < 40) {
-        maxY = 60
-      } else if (maxY < 60) {
-        maxY = 80
-      } else if (maxY < 80) {
-        maxY = 100
-      }
+      const { values } = data[0].widgetDatas[0]
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       this.chartData = {
-        datasets: newDatasets
+        labels: ['Completed', 'In Progress', 'Incomplete'],
+        datasets: [
+          {
+            barThickness: 32,
+            label: 'Percentage Of Users',
+            data: [completed, inProgress, incomplete],
+            backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
+            borderWidth: 1,
+            order: 2
+          }
+        ]
       }
       this.chartOptions = {
-        responsive: true,
         devicePixelRatio: 2,
+        responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 24
+          }
+        },
         scales: {
-          yAxes: [
+          xAxes: [
             {
-              beginAtZero: true,
-              position: 'left',
               scaleLabel: {
                 display: true,
-                labelString: 'Phishing Report Rate',
+                labelString: 'Training Status',
+                fontFamily: 'Open-sans,sans-serif',
                 fontColor: '#383B41'
               },
-              offset: false,
               gridLines: {
-                display: true,
-                drawBorder: false,
-                zeroLineColor: '#757575',
-                zeroLineWidth: 2
+                display: false
               },
               ticks: {
-                min: 0,
-                max: maxY,
-                stepSize: maxY / 5,
-                labelOffset: 0,
-                beginAtZero: true,
-                padding: 12,
-                fontFamily: 'Open-sans,sans-serif',
-                fontColor: 'rgba(56, 59, 65, 0.72)',
-                lineHeight: 1.58,
-                callback: function (value) {
-                  return value + '%'
-                }
+                fontColor: '#383B41',
+                fontSize: 9,
+                fontFamily: 'Open-sans,sans-serif'
               }
             }
           ],
-          xAxes: [
+          yAxes: [
             {
-              display: true,
-              offset: true,
-              type: 'time',
-              time: {
-                unit: 'month',
-                displayFormats: {
-                  month: 'MM/YYYY'
+              ticks: {
+                min: 0,
+                max: 100,
+                stepSize: 20,
+                labelOffset: 0,
+                padding: 12,
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                lineHeight: 1.58,
+                fontFamily: 'Open-sans,sans-serif',
+                beginAtZero: true,
+                callback: function (value) {
+                  return value + '%'
                 }
               },
               scaleLabel: {
                 display: true,
-                labelString: 'Month/Year',
-                fontColor: '#383B41'
-              },
-              ticks: {
-                fontColor: 'rgba(56, 59, 65, 0.72)',
-                fontStyle: '600',
-                fontSize: 9,
                 fontFamily: 'Open-sans,sans-serif',
-                callback(value) {
-                  const splittedVal = value.split('/')
-                  const monthName = monthNamesLong[splittedVal[0] - 1]
-                  return `${monthName}/${value.split('/')[1]}`
-                }
+                fontSize: 12,
+                fontColor: '#383B41',
+                labelString: 'Percentage Of Users'
               },
               gridLines: {
-                display: false,
-                showBorder: false,
-                color: '#F2F2F2'
+                display: true,
+                color: '#F2F2F2',
+                drawBorder: false,
+                zeroLineColor: '#757575',
+                zeroLineWidth: 2
               }
             }
           ]
         },
         legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            usePointStyle: true,
-            fontColor: '#383B41',
-            generateLabels(chart = {}) {
-              const { data } = chart
-              return data.datasets.map((item, index) => {
-                return {
-                  text: item.label,
-                  fillStyle: item.borderColor,
-                  lineWidth: 0,
-                  datasetIndex: index
-                }
-              })
-            },
-            fontFamily: 'Open-sans,sans-serif',
-            padding: 16,
-            fontSize: 12
-          }
+          display: false
         },
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById(
-              'chartjs-tooltip-phishing-simulation-engagement'
-            )
-
+            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-bar')
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-phishing-simulation-engagement'
+              tooltipEl.id = 'chartjs-tooltip-training-completion-bar'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
@@ -289,7 +225,7 @@ export default {
 
             let position = this._chart.canvas.getBoundingClientRect()
 
-            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 280 : tooltipEl.offsetWidth
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
@@ -307,71 +243,41 @@ export default {
             tooltipContent.style.border = '1px solid #ccc'
             tooltipContent.style.borderRadius = '8px'
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
-
-            let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
-            tooltipFooter.style.marginTop = '2px'
-            tooltipFooter.style.fontFamily = 'Open-sans,sans-serif'
-            tooltipFooter.style.fontSize = '14px'
-            tooltipFooter.style.borderRadius = '8px'
-            tooltipFooter.style.color = '#fff'
-            tooltipFooter.style.padding = '16px'
-            tooltipFooter.style.maxWidth = '280px'
-            tooltipFooter.style.fontWeight = 'normal'
-            const monthNamesLong = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December'
-            ]
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
               let titleRow = document.createElement('tr')
-              const xValue = new Date(tooltipModel.dataPoints[0].xLabel)
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
-                monthNamesLong[xValue.getMonth()]
-              }/${xValue.getFullYear()}</th>`
+              const xValue = tooltipModel.dataPoints[0].xLabel
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
               tableRoot.appendChild(titleRow)
               let selectedBackgroundColor = ''
               let selectedLabel = ''
               let selectedValue = ''
-              const totalPhishingReportRate = this._chart.data.datasets.reduce((acc, item) => {
-                let val = item.data[tooltipModel.dataPoints[0].index]
-                return acc + val.y
-              }, 0)
-              this._chart.data.datasets.forEach((dataset, i) => {
-                let datasetLabel =
-                  dataset.label === 'Clicked (%)'
-                    ? 'Clicked Report Rate'
-                    : 'Not Clicked Report Rate'
+              this._chart.data.datasets.forEach((dataset) => {
+                let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor = dataset.backgroundColor || '#000'
-
+                let backgroundColor =
+                  tooltipModel.dataPoints[0].label === 'Completed'
+                    ? '#43A047'
+                    : tooltipModel.dataPoints[0].label === 'Incomplete'
+                    ? '#E6A23C'
+                    : '#F56C6C'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
-                    ${datasetLabel}:
+                    ${datasetLabel}:&nbsp;
                 </td>
-                <td style="font-weight:600">${dataValue.y}%</td>
+                <td>${dataValue}%</td>
             `
-
                 if (
-                  dataset.label ===
+                  datasetLabel ===
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
                   selectedValue = dataValue
-                  selectedLabel = dataset.label
+                  selectedLabel = datasetLabel
                   selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
@@ -382,64 +288,13 @@ export default {
                 tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
-              let lastTr = document.createElement('tr')
-              lastTr.innerHTML = `
-                <td>
-
-                    Phishing Report Rate:
-                </td>
-                <td style="font-weight:600;">${totalPhishingReportRate}%</td>
-            `
-              lastTr.style.borderTop = '1px solid #E0E0E0'
-              lastTr.style.display = 'flex'
-              lastTr.style.justifyContent = 'space-between'
-              lastTr.style.paddingTop = '8px'
-              tableRoot.appendChild(lastTr)
-              tooltipFooter.style.background = selectedBackgroundColor
-              const explanationText =
-                selectedLabel === 'Clicked (%)'
-                  ? ' of the users who did click the email also reporting it.'
-                  : ' of users identifying and reporting phishing in simulation engagements'
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explanationText}</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
             })
           },
-          xPadding: 12,
-          yPadding: 12
-        },
-        plugins: {
-          datalabels: {
-            display: true,
-            offset: 12,
-            color: '#383B41',
-            formatter: function (value, context) {
-              if (context.dataset.label === 'Not Clicked (%)' && value.annotations && value.y) {
-                return value.annotations.definition
-              }
-              return ''
-            },
-            align: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
-            anchor: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
-            font: {
-              size: 10,
-              color: '#383B41',
-              weight: 'normal'
-            },
-            borderRadius: 4,
-            padding: 6
-          }
+          xPadding: 16,
+          yPadding: 16
         }
       }
       this.isEmpty = false

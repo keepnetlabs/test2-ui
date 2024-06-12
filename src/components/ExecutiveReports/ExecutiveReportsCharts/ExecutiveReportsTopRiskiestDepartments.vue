@@ -44,7 +44,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 export default {
-  name: 'ExecutiveReportsTopRiskiestUsers',
+  name: 'ExecutiveReportsTopRiskiestDepartments',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -112,7 +112,7 @@ export default {
                 //ctx.measureText(text).width;
                 const x = Math.floor(maxData._model.x / 2.3)
                 const y = maxData._model.y - padding + 2
-                ctx.fillStyle = '#000'
+                ctx.fillStyle = '#383B41'
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
@@ -121,15 +121,14 @@ export default {
             }
           }
           ctx.save()
-          ctx.strokeStyle = '#757575' // Kenarlık rengi
-          ctx.lineWidth = 2 // Kenarlık kalınlığı
+          ctx.strokeStyle = '#757575'
+          ctx.lineWidth = 2
           const xAxis = chart.scales['x-axis-0']
           const yAxis = chart.scales['y-axis-0']
-          const xTickStart = xAxis.left // X ekseninin sol sınırını alın
-          // Çizgiyi çizin
+          const xTickStart = xAxis.left
           ctx.beginPath()
-          ctx.moveTo(xTickStart, yAxis.bottom) // X ekseninin sol ucu ve Y ekseninin altı arasında başlayın
-          ctx.lineTo(xAxis.right, yAxis.bottom) // X ekseninin sağ ucu ve Y ekseninin altı arasında çizgi çizin
+          ctx.moveTo(xTickStart, yAxis.bottom)
+          ctx.lineTo(xAxis.right, yAxis.bottom)
           ctx.stroke()
           ctx.restore()
         }
@@ -336,24 +335,22 @@ export default {
         this.isEmpty = true
         return
       }
-      const names = data[0].widgetDatas.map((obj) => {
-        const arr = [obj.dataObject.fullName, obj.dataObject.email]
-        if (obj.dataObject.department) arr.push(obj.dataObject.department)
-        return arr
+      const departments = data[0].widgetDatas.map((obj) => {
+        return obj.dataObject.department
       })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
           x: obj.values[0].value,
-          y: obj.dataObject.fullName,
+          y: obj.dataObject.department,
           details: {
-            Email: obj.dataObject.email,
-            Department: obj.dataObject.department
+            Score: obj.values[0].value,
+            'Number of Users': obj.values[1].value
           }
         }
       })
       this.chartData = {
         xLabels: [0, 100],
-        yLabels: names,
+        yLabels: departments,
         datasets: [
           {
             data: dataSetsData,

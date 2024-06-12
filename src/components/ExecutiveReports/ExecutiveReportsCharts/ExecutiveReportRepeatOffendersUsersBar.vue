@@ -16,6 +16,7 @@
               :chart-data="chartData"
               :chart-options="chartOptions"
               :custom-plugin="customPlugin"
+              :another-custom-plugin="anotherCustomPlugin"
             />
           </template>
           <div
@@ -43,8 +44,10 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import labels from '@/model/constants/labels'
 export default {
-  name: 'ExecutiveReportsTopRiskiestUsers',
+  name: 'ExecutiveReportRepeatOffendersUsersBar',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -91,47 +94,42 @@ export default {
         id: 'customPlugin',
         afterDraw(chart) {
           const ctx = chart.ctx
-          const dataset = chart.data.datasets[0]
-          const meta = chart.getDatasetMeta(0)
-          const maxIndexes = []
-          let maxX = -Infinity
-          for (let i = 0; i < dataset.data.length; i++) {
-            if (dataset.data[i].x > 60) {
-              maxX = dataset.data[i].x
-              maxIndexes.push(i)
-            }
-          }
-          if (maxIndexes.length) {
-            for (let maxIndex of maxIndexes) {
-              const maxData = meta.data[maxIndex]
-              if (maxData && maxData._model) {
-                const fontSize = 9
-                const fontFamily = 'Open Sans, sans-serif'
-                const padding = 18
-                const text = 'Critical Risk Level. Immediate training is needed.'
-                //ctx.measureText(text).width;
-                const x = Math.floor(maxData._model.x / 2.3)
-                const y = maxData._model.y - padding + 2
-                ctx.fillStyle = '#000'
-                ctx.textAlign = 'left'
-                ctx.textBaseline = 'bottom'
-                ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText(text, x < 176 ? 176 : x, y)
-              }
-            }
-          }
           ctx.save()
-          ctx.strokeStyle = '#757575' // Kenarlık rengi
-          ctx.lineWidth = 2 // Kenarlık kalınlığı
+          ctx.strokeStyle = '#757575'
+          ctx.lineWidth = 2
           const xAxis = chart.scales['x-axis-0']
           const yAxis = chart.scales['y-axis-0']
-          const xTickStart = xAxis.left // X ekseninin sol sınırını alın
-          // Çizgiyi çizin
+          const xTickStart = xAxis.left
           ctx.beginPath()
-          ctx.moveTo(xTickStart, yAxis.bottom) // X ekseninin sol ucu ve Y ekseninin altı arasında başlayın
-          ctx.lineTo(xAxis.right, yAxis.bottom) // X ekseninin sağ ucu ve Y ekseninin altı arasında çizgi çizin
+          ctx.moveTo(xTickStart, yAxis.bottom)
+          ctx.lineTo(xAxis.right, yAxis.bottom)
           ctx.stroke()
           ctx.restore()
+        }
+      },
+      anotherCustomPlugin: {
+        afterDraw: (chart) => {
+          const ctx = chart.chart.ctx
+          const fontSize = 12
+          const fontFamily = 'Open Sans, sans-serif'
+          chart.legend.legendItems.forEach((legendItem, index) => {
+            const textParts = legendItem.textParts
+            if (textParts) {
+              const text = textParts[0]
+              const percentage = `(${textParts[1]} users)`
+              const x = chart.legend.legendHitBoxes[index].left + 17
+              const y = chart.legend.legendHitBoxes[index].top + 6
+              ctx.fillStyle = '#383B41'
+              ctx.fillText(text, x, y)
+              ctx.font = `bold ${fontSize}px ${fontFamily}`
+              ctx.fillText(
+                percentage,
+                x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                y + 0.5
+              )
+              ctx.font = `${fontSize}px ${fontFamily}`
+            }
+          })
         }
       }
     }
@@ -166,14 +164,24 @@ export default {
         })
     },
     setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const { values } = data[0].widgetDatas[0]
+      const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
+      const simulated = values.find((data) => data.name === 'CountSimulated')?.value
+      const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
+        ?.value
+      const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
       this.chartOptions = {
-        devicePixelRatio: 2,
         indexAxis: 'y',
+        devicePixelRatio: 2,
         responsive: true,
         padding: 24,
         layout: {
           padding: {
-            right: 48,
+            right: 0,
             left: 0
           }
         },
@@ -202,11 +210,11 @@ export default {
           xAxes: [
             {
               display: true,
-              stacked: false,
+              stacked: true,
               offset: false,
               scaleLabel: {
                 display: true,
-                labelString: 'Human Risk Score',
+                labelString: 'Percentage of Users',
                 fontColor: '#383B41'
               },
               gridLines: {
@@ -230,17 +238,73 @@ export default {
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            color: '#383B41',
+            font: 'Open-sans,sans-serif',
+            padding: 32,
+            fontSize: 12,
+            generateLabels: (chart = {}) => {
+              const { data } = chart
+              const splittedRepeatOffenders = labels.RepeatOffenders.split(' ')
+              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
+              return [
+                {
+                  text: Array.from(
+                    labels.RepeatOffenders +
+                      labels.RepeatOffenders +
+                      data.datasets[0].data[0] +
+                      ' (users) '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.RepeatOffenders]
+                    ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 0,
+                  textParts: [
+                    splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
+                    offenders
+                  ],
+                  customMarginLeft: 8
+                },
+                {
+                  text: Array.from(
+                    labels.SimulatedUsers +
+                      labels.SimulatedUsers +
+                      data.datasets[1].data[0] +
+                      ' (users) '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.SimulatedUsers]
+                    ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 1,
+                  textParts: [
+                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
+                    simulated
+                  ],
+                  customMarginLeft: 2
+                }
+              ]
+            }
+          }
         },
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-top-riskiest')
+            let tooltipEl = document.getElementById('chartjs-tooltip-repeat-offenders-users-bar')
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-top-riskiest'
-              tooltipEl.innerHTML = '<div class="tooltip-content"></div>'
+              tooltipEl.id = 'chartjs-tooltip-repeat-offenders-users-bar'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
             }
 
@@ -251,17 +315,13 @@ export default {
               tooltipEl.classList.add('no-transform')
             }
 
-            if (tooltipModel.opacity === 0) {
-              tooltipEl.style.opacity = 0
-              return
-            }
-
             let position = this._chart.canvas.getBoundingClientRect()
 
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
-              position.left + window.pageXOffset + tooltipModel.caretX / 2 + 'px'
+              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
             tooltipEl.style.pointerEvents = 'none'
 
@@ -275,38 +335,28 @@ export default {
             tooltipContent.style.border = '1px solid #ccc'
             tooltipContent.style.borderRadius = '8px'
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
-
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-              let tableRoot = tooltipContent
+              let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[0]
+                let backgroundColor = dataset.backgroundColor
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td>
+                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+                    ${datasetLabel}:&nbsp;
+                </td>
+                <td style="font-weight: 600">${dataValue || 0}%</td>
+            `
 
-              let dataIndex = tooltipModel.dataPoints[0].index
-              let dataPoint = this._chart.data.datasets[0].data[dataIndex]
-
-              let titleRow = document.createElement('div')
-              titleRow.style.fontWeight = 'bold'
-              titleRow.style.paddingBottom = '8px'
-              titleRow.textContent = dataPoint.y
-              tableRoot.appendChild(titleRow)
-              dataPoint.details.Score = dataPoint.x
-              for (const [key, value] of Object.entries(dataPoint.details)) {
-                let fieldRow = document.createElement('div')
-                fieldRow.style.display = 'flex'
-                fieldRow.style.justifyContent = 'space-between'
-                fieldRow.style.paddingBottom = '4px'
-
-                let fieldLabel = document.createElement('span')
-                fieldLabel.textContent = `${key}:`
-                fieldRow.appendChild(fieldLabel)
-
-                let fieldValue = document.createElement('span')
-                fieldValue.style.fontWeight = '700'
-                fieldValue.style.paddingLeft = '8px'
-                fieldValue.textContent = value
-                fieldRow.appendChild(fieldValue)
-
-                tableRoot.appendChild(fieldRow)
-              }
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (i === 0) tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
@@ -317,53 +367,29 @@ export default {
         },
         plugins: {
           datalabels: {
-            display: true,
-            align: 'end',
-            offset: -2,
-            anchor: 'end',
-            color: '#383B41',
-            clamp: true,
-            formatter: function (value) {
-              if (!value.x) return ''
-              return value.x + '%'
-            },
-            borderRadius: 4,
-            padding: 6
+            display: false
           }
         }
       }
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
-      }
-      const names = data[0].widgetDatas.map((obj) => {
-        const arr = [obj.dataObject.fullName, obj.dataObject.email]
-        if (obj.dataObject.department) arr.push(obj.dataObject.department)
-        return arr
-      })
-      const dataSetsData = data[0].widgetDatas.map((obj) => {
-        return {
-          x: obj.values[0].value,
-          y: obj.dataObject.fullName,
-          details: {
-            Email: obj.dataObject.email,
-            Department: obj.dataObject.department
-          }
-        }
-      })
       this.chartData = {
         xLabels: [0, 100],
-        yLabels: names,
+        yLabels: ['Users'],
         datasets: [
           {
-            data: dataSetsData,
-            barThickness: 24,
-            backgroundColor: function (context) {
-              const index = context.dataIndex
-              const value = context.dataset.data[index].x
-              return value > 60 ? '#B83A3A' : '#F56C6C'
-            },
-            borderWidth: 1
+            label: 'Repeat Offenders',
+            data: [offendersPercentage],
+            barThickness: 150,
+            backgroundColor: '#F56C6C',
+            borderWidth: 1,
+            stack: 'Stack 1'
+          },
+          {
+            label: 'Simulated Users',
+            data: [simulatedPercentage],
+            barThickness: 150,
+            backgroundColor: '#2196F3',
+            borderWidth: 1,
+            stack: 'Stack 1'
           }
         ]
       }

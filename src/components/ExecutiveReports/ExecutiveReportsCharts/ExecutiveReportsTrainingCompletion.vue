@@ -3,21 +3,34 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Training Completion"
-          subtitle="Measure the training coverage across the company"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <DoughnutChart
               v-if="chartData"
               :chart-data="chartData"
               :chart-options="chartOptions"
               :addDataLabelPlugin="true"
+              :custom-plugins="customPlugins"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -31,6 +44,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
 export default {
   name: 'ExecutiveReportsTrainingCompletion',
   components: {
@@ -52,24 +66,109 @@ export default {
     editMode: {
       type: Boolean,
       default: true
+    },
+    card: {
+      type: Object,
+      default: () => {}
+    },
+    dateRange: {
+      type: Array,
+      default: () => []
+    },
+    datePeriod: {
+      type: Number,
+      default: 1
+    },
+    defaultWidgetData: {
+      type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: []
+      chartData: [],
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]}%)`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
     }
   },
   created() {
-    this.calculateData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
-    calculateData() {
+    callForData() {
+      this.isLoading = true
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: this.datePeriod,
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1]
+      }
+      getExecutiveReportChartData(payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.setChartData(data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const { values } = data[0].widgetDatas[0]
+      const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
         showLabels: true,
         responsive: true,
+        devicePixelRatio: 2,
+        rotation: 45,
         maintainAspectRatio: false,
         tooltips: {
           enabled: false
@@ -81,20 +180,44 @@ export default {
             usePointStyle: true,
             color: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: 32,
+            padding: 16,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
               return data.datasets[0].data.map((d, index) => {
+                const label = data.labels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = label === 'Completed' ? 2 : 4
                 return {
-                  text: `${data.labels[index]} (${d} users)`,
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
+                  )
+                    .fill('')
+                    .join(' '),
                   fillStyle: CHART_COLORS[data.labels[index]]
                     ? CHART_COLORS[data.labels[index]].backgroundColor
                     : null,
                   lineWidth: 0,
-                  datasetIndex: index
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft: label === 'Completed' ? 4 : 0
                 }
               })
+            }
+          }
+        },
+        plugins: {
+          datalabels: {
+            color: '#383B41',
+            font: { family: 'Open Sans, sans-serif' },
+            display: true,
+            formatter(value) {
+              if (value === 0) return ''
+              return `${value}%`
             }
           }
         }
@@ -106,6 +229,12 @@ export default {
       })
       this.chartOptions = {
         ...chartOptions,
+        cutoutPercentage: 60,
+        elements: {
+          arc: {
+            borderWidth: 0
+          }
+        },
         backgroundColor,
         labels: this.valueEnums,
         showTooltipLine: true
@@ -114,11 +243,13 @@ export default {
         labels: this.valueEnums,
         datasets: [
           {
-            data: this.rawData,
+            data: [completed, inProgress, incomplete],
             backgroundColor
           }
         ]
       }
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
