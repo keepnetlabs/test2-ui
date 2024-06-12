@@ -602,7 +602,7 @@ export default {
           key: 'TrainingCompletionWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
+          chartType: 'bar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -1082,7 +1082,8 @@ export default {
         resourceId: widget.resourceId,
         title: widget.name,
         parentKey: widget.description,
-        name: widget.name
+        name: widget.name,
+        chartType: widget.chartType
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6
@@ -1113,18 +1114,15 @@ export default {
         case 'IndustryPhishingRiskScoreWidget':
           return ExecutiveReportsIndustryPhishingRiskScore
         case 'RepeatOffendersUsersThresholdWidget':
-          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+          if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportRepeatOffendersUsersBar
           return ExecutiveReportsRepeatOffendersUsers
         case 'ImpactOfPhishingAwarenessTrainingWidget':
           return ExecutiveReportsImpactOfPhishingAwarenessTraining
         case 'TrainingCompletionWidget':
-          if (name?.toLowerCase()?.includes('bar') || item?.title?.toLowerCase()?.includes('bar'))
+          if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsTrainingCompletionBar
-          else if (
-            name?.toLowerCase()?.includes('pie') ||
-            item?.title?.toLowerCase()?.includes('pie')
-          )
+          else if (item?.chartType?.toLowerCase()?.includes('pie'))
             return ExecutiveReportsTrainingCompletionPie
           return ExecutiveReportsTrainingCompletion
         case 'EmptyWidget':
