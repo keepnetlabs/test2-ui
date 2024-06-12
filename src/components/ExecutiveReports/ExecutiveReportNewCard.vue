@@ -1003,7 +1003,7 @@ export default {
             this.isReportCreated = false
             this.forcePreview = false
           }, 1000)
-        }, 1000)
+        }, 2000)
       })
     },
     addEmptyWidget() {

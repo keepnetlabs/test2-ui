@@ -261,8 +261,8 @@ export default {
                   tooltipModel.dataPoints[0].label === 'Completed'
                     ? '#43A047'
                     : tooltipModel.dataPoints[0].label === 'Incomplete'
-                    ? '#F56C6C'
-                    : '#E6A23C'
+                    ? '#E6A23C'
+                    : '#F56C6C'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>

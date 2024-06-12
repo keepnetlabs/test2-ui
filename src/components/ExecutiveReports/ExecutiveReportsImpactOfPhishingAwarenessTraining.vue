@@ -329,10 +329,12 @@ export default {
                   if (dataValue - industryAverageData[0] >= 0) {
                     backgroundColor = '#F56C6C'
                   } else if (
-                    value - industryAverageData[0] < 0 &&
-                    value - industryAverageData[0] > -10
+                    dataValue - industryAverageData[0] < 0 &&
+                    dataValue - industryAverageData[0] > -10
                   ) {
                     backgroundColor = '#D1AD0C'
+                  } else {
+                    backgroundColor = '#43A047'
                   }
                 }
                 let tr = document.createElement('tr')
