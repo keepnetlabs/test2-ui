@@ -67,8 +67,8 @@ export const CHART_COLORS = {
     pointHoverRadius: 3
   },
   'All Industry Avg': {
-    backgroundColor: '#B6791D',
-    borderColor: '#B6791D',
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
     fill: false,
     borderDash: [5, 5],
     borderWidth: 2,
@@ -77,24 +77,24 @@ export const CHART_COLORS = {
     pointHoverRadius: 3
   },
   'Simulated Users': {
-    backgroundColor: '#00BCD4',
-    borderColor: '#00BCD4',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   'In Progress': {
-    backgroundColor: '#E6A23C',
-    borderColor: '#E6A23C',
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   Incomplete: {
-    backgroundColor: '#F56C6C',
-    borderColor: '#F56C6C',
+    backgroundColor: '#E6A23C',
+    borderColor: '#E6A23C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,

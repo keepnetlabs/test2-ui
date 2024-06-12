@@ -3,20 +3,20 @@
     <template #skeleton-content>
       <ExecutiveWidgetContainer>
         <ExecutiveWidgetHeader
-          title="Training Completion"
-          subtitle="Measure the training coverage across the company"
+          :title="card.title"
+          :subtitle="card.parentKey"
           :edit-mode="editMode"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
           <template v-if="!isEmpty">
-            <DoughnutChart
+            <PieChart
               v-if="chartData"
-              :chart-data="chartData"
+              :data="chartData"
               :chart-options="chartOptions"
-              :addDataLabelPlugin="true"
               :custom-plugins="customPlugins"
+              add-data-label-plugin
             />
           </template>
           <div
@@ -37,7 +37,7 @@
   </WidgetLoading>
 </template>
 <script>
-import DoughnutChart from '@/components/Common/Charts/Doughnut.vue'
+import PieChart from '@/components/Common/Charts/Pie.vue'
 import labels from '@/model/constants/labels'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
@@ -46,13 +46,13 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 export default {
-  name: 'ExecutiveReportsTrainingCompletion',
+  name: 'ExecutiveReportsTrainingCompletionPie',
   components: {
     ExecutiveWidgetHeader,
     ExecutiveWidgetContainer,
     ExecutiveWidgetBody,
     WidgetLoading,
-    DoughnutChart
+    PieChart
   },
   props: {
     rawData: {
@@ -165,9 +165,15 @@ export default {
       const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
       const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
       const chartOptions = {
-        showLabels: true,
-        responsive: true,
+        elements: {
+          arc: {
+            borderWidth: 0
+          }
+        },
         rotation: 45,
+        showLabels: true,
+        labels: this.valueEnums,
+        responsive: true,
         maintainAspectRatio: false,
         tooltips: {
           enabled: false
@@ -208,17 +214,6 @@ export default {
               })
             }
           }
-        },
-        plugins: {
-          datalabels: {
-            color: '#383B41',
-            font: { family: 'Open Sans, sans-serif' },
-            display: true,
-            formatter(value) {
-              if (value === 0) return ''
-              return `${value}%`
-            }
-          }
         }
       }
       let backgroundColor = []
@@ -228,27 +223,34 @@ export default {
       })
       this.chartOptions = {
         ...chartOptions,
-        cutoutPercentage: 60,
-        elements: {
-          arc: {
-            borderWidth: 0
-          }
-        },
         backgroundColor,
-        labels: this.valueEnums,
-        showTooltipLine: true
-      }
-      this.chartData = {
-        labels: this.valueEnums,
-        datasets: [
-          {
-            data: [completed, inProgress, incomplete],
-            backgroundColor
+        showTooltipLine: true,
+        plugins: {
+          datalabels: {
+            color: '#383B41',
+            font: { family: 'Open Sans, sans-serif' },
+            display: true,
+            clamp: true,
+            anchor: function (context) {
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'start'
+              return 'center'
+            },
+            align: function (context) {
+              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
+              if (isZeroTwice) return 'center'
+              return 'center'
+            },
+            formatter(value) {
+              if (value === 0) return ''
+              return `${value}%`
+            }
           }
-        ]
+        }
       }
-      this.isEmpty = false
+      this.chartData = [completed, inProgress, incomplete]
       this.isLoading = false
+      this.isEmpty = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
