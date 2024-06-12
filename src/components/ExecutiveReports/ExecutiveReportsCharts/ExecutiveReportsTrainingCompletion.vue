@@ -167,6 +167,7 @@ export default {
       const chartOptions = {
         showLabels: true,
         responsive: true,
+        devicePixelRatio: 2,
         rotation: 45,
         maintainAspectRatio: false,
         tooltips: {

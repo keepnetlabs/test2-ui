@@ -166,6 +166,7 @@ export default {
     },
     setChartData(data) {
       this.chartOptions = {
+        devicePixelRatio: 2,
         indexAxis: 'y',
         responsive: true,
         padding: 24,
@@ -343,7 +344,7 @@ export default {
           y: obj.dataObject.department,
           details: {
             Score: obj.values[0].value,
-            'Number of Users': obj.dataObject.totalCount
+            'Number of Users': obj.values[1].value
           }
         }
       })
