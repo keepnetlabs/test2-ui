@@ -937,7 +937,7 @@ export default {
           const pdf = await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: window.devicePixelRatio * 2 > 3 ? 3 : window.devicePixelRatio * 2,
+              scale: window.devicePixelRatio * 2 > 4 ? 4 : window.devicePixelRatio * 2,
               logging: false
             },
             jsPDF: {
@@ -987,7 +987,7 @@ export default {
               bottom: 24,
               left: 24
             },
-            imageType: 'image/webp',
+            imageType: 'image/jpeg',
             imageQuality: 1.0,
             output: `${fileName}.pdf`
           })
