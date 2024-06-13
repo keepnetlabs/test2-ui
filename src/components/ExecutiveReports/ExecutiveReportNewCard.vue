@@ -935,6 +935,9 @@ export default {
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
       const isScheduledReport = this.isScheduledReport
+      const { params, query } = this.$route
+      const { id } = params
+      const { token, companyResourceId } = query
       const updateReportCreated = () => {
         this.isReportCreated = true
       }
@@ -967,7 +970,7 @@ export default {
                 if (isScheduledReport) {
                   const formData = new FormData()
                   formData.append('ExecutiveReportPdf', file)
-                  uploadExecutiveReportPdf(formData)
+                  uploadExecutiveReportPdf(formData, id, token, companyResourceId)
                 } else {
                   updateReportCreated()
                   setTimeout(() => {
