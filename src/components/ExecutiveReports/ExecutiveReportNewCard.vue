@@ -285,7 +285,12 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import ExecutiveReportCustomizeWidgetDialog from '@/components/ExecutiveReports/ExecutiveReportCustomizeWidgetDialog.vue'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
 import ExecutiveReportsWidget from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveReportsWidget.vue'
-import { getExecutiveReport, saveExecutiveReport, updateExecutiveReport } from '@/api/reports'
+import {
+  getExecutiveReport,
+  saveExecutiveReport,
+  updateExecutiveReport,
+  uploadExecutiveReportPdf
+} from '@/api/reports'
 import html2PDF from 'jspdf-html2canvas'
 import ExecutiveReportDownloadModal from '@/components/ExecutiveReports/ExecutiveReportDownloadModal.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
@@ -427,9 +432,10 @@ export default {
           {
             text: 'This Year',
             onClick: (picker) => {
-              const year = new Date().getFullYear()
+              const today = new Date()
+              const year = today.getFullYear()
               const firstDayOfYear = new Date(year, 0, 1)
-              const lastDayOfYear = new Date(year, 11, 31)
+              const lastDayOfYear = new Date(year, today.getMonth(), today.getDate())
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
               this.formData.datePeriod = 4
             }
@@ -684,19 +690,10 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
-      const datePeriod = this.formData.datePeriod
-      if (datePeriod === 0) {
-        return 'Last Month'
-      } else if (datePeriod === 1) {
-        return 'Last 3 Months'
-      } else if (datePeriod === 2) {
-        return 'Last 6 Months'
-      } else if (datePeriod === 3) {
-        return 'Last Year'
-      } else if (datePeriod === 4) {
-        return 'This Year'
-      }
-      return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
+      if (this.formData.executiveReportDateRange.length < 2) return
+      const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
+      const lastDateLeft = this.formData.executiveReportDateRange[1].split(' ')[0]
+      return `${firstDateLeft} - ${lastDateLeft}`
     }
   },
   watch: {
@@ -780,6 +777,11 @@ export default {
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
+        if (this.isScheduledReport) {
+          setTimeout(() => {
+            this.handleDownloadClick()
+          }, 5000)
+        }
       }
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
@@ -923,6 +925,10 @@ export default {
       this.isPdfDownload = true
       const justDownload = this.justDownload
       const isShowDownloadModalFromStart = this.$route.params.showDownloadModal
+      const isScheduledReport = this.isScheduledReport
+      const { params, query } = this.$route
+      const { id } = params
+      const { token, companyResourceId } = query
       const updateReportCreated = () => {
         this.isReportCreated = true
       }
@@ -944,7 +950,7 @@ export default {
               format: 'a4'
             },
             success(pdf) {
-              if (activatePreview && !justDownload) {
+              if ((activatePreview && !justDownload) || isScheduledReport) {
                 pdf.setProperties({
                   title: fileName
                 })
@@ -952,10 +958,16 @@ export default {
                 const file = new File([blob], `${fileName}.pdf`, {
                   type: 'application/pdf'
                 })
-                updateReportCreated()
-                setTimeout(() => {
-                  window.open(`${URL.createObjectURL(file)}#toolbar=0`)
-                }, 1000)
+                if (isScheduledReport) {
+                  const formData = new FormData()
+                  formData.append('ExecutiveReportPdf', file)
+                  uploadExecutiveReportPdf(formData, id, token, companyResourceId)
+                } else {
+                  updateReportCreated()
+                  setTimeout(() => {
+                    window.open(`${URL.createObjectURL(file)}#toolbar=0`)
+                  }, 1000)
+                }
               } else {
                 updateReportCreated()
                 setTimeout(() => {
@@ -1147,7 +1159,7 @@ export default {
     disabledDates(date) {
       const lastYear = new Date()
       lastYear.setFullYear(lastYear.getFullYear() - 1)
-      return date.getTime() < lastYear.getTime()
+      return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
     }
   }
 }

@@ -132,7 +132,7 @@ export default {
         datasets: [
           {
             barThickness: 32,
-            label: 'Percentage Of Users',
+            label: 'Percentage of Users',
             data: [completed, inProgress, incomplete],
             backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
             borderWidth: 1,
@@ -189,7 +189,7 @@ export default {
                 fontFamily: 'Open-sans,sans-serif',
                 fontSize: 12,
                 fontColor: '#383B41',
-                labelString: 'Percentage Of Users'
+                labelString: 'Percentage of Users'
               },
               gridLines: {
                 display: true,

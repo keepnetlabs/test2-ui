@@ -74,6 +74,16 @@ export const exportReportScheduling = (payload) => {
     responseType: 'blob'
   })
 }
+export const uploadExecutiveReportPdf = (formData, resourceId, token, companyResourceId) => {
+  const config = {}
+  if (token) {
+    config.overrideToken = true
+    config.overrideCompanyId = true
+    config.headers = { 'X-IR-COMPANY-ID': companyResourceId }
+    config.customToken = token
+  }
+  return testRequest.post(`/executive-report/${resourceId}/upload`, formData, config)
+}
 export const getReportScheduling = (resourceId) => {
   return testRequest.get(`/report-scheduling/${resourceId}`)
 }
