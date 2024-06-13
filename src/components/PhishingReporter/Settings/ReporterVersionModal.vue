@@ -5,7 +5,7 @@
     icon="mdi-timer-sand-full"
     :title="getTitle"
     subtitle="Version configurations"
-    custom-size="650"
+    custom-size="800"
     title-id="text--phishing-reporters-versions-title"
     subtitle-id="text--phishing-reporters-versions-subtitle"
     :class-name="'matching-modal version-history'"
