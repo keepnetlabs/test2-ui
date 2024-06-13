@@ -690,6 +690,7 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
+      if (this.formData.executiveReportDateRange.length < 2) return
       const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
       const lastDateLeft = this.formData.executiveReportDateRange[1].split(' ')[0]
       return `${firstDateLeft} - ${lastDateLeft}`
