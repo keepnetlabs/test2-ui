@@ -80,7 +80,18 @@ export default {
       if (key === 'CompanyId') {
         formKey = 'companyKey'
       }
-      formData[formKey] = payload[key]
+      if (key === 'DialogBoxSettings') {
+        formData['dialogBoxSettings'] = payload.DialogBoxSettings.map((setting) => {
+          let row = {}
+          for (let settingKey of Object.keys(setting)) {
+            const rowKey = settingKey.charAt(0).toLocaleLowerCase('en-US') + settingKey.slice(1)
+            row[rowKey] = setting[settingKey]
+          }
+          return row
+        })
+      } else {
+        formData[formKey] = payload[key]
+      }
     }
     this.formData = formData
   }
