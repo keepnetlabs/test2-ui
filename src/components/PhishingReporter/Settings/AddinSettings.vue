@@ -165,7 +165,11 @@
                   </v-menu>
                 </div>
               </template>
-              <div class="add-in-settings__dialog-box-settings__inner-container">
+              <v-skeleton-loader
+                v-if="isFetchingDefaultSettingsForLanguage"
+                type="list-item@10"
+              ></v-skeleton-loader>
+              <div v-else class="add-in-settings__dialog-box-settings__inner-container">
                 <div class="add-in-settings__body-item mb-4">
                   <label class="add-in-settings__list-item-header"
                     >{{ labels.DialogBox }} {{ labels.Heading }}</label
