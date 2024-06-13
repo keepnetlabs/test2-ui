@@ -14,7 +14,7 @@
         }
     }
 
-    .el-tabs__header {
+    & > .el-tabs__header {
         background-color: rgb(245, 247, 250);
         border-color: rgb(245, 247, 250);
         margin-top: 8px;
@@ -29,9 +29,5 @@
         font-size: 14px !important;
         height: 48px;
         line-height: 48px;
-    }
-
-    .el-tabs__active-bar {
-        min-width: 100px !important;
     }
 }
