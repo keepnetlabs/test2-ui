@@ -71,7 +71,7 @@
             id="input--phishing-reporter-settings-logo"
             hint="Only jpg and png files. Max. file size 2MB"
             ref="refFileUpload"
-            :readonly="!showForm"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             :extensions="['jpg', 'png']"
             :size="2"
             @inputFile="onFileChanged"
@@ -103,7 +103,6 @@
               >
             </div>
             <KSelect
-              v-if="showForm"
               v-model.trim="defaultLanguage"
               class="mt-3"
               style="max-width: 200px;"
@@ -111,7 +110,7 @@
               outlined
               label="Set Default Language"
               placeholder="Set Default Language"
-              :disabled="isFetchingDefaultSettingsForLanguage"
+              :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             ></KSelect>
           </div>
           <ElTabs
