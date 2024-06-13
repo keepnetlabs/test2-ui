@@ -690,19 +690,9 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
-      const datePeriod = this.formData.datePeriod
-      if (datePeriod === 0) {
-        return 'Last Month'
-      } else if (datePeriod === 1) {
-        return 'Last 3 Months'
-      } else if (datePeriod === 2) {
-        return 'Last 6 Months'
-      } else if (datePeriod === 3) {
-        return 'Last Year'
-      } else if (datePeriod === 4) {
-        return 'This Year'
-      }
-      return `${this.formData.executiveReportDateRange[0]} - ${this.formData.executiveReportDateRange[1]}`
+      const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
+      const lastDateLeft = this.formData.executiveReportDateRange[1].split(' ')[0]
+      return `${firstDateLeft} - ${lastDateLeft}`
     }
   },
   watch: {
