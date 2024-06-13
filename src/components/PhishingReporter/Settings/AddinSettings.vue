@@ -628,6 +628,9 @@ export default {
             this.languageOptions.find((lo) => lo.text === language)?.value || ''
           this.formValues.dialogBoxSettings.push({
             ...dialogBoxSettings,
+            isConfirmationBeforeAnalysis: true,
+            isDeleteEmailBeforeAnalysis: true,
+            isSendSimulationMails: true,
             isDefault: false,
             languageName: language,
             languageResourceId
