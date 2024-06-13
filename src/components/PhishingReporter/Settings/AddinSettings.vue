@@ -91,356 +91,368 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="add-in-settings__body-container mt-6">
-        <v-list-item-content class="add-in-settings__body-container-content py-0">
-          <div class="add-in-settings__dialog-box-settings-header">
-            <div class="add-in-settings__dialog-box-settings-header__label-container">
-              <label class="add-in-settings__label"
-                >{{ labels.DialogBox }} {{ labels.Settings }}</label
-              >
-              <span class="add-in-settings__subtitle"
-                >Customize the language options for the dialog box</span
-              >
-            </div>
-            <KSelect
-              v-model.trim="defaultLanguage"
-              class="mt-3"
-              style="max-width: 200px;"
-              :items="getDefaultLanguageOptions"
-              outlined
-              label="Set Default Language"
-              placeholder="Set Default Language"
-              :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-            ></KSelect>
-          </div>
-          <ElTabs
-            v-model="tab"
-            ref="tabs"
-            :before-leave="handleTabChange"
-            id="add-new-language"
-            class="k-sub-tab add-in-settings__languages-tabs mt-6"
-          >
-            <ElTabPane
-              v-for="setting in formValues.dialogBoxSettings"
-              :key="setting.languageName"
-              :label="setting.languageName"
-              :name="setting.languageName"
-              class="pt-6"
+      <div class="add-in-settings__body-container mt-6">
+        <div class="add-in-settings__dialog-box-settings-header">
+          <div class="add-in-settings__dialog-box-settings-header__label-container">
+            <label class="add-in-settings__label"
+              >{{ labels.DialogBox }} {{ labels.Settings }}</label
             >
-              <template v-if="showForm" #label>
-                <div
-                  style="display: flex;"
-                  :style="
-                    setting.languageName === 'English'
-                      ? { width: '48px' }
-                      : { width: getLabelWidth(setting.languageName) }
-                  "
-                >
-                  <span class="landing-page-tab__label">
-                    {{ setting.languageName }}
-                  </span>
-                  <v-menu
-                    v-if="setting.languageName !== 'English'"
-                    :min-width="128"
-                    :offset-y="true"
-                    nudge-left="50"
-                    bottom
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-icon v-ripple="false" v-on="on" class="landing-page-tab-content__button"
-                        >mdi-dots-horizontal</v-icon
-                      >
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        style="cursor: pointer;"
-                        @click="handleDeleteSelectedLanguage(setting.languageName)"
-                      >
-                        <v-list-item-title
-                          ><v-icon class="mr-2">mdi-delete</v-icon>Delete</v-list-item-title
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-              </template>
-              <v-skeleton-loader
-                v-if="isFetchingDefaultSettingsForLanguage"
-                type="list-item@10"
-              ></v-skeleton-loader>
-              <div v-else class="add-in-settings__dialog-box-settings__inner-container">
-                <div class="add-in-settings__body-item mb-4">
-                  <label class="add-in-settings__list-item-header"
-                    >{{ labels.DialogBox }} {{ labels.Heading }}</label
-                  >
-                  <InputEntityName
-                    v-model.trim="setting.msgBoxTitle"
-                    initialPlaceholder="Enter a dialog box name"
-                    entityName="dialog box name"
-                    id="input--phishing-reporter-message-box-title"
-                    class="k-textfield"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label class="add-in-settings__list-item-header">Confirm Button Label</label>
-                  <InputEntityName
-                    v-model.trim="setting.msgBoxBtnYesText"
-                    initialPlaceholder="Enter confirm button label"
-                    entityName="confirm button label"
-                    id="input--phishing-reporter-message-button-yes-text"
-                    class="k-textfield"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label class="add-in-settings__list-item-header">No Button Label</label>
-                  <InputEntityName
-                    v-model.trim="setting.msgBoxBtnNoText"
-                    initialPlaceholder="Enter a no button label"
-                    entityName="no button label"
-                    id="input--phishing-reporter-message-button-no-text"
-                    class="k-textfield"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label class="add-in-settings__list-item-header">Cancel Button Label</label>
-                  <InputEntityName
-                    v-model.trim="setting.msgBoxBtnCancelText"
-                    initialPlaceholder="Enter cancel button label"
-                    entityName="cancel button label"
-                    id="input--phishing-reporter-message-button-cancel-text"
-                    class="k-textfield"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label class="add-in-settings__list-item-header">Okay Button Label</label>
-                  <InputEntityName
-                    v-model.trim="setting.msgBoxBtnOkText"
-                    initialPlaceholder="Enter okay button label"
-                    entityName="okay button label"
-                    id="input--phishing-reporter-message-button-ok-text"
-                    class="k-textfield"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label
-                    class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-                    >Instant Report Message</label
-                  >
-                  <InputDescription
-                    v-model.trim="setting.analysisThankYouMessage"
-                    initialPlaceholder="Enter instant report message"
-                    entityName="instant report message"
-                    id="input--phishing-reporter-analysis-thank-you-message"
-                    rows="2"
-                    height="80"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                    :maxLength="256"
-                    :required="true"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label
-                    class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-                    >Connection error message</label
-                  >
-                  <InputDescription
-                    v-model.trim="setting.noInternetConnectionMessage"
-                    initialPlaceholder="Enter a connection error message"
-                    entityName="connection error message"
-                    id="input--phishing-reporter-no-internet-connection-message"
-                    rows="2"
-                    height="80"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                    :maxLength="256"
-                    :required="true"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label
-                    class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-                    >Sending error message</label
-                  >
-                  <InputDescription
-                    v-model.trim="setting.emailSendingErrorMessage"
-                    initialPlaceholder="Enter sending error message"
-                    entityName="sending error message"
-                    id="input--phishing-reporter-email-sending-error-message"
-                    rows="2"
-                    height="80"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                    :maxLength="256"
-                    :required="true"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label
-                    class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-                    >No email selected message</label
-                  >
-                  <InputDescription
-                    v-model.trim="setting.emailSelectionErrorMessage"
-                    initialPlaceholder="Enter a no email selected message"
-                    entityName="no email selected error message"
-                    id="input--phishing-reporter-email-selection-error-message"
-                    rows="2"
-                    height="80"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                    :maxLength="256"
-                    :required="true"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <label
-                    class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-                    >Bad format email message</label
-                  >
-                  <InputDescription
-                    v-model.trim="setting.badFormatEmailMessage"
-                    initialPlaceholder="Enter a bad format email message"
-                    entityName="bad format email message"
-                    id="input--phishing-reporter-bad-format-email-message"
-                    rows="2"
-                    height="80"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :applyRules="showForm"
-                    :maxLength="256"
-                    :required="true"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <v-checkbox
-                    color="#2196f3"
-                    label="Show confirmation message when reporting email"
-                    class="k-checkbox add-in-settings__list-item-checkbox"
-                    id="input--phishing-reporter-is-confirmation-before-analysis"
-                    v-model="setting.isConfirmationBeforeAnalysis"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                  ></v-checkbox>
-                  <InputDescription
-                    v-model.trim="setting.analysisConfirmationMessage"
-                    initialPlaceholder="Enter a confirmation message when reporting email"
-                    entityName="confirmation message when reporting email"
-                    id="input--phishing-reporter-analysis-confirmation-message-rules"
-                    rows="2"
-                    height="80"
-                    :disabled="!setting.isConfirmationBeforeAnalysis"
-                    :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :maxLength="256"
-                    :required="getRequiredValue('isConfirmationBeforeAnalysis')"
-                  />
-                </div>
-                <div class="add-in-settings__body-item mb-4">
-                  <v-checkbox
-                    color="#2196f3"
-                    label="Show confirmation message to delete email"
-                    class="k-checkbox add-in-settings__list-item-checkbox"
-                    id="input--phishing-reporter-is-delete-email-before-analysis"
-                    v-model="setting.isDeleteEmailBeforeAnalysis"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                  ></v-checkbox>
-                  <InputDescription
-                    v-model.trim="setting.analysisEmailDeleteMessage"
-                    initialPlaceholder="Enter a confirmation message to delete email"
-                    entityName="confirmation message to delete email"
-                    id="input--phishing-reporter-analysis-email-delete-message"
-                    rows="2"
-                    height="80"
-                    :disabled="!setting.isDeleteEmailBeforeAnalysis"
-                    :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :maxLength="256"
-                    :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
-                  />
-                </div>
-                <div class="add-in-settings__body-item">
-                  <v-checkbox
-                    v-model="setting.isSendSimulationMails"
-                    color="#2196f3"
-                    label="Turn off email forwarding for reported Phishing Simulation Emails"
-                    class="k-checkbox add-in-settings__list-item-checkbox"
-                    id="input--phishing-reporter-is-send-simulatiion-mails"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                  ></v-checkbox>
-                  <InputDescription
-                    v-model.trim="setting.simulationMailMessage"
-                    initialPlaceholder="Enter a simulation email message"
-                    entityName="simulation mail message"
-                    id="input--phishing-reporter-simulation-email-message"
-                    rows="2"
-                    height="80"
-                    :disabled="!setting.isSendSimulationMails"
-                    :initialRules="getTextAreaRules('isSendSimulationMails')"
-                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                    :maxLength="256"
-                    :required="getRequiredValue('isSendSimulationMails')"
-                  />
-                </div>
-              </div>
-            </ElTabPane>
-            <ElTabPane v-if="getLanguageOptions.length && showForm" name="addNewLangauge">
-              <template #label>
+            <span class="add-in-settings__subtitle"
+              >Customize the language options for the dialog box</span
+            >
+          </div>
+          <KSelect
+            v-if="showForm"
+            v-model.trim="defaultLanguage"
+            class="add-in-settings__default-language-select mt-3"
+            style="max-width: 200px;"
+            :items="getDefaultLanguageOptions"
+            outlined
+            label="Set Default Language"
+            placeholder="Set Default Language"
+            :disabled="!showForm || isFetchingDefaultSettingsForLanguage"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+          ></KSelect>
+          <KSelect
+            v-else
+            v-model.trim="defaultLanguage"
+            class="mt-3"
+            style="max-width: 200px;"
+            :items="getDefaultLanguageOptions"
+            outlined
+            label="Default Language"
+            placeholder="Default Language"
+            append-icon=""
+            :disabled="!showForm"
+          ></KSelect>
+        </div>
+        <ElTabs
+          v-model="tab"
+          ref="tabs"
+          :before-leave="handleTabChange"
+          id="add-new-language"
+          class="k-sub-tab add-in-settings__languages-tabs mt-6"
+        >
+          <ElTabPane
+            v-for="setting in formValues.dialogBoxSettings"
+            :key="setting.languageName"
+            :label="setting.languageName"
+            :name="setting.languageName"
+            class="pt-6"
+          >
+            <template v-if="showForm" #label>
+              <div
+                style="display: flex;"
+                :style="
+                  setting.languageName === 'English'
+                    ? { width: '48px' }
+                    : { width: getLabelWidth(setting.languageName) }
+                "
+              >
+                <span class="landing-page-tab__label">
+                  {{ setting.languageName }}
+                </span>
                 <v-menu
-                  v-model="isAddNewLanguageMenuVisible"
-                  :z-index="10000"
-                  content-class="add-new-language-menu"
-                  :nudge-bottom="36"
+                  v-if="setting.languageName !== 'English'"
+                  :min-width="128"
+                  :offset-y="true"
+                  nudge-left="50"
                   bottom
-                  :close-on-content-click="false"
                 >
-                  <template v-slot:activator="{ on: menu }">
-                    <v-btn
-                      v-on="menu"
-                      text
-                      color="#2196f3"
-                      @click="handleAddNewLanguageMenuClick"
-                      :disabled="isFetchingDefaultSettingsForLanguage"
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-ripple="false" v-on="on" class="landing-page-tab-content__button"
+                      >mdi-dots-horizontal</v-icon
                     >
-                      <v-icon class="mr-2" size="18" color="#2196f3">mdi-plus</v-icon>
-                      <span class="landing-page-tab__label"> Add New Language </span>
-                    </v-btn>
                   </template>
-                  <div>
-                    <div class="add-new-language-menu__filter-container">
-                      <v-text-field
-                        v-model="languageFilter"
-                        placeholder="Search"
-                        class="filter__text"
-                        prepend-inner-icon="mdi-magnify"
-                        outlined
-                        dense
-                        height="40"
-                      ></v-text-field>
-                    </div>
+                  <v-list>
                     <v-list-item
-                      v-for="language in getLanguageFilterOptions"
-                      :key="language.resourceId"
-                      class="add-new-language-menu__item"
-                      @click="handleSelectLanguage(language.text)"
+                      style="cursor: pointer;"
+                      @click="handleDeleteSelectedLanguage(setting.languageName)"
                     >
-                      {{ language.text }}
+                      <v-list-item-title
+                        ><v-icon class="mr-2">mdi-delete</v-icon>Delete</v-list-item-title
+                      >
                     </v-list-item>
-                  </div>
+                  </v-list>
                 </v-menu>
-              </template>
-            </ElTabPane>
-          </ElTabs>
-        </v-list-item-content>
-      </v-list-item>
+              </div>
+            </template>
+            <v-skeleton-loader
+              v-if="isFetchingDefaultSettingsForLanguage"
+              type="list-item@10"
+            ></v-skeleton-loader>
+            <div v-else class="add-in-settings__dialog-box-settings__inner-container">
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header"
+                  >{{ labels.DialogBox }} {{ labels.Heading }}</label
+                >
+                <InputEntityName
+                  v-model.trim="setting.msgBoxTitle"
+                  initialPlaceholder="Enter a dialog box name"
+                  entityName="dialog box name"
+                  id="input--phishing-reporter-message-box-title"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnYesText"
+                  initialPlaceholder="Enter confirm button label"
+                  entityName="confirm button label"
+                  id="input--phishing-reporter-message-button-yes-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">No Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnNoText"
+                  initialPlaceholder="Enter a no button label"
+                  entityName="no button label"
+                  id="input--phishing-reporter-message-button-no-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnCancelText"
+                  initialPlaceholder="Enter cancel button label"
+                  entityName="cancel button label"
+                  id="input--phishing-reporter-message-button-cancel-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnOkText"
+                  initialPlaceholder="Enter okay button label"
+                  entityName="okay button label"
+                  id="input--phishing-reporter-message-button-ok-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Instant Report Message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.analysisThankYouMessage"
+                  initialPlaceholder="Enter instant report message"
+                  entityName="instant report message"
+                  id="input--phishing-reporter-analysis-thank-you-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Connection error message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.noInternetConnectionMessage"
+                  initialPlaceholder="Enter a connection error message"
+                  entityName="connection error message"
+                  id="input--phishing-reporter-no-internet-connection-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Sending error message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.emailSendingErrorMessage"
+                  initialPlaceholder="Enter sending error message"
+                  entityName="sending error message"
+                  id="input--phishing-reporter-email-sending-error-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >No email selected message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.emailSelectionErrorMessage"
+                  initialPlaceholder="Enter a no email selected message"
+                  entityName="no email selected error message"
+                  id="input--phishing-reporter-email-selection-error-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Bad format email message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.badFormatEmailMessage"
+                  initialPlaceholder="Enter a bad format email message"
+                  entityName="bad format email message"
+                  id="input--phishing-reporter-bad-format-email-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Show confirmation message when reporting email"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-confirmation-before-analysis"
+                  v-model="setting.isConfirmationBeforeAnalysis"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.analysisConfirmationMessage"
+                  initialPlaceholder="Enter a confirmation message when reporting email"
+                  entityName="confirmation message when reporting email"
+                  id="input--phishing-reporter-analysis-confirmation-message-rules"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isConfirmationBeforeAnalysis"
+                  :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :required="getRequiredValue('isConfirmationBeforeAnalysis')"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Show confirmation message to delete email"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-delete-email-before-analysis"
+                  v-model="setting.isDeleteEmailBeforeAnalysis"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.analysisEmailDeleteMessage"
+                  initialPlaceholder="Enter a confirmation message to delete email"
+                  entityName="confirmation message to delete email"
+                  id="input--phishing-reporter-analysis-email-delete-message"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isDeleteEmailBeforeAnalysis"
+                  :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
+                />
+              </div>
+              <div class="add-in-settings__body-item">
+                <v-checkbox
+                  v-model="setting.isSendSimulationMails"
+                  color="#2196f3"
+                  label="Turn off email forwarding for reported Phishing Simulation Emails"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-send-simulatiion-mails"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.simulationMailMessage"
+                  initialPlaceholder="Enter a simulation email message"
+                  entityName="simulation mail message"
+                  id="input--phishing-reporter-simulation-email-message"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isSendSimulationMails"
+                  :initialRules="getTextAreaRules('isSendSimulationMails')"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :required="getRequiredValue('isSendSimulationMails')"
+                />
+              </div>
+            </div>
+          </ElTabPane>
+          <ElTabPane v-if="getLanguageOptions.length && showForm" name="addNewLangauge">
+            <template #label>
+              <v-menu
+                v-model="isAddNewLanguageMenuVisible"
+                :z-index="10000"
+                content-class="add-new-language-menu"
+                :nudge-bottom="36"
+                bottom
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on: menu }">
+                  <v-btn
+                    v-on="menu"
+                    text
+                    color="#2196f3"
+                    @click="handleAddNewLanguageMenuClick"
+                    :disabled="isFetchingDefaultSettingsForLanguage"
+                  >
+                    <v-icon class="mr-2" size="18" color="#2196f3">mdi-plus</v-icon>
+                    <span class="landing-page-tab__label"> Add New Language </span>
+                  </v-btn>
+                </template>
+                <div>
+                  <div class="add-new-language-menu__filter-container">
+                    <v-text-field
+                      v-model="languageFilter"
+                      placeholder="Search"
+                      class="filter__text"
+                      prepend-inner-icon="mdi-magnify"
+                      outlined
+                      dense
+                      height="40"
+                    ></v-text-field>
+                  </div>
+                  <v-list-item
+                    v-for="language in getLanguageFilterOptions"
+                    :key="language.resourceId"
+                    class="add-new-language-menu__item"
+                    @click="handleSelectLanguage(language.text)"
+                  >
+                    {{ language.text }}
+                  </v-list-item>
+                </div>
+              </v-menu>
+            </template>
+          </ElTabPane>
+        </ElTabs>
+      </div>
 
       <v-list-item class="mt-6 px-0 add-in-settings__list-item mt-2">
         <v-list-item-content>
@@ -548,10 +560,10 @@ export default {
       defaultLanguage: 'English',
       languageOptions: [],
       formValues: {
-        addInName: '',
+        addInName: 'Suspicious email reporter',
         brandName: '',
         file: '',
-        warningLabel: '',
+        warningLabel: 'Suspicious E-mail',
         dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
       reporterVersionModalStatus: false,
@@ -616,6 +628,7 @@ export default {
             this.languageOptions.find((lo) => lo.text === language)?.value || ''
           this.formValues.dialogBoxSettings.push({
             ...dialogBoxSettings,
+            isDefault: false,
             languageName: language,
             languageResourceId
           })

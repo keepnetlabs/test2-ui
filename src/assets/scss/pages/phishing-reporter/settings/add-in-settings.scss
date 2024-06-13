@@ -167,6 +167,7 @@
         align-items: center;
         justify-content: space-between;
         margin-top: -4px;
+        gap: 24px;
 
         > *:first-child {
           flex-basis: 35%;
@@ -183,19 +184,23 @@
         .v-text-field {
           max-width: 400px !important;
         }
+
+        .v-input__slot {
+          align-items: flex-start;
+        }
       }
 
       &-container {
-        max-width: 650px !important;
+        max-width: 700px !important;
 
         &-content {
-            max-width: 600px !important;
+            max-width: 650px !important;
         }
       }
     }
 
     &__languages-tabs {
-        max-width: 600px !important;
+        max-width: 650px !important;
     }
 
     &__body-container {
