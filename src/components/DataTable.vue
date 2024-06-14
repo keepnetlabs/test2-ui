@@ -1770,6 +1770,7 @@ export default {
         if (!savedFilter) return
         const { filter, search, filterValues, showByExamStatus } = savedFilter
         this.$set(this.axiosPayload, 'filter', filter)
+        console.log('initDefaultFilters', this.isReportWithExam)
         if (this.isReportWithExam && showByExamStatus) {
           this.$set(this.axiosPayload, 'showByExamStatus', showByExamStatus)
         }
@@ -1783,6 +1784,7 @@ export default {
     },
     handleSetDefaultSearch() {
       const { search, filterValues, savedFiltersLocalStorageKey, axiosPayload } = this
+      console.log('handleSetDefaultSearch', this.isReportWithExam)
       if (this.isReportWithExam && axiosPayload?.showByExamStatus) {
         localStorage.setItem(
           savedFiltersLocalStorageKey,
@@ -1813,7 +1815,16 @@ export default {
     handleClearFilters() {
       this.resetSearchText()
       this.reRenderFilters({})
-      this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      if (this.isReportWithExam) {
+        this.$emit(
+          'update:axios-payload',
+          JSON.parse(
+            JSON.stringify({ ...this.initialAxiosPayload, showByExamStatus: 'FirstAttempt' })
+          )
+        )
+      } else {
+        this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      }
       this.handleRefresh()
       this.$emit('clear-filters')
     },
