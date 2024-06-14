@@ -28,6 +28,7 @@
       options
       is-server-side-selection
       is-server-side
+      isReportWithExam
       :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
@@ -579,18 +580,34 @@ export default {
     },
     exportTrainingReportUsersTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
-        let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: this.axiosPayload.orderBy,
-          ascending: this.axiosPayload.ascending,
-          reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter,
-          showByExamStatus: this.selectedExamStatusFilter,
-          trainingType: this.isAddTrainingTypeKeyToPayload
-            ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
-            : null
+        let payload = {}
+        if (this.canRenderExamStatusFilter) {
+          payload = {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending,
+            reportAllPages: downloadTypes.reportAllPages,
+            exportType: item === 'XLS' ? 'Excel' : item,
+            filter: this.axiosPayload.filter,
+            showByExamStatus: this.selectedExamStatusFilter,
+            trainingType: this.isAddTrainingTypeKeyToPayload
+              ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+              : null
+          }
+        } else {
+          payload = {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending,
+            reportAllPages: downloadTypes.reportAllPages,
+            exportType: item === 'XLS' ? 'Excel' : item,
+            filter: this.axiosPayload.filter,
+            trainingType: this.isAddTrainingTypeKeyToPayload
+              ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+              : null
+          }
         }
         AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
           const { data } = response

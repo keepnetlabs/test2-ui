@@ -1370,6 +1370,10 @@ export default {
     },
     getRowIsSelectable: {
       type: Function
+    },
+    isReportWithExam: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -1766,7 +1770,7 @@ export default {
         if (!savedFilter) return
         const { filter, search, filterValues, showByExamStatus } = savedFilter
         this.$set(this.axiosPayload, 'filter', filter)
-        if (showByExamStatus) {
+        if (this.isReportWithExam && showByExamStatus) {
           this.$set(this.axiosPayload, 'showByExamStatus', showByExamStatus)
         }
         this.search = search
@@ -1779,7 +1783,7 @@ export default {
     },
     handleSetDefaultSearch() {
       const { search, filterValues, savedFiltersLocalStorageKey, axiosPayload } = this
-      if (axiosPayload?.showByExamStatus) {
+      if (this.isReportWithExam && axiosPayload?.showByExamStatus) {
         localStorage.setItem(
           savedFiltersLocalStorageKey,
           JSON.stringify({

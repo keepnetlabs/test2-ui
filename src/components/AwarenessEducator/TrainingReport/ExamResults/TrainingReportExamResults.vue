@@ -24,6 +24,7 @@
       options
       is-server-side-selection
       is-server-side
+      isReportWithExam
       :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
