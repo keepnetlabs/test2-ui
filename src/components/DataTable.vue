@@ -1799,7 +1799,6 @@ export default {
           })
         )
       }
-      console.log(localStorage.getItem(savedFiltersLocalStorageKey))
       this.$emit('set-default-search', search, filterValues)
     },
     handleRestoreDefaultSearch() {
