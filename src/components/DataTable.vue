@@ -1764,8 +1764,11 @@ export default {
       if (this.savedFiltersLocalStorageKey) {
         const savedFilter = JSON.parse(localStorage.getItem(this.savedFiltersLocalStorageKey))
         if (!savedFilter) return
-        const { filter, search, filterValues } = savedFilter
+        const { filter, search, filterValues, showByExamStatus } = savedFilter
         this.$set(this.axiosPayload, 'filter', filter)
+        if (showByExamStatus) {
+          this.$set(this.axiosPayload, 'showByExamStatus', showByExamStatus)
+        }
         this.search = search
         this.filterValues = filterValues
         if (isReRenderFilters) this.reRenderFilters()
@@ -1776,7 +1779,17 @@ export default {
     },
     handleSetDefaultSearch() {
       const { search, filterValues, savedFiltersLocalStorageKey, axiosPayload } = this
-      if (savedFiltersLocalStorageKey) {
+      if (axiosPayload?.showByExamStatus) {
+        localStorage.setItem(
+          savedFiltersLocalStorageKey,
+          JSON.stringify({
+            filter: axiosPayload?.filter,
+            filterValues,
+            search,
+            showByExamStatus: axiosPayload.showByExamStatus
+          })
+        )
+      } else {
         localStorage.setItem(
           savedFiltersLocalStorageKey,
           JSON.stringify({
@@ -1786,6 +1799,7 @@ export default {
           })
         )
       }
+      console.log(localStorage.getItem(savedFiltersLocalStorageKey))
       this.$emit('set-default-search', search, filterValues)
     },
     handleRestoreDefaultSearch() {
