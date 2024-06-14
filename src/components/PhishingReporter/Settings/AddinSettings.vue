@@ -771,6 +771,7 @@ export default {
       const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
       if (defaultSettingIndex !== -1) {
         this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
+        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
       }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
@@ -813,6 +814,7 @@ export default {
       const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
       if (defaultSettingIndex !== -1) {
         this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
+        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
       }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
