@@ -33,6 +33,7 @@ export default {
     selectedExamStatusFilter: {
       immediate: true,
       handler(val) {
+        if (!this.canRenderExamStatusFilter) return
         const examStatusFilterIndex = this.examStatusFilters.findIndex((item) => item.value === val)
         const columnIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'examStatus'
