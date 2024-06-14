@@ -28,7 +28,7 @@
       options
       is-server-side-selection
       is-server-side
-      isReportWithExam
+      :isReportWithExam="canRenderExamStatusFilter"
       :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
@@ -513,6 +513,9 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    if (!this.canRenderExamStatusFilter) this.callForData()
   },
   methods: {
     getEmptyTableTextMessage() {

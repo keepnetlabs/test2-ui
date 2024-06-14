@@ -1813,7 +1813,16 @@ export default {
     handleClearFilters() {
       this.resetSearchText()
       this.reRenderFilters({})
-      this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      if (this.isReportWithExam) {
+        this.$emit(
+          'update:axios-payload',
+          JSON.parse(
+            JSON.stringify({ ...this.initialAxiosPayload, showByExamStatus: 'FirstAttempt' })
+          )
+        )
+      } else {
+        this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      }
       this.handleRefresh()
       this.$emit('clear-filters')
     },
