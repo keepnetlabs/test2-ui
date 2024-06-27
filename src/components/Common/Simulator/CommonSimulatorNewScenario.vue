@@ -811,6 +811,7 @@ export default {
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType
+        delete obj['Category']
       }
       return obj
     },

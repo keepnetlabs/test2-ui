@@ -202,6 +202,19 @@
                 :picker-options="datePickerOptions"
               />
             </div>
+            <AlertBox
+              v-if="
+                sendReminderEvery &&
+                ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(
+                  formData.enrollmentReminder.endType
+                )
+              "
+              style="max-width: 690px;"
+              class="mt-4 align-items-center"
+              icon-name="mdi-information"
+              text="If this option is selected and there is no exam in the training, the reminder will continue indefinitely."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </FormGroup>
           <v-btn
             v-if="sendReminderEvery && !isReminderStopped"
@@ -329,6 +342,12 @@ import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
 import { getTimeByTimeZone } from '@/api/company'
 import AlertBox from '@/components/AlertBox'
+import {
+  periodTypeItems,
+  endTypeItems,
+  enrollmentAutoEnrollTypeItems,
+  enrollmentAutoEnrollDayOfWeekItems
+} from '@/components/AwarenessEducator/SendTraining/utils'
 
 export default {
   name: 'EditEnrollmentsModal',
@@ -402,44 +421,10 @@ export default {
           useOwnTimeZone: false
         }
       },
-      periodTypeItems: [
-        { text: 'days', value: 'Day' },
-        { text: 'weeks', value: 'Week' },
-        { text: 'months', value: 'Month' }
-      ],
-      endTypeItems: [
-        {
-          text: 'when user completes the training',
-          value: 'TrainingCompleted'
-        },
-        {
-          text: 'when user completes the quiz',
-          value: 'QuizCompleted'
-        },
-        {
-          text: 'after occurrences',
-          value: 'AfterOccurrences'
-        },
-        {
-          text: 'on date',
-          value: 'OnDate'
-        }
-      ],
-      enrollmentAutoEnrollTypeItems: [
-        { text: 'the same day', value: 'SameDay' },
-        { text: 'the next day', value: 'NextDay' },
-        { text: 'next...', value: 'Next' },
-        { text: 'in...', value: 'In' }
-      ],
-      enrollmentAutoEnrollDayOfWeekItems: [
-        { text: 'Sunday', value: 0 },
-        { text: 'Monday', value: 1 },
-        { text: 'Tuesday', value: 2 },
-        { text: 'Wednesday', value: 3 },
-        { text: 'Thursday', value: 4 },
-        { text: 'Friday', value: 5 },
-        { text: 'Saturday', value: 6 }
-      ],
+      periodTypeItems,
+      endTypeItems,
+      enrollmentAutoEnrollTypeItems,
+      enrollmentAutoEnrollDayOfWeekItems,
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       }
