@@ -173,7 +173,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
-          :items="getEndTypeItems"
+          :items="endTypeItems"
           :disabled="!sendReminderEvery"
         />
         <v-text-field
@@ -207,7 +207,9 @@
       <AlertBox
         v-if="
           sendReminderEvery &&
-          ['QuizCompleted', 'QuizSuccessfullyPassed'].includes(formData.enrollmentReminder.endType)
+          ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(
+            formData.enrollmentReminder.endType
+          )
         "
         style="max-width: 690px;"
         class="mt-4 align-items-center"
@@ -442,14 +444,6 @@ export default {
           text: this.periodTypeItems[index].text,
           value: type.name
         })) || this.periodTypeItems
-      )
-    },
-    getEndTypeItems() {
-      return (
-        this?.enumTypes?.ReminderEndTypeEnum.map((type, index) => ({
-          text: this.endTypeItems[index].text,
-          value: type.name
-        })) || this.endTypeItems
       )
     },
     isScheduledTimeDisabled() {

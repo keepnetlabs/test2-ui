@@ -14,7 +14,7 @@ export const endTypeItems = [
   },
   {
     text: 'when user successfully passes the quiz',
-    value: 'QuizSuccessfullyPassed'
+    value: 'QuizSuccessfullyCompleted'
   },
   {
     text: 'after occurences',

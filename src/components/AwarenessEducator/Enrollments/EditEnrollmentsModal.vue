@@ -202,6 +202,19 @@
                 :picker-options="datePickerOptions"
               />
             </div>
+            <AlertBox
+              v-if="
+                sendReminderEvery &&
+                ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(
+                  formData.enrollmentReminder.endType
+                )
+              "
+              style="max-width: 690px;"
+              class="mt-4 align-items-center"
+              icon-name="mdi-information"
+              text="If this option is selected and there is no exam in the training, the reminder will continue indefinitely."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </FormGroup>
           <v-btn
             v-if="sendReminderEvery && !isReminderStopped"
