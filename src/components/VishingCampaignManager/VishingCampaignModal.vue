@@ -161,6 +161,7 @@
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"
               :is-vishing="true"
+              :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @handle-selection-change="handleTableSelectionChange"
             />
             <CustomError v-if="!isTargetGroupsValid" :error-message="getTargetGroupErrorMessage" />
@@ -493,7 +494,8 @@ export default {
       sendCallsOverTypes,
       sendCallsOnDaysOptionsShort,
       isActionButtonDisabled: false,
-      distributionDayCount: 7
+      distributionDayCount: 7,
+      defaultSelectedTargetGroupResourceIds: []
     }
   },
   computed: {
@@ -683,8 +685,9 @@ export default {
   created() {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
+    } else {
+      this.callForTargetGroups()
     }
-    this.callForTargetGroups()
     this.getSelectedTimeZone()
   },
   methods: {
@@ -746,6 +749,7 @@ export default {
           templateResourceId = '',
           targetGroups
         } = response?.data?.data || {}
+        this.defaultSelectedTargetGroupResourceIds = targetGroups.map((tGroup) => tGroup.value)
         this.formValues.callerPhoneNumber = callerPhoneNumber
         this.formValues.distributionEndTime = distributionEndTime
           ?.split(':')
@@ -767,9 +771,15 @@ export default {
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         this.$nextTick(() => (this.isTargetGroupsValid = true))
         this.selectTableItems(targetGroups)
+        this.callForTargetGroups()
       })
     },
     callForTargetGroups() {
+      if (this.defaultSelectedTargetGroupResourceIds.length)
+        this.axiosPayloadOfTargetGroups.selectTargetUserResourceIds = this.defaultSelectedTargetGroupResourceIds.join(
+          ','
+        )
+      console.log()
       searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response
