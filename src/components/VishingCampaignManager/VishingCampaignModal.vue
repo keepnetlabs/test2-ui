@@ -779,7 +779,6 @@ export default {
         this.axiosPayloadOfTargetGroups.selectTargetUserResourceIds = this.defaultSelectedTargetGroupResourceIds.join(
           ','
         )
-      console.log()
       searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response
