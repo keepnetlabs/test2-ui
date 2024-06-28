@@ -24,6 +24,7 @@ export const labels = {
   LearningPathThatUsersWillBeRedirectTo: 'Learning path that users will be directed to',
   Poster: 'Poster',
   SimulatedUsers: 'Simulated Users',
+  SimulatedUsersCoverage: 'Simulated Users Coverage',
   NonSimulatedUsers: 'Non-simulated Users',
   ReportName: 'Report Name',
   SetAsInactive: 'Set as Inactive',

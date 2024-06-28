@@ -84,6 +84,14 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  'Simulated Users Coverage': {
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   'In Progress': {
     backgroundColor: '#F56C6C',
     borderColor: '#F56C6C',
