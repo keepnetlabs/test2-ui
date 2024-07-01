@@ -28,6 +28,13 @@ export const enrollmentItemsTrainingTab = [
     value: '2'
   }
 ]
+export const attachmentScenarioEnrollmentItems = [
+  {
+    title: 'Enroll via Email Notification',
+    description: 'Target audience enrolls in training through an email notification',
+    value: '2'
+  }
+]
 
 export const getEnrollmentSendTypeIdByEnum = (enrollmentSendTypeId) => {
   switch (enrollmentSendTypeId) {
