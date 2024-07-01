@@ -310,6 +310,7 @@ import ExecutiveReportsTrainingCompletion from '@/components/ExecutiveReports/Ex
 import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
 import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
 import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsEmptyWidget.vue'
+import ExecutiveReportsTopRiskiestCompanies from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestCompanies.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -550,6 +551,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        HumanRiskScoreforHighestRiskCompaniesWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Companies with Highest Risk Scores',
+          key: 'HumanRiskScoreforHighestRiskCompaniesWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         RepeatOffendersUsersThresholdWidget: {
           x: 0,
           y: 0,
@@ -769,6 +791,7 @@ export default {
             widget.widgetType === 'RepeatOffendersUsersThresholdWidget' ||
             widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
             widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget' ||
+            widget.widgetType === 'HumanRiskScoreforHighestRiskCompaniesWidget' ||
             widget.widgetType === 'TrainingCompletionWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
@@ -1123,6 +1146,8 @@ export default {
           return ExecutiveReportsTopRiskiestUsers
         case 'HumanRiskScoreforHighestRiskDepartmentsWidget':
           return ExecutiveReportsTopRiskiestDepartments
+        case 'HumanRiskScoreforHighestRiskCompaniesWidget':
+          return ExecutiveReportsTopRiskiestCompanies
         case 'IndustryPhishingRiskScoreWidget':
           return ExecutiveReportsIndustryPhishingRiskScore
         case 'RepeatOffendersUsersThresholdWidget':
