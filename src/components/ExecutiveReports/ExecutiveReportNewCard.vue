@@ -312,6 +312,7 @@ import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports
 import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsEmptyWidget.vue'
 import ExecutiveReportsTopRiskiestCompanies from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestCompanies.vue'
 import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverage.vue'
+import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1187,7 +1188,7 @@ export default {
           return ExecutiveReportsTrainingCompletion
         case 'SimulationCoverageWidget':
           if (item?.chartType?.toLowerCase()?.includes('bar'))
-            return ExecutiveReportsSimulationCoverage
+            return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
