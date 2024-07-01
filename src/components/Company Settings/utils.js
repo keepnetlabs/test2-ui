@@ -70,6 +70,14 @@ import learningPathUrl from '@/components/GrapesJs/Newsletter/mergedTexts/learni
 import learningPathName from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathName'
 import learningPathDescription from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathDescription'
 import learningPathStep from '@/components/GrapesJs/Newsletter/mergedTexts/learningPathStep'
+import reportName from '@/components/GrapesJs/Newsletter/mergedTexts/reportName'
+import senderEmail from '@/components/GrapesJs/Newsletter/mergedTexts/senderEmail'
+import userName2 from '@/components/GrapesJs/Newsletter/mergedTexts/userName2'
+import createdBy from '@/components/GrapesJs/Newsletter/mergedTexts/createdBy'
+import createDate2 from '@/components/GrapesJs/Newsletter/mergedTexts/createDate2'
+import status2 from '@/components/GrapesJs/Newsletter/mergedTexts/status2'
+import manuelCheckUrl from '@/components/GrapesJs/Newsletter/mergedTexts/manuelCheckUrl'
+import fileName from '@/components/GrapesJs/Newsletter/mergedTexts/fileName'
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{FIRSTNAME}': firstName,
@@ -142,5 +150,13 @@ export const MERGED_TEXTS_MAP = {
   '{LEARNINGPATHURL}': learningPathUrl,
   '{LEARNING_PATH_NAME}': learningPathName,
   '{LEARNING_PATH_DESCRIPTION}': learningPathDescription,
-  '{LEARNING_PATH_STEP}': learningPathStep
+  '{LEARNING_PATH_STEP}': learningPathStep,
+  '{Report_Name}': reportName,
+  '{Sender_Email}': senderEmail,
+  '{User_Name}': userName2,
+  '{Created_By}': createdBy,
+  '{Create_Date}': createDate2,
+  '{Status}': status2,
+  '{Manuel_Check_Url}': manuelCheckUrl,
+  '{File_Name}': fileName
 }
