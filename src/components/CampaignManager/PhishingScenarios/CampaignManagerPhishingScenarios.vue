@@ -602,7 +602,6 @@ export default {
     },
     isShowTrainingTab() {
       return (
-        !this.isAttachmentBasedScenario &&
         this.getTrainingSearchPermission &&
         this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
       )
