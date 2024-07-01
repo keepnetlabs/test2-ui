@@ -69,7 +69,9 @@
         hint="*Required"
         placeholder="Select an option"
         item-text="title"
-        :items="enrollmentItemsTrainingTab"
+        :items="
+          isAttachmentBasedScenario ? attachmentScenarioEnrollmentItems : enrollmentItemsTrainingTab
+        "
         :disabled="!isInputsEditable || isInputLanguageDisabled"
         :rules="[(v) => !!v || 'Required']"
         :return-object="false"
@@ -206,7 +208,10 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { enrollmentItemsTrainingTab } from '@/components/CampaignManager/PhishingScenarios/utils'
+import {
+  enrollmentItemsTrainingTab,
+  attachmentScenarioEnrollmentItems
+} from '@/components/CampaignManager/PhishingScenarios/utils'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 export default {
@@ -240,6 +245,10 @@ export default {
     isCategory: {
       type: Boolean,
       default: false
+    },
+    isAttachmentBasedScenario: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -248,6 +257,7 @@ export default {
       labels,
       trainingItems: [],
       enrollmentItemsTrainingTab,
+      attachmentScenarioEnrollmentItems,
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',

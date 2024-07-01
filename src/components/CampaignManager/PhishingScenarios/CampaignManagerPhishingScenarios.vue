@@ -217,6 +217,7 @@
                   :is-edit="isEdit"
                   isCategory
                   :enum-types="enumTypes"
+                  :isAttachmentBasedScenario="isAttachmentBasedScenario"
                   @on-preview="handleCategoryTrainingPreviewButtonClick"
                 />
               </ElTabPane>
@@ -430,6 +431,7 @@
                       :type="type"
                       :is-edit="isEdit"
                       :enum-types="enumTypes"
+                      :isAttachmentBasedScenario="isAttachmentBasedScenario"
                       @on-preview="handleTrainingPreviewButtonClick"
                     />
                   </ElTabPane>
@@ -740,7 +742,10 @@ export default {
             const difficultyValues = val.filterGroups[0].filterItems[difficultyIndex].value.split(
               ','
             )
-            this.difficulty = difficultyValues.map((item) => ({ text: item, value: item }))
+            this.difficulty = difficultyValues.map((item) => ({
+              text: item,
+              value: item
+            }))
           } else {
             const difficultyValue = val.filterGroups[0].filterItems[difficultyIndex].value
             this.difficulty = [{ text: difficultyValue, value: difficultyValue }]
