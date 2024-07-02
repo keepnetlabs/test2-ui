@@ -311,6 +311,9 @@ import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports
 import ExecutiveReportsTrainingCompletionPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionPie.vue'
 import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsEmptyWidget.vue'
 import ExecutiveReportsTopRiskiestCompanies from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestCompanies.vue'
+import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverage.vue'
+import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
+import ExecutiveReportPhishingAndQuickResponseTime from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingAndQuickResponseTime.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -467,6 +470,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        PhishingDwellTimeAndQuickestResponseTimeWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing dwell time and quickest response time',
+          key: 'PhishingDwellTimeAndQuickestResponseTimeWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         PhishingSimulationEngagementReportingTrendsWidget: {
           x: 0,
           y: 0,
@@ -589,6 +613,27 @@ export default {
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        SimulationCoverageWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Simulation Coverage',
+          key: 'SimulationCoverageWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'pie',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
@@ -792,7 +837,9 @@ export default {
             widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
             widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget' ||
             widget.widgetType === 'HumanRiskScoreforHighestRiskCompaniesWidget' ||
-            widget.widgetType === 'TrainingCompletionWidget'
+            widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
+            widget.widgetType === 'TrainingCompletionWidget' ||
+            widget.widgetType === 'SimulationCoverageWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1162,6 +1209,15 @@ export default {
           else if (item?.chartType?.toLowerCase()?.includes('pie'))
             return ExecutiveReportsTrainingCompletionPie
           return ExecutiveReportsTrainingCompletion
+        case 'SimulationCoverageWidget':
+          if (item?.chartType?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportsSimulationCoverageBar
+          return ExecutiveReportsSimulationCoverage
+        /*
+        case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
+          return ExecutiveReportPhishingAndQuickResponseTime
+
+         */
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
