@@ -1216,7 +1216,7 @@ export default {
         /*
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
-          
+
          */
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
