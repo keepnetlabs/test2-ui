@@ -28,6 +28,22 @@ export const CHART_COLORS = {
     order: 3,
     pointHoverRadius: 3
   },
+  'Quickest Response': {
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  'Average Dwell Time': {
+    backgroundColor: '#1173C1',
+    borderColor: '#1173C1',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   'Not Clicked (%)': {
     backgroundColor: '#43A047',
     borderColor: '#43A047',

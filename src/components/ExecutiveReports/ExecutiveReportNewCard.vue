@@ -313,6 +313,7 @@ import ExecutiveReportsEmptyWidget from '@/components/ExecutiveReports/Executive
 import ExecutiveReportsTopRiskiestCompanies from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestCompanies.vue'
 import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverage.vue'
 import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
+import ExecutiveReportPhishingAndQuickResponseTime from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingAndQuickResponseTime.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -462,6 +463,27 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Phishing Risk Score Across Industries',
           key: 'PhishingRiskScoreAcrossIndustriesWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        PhishingDwellTimeAndQuickestResponseTimeWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing dwell time and quickest response time',
+          key: 'PhishingDwellTimeAndQuickestResponseTimeWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -815,6 +837,7 @@ export default {
             widget.widgetType === 'ImpactOfPhishingAwarenessTrainingWidget' ||
             widget.widgetType === 'HumanRiskScoreforHighestRiskDepartmentsWidget' ||
             widget.widgetType === 'HumanRiskScoreforHighestRiskCompaniesWidget' ||
+            widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
             widget.widgetType === 'TrainingCompletionWidget' ||
             widget.widgetType === 'SimulationCoverageWidget'
           ) {
@@ -1190,6 +1213,11 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
+        /*
+        case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
+          return ExecutiveReportPhishingAndQuickResponseTime
+          
+         */
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:

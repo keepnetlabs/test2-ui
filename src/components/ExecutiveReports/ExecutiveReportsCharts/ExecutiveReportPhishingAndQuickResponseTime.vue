@@ -13,9 +13,9 @@
           <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
-              add-data-plugin
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :add-custom-legend-label-height="14"
             />
           </template>
           <div
@@ -43,11 +43,9 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
-  name: 'ExecutiveReportsSimulationCoverageBar',
+  name: 'ExecutiveReportPhishingAndQuickResponseTime',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -74,18 +72,21 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       isLoading: false,
+      chartOptions: {},
+      chartData: {},
       isEmpty: false,
       empty: {
         message: 'You do not have any report conclusion'
-      },
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      chartOptions: {},
-      chartData: {}
+      }
     }
   },
   watch: {
@@ -111,105 +112,183 @@ export default {
           const {
             data: { data }
           } = response || {}
-          this.setChartData(data)
+          this.setChartData(data[0].widgetDatas)
         })
         .finally(() => {
           this.isLoading = false
         })
     },
-    setChartData(data) {
-      if (!data[0].widgetDatas.length) {
+    setChartData(widgetDatas) {
+      const monthNamesLong = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ]
+      console.log('widgetDatas', widgetDatas)
+      const params = [widgetDatas]
+      if (this.dateFormat) params.push(this.dateFormat)
+      if (!widgetDatas.length) {
         this.isEmpty = true
-        this.industryAverageObj = null
         return
       }
-      const { values } = data[0].widgetDatas[0]
-      const nonSimulatedUsers = values.find((data) => data.name === 'CountNonSimulated')?.value
-      const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
-      const biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
-      const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
-      const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
+      const xLabels = widgetDatas.map((obj) => obj.dataObject.name)
+      console.log('xLabels', xLabels)
+      const phishingDwellTime = []
+      const quickestResponseTime = []
+      let maxY = 0
+      widgetDatas.map((obj) => {
+        const generalObj = {
+          x: obj.dataObject.name,
+          dataObject: obj.dataObject
+        }
+        obj.values.map((val) => {
+          if (val.name === 'QuickestResponse') {
+            quickestResponseTime.push({ ...generalObj, y: val.value })
+          } else if (val.name === 'AverageDwellTime') {
+            phishingDwellTime.push({ ...generalObj, y: val.value })
+          }
+          if (val.value > maxY) {
+            maxY = val.value
+          }
+        })
+        return {
+          x: obj.dataObject.name,
+          y: obj.dataObject.fullName,
+          details: {
+            Email: obj.dataObject.email,
+            Department: obj.dataObject.department
+          }
+        }
+      })
       this.chartData = {
-        labels: ['Simulated users', 'Non-simulated users'],
+        labels: xLabels,
         datasets: [
           {
-            barThickness: 32,
-            label: 'Percentage',
-            data: [simulatedUsers, nonSimulatedUsers],
-            backgroundColor: ['#00BCD4', '#FBF280'],
-            borderColor: 'transparent',
-            borderWidth: 1,
+            label: 'Dwell Time Avg',
+            type: 'line',
+            data: phishingDwellTime,
+            backgroundColor: '#1173C1',
+            borderColor: '#1173C1',
+            fill: false,
+            pointRadius: 3,
+            pointHoverRadius: 3,
+            lineTension: 0,
+            order: 2
+          },
+          {
+            label: 'Quickest Response',
+            type: 'line',
+            data: quickestResponseTime,
+            backgroundColor: '#00BCD4',
+            borderColor: '#00BCD4',
+            fill: false,
+            pointRadius: 3,
+            pointHoverRadius: 3,
+            lineTension: 0,
             order: 2
           }
         ]
       }
+      console.log('this.chartData', this.chartData)
       this.chartOptions = {
-        devicePixelRatio: 2,
         responsive: true,
+        devicePixelRatio: 2,
         maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 24
-          }
-        },
         scales: {
-          xAxes: [
-            {
-              scaleLabel: {
-                display: true,
-                fontFamily: 'Open-sans,sans-serif',
-                fontColor: '#383B41'
-              },
-              gridLines: {
-                display: false
-              },
-              ticks: {
-                fontColor: '#383B41',
-                fontSize: 9,
-                fontFamily: 'Open-sans,sans-serif'
-              }
-            }
-          ],
           yAxes: [
             {
-              ticks: {
-                min: 0,
-                max: biggestValue,
-                stepSize: Math.floor(biggestValue / 6),
-                labelOffset: 0,
-                padding: 12,
-                fontColor: 'rgba(56, 59, 65, 0.72)',
-                lineHeight: 1.58,
-                fontFamily: 'Open-sans,sans-serif',
-                beginAtZero: true
-              },
+              beginAtZero: true,
+              position: 'left',
               scaleLabel: {
                 display: true,
-                fontFamily: 'Open-sans,sans-serif',
-                fontSize: 12,
-                fontColor: '#383B41',
-                labelString: 'Number Of Users'
+                labelString: 'Time (Minutes)',
+                fontColor: 'rgba(56, 59, 65, 0.72)'
               },
+              offset: false,
               gridLines: {
                 display: true,
                 color: '#F2F2F2',
                 drawBorder: false,
                 zeroLineColor: '#757575',
                 zeroLineWidth: 2
+              },
+              ticks: {
+                min: 0,
+                max: maxY > 100 ? maxY : 100,
+                stepSize: maxY > 100 ? Math.ceil(maxY / 5 / 2) * 2 : 20,
+                labelOffset: 0,
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontFamily: 'Open Sans, sans-serif',
+                beginAtZero: true,
+                padding: 12,
+                lineHeight: 1.58
+              }
+            }
+          ],
+          xAxes: [
+            {
+              display: true,
+              offset: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Campaigns',
+                fontColor: '#383B41'
+              },
+              ticks: {
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontStyle: '600',
+                fontSize: 9,
+                fontFamily: 'Open-sans,sans-serif'
+              },
+              gridLines: {
+                display: true,
+                showBorder: false,
+                color: '#F2F2F2',
+                zeroLineColor: 'white',
+                zeroLineWidth: 2
               }
             }
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            fontColor: '#383B41',
+            generateLabels(chart = {}) {
+              const { data } = chart
+              return data.datasets.map((item, index) => {
+                return {
+                  text: item.label,
+                  fillStyle: item.borderColor,
+                  lineWidth: 0,
+                  datasetIndex: index
+                }
+              })
+            },
+            fontFamily: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12
+          }
         },
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-bar')
+            let tooltipEl = document.getElementById('chartjs-tooltip-risk-score-trend')
+
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-training-completion-bar'
+              tooltipEl.id = 'chartjs-tooltip-risk-score-trend'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
@@ -247,29 +326,25 @@ export default {
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
               let titleRow = document.createElement('tr')
-              const xValue = tooltipModel.dataPoints[0].xLabel
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
+              let dataIndex = tooltipModel.dataPoints[0].index
+              let dataPoint = this._chart.data.datasets[0].data[dataIndex]
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${dataPoint.x}</th>`
               tableRoot.appendChild(titleRow)
               let selectedBackgroundColor = ''
               let selectedLabel = ''
               let selectedValue = ''
-              this._chart.data.datasets.forEach((dataset) => {
-                let datasetLabel = 'Number of Users'
-                console.log('dataset', dataset)
-                console.log('tooltipModel', tooltipModel)
-                let dataValue =
-                  tooltipModel.dataPoints[0].label === 'Simulated users'
-                    ? simulatedUsers
-                    : nonSimulatedUsers
-                let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Simulated users' ? '#00BCD4' : '#FBF280'
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                let backgroundColor = dataset.backgroundColor || '#000'
+
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:&nbsp;
                 </td>
-                <td style="font-weight: 600">${dataValue}</td>
+                <td>${(dataValue && dataValue.y) || 0} ${dataValue.y > 1 ? 'mins' : 'min'}</td>
             `
                 if (
                   datasetLabel ===
@@ -300,13 +375,18 @@ export default {
           datalabels: {
             display: true,
             align: 'end',
-            offset: -2,
-            anchor: 'end',
-            color: '#383B41',
-            clamp: true,
-            formatter: function (_, { dataIndex }) {
-              const value = dataIndex === 0 ? simulated : nonSimulated
-              return value + '%'
+            anchor: 'center',
+            color: '#000',
+            formatter: function (value, context) {
+              if (context.dataset.label === 'Company Phishing Risk Score' && value.annotations) {
+                return value.annotations.definition
+              }
+              return ''
+            },
+            font: {
+              size: 9,
+              family: 'Open Sans, sans-serif',
+              weight: 'normal'
             },
             borderRadius: 4,
             padding: 6
