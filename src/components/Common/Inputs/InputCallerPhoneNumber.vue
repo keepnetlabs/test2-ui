@@ -104,7 +104,7 @@ export default {
     }
   },
   mounted() {
-    this.callForPhoneNumbers()
+    if (!this.defaultPhoneNumbers) this.callForPhoneNumbers()
   },
   methods: {
     callForPhoneNumbers() {
