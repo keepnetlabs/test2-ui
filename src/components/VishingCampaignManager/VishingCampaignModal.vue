@@ -505,7 +505,7 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupItems() {
-      return this.formData?.userCountDetailResponse?.data?.data || []
+      return this.userCountDetailResponse?.data?.data || []
     },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
