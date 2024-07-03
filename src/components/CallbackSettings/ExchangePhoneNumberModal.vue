@@ -17,7 +17,6 @@
         style="margin-top: 0px !important;"
         title="Callback Phone Numbers"
         subTitle="Exchange the selected callback phone number with another one from the list."
-        is-smishing
         :defaultPhoneNumbers="phoneNumbers"
         :value="selectedPhoneNumber"
         @input="handlePhoneNumberChange"
