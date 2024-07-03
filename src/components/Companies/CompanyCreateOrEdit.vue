@@ -1102,7 +1102,7 @@ export default {
           this.callbackNumberItems = []
           return
         }
-        if (res?.data?.data?.length < 12) {
+        if (res?.data?.data?.length <= 12) {
           this.callbackNumberItems = Array.from({ length: res.data.data.length }, (_, i) => i + 1)
         }
       })
