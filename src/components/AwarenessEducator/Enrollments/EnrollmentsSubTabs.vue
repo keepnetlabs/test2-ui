@@ -313,7 +313,9 @@ export default {
     },
     toggleShowPermanentlyDeleteDialog(forceUpdate = false) {
       if (forceUpdate && typeof forceUpdate === 'boolean')
-        this.$refs[`refTable${this.tab}`].refTable.callForData()
+        if (this.$refs?.[`refTable${this.tab}`]?.refTable) {
+          this.$refs[`refTable${this.tab}`].refTable.callForData()
+        }
       if (this.isShowDeletePermanentlyDialog) this.selectedRow = null
       this.isShowDeletePermanentlyDialog = !this.isShowDeletePermanentlyDialog
     },

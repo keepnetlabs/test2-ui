@@ -313,6 +313,7 @@ export default {
             let booReturn = true
             for (let i = 0; i < v.length; i++) {
               const chip = document.getElementsByClassName('v-chip--select')[i]
+              if (!chip) continue
               if (!Validations.email(v[i], '')) {
                 booReturn = false
                 chip.style.borderColor = '#ff5252'

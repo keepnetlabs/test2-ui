@@ -776,23 +776,25 @@ export default {
         const el = updatedComponent?.getEl()
         if (el?.id?.includes('outlook-button-href-id') && !el.innerText) {
           const commentElement = this.getCommentElementByComponent(updatedComponent)
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /width\:\#?(\w|\s|-)+\;/g,
-            `width:180px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /width:undefinedpx/g,
-            `width:180px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /height\:\#?(\w|\s|-)+\;/g,
-            `height:70px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /height:undefinedpx/g,
-            `height:70px;`
-          )
-          updatedComponent.components('No Label')
+          if (commentElement) {
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:180px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /width:undefinedpx/g,
+              `width:180px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /height\:\#?(\w|\s|-)+\;/g,
+              `height:70px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /height:undefinedpx/g,
+              `height:70px;`
+            )
+            updatedComponent.components('No Label')
+          }
         }
       })
       this.editor.on('component:remove', (component) => {
@@ -875,8 +877,11 @@ export default {
     },
     getCommentElementByComponent(component) {
       const parent = component.parent()
-      const children = parent.components()
-      return children?.models?.find((el) => el?.attributes?.type === 'comment')
+      const children = parent?.components?.()
+      if (children) {
+        return children?.models?.find((el) => el?.attributes?.type === 'comment')
+      }
+      return null
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()

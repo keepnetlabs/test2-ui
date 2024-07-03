@@ -155,7 +155,7 @@ export default {
     })
     let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
     let tokenData = jwt_decode(token)
-    this.role = tokenData.role
+    this.role = tokenData?.role || ''
   },
   methods: {
     setRoleItems(availableRoles = []) {

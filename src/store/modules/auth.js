@@ -39,14 +39,14 @@ const auth = {
           localStorage.getItem('selectedCompanyName') ||
           localStorage.getItem('companyName') ||
           data.userCompany.name
-        state.userRoleName = data.role.name
+        state.userRoleName = data?.role?.name || ''
         state.logoUrl = data.userCompany.logoPath
         state.firstName = data.firstName
         state.permissions = payload.permissions
       } else {
         state.user = payload.currentUserData
         state.companyName = payload.currentUserData.userCompany.name
-        state.userRoleName = payload.currentUserData.role.name
+        state.userRoleName = payload?.currentUserData?.role?.name || ''
         state.selectedCompanyName = payload.currentUserData.userCompany.name
         state.logoUrl = payload.currentUserData.userCompany.logoPath
         state.firstName = payload.currentUserData.firstName

@@ -189,7 +189,7 @@ export function setGlobalUserData(userData) {
       timeFormat: userData && userData.user_timeformat
     },
     role: {
-      name: userData.role.toString()
+      name: userData?.role?.toString?.() || ''
     }
   }
   localStorage.setItem('companyId', currentUserData.userCompany.id)
@@ -813,7 +813,7 @@ export function fileToBase64(file) {
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.readAsDataURL(file)
+      if ('Blob' in window && file instanceof Blob) reader.readAsDataURL(file)
       reader.onload = () => resolve(reader.result)
       reader.onerror = reject
     })

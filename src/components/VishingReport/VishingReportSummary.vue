@@ -151,7 +151,7 @@ export default {
         resourceId: this.$route.params.id,
         name,
         language: vishingTemplateDto?.vishingLanguage,
-        voice: this.languageItems[langaugeIndex].name,
+        voice: this.languageItems?.[langaugeIndex]?.name || '',
         languageShortCode,
         narratorGender,
         description,
@@ -161,7 +161,7 @@ export default {
         tags,
         steps,
         vishingLanguageResourceId,
-        voiceProviderTypeId: this.languageItems[langaugeIndex].voiceProviderTypeId
+        voiceProviderTypeId: this.languageItems?.[langaugeIndex]?.voiceProviderTypeId || ''
       }
       if (invalidDialingNoticeStepIndex !== -1) {
         template = {
