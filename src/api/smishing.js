@@ -444,6 +444,10 @@ export function getCampaignManagerFormDetails() {
   return testRequest.get('/smishing-simulator/smishing-campaign/form-details')
 }
 
+export function getSmishingScenariosPhoneNumber() {
+  return testRequest.get(`/smishing-simulator/smishing-scenario/mfa-phone-number`)
+}
+
 export default {
   searchTextMessageTemplates,
   getTextMessageTemplate,
@@ -518,5 +522,6 @@ export default {
   testDomainConnection,
   getExcludedIPAddresses,
   postExcludedIPAddresses,
-  getCampaignManagerFormDetails
+  getCampaignManagerFormDetails,
+  getSmishingScenariosPhoneNumber
 }

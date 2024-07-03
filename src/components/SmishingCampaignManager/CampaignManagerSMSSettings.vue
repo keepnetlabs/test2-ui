@@ -3,7 +3,6 @@
     <InputCallerPhoneNumber
       title="Sender Phone Number"
       subTitle="Select the SMS sender phone number"
-      is-smishing
       :defaultPhoneNumbers="phoneNumbers"
       :value="formData.phoneNumber"
       @input="handlePhoneNumberChange"
