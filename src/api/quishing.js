@@ -662,6 +662,10 @@ const searchCampaignJobUserEmailSubmittedMfa = (payload = {}, id = '', instanceG
   )
 }
 
+export function getQuishingScenariosPhoneNumber() {
+  return testRequest.get(`/quishing-simulator/quishing-scenario/mfa-phone-number`)
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -769,5 +773,6 @@ export default {
   getQuishingPdfCampaignPreviewContent,
   getCampaignManagerQuishingTemplatePreviewContent,
   getQuishingPdfCampaignDownloadContent,
-  searchCampaignJobPrintoutUserSendingReport
+  searchCampaignJobPrintoutUserSendingReport,
+  getQuishingScenariosPhoneNumber
 }
