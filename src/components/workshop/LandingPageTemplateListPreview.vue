@@ -454,7 +454,9 @@
                         <InputCallerPhoneNumber
                           v-model="mfaData.mfaSenderNumberResourceId"
                           select-first-item
-                          is-phishing-scenario
+                          :is-phishing-scenario="type === SCENARIO_TYPES.PHISHING"
+                          :isSmishing="type === SCENARIO_TYPES.SMISHING"
+                          :isQuishing="type === SCENARIO_TYPES.QUISHING"
                           :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
                           :title="labels.SenderPhoneNumber"
                           :sub-title="labels.SenderPhoneNumberSub"
