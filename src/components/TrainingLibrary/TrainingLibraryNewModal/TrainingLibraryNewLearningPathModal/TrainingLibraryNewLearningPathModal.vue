@@ -38,7 +38,10 @@
                 :title="labels.LearningPathInformation"
                 :subtitle="labels.LearningPathInformationSub"
               />
-              <TrainingLibraryNewLearningPathInformation ref="refTrainingCourseInformation" />
+              <TrainingLibraryNewLearningPathInformation
+                ref="refTrainingCourseInformation"
+                :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
+              />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
               <ConfigureCompanyStepHeader
@@ -129,7 +132,8 @@ export default {
       step: 1,
       trainingId: this?.selectedRow?.resourceId || '',
       availableForRequestIds: [],
-      trainingIds: []
+      trainingIds: [],
+      selectedCompaniesAndGroups: []
     }
   },
   computed: {
@@ -171,6 +175,14 @@ export default {
             this.trainingIds = trainingGroups?.map(
               (training) => training?.trainingId || training?.detailTrainingId
             )
+            this.selectedCompaniesAndGroups = availableForList
+              .map((af) => {
+                if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
+                  return null
+                }
+                return { resourceId: af.targetResourceId, typeName: af.typeName }
+              })
+              .filter(Boolean)
           }
         })
         .then(() => {

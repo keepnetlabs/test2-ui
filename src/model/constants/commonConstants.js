@@ -515,7 +515,7 @@ export const COMMON_PROPS = {
     defaultOptions: true,
     disableBranchNodes: true,
     multiple: true,
-    searchNexted: true,
+    searchNested: true,
     showCount: true
   }
 }
