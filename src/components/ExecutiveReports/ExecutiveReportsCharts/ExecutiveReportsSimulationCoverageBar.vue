@@ -255,8 +255,6 @@ export default {
               let selectedValue = ''
               this._chart.data.datasets.forEach((dataset) => {
                 let datasetLabel = 'Number of Users'
-                console.log('dataset', dataset)
-                console.log('tooltipModel', tooltipModel)
                 let dataValue =
                   tooltipModel.dataPoints[0].label === 'Simulated users'
                     ? simulatedUsers

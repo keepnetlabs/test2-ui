@@ -1213,11 +1213,8 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
-        /*
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
-
-         */
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:

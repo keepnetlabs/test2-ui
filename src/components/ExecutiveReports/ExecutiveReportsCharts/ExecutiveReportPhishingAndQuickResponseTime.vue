@@ -133,7 +133,6 @@ export default {
         'November',
         'December'
       ]
-      console.log('widgetDatas', widgetDatas)
       const params = [widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       if (!widgetDatas.length) {
@@ -141,7 +140,6 @@ export default {
         return
       }
       const xLabels = widgetDatas.map((obj) => obj.dataObject.name)
-      console.log('xLabels', xLabels)
       const phishingDwellTime = []
       const quickestResponseTime = []
       let maxY = 0
@@ -198,7 +196,6 @@ export default {
           }
         ]
       }
-      console.log('this.chartData', this.chartData)
       this.chartOptions = {
         responsive: true,
         devicePixelRatio: 2,
