@@ -32,7 +32,10 @@
               :title="labels.PosterInformation"
               :subtitle="labels.PosterInformationSub"
             />
-            <TrainingLibraryNewPosterInformation ref="refTrainingCourseInformation" />
+            <TrainingLibraryNewPosterInformation
+              ref="refTrainingCourseInformation"
+              :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -114,7 +117,8 @@ export default {
       labels,
       isActionButtonDisabled: false,
       step: 1,
-      trainingId: this?.selectedRow?.resourceId || ''
+      trainingId: this?.selectedRow?.resourceId || '',
+      selectedCompaniesAndGroups: []
     }
   },
   computed: {
@@ -156,6 +160,14 @@ export default {
           refTrainingCourseInformation.setMakeAvailableForData(availableForList)
           refTrainingContent.setFormData({ hasQuiz, type })
           refTrainingContent.setTrainingContents(trainingContents)
+          this.selectedCompaniesAndGroups = availableForList
+            .map((af) => {
+              if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
+                return null
+              }
+              return { resourceId: af.targetResourceId, typeName: af.typeName }
+            })
+            .filter(Boolean)
         }
       })
     }

@@ -81,6 +81,7 @@
       ref="refMakeAvailableFor"
       open-direction="above"
       sub-title="Companies that will see this content in their libraries"
+      :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
     />
   </v-form>
 </template>
@@ -111,6 +112,12 @@ export default {
     InputDescription,
     InputEntityName,
     FormGroup
+  },
+  props: {
+    selectedCompaniesAndGroups: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
