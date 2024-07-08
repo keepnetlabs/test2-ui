@@ -861,6 +861,9 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   //global guard structure
+  if (to.path === 'threat-sharing' && from.path === 'threat-sharing') {
+    return false
+  }
   try {
     const storeRef = store
     if (to.meta.isAuthenticated) {

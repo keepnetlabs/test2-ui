@@ -174,13 +174,13 @@ export default {
           data.trainingTypeName = this.activeTrainingStepType
           this.selectedTrainingSummary = data
           if (
-            this.selectedTrainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+            this.selectedTrainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
           ) {
             this.tabItems[2].label = labels.OpenedPosterEmail
             this.tabItems[3].label = labels.DownloadedPoster
             this.tabItems.splice(4, 2)
           } else if (
-            this.selectedTrainingSummary.trainingTypeName ===
+            this.selectedTrainingSummary?.trainingTypeName ===
             TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
           ) {
             this.tabItems[2].label = labels.OpenedInfographicEmail

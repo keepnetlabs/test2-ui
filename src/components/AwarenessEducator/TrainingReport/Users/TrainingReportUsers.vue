@@ -394,28 +394,34 @@ export default {
   },
   computed: {
     getHeaderSubtitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'All target users enrolled to this poster'
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return 'All target users enrolled to this infographic'
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         return 'All target users enrolled to this learning path'
       return 'All target users enrolled to this training'
     },
     getResendDialogTitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.ResendInfographic
       return labels.ResendTraining
     },
     getBodyTrainingType() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.Infographic.toLowerCase()
       return labels.Training.toLowerCase()
     }
@@ -428,7 +434,7 @@ export default {
         if (!val) return
         let filterableItems = []
         if (
-          this.trainingSummary.trainingDetails?.trainingTypeName ===
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
           TRAINING_LIBRARY_TYPES.LEARNING_PATH
         ) {
           const learningPathIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
@@ -444,9 +450,9 @@ export default {
             })) || []
         }
         if (
-          this.trainingSummary.trainingDetails?.trainingTypeName ===
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
             TRAINING_LIBRARY_TYPES.TRAINING ||
-          this.trainingSummary.trainingDetails?.trainingTypeName === 'SCORM'
+          this.trainingSummary?.trainingDetails?.trainingTypeName === 'SCORM'
         ) {
           const trainingIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
             (type) =>
@@ -462,7 +468,7 @@ export default {
             ) || []
         }
         if (
-          this.trainingSummary.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
+          this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
         ) {
           const posterIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
             (type) => type.displayName === TRAINING_LIBRARY_TYPES.POSTER
@@ -477,7 +483,7 @@ export default {
             ) || []
         }
         if (
-          this.trainingSummary.trainingDetails?.trainingTypeName ===
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
           TRAINING_LIBRARY_TYPES.INFOGRAPHIC
         ) {
           const infographicIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
@@ -519,13 +525,15 @@ export default {
   },
   methods: {
     getEmptyTableTextMessage() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportTrainingPosters
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.EmptyTrainingReportTrainingInfographics
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
         return labels.EmptyTrainingReportUserLearningPaths
       }
