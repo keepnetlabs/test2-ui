@@ -75,7 +75,9 @@ const CONSTANTS = {
     'Error response received for message <get-frame-manager-configuration>'
   ],
   POWER_BI: [`Cannot read properties of undefined (reading 'indexOf')`],
-  VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`]
+  VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`],
+  SAFARI: [`undefined is not an object (evaluating 'n.features')`],
+  VUE_MULTIPANE: ['t.className.match is not a function']
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -110,6 +112,8 @@ export default (router) => {
       if (CONSTANTS.ANALYTICS.some((m) => message.includes(m))) return null
       if (CONSTANTS.POWER_BI.some((m) => message.includes(m))) return null
       if (CONSTANTS.VUE_PDF.some((m) => message.includes(m))) return null
+      if (CONSTANTS.SAFARI.some((m) => message.includes(m))) return null
+      if (CONSTANTS.VUE_MULTIPANE.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.VUE_ROUTER)) return null

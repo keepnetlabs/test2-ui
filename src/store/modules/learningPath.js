@@ -108,11 +108,15 @@ const learningPath = {
       state.learningPathServerSideProps.pageNumber = payload.pageNumber
     },
     SET_LEARNING_PATH_FILTER_ITEMS(state, payload) {
-      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      const learningPathFilter = state.learningPathFilters.find(
+        (f) => f && payload && f.key === payload.key
+      )
       learningPathFilter.items = payload.items
     },
     SET_LEARNING_PATH_FILTER_ITEMS_SHOW(state, payload) {
-      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      const learningPathFilter = state.learningPathFilters.find(
+        (f) => f && payload && f.key === payload.key
+      )
       learningPathFilter.show = payload.show
     },
     SET_SELECTED_LEARNING_PATH_TRAININGS(state, payload) {
@@ -290,7 +294,7 @@ const learningPath = {
       state.learningPathServerSideProps.pageNumber = 1
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
-      const filter = state.learningPathFilters.find((f) => f.key === payload.key)
+      const filter = state.learningPathFilters.find((f) => f && payload && f.key === payload.key)
       filter.show = payload.show
     }
   },

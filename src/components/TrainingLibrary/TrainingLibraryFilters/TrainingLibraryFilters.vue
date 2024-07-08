@@ -34,18 +34,20 @@
               <VListItem
                 :class="[
                   'training-library-filtering-options-parent-list-item cursor-pointer',
-                  activeFilter.key === filter.key ? 'training-library-filter-active' : ''
+                  filter && activeFilter.key === filter.key ? 'training-library-filter-active' : ''
                 ]"
                 @click="handleSetActiveFilter(filter)"
               >
                 <VListItemTitle class="training-library-filtering-options-parent-list-item-title">
                   <div class="training-library-filtering-options-parent-list-item-title__left-side">
-                    <VIcon :color="activeFilter.key === filter.key ? '#2196F3' : '#757575'">{{
-                      filter.icon
-                    }}</VIcon>
-                    <span :style="activeFilter.key === filter.key ? 'color: #2196F3' : ''">{{
-                      filter.text
-                    }}</span>
+                    <VIcon
+                      :color="filter && activeFilter.key === filter.key ? '#2196F3' : '#757575'"
+                      >{{ filter.icon }}</VIcon
+                    >
+                    <span
+                      :style="filter && activeFilter.key === filter.key ? 'color: #2196F3' : ''"
+                      >{{ filter.text }}</span
+                    >
                   </div>
                   <div
                     class="training-library-filtering-options-parent-list-item-title__right-side"
@@ -57,7 +59,8 @@
                           : 1
                       }}
                     </div>
-                    <VIcon :color="activeFilter.key === filter.key ? '#2196F3' : '#757575'"
+                    <VIcon
+                      :color="filter && activeFilter.key === filter.key ? '#2196F3' : '#757575'"
                       >mdi-menu-right</VIcon
                     >
                   </div>
@@ -181,7 +184,7 @@ export default {
       removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     handleSetActiveFilter(filter) {
-      if (this.activeFilter.key === filter.key) return
+      if (filter && this.activeFilter.key === filter.key) return
       this.checkFilter(filter)
       this.activeFilter = filter
     },

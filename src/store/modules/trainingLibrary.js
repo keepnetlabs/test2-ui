@@ -277,11 +277,11 @@ const trainingLibrary = {
       state.learningPathSendModal = payload
     },
     SET_FILTER_ITEMS(state, payload) {
-      const filter = state.filters.find((f) => f.key === payload.key)
+      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
       filter.items = payload.items
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
-      const filter = state.filters.find((f) => f.key === payload.key)
+      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
       filter.show = payload.show
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
