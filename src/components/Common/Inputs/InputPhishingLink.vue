@@ -232,7 +232,7 @@ export default {
     handleInputChange(value, key) {
       this.$emit('input', {
         ...this.value,
-        [key]: value.trim()
+        [key]: value?.trim?.() || ''
       })
       this.changeDisabledLabel()
     },
