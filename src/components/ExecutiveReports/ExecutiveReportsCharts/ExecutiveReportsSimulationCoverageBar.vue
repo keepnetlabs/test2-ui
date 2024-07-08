@@ -188,7 +188,7 @@ export default {
                 fontFamily: 'Open-sans,sans-serif',
                 fontSize: 12,
                 fontColor: '#383B41',
-                labelString: 'Number Of Users'
+                labelString: 'Number of Users'
               },
               gridLines: {
                 display: true,
