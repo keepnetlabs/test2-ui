@@ -88,6 +88,10 @@
     "vuetify-loader": "1.9.2",
     "webpack": "^4.44.1"
   },
+  "resolutions": {
+    "lru-cache": "5.1.1",
+    "glob": "7.2.3"
+  },
   "eslintConfig": {
     "root": true,
     "env": {
