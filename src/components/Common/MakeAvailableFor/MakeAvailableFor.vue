@@ -157,7 +157,7 @@ export default {
         this.disableScroll = true
         this.searchAvailableForPayload.name = searchQuery
         this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
-        this.callForSearchAvailableFor(searchQuery, callback).then(() => {
+        this.callForSearchAvailableFor(searchQuery).then(() => {
           setTimeout(() => {
             callback(null, this.treeSelectOptions)
           }, 100)
