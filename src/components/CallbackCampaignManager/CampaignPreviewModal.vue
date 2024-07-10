@@ -239,7 +239,7 @@ export default {
       CallbackService.getCallbackScenarioPreview(scenario.value)
         .then((res) => {
           const { emailTemplate, callbackTemplate } = res?.data?.data
-          this.emailTemplate = emailTemplate.template
+          this.emailTemplate = emailTemplate?.template
           this.emailTemplateParams = {
             name: emailTemplate?.name || '',
             fromName: emailTemplate?.fromName || '',

@@ -1817,11 +1817,23 @@ export default {
         this.$emit(
           'update:axios-payload',
           JSON.parse(
-            JSON.stringify({ ...this.initialAxiosPayload, showByExamStatus: 'FirstAttempt' })
+            JSON.stringify({
+              ...this.initialAxiosPayload,
+              pageSize: this.isServerSide ? this.serverSideProps.pageSize : this.rowCount,
+              showByExamStatus: 'FirstAttempt'
+            })
           )
         )
       } else {
-        this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+        this.$emit(
+          'update:axios-payload',
+          JSON.parse(
+            JSON.stringify({
+              ...this.initialAxiosPayload,
+              pageSize: this.isServerSide ? this.serverSideProps.pageSize : this.rowCount
+            })
+          )
+        )
       }
       this.handleRefresh()
       this.$emit('clear-filters')
