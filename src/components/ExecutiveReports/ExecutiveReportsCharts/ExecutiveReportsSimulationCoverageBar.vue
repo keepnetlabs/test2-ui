@@ -126,9 +126,15 @@ export default {
       const { values } = data[0].widgetDatas[0]
       const nonSimulatedUsers = values.find((data) => data.name === 'CountNonSimulated')?.value
       const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
-      const biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
+      let biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
       const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
+      const remainder = Math.floor(biggestValue / 50)
+      if (!remainder) {
+        biggestValue = 100
+      } else {
+        biggestValue = remainder * 50 + 50
+      }
       this.chartData = {
         labels: ['Simulated users', 'Non-simulated users'],
         datasets: [
@@ -175,7 +181,7 @@ export default {
               ticks: {
                 min: 0,
                 max: biggestValue,
-                stepSize: Math.floor(biggestValue / 6),
+                stepSize: Math.floor(biggestValue / 5),
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',
