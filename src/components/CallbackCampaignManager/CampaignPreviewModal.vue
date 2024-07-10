@@ -173,7 +173,6 @@ export default {
   computed: {
     isRenderTrainingTab() {
       return false
-      // return this.trainingParams
     },
     getSubtitle() {
       return this.selectedRow?.name || ''

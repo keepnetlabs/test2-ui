@@ -1004,22 +1004,6 @@ export default {
         formData.append(`Steps[${i + 2}].Duration`, this.formValues.steps[i].duration)
         formData.append(`Steps[${i + 2}].InputUrl`, this.formValues.steps[i].inputUrl)
         formData.append(`Steps[${i + 2}].Content`, this.formValues.steps[i].content)
-        // if (this.isEdit && !this.formValues.steps[i].content && this.formValues.steps[i].inputUrl) {
-        //   formData.delete(`Steps[${i + 2}].Content`)
-        //   formData.delete(`Steps[${i + 2}].InputUrl`)
-        // }
-        // if (
-        //   this.isDuplicate &&
-        //   !this.formValues.steps[i].content &&
-        //   this.formValues.steps[i].inputUrl
-        // ) {
-        //   formData.set(`Steps[${i + 2}].InputUrl`, this.formValues.steps[i].inputUrl)
-        //   formData.delete(`Steps[${i + 2}].Content`)
-        // }
-        // if (this.isDuplicate && this.formValues.steps[i].content) {
-        //   formData.delete(`Steps[${i + 2}].InputUrl`)
-        //   formData.set(`Steps[${i + 2}].Content`, this.formValues.steps[i].content)
-        // }
       }
       if (this.isEdit && !this.isDuplicate) {
         CallbackService.updateCallbackTemplate(this.templateId, formData)

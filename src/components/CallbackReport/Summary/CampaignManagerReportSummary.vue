@@ -59,13 +59,6 @@
       :formValues="getCallbackTemplateData"
       :isFetchingSummary="isFetchingCallbackTemplate || !getCallbackTemplateData"
     />
-    <!-- <CampaignManagerReportSummaryTraining
-      v-if="getTrainingInfo"
-      class="mt-6"
-      call-training-preview-api
-      :training-params="getTrainingInfo"
-      :selected-row="getSelectedRowTrainingInfo"
-    /> -->
   </div>
 </template>
 
@@ -79,12 +72,10 @@ import { difficulties, methods } from '@/components/CampaignManager/CampaignMana
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
-// import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
-    // CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
@@ -152,10 +143,6 @@ export default {
     },
     trainingInfos() {
       return []
-      // return this.phishingScenarios.reduce((acc, pScenario) => {
-      //   if (pScenario.trainingInfo) acc.push(pScenario.trainingInfo)
-      //   return acc
-      // }, [])
     },
     getCampaignSummaryItems() {
       const { endDate = '0', totalTargetUserCount = 0 } = this.campaignSummary?.campaignInfo || {
