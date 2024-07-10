@@ -92,11 +92,6 @@ export default {
           })
           this.toggleNewMicrosoft365DECModal()
         } else {
-          // if (state) {
-          //   const newUrl = Buffer.from(state, 'base64') + '?tenant=' + tenant
-          //   window.location = newUrl
-          //   return
-          // }
           this.tenantId = tenant
           this.toggleNewMicrosoft365DECModal()
           this.$router.replace('/company/company-settings')
