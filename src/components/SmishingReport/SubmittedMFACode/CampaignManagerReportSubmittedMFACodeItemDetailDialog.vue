@@ -39,14 +39,14 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
       >
-    <template #datatable-custom-column="{ scope, col }">
-      <CampaignManagerReportTimeZoneColumn
-        v-if="col.property === COLUMNS.SUBMITTED_TIME_MFA.property"
-        :scope="scope"
-        :timeKey="COLUMNS.SUBMITTED_TIME_MFA.property"
-        localTimeKey="submittedTimeToLocalUser"
-      />
-    </template>
+        <template #datatable-custom-column="{ scope, col }">
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.SUBMITTED_TIME_MFA.property"
+            :scope="scope"
+            :timeKey="COLUMNS.SUBMITTED_TIME_MFA.property"
+            localTimeKey="submittedTimeToLocalUser"
+          />
+        </template>
       </DataTable>
     </template>
     <template #app-dialog-footer>
