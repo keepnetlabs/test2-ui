@@ -200,14 +200,6 @@
 
         .el-table .hover-row {
           background-color: #f1f8fe !important;
-          /*
-          .actions-container,.actions-container--first{
-            .cell * {
-              visibility: visible;
-            }
-          }
-
-           */
         }
 
         .el-table td > .cell {
@@ -503,19 +495,15 @@
           }
 
           .table-settings {
-            //cursor: pointer;
             display: flex;
-
             @media only screen and (max-width: 500px) {
               padding-right: 0;
               padding-top: 13px;
             }
-
             @media (max-width: 1025px) {
               margin-top: 12px;
             }
           }
-
           label {
             font-family: "Open Sans", sans-serif;
             font-size: 13px;
@@ -771,8 +759,6 @@
 
     .filter-field {
       border-radius: 8px;
-      //border: solid 1px #dcdfe6;
-
       .v-icon.v-icon {
         font-size: 20px;
       }
@@ -1022,39 +1008,10 @@
 
     .actions-container {
       padding-right: 6px !important;
-
-      /*
-      &.actions-label{
-        visibility: visible;
-      }
-      .cell *{
-        visibility: hidden;
-      }
-
-       */
-
       &--first {
         padding-right: 25px !important;
-        /*
-        &.actions-label{
-          visibility: visible;
-        }
-        .cell *{
-          visibility: hidden;
-        }
-
-         */
       }
     }
-
-    .show-action-cell {
-      /*
-      .cell *{
-        visibility: visible;
-      }
-      */
-    }
-
     .popup {
       &__badge {
         display: flex;
@@ -1191,7 +1148,6 @@
 }
 
 .k-table-header {
-  //height: 48px;
 }
 
 .cluster-view--selected {
