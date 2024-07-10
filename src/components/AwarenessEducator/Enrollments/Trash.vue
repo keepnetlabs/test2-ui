@@ -29,7 +29,6 @@ import TrashTable from '@/components/AwarenessEducator/Enrollments/TrashTable'
 import TrashDeletePermanentlyDialog from '@/components/AwarenessEducator/Enrollments/TrashDeletePermanentlyDialog'
 
  */
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import EnrollmentsSubTabs from '@/components/AwarenessEducator/Enrollments/EnrollmentsSubTabs.vue'
 import { mapGetters } from 'vuex'
 export default {

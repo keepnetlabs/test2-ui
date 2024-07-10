@@ -317,7 +317,6 @@ import KEmailPreview from '@/components/KEmailPreview'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { EMITS } from '../utils'
 import {
-  getCampaignJobSummary,
   getCampaignJobSummaryForTraining,
   getCampaignJobSummaryTargetGroups,
   getCampaignManagerPreview,

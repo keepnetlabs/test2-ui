@@ -80,7 +80,6 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 // import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
-import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 export default {
   name: 'CampaignManagerReportSummary',

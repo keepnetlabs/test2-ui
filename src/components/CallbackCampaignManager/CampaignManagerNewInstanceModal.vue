@@ -74,7 +74,6 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
-import { launchPhishingCampaign } from '@/api/phishingsimulator'
 import CallbackService from '@/api/callback'
 import { isDifferent, getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
@@ -173,10 +172,7 @@ export default {
       if (this.selectedRow?.method === 'Multiple Method') {
         const methodsArray = JSON.parse(this.selectedRow.methodDetail)
         const mfaIndex = methodsArray.findIndex((methodObj) => methodObj.method === 'MFA')
-        if (mfaIndex !== -1) {
-          return true
-        }
-        return false
+        return mfaIndex !== -1
       }
       return false
     },
