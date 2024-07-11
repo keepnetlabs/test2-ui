@@ -11,7 +11,6 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <!-- <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" /> -->
       <div class="campaign-manager-report-summary__categories">
         <div
           v-for="(category, index) in categories"

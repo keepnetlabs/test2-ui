@@ -9,7 +9,11 @@
       style="cursor: move;"
       >mdi-drag-vertical</v-icon
     >
-    <img class="learning-path-content__training--cover-image" :src="getCoverImage(training)" />
+    <img
+      class="learning-path-content__training--cover-image"
+      :src="getCoverImage(training)"
+      alt="Learning path cover"
+    />
     <div class="learning-path-content__training--info">
       <div ref="refTitle">
         <VTooltip :disabled="!isRenderTitleTooltip" right :max-width="300">

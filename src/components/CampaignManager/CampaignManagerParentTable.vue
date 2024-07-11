@@ -101,7 +101,12 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps, METHOD_TYPES } from '@/components/CampaignManager/utils'
+import {
+  COLUMNS,
+  getStatusBadgeProps,
+  METHOD_TYPES,
+  SCENARIO_DISTRIBUTION_TEXTS
+} from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -114,8 +119,6 @@ import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
-import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
-
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',

@@ -94,10 +94,8 @@ export default {
           const dataset = chart.data.datasets[0]
           const meta = chart.getDatasetMeta(0)
           const maxIndexes = []
-          let maxX = -Infinity
           for (let i = 0; i < dataset.data.length; i++) {
             if (dataset.data[i].x > 60) {
-              maxX = dataset.data[i].x
               maxIndexes.push(i)
             }
           }
@@ -109,7 +107,6 @@ export default {
                 const fontFamily = 'Open Sans, sans-serif'
                 const padding = 18
                 const text = 'Critical Risk Level. Immediate training is needed.'
-                //ctx.measureText(text).width;
                 const x = Math.floor(maxData._model.x / 2.3)
                 const y = maxData._model.y - padding + 2
                 ctx.fillStyle = '#383B41'

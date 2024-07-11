@@ -281,7 +281,6 @@ import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManage
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
-import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog'
@@ -294,7 +293,8 @@ import { mapGetters } from 'vuex'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import {
   SCENARIO_DISTRIBUTION,
-  SCENARIO_DISTRIBUTION_TEXTS
+  SCENARIO_DISTRIBUTION_TEXTS,
+  SEND_RANDOMLY_USERS_CALCULATE_TYPES
 } from '@/components/CampaignManager/utils'
 import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
 export default {

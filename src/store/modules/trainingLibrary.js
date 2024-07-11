@@ -354,7 +354,10 @@ const trainingLibrary = {
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null
       })
+      const oldPageSize = state.serverSideProps.pageSize
       state.serverSideProps = new ServerSideProps()
+      state.axiosPayload.pageSize = oldPageSize
+      state.serverSideProps.pageSize = oldPageSize
       state.filterOptionsFilters = [
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),

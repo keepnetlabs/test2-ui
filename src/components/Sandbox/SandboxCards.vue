@@ -32,7 +32,7 @@
             </div>
           </div>
           <div class="bg-image" style="bottom: 10px; right: -11px;">
-            <img src="../../assets/img/book-glass.svg" alt="client-count-image" />
+            <img src="../../assets/img/book-glass.svg" alt="client count" />
           </div>
         </div>
       </template>
@@ -69,7 +69,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../assets/img/hook.svg" alt="analysed-urls-image" />
+            <img src="../../assets/img/hook.svg" alt="analysed urls" />
           </div>
         </div>
       </template>
@@ -106,7 +106,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../assets/img/bug.svg" alt="bug-image" />
+            <img src="../../assets/img/bug.svg" alt="total attachment" />
           </div>
         </div>
       </template>
@@ -140,7 +140,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../assets/img/circle.svg" alt="image-analysed-emails" />
+            <img src="../../assets/img/circle.svg" alt="analysed emails" />
           </div>
         </div>
       </template>

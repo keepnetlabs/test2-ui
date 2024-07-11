@@ -31,8 +31,6 @@
     font-weight: 600;
   }
 }
-.campaign-manager-summary-card__body-item-one-line {
-}
 .campaign-manager-summary-card__body-container-one-line {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -78,10 +76,8 @@
     align-items: center;
     padding: 4px 8px;
     border-radius: 4px;
-    display: flex;
     gap: 4px;
     background-color: #e0e0e0;
-
     &-key {
       font-size: 12px;
       font-weight: 600;

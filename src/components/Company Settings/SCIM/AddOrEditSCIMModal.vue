@@ -152,9 +152,8 @@ import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { isDifferent, copyToClipboard } from '@/utils/functions'
+import { isDifferent, copyToClipboard, getDefaultAxiosPayload } from '@/utils/functions'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
