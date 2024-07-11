@@ -278,7 +278,12 @@
 </template>
 
 <script>
-import { createRandomCryptStringNumber, getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
+import {
+  createRandomCryptStringNumber,
+  getTimeZone,
+  getTimeZoneForMoment,
+  fileToBase64
+} from '@/utils/functions'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload.vue'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
@@ -299,7 +304,6 @@ import * as Validations from '@/utils/validations'
 import ExecutiveReportsRiskScoreTrendAcrossIndustries from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRiskScoreTrendAcrossIndustries.vue'
 import ExecutiveReportsPhishingSimulationEngagement from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingSimulationEngagement.vue'
 import { mapGetters } from 'vuex'
-import { fileToBase64 } from '@/utils/functions'
 import ExecutiveReportsTopRiskiestUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTopRiskiestUsers.vue'
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsRepeatOffendersUsers from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsRepeatOffendersUsers.vue'

@@ -307,7 +307,7 @@ export default {
       this.isLoading = true
       CallbackService.getUsedCallbackNumbers()
         .then((res) => {
-          const { companyCount, usedCount } = res.data.data
+          let { companyCount, usedCount } = res.data.data
           if (companyCount === null) companyCount = 0
           if (usedCount === null) usedCount = 0
           this.selectablePhoneNumberCount = companyCount - usedCount

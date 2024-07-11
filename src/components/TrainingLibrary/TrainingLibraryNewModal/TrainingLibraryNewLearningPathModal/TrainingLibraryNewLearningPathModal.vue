@@ -167,8 +167,7 @@ export default {
               name,
               tags: tagNames,
               targetAudience,
-              coverImage,
-              targetAudience
+              coverImage
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
             refLearningPathContent.setSelectedTrainings(trainingGroups || [])

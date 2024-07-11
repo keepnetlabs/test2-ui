@@ -127,7 +127,11 @@
             <v-card class="info-details overflow-hidden">
               <div class="detail-header pa-5 justify-center">
                 <div class="d-flex flex-row">
-                  <img src="../../assets/img/web-icon.svg" class="mr-4" alt="attack-types-image" />
+                  <img
+                    src="../../assets/img/web-icon.svg"
+                    class="mr-4"
+                    alt="attack types description"
+                  />
                   <span>By Attack Types</span>
                 </div>
               </div>
@@ -195,7 +199,7 @@
             <v-card class="info-details overflow-hidden">
               <div class="detail-header pa-5 justify-center">
                 <div class="d-flex flex-row">
-                  <img src="../../assets/img/web-icon.svg" class="mr-4" alt="email-status-image" />
+                  <img src="../../assets/img/web-icon.svg" class="mr-4" alt="email status" />
                   <span>By Email Status</span>
                 </div>
               </div>

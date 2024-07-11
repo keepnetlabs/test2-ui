@@ -197,12 +197,10 @@ import CampaignManagerPhishingScenarios from '@/components/CampaignManager/Phish
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
-import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
-
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
