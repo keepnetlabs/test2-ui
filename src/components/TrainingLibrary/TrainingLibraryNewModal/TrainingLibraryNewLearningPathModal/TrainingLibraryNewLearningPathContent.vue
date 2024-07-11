@@ -168,6 +168,11 @@ export default {
     }),
     getCompanyResourceId() {
       return localStorage.getItem('companyRequestId') || ''
+    },
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
     }
   },
   watch: {
@@ -192,9 +197,17 @@ export default {
       orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
     isInavailable(training) {
-      return isInavailable(this.availableForRequests, training, this.getCompanyResourceId)
+      return isInavailable(
+        this.availableForRequests,
+        training,
+        this.getCompanyResourceId,
+        this.getCompanyName
+      )
     },
     isDisabled(training) {
+      if (this.getCompanyName === 'System') {
+        return false
+      }
       if (
         this.availableForRequests?.includes('MyCompanyOnly') &&
         (training?.availableFor?.includes('MyCompanyOnly') ||
