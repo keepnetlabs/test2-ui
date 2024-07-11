@@ -16,7 +16,7 @@
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
     />
-    <data-table
+    <DataTable
       id="domains-data-table"
       ref="refDomainsListList"
       is-server-side
@@ -50,7 +50,7 @@
       @searchChangedEvent="handleSearchChange"
       @addAction="handleAdd"
     >
-      <template #datatable-row-actions="{scope}">
+      <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
           :icon="tableOptions.rowActions[0].icon"
@@ -68,7 +68,7 @@
           @on-click="handleActionDelete(scope.row)"
         />
       </template>
-    </data-table>
+    </DataTable>
   </div>
 </template>
 
@@ -170,6 +170,12 @@ export default {
             type: 'status',
             isEditable: true,
             tooltipKey: 'healthStatusMessage',
+            filterableCustomFieldName: 'Status',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Failed', value: 1 },
+              { text: 'Success', value: 0 }
+            ],
             width: 150
           },
           {
