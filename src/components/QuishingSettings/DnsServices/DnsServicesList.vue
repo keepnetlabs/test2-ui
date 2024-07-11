@@ -21,7 +21,7 @@
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
     />
-    <data-table
+    <DataTable
       id="dnsServiceList-data-table"
       ref="refDnsServiceListList"
       is-server-side
@@ -73,7 +73,7 @@
           @on-click="handleActionDelete(scope.row)"
         />
       </template>
-    </data-table>
+    </DataTable>
   </div>
 </template>
 
@@ -157,6 +157,12 @@ export default {
             type: 'status',
             isEditable: true,
             tooltipKey: 'healthStatusMessage',
+            filterableCustomFieldName: 'Status',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Failed', value: 1 },
+              { text: 'Success', value: 0 }
+            ],
             width: 150
           },
           {
