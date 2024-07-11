@@ -53,7 +53,7 @@
             style="bottom: 10px; right: -11px;"
             :style="[isPhishingEmpty && { opacity: 0.4 }]"
           >
-            <img src="../../../assets/img/ph-crone.svg" alt="image-phishing" />
+            <img src="../../../assets/img/ph-crone.svg" alt="crone icon" />
           </div>
         </div>
       </template>
@@ -101,7 +101,7 @@
             </div>
           </div>
           <div class="bg-image" :style="[isNotifiedEmailEmpty && { opacity: 0.3 }]">
-            <img src="../../../assets/img/ic-warning.svg" alt="image-no-email-analysed" />
+            <img src="../../../assets/img/ic-warning.svg" alt="warning icon" />
           </div>
         </div>
       </template>
@@ -161,7 +161,7 @@
             </div>
           </div>
           <div class="bg-image" :style="[!isInvestigationsEmpty && { opacity: 0.4 }]">
-            <img src="../../../assets/img/ic-check-box.svg" alt="image-check" />
+            <img src="../../../assets/img/ic-check-box.svg" alt="check icon" />
           </div>
         </div>
       </template>
@@ -218,7 +218,7 @@
             </div>
           </div>
           <div class="bg-image">
-            <img src="../../../assets/img/ic-insert-chart.svg" alt="image-chart" />
+            <img src="../../../assets/img/ic-insert-chart.svg" alt="chart icon" />
           </div>
         </div>
       </template>

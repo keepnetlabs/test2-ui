@@ -119,20 +119,6 @@ export default {
         })
     },
     setChartData(widgetDatas) {
-      const monthNamesLong = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const params = [widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       if (!widgetDatas.length) {

@@ -805,7 +805,7 @@ export function cancellableAxiosRequest(fn) {
 }
 
 export function logFormData(formData) {
-  for (var pair of formData.entries()) {
+  for (let pair of formData.entries()) {
     console.log(pair[0] + ', ' + pair[1])
   }
 }

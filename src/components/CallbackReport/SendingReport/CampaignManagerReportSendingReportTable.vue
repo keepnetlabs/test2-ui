@@ -93,7 +93,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps } from '@/components/CallbackReport/Opened/utils'
+import { COLUMNS, getStatusBadgeProps, REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -106,7 +106,6 @@ import CampaignManagerReportSendingReportEvent from '@/components/CallbackReport
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
-import { REPORT_TABS } from '@/components/CallbackReport/Opened/utils'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }

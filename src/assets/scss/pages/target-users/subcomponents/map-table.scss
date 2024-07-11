@@ -82,12 +82,6 @@
         max-height: 48px;
     }
 
-    td.edit-buttons,
-    td.empty {
-        /*flex: 1 0 90%;
-      text-align: center;*/
-    }
-
     &__header {
         &-select {
             .v-select__selection {
@@ -117,8 +111,6 @@
 
     &__body {
         td {
-
-            //height: 24px;
             &:first-child {
                 border-left: none;
             }

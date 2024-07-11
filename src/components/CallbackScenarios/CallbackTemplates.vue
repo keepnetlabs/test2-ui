@@ -118,7 +118,6 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import CallbackTemplatePreview from '@/components/CallbackScenarios/CallbackTemplatePreview'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import {
   getStoreValue,

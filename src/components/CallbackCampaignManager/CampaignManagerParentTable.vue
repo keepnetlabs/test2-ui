@@ -365,16 +365,6 @@ export default {
       this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
     },
     toggleAddCampaignManagerModal() {
-      // TODO: Check target group count
-      // if (!this.targetGroupCount || true) {
-      //   this.$emit('no-target-group')
-      //   return
-      // }
-      // TODO: Check scenario count
-      // if (!this.scenarioCount?.length) {
-      //   this.$emit('no-scenario')
-      //   return
-      // }
       this.$emit('toggle-add-campaign-manager-modal')
     },
     exportCampaignManagerList(downloadTypes) {

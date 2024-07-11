@@ -283,9 +283,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
-// import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
@@ -295,7 +293,6 @@ export default {
   name: 'CampaignManagerCallbackScenarios',
   components: {
     TrainingLibraryPreviewDialog,
-    // CampaignManagerPhishingScenariosTrainingTab,
     AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
