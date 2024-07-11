@@ -220,7 +220,7 @@
                   :applyRules="showForm"
                 />
               </div>
-              <div class="add-in-settings__body-item mb-4">
+              <div v-if="false" class="add-in-settings__body-item mb-4">
                 <label class="add-in-settings__list-item-header">Cancel Button Label</label>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnCancelText"
