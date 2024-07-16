@@ -98,7 +98,7 @@
                 hide-details
               >
               </v-checkbox>
-              <span>Send training meterials every</span>
+              <span>Send training materials every</span>
               <v-text-field
                 v-model="formData.distributionDays"
                 v-mask="'#######'"
@@ -395,6 +395,7 @@ export default {
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v > 0 || 'Enter number greater than 0',
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
