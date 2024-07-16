@@ -6,6 +6,7 @@
       :status="isWantToAddNewCommunity"
       :community-item="communityItem"
       :resource-id="resourceId"
+      :style="{ 'z-index': '999999' }"
       @closeAdd="onAddClose"
     />
     <delete-community-dialog
@@ -228,9 +229,7 @@
           >
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
               <div class="empty-communities-inline">
-                <span class="no-community">
-                  No community has been created
-                </span>
+                <span class="no-community"> No community has been created </span>
                 <v-btn
                   id="threat-sharing-communities-create-community-button"
                   class="create-com-btn mb-11"
@@ -243,9 +242,7 @@
             </div>
             <div class="empty-communities" v-if="selectedTab === 'tab-0'">
               <div class="empty-communities-inline">
-                <span class="no-community">
-                  You haven’t joined any communities
-                </span>
+                <span class="no-community"> You haven’t joined any communities </span>
                 <v-btn
                   id="threat-sharing-communities-browse-community-button"
                   class="create-com-btn mb-11"
@@ -793,7 +790,11 @@ export default {
         this.setCommunitiesAndIncidentsToStore(communitiesData)
         this.$router.push({
           name: `Community`,
-          params: { id: item.communityResourceId, item: item, communityName: item.communityName }
+          params: {
+            id: item.communityResourceId,
+            item: item,
+            communityName: item.communityName
+          }
         })
       } else {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId === 1 ? 'owner' : 'member')
