@@ -10,7 +10,7 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
               :chart-data="chartData"
@@ -18,6 +18,18 @@
               :custom-plugin="customPlugins"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -66,6 +78,10 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
@@ -117,8 +133,11 @@ export default {
           const {
             data: { data }
           } = response || {}
+          if (!data[0].widgetDatas.length) {
+            this.isEmpty = true
+            return
+          }
           this.chartData = {
-            xLabels: [10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
             datasets: [
               {
                 type: 'line',
@@ -131,6 +150,7 @@ export default {
                     x: 20,
                     y: 40
                   },
+                  { x: 25, y: 75 },
                   {
                     x: 30,
                     y: 5
@@ -140,7 +160,7 @@ export default {
                     y: 100
                   },
                   {
-                    x: 50,
+                    x: 90,
                     y: 10
                   }
                 ],
@@ -149,17 +169,39 @@ export default {
                 borderColor: '#B3D4FC',
                 fill: false,
                 stack: 'Stack 1',
-                order: 1
+                order: 2
               },
               {
                 type: 'bar',
                 barThickness: 32,
-                data: [10, 20, 0, 45, 100],
+                data: [
+                  {
+                    x: 10,
+                    y: 100
+                  },
+                  {
+                    x: 20,
+                    y: 40
+                  },
+                  { x: 0, y: 0 },
+                  {
+                    x: 30,
+                    y: 80
+                  },
+                  {
+                    x: 40,
+                    y: 100
+                  },
+                  {
+                    x: 90,
+                    y: 10
+                  }
+                ],
                 label: 'Uğurlu',
                 backgroundColor: '#0198AC',
                 borderColor: '#0198AC',
                 fill: false,
-                order: 1,
+                order: 2,
                 stack: 'Stack 1'
               },
               {
@@ -168,7 +210,14 @@ export default {
                 categoryPercentage: 0.5,
                 barPercentage: 0.5,
                 label: 'Average Dwell Time: 25 minutes',
-                data: [0, 0, 100],
+                data: [
+                  { x: 0, y: 0 },
+                  { x: 0, y: 0 },
+                  { x: 25, y: 100 },
+                  { x: 0, y: 0 },
+                  { x: 0, y: 0 },
+                  { x: 0, y: 0 }
+                ],
                 backgroundColor: '#B6791D',
                 borderColor: '#B6791D',
                 fill: false,
@@ -216,6 +265,9 @@ export default {
               ],
               xAxes: [
                 {
+                  type: 'category',
+                  labels: [10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+                  stacked: true,
                   position: 'bottom',
                   display: true,
                   offset: true,
@@ -228,10 +280,7 @@ export default {
                     fontColor: 'rgba(56, 59, 65, 0.72)',
                     fontStyle: '600',
                     fontSize: 9,
-                    fontFamily: 'Open-sans,sans-serif',
-                    callback: (val) => {
-                      return val === 25 ? undefined : val
-                    }
+                    fontFamily: 'Open-sans,sans-serif'
                   },
                   gridLines: {
                     display: false,
@@ -325,17 +374,17 @@ export default {
                   tableRoot.innerHTML = ''
                   tableRoot.style.width = '100%'
                   let titleRow = document.createElement('tr')
-                  const xValue = new Date(tooltipModel.dataPoints[0].xLabel)
-                  titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
-                    monthNamesLong[xValue.getMonth()]
-                  }/${xValue.getFullYear()}</th>`
+                  const xValue = tooltipModel.dataPoints[0].xLabel
+                  titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">Dwell Time: ${xValue} minutes</th>`
                   tableRoot.appendChild(titleRow)
                   let selectedBackgroundColor = ''
                   let selectedLabel = ''
                   let selectedValue = ''
                   this._chart.data.datasets.forEach((dataset, i) => {
                     let datasetLabel = dataset.label
+                    if (datasetLabel.toLowerCase().includes('dwell')) return
                     let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                    console.log('dataValue', dataValue)
                     let backgroundColor = dataset.backgroundColor || '#000'
 
                     let tr = document.createElement('tr')
@@ -344,7 +393,7 @@ export default {
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:
                 </td>
-                <td>${dataValue.y}</td>
+                <td>${dataValue.y} minutes</td>
             `
 
                     if (
@@ -408,6 +457,7 @@ export default {
               }
             }
           }
+          this.isEmpty = false
           this.isLoading = false
         })
         .finally(() => {
