@@ -4,6 +4,7 @@
       v-model="parentMenu"
       bottom
       offset-y
+      attach
       nudge-bottom="12"
       :close-on-content-click="false"
       content-class="filter-options__menu-content"
@@ -36,7 +37,11 @@
           class="filter-options__menu training-library-filtering-options"
         >
           <template #activator="{ on }">
-            <VListItem v-on="on" class="training-library-filtering-options-parent-list-item">
+            <VListItem
+              v-on="on"
+              :style="{ padding: '0 16px' }"
+              class="training-library-filtering-options-parent-list-item"
+            >
               <VListItemTitle class="training-library-filtering-options-parent-list-item-title"
                 >{{ item.text }} <VIcon>{{ item.icon }}</VIcon></VListItemTitle
               >
