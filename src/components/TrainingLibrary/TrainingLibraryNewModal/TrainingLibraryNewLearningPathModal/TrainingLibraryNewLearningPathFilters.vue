@@ -19,6 +19,7 @@
           ref="refMenu"
           bottom
           offset-y
+          attach
           nudge-bottom="12"
           :close-on-content-click="false"
           :close-on-click="isCloseOnClick"
@@ -46,6 +47,7 @@
             <div class="training-library-filters-container__left">
               <div v-for="filter in filters" v-if="filter.show" :key="filter.key">
                 <VListItem
+                  :style="{ padding: '0 16px' }"
                   :class="[
                     'training-library-filtering-options-parent-list-item cursor-pointer',
                     filter && activeFilter.key === filter.key
