@@ -1148,7 +1148,7 @@ export default {
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
-    isAutoRefreshActive: true,
+    isAutoRefreshActive: false,
     autoRefreshInterval: null,
     timeoutId: null,
     isRunning: false,
@@ -1989,9 +1989,6 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
-                  if (this.autoRefreshInterval) {
-                    clearInterval(this.autoRefreshInterval)
-                  }
                 })
             })
         })
@@ -2048,15 +2045,6 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
-                  if (
-                    this.isRunning &&
-                    this.$route.name === 'Investigation Details' &&
-                    this.isAutoRefreshActive
-                  ) {
-                    if (this.autoRefreshInterval) {
-                      clearInterval(this.autoRefreshInterval)
-                    }
-                  }
                 })
             })
         })
@@ -2529,8 +2517,17 @@ export default {
         }
       }
     },
-    statsAndMenuData() {
-      if (this.statsAndMenuData) this.topMenuLoading = false
+    statsAndMenuData: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        if (val?.status === 'Running') {
+          this.isAutoRefreshActive = true
+        } else {
+          this.isAutoRefreshActive = false
+        }
+        if (this.statsAndMenuData) this.topMenuLoading = false
+      }
     },
     investigationDetailsData(val) {
       const tempArr = []
