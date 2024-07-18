@@ -351,10 +351,11 @@
                   rows="2"
                   height="80"
                   :disabled="!setting.isConfirmationBeforeAnalysis"
-                  :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
+                  :initialRules="setting.isConfirmationBeforeAnalysis ? textAreaRules : []"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                   :maxLength="256"
-                  :required="getRequiredValue('isConfirmationBeforeAnalysis')"
+                  :applyRules="showForm"
+                  :required="setting.isConfirmationBeforeAnalysis"
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
@@ -374,10 +375,10 @@
                   rows="2"
                   height="80"
                   :disabled="!setting.isDeleteEmailBeforeAnalysis"
-                  :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
+                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                   :maxLength="256"
-                  :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
+                  :required="setting.isDeleteEmailBeforeAnalysis"
                 />
               </div>
               <div class="add-in-settings__body-item">
@@ -397,10 +398,10 @@
                   rows="2"
                   height="80"
                   :disabled="!setting.isSendSimulationMails"
-                  :initialRules="getTextAreaRules('isSendSimulationMails')"
+                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                   :maxLength="256"
-                  :required="getRequiredValue('isSendSimulationMails')"
+                  :required="setting.isSendSimulationMails"
                 />
               </div>
             </div>
@@ -499,7 +500,11 @@ import imageToBlob from '@/utils/image-to-blob'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import LanguageDeletionDialog from '@/components/PhishingReporter/Settings/LanguageDeletionDialog'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { defaultDialogBoxSettings } from '@/components/PhishingReporter/Settings/utils'
+import {
+  defaultDialogBoxSettings,
+  checkDialogBoxSettings
+} from '@/components/PhishingReporter/Settings/utils'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'AddinSettings',
   components: {
@@ -573,7 +578,16 @@ export default {
       validations: {
         maxLength,
         required
-      }
+      },
+      textAreaRules: [
+        (v) => this.validations.required(v, labels.Required),
+        (v) =>
+          this.validations.maxLength(
+            v,
+            256,
+            this.labels.getMaxLengthMessage('Confirmation message', 256)
+          )
+      ]
     }
   },
   computed: {
@@ -623,6 +637,15 @@ export default {
       this.isFetchingDefaultSettingsForLanguage = true
       getDefaultSettingsForLanguage(payload)
         .then((response) => {
+          if (!response?.data?.data?.startsWith?.('{')) {
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                'Translation could not be processed. Please fill in the required fields yourself or try again later.',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert'
+            })
+            return
+          }
           const dialogBoxSettings = JSON.parse(response.data.data)
           const languageResourceId =
             this.languageOptions.find((lo) => lo.text === language)?.value || ''
@@ -636,6 +659,15 @@ export default {
             languageResourceId
           })
           this.tab = language
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message:
+              'Translation could not be processed. Please fill in the required fields yourself or try again later.',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert'
+          })
+          return
         })
         .finally(() => {
           this.isFetchingDefaultSettingsForLanguage = false
@@ -708,7 +740,32 @@ export default {
       this.selectedVersionRow = row
       this.reporterVersionModalStatus = true
     },
+    checkDialogBoxSettings() {
+      const invalidLanguages = []
+      for (let i = 0; i < this.formValues.dialogBoxSettings.length; i++) {
+        if (!checkDialogBoxSettings(this.formValues.dialogBoxSettings[i]))
+          invalidLanguages.push(this.formValues.dialogBoxSettings[i].languageName)
+      }
+      return invalidLanguages
+    },
     submit(event, isAddIn = false) {
+      const invalidLanguages = this.checkDialogBoxSettings()
+      if (invalidLanguages.length) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `Please fill in all required “${
+            invalidLanguages.length === 2
+              ? invalidLanguages[0] + ' and ' + invalidLanguages[1]
+              : invalidLanguages.length > 2
+              ? invalidLanguages.slice(0, invalidLanguages.length - 1).join(', ') +
+                ' and ' +
+                invalidLanguages[invalidLanguages.length - 1]
+              : invalidLanguages[0]
+          }” fields in the dialog box settings.`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert'
+        })
+        return
+      }
       if (this.$refs.refForm.validate()) {
         this.formValues = {
           ...this.formValues,
