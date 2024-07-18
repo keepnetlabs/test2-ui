@@ -4,6 +4,7 @@
       v-if="isWantToAddNewCommunity"
       ref="refNewCommunity"
       :status="isWantToAddNewCommunity"
+      :style="{ 'z-index': '999999' }"
       @closeAdd="onAddClose"
     />
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">

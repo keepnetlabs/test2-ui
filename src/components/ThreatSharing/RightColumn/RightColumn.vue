@@ -5,6 +5,7 @@
       :status="isWantToAddNewCommunity"
       :community-item="communityItem"
       :resourceId="communityItem && communityItem.resourceId"
+      :style="{ 'z-index': '999999' }"
       @closeAdd="onAddClose"
     />
     <RightColumnLeaveCommunityDialog

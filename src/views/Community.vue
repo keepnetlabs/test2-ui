@@ -5,6 +5,7 @@
         v-if="isWantToAddNewCommunity"
         ref="refNewCommunity"
         :status="isWantToAddNewCommunity"
+        :style="{ 'z-index': '999999' }"
         @closeAdd="onAddClose"
       />
       <v-overlay

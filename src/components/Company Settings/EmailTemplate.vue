@@ -6,6 +6,7 @@
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
       z-index="9999"
+      :style="{ 'z-index': '999999' }"
       :show-header="false"
       :should-remove-overflow="false"
       @submit="saveGrapeJs"
