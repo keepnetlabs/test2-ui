@@ -173,6 +173,7 @@ export const PROPERTY_STORE = {
   INFOGRAPHIC_NAME: 'trainingName',
   MATERIAL_NAME: 'trainingName',
   SCREENSAVER_NAME: 'trainingName',
+  CREATION_TYPE: 'creationType',
   FREQUENCY: 'frequency',
   REPORTNAME: 'reportName',
   BEHAVIOURS: 'behaviours',

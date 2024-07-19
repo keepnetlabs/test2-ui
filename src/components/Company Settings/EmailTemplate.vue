@@ -44,7 +44,7 @@
         />
       </FormGroup>
     </div>
-    <div :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : 'pt-4']" v-if="!onlyGrapes">
+    <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-6']" v-if="!onlyGrapes">
       <FormGroup
         title="Subject:"
         :sub-title="getSubjectSubtitle"
@@ -63,7 +63,7 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : '']">
+    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
       <FormGroup
         title="From Name:"
         style="max-width: unset;"
@@ -81,7 +81,7 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" :class="['mx-4', isHorizontalFormGroups ? 'pt-2 pb-4' : '']">
+    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']">
       <FormGroup
         title="From Email Address:"
         style="max-width: unset;"
@@ -199,6 +199,91 @@
         </div>
       </div>
     </div>
+    <div v-if="isAiAssistant" class="email-template__ai-assistant">
+      <div class="email-template__ai-assistant-header">
+        <div class="email-template__ai-assistant-left">
+          <div>
+            <VSwitch v-model="aiAssistant" hide-details color="#2196f3" />
+          </div>
+          <div>
+            <div class="email-template__ai-assistant-left-title">AI Assistant</div>
+            <div class="email-template__ai-assistant-left-description">
+              AI will generate an email based on your description. Describe what your email should
+              be about
+            </div>
+          </div>
+        </div>
+        <div class="email-template__ai-assistant-right">
+          <div class="email-template__ai-assistant-right-text">
+            Remaining Rights:
+            <span class="fw-600"
+              >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="email-template__ai-assistant-content">
+        <div class="d-flex gap-6">
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(0)"
+          >
+            {{ badgeContents[0] }}
+          </div>
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(1)"
+          >
+            {{ badgeContents[1] }}
+          </div>
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(2)"
+          >
+            {{ badgeContents[2] }}
+          </div>
+        </div>
+        <div class="mt-4">
+          <VTextarea
+            v-model.trim="aiTemplateText"
+            outlined
+            dense
+            no-resize
+            persistent-hint
+            rows="2"
+            height="76"
+            placeholder="Enter your instructions to create an email. You can use the examples above to start."
+            :rules="[aiTemplateMaxLength]"
+          />
+        </div>
+        <div class="email-template__ai-assistant-footer">
+          <div class="email-template__ai-assistant-footer-left">
+            <v-btn
+              class="white--text btn-util btn-download-add-in pl-4"
+              color="#00bcd4"
+              rounded
+              :style="aiTemplateText.length === 0 ? { opacity: '0.5', pointerEvents: 'none' } : ''"
+              @click="handleGenerateEmail"
+            >
+              GENERATE EMAIL
+            </v-btn>
+            <div v-if="generatedTemplates.length" class="ml-6">
+              <span class="email-template__ai-assistant-footer-text"
+                >Generated email 1 of {{ generatedTemplates.length }}</span
+              >
+              <VIcon class="ml-2 cursor-pointer">mdi-chevron-left</VIcon>
+              <VIcon class="ml-2 cursor-pointer">mdi-chevron-right</VIcon>
+            </div>
+          </div>
+          <div
+            class="email-template__ai-assistant-footer-text"
+            :style="aiTemplateText.length > 500 ? { color: '#ff5252' } : ''"
+          >
+            {{ aiTemplateText.length }} / 500 characters
+          </div>
+        </div>
+      </div>
+    </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <v-btn
       id="btn-edit--notification-template-email-template"
@@ -296,18 +381,30 @@ export default {
     'isEnrollmentCategorySelected',
     'isNotificationEnrollment',
     'isHorizontalFormGroups',
-    'showNameField'
+    'showNameField',
+    'isAiAssistant',
+    'aiAssistant',
+    'aiAssistantRemainingRight',
+    'aiAssistantTotalRight'
   ],
   data() {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
+      badgeContents: [
+        'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.',
+        'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
+        'Phishing simulation email informing the user to download a critical software update to avoid security risks.'
+      ],
       previewTemplate: null,
+      aiTemplateText: '',
       initialTemplate: null,
       labels,
       showGrapesModal: false,
       grapeJsKey: `${createRandomCryptStringNumber()}-key`,
       Validations,
       attachmentListKey: `${createRandomCryptStringNumber()}-key`,
+      aiTemplateMaxLength: (v) =>
+        Validations.maxLength(v, 500, labels.getMaxLengthMessage('Content', 500), 500),
       ccEmailRules: {
         email: (v) => {
           if (v.length > 0) {
@@ -379,7 +476,8 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
         (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
-      ]
+      ],
+      generatedTemplates: []
     }
   },
   computed: {
@@ -428,11 +526,16 @@ export default {
     }
   },
   mounted() {
+    console.log('aiAssistantRemainingRight', this.aiAssistantRemainingRight)
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
+    handleGenerateEmail() {},
+    handleAiAssistantBadgeClick(index) {
+      this.aiTemplateText = this.badgeContents[index]
+    },
     handleRenameItem() {
       this.$emit('handleRenameAttachment')
     },

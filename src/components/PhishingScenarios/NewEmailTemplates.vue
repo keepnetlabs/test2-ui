@@ -124,7 +124,7 @@
                       onsubmit="return false"
                     >
                       <template #title>
-                        <div style="display: flex; justify-content: space-between;">
+                        <div class="d-flex align-baseline justify-space-between mb-3">
                           <label class="k-form-group__title">Email Template</label>
                           <v-tooltip bottom opacity="1">
                             <template v-slot:activator="{ on }">
@@ -154,6 +154,7 @@
                       </template>
                       <email-template
                         ref="refEmailTemplate"
+                        :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
@@ -162,6 +163,9 @@
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
+                        :ai-assistant.sync="formValues.aiAssistant"
+                        :ai-assistant-remaining-right="formValues.aiAssistantRemainingRights"
+                        :ai-assistant-total-right="formValues.aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
@@ -287,6 +291,9 @@ export default {
         fromName: null,
         subject: null,
         template: null,
+        aiAssistant: false,
+        aiAssistantRemainingRights: 10,
+        aiAssistantTotalRights: 10,
         attachmentFiles: [],
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],

@@ -253,6 +253,21 @@ export default {
             filterableCustomFieldName: 'DifficultyResourceId'
           },
           {
+            property: PROPERTY_STORE.CREATION_TYPE,
+            align: 'left',
+            editable: false,
+            label: labels.CreationType,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'AI Assistant', value: 'AI Assistant' },
+              { text: 'Manual', value: 'Manual' }
+            ],
+            width: 180
+          },
+          {
             property: PROPERTY_STORE.CREATEDBY,
             align: 'left',
             editable: false,
