@@ -496,6 +496,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        PhishingDwellTimeDistributionWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing dwell time and quickest response time',
+          key: 'PhishingDwellTimeDistributionWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         PhishingSimulationEngagementReportingTrendsWidget: {
           x: 0,
           y: 0,
@@ -844,7 +865,8 @@ export default {
             widget.widgetType === 'HumanRiskScoreforHighestRiskCompaniesWidget' ||
             widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
             widget.widgetType === 'TrainingCompletionWidget' ||
-            widget.widgetType === 'SimulationCoverageWidget'
+            widget.widgetType === 'SimulationCoverageWidget' ||
+            widget.widgetType === 'PhishingDwellTimeDistributionWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1189,7 +1211,6 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
-      return ExecutiveReportsPhishingDwellTimeDistribution
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
@@ -1221,6 +1242,8 @@ export default {
           return ExecutiveReportsSimulationCoverage
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
+        case 'PhishingDwellTimeDistributionWidget':
+          return ExecutiveReportsPhishingDwellTimeDistribution
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:

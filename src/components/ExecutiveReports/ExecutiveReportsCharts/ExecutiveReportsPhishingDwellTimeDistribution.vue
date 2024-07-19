@@ -133,262 +133,272 @@ export default {
           const {
             data: { data }
           } = response || {}
-          if (!data[0].widgetDatas.length) {
-            this.isEmpty = true
-            return
-          }
-          this.chartData = {
-            datasets: [
+          this.setChartData(data[0].widgetDatas)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(widgetDatas) {
+      if (!widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      console.log('widgetDatas', widgetDatas)
+      let isAverageAdded = false
+      let averageDwellTime = 0
+      let averageDwellTimeIndex = 0
+      const labels = widgetDatas.reduce((acc, item) => {
+        const { ActionRange } = item.dataObject
+        averageDwellTime = item.values.find(({ name }) => name === 'AverageDwellTime').value
+        if (ActionRange < averageDwellTime) {
+          acc.push(ActionRange)
+        } else if (ActionRange > averageDwellTime && !isAverageAdded) {
+          acc.push(averageDwellTime)
+          averageDwellTimeIndex = acc.length - 1
+          acc.push(ActionRange)
+          isAverageAdded = true
+        }
+        return acc
+      }, [])
+      const dwellTimeBarData = widgetDatas.reduce((acc, item, index) => {
+        let tempData = item.values.find(({ name }) => name === 'Percentage').value
+        if (index === averageDwellTimeIndex && tempData !== averageDwellTime) {
+          acc.push({ x: 0, y: 0 })
+        }
+        acc.push(tempData)
+        return acc
+      }, [])
+      console.log('dwellTimeBarData', dwellTimeBarData)
+      const averageDwellTimeBarData = new Array(labels.length).fill({ x: 0, y: 0 })
+      averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
+      console.log('averageDwellTimeBarData', averageDwellTimeBarData)
+      this.chartData = {
+        datasets: [
+          {
+            type: 'line',
+            data: [
               {
-                type: 'line',
-                data: [
-                  {
-                    x: 10,
-                    y: 100
-                  },
-                  {
-                    x: 20,
-                    y: 40
-                  },
-                  { x: 25, y: 75 },
-                  {
-                    x: 30,
-                    y: 5
-                  },
-                  {
-                    x: 40,
-                    y: 100
-                  },
-                  {
-                    x: 90,
-                    y: 10
-                  }
-                ],
-                label: 'Gürkan',
-                backgroundColor: '#B3D4FC',
-                borderColor: '#B3D4FC',
-                fill: false,
-                stack: 'Stack 1',
-                order: 2
+                x: 10,
+                y: 100
               },
               {
-                type: 'bar',
-                barThickness: 32,
-                data: [
-                  {
-                    x: 10,
-                    y: 100
-                  },
-                  {
-                    x: 20,
-                    y: 40
-                  },
-                  { x: 0, y: 0 },
-                  {
-                    x: 30,
-                    y: 80
-                  },
-                  {
-                    x: 40,
-                    y: 100
-                  },
-                  {
-                    x: 90,
-                    y: 10
-                  }
-                ],
-                label: 'Uğurlu',
-                backgroundColor: '#0198AC',
-                borderColor: '#0198AC',
-                fill: false,
-                order: 2,
-                stack: 'Stack 1'
+                x: 20,
+                y: 40
+              },
+              { x: 25, y: 75 },
+              {
+                x: 30,
+                y: 5
               },
               {
-                type: 'bar',
-                barThickness: 2,
-                categoryPercentage: 0.5,
-                barPercentage: 0.5,
-                label: 'Average Dwell Time: 25 minutes',
-                data: [
-                  { x: 0, y: 0 },
-                  { x: 0, y: 0 },
-                  { x: 25, y: 100 },
-                  { x: 0, y: 0 },
-                  { x: 0, y: 0 },
-                  { x: 0, y: 0 }
-                ],
-                backgroundColor: '#B6791D',
-                borderColor: '#B6791D',
-                fill: false,
-                order: 3,
-                stack: 'Stack 1'
+                x: 40,
+                y: 100
+              },
+              {
+                x: 90,
+                y: 10
               }
-            ]
+            ],
+            label: 'Gürkan',
+            backgroundColor: '#B3D4FC',
+            borderColor: '#B3D4FC',
+            borderWidth: 1,
+            lineTension: 0.3,
+            pointRadius: 0,
+            pointStyle: 'dash',
+            fill: false,
+            stack: 'Stack 1',
+            order: 2
+          },
+          {
+            type: 'bar',
+            barThickness: 32,
+            data: dwellTimeBarData,
+            label: 'Uğurlu',
+            backgroundColor: '#0198AC',
+            borderColor: '#0198AC',
+            fill: false,
+            order: 2,
+            stack: 'Stack 1'
+          },
+          {
+            type: 'bar',
+            barThickness: 2,
+            categoryPercentage: 0.5,
+            barPercentage: 0.5,
+            label: 'Average Dwell Time: 25 minutes',
+            data: averageDwellTimeBarData,
+            backgroundColor: '#B6791D',
+            borderColor: '#B6791D',
+            fill: false,
+            order: 3,
+            stack: 'Stack 1'
           }
-          this.chartOptions = {
-            responsive: true,
-            devicePixelRatio: 2,
-            maintainAspectRatio: false,
-            scales: {
-              yAxes: [
-                {
-                  beginAtZero: true,
-                  position: 'left',
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Percentage of Users',
-                    fontColor: '#383B41'
-                  },
-                  offset: false,
-                  gridLines: {
-                    display: true,
-                    color: '#F2F2F2',
-                    drawBorder: false,
-                    zeroLineColor: '#757575',
-                    zeroLineWidth: 2
-                  },
-                  ticks: {
-                    min: 0,
-                    max: 100,
-                    stepSize: 20,
-                    labelOffset: 0,
-                    padding: 12,
-                    fontColor: 'rgba(56, 59, 65, 0.72)',
-                    fontFamily: 'Open Sans, sans-serif',
-                    lineHeight: 1.58,
-                    callback: function (value) {
-                      return ((value / this.max) * 100).toFixed(0) + '%'
-                    }
-                  }
+        ]
+      }
+      this.chartOptions = {
+        responsive: true,
+        devicePixelRatio: 2,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [
+            {
+              beginAtZero: true,
+              position: 'left',
+              scaleLabel: {
+                display: true,
+                labelString: 'Percentage of Users',
+                fontColor: '#383B41'
+              },
+              offset: false,
+              gridLines: {
+                display: true,
+                color: '#F2F2F2',
+                drawBorder: false,
+                zeroLineColor: '#757575',
+                zeroLineWidth: 2
+              },
+              ticks: {
+                min: 0,
+                max: 100,
+                stepSize: 20,
+                labelOffset: 0,
+                padding: 12,
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontFamily: 'Open Sans, sans-serif',
+                lineHeight: 1.58,
+                callback: function (value) {
+                  return ((value / this.max) * 100).toFixed(0) + '%'
                 }
-              ],
-              xAxes: [
+              }
+            }
+          ],
+          xAxes: [
+            {
+              type: 'category',
+              labels,
+              stacked: true,
+              position: 'bottom',
+              display: true,
+              offset: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Dwell Time (Minutes)',
+                fontColor: '#383B41'
+              },
+              ticks: {
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontStyle: '600',
+                fontSize: 9,
+                fontFamily: 'Open-sans,sans-serif'
+              },
+              gridLines: {
+                display: false,
+                drawBorder: false
+              }
+            }
+          ]
+        },
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            fontColor: '#757575',
+            generateLabels(chart = {}) {
+              const { data } = chart
+              return [
                 {
-                  type: 'category',
-                  labels: [10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
-                  stacked: true,
-                  position: 'bottom',
-                  display: true,
-                  offset: true,
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Dwell Time (Minutes)',
-                    fontColor: '#383B41'
-                  },
-                  ticks: {
-                    fontColor: 'rgba(56, 59, 65, 0.72)',
-                    fontStyle: '600',
-                    fontSize: 9,
-                    fontFamily: 'Open-sans,sans-serif'
-                  },
-                  gridLines: {
-                    display: false,
-                    drawBorder: false
-                  }
+                  text: '',
+                  fillStyle: '#B6791D',
+                  lineWidth: 0,
+                  datasetIndex: 0,
+                  industryAverage: averageDwellTime,
+                  textParts: ['Average Dwell Time:', averageDwellTime]
                 }
               ]
             },
-            legend: {
-              display: true,
-              position: 'top',
-              labels: {
-                usePointStyle: true,
-                fontColor: '#757575',
-                generateLabels(chart = {}) {
-                  const { data } = chart
-                  return [
-                    {
-                      text: '',
-                      fillStyle: '#B6791D',
-                      lineWidth: 0,
-                      datasetIndex: 0,
-                      industryAverage: '25',
-                      textParts: ['Average Dwell Time:', '25']
-                    }
-                  ]
-                },
-                fontFamily: 'Open-sans,sans-serif',
-                padding: 16,
-                fontSize: 12
-              }
-            },
-            tooltips: {
-              enabled: false,
-              custom: function (tooltipModel) {
-                let tooltipEl = document.getElementById(
-                  'chartjs-tooltip-phishing-dwell-time-distribution'
-                )
+            fontFamily: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12
+          }
+        },
+        tooltips: {
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById(
+              'chartjs-tooltip-phishing-dwell-time-distribution'
+            )
 
-                if (!tooltipEl) {
-                  tooltipEl = document.createElement('div')
-                  tooltipEl.id = 'chartjs-tooltip-phishing-dwell-time-distribution'
-                  tooltipEl.innerHTML =
-                    '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
-                  document.body.appendChild(tooltipEl)
-                }
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-phishing-dwell-time-distribution'
+              tooltipEl.innerHTML =
+                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+              document.body.appendChild(tooltipEl)
+            }
 
-                tooltipEl.classList.remove('above', 'below', 'no-transform')
-                if (tooltipModel.yAlign) {
-                  tooltipEl.classList.add(tooltipModel.yAlign)
-                } else {
-                  tooltipEl.classList.add('no-transform')
-                }
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
 
-                let position = this._chart.canvas.getBoundingClientRect()
+            let position = this._chart.canvas.getBoundingClientRect()
 
-                tooltipEl.style.opacity = 1
-                tooltipEl.style.position = 'absolute'
-                tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
-                tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
-                tooltipEl.style.pointerEvents = 'none'
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
 
-                let tooltipContent = tooltipEl.querySelector('.tooltip-content')
-                tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
-                tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
-                tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
-                tooltipContent.style.padding =
-                  tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
-                tooltipContent.style.background = 'white'
-                tooltipContent.style.border = '1px solid #ccc'
-                tooltipContent.style.borderRadius = '8px'
-                tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
 
-                const monthNamesLong = [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December'
-                ]
-                if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-                  let tableRoot = tooltipContent.querySelector('table')
-                  tableRoot.innerHTML = ''
-                  tableRoot.style.width = '100%'
-                  let titleRow = document.createElement('tr')
-                  const xValue = tooltipModel.dataPoints[0].xLabel
-                  titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">Dwell Time: ${xValue} minutes</th>`
-                  tableRoot.appendChild(titleRow)
-                  let selectedBackgroundColor = ''
-                  let selectedLabel = ''
-                  let selectedValue = ''
-                  this._chart.data.datasets.forEach((dataset, i) => {
-                    let datasetLabel = dataset.label
-                    if (datasetLabel.toLowerCase().includes('dwell')) return
-                    let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                    console.log('dataValue', dataValue)
-                    let backgroundColor = dataset.backgroundColor || '#000'
+            const monthNamesLong = [
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December'
+            ]
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const xValue = tooltipModel.dataPoints[0].xLabel
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">Dwell Time: ${xValue} minutes</th>`
+              tableRoot.appendChild(titleRow)
+              let selectedBackgroundColor = ''
+              let selectedLabel = ''
+              let selectedValue = ''
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                if (datasetLabel.toLowerCase().includes('dwell')) return
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                console.log('dataValue', dataValue)
+                let backgroundColor = dataset.backgroundColor || '#000'
 
-                    let tr = document.createElement('tr')
-                    tr.innerHTML = `
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
                 <td>
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:
@@ -396,73 +406,69 @@ export default {
                 <td>${dataValue.y} minutes</td>
             `
 
-                    if (
-                      datasetLabel ===
-                      this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
-                    ) {
-                      tr.style.fontWeight = '600'
-                      selectedValue = dataValue
-                      selectedLabel = datasetLabel
-                      selectedBackgroundColor = backgroundColor
-                    } else {
-                      tr.style.fontWeight = 'normal'
-                    }
-
-                    tr.style.display = 'flex'
-                    tr.style.justifyContent = 'space-between'
-                    tr.style.paddingBottom = '6px'
-                    tableRoot.appendChild(tr)
-                  })
+                if (
+                  datasetLabel ===
+                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
+                ) {
+                  tr.style.fontWeight = '600'
+                  selectedValue = dataValue
+                  selectedLabel = datasetLabel
+                  selectedBackgroundColor = backgroundColor
+                } else {
+                  tr.style.fontWeight = 'normal'
                 }
-                this._chart.canvas.addEventListener('mouseout', () => {
-                  tooltipEl.style.opacity = 0
-                })
-              },
-              xPadding: 12,
-              yPadding: 12
-            },
-            plugins: {
-              datalabels: {
-                display: false,
-                offset: 12,
-                color: '#383B41',
-                formatter: function (value, context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return '---- Reporting practices have steadily improved'
-                  }
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                    return 'Significant decrease in reporting practices ----'
-                  }
-                  return ''
-                },
-                align: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return 'right'
-                  }
-                  return 'left'
-                },
-                anchor: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return 'right'
-                  }
-                  return 'left'
-                },
-                font: {
-                  size: 10,
-                  color: '#383B41',
-                  weight: 'normal'
-                },
-                borderRadius: 4,
-                padding: 6
-              }
+
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
             }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 12,
+          yPadding: 12
+        },
+        plugins: {
+          datalabels: {
+            display: false,
+            offset: 12,
+            color: '#383B41',
+            formatter: function (value, context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return '---- Reporting practices have steadily improved'
+              }
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
+                return 'Significant decrease in reporting practices ----'
+              }
+              return ''
+            },
+            align: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
+            },
+            anchor: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
+            },
+            font: {
+              size: 10,
+              color: '#383B41',
+              weight: 'normal'
+            },
+            borderRadius: 4,
+            padding: 6
           }
-          this.isEmpty = false
-          this.isLoading = false
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
+        }
+      }
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
