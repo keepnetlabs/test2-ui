@@ -21,6 +21,7 @@ const CONSTANTS = {
     "Cannot read properties of undefined (reading 'getZoomDecimal')",
     "Cannot read properties of undefined (reading 'parseHtml')",
     "Cannot read properties of null (reading 'ownerDocument')",
+    `Cannot read properties of undefined (reading 'ownerDocument')`,
     'this.getDoc() is null',
     'this.em.getSelected is not a function',
     'this.em.getSelectedAll is not a function',
@@ -78,7 +79,11 @@ const CONSTANTS = {
   VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`],
   SAFARI: [`undefined is not an object (evaluating 'n.features')`],
   VUE_MULTIPANE: ['t.className.match is not a function'],
-  SENTRY: [`Cannot read properties of null (reading 'role')`]
+  SENTRY: [`Cannot read properties of null (reading 'role')`],
+  IOS: [
+    `TypeError: undefined is not an object (evaluating '__gCrWeb.instantSearch.setIOSParameters')`,
+    `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`
+  ]
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -116,6 +121,7 @@ export default (router) => {
       if (CONSTANTS.SAFARI.some((m) => message.includes(m))) return null
       if (CONSTANTS.VUE_MULTIPANE.some((m) => message.includes(m))) return null
       if (CONSTANTS.SENTRY.some((m) => message.includes(m))) return null
+      if (CONSTANTS.IOS.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.VUE_ROUTER)) return null
