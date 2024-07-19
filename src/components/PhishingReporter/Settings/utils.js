@@ -25,3 +25,21 @@ export const defaultDialogBoxSettings = {
     'This was a phishing simulation sent to by your cyber-security team. Thank you for your awareness and cautiousness.',
   isDefault: true
 }
+
+export const checkDialogBoxSettings = (settings) => {
+  if (!settings.languageName) return false
+  if (!settings.msgBoxTitle) return false
+  if (!settings.msgBoxBtnYesText) return false
+  if (!settings.msgBoxBtnNoText) return false
+  if (!settings.msgBoxBtnCancelText) return false
+  if (!settings.msgBoxBtnOkText) return false
+  if (!settings.analysisThankYouMessage) return false
+  if (!settings.noInternetConnectionMessage) return false
+  if (!settings.emailSendingErrorMessage) return false
+  if (!settings.emailSelectionErrorMessage) return false
+  if (!settings.badFormatEmailMessage) return false
+  if (settings.isConfirmationBeforeAnalysis && !settings.analysisConfirmationMessage) return false
+  if (settings.isDeleteEmailBeforeAnalysis && !settings.analysisEmailDeleteMessage) return false
+  if (settings.isSendSimulationMails && !settings.simulationMailMessage) return false
+  return true
+}

@@ -25,6 +25,7 @@
         placeholder="Select training"
         :items="trainingItems"
         :disabled="!isInputsEditable"
+        :no-data-text="isTrainingLoading ? 'Loading...' : 'No training available'"
         @input="handleTrainingItemSelect"
         @click:clear="handleTrainingItemSelect(null)"
       />
@@ -255,6 +256,7 @@ export default {
     return {
       inputContentLanguageKey: createRandomCryptStringNumber(),
       labels,
+      isTrainingLoading: false,
       trainingItems: [],
       enrollmentItemsTrainingTab,
       attachmentScenarioEnrollmentItems,
@@ -340,8 +342,9 @@ export default {
   },
   methods: {
     callForTrainingItems() {
-      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 })).then(
-        (response) => {
+      this.isTrainingLoading = true
+      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 }))
+        .then((response) => {
           const {
             data: { data = {} }
           } = response
@@ -350,8 +353,10 @@ export default {
             text: result.trainingName,
             value: result.trainingId
           }))
-        }
-      )
+        })
+        .finally(() => {
+          this.isTrainingLoading = false
+        })
     },
     handlePreview() {
       this.$emit('on-preview', this.value)
