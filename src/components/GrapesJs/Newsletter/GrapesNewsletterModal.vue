@@ -876,10 +876,10 @@ export default {
         })
     },
     getCommentElementByComponent(component) {
-      const parent = component.parent()
+      const parent = component?.parent?.()
       const children = parent?.components?.()
       if (children) {
-        return children?.models?.find((el) => el?.attributes?.type === 'comment')
+        return children?.models?.find((el) => el?.attributes?.type === 'comment') || null
       }
       return null
     },

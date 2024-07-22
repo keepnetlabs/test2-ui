@@ -21,19 +21,24 @@ const CONSTANTS = {
     "Cannot read properties of undefined (reading 'getZoomDecimal')",
     "Cannot read properties of undefined (reading 'parseHtml')",
     "Cannot read properties of null (reading 'ownerDocument')",
+    `Cannot read properties of undefined (reading 'ownerDocument')`,
     'this.getDoc() is null',
     'this.em.getSelected is not a function',
     'this.em.getSelectedAll is not a function',
     "undefined is not an object (evaluating 'u.width')",
     "null is not an object (evaluating 'this.getDoc().querySelector')",
     'v.get is not a function',
-    "undefined is not an object (evaluating '__gCrWeb.instantSearch.clearHighlight')"
+    "undefined is not an object (evaluating '__gCrWeb.instantSearch.clearHighlight')",
+    `Cannot read properties of null (reading 'offsetWidth')`
   ],
   VUETIFY_INTERNAL: [
     "Cannot read properties of undefined (reading 'getTiles')",
     't.hasAttribute is not a function'
   ],
-  VUE_ROUTER: 'Navigation aborted from',
+  VUE_ROUTER: [
+    'Navigation aborted from',
+    `Redirected when going from "/reports/executive-reports" to "/reports/executive-reports/new" via a navigation guard.`
+  ],
   SMARTLOOK: 'smartlook',
   RECORDER_ERROR: 'Could not start new session on document.visible event',
   RESIZE_OBSERVER: 'ResizeObserver',
@@ -74,11 +79,18 @@ const CONSTANTS = {
     "null is not an object (evaluating 'g.readyState')",
     'Error response received for message <get-frame-manager-configuration>'
   ],
-  POWER_BI: [`Cannot read properties of undefined (reading 'indexOf')`],
+  POWER_BI: [
+    `Cannot read properties of undefined (reading 'indexOf')`,
+    `Cannot read properties of undefined (reading 'powerBiEmbed')`
+  ],
   VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`],
   SAFARI: [`undefined is not an object (evaluating 'n.features')`],
   VUE_MULTIPANE: ['t.className.match is not a function'],
-  SENTRY: [`Cannot read properties of null (reading 'role')`]
+  SENTRY: [`Cannot read properties of null (reading 'role')`],
+  IOS: [
+    `TypeError: undefined is not an object (evaluating '__gCrWeb.instantSearch.setIOSParameters')`,
+    `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`
+  ]
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -116,9 +128,10 @@ export default (router) => {
       if (CONSTANTS.SAFARI.some((m) => message.includes(m))) return null
       if (CONSTANTS.VUE_MULTIPANE.some((m) => message.includes(m))) return null
       if (CONSTANTS.SENTRY.some((m) => message.includes(m))) return null
+      if (CONSTANTS.IOS.some((m) => message.includes(m))) return null
+      if (CONSTANTS.VUE_ROUTER.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
-      if (message.includes(CONSTANTS.VUE_ROUTER)) return null
       if (message.includes(CONSTANTS.RESIZE_OBSERVER)) return null
       if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
     }
