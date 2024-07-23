@@ -543,8 +543,8 @@ export default {
         return
       }
       if (
-        !this.formValues.template.includes('{PHISHING_CODE}') ||
-        !this.formValues.template.includes('{PHISHING_CALLBACK_PHONE}')
+        !this.formValues?.template?.includes?.('{PHISHING_CODE}') ||
+        !this.formValues?.template?.includes?.('{PHISHING_CALLBACK_PHONE}')
       ) {
         this.isWarningModalVisible = true
         this.isSubmitDisabled = false
