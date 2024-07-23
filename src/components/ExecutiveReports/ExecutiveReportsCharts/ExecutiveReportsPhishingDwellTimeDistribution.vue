@@ -169,23 +169,21 @@ export default {
         acc.push(tempData)
         return acc
       }, [])
-      console.log('labels', labels)
-      console.log('widgetDatas', widgetDatas)
       let isAddedIndex = false
       const lineBarData = widgetDatas.reduce((acc, item, index) => {
-        console.log('index', index)
         let tempData = item.values.find(({ name }) => name === 'Percentage').value
         if (index === averageDwellTimeIndex) {
           isAddedIndex = true
-          acc.push({ x: Number(labels[index]), y: tempData })
+          acc.push({ x: Number(labels[index]), y: tempData > 0 ? tempData - 1 : tempData })
         }
-        acc.push({ x: Number(labels[isAddedIndex ? index + 1 : index]), y: tempData })
+        acc.push({
+          x: Number(labels[isAddedIndex ? index + 1 : index]),
+          y: tempData > 0 ? tempData - 1 : tempData
+        })
         return acc
       }, [])
-      console.log('linearBarData', lineBarData)
       const averageDwellTimeBarData = new Array(labels.length).fill({ x: 0, y: 0 })
       averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
-      console.log('labels', labels)
       this.chartData = {
         datasets: [
           {
@@ -360,7 +358,6 @@ export default {
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
 
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-              console.log(tooltipModel)
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
