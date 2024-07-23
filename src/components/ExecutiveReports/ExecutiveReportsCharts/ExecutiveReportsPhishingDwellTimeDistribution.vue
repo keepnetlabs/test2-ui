@@ -10,13 +10,26 @@
           @on-edit="handleEdit"
         />
         <ExecutiveWidgetBody>
-          <template v-if="true">
+          <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugins"
             />
           </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
         </ExecutiveWidgetBody>
       </ExecutiveWidgetContainer>
     </template>
@@ -65,10 +78,37 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
       isLoading: false,
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                const text = textParts[0]
+                const percentage = `${textParts[1]} minutes`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -77,7 +117,8 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData[0].widgetDatas)
+    else this.callForData()
   },
   methods: {
     callForData() {
@@ -93,348 +134,303 @@ export default {
           const {
             data: { data }
           } = response || {}
-          /*
-          data[0].widgetDatas[0].values[0].value = 25
-          data[0].widgetDatas[0].values[1].value = 35
-          data[0].widgetDatas[1].values[0].value = 40
-          data[0].widgetDatas[1].values[1].value = 60
-          const { valueEnums, datasets } = createExecutiveReportChartData(data[0].widgetDatas)
-          const newDatasets = []
-          for (let itemType of valueEnums) {
-            const typedItems = datasets.filter((item) => item.result === itemType)
-            newDatasets.push({
-              type: 'bar',
-              barThickness: 32,
-              label: itemType,
-              ...CHART_COLORS[itemType],
-              data: typedItems
-            })
-          }
-
-           */
-          this.chartData = {
-            xLabels: [10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
-            datasets: [
-              {
-                type: 'line',
-                data: [
-                  {
-                    x: 10,
-                    y: 100
-                  },
-                  {
-                    x: 20,
-                    y: 40
-                  },
-                  {
-                    x: 30,
-                    y: 5
-                  },
-                  {
-                    x: 40,
-                    y: 100
-                  },
-                  {
-                    x: 50,
-                    y: 10
-                  }
-                ],
-                label: 'Gürkan',
-                backgroundColor: '#B3D4FC',
-                borderColor: '#B3D4FC',
-                fill: false,
-                stack: 'Stack 1',
-                order: 1
-              },
-              {
-                type: 'bar',
-                barThickness: 32,
-                data: [10, 20, 0, 45, 100],
-                label: 'Uğurlu',
-                backgroundColor: '#0198AC',
-                borderColor: '#0198AC',
-                fill: false,
-                order: 1,
-                stack: 'Stack 1'
-              },
-              {
-                type: 'bar',
-                barThickness: 2,
-                categoryPercentage: 0.5,
-                barPercentage: 0.5,
-                label: 'Average Dwell Time: 25 minutes',
-                data: [0, 0, 100],
-                backgroundColor: '#B6791D',
-                borderColor: '#B6791D',
-                fill: false,
-                order: 3,
-                stack: 'Stack 1'
-              }
-            ]
-          }
-          this.chartOptions = {
-            responsive: true,
-            devicePixelRatio: 2,
-            maintainAspectRatio: false,
-            scales: {
-              yAxes: [
-                {
-                  beginAtZero: true,
-                  position: 'left',
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Percentage of Users',
-                    fontColor: '#383B41'
-                  },
-                  offset: true,
-                  gridLines: {
-                    display: true,
-                    color: 'rgba(128, 151, 177, 0.3)',
-                    borderDash: [3]
-                  },
-                  ticks: {
-                    min: 0,
-                    max: 100,
-                    stepSize: 20,
-                    labelOffset: 0,
-                    beginAtZero: true,
-                    padding: -2,
-                    fontColor: '#383B41',
-                    lineHeight: 1.58,
-                    callback: function (value) {
-                      return ((value / this.max) * 100).toFixed(0) + '%'
-                    }
-                  }
-                }
-              ],
-              xAxes: [
-                {
-                  position: 'bottom',
-                  display: true,
-                  offset: true,
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Dwell Time (Minutes)',
-                    fontColor: '#383B41'
-                  },
-                  ticks: {
-                    fontColor: 'rgba(176, 186, 201)',
-                    lineHeight: 1.58,
-                    padding: -2,
-                    min: 10,
-                    max: 120,
-                    stepSize: 10,
-                    callback: (val) => {
-                      return val === 25 ? undefined : val
-                    }
-                  },
-                  gridLines: {
-                    display: true,
-                    color: 'rgba(128, 151, 177, 0.3)',
-                    borderDash: [3]
-                  }
-                }
-              ]
-            },
-            legend: {
-              display: true,
-              position: 'top',
-              labels: {
-                usePointStyle: true,
-                fontColor: '#757575',
-                generateLabels(chart = {}) {
-                  const { data } = chart
-                  return data.datasets.map((item, index) => {
-                    return {
-                      text: item.label,
-                      fillStyle: item.borderColor,
-                      lineWidth: 0,
-                      datasetIndex: index
-                    }
-                  })
-                },
-                fontFamily: 'Open-sans,sans-serif',
-                padding: 16,
-                fontSize: 12
-              }
-            },
-            tooltips: {
-              enabled: false,
-              custom: function (tooltipModel) {
-                let tooltipEl = document.getElementById(
-                  'chartjs-tooltip-phishing-simulation-engagement'
-                )
-
-                if (!tooltipEl) {
-                  tooltipEl = document.createElement('div')
-                  tooltipEl.id = 'chartjs-tooltip-phishing-simulation-engagement'
-                  tooltipEl.innerHTML =
-                    '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
-                  document.body.appendChild(tooltipEl)
-                }
-
-                tooltipEl.classList.remove('above', 'below', 'no-transform')
-                if (tooltipModel.yAlign) {
-                  tooltipEl.classList.add(tooltipModel.yAlign)
-                } else {
-                  tooltipEl.classList.add('no-transform')
-                }
-
-                let position = this._chart.canvas.getBoundingClientRect()
-
-                tooltipEl.style.opacity = 1
-                tooltipEl.style.position = 'absolute'
-                tooltipEl.style.left =
-                  position.left + window.pageXOffset + tooltipModel.caretX + 'px'
-                tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
-                tooltipEl.style.pointerEvents = 'none'
-
-                let tooltipContent = tooltipEl.querySelector('.tooltip-content')
-                tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
-                tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
-                tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
-                tooltipContent.style.padding =
-                  tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
-                tooltipContent.style.background = 'white'
-                tooltipContent.style.border = '1px solid #ccc'
-                tooltipContent.style.borderRadius = '8px'
-                tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
-
-                let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
-                tooltipFooter.style.marginTop = '2px'
-                tooltipFooter.style.fontFamily = 'Open-sans,sans-serif'
-                tooltipFooter.style.fontSize = '14px'
-                tooltipFooter.style.borderRadius = '8px'
-                tooltipFooter.style.color = '#fff'
-                tooltipFooter.style.padding = '16px'
-                tooltipFooter.style.maxWidth = '280px'
-                tooltipFooter.style.fontWeight = 'normal'
-                const monthNamesLong = [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December'
-                ]
-                if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-                  let tableRoot = tooltipContent.querySelector('table')
-                  tableRoot.innerHTML = ''
-                  tableRoot.style.width = '100%'
-                  let titleRow = document.createElement('tr')
-                  const xValue = new Date(tooltipModel.dataPoints[0].xLabel)
-                  titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
-                    monthNamesLong[xValue.getMonth()]
-                  }/${xValue.getFullYear()}</th>`
-                  tableRoot.appendChild(titleRow)
-                  let selectedBackgroundColor = ''
-                  let selectedLabel = ''
-                  let selectedValue = ''
-                  this._chart.data.datasets.forEach((dataset, i) => {
-                    let datasetLabel = dataset.label
-                    let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                    let backgroundColor = dataset.backgroundColor || '#000'
-
-                    let tr = document.createElement('tr')
-                    tr.innerHTML = `
-                <td>
-                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
-                    ${datasetLabel}:
-                </td>
-                <td>${dataValue.y}</td>
-            `
-
-                    if (
-                      datasetLabel ===
-                      this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
-                    ) {
-                      tr.style.fontWeight = '600'
-                      selectedValue = dataValue
-                      selectedLabel = datasetLabel
-                      selectedBackgroundColor = backgroundColor
-                    } else {
-                      tr.style.fontWeight = 'normal'
-                    }
-
-                    tr.style.display = 'flex'
-                    tr.style.justifyContent = 'space-between'
-                    tr.style.paddingBottom = '6px'
-                    tableRoot.appendChild(tr)
-                  })
-                  let lastTr = document.createElement('tr')
-                  lastTr.innerHTML = `
-                <td>
-
-                    Phishing Report Rate:
-                </td>
-                <td>70</td>
-            `
-                  lastTr.style.borderTop = '1px solid #E0E0E0'
-                  lastTr.style.display = 'flex'
-                  lastTr.style.justifyContent = 'space-between'
-                  lastTr.style.paddingTop = '8px'
-                  tableRoot.appendChild(lastTr)
-                  tooltipFooter.style.background = selectedBackgroundColor
-                  const explanationText =
-                    selectedLabel === 'Clicked (%)'
-                      ? ' of the users who did click the email also reporting it.'
-                      : ' of users identifying and reporting phishing in simulation engagements'
-                  tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explanationText}</th>`
-                }
-                this._chart.canvas.addEventListener('mouseout', () => {
-                  tooltipEl.style.opacity = 0
-                })
-              },
-              xPadding: 12,
-              yPadding: 12
-            },
-            plugins: {
-              datalabels: {
-                display: false,
-                offset: 12,
-                color: '#383B41',
-                formatter: function (value, context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return '---- Reporting practices have steadily improved'
-                  }
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                    return 'Significant decrease in reporting practices ----'
-                  }
-                  return ''
-                },
-                align: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return 'right'
-                  }
-                  return 'left'
-                },
-                anchor: function (context) {
-                  if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                    return 'right'
-                  }
-                  return 'left'
-                },
-                font: {
-                  size: 10,
-                  color: '#383B41',
-                  weight: 'normal'
-                },
-                borderRadius: 4,
-                padding: 6
-              }
-            }
-          }
-          this.isLoading = false
+          this.setChartData(data[0].widgetDatas)
         })
         .finally(() => {
           this.isLoading = false
         })
+    },
+    setChartData(widgetDatas) {
+      if (!widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      let isAverageAdded = false
+      let averageDwellTime = 0
+      let averageDwellTimeIndex = 0
+      const labels = widgetDatas.reduce((acc, item) => {
+        const { ActionRange } = item.dataObject
+        averageDwellTime = item.values.find(({ name }) => name === 'AverageDwellTime').value
+        if (ActionRange < averageDwellTime) {
+          acc.push(ActionRange)
+        } else if (ActionRange > averageDwellTime && !isAverageAdded) {
+          acc.push(averageDwellTime)
+          averageDwellTimeIndex = acc.length - 1
+          acc.push(ActionRange)
+          isAverageAdded = true
+        }
+        return acc
+      }, [])
+      const dwellTimeBarData = widgetDatas.reduce((acc, item, index) => {
+        let tempData = item.values.find(({ name }) => name === 'Percentage').value
+        if (index === averageDwellTimeIndex && tempData !== averageDwellTime) {
+          acc.push({ x: 0, y: 0 })
+        }
+        acc.push(tempData)
+        return acc
+      }, [])
+      let isAddedIndex = false
+      const lineBarData = widgetDatas.reduce((acc, item, index) => {
+        let tempData = item.values.find(({ name }) => name === 'Percentage').value
+        if (index === averageDwellTimeIndex) {
+          isAddedIndex = true
+          acc.push({ x: Number(labels[index]), y: tempData > 0 ? tempData - 1 : tempData })
+        }
+        acc.push({
+          x: Number(labels[isAddedIndex ? index + 1 : index]),
+          y: tempData > 0 ? tempData - 1 : tempData
+        })
+        return acc
+      }, [])
+      const averageDwellTimeBarData = new Array(labels.length).fill({ x: 0, y: 0 })
+      averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
+      this.chartData = {
+        datasets: [
+          {
+            type: 'line',
+            stacked: true,
+            data: lineBarData,
+            backgroundColor: '#B3D4FC',
+            borderColor: '#B3D4FC',
+            label: 'line',
+            borderWidth: 1,
+            lineTension: 0.3,
+            pointRadius: 0,
+            pointStyle: 'dash',
+            fill: false,
+            stack: 'Stack 1',
+            order: 2,
+            xAxisID: 'A'
+          },
+          {
+            type: 'bar',
+            barThickness: 32,
+            data: dwellTimeBarData,
+            label: 'dwell bar',
+            backgroundColor: '#0198AC',
+            borderColor: '#0198AC',
+            fill: false,
+            order: 2,
+            stack: 'Stack 1',
+            xAxisID: 'A'
+          },
+          {
+            type: 'bar',
+            barThickness: 2,
+            categoryPercentage: 0.5,
+            barPercentage: 0.5,
+            label: 'Average Dwell Time: 25 minutes',
+            data: averageDwellTimeBarData,
+            backgroundColor: '#B6791D',
+            borderColor: '#B6791D',
+            fill: false,
+            order: 3,
+            stack: 'Stack 1',
+            xAxisID: 'A'
+          }
+        ]
+      }
+      this.chartOptions = {
+        responsive: true,
+        devicePixelRatio: 2,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [
+            {
+              beginAtZero: true,
+              position: 'left',
+              scaleLabel: {
+                display: true,
+                labelString: 'Percentage of Users',
+                fontColor: '#383B41'
+              },
+              offset: false,
+              gridLines: {
+                display: true,
+                color: '#F2F2F2',
+                drawBorder: false,
+                zeroLineColor: '#757575',
+                zeroLineWidth: 2
+              },
+              ticks: {
+                min: 0,
+                max: 100,
+                stepSize: 20,
+                labelOffset: 0,
+                padding: 12,
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontFamily: 'Open Sans, sans-serif',
+                lineHeight: 1.58,
+                callback: function (value) {
+                  return ((value / this.max) * 100).toFixed(0) + '%'
+                }
+              }
+            }
+          ],
+          xAxes: [
+            {
+              id: 'A',
+              type: 'category',
+              labels,
+              stacked: true,
+              position: 'bottom',
+              display: true,
+              offset: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Dwell Time (Minutes)',
+                fontColor: '#383B41'
+              },
+              ticks: {
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontStyle: '600',
+                fontSize: 9,
+                fontFamily: 'Open-sans,sans-serif'
+              },
+              gridLines: {
+                display: false,
+                drawBorder: false
+              }
+            }
+          ]
+        },
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            fontColor: '#757575',
+            generateLabels(chart = {}) {
+              const { data } = chart
+              return [
+                {
+                  text: '',
+                  fillStyle: '#B6791D',
+                  lineWidth: 0,
+                  datasetIndex: 0,
+                  industryAverage: averageDwellTime,
+                  textParts: ['Average Dwell Time:', averageDwellTime]
+                }
+              ]
+            },
+            fontFamily: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12
+          }
+        },
+        tooltips: {
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById(
+              'chartjs-tooltip-phishing-dwell-time-distribution'
+            )
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-phishing-dwell-time-distribution'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
+              document.body.appendChild(tooltipEl)
+            }
+
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+
+            let position = this._chart.canvas.getBoundingClientRect()
+
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const xValue = tooltipModel.dataPoints[0].xLabel
+              let isAverage = xValue === averageDwellTime
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
+                isAverage ? 'Average' : ''
+              } Dwell Time: ${xValue} minutes</th>`
+              if (isAverage) titleRow.querySelector('th').style.paddingBottom = '0'
+              tableRoot.appendChild(titleRow)
+              this._chart.data.datasets.forEach((dataset, i) => {
+                let datasetLabel = dataset.label
+                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
+                dataValue = typeof dataValue === 'object' ? dataValue.y : dataValue
+                if (datasetLabel !== 'dwell bar' || dataValue <= 0) return
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td>Percentage of Users:
+                </td>
+                <td style="font-weight: 600">&nbsp; ${dataValue}%</td>
+            `
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                tr.style.paddingBottom = '6px'
+                tableRoot.appendChild(tr)
+              })
+            }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 12,
+          yPadding: 12
+        },
+        plugins: {
+          datalabels: {
+            display: false,
+            offset: 12,
+            color: '#383B41',
+            formatter: function (value, context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return '---- Reporting practices have steadily improved'
+              }
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
+                return 'Significant decrease in reporting practices ----'
+              }
+              return ''
+            },
+            align: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
+            },
+            anchor: function (context) {
+              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
+                return 'right'
+              }
+              return 'left'
+            },
+            font: {
+              size: 10,
+              color: '#383B41',
+              weight: 'normal'
+            },
+            borderRadius: 4,
+            padding: 6
+          }
+        }
+      }
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
       this.$emit('on-delete', this.card)
