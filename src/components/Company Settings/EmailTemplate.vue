@@ -222,7 +222,7 @@
           </div>
         </div>
       </div>
-      <div class="email-template__ai-assistant-content">
+      <div v-if="aiAssistant" class="email-template__ai-assistant-content">
         <div class="d-flex gap-6">
           <div
             class="email-template__ai-assistant-content-badge"
@@ -262,17 +262,32 @@
               class="white--text btn-util btn-download-add-in pl-4"
               color="#00bcd4"
               rounded
-              :style="aiTemplateText.length === 0 ? { opacity: '0.5', pointerEvents: 'none' } : ''"
+              :style="
+                aiTemplateText.length === 0 || isEmailGenerating
+                  ? { opacity: '0.5', pointerEvents: 'none' }
+                  : ''
+              "
               @click="handleGenerateEmail"
             >
               GENERATE EMAIL
             </v-btn>
             <div v-if="generatedTemplates.length" class="ml-6">
               <span class="email-template__ai-assistant-footer-text"
-                >Generated email 1 of {{ generatedTemplates.length }}</span
+                >Generated email {{ activeGeneratedTemplateIndex }} of
+                {{ generatedTemplates.length }}</span
               >
-              <VIcon class="ml-2 cursor-pointer">mdi-chevron-left</VIcon>
-              <VIcon class="ml-2 cursor-pointer">mdi-chevron-right</VIcon>
+              <VIcon
+                class="ml-2 cursor-pointer"
+                :disabled="activeGeneratedTemplateIndex <= 1"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
+                >mdi-chevron-left</VIcon
+              >
+              <VIcon
+                class="ml-2 cursor-pointer"
+                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
+                >mdi-chevron-right</VIcon
+              >
             </div>
           </div>
           <div
@@ -285,37 +300,46 @@
       </div>
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
-    <v-btn
-      id="btn-edit--notification-template-email-template"
-      style="text-transform: none;"
-      :disabled="editItemsDisabled"
-      rounded
-      color="#2196f3"
-      class="email-template-preview__button"
-      @click="editHtmlTemplate"
-    >
-      <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit Content
-    </v-btn>
-    <div class="email-template-preview" style="pointer-events: none;">
-      <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
-      <template v-else>
-        <landing-page-template-default
-          v-if="templateType === 'landing'"
-          ref="refPreview"
-          :email-template-logo="emailTemplateLogo"
-        />
-        <individual-print-out-template-default
-          v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
-          ref="refPreview"
-          :email-template-logo="emailTemplateLogo"
-        />
-        <quishing-email-template-default
-          v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
-          ref="refPreview"
-          :email-template-logo="emailTemplateLogo"
-        />
-        <email-template-default v-else ref="refPreview" :email-template-logo="emailTemplateLogo" />
-      </template>
+    <div v-if="isEmailGenerating">
+      <EmailTemplatesAILoader />
+    </div>
+    <div v-else id="email-template-content">
+      <v-btn
+        id="btn-edit--notification-template-email-template"
+        style="text-transform: none;"
+        :disabled="editItemsDisabled"
+        rounded
+        color="#2196f3"
+        class="email-template-preview__button"
+        @click="editHtmlTemplate"
+      >
+        <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit Content
+      </v-btn>
+      <div class="email-template-preview" style="pointer-events: none;">
+        <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
+        <template v-else>
+          <landing-page-template-default
+            v-if="templateType === 'landing'"
+            ref="refPreview"
+            :email-template-logo="emailTemplateLogo"
+          />
+          <individual-print-out-template-default
+            v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
+            ref="refPreview"
+            :email-template-logo="emailTemplateLogo"
+          />
+          <quishing-email-template-default
+            v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
+            ref="refPreview"
+            :email-template-logo="emailTemplateLogo"
+          />
+          <email-template-default
+            v-else
+            ref="refPreview"
+            :email-template-logo="emailTemplateLogo"
+          />
+        </template>
+      </div>
     </div>
   </v-card>
 </template>
@@ -340,9 +364,11 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    EmailTemplatesAILoader,
     KSelect,
     QuishingEmailTemplateDefault,
     IndividualPrintOutTemplateDefault,
@@ -390,6 +416,7 @@ export default {
   data() {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
+      isEmailGenerating: false,
       badgeContents: [
         'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.',
         'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
@@ -477,7 +504,8 @@ export default {
         (v) => Validations.startsWithSpace(v),
         (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
       ],
-      generatedTemplates: []
+      generatedTemplates: [],
+      activeGeneratedTemplateIndex: 0
     }
   },
   computed: {
@@ -526,13 +554,35 @@ export default {
     }
   },
   mounted() {
-    console.log('aiAssistantRemainingRight', this.aiAssistantRemainingRight)
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
-    handleGenerateEmail() {},
+    handleGenerateEmail() {
+      const generatedEmailIndex = this.generatedTemplates.findIndex(
+        (item) => item.text === this.aiTemplateText
+      )
+      if (generatedEmailIndex !== -1) {
+        this.activeGeneratedTemplateIndex = generatedEmailIndex + 1
+        this.$emit('update:template', this.defaultTemplate)
+        return
+      }
+      this.isEmailGenerating = true
+      document
+        ?.querySelector('#email-template-content')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+      this.generatedTemplates.push({ text: this.aiTemplateText, content: '' })
+      this.activeGeneratedTemplateIndex = this.activeGeneratedTemplateIndex + 1
+      console.log('this.generatedTemplates', this.generatedTemplates)
+      setTimeout(() => {
+        this.isEmailGenerating = false
+      }, 20000)
+    },
+    setActiveGeneratedTemplate(index) {
+      this.activeGeneratedTemplateIndex = index
+      this.$emit('update:template', this.generatedTemplates[index].content)
+    },
     handleAiAssistantBadgeClick(index) {
       this.aiTemplateText = this.badgeContents[index]
     },
