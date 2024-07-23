@@ -868,6 +868,7 @@ export default {
             widget.widgetType === 'SimulationCoverageWidget' ||
             widget.widgetType === 'PhishingDwellTimeDistributionWidget'
           ) {
+            console.log('widget', widget)
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
             this.defaultWidgetData[widget.widgetType] = widget.widgetDatas

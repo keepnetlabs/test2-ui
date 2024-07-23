@@ -117,7 +117,8 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData[0].widgetDatas)
+    else this.callForData()
   },
   methods: {
     callForData() {
@@ -144,7 +145,6 @@ export default {
         this.isEmpty = true
         return
       }
-      console.log('widgetDatas', widgetDatas)
       let isAverageAdded = false
       let averageDwellTime = 0
       let averageDwellTimeIndex = 0
@@ -169,58 +169,52 @@ export default {
         acc.push(tempData)
         return acc
       }, [])
-      console.log('dwellTimeBarData', dwellTimeBarData)
+      console.log('labels', labels)
+      console.log('widgetDatas', widgetDatas)
+      let isAddedIndex = false
+      const lineBarData = widgetDatas.reduce((acc, item, index) => {
+        console.log('index', index)
+        let tempData = item.values.find(({ name }) => name === 'Percentage').value
+        if (index === averageDwellTimeIndex) {
+          isAddedIndex = true
+          acc.push({ x: Number(labels[index]), y: tempData })
+        }
+        acc.push({ x: Number(labels[isAddedIndex ? index + 1 : index]), y: tempData })
+        return acc
+      }, [])
+      console.log('linearBarData', lineBarData)
       const averageDwellTimeBarData = new Array(labels.length).fill({ x: 0, y: 0 })
       averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
-      console.log('averageDwellTimeBarData', averageDwellTimeBarData)
+      console.log('labels', labels)
       this.chartData = {
         datasets: [
           {
             type: 'line',
-            data: [
-              {
-                x: 10,
-                y: 100
-              },
-              {
-                x: 20,
-                y: 40
-              },
-              { x: 25, y: 75 },
-              {
-                x: 30,
-                y: 5
-              },
-              {
-                x: 40,
-                y: 100
-              },
-              {
-                x: 90,
-                y: 10
-              }
-            ],
-            label: 'Gürkan',
+            stacked: true,
+            data: lineBarData,
             backgroundColor: '#B3D4FC',
             borderColor: '#B3D4FC',
+            label: 'line',
             borderWidth: 1,
             lineTension: 0.3,
             pointRadius: 0,
             pointStyle: 'dash',
             fill: false,
             stack: 'Stack 1',
-            order: 2
+            order: 2,
+            xAxisID: 'A'
           },
           {
             type: 'bar',
             barThickness: 32,
             data: dwellTimeBarData,
-            label: 'Uğurlu',
+            label: 'dwell bar',
             backgroundColor: '#0198AC',
             borderColor: '#0198AC',
             fill: false,
             order: 2,
-            stack: 'Stack 1'
+            stack: 'Stack 1',
+            xAxisID: 'A'
           },
           {
             type: 'bar',
@@ -233,7 +227,8 @@ export default {
             borderColor: '#B6791D',
             fill: false,
             order: 3,
-            stack: 'Stack 1'
+            stack: 'Stack 1',
+            xAxisID: 'A'
           }
         ]
       }
@@ -276,6 +271,7 @@ export default {
           ],
           xAxes: [
             {
+              id: 'A',
               type: 'category',
               labels,
               stacked: true,
@@ -330,12 +326,10 @@ export default {
             let tooltipEl = document.getElementById(
               'chartjs-tooltip-phishing-dwell-time-distribution'
             )
-
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
               tooltipEl.id = 'chartjs-tooltip-phishing-dwell-time-distribution'
-              tooltipEl.innerHTML =
-                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
               document.body.appendChild(tooltipEl)
             }
 
@@ -365,59 +359,30 @@ export default {
             tooltipContent.style.borderRadius = '8px'
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
 
-            const monthNamesLong = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December'
-            ]
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              console.log(tooltipModel)
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
               let titleRow = document.createElement('tr')
               const xValue = tooltipModel.dataPoints[0].xLabel
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">Dwell Time: ${xValue} minutes</th>`
+              let isAverage = xValue === averageDwellTime
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${
+                isAverage ? 'Average' : ''
+              } Dwell Time: ${xValue} minutes</th>`
+              if (isAverage) titleRow.querySelector('th').style.paddingBottom = '0'
               tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
-                if (datasetLabel.toLowerCase().includes('dwell')) return
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                console.log('dataValue', dataValue)
-                let backgroundColor = dataset.backgroundColor || '#000'
-
+                dataValue = typeof dataValue === 'object' ? dataValue.y : dataValue
+                if (datasetLabel !== 'dwell bar' || dataValue <= 0) return
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
-                <td>
-                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
-                    ${datasetLabel}:
+                <td>Percentage of Users:
                 </td>
-                <td>${dataValue.y} minutes</td>
+                <td style="font-weight: 600">&nbsp; ${dataValue}%</td>
             `
-
-                if (
-                  datasetLabel ===
-                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
-                ) {
-                  tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
-                } else {
-                  tr.style.fontWeight = 'normal'
-                }
-
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
                 tr.style.paddingBottom = '6px'
