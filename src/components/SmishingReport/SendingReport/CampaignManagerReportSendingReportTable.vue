@@ -392,7 +392,7 @@ export default {
         })
     },
     getErrorMessage(row = {}) {
-      if (row.status === 'Error') {
+      if (row.status === 'Error' || row.status === 'Not Delivered') {
         return row?.jobResultMessage || ''
       }
       return ''
@@ -400,11 +400,11 @@ export default {
     getStatusBadgeProps(status = '') {
       return getStatusBadgeProps(status)
     },
-    getDataTableFieldLabel(status = '') {
-      return getDataTableFieldLabel(status)
-    },
     getTooltipDisabilityStatus(row = {}) {
-      return row?.status !== 'Error' || !row?.jobResultMessage
+      if (row.status === 'Error' || row.status === 'Not Delivered') {
+        return !row?.jobResultMessage
+      }
+      return true
     }
   }
 }
