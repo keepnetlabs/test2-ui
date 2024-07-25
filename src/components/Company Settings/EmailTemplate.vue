@@ -202,8 +202,10 @@
     <div v-if="isAiAssistant" class="email-template__ai-assistant">
       <div class="email-template__ai-assistant-header">
         <div class="email-template__ai-assistant-left">
-          <div>
-            <VSwitch v-model="aiAssistant" hide-details color="#2196f3" />
+          <div class="mr-4">
+            <VIcon class="cursor-pointer" color="#757575" @click="aiAssistant = !aiAssistant">
+              {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+            </VIcon>
           </div>
           <div>
             <div class="email-template__ai-assistant-left-title">AI Assistant</div>
@@ -213,17 +215,9 @@
             </div>
           </div>
         </div>
-        <div class="email-template__ai-assistant-right">
-          <div class="email-template__ai-assistant-right-text">
-            Remaining Rights:
-            <span class="fw-600"
-              >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
-            >
-          </div>
-        </div>
       </div>
       <div v-if="aiAssistant" class="email-template__ai-assistant-content">
-        <div class="d-flex gap-6">
+        <div class="d-flex gap-2">
           <div
             class="email-template__ai-assistant-content-badge"
             @click="handleAiAssistantBadgeClick(0)"
@@ -243,58 +237,83 @@
             {{ badgeContents[2] }}
           </div>
         </div>
-        <div class="mt-4">
+        <div class="mt-2">
           <VTextarea
             v-model.trim="aiTemplateText"
+            class="email-template__ai-assistant-textarea"
             outlined
             dense
             no-resize
             persistent-hint
             rows="2"
             height="76"
-            placeholder="Enter your instructions to create an email. You can use the examples above to start."
+            placeholder="Provide a detailed description of your email template content enter"
             :rules="[aiTemplateMaxLength]"
-          />
+          >
+            <template #append>
+              <div
+                class="email-template__ai-assistant-footer-text"
+                :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
+              >
+                <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
+                  <template #activator="{ on }">
+                    <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
+                      >mdi-information</VIcon
+                    >
+                  </template>
+                  <span
+                    >Description cannot exceed the 500 character limit. Please shorten
+                    description.</span
+                  >
+                </VTooltip>
+                {{ aiTemplateText.length }} / 500 characters
+              </div>
+            </template>
+          </VTextarea>
         </div>
         <div class="email-template__ai-assistant-footer">
           <div class="email-template__ai-assistant-footer-left">
+            <div v-if="generatedTemplates.length">
+              <VIcon
+                class="cursor-pointer"
+                color="#757575"
+                :disabled="activeGeneratedTemplateIndex <= 1"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
+                >mdi-chevron-left</VIcon
+              >
+              <VIcon
+                class="ml-1 cursor-pointer"
+                color="#757575"
+                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
+                >mdi-chevron-right</VIcon
+              >
+              <span class="email-template__ai-assistant-footer-left-text"
+                >Generated email {{ activeGeneratedTemplateIndex }} of
+                {{ generatedTemplates.length }}</span
+              >
+            </div>
+          </div>
+          <div class="email-template__ai-assistant-footer-right">
+            <div class="email-template__ai-assistant-right-text">
+              Remaining Rights:
+              <span class="fw-600"
+                >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
+              >
+            </div>
             <v-btn
               class="white--text btn-util btn-download-add-in pl-4"
               color="#00bcd4"
               rounded
               :style="
                 aiTemplateText.length === 0 || isEmailGenerating
-                  ? { opacity: '0.5', pointerEvents: 'none' }
-                  : ''
+                  ? { opacity: '0.5', pointerEvents: 'none', textTransform: 'capitalize' }
+                  : { textTransform: 'capitalize' }
               "
               @click="handleGenerateEmail"
             >
-              GENERATE EMAIL
+              Generate Email Template
             </v-btn>
-            <div v-if="generatedTemplates.length" class="ml-6">
-              <span class="email-template__ai-assistant-footer-text"
-                >Generated email {{ activeGeneratedTemplateIndex }} of
-                {{ generatedTemplates.length }}</span
-              >
-              <VIcon
-                class="ml-2 cursor-pointer"
-                :disabled="activeGeneratedTemplateIndex <= 1"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
-                >mdi-chevron-left</VIcon
-              >
-              <VIcon
-                class="ml-2 cursor-pointer"
-                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
-                >mdi-chevron-right</VIcon
-              >
-            </div>
-          </div>
-          <div
-            class="email-template__ai-assistant-footer-text"
-            :style="aiTemplateText.length > 500 ? { color: '#ff5252' } : ''"
-          >
-            {{ aiTemplateText.length }} / 500 characters
           </div>
         </div>
       </div>
@@ -431,7 +450,7 @@ export default {
       Validations,
       attachmentListKey: `${createRandomCryptStringNumber()}-key`,
       aiTemplateMaxLength: (v) =>
-        Validations.maxLength(v, 500, labels.getMaxLengthMessage('Content', 500), 500),
+        Validations.maxLength(v, 500, labels.getMaxLengthMessage('Description', 500), 500),
       ccEmailRules: {
         email: (v) => {
           if (v.length > 0) {

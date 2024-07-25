@@ -71,6 +71,17 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template #datatable-custom-column="{ scope }">
+        <span>
+          {{ scope.row.name }}
+          <VTooltip v-if="scope.row.isAi" bottom>
+            <template #activator="{ on }">
+              <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+            </template>
+            <span>This template was generated with AI</span>
+          </VTooltip>
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
@@ -197,7 +208,7 @@ export default {
             label: labels.TemplateName,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'slot',
             fixed: 'left',
             width: 240,
             filterableType: 'text',
