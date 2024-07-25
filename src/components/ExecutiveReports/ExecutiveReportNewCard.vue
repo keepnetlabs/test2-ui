@@ -762,7 +762,7 @@ export default {
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
-      if (!this.formData.name || !this.layout.length)
+      if (!this.formData.name || !this.layout.length || this.isActionButtonDisabled)
         classes.push('new-executive-report-button-disabled')
       return classes
     },
