@@ -134,6 +134,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data[0].widgetDatas)
         })
         .finally(() => {
