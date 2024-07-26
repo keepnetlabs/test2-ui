@@ -785,7 +785,6 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
-      console.log('this.dateRange', this.dateRange)
       if (this.dateRange) return this.dateRange
       if (this.formData.executiveReportDateRange.length < 2) return
       const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
