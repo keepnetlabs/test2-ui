@@ -381,7 +381,8 @@ export default {
       return this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
     },
     getTargetGroupItems() {
-      return this.formData?.userCountDetailResponse?.data?.data || []
+      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      return activeItems
     },
     isRenderTrainingCard() {
       return this.trainingParams
