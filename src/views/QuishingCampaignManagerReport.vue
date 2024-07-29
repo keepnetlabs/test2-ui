@@ -171,6 +171,9 @@ export default {
           this.isQuishingTypePrintout =
             firstScenario?.scenarioInfo?.templateType?.toLowerCase() ===
             QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+          if (this.isQuishingTypePrintout) {
+            this.tabItems.splice(this.tabItems.length - 1, 1)
+          }
           if (scenarios.length === 1) {
             const scenarioMethodType = firstScenario.scenarioInfo?.methodTypeId
             if (scenarioMethodType === 1) {
