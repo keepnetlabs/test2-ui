@@ -80,6 +80,17 @@ export default {
     ]
     if (isQuishingTypePrintout) {
       columns.push(COLUMNS.TIMES_SUBMISSION_PRINTOUT)
+      rowActions.push(
+        {
+          name: labels.Details,
+          id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
+          icon: '$custom-details',
+          action: 'on-detail',
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+          ]
+        }
+      )
     } else {
       columns.push(COLUMNS.TIMES_SUBMISSION)
       rowActions.push(
