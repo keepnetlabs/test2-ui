@@ -27,6 +27,15 @@
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
+      <div class="email-settings__information">
+        <div>
+          <VIcon color="#2196f3">mdi-alert-circle</VIcon>
+        </div>
+        <div class="email-settings__information-text">
+          System users will always receive an information email for reported incidents. Using the
+          checkbox above, you can send an information email to third parties.
+        </div>
+      </div>
       <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
         <InputEmail
           v-model.trim="formValues.to"

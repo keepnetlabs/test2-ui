@@ -38,7 +38,7 @@
         :is-valid="isTargetGroupsValid"
         :error-message="getTargetGroupErrorMessage"
       />
-      <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
+      <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" isPhishing />
       <InputDistribution
         v-model="inputDistributionFormData"
         :distribution-delay-time-items="getDistributionDelayTimeItems"
@@ -91,6 +91,7 @@ const defaultFormValues = {
   scheduleTypeId: '1',
   scheduledDate: '',
   scheduledDateTimeZoneId: '',
+  useTargetUserTimeZone: false,
   excludeFromReports: false
 }
 const EMITS = {
@@ -161,7 +162,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       axiosPayloadOfTargetGroups: getDefaultAxiosPayload()
     }
@@ -320,6 +322,7 @@ export default {
         this.setActionButtonDisability(true)
         const payload = {
           ...this.formValues,
+          useTargetUserTimeZone: this.inputScheduleFormData?.useTargetUserTimeZone || false,
           scheduledDateTimeZoneId: this.inputScheduleFormData.scheduledDateTimeZoneId,
           scheduleTypeId: this.inputScheduleFormData.scheduleTypeId,
           distributionStartTypeId: this.inputDistributionFormData.distributionStartTypeId,
@@ -391,10 +394,12 @@ export default {
         this.formValues.targetGroupResourceIds.map((item) => item.value)
       )
       if (userCountDetailResponse?.data?.data && userCountDetailResponse?.data?.data?.length) {
-        this.totalTargetUserCount =
-          userCountDetailResponse?.data?.data
-            ?.find((detail) => detail.status === 'Active')
-            ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count || 0
+        this.totalTargetUserCount = userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+          if (row.status !== 'Active') return acc
+          const verifiedUserCount =
+            row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+          return acc + verifiedUserCount
+        }, 0)
       }
     }
   }

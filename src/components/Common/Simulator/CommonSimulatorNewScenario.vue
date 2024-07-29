@@ -1,5 +1,12 @@
 <template>
-  <AppModal :status="status" :icon-name="getModalIcon" :title="getModalTitle">
+  <AppModal
+    :status="status"
+    :icon-name="getModalIcon"
+    :title="getModalTitle"
+    class="common-simulator-new-scenario"
+    footer-class="common-simulator-new-scenario__footer"
+    :showFooter="!isTemplateEditing"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -54,6 +61,24 @@
                     rows="2"
                     height="100"
                     :maxLength="300"
+                  />
+                </FormGroup>
+                <FormGroup
+                  v-if="isPhishing"
+                  title="Category"
+                  sub-title="Select the phishing category for this scenario"
+                >
+                  <KSelect
+                    :value="formValues.categoryId"
+                    id="input--category-scenario"
+                    outlined
+                    dense
+                    persistent-hint
+                    placeholder="Select category"
+                    hint="*Required"
+                    :rules="[(v) => Validations.required(v, labels.Required)]"
+                    :items="getCategoryItems"
+                    @change="handleCategoryChange"
                   />
                 </FormGroup>
                 <FormGroup
@@ -122,16 +147,21 @@
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
+                    ref="refEmailTemplateListPreview"
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
                     :category-resource-id="formValues.methodTypeId"
                     :api-funcs="getEmailTemplateApiFuncs"
                     :quishing-type="quishingType"
+                    :isAttachmentBasedScenario="isAttachmentBasedScenario"
+                    :languages="languageOptions"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
+                    @template-edit="handleTemplateEdit"
+                    @edit-mode="handleEditModeChange"
                   />
                 </v-list-item-content>
               </v-list-item>
@@ -156,10 +186,13 @@
                     :mfa-data="mfaData"
                     :type="type"
                     :api-funcs="getLandingPageApiFuncs"
+                    :languages="languageOptions"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
+                    @template-edit="handleTemplateEdit"
+                    @edit-mode="handleLandingPageEditModeChange"
                 /></v-list-item-content>
               </v-list-item>
             </div>
@@ -235,7 +268,9 @@
                             <div class="attachment blue-attach mb-0">
                               <AttachmentsPreview
                                 :deletable="false"
-                                :att="{ name: summaryData.emailTemplate.phishingFileName }"
+                                :att="{
+                                  name: summaryData.emailTemplate.phishingFileName
+                                }"
                                 :isEmailTemplate="true"
                               />
                             </div>
@@ -495,7 +530,17 @@
       <StepperFooter
         :max-step="maxStep"
         :step.sync="step"
-        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :disabled-statuses="{
+          nextButton:
+            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
+          submitButton:
+            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+        }"
+        :disabledNextButtonTooltipText="
+          isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+            ? 'You’re editing a template. Exit editing to continue.'
+            : ''
+        "
         :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
@@ -592,6 +637,9 @@ export default {
   },
   data() {
     return {
+      isTemplateEditing: false,
+      isEmailTemplateInEditMode: false,
+      isLandingPageTemplateInEditMode: false,
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
@@ -616,9 +664,11 @@ export default {
       Validations,
       initialFormValues: {},
       quishingType: '',
+      categoryText: '',
       formValues: {
         name: '',
         description: '',
+        categoryId: '',
         methodTypeId: '1',
         difficultyTypeId: '1',
         emailTemplateId: null,
@@ -647,6 +697,12 @@ export default {
   computed: {
     getURLText() {
       return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
+    },
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
+    },
+    getCategoryItems() {
+      return this.scenarioDetailsLookup?.categories || []
     },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
@@ -750,10 +806,12 @@ export default {
       const obj = {
         Name: this.formValues.name,
         Difficulty: this.getDifficultyType,
-        Method: this.getMethodText
+        Method: this.getMethodText,
+        Category: this.categoryText
       }
       if (this.isQuishing) {
         obj['Quishing Type'] = this.quishingType
+        delete obj['Category']
       }
       return obj
     },
@@ -901,6 +959,21 @@ export default {
   },
   methods: {
     getDifficultyColor,
+    handleTemplateEdit(val) {
+      this.isTemplateEditing = val
+    },
+    handleEditModeChange(val) {
+      this.isEmailTemplateInEditMode = val
+    },
+    handleLandingPageEditModeChange(val) {
+      this.isLandingPageTemplateInEditMode = val
+    },
+    handleCategoryChange(categoryId) {
+      this.formValues.categoryId = categoryId
+      this.categoryText =
+        this.scenarioDetailsLookup?.categories?.find((item) => item.value === categoryId)?.text ||
+        ''
+    },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
         cancelButton: 'btn-cancel--duplicate-scenario-modal',
@@ -915,10 +988,20 @@ export default {
         this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
       apiFunc(this.scenarioId)
         .then((response) => {
-          this.formValues = response.data.data
+          this.formValues = { ...response.data.data }
           this.formValues.name = `${this.formValues.name}`
           this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
           this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          if (this.type === SCENARIO_TYPES.PHISHING) {
+            this.formValues.categoryId = this.scenarioDetailsLookup?.categories?.find(
+              (item) => item.text === response?.data?.data?.category
+            )?.value
+            this.categoryText =
+              this.scenarioDetailsLookup?.categories?.find(
+                (item) => item.value === this.formValues.categoryId
+              )?.text || ''
+            delete this.formValues.category
+          }
           const emailTemplateResourceId = this.isQuishing
             ? response.data.data.templateResourceId
             : response.data.data.emailTemplateResourceId
@@ -1086,8 +1169,58 @@ export default {
       }
     },
     backStep() {
-      this.step -= 1
-      this.isSubmitDisabled = false
+      if (this.step === 2 && this.isEmailTemplateInEditMode) {
+        const { editData, initialEditData } = this.$refs.refEmailTemplateListPreview
+        const isChanged = isDifferent(editData, initialEditData)
+        if (!isChanged) {
+          if (this.$refs?.refEmailTemplateListPreview)
+            this.$refs.refEmailTemplateListPreview.isEditMode = false
+          this.isSubmitDisabled = false
+          this.isEmailTemplateInEditMode = false
+          this.step -= 1
+          return
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            if (this.$refs?.refEmailTemplateListPreview)
+              this.$refs.refEmailTemplateListPreview.isEditMode = false
+            this.isSubmitDisabled = false
+            this.isEmailTemplateInEditMode = false
+            this.step -= 1
+            return
+          }
+        })
+      } else if (
+        !this.isAttachmentBasedScenario &&
+        this.step === 3 &&
+        this.isLandingPageTemplateInEditMode
+      ) {
+        const { editData, initialEditData } = this.$refs.refLandingPageTemplateListPreview
+        const isChanged = isDifferent(editData, initialEditData)
+        if (!isChanged) {
+          if (this.$refs?.refLandingPageTemplateListPreview)
+            this.$refs.refLandingPageTemplateListPreview.isEditMode = false
+          this.isSubmitDisabled = false
+          this.isLandingPageTemplateInEditMode = false
+          this.step -= 1
+          return
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            if (this.$refs?.refLandingPageTemplateListPreview)
+              this.$refs.refLandingPageTemplateListPreview.isEditMode = false
+            this.isSubmitDisabled = false
+            this.isLandingPageTemplateInEditMode = false
+            this.step -= 1
+            return
+          }
+        })
+      } else {
+        this.step -= 1
+        this.isSubmitDisabled = false
+      }
     },
     submit() {
       this.isSubmitDisabled = true
@@ -1100,6 +1233,10 @@ export default {
         mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
+      }
+      if (!this.isPhishing) {
+        delete payload.categoryId
+        delete payload.category
       }
       if (this.isQuishing) {
         payload.templateType = this.quishingType

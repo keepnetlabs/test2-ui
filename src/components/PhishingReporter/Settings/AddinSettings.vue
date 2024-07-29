@@ -1,5 +1,11 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
+    <LanguageDeletionDialog
+      v-if="isLanguageDeletionDialogVisible"
+      :status="isLanguageDeletionDialogVisible"
+      @close="handleCloseLanguageDeletionDialog"
+      @confirm="handleDeleteSelectedLanguageConfirm"
+    />
     <version-history-modal
       v-if="versionHistoryModalStatus"
       :status="versionHistoryModalStatus"
@@ -35,7 +41,7 @@
             class="k-textfield mt-2"
             initial-placeholder="Enter an add-in name"
             entity-name="add-in name"
-            :readonly="!showForm"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             :applyRules="showForm"
           />
         </v-list-item-content>
@@ -50,7 +56,7 @@
             class="k-textfield mt-2"
             initial-placeholder="Enter a Brand Name"
             entity-name="brand name"
-            :readonly="!showForm"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             :applyRules="showForm"
           />
         </v-list-item-content>
@@ -59,15 +65,13 @@
       <v-list-item class="px-0 add-in-settings__list-item add-in-settings__file-upload">
         <v-list-item-content>
           <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Logo }}</label>
-          <div class="add-in-settings__subtitle mb-2">
-            Recommended size is 60x60px
-          </div>
+          <div class="add-in-settings__subtitle mb-2">Recommended size is 60x60px</div>
 
           <k-file-upload
             id="input--phishing-reporter-settings-logo"
             hint="Only jpg and png files. Max. file size 2MB"
             ref="refFileUpload"
-            :readonly="!showForm"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             :extensions="['jpg', 'png']"
             :size="2"
             @inputFile="onFileChanged"
@@ -87,229 +91,371 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 add-in-settings__list-item add-in-settings__body-container mt-6">
-        <v-list-item-content>
-          <label class="add-in-settings__label">{{ labels.DialogBox }} {{ labels.Settings }}</label>
-          <div class="add-in-settings__body-item mt-4 mb-4">
-            <label class="add-in-settings__list-item-header"
-              >{{ labels.DialogBox }} {{ labels.Heading }}</label
+      <div class="add-in-settings__body-container mt-6">
+        <div class="add-in-settings__dialog-box-settings-header">
+          <div class="add-in-settings__dialog-box-settings-header__label-container">
+            <label class="add-in-settings__label"
+              >{{ labels.DialogBox }} {{ labels.Settings }}</label
             >
-            <InputEntityName
-              v-model.trim="formValues.msgBoxTitle"
-              initialPlaceholder="Enter a dialog box name"
-              entityName="dialog box name"
-              id="input--phishing-reporter-message-box-title"
-              class="k-textfield"
-              :readonly="!showForm"
-              :applyRules="showForm"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header">Confirm Button Label</label>
-            <InputEntityName
-              v-model.trim="formValues.msgBoxBtnYesText"
-              initialPlaceholder="Enter confirm button label"
-              entityName="confirm button label"
-              id="input--phishing-reporter-message-button-yes-text"
-              class="k-textfield"
-              :readonly="!showForm"
-              :applyRules="showForm"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header">No Button Label</label>
-            <InputEntityName
-              v-model.trim="formValues.msgBoxBtnNoText"
-              initialPlaceholder="Enter a no button label"
-              entityName="no button label"
-              id="input--phishing-reporter-message-button-no-text"
-              class="k-textfield"
-              :readonly="!showForm"
-              :applyRules="showForm"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header">Cancel Button Label</label>
-            <InputEntityName
-              v-model.trim="formValues.msgBoxBtnCancelText"
-              initialPlaceholder="Enter cancel button label"
-              entityName="cancel button label"
-              id="input--phishing-reporter-message-button-cancel-text"
-              class="k-textfield"
-              :readonly="!showForm"
-              :applyRules="showForm"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header">Okay Button Label</label>
-            <InputEntityName
-              v-model.trim="formValues.msgBoxBtnOkText"
-              initialPlaceholder="Enter okay button label"
-              entityName="okay button label"
-              id="input--phishing-reporter-message-button-ok-text"
-              class="k-textfield"
-              :readonly="!showForm"
-              :applyRules="showForm"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-              >Instant Report Message</label
+            <span class="add-in-settings__subtitle"
+              >Customize the language options for the dialog box</span
             >
-            <InputDescription
-              v-model.trim="formValues.analysisThankYouMessage"
-              initialPlaceholder="Enter instant report message"
-              entityName="instant report message"
-              id="input--phishing-reporter-analysis-thank-you-message"
-              rows="2"
-              height="80"
-              :readonly="!showForm"
-              :applyRules="showForm"
-              :maxLength="256"
-              :required="true"
-            />
           </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-              >Connection error message</label
-            >
-            <InputDescription
-              v-model.trim="formValues.noInternetConnectionMessage"
-              initialPlaceholder="Enter a connection error message"
-              entityName="connection error message"
-              id="input--phishing-reporter-no-internet-connection-message"
-              rows="2"
-              height="80"
-              :readonly="!showForm"
-              :applyRules="showForm"
-              :maxLength="256"
-              :required="true"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-              >Sending error message</label
-            >
-            <InputDescription
-              v-model.trim="formValues.emailSendingErrorMessage"
-              initialPlaceholder="Enter sending error message"
-              entityName="sending error message"
-              id="input--phishing-reporter-email-sending-error-message"
-              rows="2"
-              height="80"
-              :readonly="!showForm"
-              :applyRules="showForm"
-              :maxLength="256"
-              :required="true"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-              >No email selected message</label
-            >
-            <InputDescription
-              v-model.trim="formValues.emailSelectionErrorMessage"
-              initialPlaceholder="Enter a no email selected message"
-              entityName="no email selected error message"
-              id="input--phishing-reporter-email-selection-error-message"
-              rows="2"
-              height="80"
-              :readonly="!showForm"
-              :applyRules="showForm"
-              :maxLength="256"
-              :required="true"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
-              >Bad format email message</label
-            >
-            <InputDescription
-              v-model.trim="formValues.badFormatEmailMessage"
-              initialPlaceholder="Enter a bad format email message"
-              entityName="bad format email message"
-              id="input--phishing-reporter-bad-format-email-message"
-              rows="2"
-              height="80"
-              :readonly="!showForm"
-              :applyRules="showForm"
-              :maxLength="256"
-              :required="true"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <v-checkbox
-              color="#2196f3"
-              label="Show confirmation message when reporting email"
-              class="k-checkbox add-in-settings__list-item-checkbox"
-              id="input--phishing-reporter-is-confirmation-before-analysis"
-              v-model="formValues.isConfirmationBeforeAnalysis"
-              :readonly="!showForm"
-            ></v-checkbox>
-            <InputDescription
-              v-model.trim="formValues.analysisConfirmationMessage"
-              initialPlaceholder="Enter a confirmation message when reporting email"
-              entityName="confirmation message when reporting email"
-              id="input--phishing-reporter-analysis-confirmation-message-rules"
-              rows="2"
-              height="80"
-              :disabled="!formValues.isConfirmationBeforeAnalysis"
-              :initialRules="getTextAreaRules('isConfirmationBeforeAnalysis')"
-              :readonly="!showForm"
-              :maxLength="256"
-              :required="getRequiredValue('isConfirmationBeforeAnalysis')"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <v-checkbox
-              color="#2196f3"
-              label="Show confirmation message to delete email"
-              class="k-checkbox add-in-settings__list-item-checkbox"
-              id="input--phishing-reporter-is-delete-email-before-analysis"
-              v-model="formValues.isDeleteEmailBeforeAnalysis"
-              :readonly="!showForm"
-            ></v-checkbox>
-            <InputDescription
-              v-model.trim="formValues.analysisEmailDeleteMessage"
-              initialPlaceholder="Enter a confirmation message to delete email"
-              entityName="confirmation message to delete email"
-              id="input--phishing-reporter-analysis-email-delete-message"
-              rows="2"
-              height="80"
-              :disabled="!formValues.isDeleteEmailBeforeAnalysis"
-              :initialRules="getTextAreaRules('isDeleteEmailBeforeAnalysis')"
-              :readonly="!showForm"
-              :maxLength="256"
-              :required="getRequiredValue('isDeleteEmailBeforeAnalysis')"
-            />
-          </div>
-          <div class="add-in-settings__body-item mb-4">
-            <v-checkbox
-              v-model="formValues.isSendSimulationMails"
-              color="#2196f3"
-              label="Turn off email forwarding for reported Phishing Simulation Emails"
-              class="k-checkbox add-in-settings__list-item-checkbox"
-              id="input--phishing-reporter-is-send-simulatiion-mails"
-              :readonly="!showForm"
-            ></v-checkbox>
-            <InputDescription
-              v-model.trim="formValues.simulationMailMessage"
-              initialPlaceholder="Enter a simulation email message"
-              entityName="simulation mail message"
-              id="input--phishing-reporter-simulation-email-message"
-              rows="2"
-              height="80"
-              :disabled="!formValues.isSendSimulationMails"
-              :initialRules="getTextAreaRules('isSendSimulationMails')"
-              :readonly="!showForm"
-              :maxLength="256"
-              :required="getRequiredValue('isSendSimulationMails')"
-            />
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+          <KSelect
+            v-if="showForm"
+            v-model.trim="defaultLanguage"
+            class="add-in-settings__default-language-select mt-3"
+            style="max-width: 200px;"
+            :items="getDefaultLanguageOptions"
+            outlined
+            label="Set Default Language"
+            placeholder="Set Default Language"
+            :disabled="!showForm || isFetchingDefaultSettingsForLanguage"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+          ></KSelect>
+          <KSelect
+            v-else
+            v-model.trim="defaultLanguage"
+            class="mt-3"
+            style="max-width: 200px;"
+            :items="getDefaultLanguageOptions"
+            outlined
+            label="Default Language"
+            placeholder="Default Language"
+            append-icon=""
+            :disabled="!showForm"
+          ></KSelect>
+        </div>
+        <ElTabs
+          v-model="tab"
+          ref="tabs"
+          :before-leave="handleTabChange"
+          id="add-new-language"
+          class="k-sub-tab add-in-settings__languages-tabs mt-6"
+        >
+          <ElTabPane
+            v-for="setting in formValues.dialogBoxSettings"
+            :key="setting.languageName"
+            :label="setting.languageName"
+            :name="setting.languageName"
+            class="pt-6"
+          >
+            <template v-if="showForm" #label>
+              <div
+                style="display: flex;"
+                :style="
+                  setting.languageName === 'English'
+                    ? { width: '48px' }
+                    : { width: getLabelWidth(setting.languageName) }
+                "
+              >
+                <span class="landing-page-tab__label">
+                  {{ setting.languageName }}
+                </span>
+                <v-menu
+                  v-if="setting.languageName !== 'English'"
+                  :min-width="128"
+                  :offset-y="true"
+                  nudge-left="50"
+                  bottom
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-ripple="false" v-on="on" class="landing-page-tab-content__button"
+                      >mdi-dots-horizontal</v-icon
+                    >
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      style="cursor: pointer;"
+                      @click="handleDeleteSelectedLanguage(setting.languageName)"
+                    >
+                      <v-list-item-title
+                        ><v-icon class="mr-2">mdi-delete</v-icon>Delete</v-list-item-title
+                      >
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+            </template>
+            <v-skeleton-loader
+              v-if="isFetchingDefaultSettingsForLanguage"
+              type="list-item@10"
+            ></v-skeleton-loader>
+            <div v-else class="add-in-settings__dialog-box-settings__inner-container">
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header"
+                  >{{ labels.DialogBox }} {{ labels.Heading }}</label
+                >
+                <InputEntityName
+                  v-model.trim="setting.msgBoxTitle"
+                  initialPlaceholder="Enter a dialog box name"
+                  entityName="dialog box name"
+                  id="input--phishing-reporter-message-box-title"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnYesText"
+                  initialPlaceholder="Enter confirm button label"
+                  entityName="confirm button label"
+                  id="input--phishing-reporter-message-button-yes-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">No Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnNoText"
+                  initialPlaceholder="Enter a no button label"
+                  entityName="no button label"
+                  id="input--phishing-reporter-message-button-no-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div v-if="false" class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnCancelText"
+                  initialPlaceholder="Enter cancel button label"
+                  entityName="cancel button label"
+                  id="input--phishing-reporter-message-button-cancel-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                <InputEntityName
+                  v-model.trim="setting.msgBoxBtnOkText"
+                  initialPlaceholder="Enter okay button label"
+                  entityName="okay button label"
+                  id="input--phishing-reporter-message-button-ok-text"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Instant Report Message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.analysisThankYouMessage"
+                  initialPlaceholder="Enter instant report message"
+                  entityName="instant report message"
+                  id="input--phishing-reporter-analysis-thank-you-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Connection error message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.noInternetConnectionMessage"
+                  initialPlaceholder="Enter a connection error message"
+                  entityName="connection error message"
+                  id="input--phishing-reporter-no-internet-connection-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Sending error message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.emailSendingErrorMessage"
+                  initialPlaceholder="Enter sending error message"
+                  entityName="sending error message"
+                  id="input--phishing-reporter-email-sending-error-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >No email selected message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.emailSelectionErrorMessage"
+                  initialPlaceholder="Enter a no email selected message"
+                  entityName="no email selected error message"
+                  id="input--phishing-reporter-email-selection-error-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+                  >Bad format email message</label
+                >
+                <InputDescription
+                  v-model.trim="setting.badFormatEmailMessage"
+                  initialPlaceholder="Enter a bad format email message"
+                  entityName="bad format email message"
+                  id="input--phishing-reporter-bad-format-email-message"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Show confirmation message when reporting email"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-confirmation-before-analysis"
+                  v-model="setting.isConfirmationBeforeAnalysis"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.analysisConfirmationMessage"
+                  initialPlaceholder="Enter a confirmation message when reporting email"
+                  entityName="confirmation message when reporting email"
+                  id="input--phishing-reporter-analysis-confirmation-message-rules"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isConfirmationBeforeAnalysis"
+                  :initialRules="setting.isConfirmationBeforeAnalysis ? textAreaRules : []"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :applyRules="showForm"
+                  :required="setting.isConfirmationBeforeAnalysis"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Show confirmation message to delete email"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-delete-email-before-analysis"
+                  v-model="setting.isDeleteEmailBeforeAnalysis"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.analysisEmailDeleteMessage"
+                  initialPlaceholder="Enter a confirmation message to delete email"
+                  entityName="confirmation message to delete email"
+                  id="input--phishing-reporter-analysis-email-delete-message"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isDeleteEmailBeforeAnalysis"
+                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :required="setting.isDeleteEmailBeforeAnalysis"
+                />
+              </div>
+              <div class="add-in-settings__body-item">
+                <v-checkbox
+                  v-model="setting.isSendSimulationMails"
+                  color="#2196f3"
+                  label="Turn off email forwarding for reported Phishing Simulation Emails"
+                  class="k-checkbox add-in-settings__list-item-checkbox"
+                  id="input--phishing-reporter-is-send-simulatiion-mails"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                ></v-checkbox>
+                <InputDescription
+                  v-model.trim="setting.simulationMailMessage"
+                  initialPlaceholder="Enter a simulation email message"
+                  entityName="simulation mail message"
+                  id="input--phishing-reporter-simulation-email-message"
+                  rows="2"
+                  height="80"
+                  :disabled="!setting.isSendSimulationMails"
+                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :maxLength="256"
+                  :required="setting.isSendSimulationMails"
+                />
+              </div>
+            </div>
+          </ElTabPane>
+          <ElTabPane v-if="getLanguageOptions.length && showForm" name="addNewLangauge">
+            <template #label>
+              <v-menu
+                v-model="isAddNewLanguageMenuVisible"
+                :z-index="10000"
+                content-class="add-new-language-menu"
+                :nudge-bottom="36"
+                bottom
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on: menu }">
+                  <v-btn
+                    v-on="menu"
+                    text
+                    color="#2196f3"
+                    @click="handleAddNewLanguageMenuClick"
+                    :disabled="isFetchingDefaultSettingsForLanguage"
+                  >
+                    <v-icon class="mr-2" size="18" color="#2196f3">mdi-plus</v-icon>
+                    <span class="landing-page-tab__label"> Add New Language </span>
+                  </v-btn>
+                </template>
+                <div>
+                  <div class="add-new-language-menu__filter-container">
+                    <v-text-field
+                      v-model="languageFilter"
+                      placeholder="Search"
+                      class="filter__text"
+                      prepend-inner-icon="mdi-magnify"
+                      outlined
+                      dense
+                      height="40"
+                    ></v-text-field>
+                  </div>
+                  <v-list-item
+                    v-for="language in getLanguageFilterOptions"
+                    :key="language.resourceId"
+                    class="add-new-language-menu__item"
+                    @click="handleSelectLanguage(language.text)"
+                  >
+                    {{ language.text }}
+                  </v-list-item>
+                </div>
+              </v-menu>
+            </template>
+          </ElTabPane>
+        </ElTabs>
+      </div>
 
-      <v-list-item class="px-0 add-in-settings__list-item mt-2">
+      <v-list-item class="mt-6 px-0 add-in-settings__list-item mt-2">
         <v-list-item-content>
           <label class="add-in-settings__label">Warning Label</label>
           <label class="add-in-settings__subtitle"
@@ -321,7 +467,7 @@
             entityName="warning label"
             id="input--phishing-reporter-warning-label"
             class="k-textfield mt-2"
-            :readonly="!showForm"
+            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
             :applyRules="showForm"
           />
         </v-list-item-content>
@@ -329,7 +475,7 @@
       <phishing-settings-footer
         v-if="showFooter"
         className="mt-3"
-        :saveDisable="saveDisable"
+        :saveDisable="saveDisable || isFetchingDefaultSettingsForLanguage"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
       />
@@ -339,7 +485,7 @@
 
 <script>
 import { maxLength, required } from '@/utils/validations'
-import { getPhishingReporterImg } from '@/api/phishingReporter'
+import { getPhishingReporterImg, getDefaultSettingsForLanguage } from '@/api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import ReporterVersionModal from './ReporterVersionModal'
@@ -351,6 +497,14 @@ import { mapGetters } from 'vuex'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import imageToBlob from '@/utils/image-to-blob'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import LanguageDeletionDialog from '@/components/PhishingReporter/Settings/LanguageDeletionDialog'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import {
+  defaultDialogBoxSettings,
+  checkDialogBoxSettings
+} from '@/components/PhishingReporter/Settings/utils'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'AddinSettings',
   components: {
@@ -359,7 +513,9 @@ export default {
     VersionHistoryModal,
     PhishingSettingsFooter,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    KSelect,
+    LanguageDeletionDialog
   },
   props: {
     showFooter: {
@@ -400,26 +556,20 @@ export default {
       isValid: false,
       files: [],
       labels,
+      isFetchingDefaultSettingsForLanguage: false,
+      isLanguageDeletionDialogVisible: false,
+      selectedLanguageToDelete: '',
+      isAddNewLanguageMenuVisible: false,
+      languageFilter: '',
+      tab: 'English',
+      defaultLanguage: 'English',
+      languageOptions: [],
       formValues: {
-        addInName: '',
+        addInName: 'Suspicious email reporter',
         brandName: '',
         file: '',
-        msgBoxTitle: '',
-        isConfirmationBeforeAnalysis: false,
-        analysisConfirmationMessage: '',
-        analysisThankYouMessage: '',
-        analysisEmailDeleteMessage: '',
-        warningLabel: '',
-        hiddenFileUploadValue: '',
-        isDeleteEmailBeforeAnalysis: null,
-        msgBoxBtnYesText: '',
-        noInternetConnectionMessage: '',
-        msgBoxBtnNoText: '',
-        msgBoxBtnOkText: '',
-        emailSelectionErrorMessage: '',
-        badFormatEmailMessage: '',
-        isSendSimulationMails: false,
-        simulationMailMessage: ''
+        warningLabel: 'Suspicious E-mail',
+        dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -428,13 +578,129 @@ export default {
       validations: {
         maxLength,
         required
-      }
+      },
+      textAreaRules: [
+        (v) => this.validations.required(v, labels.Required),
+        (v) =>
+          this.validations.maxLength(
+            v,
+            256,
+            this.labels.getMaxLengthMessage('Confirmation message', 256)
+          )
+      ]
     }
   },
   computed: {
-    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' })
+    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' }),
+    getDefaultLanguageOptions() {
+      return this.formValues?.dialogBoxSettings?.map((setting) => setting.languageName) || []
+    },
+    getLanguageOptions() {
+      return this.languageOptions.filter(
+        (language) =>
+          !this.formValues.dialogBoxSettings.some(
+            (setting) => setting.languageName === language.text
+          )
+      )
+    },
+    getLanguageFilterOptions() {
+      return this.languageFilter.length > 0
+        ? this.getLanguageOptions.filter((item) => {
+            return item.text.toLowerCase().includes(this.languageFilter.toLowerCase())
+          })
+        : this.getLanguageOptions
+    }
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+      })
+    },
+    getLabelWidth(language) {
+      return `${language.length * 10}px`
+    },
+    handleAddNewLanguageMenuClick() {
+      this.isAddNewLanguageMenuVisible = true
+    },
+    handleSelectLanguage(language) {
+      const payload = {
+        languageJson: JSON.stringify(defaultDialogBoxSettings),
+        languageName: language
+      }
+      this.isAddNewLanguageMenuVisible = false
+      this.languageFilter = ''
+      this.isFetchingDefaultSettingsForLanguage = true
+      getDefaultSettingsForLanguage(payload)
+        .then((response) => {
+          if (!response?.data?.data?.startsWith?.('{')) {
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                'Translation could not be processed. Please fill in the required fields yourself or try again later.',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert'
+            })
+            return
+          }
+          const dialogBoxSettings = JSON.parse(response.data.data)
+          const languageResourceId =
+            this.languageOptions.find((lo) => lo.text === language)?.value || ''
+          this.formValues.dialogBoxSettings.push({
+            ...dialogBoxSettings,
+            isConfirmationBeforeAnalysis: true,
+            isDeleteEmailBeforeAnalysis: true,
+            isSendSimulationMails: true,
+            isDefault: false,
+            languageName: language,
+            languageResourceId
+          })
+          this.tab = language
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message:
+              'Translation could not be processed. Please fill in the required fields yourself or try again later.',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert'
+          })
+          return
+        })
+        .finally(() => {
+          this.isFetchingDefaultSettingsForLanguage = false
+        })
+    },
+    handleTabChange(activeTab) {
+      if (activeTab === 'addNewLangauge') {
+        return false
+      }
+      return true
+    },
+    handleCloseLanguageDeletionDialog() {
+      this.selectedLanguageToDelete = ''
+      this.isLanguageDeletionDialogVisible = false
+    },
+    handleDeleteSelectedLanguage(language) {
+      this.selectedLanguageToDelete = language
+      this.isLanguageDeletionDialogVisible = true
+    },
+    handleDeleteSelectedLanguageConfirm() {
+      if (!this.selectedLanguageToDelete) return
+      const languageItemIndex = this.formValues.dialogBoxSettings.findIndex(
+        (fl) => fl.languageName === this.selectedLanguageToDelete
+      )
+      if (languageItemIndex === -1) return
+      this.formValues.dialogBoxSettings.splice(languageItemIndex, 1)
+      this.tab = 'English'
+      if (this.defaultLanguage === this.selectedLanguageToDelete) {
+        this.defaultLanguage = 'English'
+      }
+      this.selectedLanguageToDelete = ''
+      this.isLanguageDeletionDialogVisible = false
+    },
     getRequiredValue(key) {
       let required = false
       if (this.formValues[key]) {
@@ -474,14 +740,45 @@ export default {
       this.selectedVersionRow = row
       this.reporterVersionModalStatus = true
     },
+    checkDialogBoxSettings() {
+      const invalidLanguages = []
+      for (let i = 0; i < this.formValues.dialogBoxSettings.length; i++) {
+        if (!checkDialogBoxSettings(this.formValues.dialogBoxSettings[i]))
+          invalidLanguages.push(this.formValues.dialogBoxSettings[i].languageName)
+      }
+      return invalidLanguages
+    },
     submit(event, isAddIn = false) {
+      const invalidLanguages = this.checkDialogBoxSettings()
+      if (invalidLanguages.length) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `Please fill in all required “${
+            invalidLanguages.length === 2
+              ? invalidLanguages[0] + ' and ' + invalidLanguages[1]
+              : invalidLanguages.length > 2
+              ? invalidLanguages.slice(0, invalidLanguages.length - 1).join(', ') +
+                ' and ' +
+                invalidLanguages[invalidLanguages.length - 1]
+              : invalidLanguages[0]
+          }” fields in the dialog box settings.`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert'
+        })
+        return
+      }
       if (this.$refs.refForm.validate()) {
         this.formValues = {
           ...this.formValues,
-          analysisConfirmationMessage: this.formValues.analysisConfirmationMessage || '',
-          analysisEmailDeleteMessage: this.formValues.analysisEmailDeleteMessage || '',
-          simulationMailMessage: this.formValues.simulationMailMessage || ''
+          dialogBoxSettings: this.formValues.dialogBoxSettings.map((setting) => ({
+            ...setting,
+            analysisConfirmationMessage: setting?.analysisConfirmationMessage || '',
+            analysisEmailDeleteMessage: setting?.analysisEmailDeleteMessage || '',
+            simulationMailMessage: setting?.simulationMailMessage || ''
+          }))
         }
+        this.formValues.dialogBoxSettings.sort((x) => {
+          return x.languageName === 'English' ? -1 : 1
+        })
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
@@ -518,47 +815,21 @@ export default {
   },
   created() {
     //If has a report
+    this.callForLanguages()
     if (this.formData) {
-      const {
-        addInName,
-        brandName,
-        warningLabel,
-        msgBoxTitle,
-        isConfirmationBeforeAnalysis,
-        analysisConfirmationMessage,
-        analysisThankYouMessage,
-        analysisEmailDeleteMessage,
-        isDeleteEmailBeforeAnalysis,
-        msgBoxBtnYesText,
-        msgBoxBtnNoText,
-        msgBoxBtnCancelText,
-        msgBoxBtnOkText,
-        noInternetConnectionMessage,
-        emailSendingErrorMessage,
-        emailSelectionErrorMessage,
-        badFormatEmailMessage,
-        isSendSimulationMails,
-        simulationMailMessage
-      } = this.formData
+      const { addInName, brandName, warningLabel, dialogBoxSettings } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
-      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
-      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
       this.formValues.warningLabel = warningLabel
-      this.formValues.msgBoxTitle = msgBoxTitle
-      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
-      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
-      this.formValues.analysisThankYouMessage = analysisThankYouMessage
-      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
-      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
-      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
-      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
-      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
-      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
-      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
-      this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = isSendSimulationMails
-      this.formValues.simulationMailMessage = simulationMailMessage
+      this.formValues.dialogBoxSettings = dialogBoxSettings
+      this.formValues.dialogBoxSettings.sort((x) => {
+        return x.languageName === 'English' ? -1 : 1
+      })
+      const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
+      if (defaultSettingIndex !== -1) {
+        this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
+        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+      }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
@@ -567,30 +838,7 @@ export default {
         ? this.whiteLabelBrandName
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
-      this.formValues.msgBoxTitle = 'Phishing Reporter'
-      this.formValues.msgBoxBtnCancelText = 'Cancel'
-      this.formValues.analysisConfirmationMessage =
-        'Do you want to report this email to the system administrator for analysis?'
-      this.formValues.isConfirmationBeforeAnalysis = true
-      this.formValues.analysisEmailDeleteMessage =
-        'Do you wish to delete the original email from your inbox?'
-      this.formValues.analysisThankYouMessage =
-        'Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.'
-      this.formValues.warningLabel = 'Suspicious E-Mail'
-      this.formValues.isDeleteEmailBeforeAnalysis = true
-      this.formValues.msgBoxBtnYesText = 'Yes'
-      this.formValues.msgBoxBtnNoText = 'No'
-      this.formValues.msgBoxBtnOkText = 'Okay'
-      this.formValues.emailSendingErrorMessage =
-        'Report email cannot be sent to related department. Please try again later.'
-      this.formValues.noInternetConnectionMessage =
-        'Phishing Reporter add-in cannot connect to server. Please inform related department.'
-      this.formValues.emailSelectionErrorMessage =
-        'To report an email you must first select the email and then click the report button.'
-      this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
-      this.formValues.isSendSimulationMails = true
-      this.formValues.simulationMailMessage =
-        'This was a phishing simulation sent to by your cyber-security team. Thank you for your awareness and cautiousness.'
+      this.formValues.dialogBoxSettings = [{ ...defaultDialogBoxSettings }]
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
@@ -598,47 +846,33 @@ export default {
     }
   },
   watch: {
+    defaultLanguage(val) {
+      if (!val) return
+      const settingIndex = this.formValues.dialogBoxSettings.findIndex(
+        (setting) => setting.languageName === val
+      )
+      if (settingIndex !== -1) {
+        this.formValues.dialogBoxSettings[settingIndex].isDefault = true
+        this.formValues.dialogBoxSettings.forEach((setting, index) => {
+          if (index === settingIndex) return
+          setting.isDefault = false
+        })
+      }
+    },
     formData(val) {
-      const {
-        addInName,
-        brandName,
-        warningLabel,
-        msgBoxTitle,
-        isConfirmationBeforeAnalysis,
-        analysisConfirmationMessage,
-        analysisThankYouMessage,
-        analysisEmailDeleteMessage,
-        isDeleteEmailBeforeAnalysis,
-        msgBoxBtnNoText,
-        msgBoxBtnYesText,
-        msgBoxBtnCancelText,
-        msgBoxBtnOkText,
-        noInternetConnectionMessage,
-        emailSendingErrorMessage,
-        emailSelectionErrorMessage,
-        badFormatEmailMessage,
-        isSendSimulationMails,
-        simulationMailMessage
-      } = val
+      const { addInName, brandName, warningLabel, dialogBoxSettings } = val
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
-      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
       this.formValues.warningLabel = warningLabel
-      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
-      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
-      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
-      this.formValues.msgBoxTitle = msgBoxTitle
-      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
-      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
-      this.formValues.analysisThankYouMessage = analysisThankYouMessage
-      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
-      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
-      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
-      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
-      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
-      this.formValues.badFormatEmailMessage = badFormatEmailMessage
-      this.formValues.isSendSimulationMails = isSendSimulationMails
-      this.formValues.simulationMailMessage = simulationMailMessage
+      this.formValues.dialogBoxSettings = [...dialogBoxSettings]
+      this.formValues.dialogBoxSettings.sort((x) => {
+        return x.languageName === 'English' ? -1 : 1
+      })
+      const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
+      if (defaultSettingIndex !== -1) {
+        this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
+        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+      }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })

@@ -16,7 +16,7 @@ const learningPath = {
     selectedLearningPathTrainings: [],
     learningPathServerSideProps: new ServerSideProps(),
     learningPathAxiosPayload: getDefaultAxiosPayload({
-      pageSize: 500,
+      pageSize: 10,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
       trainingType: null,
       trainingId: '',
@@ -108,11 +108,15 @@ const learningPath = {
       state.learningPathServerSideProps.pageNumber = payload.pageNumber
     },
     SET_LEARNING_PATH_FILTER_ITEMS(state, payload) {
-      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      const learningPathFilter = state.learningPathFilters.find(
+        (f) => f && payload && f.key === payload.key
+      )
       learningPathFilter.items = payload.items
     },
     SET_LEARNING_PATH_FILTER_ITEMS_SHOW(state, payload) {
-      const learningPathFilter = state.learningPathFilters.find((f) => f.key === payload.key)
+      const learningPathFilter = state.learningPathFilters.find(
+        (f) => f && payload && f.key === payload.key
+      )
       learningPathFilter.show = payload.show
     },
     SET_SELECTED_LEARNING_PATH_TRAININGS(state, payload) {
@@ -131,7 +135,7 @@ const learningPath = {
       state.learningPathSelectedTrainingContent = 'All Materials'
       state.learningPathSelectedSubTrainingContent = 'All Types'
       state.learningPathAxiosPayload = getDefaultAxiosPayload({
-        pageSize: 500,
+        pageSize: 10,
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null,
         filter: {
@@ -288,12 +292,26 @@ const learningPath = {
     RESET_LEARNING_PATH_PAGINATION(state) {
       state.learningPathAxiosPayload.pageNumber = 1
       state.learningPathServerSideProps.pageNumber = 1
+    },
+    SET_FILTER_ITEMS_SHOW(state, payload) {
+      const filter = state.learningPathFilters.find((f) => f && payload && f.key === payload.key)
+      filter.show = payload.show
     }
   },
   actions: {
+    setLearningPathFilterItemsShow({ commit }, payload) {
+      commit('SET_FILTER_ITEMS_SHOW', payload)
+    },
     callForLearningPathTableData({ commit, state }, payload) {
-      if (payload?.trainingId) {
-        state.learningPathAxiosPayload.trainingId = payload.trainingId
+      if (payload?.trainingIds) {
+        state.learningPathAxiosPayload.trainingIds = payload.trainingIds
+      }
+      if (state.selectedLearningPathTrainings?.length) {
+        const trainingIds =
+          state.selectedLearningPathTrainings?.map(
+            (training) => training?.trainingId || training?.detailTrainingId
+          ) || []
+        state.learningPathAxiosPayload.trainingIds = trainingIds
       }
       AwarenessEducatorService.searchTraining(state.learningPathAxiosPayload).then((response) => {
         const {

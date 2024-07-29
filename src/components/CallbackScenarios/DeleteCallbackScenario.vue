@@ -10,7 +10,7 @@
     @changeStatus="closeModal"
   >
     <template #app-dialog-body>
-      {{ selectedScenario && selectedScenario.name }} will be deleted.
+      {{ getBodyText }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -28,7 +28,6 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { deleteScenario } from '@/api/scenarios'
 import CallbackService from '@/api/callback'
 export default {
   name: 'DeleteCallbackScenario',
@@ -42,6 +41,16 @@ export default {
     },
     selectedScenario: {
       type: Object
+    },
+    scenarioCount: {
+      type: Number,
+      default: 0
+    },
+    isMultiple: {
+      type: Boolean
+    },
+    multipleDeletePayload: {
+      type: Object
     }
   },
   data() {
@@ -49,20 +58,39 @@ export default {
       isActionButtonDisabled: false
     }
   },
+  computed: {
+    getBodyText() {
+      if (this.isMultiple) {
+        return `${this.scenarioCount} scenarios will be deleted.`
+      }
+      return `${this.selectedScenario && this.selectedScenario.name} will be deleted.`
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      this.isActionButtonDisabled = true
-      CallbackService.deleteCallbackScenario(this.selectedScenario.resourceId)
-        .then(() => {
-          this.$emit('handleSuccessDeleteAction', this.selectedScenario)
-          this.closeModal()
-        })
-        .finally(() => {
-          this.isActionButtonDisabled = false
-        })
+      if (this.isMultiple) {
+        this.isActionButtonDisabled = true
+        CallbackService.bulkDeleteCallbackScenarios(this.multipleDeletePayload)
+          .then(() => {
+            this.$emit('on-success-multiple')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      } else {
+        this.isActionButtonDisabled = true
+        CallbackService.deleteCallbackScenario(this.selectedScenario.resourceId)
+          .then(() => {
+            this.$emit('handleSuccessDeleteAction', this.selectedScenario)
+            this.closeModal()
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      }
     }
   }
 }

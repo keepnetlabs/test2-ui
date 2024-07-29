@@ -381,14 +381,24 @@ export default {
             refSendTrainingSelectUsers.isTargetGroupsValid = true
             const targetGroupResourceIds = targetGroups.map((group) => group.resourceId)
             this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
-            this.totalActiveUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((row) => row.status === 'Active')
-                ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-            this.totalPhoneNumberUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((row) => row.status === 'Active')
-                ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+            this.totalActiveUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const verifiedUserCount =
+                  row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                return acc + verifiedUserCount
+              },
+              0
+            )
+            this.totalPhoneNumberUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const phoneNumberCount =
+                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+                return acc + phoneNumberCount
+              },
+              0
+            )
             this.step += flag
           } else {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true

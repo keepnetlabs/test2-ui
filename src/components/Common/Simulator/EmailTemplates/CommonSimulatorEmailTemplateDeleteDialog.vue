@@ -10,7 +10,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
+      {{ getBodyText }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -46,6 +46,19 @@ export default {
     type: {
       type: String,
       default: SCENARIO_DELETE_DIALOG_TYPES.EMAIL
+    },
+    templateCount: {
+      type: Number,
+      default: 0
+    },
+    isMultiple: {
+      type: Boolean
+    },
+    multipleDeletePayload: {
+      type: Object
+    },
+    multipleDeleteApiFunc: {
+      type: Function
     }
   },
   data() {
@@ -63,18 +76,35 @@ export default {
       return this.type === SCENARIO_DELETE_DIALOG_TYPES.EMAIL
         ? 'Email Template will deleted permanently'
         : 'Landing Page will deleted permanently'
+    },
+    getBodyText() {
+      if (this.isMultiple) {
+        return `${this.templateCount} templates will be deleted.`
+      }
+      return `${this.selectedEmailTemplate && this.selectedEmailTemplate.name} will be deleted.`
     }
   },
   methods: {
     handleDelete() {
-      this.isActionButtonDisabled = true
-      this.apiFunc(this.selectedEmailTemplate.resourceId)
-        .then(() => {
-          this.$emit('on-success', this.selectedEmailTemplate)
-        })
-        .finally(() => {
-          this.isActionButtonDisabled = false
-        })
+      if (this.isMultiple) {
+        this.isActionButtonDisabled = true
+        this.multipleDeleteApiFunc(this.multipleDeletePayload)
+          .then(() => {
+            this.$emit('on-success-multiple')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      } else {
+        this.isActionButtonDisabled = true
+        this.apiFunc(this.selectedEmailTemplate.resourceId)
+          .then(() => {
+            this.$emit('on-success', this.selectedEmailTemplate)
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      }
     },
     handleClose() {
       this.$emit('on-close')

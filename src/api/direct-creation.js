@@ -53,6 +53,16 @@ const getDirectEmailSettings = () => {
 const getGoogleWorkspaceClientId = () => {
   return testRequest.get(`${API_URL}/google-client`)
 }
+const makeDefault = (resourceId = '', payload = {}) => {
+  return testRequest.put(`${API_URL}/make-default/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+const removeDefault = (resourceId = '', payload = {}) => {
+  return testRequest.put(`${API_URL}/remove-default/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 
 export default {
   getApplicationId,
@@ -65,5 +75,7 @@ export default {
   createDirectEmailCreation,
   updateDirectEmailCreation,
   getDirectEmailSettings,
-  getGoogleWorkspaceClientId
+  getGoogleWorkspaceClientId,
+  makeDefault,
+  removeDefault
 }

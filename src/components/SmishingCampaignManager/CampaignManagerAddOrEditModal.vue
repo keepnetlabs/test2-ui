@@ -8,6 +8,12 @@
     @closeOverlay="closeOverlay"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -126,6 +132,7 @@
             <CampaignManagerSummary
               ref="refCampaignManagerSummary"
               :form-data="getFormDataForCampaignSummary"
+              :isMFAScenarioSelected="isMFAScenarioSelected"
               :language-options="languageOptions"
               :show-schedule="showSchedule"
             />
@@ -174,6 +181,8 @@ import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAu
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
+import { getErrorMessage } from '@/utils/functions'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -191,6 +200,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
+    DefaultErrorDialog,
     AppModal
   },
   props: {
@@ -213,6 +223,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,
@@ -309,6 +320,8 @@ export default {
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
         formData.selectedScheduleId = scheduleTypeId
+        formData.useTargetUserTimeZone =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.useTargetUserTimeZone
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
         formData.selectedPhishingScenarios = this.selectedPhishingScenarios
@@ -466,6 +479,10 @@ export default {
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        if (this.$refs?.refCampaignManagerDeliverySettings) {
+          this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.useTargetUserTimeZone =
+            data.useTargetUserTimeZone
+        }
         this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
@@ -532,10 +549,15 @@ export default {
             this.userCountDetailResponse?.data?.data &&
             this.userCountDetailResponse?.data?.data?.length
           ) {
-            this.totalTargetUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((detail) => detail.status === 'Active')
-                ?.hasPhoneNumber.find((dList) => dList.status === 'Yes')?.count || 0
+            this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const phoneNumberCount =
+                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+                return acc + phoneNumberCount
+              },
+              0
+            )
             if (!this.totalTargetUserCount) {
               refCampaignManagerTargetAudience.isShowActiveAndPhoneNumberError = true
               refCampaignManagerTargetAudience.isTargetGroupsValid = false
@@ -627,6 +649,7 @@ export default {
                 ? null
                 : deliverySettingsFormData.scheduledDate,
             scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
+            useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
             distributionTypeId: parseInt(deliverySettingsFormData.distributionTypeId),
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: parseInt(
@@ -652,11 +675,17 @@ export default {
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
+              })
               .finally(this.setActionButtonDisability)
           } else {
             SmishingService.createSmishingCampaign(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
+              })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
               })
               .finally(this.setActionButtonDisability)
           }

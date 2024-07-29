@@ -1379,6 +1379,16 @@ export default {
       url: `pbi/reports/{companyResourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
+    },
+    EXECUTIVE_REPORTS_SEARCH: {
+      url: 'executive-report/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SCHEDULED_REPORTS_SEARCH: {
+      url: 'report-scheduling/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   ADVANCED_REPORTS_PERMISSIONS: {
@@ -1386,6 +1396,20 @@ export default {
       url: `pbi/reports/{companyResourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
+    }
+  },
+  EXECUTIVE_REPORTS_PERMISSIONS: {
+    SEARCH: {
+      url: 'executive-report/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SCHEDULED_REPORTS_PERMISSIONS: {
+    SEARCH: {
+      url: 'report-scheduling/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   CAMPAIGN_REPORTS_PERMISSIONS: {

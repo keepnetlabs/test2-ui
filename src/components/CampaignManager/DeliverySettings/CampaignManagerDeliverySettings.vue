@@ -101,7 +101,11 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" />
+    <InputSchedule
+      v-model="inputScheduleFormData"
+      ref="inputSchedule"
+      :isPhishing="type === SCENARIO_TYPES.PHISHING"
+    />
     <InputDistribution
       v-model="inputDistributionFormData"
       :distribution-delay-time-items="getDistributionDelayTimeItems"
@@ -127,6 +131,7 @@ import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/Advance
 import {
   calculateSendingInfo,
   getDefaultCompanySmtpSetting,
+  getDefaultEmailDeliverySetting,
   getEmailDeliveries
 } from '@/api/phishingsimulator'
 import CallbackService from '@/api/callback'
@@ -202,6 +207,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       selectedTimeZoneText: '',
       labels,
       isTestingConnection: false,
@@ -238,7 +244,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       commonRules: {
         hint: '*Required',
@@ -346,7 +353,11 @@ export default {
     }
   },
   created() {
-    this.callForDefaultSmtpSetting()
+    if (this.type === SCENARIO_TYPES.CALLBACK || this.type === SCENARIO_TYPES.QUISHING) {
+      this.callForDefaultSmtpSetting()
+    } else {
+      this.callForDefaultEmailDeliverySetting()
+    }
   },
   methods: {
     getTestConnectionButtonStyle() {
@@ -405,10 +416,33 @@ export default {
         this.emailDeliveryItems = deliveries
         this.$nextTick(() => {
           //setting default smtp setting
-          if (this.isEdit || !this.formData.smtpSettingResourceId) return
+          if (
+            this.isEdit ||
+            (!this.formData.smtpSettingResourceId && !this.formData.directEmailSettingResourceId)
+          )
+            return
+          const defaultDECSettingIndex = deliveries.findIndex(
+            (item) => item.resourceId === this.formData.directEmailSettingResourceId
+          )
+          if (defaultDECSettingIndex !== -1) {
+            this.emailDelivery = deliveries[defaultDECSettingIndex]
+            return
+          }
           this.emailDelivery =
             deliveries.find((item) => item.resourceId === this.formData.smtpSettingResourceId) || {}
         })
+      })
+    },
+    callForDefaultEmailDeliverySetting() {
+      if (this.isEdit) return
+      getDefaultEmailDeliverySetting().then((res) => {
+        if (res?.data?.data?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) {
+          this.formData.directEmailSettingResourceId = res?.data?.data?.resourceId
+          this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        } else {
+          this.formData.smtpSettingResourceId = res?.data?.data?.resourceId
+          this.formData.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        }
       })
     },
     callForDefaultSmtpSetting() {

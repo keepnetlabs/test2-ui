@@ -25,7 +25,12 @@
       :status="isShowDeleteDialog"
       :selectedScenario="selectedScenario"
       :api-func="deleteScenario"
+      :scenarioCount="multipleDeletedScenariosCount"
+      :multipleDeleteApiFunc="bulkDeleteScenarios"
+      :multipleDeletePayload="multipleScenariosPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="toggleDeleteDialog(null, true)"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="toggleDeleteDialog"
     />
     <CommonSimulatorPreviewDialog
@@ -43,6 +48,7 @@
       @on-fast-launch="toggleFastLaunchDialog"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
+      @on-multiple-delete="handleMultipleDelete"
     />
   </div>
 </template>
@@ -78,6 +84,9 @@ export default {
       isShowFastLaunchDialog: false,
       selectedScenario: null,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedScenariosCount: 0,
+      multipleScenariosPayload: {},
       isEdit: false
     }
   },
@@ -94,6 +103,7 @@ export default {
   },
   methods: {
     deleteScenario: QuishingService.deleteScenario,
+    bulkDeleteScenarios: QuishingService.bulkDeleteScenarios,
     getQuishingScenarioLandingPageAndEmailTemplate:
       QuishingService.getQuishingScenarioLandingPageAndEmailTemplate,
     toggleNewScenarioModal(selectedRow = null, isDuplicate = false) {
@@ -111,9 +121,15 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleDeleteDialog(selectedRow = null, forceUpdate = false) {
+      this.isMultipleDelete = false
       if (forceUpdate) this.$refs.refTable.callForData()
       this.selectedScenario = selectedRow
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refTable?.$refs?.refScenariosList?.resetSelectableParams()
+      this.isShowDeleteDialog = false
+      this.$refs?.refTable?.callForData()
     },
     changeNewScenarioModalStatus(status, restart) {
       if (restart) this.$refs.refTable.callForData()
@@ -128,6 +144,19 @@ export default {
       if (this.$refs.fastLaunch) {
         this.$refs.fastLaunch.closeOverlay()
       }
+    },
+    handleMultipleDelete({ selections, excludedItems, selectAll, axiosPayload, serverSideProps }) {
+      this.isMultipleDelete = true
+      this.multipleDeletedScenariosCount = selectAll
+        ? serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleScenariosPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: axiosPayload.filter
+      }
+      this.isShowDeleteDialog = true
     }
   }
 }

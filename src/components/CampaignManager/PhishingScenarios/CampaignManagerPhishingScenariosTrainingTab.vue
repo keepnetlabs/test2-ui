@@ -25,6 +25,7 @@
         placeholder="Select training"
         :items="trainingItems"
         :disabled="!isInputsEditable"
+        :no-data-text="isTrainingLoading ? 'Loading...' : 'No training available'"
         @input="handleTrainingItemSelect"
         @click:clear="handleTrainingItemSelect(null)"
       />
@@ -69,7 +70,9 @@
         hint="*Required"
         placeholder="Select an option"
         item-text="title"
-        :items="enrollmentItemsTrainingTab"
+        :items="
+          isAttachmentBasedScenario ? attachmentScenarioEnrollmentItems : enrollmentItemsTrainingTab
+        "
         :disabled="!isInputsEditable || isInputLanguageDisabled"
         :rules="[(v) => !!v || 'Required']"
         :return-object="false"
@@ -137,7 +140,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
-          :items="getEndTypeItems"
+          :items="endTypeItems"
           :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
         <VTextField
@@ -171,6 +174,17 @@
           :disabled="!value.enrollmentReminder.sendReminderEvery"
         />
       </div>
+      <AlertBox
+        v-if="
+          value.enrollmentReminder.sendReminderEvery &&
+          ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(value.enrollmentReminder.endType)
+        "
+        style="max-width: 690px;"
+        class="mt-4 align-items-center"
+        icon-name="mdi-information"
+        text="If this option is selected and there is no exam in the training, the reminder will continue indefinitely."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </FormGroup>
     <FormGroup v-if="isShowReminder" class="ml-3 mt-6 mb-6" :title="labels.Certificate">
       <v-checkbox
@@ -195,7 +209,10 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { enrollmentItemsTrainingTab } from '@/components/CampaignManager/PhishingScenarios/utils'
+import {
+  enrollmentItemsTrainingTab,
+  attachmentScenarioEnrollmentItems
+} from '@/components/CampaignManager/PhishingScenarios/utils'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 export default {
@@ -225,14 +242,24 @@ export default {
     isShowReminder: {
       type: Boolean,
       default: false
+    },
+    isCategory: {
+      type: Boolean,
+      default: false
+    },
+    isAttachmentBasedScenario: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       inputContentLanguageKey: createRandomCryptStringNumber(),
       labels,
+      isTrainingLoading: false,
       trainingItems: [],
       enrollmentItemsTrainingTab,
+      attachmentScenarioEnrollmentItems,
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
@@ -259,14 +286,6 @@ export default {
           text: this.periodTypeItems[index].text,
           value: type.name
         })) || this.periodTypeItems
-      )
-    },
-    getEndTypeItems() {
-      return (
-        this?.enumTypes?.ReminderEndTypeEnum?.map((type, index) => ({
-          text: this.endTypeItems[index].text,
-          value: type.name
-        })) || this.endTypeItems
       )
     },
     getSubtitle() {
@@ -300,7 +319,7 @@ export default {
       return `A ${scenarioText} scenario should be selected in order to be able to choose a training`
     },
     isInputsEditable() {
-      return this?.value?.isCheckboxSelected
+      return this?.value?.isCheckboxSelected || this.isCategory
     },
     isInputLanguageDisabled() {
       return !this.isInputsEditable || !this.value.trainingId
@@ -323,8 +342,9 @@ export default {
   },
   methods: {
     callForTrainingItems() {
-      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 })).then(
-        (response) => {
+      this.isTrainingLoading = true
+      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 }))
+        .then((response) => {
           const {
             data: { data = {} }
           } = response
@@ -333,8 +353,10 @@ export default {
             text: result.trainingName,
             value: result.trainingId
           }))
-        }
-      )
+        })
+        .finally(() => {
+          this.isTrainingLoading = false
+        })
     },
     handlePreview() {
       this.$emit('on-preview', this.value)

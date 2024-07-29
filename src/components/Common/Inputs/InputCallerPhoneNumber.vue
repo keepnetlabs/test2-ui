@@ -41,6 +41,8 @@ import { getPhoneNumbers } from '@/api/vishing'
 import PhoneNumber from 'awesome-phonenumber'
 import * as Validations from '@/utils/validations'
 import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
+import { getSmishingScenariosPhoneNumber } from '@/api/smishing'
+import { getQuishingScenariosPhoneNumber } from '@/api/quishing'
 import { mapGetters } from 'vuex'
 export default {
   name: 'InputCallerPhoneNumber',
@@ -74,6 +76,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isQuishing: {
+      type: Boolean,
+      default: false
+    },
     callerPhoneNumber: {
       type: String,
       default: ''
@@ -98,7 +104,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.isSmishing) this.callForPhoneNumbers()
+    if (!this.defaultPhoneNumbers) this.callForPhoneNumbers()
   },
   methods: {
     callForPhoneNumbers() {
@@ -112,7 +118,49 @@ export default {
           this.phoneNumbers = this.sortPhoneNumbersAndOrderByRegionCode(data, true).map(
             (phoneNumberWrapper) => {
               return {
-                text: this.getPhoneNumberFormatted({ text: phoneNumberWrapper.phoneNumber }),
+                text: this.getPhoneNumberFormatted({
+                  text: phoneNumberWrapper.phoneNumber
+                }),
+                value: phoneNumberWrapper.resourceId
+              }
+            }
+          )
+          if (!this.value && this.selectFirstItem)
+            this.handleInputChange(this.phoneNumbers[0].value)
+        })
+      } else if (this.isSmishing) {
+        getSmishingScenariosPhoneNumber().then((response) => {
+          const { data: { data = [] } = {} } = response
+          if (!data) return
+          data.sort((a, b) => {
+            return a.phoneNumber < b.phoneNumber ? -1 : 1
+          })
+          this.phoneNumbers = this.sortPhoneNumbersAndOrderByRegionCode(data, true).map(
+            (phoneNumberWrapper) => {
+              return {
+                text: this.getPhoneNumberFormatted({
+                  text: phoneNumberWrapper.phoneNumber
+                }),
+                value: phoneNumberWrapper.resourceId
+              }
+            }
+          )
+          if (!this.value && this.selectFirstItem)
+            this.handleInputChange(this.phoneNumbers[0].value)
+        })
+      } else if (this.isQuishing) {
+        getQuishingScenariosPhoneNumber().then((response) => {
+          const { data: { data = [] } = {} } = response
+          if (!data) return
+          data.sort((a, b) => {
+            return a.phoneNumber < b.phoneNumber ? -1 : 1
+          })
+          this.phoneNumbers = this.sortPhoneNumbersAndOrderByRegionCode(data, true).map(
+            (phoneNumberWrapper) => {
+              return {
+                text: this.getPhoneNumberFormatted({
+                  text: phoneNumberWrapper.phoneNumber
+                }),
                 value: phoneNumberWrapper.resourceId
               }
             }
@@ -153,15 +201,21 @@ export default {
     },
     getPhoneNumberFormatted(phoneNumber) {
       const phoneNumberObj = this.createPhoneNumberObj(
-        this.isPhishingScenario ? phoneNumber.text : phoneNumber
+        this.isPhishingScenario || this.isSmishing || this.isQuishing
+          ? phoneNumber.text
+          : phoneNumber
       )
       return phoneNumberObj?.g?.number?.international
     },
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
-      if (this.isPhishingScenario && !this.phoneNumbers.length) return 'EN'
+      if (
+        (this.isPhishingScenario || this.isSmishing || this.isQuishing) &&
+        !this.phoneNumbers.length
+      )
+        return 'EN'
       const phoneNumberObj = this.createPhoneNumberObj(
-        this.isPhishingScenario
+        this.isPhishingScenario || this.isSmishing || this.isQuishing
           ? typeof phoneNumber === 'object'
             ? phoneNumber.text
             : this.phoneNumbers.find(

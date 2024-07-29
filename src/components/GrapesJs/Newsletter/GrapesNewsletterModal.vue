@@ -208,7 +208,7 @@ export default {
     },
     removeVideoElement() {
       const videoIndex = this.editor.Blocks.all.models.findIndex(
-        (model) => model.attributes.label === 'Video'
+        (model) => model?.attributes?.label === 'Video'
       )
       if (videoIndex !== -1) {
         this.editor.Blocks.all.models.splice(videoIndex, 1)
@@ -286,7 +286,7 @@ export default {
     addFonts() {
       let styleManager = this.editor.StyleManager
       let fontProperty = styleManager.getProperty('typography', 'font-family')
-      if (fontProperty) {
+      if (fontProperty?.attributes) {
         fontProperty.attributes.options.push({ value: 'sans-serif', name: 'Sans-serif' })
       }
       styleManager.render()
@@ -633,7 +633,7 @@ export default {
         }
       })
       this.editor.on('style:property:update', (styleChanges) => {
-        if (!styleChanges.to.value && styleChanges.property.attributes.property !== 'width') {
+        if (!styleChanges.to.value && styleChanges?.property?.attributes?.property !== 'width') {
           return
         }
         if (
@@ -661,33 +661,33 @@ export default {
             )
             if (commentElement) {
               if (
-                styleChanges.property.attributes.property === 'background-color' ||
-                styleChanges.property.attributes.property === 'background'
+                styleChanges?.property?.attributes?.property === 'background-color' ||
+                styleChanges?.property?.attributes?.property === 'background'
               ) {
                 commentElement.attributes.content = commentElement.attributes.content.replace(
                   /fillcolor="([^\'\"]+)"/g,
                   `fillcolor="${styleChanges.value}"`
                 )
               }
-              if (styleChanges.property.attributes.property === 'color') {
+              if (styleChanges?.property?.attributes?.property === 'color') {
                 commentElement.attributes.content = commentElement.attributes.content.replace(
                   /color\:\#?(\w|\s|-)+\;/g,
                   `color:${styleChanges.value};`
                 )
               }
-              if (styleChanges.property.attributes.property === 'font-family') {
+              if (styleChanges?.property?.attributes?.property === 'font-family') {
                 commentElement.attributes.content = commentElement.attributes.content.replace(
                   /font-family\:\#?(\w|\s|-|\,)+\;/g,
                   `font-family:${styleChanges.value};`
                 )
               }
-              if (styleChanges.property.attributes.property === 'font-size') {
+              if (styleChanges?.property?.attributes?.property === 'font-size') {
                 commentElement.attributes.content = commentElement.attributes.content.replace(
                   /font-size\:\#?(\w|\s|-)+\;/g,
                   `font-size:${styleChanges.value};`
                 )
               }
-              if (styleChanges.property.attributes.property === 'width') {
+              if (styleChanges?.property?.attributes?.property === 'width') {
                 const isShowWidth = [0, '0', '', 'auto', undefined].includes(
                   styleChanges?.to?.value
                 )
@@ -776,23 +776,25 @@ export default {
         const el = updatedComponent?.getEl()
         if (el?.id?.includes('outlook-button-href-id') && !el.innerText) {
           const commentElement = this.getCommentElementByComponent(updatedComponent)
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /width\:\#?(\w|\s|-)+\;/g,
-            `width:180px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /width:undefinedpx/g,
-            `width:180px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /height\:\#?(\w|\s|-)+\;/g,
-            `height:70px;`
-          )
-          commentElement.attributes.content = commentElement.attributes.content.replace(
-            /height:undefinedpx/g,
-            `height:70px;`
-          )
-          updatedComponent.components('No Label')
+          if (commentElement?.attributes) {
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /width\:\#?(\w|\s|-)+\;/g,
+              `width:180px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /width:undefinedpx/g,
+              `width:180px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /height\:\#?(\w|\s|-)+\;/g,
+              `height:70px;`
+            )
+            commentElement.attributes.content = commentElement.attributes.content.replace(
+              /height:undefinedpx/g,
+              `height:70px;`
+            )
+            updatedComponent.components('No Label')
+          }
         }
       })
       this.editor.on('component:remove', (component) => {
@@ -874,9 +876,12 @@ export default {
         })
     },
     getCommentElementByComponent(component) {
-      const parent = component.parent()
-      const children = parent.components()
-      return children?.models?.find((el) => el?.attributes?.type === 'comment')
+      const parent = component?.parent?.()
+      const children = parent?.components?.()
+      if (children) {
+        return children?.models?.find((el) => el?.attributes?.type === 'comment') || null
+      }
+      return null
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()

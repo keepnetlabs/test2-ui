@@ -84,6 +84,10 @@
       <CampaignManagerRowActions
         :scope="scope"
         :row-actions="tableOptions.rowActions"
+        :isNewInstanceDisabled="
+          scope.row.categoryDistributionType !== SCENARIO_DISTRIBUTION_TEXTS[0] &&
+          scope.row.frequency !== 0
+        "
         @on-edit="handleEdit"
         @on-preview="handlePreview"
         @on-delete="handleDelete"
@@ -97,7 +101,12 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps, METHOD_TYPES } from '@/components/CampaignManager/utils'
+import {
+  COLUMNS,
+  getStatusBadgeProps,
+  METHOD_TYPES,
+  SCENARIO_DISTRIBUTION_TEXTS
+} from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -110,7 +119,6 @@ import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, getDataTableFieldLabel } from '@/utils/functions'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import Badge from '@/components/Badge'
-
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -138,6 +146,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
+      SCENARIO_DISTRIBUTION_TEXTS,
       METHOD_TYPES,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
@@ -160,6 +169,7 @@ export default {
           COLUMNS.TARGET_USERS,
           COLUMNS.STATUS,
           COLUMNS.SCENARIO_COUNT,
+          COLUMNS.SCENARIO_DISTRIBUTION,
           COLUMNS.METHOD,
           COLUMNS.HAS_TRAINING,
           COLUMNS.CREATEDBY,
@@ -267,6 +277,21 @@ export default {
           })
           .finally(this.setLoading)
       }
+    },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const scenarioDistributionColumnIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'CategoryDistributionType'
+      )
+      if (scenarioDistributionColumnIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems[
+          scenarioDistributionColumnIndex
+        ].FieldName = 'ScenarioDistribution'
+      }
+      this.resetPageNumber()
+      this.callForData()
     },
     getMethodDetail(methodDetail = {}) {
       if (!methodDetail) return {}

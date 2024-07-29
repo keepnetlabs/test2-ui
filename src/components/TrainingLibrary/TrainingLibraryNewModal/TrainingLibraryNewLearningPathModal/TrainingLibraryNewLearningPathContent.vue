@@ -42,7 +42,7 @@
           >
             <TrainingLibraryNewLearningPathTraining
               v-for="(training, trainingIndex) in getTrainings"
-              :key="training.trainingId"
+              :key="trainingIndex"
               :class="[
                 isInavailable(training) ? 'learning-path-content__training--inavailable' : ''
               ]"
@@ -86,7 +86,7 @@
         >
           <TrainingLibraryNewLearningPathTraining
             v-for="(training, trainingIndex) in getSelectedTrainings"
-            :key="training.trainingId"
+            :key="trainingIndex"
             :class="[isDisabled(training) ? 'learning-path-content__training--disabled' : '']"
             :training="training"
             :isDisabled="isDisabled(training)"
@@ -116,7 +116,6 @@ import useDebounce from '@/hooks/useDebounce'
 import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
 import { isInavailable } from '../../utils'
 
-let that = null
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
   components: {
@@ -166,7 +165,15 @@ export default {
         'learningPath/getLearningPathModalTrainingPreviewDialog',
       getTrainings: 'learningPath/getLearningPathTrainings',
       getSelectedTrainings: 'learningPath/getSelectedLearningPathTrainings'
-    })
+    }),
+    getCompanyResourceId() {
+      return localStorage.getItem('companyRequestId') || ''
+    },
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
+    }
   },
   watch: {
     availableForRequests: {
@@ -190,11 +197,23 @@ export default {
       orderLearningPathData: 'learningPath/orderLearningPathData'
     }),
     isInavailable(training) {
-      return isInavailable(this.availableForRequests, training)
+      return isInavailable(
+        this.availableForRequests,
+        training,
+        this.getCompanyResourceId,
+        this.getCompanyName
+      )
     },
     isDisabled(training) {
-      if (this.availableForRequests?.includes('MyCompanyOnly')) {
-        return
+      if (this.getCompanyName === 'System') {
+        return false
+      }
+      if (
+        this.availableForRequests?.includes('MyCompanyOnly') &&
+        (training?.availableFor?.includes('MyCompanyOnly') ||
+          training?.availableFor?.includes(this.getCompanyResourceId))
+      ) {
+        return false
       } else if (training?.availableFor?.includes('AllCompanies')) {
         return false
       } else if (

@@ -28,6 +28,7 @@
       options
       is-server-side-selection
       is-server-side
+      :isReportWithExam="canRenderExamStatusFilter"
       :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
@@ -51,7 +52,46 @@
       @on-interactions="handleInteractions"
       @on-resend="handleOnResend"
     >
-      <template v-slot:datatable-custom-column="{ scope, col }">
+      <template v-if="canRenderExamStatusFilter" #addUsers>
+        <v-menu
+          v-model="isExamStatusFilterMenuActive"
+          :offset-y="true"
+          bottom
+          left
+          nudge-right="4"
+          nudge-bottom="4"
+        >
+          <template #activator="{ on: menu }">
+            <v-btn v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+              <span style="font-weight: 600;">show by exam status</span>
+              <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
+                isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
+              }}</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <VRadioGroup v-model="selectedExamStatusFilter" hide-details class="mt-0">
+              <v-list-item v-for="filterItem in examStatusFilters" :key="filterItem.value">
+                <VRadio
+                  class="mb-0 mr-auto"
+                  color="#2196f3"
+                  :label="filterItem.text"
+                  :value="filterItem.value"
+                />
+                <div class="d-flex justify-items-end">
+                  <VTooltip bottom>
+                    <template #activator="{ on }">
+                      <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
+                    </template>
+                    <span>{{ filterItem.tooltipText }}</span>
+                  </VTooltip>
+                </div>
+              </v-list-item>
+            </VRadioGroup>
+          </v-list>
+        </v-menu>
+      </template>
+      <template #datatable-custom-column="{ scope, col }">
         <div v-if="col.property === 'status'" class="training-report-users__status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.status)" :col="col" size="medium" />
@@ -59,6 +99,15 @@
         <div v-if="col.property === 'examStatus'" class="training-report-users__exam-status-column">
           <v-btn style="display: none;" />
           <Badge v-bind="getStatusBadgeProps(scope.row.examStatus)" :col="col" size="medium" />
+        </div>
+        <div v-if="col.property === 'examScore'" class="training-report-users__exam-score-column">
+          <v-icon
+            v-if="scope.row.examScore !== undefined && scope.row.isMainScore"
+            color="#0198AC"
+            class="mr-1"
+            >mdi-sync</v-icon
+          >
+          <span>{{ scope.row.examScore }}</span>
         </div>
       </template>
     </DataTable>
@@ -75,6 +124,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
+import useExamStatusFilter from '@/hooks/awareness-educator/useExamStatusFilter'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
@@ -93,7 +143,7 @@ export default {
     TrainingReportUserInteractionsModal,
     CampaignManagerReportHeader
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useExamStatusFilter],
   props: {
     id: {
       type: String
@@ -106,6 +156,9 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    trainingType: {
+      type: String
     },
     isAddTrainingTypeKeyToPayload: {
       type: Boolean,
@@ -190,13 +243,9 @@ export default {
         },
         overrideWidth: true,
         filterableType: 'select',
-        filterableItems:
-          this?.formDetails?.targetUserEnrollmentStatusEnum?.map((item) => ({
-            text: item.displayName || item.name,
-            value: item.name
-          })) || []
+        filterableItems: []
       },
-      ...(this.trainingSummary?.trainingTypeName === 'SCORM'
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         ? [
             {
               property: 'examStatus',
@@ -205,9 +254,9 @@ export default {
               label: 'Exam Status',
               sortable: false,
               hideSort: true,
-              show: false,
+              show: true,
               type: 'slot',
-              width: 200,
+              width: 275,
               props: {
                 style: {
                   maxWidth: '110px !important'
@@ -224,8 +273,8 @@ export default {
               label: 'Exam Score',
               fixed: false,
               sortable: true,
-              show: false,
-              type: 'text',
+              show: true,
+              type: 'slot',
               width: 160,
               filterableType: 'text'
             }
@@ -345,33 +394,118 @@ export default {
   },
   computed: {
     getHeaderSubtitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'All target users enrolled to this poster'
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return 'All target users enrolled to this infographic'
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         return 'All target users enrolled to this learning path'
       return 'All target users enrolled to this training'
     },
     getResendDialogTitle() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.ResendInfographic
       return labels.ResendTraining
     },
     getBodyTrainingType() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.Infographic.toLowerCase()
       return labels.Training.toLowerCase()
     }
   },
   watch: {
+    formDetails: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        let filterableItems = []
+        if (
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
+          TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        ) {
+          const learningPathIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+          )
+          if (learningPathIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[
+              learningPathIndex
+            ]?.enumResults?.map((item) => ({
+              text: item.displayName || item.name,
+              value: item.name
+            })) || []
+        }
+        if (
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
+            TRAINING_LIBRARY_TYPES.TRAINING ||
+          this.trainingSummary?.trainingDetails?.trainingTypeName === 'SCORM'
+        ) {
+          const trainingIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) =>
+              type.displayName === TRAINING_LIBRARY_TYPES.TRAINING || type.displayName === 'SCORM'
+          )
+          if (trainingIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[trainingIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        if (
+          this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
+        ) {
+          const posterIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.POSTER
+          )
+          if (posterIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[posterIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        if (
+          this.trainingSummary?.trainingDetails?.trainingTypeName ===
+          TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+        ) {
+          const infographicIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
+            (type) => type.displayName === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+          )
+          if (infographicIndex === -1) return
+          filterableItems =
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[infographicIndex]?.enumResults?.map(
+              (item) => ({
+                text: item.displayName || item.name,
+                value: item.name
+              })
+            ) || []
+        }
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'status'),
+          'filterableItems',
+          filterableItems
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {
@@ -386,18 +520,20 @@ export default {
       }
     }
   },
-  created() {
-    this.callForData()
+  mounted() {
+    if (!this.canRenderExamStatusFilter) this.callForData()
   },
   methods: {
     getEmptyTableTextMessage() {
-      if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportTrainingPosters
-      else if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
         return labels.EmptyTrainingReportTrainingInfographics
       else if (
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
         return labels.EmptyTrainingReportUserLearningPaths
       }
@@ -445,23 +581,44 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
+          this.tableData =
+            results.map((row) => ({
+              ...row,
+              examStatus: row.examStatusName
+            })) || []
         })
         .finally(this.setLoading)
     },
     exportTrainingReportUsersTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
-        let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: this.axiosPayload.orderBy,
-          ascending: this.axiosPayload.ascending,
-          reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter,
-          trainingType: this.isAddTrainingTypeKeyToPayload
-            ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
-            : null
+        let payload = {}
+        if (this.canRenderExamStatusFilter) {
+          payload = {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending,
+            reportAllPages: downloadTypes.reportAllPages,
+            exportType: item === 'XLS' ? 'Excel' : item,
+            filter: this.axiosPayload.filter,
+            showByExamStatus: this.selectedExamStatusFilter,
+            trainingType: this.isAddTrainingTypeKeyToPayload
+              ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+              : null
+          }
+        } else {
+          payload = {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending,
+            reportAllPages: downloadTypes.reportAllPages,
+            exportType: item === 'XLS' ? 'Excel' : item,
+            filter: this.axiosPayload.filter,
+            trainingType: this.isAddTrainingTypeKeyToPayload
+              ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+              : null
+          }
         }
         AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
           const { data } = response

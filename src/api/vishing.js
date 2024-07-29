@@ -21,6 +21,13 @@ export function deleteVishingTemplate(resourceId = '') {
   })
 }
 
+export function bulkDeleteVishingTemplates(payload) {
+  return vishingRequest.delete(`/vishing-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 export function getVishingTemplatePreview(resourceId = '') {
   return vishingRequest.get(`/vishing-template/preview/${resourceId}`)
 }

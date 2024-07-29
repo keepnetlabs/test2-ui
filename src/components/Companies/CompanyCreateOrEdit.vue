@@ -119,6 +119,42 @@
                     :rules="[(v) => validations.required(v)]"
                   />
                 </FormGroup>
+                <FormGroup
+                  title="Time Format"
+                  has-hint
+                  sub-title="Time format in notification templates"
+                >
+                  <k-select
+                    v-model="formData.TimeFormat"
+                    id="input--company-time-format"
+                    :items="timeFormatList"
+                    persistent-hint
+                    outlined
+                    placeholder="Select time format"
+                    hint="*Required"
+                    no-data-text="No data"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
+                <FormGroup
+                  title="Date Format"
+                  has-hint
+                  sub-title="Date format in notification templates"
+                >
+                  <k-select
+                    v-model="formData.DateFormat"
+                    id="input--company-date-format"
+                    :items="dateFormatList"
+                    persistent-hint
+                    outlined
+                    placeholder="Select date format"
+                    hint="*Required"
+                    no-data-text="No data"
+                    :menu-props="{ offsetY: true }"
+                    :rules="[(v) => validations.required(v)]"
+                  ></k-select>
+                </FormGroup>
                 <FormGroup :title="labels.Address">
                   <InputAddress
                     v-model="formData.Address"
@@ -139,9 +175,9 @@
                   <v-list-item-content :class="[getPreviewLogoUrl && 'mb-0']">
                     <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
                     <k-file-upload
-                      hint="Upload, png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
+                      hint="Upload png, jpg or jpeg. Suggested size: 180px * 60px. Max. file size 2MB"
                       id="input--company-logo"
-                      :extensions="['jpg', 'jpeg', 'png', 'bmp', 'svg']"
+                      :extensions="['jpg', 'jpeg', 'png']"
                       :size="2"
                       @inputFile="onFileChanged"
                     />
@@ -362,8 +398,9 @@
                     >
                       <template #text>
                         <p class="mb-0 mb-n1">
-                          There are only <strong>{{ callbackNumberItems.length }}</strong> available
-                          callback phone numbers in the system. If you would like to execute up to
+                          There are only
+                          <strong>{{ callbackNumberItems.length }}</strong> available callback phone
+                          numbers in the system. If you would like to execute up to
                           <strong>12</strong> callback scenarios, then get in touch with your
                           support representative to add more callback phone numbers to the system.
                         </p>
@@ -380,7 +417,6 @@
                       hint="*Required"
                       position="top"
                       :menu-props="{ offsetY: true }"
-                      @input="handleLicenseTypeChange"
                       persistent-hint
                     ></k-select>
                   </v-list-item-content>
@@ -596,6 +632,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
+import moment from 'moment'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -625,6 +662,7 @@ export default {
   },
   data() {
     return {
+      moment,
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
       languageItems: [],
@@ -666,8 +704,34 @@ export default {
         ReleaseNotesUrl: '',
         CompanyGroupResourceIdArray: [],
         LicenseModuleResourceIdArray: [],
-        statusId: '1'
+        statusId: '1',
+        DateFormat: 'dd/MM/yyyy',
+        TimeFormat: '24h'
       },
+      dateFormatList: [
+        {
+          text: `DD/MM/YYYY ${moment(new Date()).format('DD/MM/YYYY')}`,
+          value: 'dd/MM/yyyy'
+        },
+        {
+          text: `MM/DD/YYYY ${moment(new Date()).format('MM/DD/YYYY')}`,
+          value: 'MM/dd/yyyy'
+        },
+        {
+          text: `YYYY/MM/DD ${moment(new Date()).format('YYYY/MM/DD')}`,
+          value: 'yyyy/MM/dd'
+        }
+      ],
+      timeFormatList: [
+        {
+          text: '24h 18:25',
+          value: '24h'
+        },
+        {
+          text: '12h 06:25 PM',
+          value: '12h'
+        }
+      ],
       defaultFormData: null,
       LicenseDates: [],
       isActive: true,
@@ -761,6 +825,8 @@ export default {
     isCallbackSelected(val) {
       if (!val) {
         this.formData.CallBackNumberBookingCount = null
+      } else {
+        this.getAvailableCallbackNumbers()
       }
     },
     'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
@@ -848,7 +914,6 @@ export default {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
-    this.getAvailableCallbackNumbers()
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
@@ -875,6 +940,8 @@ export default {
       this.formData.IsVersionVisible = this.selectedExtend.isVersionVisible
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
+      this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
+      this.formData.DateFormat = this.selectedExtend?.dateFormat || 'dd/MM/yyyy'
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
@@ -1035,7 +1102,7 @@ export default {
           this.callbackNumberItems = []
           return
         }
-        if (res?.data?.data?.length < 12) {
+        if (res?.data?.data?.length <= 12) {
           this.callbackNumberItems = Array.from({ length: res.data.data.length }, (_, i) => i + 1)
         }
       })
@@ -1103,15 +1170,14 @@ export default {
     },
     handleLicenseTypeChange(resourceId = '') {
       const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
-      this.formData.LicenseModuleResourceIdArray = selectedLicenceType.licenseModules.reduce(
-        (acc, item) => {
-          if (item.isAvailable) {
-            acc.push(item.resourceId)
-          }
-          return acc
-        },
-        []
-      )
+      this.formData.LicenseModuleResourceIdArray = !!selectedLicenceType?.licenseModules
+        ? selectedLicenceType.licenseModules.reduce((acc, item) => {
+            if (item.isAvailable) {
+              acc.push(item.resourceId)
+            }
+            return acc
+          }, [])
+        : []
     },
     nextStep() {
       let isFormValid = true

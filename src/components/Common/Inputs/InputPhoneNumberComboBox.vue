@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getPhoneNumbers } from '@/api/vishing'
 import PhoneNumber from 'awesome-phonenumber'

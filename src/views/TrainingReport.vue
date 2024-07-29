@@ -153,20 +153,20 @@ export default {
       )
         .then((response) => {
           this.trainingSummary = response?.data?.data
-          if (this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+          if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
             this.tabItems[2].label = labels.OpenedPosterEmail
             this.tabItems[3].label = labels.DownloadedPoster
             this.tabItems.splice(4, 2)
           } else if (
-            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+            this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
           ) {
             this.tabItems[2].label = labels.OpenedInfographicEmail
             this.tabItems[3].label = labels.DownloadedInfographic
             this.tabItems.splice(4, 2)
           } else if (
-            this.trainingSummary.trainingTypeName ===
+            this.trainingSummary?.trainingTypeName ===
               TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-            this.trainingSummary.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+            this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
           ) {
             const newTabItems = []
             newTabItems.push({
@@ -179,7 +179,7 @@ export default {
             this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
             this.trainingSummary.steps.forEach((step, index) => {
               newTabItems.push({
-                name: step.trainingName,
+                name: `${index + 1}`,
                 id: `training-report-learning-path-${step.trainingName}-${index}`,
                 label: `Step ${index + 1}: ${step.trainingName}`,
                 component: TrainingReportLearningPathContainer,

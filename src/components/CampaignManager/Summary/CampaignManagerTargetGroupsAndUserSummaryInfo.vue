@@ -7,10 +7,10 @@
         class="campaign-manager-target-groups-and-users-info__item"
       >
         <div>
-          {{ item.name }}
+          {{ item.targetGroupName }}
         </div>
         <div>
-          {{ item.userCount || item['userCount'] || 0 }}
+          {{ getUserCount(item) }}
         </div>
       </div>
     </div>
@@ -23,6 +23,17 @@ export default {
   props: {
     items: {
       type: Array
+    },
+    isPhoneNumber: {
+      type: Boolean
+    }
+  },
+  methods: {
+    getUserCount(item) {
+      if (this.isPhoneNumber) {
+        return item?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+      }
+      return item?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
     }
   }
 }

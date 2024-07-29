@@ -343,15 +343,13 @@ export default {
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
     getCardsData() {
-      const { reportDetail = {}, completedCount = 0 } = this.trainingSummary || {}
+      const { reportDetail = {}, completedCount = 0, inProgressCount } = this.trainingSummary || {}
       const {
         totalTargetUserCount = 0,
         totalUserClickedCount = 0,
         totalUserOpenedCount = 0,
-        noResponseCount = 0,
-        inProgressCount = 0
+        noResponseCount = 0
       } = reportDetail
-      const inProgress = inProgressCount ? inProgressCount : totalUserClickedCount - completedCount
       return {
         downloaded: {
           userCount: totalUserClickedCount,
@@ -368,9 +366,11 @@ export default {
               : ((totalUserOpenedCount / totalTargetUserCount) * 100).toFixed()
         },
         inProgress: {
-          userCount: inProgress,
+          userCount: inProgressCount,
           userPercent:
-            totalTargetUserCount === 0 ? '0' : ((inProgress / totalTargetUserCount) * 100).toFixed()
+            totalTargetUserCount === 0
+              ? '0'
+              : ((inProgressCount / totalTargetUserCount) * 100).toFixed()
         },
         completedTraining: {
           userCount: completedCount,

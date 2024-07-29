@@ -277,11 +277,11 @@ const trainingLibrary = {
       state.learningPathSendModal = payload
     },
     SET_FILTER_ITEMS(state, payload) {
-      const filter = state.filters.find((f) => f.key === payload.key)
+      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
       filter.items = payload.items
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
-      const filter = state.filters.find((f) => f.key === payload.key)
+      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
       filter.show = payload.show
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
@@ -354,7 +354,10 @@ const trainingLibrary = {
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null
       })
+      const oldPageSize = state.serverSideProps.pageSize
       state.serverSideProps = new ServerSideProps()
+      state.axiosPayload.pageSize = oldPageSize
+      state.serverSideProps.pageSize = oldPageSize
       state.filterOptionsFilters = [
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
@@ -662,8 +665,9 @@ const trainingLibrary = {
     setFilterItems({ commit }, payload) {
       commit('SET_FILTER_ITEMS', payload)
     },
-    setFilterItemsShow({ commit }, payload) {
+    setFilterItemsShow({ commit, dispatch }, payload) {
       commit('SET_FILTER_ITEMS_SHOW', payload)
+      dispatch('learningPath/setLearningPathFilterItemsShow', payload, { root: true })
     },
     initDefaultTableFilters({ commit }) {
       commit('SET_DEFAULT_TABLE_FILTERS')

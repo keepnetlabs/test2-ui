@@ -153,6 +153,10 @@ export default {
     urlSchemaTypes: {
       type: Array,
       default: () => []
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -182,13 +186,31 @@ export default {
     }
   },
   watch: {
-    'value.urlSchemaTypeId'(val) {
-      this.subdomainRules = val === '1' ? this.httpRules : this.httpsRules
-      this.$nextTick(() => {
-        if (this.$refs.refSubdomain) {
-          this.$refs.refSubdomain.validate()
-        }
-      })
+    value: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.changeDisabledLabel()
+        this.$nextTick(() => {
+          if (this.$refs.refSubdomain) {
+            this.$refs.refSubdomain.validate()
+          }
+        })
+      }
+    },
+    disabledLabel(val) {
+      this.$emit('link-change', val)
+    },
+    'value.urlSchemaTypeId': {
+      immediate: true,
+      handler(val) {
+        this.subdomainRules = val === '1' ? this.httpRules : this.httpsRules
+        this.$nextTick(() => {
+          if (this.$refs.refSubdomain) {
+            this.$refs.refSubdomain.validate()
+          }
+        })
+      }
     },
     'value.domainRecordId'() {
       this.changeDisabledLabel()
@@ -204,13 +226,13 @@ export default {
     }
   },
   mounted() {
-    this.setDefaultValue()
+    if (!this.isEdit) this.setDefaultValue()
   },
   methods: {
     handleInputChange(value, key) {
       this.$emit('input', {
         ...this.value,
-        [key]: value.trim()
+        [key]: value?.trim?.() || ''
       })
       this.changeDisabledLabel()
     },

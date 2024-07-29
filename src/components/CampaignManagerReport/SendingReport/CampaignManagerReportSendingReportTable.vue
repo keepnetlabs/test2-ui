@@ -34,8 +34,32 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[0].id"
+        :icon="tableOptions.rowActions[0].icon"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue'"
+        :checkIsOwnerProperty="false"
+        disabledTooltipText="Can not resend when the status is In Queue."
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :id="tableOptions.rowActions[1].id"
+        :icon="tableOptions.rowActions[1].icon"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        :checkIsOwnerProperty="false"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
-      <div class="campaign-report-sending-report-table__status-column">
+      <div
+        v-if="col.property === COLUMNS.DELIVERY_STATUS.property"
+        class="campaign-report-sending-report-table__status-column"
+      >
         <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
           <template v-slot:activator="{ on }">
             <v-btn style="display: none;" />
@@ -49,6 +73,13 @@
           <span>{{ getErrorMessage(scope.row) }}</span>
         </v-tooltip>
       </div>
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.DATE_SENT.property"
+        :scope="scope"
+        :timeKey="COLUMNS.DATE_SENT.property"
+        :isToBeSent="['In Queue'].includes(scope.row.status)"
+        localTimeKey="lastSendingTimeToLocalUser"
+      />
     </template>
     <template #extended-view-slot>
       <div
@@ -109,13 +140,22 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 import Badge from '@/components/Badge'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
 export default {
   name: 'CampaignManagerReportSendingReportTable',
-  components: { CampaignManagerReportSendingReportEvent, DataTable, Badge },
+  components: {
+    CampaignManagerReportSendingReportEvent,
+    DataTable,
+    Badge,
+    CampaignManagerReportTimeZoneColumn,
+    DefaultButtonRowAction
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -134,6 +174,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'
@@ -248,6 +289,7 @@ export default {
         ? events.map((event) => ({
             status: event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
             date: event.timestamp,
+            localTime: event?.timestamptolocaluser,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
           }))

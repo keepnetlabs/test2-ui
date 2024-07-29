@@ -11,6 +11,10 @@ export function createPhishingReporter(payload) {
   })
 }
 
+export function getDefaultSettingsForLanguage(payload) {
+  return testRequest.post('/phishing-reporter/translate-addin-settings', payload)
+}
+
 export function getPhishingReporter() {
   return testRequest.get('/phishing-reporter')
 }

@@ -49,13 +49,29 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
+                :items="getTargetGroupItems"
+                isPhoneNumber
               />
             </div>
             <AlertBox
-              v-if="canRenderAlertbox"
+              v-if="canRenderPhoneNumberAlertBox"
               class="mt-4"
-              :text="getUnverifiedDomainsText"
+              :text="getPhoneNumberWarningText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+            <AlertBox
+              v-if="canRenderNoPhoneNumberAlertBox"
+              class="mt-4"
+              icon-color="#B83A3A"
+              style="background-color: #f56c6c33;"
+              text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+            <AlertBox
+              v-if="canRenderTimeZoneAlertBox"
+              class="mt-4 bg-aqua-light"
+              icon-color="#2196f3"
+              :text="getTimeZoneWarningText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
           </div>
@@ -138,7 +154,8 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              <span style="font-weight: 600;">Text Message:</span> {{ textTemplateParams.template }}
+              <span style="font-weight: 600;">Text Message:</span>
+              {{ textTemplateParams.template }}
             </div>
           </div>
         </template>
@@ -173,6 +190,7 @@ import CampaignManagerScheduleDialog from '@/components/CampaignManager/Campaign
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -200,6 +218,10 @@ export default {
     showSchedule: {
       type: Boolean,
       default: false
+    },
+    isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -222,6 +244,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
+    }),
+    canRenderTimeZoneAlertBox() {
+      return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
+    },
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     isRenderTrainingCard() {
       return this.trainingParams
     },
@@ -285,15 +316,72 @@ export default {
     canRenderAlertbox() {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
+    canRenderPhoneNumberAlertBox() {
+      return this.getActiveUsersWithoutPhoneNumberCount > 0 && this.isMFAScenarioSelected
+    },
+    canRenderNoPhoneNumberAlertBox() {
+      return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+    },
     getUnverifiedDomainsText() {
-      return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
+      return `There ${this.getUsersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
+        this.getUsersFromUnverifiedDomainsCount
+      } active user${
+        this.getUsersFromUnverifiedDomainsCount > 1 ? 's' : ''
+      } with unverified domains in the selected groups. Please verify the domains in order to send emails.`
+    },
+    getPhoneNumberWarningText() {
+      return `There ${this.getActiveUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithPhoneNumberCount
+      } active user${this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } and ${this.getActiveUsersWithoutPhoneNumberCount} active user${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } without phone number${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } in this group. Only the ${this.getActiveUsersWithPhoneNumberCount} user${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } will receive MFA scenario.`
+    },
+    getTimeZoneWarningText() {
+      return `There ${this.getActiveUsersWithoutTimeZoneCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithoutTimeZoneCount
+      } active user${
+        this.getActiveUsersWithoutTimeZoneCount > 1 ? 's' : ''
+      } without time zone information in the selected groups. They will receive the campaign based on the your own time zone (${
+        this.getSelectedTimeZoneName
+      }).`
+    },
+    getActiveUsersWithoutTimeZoneCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutTimeZoneCount = row?.timeZone?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutTimeZoneCount
+      }, 0)
     },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unVerifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unVerifiedUserCount
+      }, 0)
+    },
+    getActiveUsersWithPhoneNumberCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
+    },
+    getActiveUsersWithoutPhoneNumberCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutPhoneNumberCount =
+          row?.hasPhoneNumber?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutPhoneNumberCount
+      }, 0)
     },
     isFormData() {
       return Object.keys(this.formData).length
@@ -349,11 +437,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getTotalUsers() {
       const { selectedTargetGroups } = this.formData
@@ -364,16 +452,21 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return (
-        userCountDetailResponse?.data.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      )
+      return userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const verifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+        return acc + verifiedUserCount
+      }, 0)
     },
     getSettingsItems() {
-      const { selectedSchedule, duration, senderPhoneNumber } = this.formData
+      const { selectedSchedule, duration, senderPhoneNumber, useTargetUserTimeZone } = this.formData
+      let startingText = selectedSchedule
+      if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
+        startingText = `${selectedSchedule} - Target users’ time zones`
+      }
       return {
-        Starting: selectedSchedule,
+        Starting: startingText,
         Duration: duration,
         'Sender Phone Number': senderPhoneNumber
       }

@@ -70,6 +70,12 @@
             :scope="scope"
             :tooltip-text="getActivityTooltipText(scope.row)"
           />
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.DATE_CLICKED.property"
+            :scope="scope"
+            :timeKey="COLUMNS.DATE_CLICKED.property"
+            localTimeKey="clickedTimeToLocalUser"
+          />
         </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
@@ -108,6 +114,7 @@ import CampaignManagerReportActivityColumn from '@/components/CampaignManagerRep
 import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
 import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
@@ -115,6 +122,7 @@ export default {
     CampaignManagerReportSandboxActivityDialog,
     CampaignManagerReportHumanActivityDialog,
     CampaignManagerReportActivityColumn,
+    CampaignManagerReportTimeZoneColumn,
     DefaultButtonRowAction,
     SandboxDetailDialogAlerts,
     AppDialogFooterWithClose,
@@ -200,7 +208,7 @@ export default {
       return `Clicked Link ${this.item?.['clickedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     }
   },
   created() {

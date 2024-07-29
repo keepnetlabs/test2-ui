@@ -226,7 +226,7 @@ export default {
   },
   computed: {
     getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     },
     getMessage() {
       if (['In Queue', 'InQueue'].includes(this.item.status)) {

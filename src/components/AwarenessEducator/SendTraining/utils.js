@@ -13,6 +13,10 @@ export const endTypeItems = [
     value: 'QuizCompleted'
   },
   {
+    text: 'when user successfully passes the quiz',
+    value: 'QuizSuccessfullyCompleted'
+  },
+  {
     text: 'after occurences',
     value: 'AfterOccurrences'
   },

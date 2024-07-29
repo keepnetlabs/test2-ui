@@ -1,5 +1,5 @@
 <template>
-  <img src="../../assets/img/playfile.svg" />
+  <img src="../../assets/img/playfile.svg" alt="Play File" />
 </template>
 
 <script>

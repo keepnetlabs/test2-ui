@@ -41,9 +41,7 @@
       <transition appear name="bounce">
         <div class="v-messages theme--light error--text" role="alert">
           <div class="v-messages__wrapper">
-            <div class="v-messages__message" style="padding-left: 10px;">
-              Required
-            </div>
+            <div class="v-messages__message" style="padding-left: 10px;">Required</div>
           </div>
         </div>
       </transition>
@@ -82,6 +80,10 @@ export default {
     openDirection: {
       type: String,
       default: 'auto'
+    },
+    selectedCompaniesAndGroups: {
+      type: Array,
+      default: () => []
     }
   },
   directives: {
@@ -104,7 +106,8 @@ export default {
         pageSize: 100,
         orderBy: 'CreateTime',
         ascending: false,
-        name: ''
+        name: '',
+        selectedCompanyGroup: []
       },
       treeSelectOptions: null,
       treeSelectionStatus: false,
@@ -118,8 +121,19 @@ export default {
       return this.getRole !== labels.CompanyAdmin
     },
     getRole() {
-      //this.$store.state?.auth?.userRoleName
       return this.$store.state?.auth?.userRoleName
+    }
+  },
+  watch: {
+    selectedCompaniesAndGroups: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.length) {
+          this.searchAvailableForPayload.selectedCompanyGroup = val
+          this.callForSearchAvailableFor(undefined, true)
+        }
+      }
     }
   },
   mounted() {
@@ -144,7 +158,9 @@ export default {
         this.searchAvailableForPayload.name = searchQuery
         this.searchAvailableForPayload.pageNumber = searchQuery ? 1 : this.scrollablePageNumber
         this.callForSearchAvailableFor(searchQuery).then(() => {
-          callback(null, this.treeSelectOptions)
+          setTimeout(() => {
+            callback(null, this.treeSelectOptions)
+          }, 100)
           if (this.isScrolling) {
             const element = document
               .getElementById('input--make-available-for')
@@ -195,7 +211,7 @@ export default {
         this.handleInfiniteLoading()
       }
     },
-    callForSearchAvailableFor(search) {
+    callForSearchAvailableFor(search, isReplace = false) {
       return searchAvailableFor(this.searchAvailableForPayload)
         .then((response) => {
           this.treeSelectOptions = [
@@ -241,11 +257,9 @@ export default {
             : []
           if (!search)
             this.defaultCompanyItems = [...this.defaultCompanyItems, ...defaultCompanyItems]
-          this.$set(this.treeSelectOptions, 3, {
-            ...this.treeSelectOptions[3],
-            children: search ? defaultCompanyItems : this.defaultCompanyItems
-          })
-
+          if (isReplace) {
+            this.defaultCompanyItems = [...defaultCompanyItems]
+          }
           const defaultCompanyGroupItems = groups?.results
             ? groups.results.map((item) => {
                 return {
@@ -262,6 +276,13 @@ export default {
               ...this.defaultCompanyGroupItems,
               ...defaultCompanyGroupItems
             ]
+          if (isReplace) {
+            this.defaultCompanyGroupItems = [...defaultCompanyGroupItems]
+          }
+          this.$set(this.treeSelectOptions, 3, {
+            ...this.treeSelectOptions[3],
+            children: search ? defaultCompanyItems : this.defaultCompanyItems
+          })
           this.$set(this.treeSelectOptions, 2, {
             ...this.treeSelectOptions[2],
             children: search ? defaultCompanyGroupItems : this.defaultCompanyGroupItems
@@ -357,7 +378,12 @@ export default {
       //If role is company admin return just company admin
       if (this.getRole === labels.CompanyAdmin)
         return [
-          { id: 'MyCompanyOnly', label: 'My company only', resourceId: null, type: 'MyCompanyOnly' }
+          {
+            id: 'MyCompanyOnly',
+            label: 'My company only',
+            resourceId: null,
+            type: 'MyCompanyOnly'
+          }
         ]
       return getAvailableForValues(data)
     }

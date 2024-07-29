@@ -318,7 +318,12 @@
                   to="/phishing-simulator/campaign-manager"
                   id="btn--link-navigator-menu-phishing-campaign-manager"
                   route-name="Campaign Manager"
-                  :active-class-comparator="() => routerName === 'Campaign Manager'"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Campaign Manager' ||
+                      routerName === 'Campaign Reports' ||
+                      routerName === 'Campaign Report'
+                  "
                   @click="handlePhishingCampaignManagerClick"
                 />
               </v-list-item-content>
@@ -737,6 +742,7 @@
                 <v-list-item-title>Reports</v-list-item-title>
               </v-list-item-content>
             </template>
+            <!--
             <v-list-item
               v-if="getCampaignReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
@@ -752,6 +758,7 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            -->
             <v-list-item
               v-if="getAdvancedReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
@@ -763,6 +770,42 @@
                   route-name="Advanced Reports"
                   :active-class-comparator="
                     () => routerName === 'Advanced Reports' || routerName === 'Advanced Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getExecutiveReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/executive-reports"
+                  id="btn--link-navigator-menu-executive-reports"
+                  route-name="Executive Reports"
+                  :active-class-comparator="
+                    () =>
+                      routerName === 'Executive Reports' ||
+                      routerName === 'Executive Report' ||
+                      routerName === 'New Executive Report' ||
+                      routerName === 'Preview Executive Report' ||
+                      routerName === 'Edit Executive Report' ||
+                      routerName === 'Duplicate Executive Report'
+                  "
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="getScheduledReportsSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/scheduled-reports"
+                  id="btn--link-navigator-menu-scheduled-reports"
+                  route-name="Scheduled Reports"
+                  :active-class-comparator="
+                    () => routerName === 'Scheduled Reports' || routerName === 'Scheduled Report'
                   "
                 />
               </v-list-item-content>
@@ -1115,6 +1158,8 @@ export default {
       getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
       getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
       getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
+      getExecutiveReportsSearchPermissions: 'permissions/getExecutiveReportsSearchPermissions',
+      getScheduledReportsSearchPermissions: 'permissions/getScheduledReportsSearchPermissions',
       getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions',
       getSmishingSimulatorLeftMenuPermissions:
         'permissions/getSmishingSimulatorLeftMenuPermissions',
@@ -1154,10 +1199,7 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Campaign Reports' ||
-        routerName === 'Campaign Report' ||
-        routerName === 'Advanced Reports' ||
-        routerName === 'Advanced Report'
+        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]
@@ -1289,6 +1331,8 @@ export default {
           routerName === 'Email Templates' ||
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
+          routerName === 'Campaign Reports' ||
+          routerName === 'Campaign Report' ||
           routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'

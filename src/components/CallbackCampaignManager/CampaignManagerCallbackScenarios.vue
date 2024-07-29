@@ -70,6 +70,7 @@
                     persistent-hint
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
+                    :disabled="!getSelectedLanguageShortCode"
                     @change="callForPhishingScenarios"
                   >
                   </v-select>
@@ -282,9 +283,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
-// import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
@@ -294,7 +293,6 @@ export default {
   name: 'CampaignManagerCallbackScenarios',
   components: {
     TrainingLibraryPreviewDialog,
-    // CampaignManagerPhishingScenariosTrainingTab,
     AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
@@ -405,10 +403,32 @@ export default {
       return this.languageItems?.map((language) => language.language)
     },
     getVoiceItems() {
+      if (this.getSelectedLanguageShortCode) {
+        return this.languageItems
+          .filter((language) =>
+            language.languageCode
+              .toLowerCase()
+              .includes(this.getSelectedLanguageShortCode.toLowerCase())
+          )
+          .map((language) => language.name)
+      }
       return this.languageItems.map((language) => language.name)
     },
+
     getSelectedLanguage() {
       return this.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value
+    },
+    getSelectedLanguageShortCode() {
+      if (this.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value) {
+        const languageTypeResourceId = this.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value
+        const selectedLanguageItemIndex = this.languages.findIndex(
+          (language) => language.value === languageTypeResourceId
+        )
+        if (selectedLanguageItemIndex !== -1) {
+          return this.languages[selectedLanguageItemIndex].text
+        }
+      }
+      return ''
     },
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -451,6 +471,9 @@ export default {
     }
   },
   watch: {
+    getSelectedLanguageShortCode(val) {
+      this.axiosPayload.filter.FilterGroups[0].FilterItems[1].Value = ''
+    },
     defaultPhishingScenariosValuesMapped(val) {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true

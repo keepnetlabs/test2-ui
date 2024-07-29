@@ -64,6 +64,13 @@ import QuishingSettings from '@/views/QuishingSettings.vue'
 import QuishingCampaignManagerReport from '@/views/QuishingCampaignManagerReport.vue'
 import ScormProxyReport from '@/views/ScormProxyReport.vue'
 import TrainingLibrary from '@/views/TrainingLibrary.vue'
+import ExecutiveReports from '@/views/ExecutiveReports.vue'
+import NewExecutiveReport from '@/views/NewExecutiveReport.vue'
+import PreviewExecutiveReport from '@/views/PreviewExecutiveReport.vue'
+import EditExecutiveReport from '@/views/EditExecutiveReport.vue'
+import DuplicateExecutiveReport from '@/views/DuplicateExecutiveReport.vue'
+import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
+import ScheduledReports from '@/views/ScheduledReports.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -99,6 +106,14 @@ const router = new Router({
       path: '/training/scorm/phished-landing-page',
       name: 'scorm',
       component: PhishedLandingPage,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/reports/executive-reports/scheduled-executive-report/:id',
+      name: 'Scheduled Executive Report',
+      component: ScheduledExecutiveReport,
       meta: {
         isAuthenticated: false
       }
@@ -708,7 +723,6 @@ const router = new Router({
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         },
-
         {
           path: '/reports/campaign-reports',
           name: 'Campaign Reports',
@@ -726,6 +740,66 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports',
+          name: 'Executive Reports',
+          component: ExecutiveReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/scheduled-reports',
+          name: 'Scheduled Reports',
+          component: ScheduledReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/new',
+          name: 'New Executive Report',
+          component: NewExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/preview/:id',
+          name: 'Preview Executive Report',
+          component: PreviewExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/edit/:id',
+          name: 'Edit Executive Report',
+          component: EditExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/executive-reports/duplicate/:id',
+          name: 'Duplicate Executive Report',
+          component: DuplicateExecutiveReport,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Executive Reports',
             permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
           }
         },
@@ -787,6 +861,9 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   //global guard structure
+  if (to.path === 'threat-sharing' && from.path === 'threat-sharing') {
+    return false
+  }
   try {
     const storeRef = store
     if (to.meta.isAuthenticated) {

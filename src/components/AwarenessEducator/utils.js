@@ -57,6 +57,17 @@ export const COLUMNS = {
     type: 'text',
     width: 200
   },
+  REPORT_NAME: {
+    property: PROPERTY_STORE.REPORTNAME,
+    align: 'left',
+    label: labels.ReportName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
   TRAINING_NAME_UNFIXED: {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
@@ -324,6 +335,20 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: ENROLLMENT_STATUSES_FILTER
   },
+  STATUS_SCHEDULED: {
+    property: PROPERTY_STORE.STATUS,
+    align: 'center',
+    label: labels.Status,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 150,
+    filterableItems: [
+      { text: 'Active', value: 1 },
+      { text: 'Inactive', value: 0 }
+    ]
+  },
   STATUS_TRASH: {
     property: PROPERTY_STORE.STATUS,
     align: 'center',
@@ -374,5 +399,71 @@ export const COLUMNS = {
     width: 150,
     hasTooltip: true,
     filterableType: 'text'
+  },
+  SCHEDULE_NAME: {
+    property: PROPERTY_STORE.NAME,
+    align: 'left',
+    label: labels.ScheduleName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
+  FREQUENCY: {
+    property: PROPERTY_STORE.FREQUENCY,
+    align: 'left',
+    editable: false,
+    label: labels.Frequency,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'One Time', value: 0 },
+      { text: 'Weekly', value: 1 },
+      { text: 'Every two weeks', value: 2 },
+      { text: 'Monthly', value: 3 },
+      { text: 'Quarterly', value: 4 }
+    ]
+  },
+  DATE_CREATED: {
+    property: 'createTime',
+    align: 'left',
+    label: 'Date Created',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  LAST_SEND_DATE: {
+    property: PROPERTY_STORE.LAST_SEND_DATE,
+    align: 'left',
+    label: labels.LastSendDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  NEXT_SEND_DATE: {
+    property: PROPERTY_STORE.NEXT_SEND_DATE,
+    align: 'left',
+    label: labels.NextSendDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
   }
 }

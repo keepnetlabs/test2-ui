@@ -58,6 +58,7 @@ export const COMMON_CONSTANTS = {
 }
 
 export const LABEL_STORE = {
+  TIMEZONE: 'Time Zone',
   CREATEDATE: 'Date Created',
   CREATETIME: 'Date Created',
   FIRSTNAME: 'First Name',
@@ -167,13 +168,18 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  TIME_ZONE: 'timeZone',
   RECIPIENT_TYPE: 'recipientType',
   INFOGRAPHIC_NAME: 'trainingName',
   MATERIAL_NAME: 'trainingName',
   SCREENSAVER_NAME: 'trainingName',
+  FREQUENCY: 'frequency',
+  REPORTNAME: 'reportName',
   BEHAVIOURS: 'behaviours',
   POSTER_NAME: 'trainingName',
+  NEXT_SEND_DATE: 'nextSendDate',
   DATE_CREATED: 'dateCreated',
+  RISK_SCORE: 'riskScore',
   VENDOR: 'vendor',
   VENDORNAME: 'vendorName',
   VENDORID: 'vendorId',
@@ -213,6 +219,7 @@ export const PROPERTY_STORE = {
   LASTOPENED: 'lastOpened',
   DATA: 'data',
   LAST_SENDING_DATE: 'lastSendingDate',
+  LAST_SEND_DATE: 'lastSendDate',
   LASTRUNTIME: 'lastRunTime',
   LAST_SENDING_STATUS: 'lastSendingStatus',
   DATECLICKED: 'dateClicked',
@@ -343,6 +350,7 @@ export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
   ENROLLMENTS_POSTER_LIST: 'EnrollmentsPosterListSettings',
+  SCHEDULED_LIST: 'ScheduledListSettings',
   ENROLLMENTS_LEARNING_PATH_LIST: 'EnrollmentsLearningPathListSettings',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTableSettings',
   TRAINING_LIBRARY_SCREENSAVER_TABLE: 'TrainingLibraryScreensaverTableSettings',
@@ -507,7 +515,7 @@ export const COMMON_PROPS = {
     defaultOptions: true,
     disableBranchNodes: true,
     multiple: true,
-    searchNexted: true,
+    searchNested: true,
     showCount: true
   }
 }
@@ -578,6 +586,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CAMPAIGN_MANAGER_REPORTS_TABLE: 'CampaignManagerReportsTableSearchKeys',
   CERTIFICATES_LIST: 'CertificatesListTableSearchKeys',
+  SCHEDULED_LIST: 'ScheduledListTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_MFA_TABLE:

@@ -192,9 +192,9 @@ export default {
       distributionDelayTimeTypes: 'trainingLibraryHelpers/getDistributionDelayTimeTypes',
       certificateEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
-        reminderEmailNotificationTemplateTypeResourceId:
+      reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-        learningPathEmailNotificationTemplateTypeResourceId:
+      learningPathEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId'
     }),
     isSmsNotification() {
@@ -239,6 +239,9 @@ export default {
               : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
           Reminder: sendReminderEvery,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          Distribution: refSendTrainingSettings.isDistributionEnabled
+            ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
+            : 'Off',
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
@@ -256,6 +259,7 @@ export default {
         }
         if (isProxy) {
           delete formData.settings['Auto-enroll']
+          delete formData.settings['Distribution']
           delete formData.settings['Schedule']
         }
 
@@ -357,14 +361,24 @@ export default {
             refSendTrainingSelectUsers.isTargetGroupsValid = true
             const targetGroupResourceIds = targetGroups.map((group) => group.resourceId)
             this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
-            this.totalActiveUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((row) => row.status === 'Active')
-                ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-            this.totalPhoneNumberUserCount =
-              this.userCountDetailResponse?.data?.data
-                ?.find((row) => row.status === 'Active')
-                ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+            this.totalActiveUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const verifiedUserCount =
+                  row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                return acc + verifiedUserCount
+              },
+              0
+            )
+            this.totalPhoneNumberUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+              (acc, row) => {
+                if (row.status !== 'Active') return acc
+                const phoneNumberCount =
+                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+                return acc + phoneNumberCount
+              },
+              0
+            )
             this.step += flag
           } else {
             refSendTrainingSelectUsers.isShowTargetGroupUsersError = true
@@ -463,7 +477,7 @@ export default {
         return this.handleDownloadPackage(this.selectedRow)
       const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
       const selectedIndex = refSendTrainingSelectUsers.selectedRadioGroupIndex
-      const { sendReminderEvery, isAutoEnroll } = refSendTrainingSettings
+      const { sendReminderEvery, isAutoEnroll, isDistributionEnabled } = refSendTrainingSettings
       const {
         enrollmentScheduler,
         enrollmentAutoEnroll,
@@ -472,6 +486,7 @@ export default {
         markedAsTest,
         awardCertificate,
         languageIds,
+        distributionDays,
         name
       } = refSendTrainingSettings.formData
       const newLanguageIds = languageIds.filter((languageId) => languageId !== 'All')
@@ -499,7 +514,8 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
-        languageIds: newLanguageIds
+        languageIds: newLanguageIds,
+        distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {

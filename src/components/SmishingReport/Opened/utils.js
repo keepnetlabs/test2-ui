@@ -38,6 +38,22 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  ACTIVITY_TYPE: {
+    property: PROPERTY_STORE.ACTIVITYTYPE,
+    align: 'left',
+    label: labels.ActivityType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Human Activity', value: '0' },
+      { text: 'Sandbox Activity', value: '1' }
+    ]
+  },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
     align: 'left',
@@ -81,7 +97,7 @@ export const COLUMNS = {
     label: 'Message Send Date',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 200,
     filterableType: 'date'
   },
@@ -129,7 +145,7 @@ export const COLUMNS = {
     label: labels.LastOpened,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 160,
     filterableType: 'date'
   },
@@ -187,7 +203,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -199,7 +215,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -211,7 +227,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 230,
     isEditable: false,
     filterableType: 'date'
@@ -223,7 +239,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -288,6 +304,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  IP_SLOT: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   IP_PHISHING_REPORTER: {
     property: 'userIpAddressList',
     align: 'left',
@@ -319,7 +347,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -353,19 +381,19 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
   },
   LAST_SUBMISSION_CODE: {
-    property: 'lastSendingTime',
+    property: 'mfaLastSubmittedTime',
     align: 'left',
     label: labels.LastSubmittedCode,
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 220,
     isEditable: false,
     filterableType: 'date'
@@ -413,7 +441,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -498,4 +526,9 @@ export function getStatusBadgeProps(status) {
 
 export const UNUSUAL_TYPES = {
   UNUSUAL_IP: 1
+}
+
+export const ACTIVITY_TYPES = {
+  HUMAN: 'Human Activity',
+  SYSTEM: 'Sandbox Activity'
 }

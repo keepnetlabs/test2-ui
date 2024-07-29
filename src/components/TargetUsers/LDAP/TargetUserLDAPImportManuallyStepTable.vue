@@ -54,6 +54,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import LDAPService from '@/api/ldap'
+import { mapGetters } from 'vuex'
 import { getAxiosPayloadOfManuallyTable } from '@/components/TargetUsers/LDAP/utils'
 export default {
   name: 'TargetUserLDAPImportManuallyStepTable',
@@ -159,6 +160,34 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: PROPERTY_STORE.PHONENUMBER,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 300,
+            filterableType: this.hideFilter ? null : 'text',
+            dbName: 'Department',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.TIME_ZONE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: this.hideFilter ? null : 'select',
+            filterableItems: [],
+            dbName: 'TimeZone',
+            filterableCustomFieldName: 'TimeZoneId'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
@@ -216,6 +245,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTimezones: 'common/getTimezones'
+    }),
     getValidityButtonText() {
       return !this.isShowInvalid ? `ONLY SHOW INVALID (${this.getInvalidUserCount})` : `SHOW ALL`
     },
@@ -227,9 +259,53 @@ export default {
     if (this.hideFilter) {
       this.serverSideProps.pageSize = 5
     }
+    this.callForGetTimeZones()
     this.callForData()
   },
+  watch: {
+    getTimezones: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems()
+      }
+    }
+  },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const timeZoneIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
+    setTimeZoneFilterableItems() {
+      const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      filterableItems.unshift({ text: 'Blank', value: 'Blank' })
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refPeopleTable?.reRenderFilters()
+    },
     callForData() {
       this.setLoading(true)
       const transactionId = this.getTransactionId()

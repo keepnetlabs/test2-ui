@@ -63,6 +63,13 @@
             id="input--target-user-department"
           />
         </form-group>
+        <FormGroup
+          class="mb-6"
+          title="Time Zone"
+          subTitle="By selecting the appropriate time zone, you can send campaigns to the target user in their own time zone."
+        >
+          <InputTimezone v-model="formValues.timeZoneId" class="black-placeholder" isBlock />
+        </FormGroup>
         <FormGroup v-if="!editData" title="Target Group">
           <k-select
             v-infinite-scroll="{
@@ -231,6 +238,7 @@ import labels from '@/model/constants/labels'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
 import {
   getTimeZone,
@@ -258,7 +266,8 @@ export default {
     InputDate,
     InputPhone,
     InputDepartment,
-    TargetUsersCheckLicenseDialog
+    TargetUsersCheckLicenseDialog,
+    InputTimezone
   },
   props: {
     status: {
@@ -296,7 +305,8 @@ export default {
         phoneNumber: '',
         department: '',
         priority: 'Medium',
-        isActive: true
+        isActive: true,
+        timeZoneId: null
       },
       isPickersValidated: {},
       customFieldsModels: {},
@@ -334,6 +344,10 @@ export default {
       return this.editData
         ? 'btn-edit--target-users-add-user-to-people-modal'
         : 'btn-save--target-users-add-user-to-people-modal'
+    },
+    getTimeZoneList() {
+      const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
+      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
   created() {
@@ -347,9 +361,18 @@ export default {
         this.$set(this.isPickersValidated, resourceId, false)
       }
     }
+    this.callForGetTimeZones()
     this.setEditData()
   },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
     callForTargetGroups(addPage) {
       if (addPage) {
         this.targetGroupPayload.pageNumber += 1
@@ -588,6 +611,8 @@ export default {
         delete editedData[customFieldProp]
         this.formValues = {
           ...editedData,
+          timeZoneId:
+            this.getTimeZoneList.find((tz) => tz.text === editedData.timeZone)?.value || null,
           isActive: editedData.status === 'Active'
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

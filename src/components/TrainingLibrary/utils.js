@@ -337,8 +337,20 @@ export const emptyLearningPathSendModalObj = {
   status: false,
   selectedRow: null
 }
-export function isInavailable(availableFor, training) {
-  if (availableFor?.includes('MyCompanyOnly')) {
+export function isInavailable(
+  availableFor,
+  training,
+  selectedCompanyResourceId,
+  selectedCompanyName
+) {
+  if (selectedCompanyName === 'System') {
+    return false
+  }
+  if (
+    availableFor?.includes('MyCompanyOnly') &&
+    (training?.availableFor?.includes('MyCompanyOnly') ||
+      training?.availableFor?.includes(selectedCompanyResourceId))
+  ) {
     return false
   } else if (training?.availableFor?.includes('AllCompanies')) {
     return false

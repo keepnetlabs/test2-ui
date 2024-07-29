@@ -23,8 +23,12 @@
       v-if="showDeleteModal"
       :status="showDeleteModal"
       :selectedEmailTemplate="selectedEmailTemplate"
-      @handleSuccessDeleteAction="handleSuccessDeleteAction"
-      @handleCloseModal="showDeleteModal = false"
+      :templateCount="multipleDeletedTemplatesCount"
+      :multipleDeletePayload="multipleTemplatesPayload"
+      :isMultiple="isMultipleDelete"
+      @on-success="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
+      @on-close="showDeleteModal = false"
     />
     <AppDialog
       v-if="isTemplateDetails"
@@ -59,12 +63,12 @@
         </div>
       </template>
     </AppDialog>
-
-    <data-table
+    <DataTable
       v-if="getSmishingTextMessageTemplatesSearchPermissions"
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -86,7 +90,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewEmailTemplateModalStatus(true)"
       @downloadEvent="exportEmailTemplates"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -132,7 +136,7 @@
           />
         </RowActionsMenu>
       </template>
-    </data-table>
+    </DataTable>
   </div>
 </template>
 
@@ -188,6 +192,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedTemplatesCount: 0,
+      multipleTemplatesPayload: {},
       emailTemplateId: null,
       labels,
       totalNumberOfRecords: 0,
@@ -348,7 +355,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -432,7 +439,12 @@ export default {
       }
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refEmailTemplatesList.unSelectRow(row)
+      this.$refs.refEmailTemplatesList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refEmailTemplatesList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -526,7 +538,21 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedTemplatesCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTemplatesPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
     }

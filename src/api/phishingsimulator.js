@@ -90,6 +90,13 @@ export function deleteEmailTemplate(id) {
   })
 }
 
+export function bulkDeleteEmailTemplates(payload) {
+  return testRequest.delete(`phishing-simulator/email-templates/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 export function getMergedTextForPhishing() {
   const payload = {
     reportAllPages: false,
@@ -188,6 +195,10 @@ export function getDefaultCompanySmtpSetting() {
   return testRequest.get(
     '/phishing-simulator/phishing-campaign/root-company-shared-smtp-resource-id'
   )
+}
+
+export function getDefaultEmailDeliverySetting() {
+  return testRequest.get('/phishing-simulator/phishing-campaign/default-email-delivery-setting')
 }
 
 export function searchCampaignJobUserEmailClicked(payload = {}, id = '', instanceGroup = '') {
@@ -512,4 +523,8 @@ export const updateSandboxActivity = (resourceId, payload) => {
       snackbar: COMMON_SNACKBAR
     }
   )
+}
+
+export const searchScenarioInfo = (payload) => {
+  return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
 }

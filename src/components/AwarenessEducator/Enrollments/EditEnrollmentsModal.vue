@@ -32,10 +32,100 @@
             />
           </FormGroup>
           <FormGroup
+            v-if="selectedRow.status === 'Scheduled'"
+            style="max-width: 600px;"
+            title="Schedule"
+          >
+            <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+              <span>Schedule to:</span>
+              <div :class="['ml-3', !isDateValid && 'date-picker-error mb-n3']">
+                <InputDate
+                  v-model="formData.enrollmentScheduler.scheduledDate"
+                  class="date-picker-height-40 black-placeholder"
+                  type="datetime"
+                  ref="refPicker"
+                  placeholder="Select Date and Time"
+                  style="width: 100%; max-width: 220px;"
+                  :format="parsedFormat"
+                  :valueFormat="parsedFormat"
+                  :picker-options="datePickerOptions"
+                  :rules="[(v) => Validations.required(v)]"
+                />
+                <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+                  <transition appear name="bounce">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message" style="padding-left: 10px;">
+                          Date is required
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+              </div>
+              <span class="v-label theme--light mx-2" style="font-size: 14px;">in</span>
+              <div :class="[!isTimezoneValid && 'date-picker-error mb-n3']">
+                <InputTimezone
+                  v-model="formData.enrollmentScheduler.scheduledTimeZoneId"
+                  class="black-placeholder"
+                  :rules="[(v) => Validations.required(v)]"
+                />
+                <div class="v-text-field__details checkbox-error" v-if="!isTimezoneValid">
+                  <transition appear name="bounce">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message" style="padding-left: 10px;">
+                          Timezone is required
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+              </div>
+            </div>
+          </FormGroup>
+          <FormGroup
+            v-if="selectedRow.status === 'Scheduled' && isLearningPath"
+            class="mt-2"
+            title="Distribution"
+            sub-title="Distribute learning path materials with the specified interval days."
+          >
+            <div class="campaign-manager-advanced-settings__other-settings-last">
+              <v-checkbox
+                v-model="isDistributionEnabled"
+                id="input--campaign-manager-advanced-settings-randomly-selected"
+                color="#2196f3"
+                hide-details
+              >
+              </v-checkbox>
+              <span>Send training materials every</span>
+              <v-text-field
+                v-model="formData.distributionDays"
+                v-mask="'#######'"
+                id="input--edit-enrollment-reminder-period-count"
+                placeholder="Enter number"
+                outlined
+                class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+                style="max-width: 64px;"
+                :disabled="!isDistributionEnabled"
+                :rules="rules.number"
+              ></v-text-field>
+              <span>days</span>
+            </div>
+            <AlertBox
+              v-if="isDistributionEnabled"
+              class="bg-aqua-light mt-2"
+              icon-color="#2196F3"
+              icon-name="mdi-information"
+              text="If the delivery time falls on a weekend, it will be sent on the following Monday."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+          </FormGroup>
+          <FormGroup
             v-if="sendReminderEvery && !isReminderStopped"
             :title="labels.Reminder"
             style="max-width: 875px;"
-            class="mb-2"
+            class="mb-2 mt-6"
           >
             <div
               class="campaign-manager-advanced-settings__other-settings-last campaign-manager-advanced-settings__other-settings-last--disabled"
@@ -112,6 +202,19 @@
                 :picker-options="datePickerOptions"
               />
             </div>
+            <AlertBox
+              v-if="
+                sendReminderEvery &&
+                ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(
+                  formData.enrollmentReminder.endType
+                )
+              "
+              style="max-width: 690px;"
+              class="mt-4 align-items-center"
+              icon-name="mdi-information"
+              text="If this option is selected and there is no exam in the training, the reminder will continue indefinitely."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </FormGroup>
           <v-btn
             v-if="sendReminderEvery && !isReminderStopped"
@@ -233,6 +336,19 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog'
 import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog'
+import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
+import InputTimezone from '@/components/Common/Inputs/InputTimezone'
+import * as Validations from '@/utils/validations'
+import { mapGetters } from 'vuex'
+import { getTimeByTimeZone } from '@/api/company'
+import AlertBox from '@/components/AlertBox'
+import {
+  periodTypeItems,
+  endTypeItems,
+  enrollmentAutoEnrollTypeItems,
+  enrollmentAutoEnrollDayOfWeekItems
+} from '@/components/AwarenessEducator/SendTraining/utils'
+
 export default {
   name: 'EditEnrollmentsModal',
   components: {
@@ -242,8 +358,10 @@ export default {
     AppModalBodyHeader,
     AppModal,
     InputEntityName,
+    InputTimezone,
     StopReminderDialog,
-    StopAutoEnrollDialog
+    StopAutoEnrollDialog,
+    AlertBox
   },
   props: {
     status: {
@@ -261,6 +379,7 @@ export default {
   },
   data() {
     return {
+      Validations,
       isAutoEnrollStopped: false,
       isReminderStopped: false,
       loading: false,
@@ -268,18 +387,22 @@ export default {
       isStopAutoEnrollDialogVisible: false,
       labels,
       radioItems: [{ text: 'Send now', value: '1' }],
-      isDateValid: true,
+      isTimezoneValid: true,
       sendReminderEvery: false,
       isAutoEnroll: false,
+      isDistributionEnabled: false,
+      parsedFormat: getTimeZone(false),
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v > 0 || 'Enter number greater than 0',
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       },
       formData: {
         markedAsTest: false,
+        distributionDays: 2,
         enrollmentAutoEnroll: {
           type: 'SameDay',
           dayOfWeek: 0,
@@ -292,57 +415,70 @@ export default {
           endType: 'TrainingCompleted',
           occurrenceCount: 1,
           stopTime: ''
+        },
+        enrollmentScheduler: {
+          scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          scheduledTimeZoneId: '',
+          useOwnTimeZone: false
         }
       },
-      periodTypeItems: [
-        { text: 'days', value: 'Day' },
-        { text: 'weeks', value: 'Week' },
-        { text: 'months', value: 'Month' }
-      ],
-      endTypeItems: [
-        {
-          text: 'when user completes the training',
-          value: 'TrainingCompleted'
-        },
-        {
-          text: 'when user completes the quiz',
-          value: 'QuizCompleted'
-        },
-        {
-          text: 'after occurrences',
-          value: 'AfterOccurrences'
-        },
-        {
-          text: 'on date',
-          value: 'OnDate'
-        }
-      ],
-      enrollmentAutoEnrollTypeItems: [
-        { text: 'the same day', value: 'SameDay' },
-        { text: 'the next day', value: 'NextDay' },
-        { text: 'next...', value: 'Next' },
-        { text: 'in...', value: 'In' }
-      ],
-      enrollmentAutoEnrollDayOfWeekItems: [
-        { text: 'Sunday', value: 0 },
-        { text: 'Monday', value: 1 },
-        { text: 'Tuesday', value: 2 },
-        { text: 'Wednesday', value: 3 },
-        { text: 'Thursday', value: 4 },
-        { text: 'Friday', value: 5 },
-        { text: 'Saturday', value: 6 }
-      ],
+      periodTypeItems,
+      endTypeItems,
+      enrollmentAutoEnrollTypeItems,
+      enrollmentAutoEnrollDayOfWeekItems,
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       }
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone'
+    }),
+    isLearningPath() {
+      return this.selectedRow?.type === 'Learning Path'
+    },
     distributionSmtpDelayTimeTypes() {
       return this.getDistributionSmtpDelayTimeTypes()
     },
     trainingTimeItems() {
       return this.getDistributionEmailOverTimeTypes()
+    },
+    isDateValid() {
+      return (
+        !(this.selectedRow?.status === 'Scheduled') ||
+        (this.selectedRow?.status === 'Scheduled' &&
+          !!this.formData?.enrollmentScheduler?.scheduledDate)
+      )
+    }
+  },
+  watch: {
+    selectedTimeZone: {
+      handler(val) {
+        if (val && !this.formData.enrollmentScheduler.scheduledTimeZoneId)
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = val
+      }
+    },
+    timezoneFormat: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.parsedFormat = getTimeZone(false, val)
+        }
+      }
+    },
+    'formData.enrollmentScheduler.scheduledTimeZoneId': {
+      handler(newVal, oldVal) {
+        if (!!oldVal && !!newVal) {
+          this.formData.enrollmentScheduler.useOwnTimeZone = false
+          getTimeByTimeZone(newVal).then((res) => {
+            if (res?.data?.data) {
+              this.formData.enrollmentScheduler.scheduledDate = res.data.data
+            }
+          })
+        }
+      }
     }
   },
   created() {
@@ -352,8 +488,20 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const { enrollmentReminder, enrollmentAutoEnroll } = response?.data?.data || {}
+          const { enrollmentReminder, enrollmentAutoEnroll, enrollmentScheduler } =
+            response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
+          if (this.selectedRow?.status === 'Scheduled') {
+            this.formData.enrollmentScheduler = { ...enrollmentScheduler } || {
+              scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+              scheduledTimeZoneId: '',
+              useOwnTimeZone: false
+            }
+          }
+          if (this.isLearningPath && !!response.data.data.distributionDays) {
+            this.isDistributionEnabled = true
+            this.formData.distributionDays = response?.data?.data?.distributionDays || 2
+          }
           if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
@@ -422,11 +570,25 @@ export default {
       }
     },
     handleSubmit() {
+      if (!this.isDateValid) return
       if (this.$refs.refForm.validate()) {
         this.loading = true
         const payload = JSON.parse(JSON.stringify(this.formData))
+        if (this.selectedRow.status !== 'Scheduled') {
+          delete payload['scheduleDate']
+          delete payload['scheduledTimeZoneId']
+          if (!!payload?.enrollmentScheduler) {
+            payload.enrollmentScheduler = null
+          }
+        }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+        if (!this.isLearningPath) delete payload.distributionDays
+        if (this.isDistributionEnabled && !!payload?.distributionDays) {
+          payload.distributionDays = parseInt(payload.distributionDays)
+        } else {
+          payload.distributionDays = null
+        }
         AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
           .then(() => {
             this.$emit(EMITS.ON_CLOSE, true)

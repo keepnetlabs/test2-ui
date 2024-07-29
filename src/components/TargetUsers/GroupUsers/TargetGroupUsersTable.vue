@@ -101,6 +101,7 @@ import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
   getTargetUserCustomFieldsByCompanyId,
+  getTargetUsers,
   searchTargetGroupUsers
 } from '@/api/targetUsers'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -115,6 +116,7 @@ import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallCompone
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import { getValue } from '@/utils/validations'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -154,6 +156,10 @@ export default {
     },
     isServerSide: {
       default: true
+    },
+    isCallTargetUserSearch: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [
@@ -170,7 +176,9 @@ export default {
   data() {
     return {
       axiosPayload: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
-      defaultRequestBody: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
+      defaultRequestBody: getDefaultAxiosPayload({
+        excludeGroupUsers: this.excludeGroupUsers
+      }),
       defaultColumns: [
         {
           property: PROPERTY_STORE.FIRSTNAME,
@@ -229,6 +237,21 @@ export default {
           type: 'text',
           filterableType: 'text',
           dbName: 'department'
+        },
+        {
+          property: PROPERTY_STORE.TIME_ZONE,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.TIME_ZONE),
+          sortable: false,
+          hideSort: true,
+          show: true,
+          type: 'text',
+          width: 160,
+          filterableType: 'select',
+          filterableItems: [],
+          dbName: 'TimeZone',
+          filterableCustomFieldName: 'TimeZoneId'
         }
       ],
       lastColumns: [
@@ -302,23 +325,61 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  computed: {
+    ...mapGetters({
+      getTimezones: 'common/getTimezones'
+    })
+  },
   watch: {
     customFields() {
       this.addCustomFieldColumns()
+    },
+    getTimezones: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems()
+      }
     }
   },
-
   created() {
+    this.callForGetTimeZones()
     if (this.resourceId) {
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
-
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    setTimeZoneFilterableItems() {
+      const filterableItems = this.getTimezones?.timeZoneList?.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
+      filterableItems.unshift({ text: 'Blank', value: 'Blank' })
+      this.$set(
+        this.defaultColumns.find((col) => col.property === PROPERTY_STORE.TIME_ZONE),
+        'filterableItems',
+        filterableItems
+      )
+      this?.$refs?.refTargetGroupUsersTable?.reRenderFilters()
+    },
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      const timeZoneIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'TimeZone'
+      )
+      if (timeZoneIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
@@ -391,42 +452,81 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
-      searchTargetGroupUsers(id, this.axiosPayload)
-        .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
-            response?.data?.data || {}
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          const { data: { data: { results = [] } } = {} } = response
-          this.tableData = results.map((item) => {
-            const { customFieldValues } = item
-            for (let { name, value, dataType, timestampValue } of customFieldValues) {
-              if (dataType === 'Boolean') {
-                if (value === 'True') {
-                  item[name] = 'Yes'
-                } else if (value === 'False') {
-                  item[name] = 'No'
+      if (this.isCallTargetUserSearch) {
+        getTargetUsers(this.axiosPayload)
+          .then((response) => {
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+              response?.data?.data || {}
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { data: { data: { results = [] } } = {} } = response
+            this.tableData = results.map((item) => {
+              const { customFieldValues } = item
+              for (let { name, value, dataType, timestampValue } of customFieldValues) {
+                if (dataType === 'Boolean') {
+                  if (value === 'True') {
+                    item[name] = 'Yes'
+                  } else if (value === 'False') {
+                    item[name] = 'No'
+                  } else {
+                    item[name] = 'No'
+                  }
+                } else if (['Date', 'DateTime'].includes(dataType)) {
+                  item[name] = timestampValue
                 } else {
-                  item[name] = 'No'
+                  item[name] = getValue(value)
                 }
-              } else if (['Date', 'DateTime'].includes(dataType)) {
-                item[name] = timestampValue
-              } else {
-                item[name] = getValue(value)
               }
-            }
-            return item
+              return item
+            })
           })
-        })
-        .catch((err) => {
-          if (err?.response?.status === 404) {
-            this.$emit('handleRouteBackToTargetUsers')
-          }
-        })
-        .finally(() => {
-          this.loading = false
-        })
+          .catch((err) => {
+            if (err?.response?.status === 404) {
+              this.$emit('handleRouteBackToTargetUsers')
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        searchTargetGroupUsers(id, this.axiosPayload)
+          .then((response) => {
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+              response?.data?.data || {}
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { data: { data: { results = [] } } = {} } = response
+            this.tableData = results.map((item) => {
+              const { customFieldValues } = item
+              for (let { name, value, dataType, timestampValue } of customFieldValues) {
+                if (dataType === 'Boolean') {
+                  if (value === 'True') {
+                    item[name] = 'Yes'
+                  } else if (value === 'False') {
+                    item[name] = 'No'
+                  } else {
+                    item[name] = 'No'
+                  }
+                } else if (['Date', 'DateTime'].includes(dataType)) {
+                  item[name] = timestampValue
+                } else {
+                  item[name] = getValue(value)
+                }
+              }
+              return item
+            })
+          })
+          .catch((err) => {
+            if (err?.response?.status === 404) {
+              this.$emit('handleRouteBackToTargetUsers')
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      }
     },
 
     columnFilterChanged(filter) {

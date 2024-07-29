@@ -12,6 +12,7 @@
       :scheduled-date="getScheduledDate"
       :items="getScheduledDialogItems"
       :scenario-type="type"
+      :isCategoryBasedDistribution="isDistributionNotManual"
       @on-close="toggleScheduleDialog"
     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
@@ -49,7 +50,8 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
               <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
+                :items="getTargetGroupItems"
+                :isPhoneNumber="isMFAScenarioSelected || isVishing"
               />
             </div>
             <AlertBox
@@ -61,9 +63,22 @@
             <AlertBox
               v-if="canRenderPhoneNumberAlertBox"
               class="mt-4"
+              :text="getPhoneNumberWarningText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+            <AlertBox
+              v-if="canRenderNoPhoneNumberAlertBox"
+              class="mt-4"
               icon-color="#B83A3A"
               style="background-color: #f56c6c33;"
               text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+            <AlertBox
+              v-if="canRenderTimeZoneAlertBox"
+              class="mt-4 bg-aqua-light"
+              icon-color="#2196f3"
+              :text="getTimeZoneWarningText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
           </div>
@@ -73,7 +88,7 @@
     <div class="my-6 d-flex justify-space-between align-center">
       <div>
         <span class="campaign-manager-last-step__phishing-scenario-label">{{
-          type === SCENARIO_TYPES.PHISHING ? 'Phishing Scenarios' : 'Quishing Scenarios'
+          type === SCENARIO_TYPES.PHISHING ? getPhishingScenariosText : 'Quishing Scenarios'
         }}</span>
         <VTooltip v-if="phishingScenarios.length > 5" bottom>
           <template #activator="{ on }">
@@ -86,7 +101,7 @@
           </div>
         </VTooltip>
       </div>
-      <div v-if="showSchedule">
+      <div v-if="showSchedule && isDistributionManually">
         <v-btn
           class="campaign-manager-summary-card__button pr-4 mr-6"
           rounded
@@ -99,6 +114,10 @@
         </v-btn>
       </div>
     </div>
+    <CampaignManagerSummaryScenarioInfoTable
+      v-if="isDistributionNotManual"
+      :filterPayload="getScenarioInfoTableFilterPayload"
+    />
     <ElTabs
       v-if="phishingScenarios.length"
       v-model="selectedScenarioResourceId"
@@ -112,8 +131,14 @@
         :label="template.name"
       />
     </ElTabs>
+    <CampaignManagerReportSummaryCategory
+      v-if="type === SCENARIO_TYPES.PHISHING && isDistributionManually"
+      class="mt-4"
+      :category="category"
+    />
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
+        v-if="isDistributionManually"
         detailable
         icon="mdi-email"
         :show-body-detail.sync="isShowEmailTemplate"
@@ -227,7 +252,7 @@
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryLandingPage
-        v-if="!isAttachmentBasedScenario"
+        v-if="!isAttachmentBasedScenario && isDistributionManually"
         :type="type"
         :difficulties="difficulties"
         :methods="methods"
@@ -256,7 +281,6 @@ import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManage
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
-import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog'
@@ -266,16 +290,25 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { mapGetters } from 'vuex'
+import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
+import {
+  SCENARIO_DISTRIBUTION,
+  SCENARIO_DISTRIBUTION_TEXTS,
+  SEND_RANDOMLY_USERS_CALCULATE_TYPES
+} from '@/components/CampaignManager/utils'
+import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
 export default {
   name: 'CampaignManagerSummary',
   components: {
     CampaignManagerReportSummaryTraining,
+    CampaignManagerSummaryScenarioInfoTable,
     KEmailPreview,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
     AttachmentsPreview,
     CampaignManagerReportSummaryLandingPage,
+    CampaignManagerReportSummaryCategory,
     AlertBox,
     CampaignManagerScheduleDialog
   },
@@ -306,6 +339,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
       trainingLanguages: [],
       selectedTrainingLanguages: [],
@@ -318,6 +352,7 @@ export default {
       selectedScenarioName: '',
       emailTemplateParams: {},
       landingPageParams: {},
+      category: '',
       difficulties,
       methods,
       isShowScheduleDialog: false,
@@ -327,8 +362,27 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getScenarioInfoTableFilterPayload() {
+      return this?.formData?.categoryFilter || null
+    },
+    getPhishingScenariosText() {
+      if (this.isDistributionNotManual) {
+        return `Scenario Info`
+      }
+      return `Phishing Scenarios`
+    },
+    isDistributionManually() {
+      return this.formData?.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    isDistributionNotManual() {
+      return this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     isRenderTrainingCard() {
       return this.trainingParams
     },
@@ -390,24 +444,76 @@ export default {
       return this.getUsersFromUnverifiedDomainsCount > 0 && !this.isVishing
     },
     canRenderPhoneNumberAlertBox() {
-      return this.getActiveUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+      return (
+        this.getActiveUsersWithoutPhoneNumberCount > 0 &&
+        (this.isMFAScenarioSelected || this.getCampaignInfoItems.method.includes('MFA'))
+      )
+    },
+    canRenderNoPhoneNumberAlertBox() {
+      return (
+        this.getActiveUsersWithPhoneNumberCount === 0 &&
+        (this.isMFAScenarioSelected || this.getCampaignInfoItems.method.includes('MFA'))
+      )
+    },
+    canRenderTimeZoneAlertBox() {
+      return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
     },
     getUnverifiedDomainsText() {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
+    getPhoneNumberWarningText() {
+      return `There ${this.getActiveUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithPhoneNumberCount
+      } active user${this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''} with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } and ${this.getActiveUsersWithoutPhoneNumberCount} active user${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } without phone number${
+        this.getActiveUsersWithoutPhoneNumberCount > 1 ? 's' : ''
+      } in this group. Only the ${this.getActiveUsersWithPhoneNumberCount} user${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } with phone number${
+        this.getActiveUsersWithPhoneNumberCount > 1 ? 's' : ''
+      } will receive MFA scenario.`
+    },
+    getTimeZoneWarningText() {
+      return `There ${this.getActiveUsersWithoutTimeZoneCount > 1 ? 'are' : 'is'} ${
+        this.getActiveUsersWithoutTimeZoneCount
+      } active user${
+        this.getActiveUsersWithoutTimeZoneCount > 1 ? 's' : ''
+      } without time zone information in the selected groups. They will receive the campaign based on the your own time zone (${
+        this.getSelectedTimeZoneName
+      }).`
+    },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unverifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unverifiedUserCount
+      }, 0)
+    },
+    getActiveUsersWithoutTimeZoneCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutTimeZoneCount = row?.timeZone?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutTimeZoneCount
+      }, 0)
     },
     getActiveUsersWithPhoneNumberCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
+    },
+    getActiveUsersWithoutPhoneNumberCount() {
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const withoutPhoneNumberCount =
+          row?.hasPhoneNumber?.find((r) => r.status === 'No')?.count || 0
+        return acc + withoutPhoneNumberCount
+      }, 0)
     },
     isFormData() {
       return Object.keys(this.formData).length
@@ -427,6 +533,24 @@ export default {
     },
     getCampaignInfoItems() {
       const { formData, phishingScenarios } = this
+      if (
+        formData?.scenarioDistribution &&
+        formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+      ) {
+        const methodSet = new Set()
+        const difficultySet = new Set()
+        formData.phishingScenarioItems.forEach((pScenario) => {
+          methodSet.add(pScenario.method)
+          difficultySet.add(pScenario.difficulty)
+        })
+        return {
+          name: formData.name,
+          method: [...methodSet].join(', '),
+          difficulty: [...difficultySet].join(', '),
+          'Tracking Duration': formData.duration,
+          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+        }
+      }
       const methodSet = new Set()
       const difficultySet = new Set()
       phishingScenarios.forEach((pScenario) => {
@@ -437,7 +561,8 @@ export default {
         name: formData.name,
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
-        'Tracking Duration': formData.duration
+        'Tracking Duration': formData.duration,
+        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
       }
     },
     getTotalRandomlySelectedUserCount() {
@@ -480,16 +605,25 @@ export default {
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return (
-        userCountDetailResponse?.data.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      )
+      return userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const verifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+        return acc + verifiedUserCount
+      }, 0)
     },
     getSettingsItems() {
-      const { selectedEmailDelivery = {}, sendingLimit, selectedSchedule } = this.formData
+      const {
+        selectedEmailDelivery = {},
+        sendingLimit,
+        selectedSchedule,
+        useTargetUserTimeZone
+      } = this.formData
       const obj = {
         Starting: selectedSchedule
+      }
+      if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
+        obj['Starting'] = `${selectedSchedule} - Target users’ time zones`
       }
       obj['Sending Limit'] = sendingLimit
       obj['Email Delivery'] = `${
@@ -521,8 +655,15 @@ export default {
   watch: {
     formData: {
       handler(val) {
-        this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
-        this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        if (this.formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          if (this.formData.trainingForCategory?.trainingId) {
+            this.selectedTraining = this.formData.trainingForCategory
+            this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
+          }
+        } else {
+          this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
+          this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        }
       },
       deep: true,
       immediate: true
@@ -553,7 +694,7 @@ export default {
       apiFunc(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
+          const { emailTemplate, landingPageTemplate, category = '' } = data
           let {
             template,
             fromName,
@@ -605,6 +746,7 @@ export default {
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
+          this.category = category
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },

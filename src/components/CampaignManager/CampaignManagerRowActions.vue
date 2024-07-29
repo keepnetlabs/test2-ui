@@ -27,24 +27,32 @@
         </v-btn>
       </template>
       <v-list class="v-cart-dropdown-list el-table__action-buttons">
-        <v-list-item
-          v-for="(act, ind) of getItems"
-          :key="ind"
-          :id="`${act.id}-${scope.$index}-${ind}-${Math.random().toString().substring(2)}`"
-          :disabled="act.disabled"
-          class="sub-menu-el datatable-row-action-list"
-        >
-          <v-list-item-title @click="handleItemClick(act)">
-            <img
-              v-if="act.id === 'btn-new-instance-item-row-actions-campaign-manager'"
-              class="pr-3"
-              :src="act.icon"
-              alt="icon"
-            />
-            <v-icon v-else class="pr-3" :disabled="act.disabled">{{ act.icon }}</v-icon>
-            <span>{{ act.name }}</span>
-          </v-list-item-title>
-        </v-list-item>
+        <v-tooltip v-for="(act, ind) of getItems" :disabled="!act.disabled" :key="ind" bottom>
+          <template #activator="{ on }">
+            <div v-on="on">
+              <v-list-item
+                :id="`${act.id}-${scope.$index}-${ind}-${Math.random().toString().substring(2)}`"
+                :disabled="act.disabled"
+                class="sub-menu-el datatable-row-action-list"
+              >
+                <v-list-item-title @click="handleItemClick(act)">
+                  <img
+                    v-if="act.id === 'btn-new-instance-item-row-actions-campaign-manager'"
+                    :class="[
+                      'pr-3',
+                      act.disabled && 'v-icon notranslate v-icon--disabled mdi theme--light '
+                    ]"
+                    :src="act.icon"
+                    alt="icon"
+                  />
+                  <v-icon v-else class="pr-3" :disabled="act.disabled">{{ act.icon }}</v-icon>
+                  <span>{{ act.name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+            </div>
+          </template>
+          <span>{{ act.disabledText || act.name }}</span>
+        </v-tooltip>
       </v-list>
     </v-menu>
   </div>
@@ -64,6 +72,10 @@ export default {
     },
     rowActions: {
       type: Array
+    },
+    isNewInstanceDisabled: {
+      type: Boolean,
+      default: false
     },
     isQuishingPrintPreview: {
       type: Boolean,
@@ -99,9 +111,15 @@ export default {
         name: labels.CreateNewInstance,
         isNotShow: true,
         id: 'btn-new-instance-item-row-actions-campaign-manager',
-        icon: require('../../assets/img/icon_left.svg'),
+        icon:
+          !this.getCampaignManagerParentCreatePermissions || this.isNewInstanceDisabled
+            ? require('../../assets/img/icon_left_disabled.svg')
+            : require('../../assets/img/icon_left.svg'),
         action: 'on-launch',
-        disabled: !this.getCampaignManagerParentCreatePermissions
+        disabled: !this.getCampaignManagerParentCreatePermissions || this.isNewInstanceDisabled,
+        disabledText: this.isNewInstanceDisabled
+          ? `A new instance with frequency and random scenarios can’t be created.`
+          : 'Create New Instance'
       }
       const duplicateItem = {
         name: labels.Duplicate,

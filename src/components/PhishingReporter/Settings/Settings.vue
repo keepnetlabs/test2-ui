@@ -12,9 +12,15 @@
       :status="downloadAddInModalStatus"
       @handleClose="downloadAddInModalStatus = false"
     />
-    <el-tabs id="settings-el-tabs" v-model="tab" v-if="!inModal || applicationType === 'Outlook'">
+    <el-tabs
+      id="settings-el-tabs"
+      v-model="tab"
+      v-if="!inModal || applicationType === 'Outlook'"
+      class="k-sub-tab mt-2"
+    >
       <el-tab-pane
         v-if="!inModal || applicationType === 'Outlook'"
+        class="pt-6"
         label="Add-in Settings"
         name="phishing-reporter-settings-add-in-settings"
         id="phishing-reporter-settings-add-in-settings-content"
@@ -31,6 +37,7 @@
       /></el-tab-pane>
       <el-tab-pane
         v-if="!inModal || applicationType === 'Outlook'"
+        class="pt-6"
         label="Email Settings"
         name="phishing-reporter-settings-email-settings"
         id="phishing-reporter-settings-email-settings-content"
@@ -47,6 +54,7 @@
       </el-tab-pane>
       <el-tab-pane
         v-if="!inModal || applicationType === 'Outlook'"
+        class="pt-6"
         label="Other Settings"
         name="phishing-reporter-settings-other-settings"
         id="phishing-reporter-settings-other-settings-content"
@@ -63,6 +71,7 @@
       </el-tab-pane>
       <el-tab-pane
         v-if="!inModal || applicationType === 'DiagnosticTool'"
+        class="pt-6"
         id="phishing-reporter-settings-diagnostic-tool-content"
         label="Diagnostic Tool"
         name="phishing-reporter-settings-diagnostic-tool"
@@ -163,15 +172,17 @@ export default {
       this.saveDisable = true
       let addinSettings = this?.$refs?.refAddinSettings?.getFormValues() || {}
       const emailSettings = this?.$refs?.refEmailSettings?.getFormValues() || {}
-      const otherSettings = this?.$refs?.refOtherSettings?.getFormValues() || {}
+      const otherSettings =
+        {
+          companyKey: localStorage.getItem('companyId'),
+          enableEnterpriseVault: false,
+          apiKey: APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
+          apiUrl:
+            APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api',
+          ...this?.$refs?.refOtherSettings?.getFormValues()
+        } || {}
       const diagnosticTool = this?.$refs?.refDiagnosticTool?.getFormValues() || {}
 
-      addinSettings = {
-        ...addinSettings,
-        analysisConfirmationMessage: addinSettings.analysisConfirmationMessage || '',
-        analysisEmailDeleteMessage: addinSettings.analysisEmailDeleteMessage || '',
-        simulationMailMessage: addinSettings.simulationMailMessage || ''
-      }
       const newFormData = {
         ...this.formData,
         ...addinSettings,
@@ -186,16 +197,96 @@ export default {
       }
       const formData = new FormData()
       Object.keys(newFormData).forEach((key) => {
-        formData.append(
-          key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
-          this.getFormDataValue(newFormData[key])
-        )
+        if (key === 'dialogBoxSettings') {
+          for (let i = 0; i < newFormData.dialogBoxSettings.length; i++) {
+            formData.append(
+              `DialogBoxSettings[${i}].LanguageName`,
+              newFormData?.dialogBoxSettings?.[i]?.languageName || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].LanguageResourceId`,
+              newFormData?.dialogBoxSettings?.[i]?.languageResourceId || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxTitle`,
+              newFormData?.dialogBoxSettings?.[i]?.msgBoxTitle || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnCancelText`,
+              newFormData?.dialogBoxSettings?.[i]?.msgBoxBtnCancelText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisConfirmationMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.analysisConfirmationMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsConfirmationBeforeAnalysis`,
+              newFormData?.dialogBoxSettings?.[i]?.isConfirmationBeforeAnalysis || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisEmailDeleteMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.analysisEmailDeleteMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].AnalysisThankYouMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.analysisThankYouMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsDeleteEmailBeforeAnalysis`,
+              newFormData?.dialogBoxSettings?.[i]?.isDeleteEmailBeforeAnalysis || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnYesText`,
+              newFormData?.dialogBoxSettings?.[i]?.msgBoxBtnYesText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnNoText`,
+              newFormData?.dialogBoxSettings?.[i]?.msgBoxBtnNoText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].MsgBoxBtnOkText`,
+              newFormData?.dialogBoxSettings?.[i]?.msgBoxBtnOkText || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].EmailSendingErrorMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.emailSendingErrorMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].NoInternetConnectionMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.noInternetConnectionMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].EmailSelectionErrorMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.emailSelectionErrorMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].BadFormatEmailMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.badFormatEmailMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsSendSimulationMails`,
+              newFormData?.dialogBoxSettings?.[i]?.isSendSimulationMails || false
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].SimulationMailMessage`,
+              newFormData?.dialogBoxSettings?.[i]?.simulationMailMessage || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].IsDefault`,
+              newFormData?.dialogBoxSettings?.[i]?.isDefault || false
+            )
+          }
+        } else {
+          formData.append(
+            key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
+            this.getFormDataValue(newFormData[key])
+          )
+        }
       })
 
       if (updatedValues.isAddIn) {
         this.activateLoader()
       }
-
       createPhishingReporter(formData)
         .then(() => {
           this.saveDisable = false

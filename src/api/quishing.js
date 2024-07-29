@@ -14,6 +14,12 @@ const deleteScenario = (id) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const bulkDeleteScenarios = (payload) => {
+  return testRequest.delete(`/quishing-simulator/quishing-scenario/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
 const createScenario = (payload) => {
   return testRequest.post(`/quishing-simulator/quishing-scenario`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -83,6 +89,12 @@ const deleteIndividualPrintoutTemplate = (id) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const bulkDeleteQuishingTemplates = (payload) => {
+  return testRequest.delete(`/quishing-simulator/quishing-templates/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
 const exportLandingPageTemplates = (payload) => {
   return testRequest.post(`/quishing-simulator/landing-page-template/search/export`, payload, {
     responseType: 'blob'
@@ -96,6 +108,13 @@ const searchLandingPageList = (payload) => {
 const deleteLandingPageTemplate = (id) => {
   return testRequest.delete(`/quishing-simulator/landing-page-template/${id}`, {
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+const bulkDeleteLandingPageTemplates = (payload) => {
+  return testRequest.delete(`/quishing-simulator/landing-page-template/bulk-delete`, {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
   })
 }
 const getLandingPageFormDetails = () => {
@@ -207,7 +226,9 @@ const deleteDnsService = (id) => {
   })
 }
 const createDnsService = (payload) => {
-  return testRequest.post(`quishing-simulator/dns-services`, payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post(`quishing-simulator/dns-services`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 const getDnsService = (id) => {
   return testRequest.get(`quishing-simulator/dns-services/${id}`)
@@ -641,6 +662,10 @@ const searchCampaignJobUserEmailSubmittedMfa = (payload = {}, id = '', instanceG
   )
 }
 
+export function getQuishingScenariosPhoneNumber() {
+  return testRequest.get(`/quishing-simulator/quishing-scenario/mfa-phone-number`)
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -652,8 +677,11 @@ export default {
   updateScenario,
   getScenario,
   deleteScenario,
+  bulkDeleteScenarios,
   deleteEmailTemplate,
+  bulkDeleteQuishingTemplates,
   deleteLandingPageTemplate,
+  bulkDeleteLandingPageTemplates,
   exportLandingPageTemplates,
   getQuishingScenarioLandingPageAndEmailTemplate,
   getEmailTemplatesList,
@@ -745,5 +773,6 @@ export default {
   getQuishingPdfCampaignPreviewContent,
   getCampaignManagerQuishingTemplatePreviewContent,
   getQuishingPdfCampaignDownloadContent,
-  searchCampaignJobPrintoutUserSendingReport
+  searchCampaignJobPrintoutUserSendingReport,
+  getQuishingScenariosPhoneNumber
 }

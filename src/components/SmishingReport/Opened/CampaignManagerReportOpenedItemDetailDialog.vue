@@ -43,7 +43,16 @@
         @refreshAction="callForData"
       >
         <template #datatable-custom-column="{ scope }">
-          <CampaignManagerReportUserAgentColumn :scope="scope" />
+          <CampaignManagerReportUserAgentColumn
+            v-if="col.property === COLUMNS.USER_AGENT_SLOT.property"
+            :scope="scope"
+          />
+          <CampaignManagerReportTimeZoneColumn
+            v-if="col.property === COLUMNS.DATE_OPENED.property"
+            :scope="scope"
+            :timeKey="COLUMNS.DATE_OPENED.property"
+            localTimeKey="openedTimeToLocalUser"
+          />
         </template>
       </DataTable>
     </template>
@@ -73,9 +82,16 @@ import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportUserAgentColumn from '@/components/CampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
-  components: { CampaignManagerReportUserAgentColumn, DataTable, AppDialog },
+  components: {
+    CampaignManagerReportUserAgentColumn,
+    DataTable,
+    AppDialog,
+    CampaignManagerReportTimeZoneColumn
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -87,6 +103,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         icon: 'mdi-text-box',
         id: 'campaign-manager-opened-detail-item-data-table',
@@ -123,7 +140,7 @@ export default {
       return `Opened Email ${this.item?.['openedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return `${this.item?.firstName} ${this.item?.lastName}`
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     }
   },
   created() {

@@ -217,7 +217,7 @@
                       <InputCallerPhoneNumber
                         v-model="mfaData.mfaSenderNumberResourceId"
                         select-first-item
-                        is-phishing-scenario
+                        isSmishing
                         :caller-phone-number.sync="mfaData.mfaCallerPhoneNumber"
                         :title="labels.SenderPhoneNumber"
                         :sub-title="labels.SenderPhoneNumberSub"

@@ -1,0 +1,381 @@
+<template>
+  <WidgetLoading :loading="isLoading">
+    <template #skeleton-content>
+      <ExecutiveWidgetContainer>
+        <ExecutiveWidgetHeader
+          :title="card.title"
+          :subtitle="card.parentKey"
+          :edit-mode="editMode"
+          @on-delete="handleDelete"
+          @on-edit="handleEdit"
+        />
+        <ExecutiveWidgetBody>
+          <template v-if="!isEmpty">
+            <HorizontalBarChart
+              v-if="chartData.datasets"
+              :chart-data="chartData"
+              :chart-options="chartOptions"
+              :custom-plugin="customPlugin"
+            />
+          </template>
+          <div
+            v-else
+            class="k-widget-list__empty-inline"
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <h2 v-if="empty.message">{{ empty.message }}</h2>
+            <p v-if="empty.subMes">{{ empty.subMes }}</p>
+            <v-btn v-if="empty.btn" class="empty-btn">
+              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+              {{ empty.btn }}
+            </v-btn>
+          </div>
+        </ExecutiveWidgetBody>
+      </ExecutiveWidgetContainer>
+    </template>
+  </WidgetLoading>
+</template>
+
+<script>
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
+import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
+import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
+export default {
+  name: 'ExecutiveReportsTopRiskiestUsers',
+  components: {
+    ExecutiveWidgetBody,
+    ExecutiveWidgetHeader,
+    ExecutiveWidgetContainer,
+    HorizontalBarChart,
+    WidgetLoading
+  },
+  props: {
+    editMode: {
+      type: Boolean,
+      default: true
+    },
+    card: {
+      type: Object,
+      default: () => {}
+    },
+    dateRange: {
+      type: Array,
+      default: () => []
+    },
+    datePeriod: {
+      type: Number,
+      default: 1
+    },
+    defaultWidgetData: {
+      type: [Object, Array]
+    },
+    dateFormat: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      isLoading: false,
+      isEmpty: false,
+      empty: {
+        message: 'You do not have any report conclusion'
+      },
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      chartOptions: {},
+      chartData: {},
+      customPlugin: {
+        id: 'customPlugin',
+        afterDraw(chart) {
+          const ctx = chart.ctx
+          const dataset = chart.data.datasets[0]
+          const meta = chart.getDatasetMeta(0)
+          const maxIndexes = []
+          let maxX = -Infinity
+          for (let i = 0; i < dataset.data.length; i++) {
+            if (dataset.data[i].x > 60) {
+              maxX = dataset.data[i].x
+              maxIndexes.push(i)
+            }
+          }
+          if (maxIndexes.length) {
+            for (let maxIndex of maxIndexes) {
+              const maxData = meta.data[maxIndex]
+              if (maxData && maxData._model) {
+                const fontSize = 9
+                const fontFamily = 'Open Sans, sans-serif'
+                const padding = 18
+                const text = 'Critical Risk Level. Immediate training is needed.'
+                //ctx.measureText(text).width;
+                const x = Math.floor(maxData._model.x / 2.3)
+                const y = maxData._model.y - padding + 2
+                ctx.fillStyle = '#000'
+                ctx.textAlign = 'left'
+                ctx.textBaseline = 'bottom'
+                ctx.font = `${fontSize}px ${fontFamily}`
+                ctx.fillText(text, x < 176 ? 176 : x, y)
+              }
+            }
+          }
+          ctx.save()
+          ctx.strokeStyle = '#757575' // Kenarlık rengi
+          ctx.lineWidth = 2 // Kenarlık kalınlığı
+          const xAxis = chart.scales['x-axis-0']
+          const yAxis = chart.scales['y-axis-0']
+          const xTickStart = xAxis.left // X ekseninin sol sınırını alın
+          // Çizgiyi çizin
+          ctx.beginPath()
+          ctx.moveTo(xTickStart, yAxis.bottom) // X ekseninin sol ucu ve Y ekseninin altı arasında başlayın
+          ctx.lineTo(xAxis.right, yAxis.bottom) // X ekseninin sağ ucu ve Y ekseninin altı arasında çizgi çizin
+          ctx.stroke()
+          ctx.restore()
+        }
+      }
+    }
+  },
+  watch: {
+    dateRange() {
+      this.callForData()
+    }
+  },
+  created() {
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
+  },
+  methods: {
+    callForData() {
+      this.isLoading = true
+      const payload = {
+        widgetIds: [this.card.resourceId],
+        datePeriod: this.datePeriod,
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1]
+      }
+      getExecutiveReportChartData(payload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.setChartData(data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    setChartData(data) {
+      this.chartOptions = {
+        devicePixelRatio: 2,
+        indexAxis: 'y',
+        responsive: true,
+        padding: 24,
+        layout: {
+          padding: {
+            right: 48,
+            left: 0
+          }
+        },
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [
+            {
+              beginAtZero: true,
+              offset: true,
+              gridLines: {
+                display: false,
+                drawBorder: false
+              },
+              ticks: {
+                labelOffset: 0,
+                beginAtZero: true,
+                padding: 0,
+                fontSize: 9,
+                fontFamily: 'Open Sans, sans-serif',
+                fontStyle: '600',
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                lineHeight: 1.58
+              }
+            }
+          ],
+          xAxes: [
+            {
+              display: true,
+              stacked: false,
+              offset: false,
+              scaleLabel: {
+                display: true,
+                labelString: 'Human Risk Score',
+                fontColor: '#383B41'
+              },
+              gridLines: {
+                display: true,
+                color: 'white',
+                zeroLineColor: '#F2F2F2',
+                z: 1
+              },
+              ticks: {
+                min: 0,
+                max: 100,
+                stepSize: 20,
+                fontFamily: 'Open Sans, sans-serif',
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontSize: 12,
+                callback: function (value) {
+                  return ((value / this.max) * 100).toFixed(0) + '%'
+                }
+              }
+            }
+          ]
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-top-riskiest')
+
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-top-riskiest'
+              tooltipEl.innerHTML = '<div class="tooltip-content"></div>'
+              document.body.appendChild(tooltipEl)
+            }
+
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0
+              return
+            }
+
+            let position = this._chart.canvas.getBoundingClientRect()
+
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left =
+              position.left + window.pageXOffset + tooltipModel.caretX / 2 + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+              let tableRoot = tooltipContent
+              tableRoot.innerHTML = ''
+
+              let dataIndex = tooltipModel.dataPoints[0].index
+              let dataPoint = this._chart.data.datasets[0].data[dataIndex]
+
+              let titleRow = document.createElement('div')
+              titleRow.style.fontWeight = 'bold'
+              titleRow.style.paddingBottom = '8px'
+              titleRow.textContent = dataPoint.y
+              tableRoot.appendChild(titleRow)
+              dataPoint.details.Score = dataPoint.x
+              for (const [key, value] of Object.entries(dataPoint.details)) {
+                let fieldRow = document.createElement('div')
+                fieldRow.style.display = 'flex'
+                fieldRow.style.justifyContent = 'space-between'
+                fieldRow.style.paddingBottom = '4px'
+
+                let fieldLabel = document.createElement('span')
+                fieldLabel.textContent = `${key}:`
+                fieldRow.appendChild(fieldLabel)
+
+                let fieldValue = document.createElement('span')
+                fieldValue.style.fontWeight = '700'
+                fieldValue.style.paddingLeft = '8px'
+                fieldValue.textContent = value
+                fieldRow.appendChild(fieldValue)
+
+                tableRoot.appendChild(fieldRow)
+              }
+            }
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+            })
+          },
+          xPadding: 12,
+          yPadding: 12
+        },
+        plugins: {
+          datalabels: {
+            display: true,
+            align: 'end',
+            offset: -2,
+            anchor: 'end',
+            color: '#383B41',
+            clamp: true,
+            formatter: function (value) {
+              if (!value.x) return ''
+              return value.x + '%'
+            },
+            borderRadius: 4,
+            padding: 6
+          }
+        }
+      }
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const names = data[0].widgetDatas.map((obj) => {
+        const arr = [obj.dataObject.fullName, obj.dataObject.email]
+        if (obj.dataObject.department) arr.push(obj.dataObject.department)
+        return arr
+      })
+      const dataSetsData = data[0].widgetDatas.map((obj) => {
+        return {
+          x: obj.values[0].value,
+          y: obj.dataObject.fullName,
+          details: {
+            Email: obj.dataObject.email,
+            Department: obj.dataObject.department
+          }
+        }
+      })
+      this.chartData = {
+        xLabels: [0, 100],
+        yLabels: names,
+        datasets: [
+          {
+            data: dataSetsData,
+            barThickness: 24,
+            backgroundColor: function (context) {
+              const index = context.dataIndex
+              const value = context.dataset.data[index].x
+              return value > 60 ? '#B83A3A' : '#F56C6C'
+            },
+            borderWidth: 1
+          }
+        ]
+      }
+      this.isEmpty = false
+      this.isLoading = false
+    },
+    handleDelete() {
+      this.$emit('on-delete', this.card)
+    },
+    handleEdit() {
+      this.$emit('on-edit', this.card)
+    }
+  }
+}
+</script>

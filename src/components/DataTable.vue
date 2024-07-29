@@ -511,6 +511,7 @@
               type="selection"
               :reserve-selection="true"
               width="48"
+              :selectable="getRowIsSelectable"
             />
             <el-table-column
               v-for="(col, ind) of columns"
@@ -1366,6 +1367,13 @@ export default {
       default: () => {
         return { menuAttach: '.k-table__wrapper' }
       }
+    },
+    getRowIsSelectable: {
+      type: Function
+    },
+    isReportWithExam: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -1760,8 +1768,11 @@ export default {
       if (this.savedFiltersLocalStorageKey) {
         const savedFilter = JSON.parse(localStorage.getItem(this.savedFiltersLocalStorageKey))
         if (!savedFilter) return
-        const { filter, search, filterValues } = savedFilter
+        const { filter, search, filterValues, showByExamStatus } = savedFilter
         this.$set(this.axiosPayload, 'filter', filter)
+        if (this.isReportWithExam && showByExamStatus) {
+          this.$set(this.axiosPayload, 'showByExamStatus', showByExamStatus)
+        }
         this.search = search
         this.filterValues = filterValues
         if (isReRenderFilters) this.reRenderFilters()
@@ -1772,7 +1783,17 @@ export default {
     },
     handleSetDefaultSearch() {
       const { search, filterValues, savedFiltersLocalStorageKey, axiosPayload } = this
-      if (savedFiltersLocalStorageKey) {
+      if (this.isReportWithExam && axiosPayload?.showByExamStatus) {
+        localStorage.setItem(
+          savedFiltersLocalStorageKey,
+          JSON.stringify({
+            filter: axiosPayload?.filter,
+            filterValues,
+            search,
+            showByExamStatus: axiosPayload.showByExamStatus
+          })
+        )
+      } else {
         localStorage.setItem(
           savedFiltersLocalStorageKey,
           JSON.stringify({
@@ -1792,7 +1813,28 @@ export default {
     handleClearFilters() {
       this.resetSearchText()
       this.reRenderFilters({})
-      this.$emit('update:axios-payload', JSON.parse(JSON.stringify(this.initialAxiosPayload)))
+      if (this.isReportWithExam) {
+        this.$emit(
+          'update:axios-payload',
+          JSON.parse(
+            JSON.stringify({
+              ...this.initialAxiosPayload,
+              pageSize: this.isServerSide ? this.serverSideProps.pageSize : this.rowCount,
+              showByExamStatus: 'FirstAttempt'
+            })
+          )
+        )
+      } else {
+        this.$emit(
+          'update:axios-payload',
+          JSON.parse(
+            JSON.stringify({
+              ...this.initialAxiosPayload,
+              pageSize: this.isServerSide ? this.serverSideProps.pageSize : this.rowCount
+            })
+          )
+        )
+      }
       this.handleRefresh()
       this.$emit('clear-filters')
     },
@@ -2308,7 +2350,7 @@ export default {
         this.setRenderedColumns()
       } else {
         this.columns.forEach((col) => {
-          col.show = renderedColumns.find((property) => property === col.property)
+          col.show = renderedColumns.find((property) => property === col?.property || '')
           this.renderedColumns = renderedColumns
         })
       }

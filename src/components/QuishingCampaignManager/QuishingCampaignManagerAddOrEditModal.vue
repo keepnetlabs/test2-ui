@@ -8,6 +8,12 @@
     @closeOverlay="closeOverlay"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -170,12 +176,12 @@ import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
-import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
+import CampaignManagerSummary from '@/components/QuishingCampaignManager/QuishingCampaignManagerSummary'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
-import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
+import CampaignManagerPhishingScenarios from '@/components/QuishingCampaignManager/CampaignManagerQuishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
@@ -185,6 +191,8 @@ import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import { getErrorMessage } from '@/utils/functions'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -201,6 +209,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
+    DefaultErrorDialog,
     AppModal
   },
   props: {
@@ -223,6 +232,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      createErrorMessage: '',
       SCENARIO_TYPES,
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
@@ -550,11 +560,15 @@ export default {
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
             ) {
-              this.totalTargetUserCount =
-                this.userCountDetailResponse?.data?.data
-                  ?.find((detail) => detail.status === 'Active')
-                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
-                totalTargetUserCount
+              this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+                (acc, row) => {
+                  if (row.status !== 'Active') return acc
+                  const verifiedUserCount =
+                    row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                  return acc + verifiedUserCount
+                },
+                0
+              )
             }
             if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
@@ -632,7 +646,7 @@ export default {
             },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
-          if (refCampaignManagerSummary?.canRenderPhoneNumberAlertBox) {
+          if (refCampaignManagerSummary?.canRenderNoPhoneNumberAlertBox) {
             this.$store.dispatch('common/createSnackBar', {
               message: 'There are no defined phone numbers for the selected target groups.',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -721,11 +735,17 @@ export default {
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
+              })
               .finally(this.setActionButtonDisability)
           } else {
             QuishingService.createCampaignManager(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
+              })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
               })
               .finally(this.setActionButtonDisability)
           }

@@ -3,7 +3,6 @@
     <InputCallerPhoneNumber
       title="Sender Phone Number"
       subTitle="Select the SMS sender phone number"
-      is-smishing
       :defaultPhoneNumbers="phoneNumbers"
       :value="formData.phoneNumber"
       @input="handlePhoneNumberChange"
@@ -23,7 +22,7 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
+    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" isSmishing />
     <InputDistribution
       v-model="inputDistributionFormData"
       :type="DISTRIBUTION_TYPES.SMISHING"
@@ -124,7 +123,8 @@ export default {
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
         scheduledDate: '',
-        scheduledDateTimeZoneId: ''
+        scheduledDateTimeZoneId: '',
+        useTargetUserTimeZone: false
       },
       inputDistributionFormData: {
         distributionTypeId: DISTRIBUTION_TYPES.SMISHING,

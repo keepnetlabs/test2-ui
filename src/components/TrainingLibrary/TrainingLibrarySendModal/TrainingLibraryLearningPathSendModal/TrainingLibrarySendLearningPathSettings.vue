@@ -127,7 +127,44 @@
     </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
-      class="mt-2"
+      class="mt-6"
+      title="Distribution"
+      sub-title="Distribute learning path materials with the specified interval days."
+    >
+      <div class="campaign-manager-advanced-settings__other-settings-last">
+        <v-checkbox
+          v-model="isDistributionEnabled"
+          id="input--campaign-manager-advanced-settings-randomly-selected"
+          color="#2196f3"
+          hide-details
+        >
+        </v-checkbox>
+        <span>Send training materials every</span>
+        <v-text-field
+          v-model="formData.distributionDays"
+          v-mask="'#######'"
+          id="input--edit-enrollment-reminder-period-count"
+          placeholder="Enter number"
+          outlined
+          class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
+          style="max-width: 64px;"
+          :disabled="!isDistributionEnabled"
+          :rules="rules.number"
+        ></v-text-field>
+        <span>days</span>
+      </div>
+      <AlertBox
+        v-if="isDistributionEnabled"
+        class="bg-aqua-light mt-2"
+        icon-color="#2196F3"
+        icon-name="mdi-information"
+        text="If the delivery time falls on a weekend, it will be sent on the following Monday."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
+    </FormGroup>
+    <FormGroup
+      v-if="!formData.isProxy"
+      class="mt-6"
       :title="labels.Reminder"
       style="max-width: 875px;"
     >
@@ -173,7 +210,7 @@
           hide-details
           placeholder="Select a item"
           style="max-width: 282px; min-width: 282px;"
-          :items="getEndTypeItems"
+          :items="endTypeItems"
           :disabled="!sendReminderEvery"
         />
         <v-text-field
@@ -204,6 +241,19 @@
           :disabled="!sendReminderEvery"
         />
       </div>
+      <AlertBox
+        v-if="
+          sendReminderEvery &&
+          ['QuizCompleted', 'QuizSuccessfullyCompleted'].includes(
+            formData.enrollmentReminder.endType
+          )
+        "
+        style="max-width: 690px;"
+        class="mt-4 align-items-center"
+        icon-name="mdi-information"
+        text="If this option is selected and there is no exam in the training, the reminder will continue indefinitely."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </FormGroup>
     <FormGroup v-if="!formData.isProxy && showCertificate" class="mt-6" :title="labels.Certificate">
       <v-checkbox
@@ -307,7 +357,7 @@ import * as Validations from '@/utils/validations'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings.vue'
-import AlertBox from '@/components/AlertBox.vue'
+import AlertBox from '@/components/AlertBox'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import {
   endTypeItems,
@@ -372,6 +422,7 @@ export default {
       Validations,
       isDateValid: true,
       sendReminderEvery: false,
+      isDistributionEnabled: false,
       isAutoEnroll: false,
       datePickerOptions: {
         disabledDate: this.disabledEndDates
@@ -386,6 +437,7 @@ export default {
         markedAsTest: false,
         awardCertificate: false,
         isProxy: false,
+        distributionDays: 2,
         enrollmentScheduler: {
           scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           scheduledTimeZoneId: '',
@@ -409,6 +461,7 @@ export default {
       rules: {
         number: [
           (v) => /\d/.test(v) || 'Enter valid number',
+          (v) => Validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v > 0 || 'Enter number greater than 0',
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
@@ -430,14 +483,6 @@ export default {
           text: this.periodTypeItems[index].text,
           value: type.name
         })) || this.periodTypeItems
-      )
-    },
-    getEndTypeItems() {
-      return (
-        this?.enumTypes?.ReminderEndTypeEnum.map((type, index) => ({
-          text: this.endTypeItems[index].text,
-          value: type.name
-        })) || this.endTypeItems
       )
     },
     isScheduledTimeDisabled() {

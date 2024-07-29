@@ -450,9 +450,13 @@ const resendTrainingSendingReportList = (payload = {}, id = '') => {
 }
 
 const exportTrainingReport = (id = '') => {
-  return testRequest.get(`/training-reports/export/${id}`, {
-    responseType: 'blob'
-  })
+  return testRequest.post(
+    `/training-reports/${id}/export`,
+    {},
+    {
+      responseType: 'blob'
+    }
+  )
 }
 
 const getTrainingItems = (payload) => {

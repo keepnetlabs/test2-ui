@@ -38,7 +38,10 @@
                 :title="labels.LearningPathInformation"
                 :subtitle="labels.LearningPathInformationSub"
               />
-              <TrainingLibraryNewLearningPathInformation ref="refTrainingCourseInformation" />
+              <TrainingLibraryNewLearningPathInformation
+                ref="refTrainingCourseInformation"
+                :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
+              />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
               <ConfigureCompanyStepHeader
@@ -128,7 +131,9 @@ export default {
       isActionButtonDisabled: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || '',
-      availableForRequestIds: []
+      availableForRequestIds: [],
+      trainingIds: [],
+      selectedCompaniesAndGroups: []
     }
   },
   computed: {
@@ -150,7 +155,7 @@ export default {
             tagNames,
             targetAudience,
             coverImage,
-            trainingGroups
+            trainingGroups = []
           } = response?.data?.data || {}
           const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
           if (refTrainingCourseInformation && refLearningPathContent) {
@@ -162,16 +167,26 @@ export default {
               name,
               tags: tagNames,
               targetAudience,
-              coverImage,
-              targetAudience
+              coverImage
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-            refLearningPathContent.setSelectedTrainings(trainingGroups)
+            refLearningPathContent.setSelectedTrainings(trainingGroups || [])
+            this.trainingIds = trainingGroups?.map(
+              (training) => training?.trainingId || training?.detailTrainingId
+            )
+            this.selectedCompaniesAndGroups = availableForList
+              .map((af) => {
+                if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
+                  return null
+                }
+                return { resourceId: af.targetResourceId, typeName: af.typeName }
+              })
+              .filter(Boolean)
           }
         })
         .then(() => {
           this.callForLearningPathTrainingLibrary({
-            trainingId: this.selectedRow.trainingId,
+            trainingIds: this.trainingIds,
             isAppend: false
           })
         })
@@ -200,9 +215,9 @@ export default {
             refTrainingCourseInformation.formData.availableForRequests
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
-          this.availableForRequestIds = refTrainingCourseInformation.formData.availableForRequests.map(
-            (item) => item.id
-          )
+          this.availableForRequestIds =
+            refTrainingCourseInformation?.formData?.availableForRequests?.map((item) => item.id) ||
+            []
         }
         if (refTrainingCourseInformation.validateForm()) {
           this.step += flag

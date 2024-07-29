@@ -183,6 +183,7 @@
                     :text-template-method="getSelectedTextTemplateMethod"
                     :is-method-mfa="isMethodMfa"
                     :mfa-data="mfaData"
+                    :type="SCENARIO_TYPES.SMISHING"
                     @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
@@ -544,6 +545,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import TextMessageTemplateSelectList from '@/components/SmishingScenarios/TextMessageTemplateSelectList'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'NewScenario',
@@ -590,6 +592,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
         backButton: 'btn-back--add-or-edit-scenario-modal',

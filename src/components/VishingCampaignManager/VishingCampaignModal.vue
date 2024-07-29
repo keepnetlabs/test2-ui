@@ -161,6 +161,7 @@
               :response-of-target-groups-items="responseOfTargetGroupsItems"
               :is-valid="isTargetGroupsValid"
               :is-vishing="true"
+              :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @handle-selection-change="handleTableSelectionChange"
             />
             <CustomError v-if="!isTargetGroupsValid" :error-message="getTargetGroupErrorMessage" />
@@ -317,7 +318,10 @@
                     <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
                   </div>
                   <div v-if="isShowTargetUserDetail">
-                    <CampaignManagerTargetGroupsAndUserSummaryInfo :items="selectedTargetGroups" />
+                    <CampaignManagerTargetGroupsAndUserSummaryInfo
+                      :items="getTargetGroupItems"
+                      isPhoneNumber
+                    />
                   </div>
                 </template>
               </CampaignManagerSummaryCard>
@@ -490,7 +494,8 @@ export default {
       sendCallsOverTypes,
       sendCallsOnDaysOptionsShort,
       isActionButtonDisabled: false,
-      distributionDayCount: 7
+      distributionDayCount: 7,
+      defaultSelectedTargetGroupResourceIds: []
     }
   },
   computed: {
@@ -499,6 +504,9 @@ export default {
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getTargetGroupItems() {
+      return this.userCountDetailResponse?.data?.data || []
+    },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
       if (Object.keys(this.formValues)?.length && this.formValues.targetGroupResourceIds) {
@@ -510,11 +518,11 @@ export default {
       return text
     },
     getTotalActiveUsersWithPhoneNumber() {
-      return (
-        this.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-      )
+      return this.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const phoneNumberCount = row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
+        return acc + phoneNumberCount
+      }, 0)
     },
     getSendCallsText() {
       return `${this.getTotalActiveUsersWithPhoneNumber} user${
@@ -677,8 +685,9 @@ export default {
   created() {
     if (this.isEdit || this.isDuplicate) {
       this.callForCampaign()
+    } else {
+      this.callForTargetGroups()
     }
-    this.callForTargetGroups()
     this.getSelectedTimeZone()
   },
   methods: {
@@ -740,6 +749,7 @@ export default {
           templateResourceId = '',
           targetGroups
         } = response?.data?.data || {}
+        this.defaultSelectedTargetGroupResourceIds = targetGroups.map((tGroup) => tGroup.value)
         this.formValues.callerPhoneNumber = callerPhoneNumber
         this.formValues.distributionEndTime = distributionEndTime
           ?.split(':')
@@ -761,9 +771,14 @@ export default {
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         this.$nextTick(() => (this.isTargetGroupsValid = true))
         this.selectTableItems(targetGroups)
+        this.callForTargetGroups()
       })
     },
     callForTargetGroups() {
+      if (this.defaultSelectedTargetGroupResourceIds.length)
+        this.axiosPayloadOfTargetGroups.selectTargetUserResourceIds = this.defaultSelectedTargetGroupResourceIds.join(
+          ','
+        )
       searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response

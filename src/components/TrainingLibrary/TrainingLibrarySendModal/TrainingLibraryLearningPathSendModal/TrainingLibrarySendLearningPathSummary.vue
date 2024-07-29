@@ -7,12 +7,6 @@
       }"
     >
       <CampaignManagerSummaryCardOneLine
-        :class="{
-          'campaign-manager-summary-card__body-container-learning-path': true,
-          'campaign-manager-summary-card__body-container-reminder': isReminder,
-          'campaign-manager-summary-card__body-container-is-proxy': isProxy,
-          'campaign-manager-summary-card__body-container-phone-number': isPhoneNumber
-        }"
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingItems"
@@ -32,9 +26,7 @@
           >
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
             <div v-if="isShowTargetUserDetail" class="mt-4">
-              <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="formData.selectedTargetGroups"
-              />
+              <CampaignManagerTargetGroupsAndUserSummaryInfo :items="getTargetGroupItems" />
             </div>
             <AlertBox
               v-if="canRenderAlertbox"
@@ -242,6 +234,9 @@ export default {
     }
   },
   computed: {
+    getTargetGroupItems() {
+      return this.formData?.userCountDetailResponse?.data?.data || []
+    },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.selectedTargetGroups) {
@@ -257,19 +252,21 @@ export default {
       return `There are ${this.getUsersFromUnverifiedDomainsCount} active users with unverified domains in the selected groups. Please verify the domains in order to send emails.`
     },
     getUsersFromUnverifiedDomainsCount() {
-      return (
-        this.formData.userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-      )
+      return this.formData.userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const unverifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Unverified')?.count || 0
+        return acc + unverifiedUserCount
+      }, 0)
     },
     getTotalActiveUsers() {
       const { userCountDetailResponse } = this.formData
-      return (
-        userCountDetailResponse?.data?.data
-          ?.find((row) => row.status === 'Active')
-          ?.domainAllowList?.find((row) => row.status === 'Verified')?.count || 0
-      )
+      return userCountDetailResponse?.data?.data?.reduce((acc, row) => {
+        if (row.status !== 'Active') return acc
+        const verifiedUserCount =
+          row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+        return acc + verifiedUserCount
+      }, 0)
     },
     getEnrollmentTemplate() {
       return this.formData?.enrollmentData?.template || ''
@@ -278,7 +275,7 @@ export default {
       return this?.formData?.settings
     },
     isReminder() {
-      return this.getSettingItems?.Reminder
+      return this.getSettingItems?.Reminder || this.getSettingItems?.Distribution
     },
     isProxy() {
       return this?.formData?.isProxy

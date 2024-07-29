@@ -29,7 +29,16 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+  >
+    <template #datatable-custom-column="{ scope, col }">
+      <CampaignManagerReportTimeZoneColumn
+        v-if="col.property === COLUMNS.LAST_SUBMISSION.property"
+        :scope="scope"
+        :timeKey="COLUMNS.LAST_SUBMISSION.property"
+        localTimeKey="lastSubmittedTimeToLocalUser"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -46,9 +55,11 @@ import SmishingService from '@/api/smishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+
 export default {
   name: 'CampaignManagerReportSubmittedTable',
-  components: { DataTable },
+  components: { DataTable, CampaignManagerReportTimeZoneColumn },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -67,6 +78,7 @@ export default {
   },
   data() {
     return {
+      COLUMNS,
       CONSTANTS: {
         id: 'campaign-manager-submitted-data-table',
         ascending: 'ascending'

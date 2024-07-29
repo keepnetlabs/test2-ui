@@ -236,7 +236,7 @@ export default {
       if (!rows.length) return true
       const isInvalid = rows.some((row) => {
         if (!row) return false
-        return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+))*$/.test(
+        return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+\s?[^=()\\+, ;<>]+)+(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+\s?[^=()\\+, ;<>]+)+)*$/.test(
           row
         )
       })

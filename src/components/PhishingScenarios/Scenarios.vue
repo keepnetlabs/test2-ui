@@ -7,7 +7,6 @@
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"
     />
-
     <CommonSimulatorNewScenario
       v-if="modalStatus"
       ref="newScenarioModal"
@@ -25,7 +24,12 @@
       :status="showDeleteModal"
       :selectedScenario="selectedScenario"
       :api-func="deleteScenario"
+      :scenarioCount="multipleDeletedScenariosCount"
+      :multipleDeleteApiFunc="bulkDeleteScenarios"
+      :multipleDeletePayload="multipleScenariosPayload"
+      :isMultiple="isMultipleDelete"
       @on-success="handleSuccessDeleteAction"
+      @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
     <CommonSimulatorPreviewDialog
@@ -41,6 +45,7 @@
       class="scenarios"
       ref="refScenariosList"
       is-server-side
+      is-server-side-selection
       selectable
       filterable
       options
@@ -62,7 +67,7 @@
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScenarioModalStatus(true)"
       @downloadEvent="exportScenario"
-      @handleMultipleDelete="handleActionDelete"
+      @handleMultipleDelete="handleMultipleDelete"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForData"
@@ -132,7 +137,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { deleteScenario, exportScenarios, getScenariosList } from '@/api/scenarios'
+import {
+  deleteScenario,
+  exportScenarios,
+  getScenariosList,
+  bulkDeleteScenarios
+} from '@/api/scenarios'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -173,6 +183,9 @@ export default {
       loading: true,
       isEdit: false,
       isDuplicate: false,
+      isMultipleDelete: false,
+      multipleDeletedScenariosCount: 0,
+      multipleScenariosPayload: {},
       scenarioId: null,
       labels,
       selectedScenarioURL: '',
@@ -184,6 +197,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SCENARIOS,
         columns: [
           COMMON_SIMULATOR_COLUMNS.NAME,
+          COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGE,
           COMMON_SIMULATOR_COLUMNS.TAGS,
@@ -233,7 +247,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         empty: {
@@ -266,27 +280,37 @@ export default {
   },
   mounted() {
     this.callForLanguages('refScenariosList')
-    this.callForScenarioDetails().then(() => {
-      this.callForData()
-      this.$set(
-        this.tableOptions.columns[1],
-        'filterableItems',
-        this.scenarioDetailsLookup.methodTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
-      )
-      this.$set(
-        this.tableOptions.columns[3],
-        'filterableItems',
-        this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
-      )
-    })
+    this.callForScenarioDetails()
+      .then(() => {
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          this.scenarioDetailsLookup?.categories?.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          this.scenarioDetailsLookup.methodTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this.$set(
+          this.tableOptions.columns[4],
+          'filterableItems',
+          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this?.$refs?.refScenariosList?.reRenderFilters()
+      })
+      .then(this.callForData)
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
+    bulkDeleteScenarios,
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
@@ -313,7 +337,12 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     handleSuccessDeleteAction(row) {
-      this.$refs.refScenariosList.unSelectRow(row)
+      this.$refs.refScenariosList.resetSelectableParams()
+      this.showDeleteModal = false
+      this.callForData()
+    },
+    handleSuccessMultipleDeleteAction() {
+      this?.$refs?.refScenariosList?.resetSelectableParams()
       this.showDeleteModal = false
       this.callForData()
     },
@@ -385,7 +414,21 @@ export default {
         })
       })
     },
+    handleMultipleDelete(selections, excludedItems, selectAll) {
+      this.isMultipleDelete = true
+      this.multipleDeletedScenariosCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleScenariosPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      this.showDeleteModal = true
+    },
     handleActionDelete(row) {
+      this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true
     }

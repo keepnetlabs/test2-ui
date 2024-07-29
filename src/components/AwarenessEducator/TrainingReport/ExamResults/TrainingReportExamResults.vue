@@ -24,6 +24,7 @@
       options
       is-server-side-selection
       is-server-side
+      isReportWithExam
       :loading="isLoading"
       :table="tableData"
       :columns="tableOptions.columns"
@@ -46,7 +47,61 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
-    />
+    >
+      <template #addUsers>
+        <v-menu
+          v-model="isExamStatusFilterMenuActive"
+          :offset-y="true"
+          bottom
+          left
+          nudge-right="4"
+          nudge-bottom="4"
+        >
+          <template #activator="{ on: menu }">
+            <v-btn v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+              <span style="font-weight: 600;">show by exam status</span>
+              <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
+                isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
+              }}</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <VRadioGroup v-model="selectedExamStatusFilter" hide-details class="mt-0">
+              <v-list-item v-for="filterItem in examStatusFilters" :key="filterItem.value">
+                <VRadio
+                  class="mb-0 mr-auto"
+                  color="#2196f3"
+                  :label="filterItem.text"
+                  :value="filterItem.value"
+                />
+                <div class="d-flex justify-items-end">
+                  <VTooltip bottom>
+                    <template #activator="{ on }">
+                      <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
+                    </template>
+                    <span>{{ filterItem.tooltipText }}</span>
+                  </VTooltip>
+                </div>
+              </v-list-item>
+            </VRadioGroup>
+          </v-list>
+        </v-menu>
+      </template>
+      <template #datatable-custom-column="{ scope, col }">
+        <div
+          v-if="col.property === 'examScore'"
+          class="training-report-exam-results__exam-score-column"
+        >
+          <v-icon
+            v-if="scope.row.examScore !== undefined && scope.row.isMainScore"
+            color="#0198AC"
+            class="mr-1"
+            >mdi-sync</v-icon
+          >
+          <span>{{ scope.row.examScore }}</span>
+        </div>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -65,7 +120,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import TrainingReportExamResultsDetails from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResultsDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
+import useExamStatusFilter from '@/hooks/awareness-educator/useExamStatusFilter'
 export default {
   name: 'TrainingReportExamResults',
   components: {
@@ -74,7 +129,7 @@ export default {
     CampaignManagerReportHeader,
     TrainingReportExamResultsDetails
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useExamStatusFilter],
   props: {
     id: {
       type: String
@@ -172,12 +227,12 @@ export default {
             property: 'examStatus',
             align: 'center',
             editable: false,
-            label: 'Status',
+            label: 'Exam Status',
             sortable: true,
             fixed: false,
             show: true,
             type: 'badge',
-            width: 200,
+            width: 300,
             filterableType: 'select',
             filterableItems:
               this?.formDetails?.examStatusEnum?.map((item) => ({
@@ -193,7 +248,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'slot',
             width: 140,
             filterableType: 'text'
           }
@@ -223,9 +278,6 @@ export default {
       },
       tableData: []
     }
-  },
-  created() {
-    this.callForData()
   },
   watch: {
     isScormProxy: {

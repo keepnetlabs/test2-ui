@@ -82,6 +82,8 @@
             :is-edit="!!selectedItem"
             :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
             :isNotificationTemplate="true"
+            :is-notification-enrollment="isSelectedNotificationEnrollment"
+            :cc-addresses.sync="formValues.ccAddresses"
             @handleEditHtmlTemplate="formValues.template = $event"
           />
         </form-group>
@@ -149,6 +151,7 @@ export default {
     return {
       labels,
       loading: false,
+      isSelectedNotificationEnrollment: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       saveDisable: this.editItemsDisabled,
@@ -171,7 +174,8 @@ export default {
         fromAddress: '',
         fromName: '',
         subject: '',
-        template: undefined
+        template: undefined,
+        ccAddresses: []
       },
       categoryItems: [],
       smtpItems: [],
@@ -284,6 +288,9 @@ export default {
           }
           if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
+            .toLowerCase()
+            .includes('enrollment')
         })
         .finally(() => {
           this.loading = false
@@ -345,6 +352,10 @@ export default {
     handleCategoryChange(resourceId = '') {
       const categoryIndex = this.categoryItems.findIndex((item) => item.value === resourceId)
       if (categoryIndex !== -1) {
+        this.isSelectedNotificationEnrollment = this.categoryItems[categoryIndex].text
+          .toLowerCase()
+          .includes('enrollment')
+        if (!this.isSelectedNotificationEnrollment) this.formValues.ccAddresses = []
         this.formValues.template = this.categoryItems[categoryIndex].template
       }
       if (!this.blockManagerComponents.hasOwnProperty(resourceId)) {

@@ -68,6 +68,8 @@ const {
   ALLOW_LIST_PERMISSIONS,
   DIRECT_EMAIL_CREATION_PERMISSIONS,
   ADVANCED_REPORTS_PERMISSIONS,
+  EXECUTIVE_REPORTS_PERMISSIONS,
+  SCHEDULED_REPORTS_PERMISSIONS,
   SMISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
   SMISHING_SCENARIOS_PERMISSIONS,
   SMISHING_TEXT_MESSAGE_TEMPLATES_PERMISSIONS,
@@ -153,6 +155,8 @@ const defaultState = {
   allowListPermissions: ALLOW_LIST_PERMISSIONS,
   directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS,
   advancedReportsPermissions: ADVANCED_REPORTS_PERMISSIONS,
+  executiveReportsPermissions: EXECUTIVE_REPORTS_PERMISSIONS,
+  scheduledReportsPermissions: SCHEDULED_REPORTS_PERMISSIONS,
   smishingSimulatorLeftMenuPermissions: SMISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
   smishingScenariosLeftMenuPermissions: SMISHING_SCENARIOS_LEFT_MENU_PERMISSIONS,
   smishingScenariosPermissions: SMISHING_SCENARIOS_PERMISSIONS,
@@ -871,6 +875,12 @@ const store = {
     },
     getAdvancedReportsSearchPermissions(state) {
       return state?.advancedReportsPermissions?.SEARCH?.hasPermission
+    },
+    getExecutiveReportsSearchPermissions(state) {
+      return state?.executiveReportsPermissions?.SEARCH?.hasPermission
+    },
+    getScheduledReportsSearchPermissions(state) {
+      return state?.scheduledReportsPermissions?.SEARCH?.hasPermission
     },
     getCampaignReportsSearchPermissions(state) {
       return state?.campaignReportsPermissions?.SEARCH?.hasPermission
@@ -1615,6 +1625,8 @@ const store = {
         'allowListPermissions',
         'directEmailCreationPermissions',
         'advancedReportsPermissions',
+        'executiveReportsPermissions',
+        'scheduledReportsPermissions',
         'smishingSimulatorLeftMenuPermissions',
         'smishingScenariosLeftMenuPermissions',
         'smishingScenariosPermissions',

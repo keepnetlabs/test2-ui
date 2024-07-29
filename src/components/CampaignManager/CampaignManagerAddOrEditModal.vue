@@ -8,6 +8,12 @@
     @closeOverlay="closeOverlay"
   >
     <template #overlay-body>
+      <DefaultErrorDialog
+        v-if="!!createErrorMessage"
+        :status="!!createErrorMessage"
+        :error-message="createErrorMessage"
+        @on-close="createErrorMessage = ''"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -79,9 +85,18 @@
               :is-edit="isEdit || isDuplicate"
               :languages="languageOptions"
               :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
-              :is-valid="isPhishingScenariosValid"
+              :is-valid="getIsPhishingScenariosValid"
+              :form-details="formDetails"
+              :initialCategoryFilter="initialCategoryFilter"
+              :initialScenarioDistribution="initialScenarioDistribution"
+              :initialTrainingForCategory="initialTrainingForCategory"
+              @distributionChanged="handleDistributionChanged"
+              @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
+              @trainingForCategoryChanged="handleTrainingForCategoryChanged"
+              @categoryFilterChanged="handleCategoryFilterChanged"
+              @phishingScenarioItemsChanged="handlePhishingScenarioItemsChanged"
             />
-            <CustomError class="mb-6 ml-2" :is-valid="isPhishingScenariosValid" />
+            <CustomError class="mb-6 ml-2" :is-valid="getIsPhishingScenariosValid" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -166,7 +181,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent, getErrorMessage } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
   createCampaignManager,
@@ -182,10 +197,10 @@ import CampaignManagerPhishingScenarios from '@/components/CampaignManager/Phish
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
-import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -202,6 +217,7 @@ export default {
     CampaignManagerSummary,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
+    DefaultErrorDialog,
     AppModal
   },
   props: {
@@ -224,6 +240,9 @@ export default {
   emits: EMITS,
   data() {
     return {
+      isSecondNextClicked: false,
+      SCENARIO_DISTRIBUTION,
+      createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,
@@ -236,12 +255,31 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
+      scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+      initialScenarioDistribution: null,
       defaultTargetGroupResourceIds: [],
-      scheduleInfoResponse: {}
+      phishingScenarioItems: [],
+      scheduleInfoResponse: {},
+      trainingForCategory: {},
+      categoryFilter: {},
+      initialCategoryFilter: null,
+      initialTrainingForCategory: null,
+      totalPhishingScenariosCount: 0
     }
   },
   computed: {
+    getIsPhishingScenariosValid() {
+      return this.isSecondNextClicked
+        ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+            this.totalPhishingScenariosCount > 0) ||
+            (this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY &&
+              !!this.selectedPhishingScenarios.length)
+        : true
+    },
     isMFAScenarioSelected() {
+      if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+        return this.phishingScenarioItems.some((scenario) => scenario.method === 'MFA')
+      }
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
     },
     getTotalTargetUserCountForTargetAudience() {
@@ -322,6 +360,8 @@ export default {
         formData.sendingLimit =
           refCampaignManagerDeliverySettings?.inputDistributionFormData?.sendingLimit
         formData.selectedSchedule = selectedSchedule
+        formData.useTargetUserTimeZone =
+          refCampaignManagerDeliverySettings?.inputScheduleFormData?.useTargetUserTimeZone
         formData.selectedScheduleId = scheduleTypeId
         formData.targetGroupResourceIds = this.targetGroupResourceIds
         formData.selectedTargetGroups = this.selectedTargetGroups
@@ -336,6 +376,12 @@ export default {
         formData.frequencyId = refCampaignManagerDeliverySettings.formData.frequency
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
+        formData.scenarioDistribution = this.scenarioDistribution
+        if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          formData.trainingForCategory = this.trainingForCategory
+          formData.categoryFilter = this.categoryFilter
+          formData.phishingScenarioItems = this.phishingScenarioItems
+        }
       }
       return formData
     },
@@ -459,10 +505,26 @@ export default {
     this.initialFormValues = this.getFormValues()
   },
   methods: {
+    handleTotalPhishingScenariosCountChange(val) {
+      this.totalPhishingScenariosCount = val
+    },
+    handleTrainingForCategoryChanged(training) {
+      this.trainingForCategory = { ...training }
+    },
+    handleDistributionChanged(val) {
+      this.scenarioDistribution = val
+    },
+    handleCategoryFilterChanged(filter) {
+      this.categoryFilter = { ...filter }
+    },
+    handlePhishingScenarioItemsChanged(items) {
+      this.phishingScenarioItems = items
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
+            name: language.name,
             text: language.description,
             value: language.resourceId
           })) || []
@@ -477,11 +539,21 @@ export default {
         if (this.isDuplicate) {
           data.name = `${data.name} - Copy`
         }
+        if (data?.categoryDistributionType !== SCENARIO_DISTRIBUTION.MANUALLY) {
+          this.initialCategoryFilter = data?.categoryFilter || null
+          this.initialTrainingForCategory = data?.trainingForCategory || null
+        }
+        this.initialScenarioDistribution =
+          data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
         this.selectedRowFormData = data
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
           resourceId: tGroup.value
         }))
+        if (this.$refs?.refCampaignManagerDeliverySettings) {
+          this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData.useTargetUserTimeZone =
+            data.useTargetUserTimeZone
+        }
         this.defaultTargetGroupResourceIds = data.targetGroups.map((tGroup) => tGroup.value)
         this.selectedTargetGroupsMapped = this.selectedTargetGroups
         if (
@@ -516,6 +588,9 @@ export default {
     },
     changeStep(flag = 1) {
       this.step += flag
+      if (this.step === 2) {
+        this.isSecondNextClicked = false
+      }
     },
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
@@ -528,9 +603,9 @@ export default {
           this.changeStep()
           return
         case 2:
+          this.isSecondNextClicked = true
           const { refCampaignManagerPhishingScenarios } = this.$refs
-          this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
-          if (!this.isPhishingScenariosValid) return
+          if (!this.getIsPhishingScenariosValid) return
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
@@ -554,11 +629,15 @@ export default {
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
             ) {
-              this.totalTargetUserCount =
-                this.userCountDetailResponse?.data?.data
-                  ?.find((detail) => detail.status === 'Active')
-                  ?.domainAllowList.find((dList) => dList.status === 'Verified')?.count ||
-                totalTargetUserCount
+              this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
+                (acc, row) => {
+                  if (row.status !== 'Active') return acc
+                  const verifiedUserCount =
+                    row?.domainAllowList?.find((r) => r.status === 'Verified')?.count || 0
+                  return acc + verifiedUserCount
+                },
+                0
+              )
             }
             if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           } else {
@@ -636,7 +715,7 @@ export default {
             },
             refCampaignManagerPhishingScenarios: { trainingTabModel }
           } = this.$refs
-          if (refCampaignManagerSummary?.canRenderPhoneNumberAlertBox) {
+          if (refCampaignManagerSummary?.canRenderNoPhoneNumberAlertBox) {
             this.$store.dispatch('common/createSnackBar', {
               message: 'There are no defined phone numbers for the selected target groups.',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -681,7 +760,7 @@ export default {
               enrollmentSendTypeId
             })
           })
-          const payload = {
+          let payload = {
             phishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
@@ -696,6 +775,7 @@ export default {
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : deliverySettingsFormData.scheduledDateTimeZoneId,
+            useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,
@@ -715,7 +795,24 @@ export default {
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
-              targetAudienceFormData.sendRandomlyUsersCalculateTypeId
+              targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
+            categoryDistributionType: this.scenarioDistribution
+          }
+          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+            payload = {
+              ...payload,
+              phishingScenarios: [],
+              categoryFilter: {
+                Condition: this.categoryFilter.filter.Condition,
+                FilterGroups: this.categoryFilter.filter.FilterGroups
+              },
+              trainingForCategory: {
+                ...this.trainingForCategory,
+                trainingLanguageIds: this.trainingForCategory.trainingLanguageIds.filter(
+                  (lang) => lang !== labels.All
+                )
+              }
+            }
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {
@@ -723,11 +820,17 @@ export default {
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
               })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
+              })
               .finally(this.setActionButtonDisability)
           } else {
             createCampaignManager(payload)
               .then(() => {
                 this.$emit(EMITS.ON_SUBMIT)
+              })
+              .catch((error) => {
+                this.createErrorMessage = getErrorMessage(error)
               })
               .finally(this.setActionButtonDisability)
           }
