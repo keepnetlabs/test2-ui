@@ -23,7 +23,7 @@
       />
     </FormGroup>
     <InputSchedule v-model="inputScheduleFormData"
-    :isEditOrDuplicate="isEdit"
+    :isEditOrDuplicate="isEdit || isDuplicate"
      ref="inputSchedule" class="mb-6" isSmishing />
     <InputDistribution
       v-model="inputDistributionFormData"
@@ -80,6 +80,9 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
       type: Boolean
     },
     targetGroupResourceIds: {
