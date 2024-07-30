@@ -60,7 +60,7 @@ import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 
 export default {
-  name: 'CampaignManagerDeliverySettings',
+  name: 'CampaignManagerSMSSettings',
   components: {
     FormGroup,
     KSelect,

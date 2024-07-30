@@ -133,6 +133,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               :type="SCENARIO_TYPES.CALLBACK"
               @set-action-button-disability="setActionButtonDisability"
             />
