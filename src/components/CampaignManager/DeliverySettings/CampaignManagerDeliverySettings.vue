@@ -103,6 +103,7 @@
     </FormGroup>
     <InputSchedule
       v-model="inputScheduleFormData"
+      :isEditOrDuplicate="isEdit"
       ref="inputSchedule"
       :isPhishing="type === SCENARIO_TYPES.PHISHING"
     />

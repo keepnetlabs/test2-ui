@@ -137,6 +137,10 @@ export default {
     isSmishing: {
       type: Boolean,
       default: false
+    },
+    isEditOrDuplicate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -196,7 +200,7 @@ export default {
       }
     },
     'value.scheduledDateTimeZoneId'(val) {
-      if (val) {
+      if (val && !this.isEditOrDuplicate) {
         getTimeByTimeZone(val).then((res) => {
           if (res?.data?.data) {
             this.value.scheduledDate = res.data.data
@@ -240,7 +244,7 @@ export default {
       }
     },
     getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
+      if (!this.isEditOrDuplicate && this.$store?.getters['common/getSelectedTimeZone']) {
         this.value.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
       } else {
         this.$store.dispatch('common/callForSettings')

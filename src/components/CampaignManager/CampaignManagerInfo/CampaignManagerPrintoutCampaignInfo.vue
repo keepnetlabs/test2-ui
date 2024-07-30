@@ -9,7 +9,9 @@
         :initial-rules="rules.name"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
+    <InputSchedule v-model="inputScheduleFormData"
+    :isEditOrDuplicate="isEdit"
+     ref="inputSchedule" class="mb-6" />
     <FormGroup
       v-if="showDuration"
       has-hint
