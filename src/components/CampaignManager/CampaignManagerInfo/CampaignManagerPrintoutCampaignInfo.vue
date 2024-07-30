@@ -10,7 +10,7 @@
       />
     </FormGroup>
     <InputSchedule v-model="inputScheduleFormData"
-    :isEditOrDuplicate="isEdit"
+    :isEditOrDuplicate="isEdit || isDuplicate"
      ref="inputSchedule" class="mb-6" />
     <FormGroup
       v-if="showDuration"
@@ -68,6 +68,9 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
       type: Boolean
     },
     showDuration: {
