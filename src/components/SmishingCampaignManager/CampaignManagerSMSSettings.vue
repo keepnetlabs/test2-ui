@@ -22,7 +22,9 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" isSmishing />
+    <InputSchedule v-model="inputScheduleFormData"
+    :isEditOrDuplicate="isEdit"
+     ref="inputSchedule" class="mb-6" isSmishing />
     <InputDistribution
       v-model="inputDistributionFormData"
       :type="DISTRIBUTION_TYPES.SMISHING"
