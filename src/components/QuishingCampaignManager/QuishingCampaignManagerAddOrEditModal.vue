@@ -125,6 +125,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               :phishing-type-id="3"
               @set-action-button-disability="setActionButtonDisability"
             />
