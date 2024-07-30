@@ -30,7 +30,7 @@
         </slot>
       </div>
     </slot>
-    <slot name="body">
+    <slot name="body" :items="items">
       <div class="campaign-manager-summary-card__body">
         <div class="campaign-manager-summary-card__body-container">
           <div

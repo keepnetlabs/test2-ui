@@ -43,7 +43,7 @@ import * as Validations from '@/utils/validations'
 import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'InputCallerPhoneNumber',
+  name: 'InputPhoneNumberComboBox',
   components: { KSelect },
   props: {
     value: {
@@ -79,7 +79,8 @@ export default {
       default: ''
     },
     rules: {
-      type: Array
+      type: Array,
+      default: () => []
     }
   },
   data() {
