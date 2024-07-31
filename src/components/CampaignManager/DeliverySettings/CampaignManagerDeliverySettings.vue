@@ -103,6 +103,7 @@
     </FormGroup>
     <InputSchedule
       v-model="inputScheduleFormData"
+      :isEditOrDuplicate="isEdit || isDuplicate"
       ref="inputSchedule"
       :isPhishing="type === SCENARIO_TYPES.PHISHING"
     />
@@ -174,6 +175,9 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
       type: Boolean
     },
     targetGroupResourceIds: {
