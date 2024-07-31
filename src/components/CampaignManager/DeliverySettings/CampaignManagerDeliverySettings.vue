@@ -271,6 +271,11 @@ export default {
       timeZones: 'common/getTimezones',
       getUser: 'auth/userGetter'
     }),
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
+    },
     canRenderAlertBox() {
       return (
         this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
@@ -402,7 +407,7 @@ export default {
           if (
             this.type === SCENARIO_TYPES.PHISHING &&
             this.getUser?.role?.name === 'Reseller' &&
-            this.targetGroupCompanyNames.some((cn) => cn !== this.getUser?.userCompany?.name)
+            this.targetGroupCompanyNames.some((cn) => cn !== this.getCompanyName)
           ) {
             deliveries.push(directEmailItems[0])
             const disabledItems = directEmailItems.map((d) => ({
