@@ -112,6 +112,7 @@ export default {
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.SENDER_PHONE_NUMBER,
           COLUMNS.LAST_CLICKED,
           COLUMNS.TIMES_CLICKED,
           Object.assign({}, COLUMNS.ACTIVITY_TYPE)

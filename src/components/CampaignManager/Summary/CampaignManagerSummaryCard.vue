@@ -38,7 +38,7 @@
             :key="key"
             class="campaign-manager-summary-card__body-item"
           >
-            <slot :name="key.replace(' ', '')" :props="{ key }">
+            <slot :name="key.replace(' ', '')" :props="{ key, val }">
               <div v-if="!hideLabel" class="campaign-manager-summary-card__body-item-key">
                 {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
               </div>
