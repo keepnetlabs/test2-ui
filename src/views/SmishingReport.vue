@@ -93,7 +93,7 @@ export default {
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport,
-          isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
+          isVisible: this.$store.getters['permissions/getSmishingReportSearchTypePermissions']
         }
       ],
       formDetails: null
