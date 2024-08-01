@@ -21,6 +21,12 @@
               <div class="campaign-manager-last-step__landing-page-template-body-header-left">
                 <div class="campaign-manager-last-step__email-template-body-header-left">
                   {{ name || formData.name }}
+                  <VTooltip v-if="isAi" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip>
                 </div>
               </div>
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
@@ -58,6 +64,12 @@
             <div class="campaign-manager-last-step__landing-page-template-body-header-left">
               <div class="campaign-manager-last-step__email-template-body-header-left">
                 {{ name || formData.name }}
+                <VTooltip v-if="isAi" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
               </div>
             </div>
             <div class="campaign-manager-last-step__landing-page-template-body-header-right">
@@ -110,112 +122,114 @@
 </template>
 
 <script>
-import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
-import Badge from '@/components/Badge'
-import labels from '@/model/constants/labels'
-import KEmailPreview from '@/components/KEmailPreview'
-import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { getDifficultyBadgeColor } from '@/utils/functions'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import CampaignManagerSummaryCard from "@/components/CampaignManager/Summary/CampaignManagerSummaryCard";
+import Badge from "@/components/Badge";
+import labels from "@/model/constants/labels";
+import KEmailPreview from "@/components/KEmailPreview";
+import { useLoading } from "@/hooks/useLoading";
+import { getCampaignManagerLandingPageTemplatePreviewContent } from "@/api/landingPage";
+import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
+import { getDifficultyBadgeColor } from "@/utils/functions";
+import { SCENARIO_TYPES } from "@/components/Common/Simulator/utils";
 
 export default {
-  name: 'CampaignManagerReportSummaryLandingPage',
+  name: "CampaignManagerReportSummaryLandingPage",
   components: {
     DatatableLoading,
     KEmailPreview,
     Badge,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
   },
   mixins: [useLoading],
   props: {
     formData: {
-      type: Object
+      type: Object,
     },
     isFetchingSummary: {
-      type: Boolean
+      type: Boolean,
     },
     difficulties: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     methods: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     type: {
       type: String,
-      default: SCENARIO_TYPES.PHISHING
-    }
+      default: SCENARIO_TYPES.PHISHING,
+    },
   },
   data() {
     return {
-      selectedTab: '1',
+      selectedTab: "1",
       labels,
       isShowLandingPageTemplate: false,
       templates: [],
-      name: '',
-      urlTemplate: '',
-      method: '',
-      difficulty: ''
-    }
+      name: "",
+      urlTemplate: "",
+      method: "",
+      difficulty: "",
+      isAi: false
+    };
   },
   computed: {
     getTitle() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? labels.LandingPageWhoUsers
-        : labels.LandingPageWhoQuishing
+        : labels.LandingPageWhoQuishing;
     },
     isFormData() {
-      return Object.keys(this.formData || {}).length
+      return Object.keys(this.formData || {}).length;
     },
     getCurrentTemplate() {
       return this.templates?.length > 1
-        ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ''
-        : this.templates?.[0]?.content || ''
+        ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ""
+        : this.templates?.[0]?.content || "";
     },
     getLandingPageUrlText() {
-      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
-    }
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL;
+    },
   },
   watch: {
     formData: {
       handler(fd) {
         if (fd?.landingPageTemplates) {
-          this.templates = fd.landingPageTemplates
+          this.templates = fd.landingPageTemplates;
         } else if (fd?.resourceId && fd?.jobResourceId) {
-          this.callForTemplate(fd.resourceId, fd.jobResourceId, fd.instanceGroup)
+          this.callForTemplate(fd.resourceId, fd.jobResourceId, fd.instanceGroup);
         }
       },
       deep: true,
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
-    callForTemplate(resourceId = '', jobResourceId = '', instanceGroup = '') {
+    callForTemplate(resourceId = "", jobResourceId = "", instanceGroup = "") {
       if (this.isFetchingSummary) {
-        this.setLoading(true)
+        this.setLoading(true);
       }
       getCampaignManagerLandingPageTemplatePreviewContent(resourceId, jobResourceId, instanceGroup)
         .then((response) => {
           const {
-            data: { data }
-          } = response
-          this.templates = data?.landingPages || []
-          this.name = data?.name || ''
-          this.urlTemplate = data?.urlTemplate || ''
-          this.method = this.methods[data.methodTypeId - 1].text
-          this.difficulty = this.difficulties[data.difficultyTypeId - 1].text
+            data: { data },
+          } = response;
+          this.templates = data?.landingPages || [];
+          this.name = data?.name || "";
+          this.urlTemplate = data?.urlTemplate || "";
+          this.method = this.methods[data.methodTypeId - 1].text;
+          this.difficulty = this.difficulties[data.difficultyTypeId - 1].text;
+          this.isAi = data?.isAi || false
         })
-        .finally(this.setLoading)
+        .finally(this.setLoading);
     },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
+    getBadgeColor(text = "") {
+      return getDifficultyBadgeColor(text);
     },
-    getBadgeText(text = '') {
-      return text
-    }
-  }
-}
+    getBadgeText(text = "") {
+      return text;
+    },
+  },
+};
 </script>

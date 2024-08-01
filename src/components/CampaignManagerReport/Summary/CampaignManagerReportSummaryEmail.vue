@@ -13,6 +13,12 @@
         <div class="campaign-manager-last-step__email-template-body-header">
           <div class="campaign-manager-last-step__email-template-body-header-left">
             {{ name }}
+            <VTooltip v-if="isAi" bottom>
+              <template #activator="{ on }">
+                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+              </template>
+              <span>This template was generated with AI</span>
+            </VTooltip>
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
@@ -66,72 +72,73 @@
 </template>
 
 <script>
-import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
-import labels from '@/model/constants/labels'
-import Badge from '@/components/Badge'
-import KEmailPreview from '@/components/KEmailPreview'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { useLoading } from '@/hooks/useLoading'
-import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsimulator'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import { getDifficultyBadgeColor } from '@/utils/functions'
+import CampaignManagerSummaryCard from "@/components/CampaignManager/Summary/CampaignManagerSummaryCard";
+import labels from "@/model/constants/labels";
+import Badge from "@/components/Badge";
+import KEmailPreview from "@/components/KEmailPreview";
+import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
+import { useLoading } from "@/hooks/useLoading";
+import { getCampaignManagerEmailTemplatePreviewContent } from "@/api/phishingsimulator";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview";
+import { getDifficultyBadgeColor } from "@/utils/functions";
 
 export default {
-  name: 'CampaignManagerReportSummaryEmail',
+  name: "CampaignManagerReportSummaryEmail",
   components: {
     AttachmentsPreview,
     DatatableLoading,
     KEmailPreview,
     Badge,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
   },
   mixins: [useLoading],
   props: {
     formData: {
-      type: Object
+      type: Object,
     },
     difficulties: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     methods: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     isFetchingSummary: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   data() {
     return {
       isShowEmailTemplate: false,
       labels,
       emailTemplate: null,
-      difficulty: '',
-      method: '',
-      name: '',
-      fromName: '',
-      fromAddress: ''
-    }
+      difficulty: "",
+      method: "",
+      name: "",
+      fromName: "",
+      fromAddress: "",
+      isAi: false
+    };
   },
   computed: {
     isFormData() {
-      return Object.keys(this.formData).length
-    }
+      return Object.keys(this.formData).length;
+    },
   },
   watch: {
     isShowEmailTemplate(val = false) {
       if (val && !this.emailTemplate) {
-        this.callForTemplate()
+        this.callForTemplate();
       }
     },
-    'formData.resourceId'() {
-      this.callForTemplate(false)
-    }
+    "formData.resourceId"() {
+      this.callForTemplate(false);
+    },
   },
   methods: {
     callForTemplate(showLoader = true) {
-      if (showLoader) this.setLoading(true)
+      if (showLoader) this.setLoading(true);
       if (
         this.formData?.resourceId &&
         this.formData?.campaignResourceId &&
@@ -144,27 +151,29 @@ export default {
         )
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            this.emailTemplate = data.template
+              data: { data },
+            } = response;
+            this.emailTemplate = data.template;
             this.difficulty =
-              this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
+              this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text ||
+              "";
             this.method =
-              this.methods.find((item) => item.value === data.categoryResourceId)?.text || ''
-            this.fromName = data.fromName
-            this.fromAddress = data.fromAddress
-            this.name = data.name
+              this.methods.find((item) => item.value === data.categoryResourceId)?.text || "";
+            this.fromName = data.fromName;
+            this.fromAddress = data.fromAddress;
+            this.name = data.name;
+            this.isAi = data?.isAi || false;
           })
           .finally(() => {
-            if (showLoader) this.setLoading()
-          })
+            if (showLoader) this.setLoading();
+          });
     },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
+    getBadgeColor(text = "") {
+      return getDifficultyBadgeColor(text);
     },
-    getBadgeText(text = '') {
-      return text
-    }
-  }
-}
+    getBadgeText(text = "") {
+      return text;
+    },
+  },
+};
 </script>

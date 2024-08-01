@@ -108,6 +108,12 @@
                   <div class="d-flex flex-column wrapWord">
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
+                      <VTooltip v-if="item.isAi" bottom>
+                        <template #activator="{ on }">
+                          <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                        </template>
+                        <span>This template was generated with AI</span>
+                      </VTooltip>
                     </div>
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}

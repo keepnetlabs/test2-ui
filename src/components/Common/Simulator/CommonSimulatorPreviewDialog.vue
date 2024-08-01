@@ -23,12 +23,20 @@
               <div v-if="isQuishing">
                 <span class="template-preview__text--title">Quishing Type: </span>
                 <span class="template-preview__text--body">{{
-                  emailTemplateParams.type || 'Email'
+                  emailTemplateParams.type || "Email"
                 }}</span>
               </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <span class="template-preview__text--body"
+                  >{{ emailTemplateParams.name }}
+                  <VTooltip v-if="emailTemplateParams.isAi" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip>
+                </span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title">From: </span>
@@ -103,43 +111,43 @@
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
-import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
-import KEmailPreview from '@/components/KEmailPreview.vue'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
-import AppDialog from '@/components/AppDialog.vue'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
-import labels from '@/model/constants/labels'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import QuishingService from '@/api/quishing'
+import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading.vue";
+import TabsWithMfaSettings from "@/components/PhishingScenarios/TabsWithMfaSettings.vue";
+import KEmailPreview from "@/components/KEmailPreview.vue";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue";
+import AppDialog from "@/components/AppDialog.vue";
+import AppDialogFooterWithClose from "@/components/SmallComponents/AppDialogFooterWithClose.vue";
+import labels from "@/model/constants/labels";
+import { difficulties, methods } from "@/components/CampaignManager/CampaignManagerInfo/utils";
+import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from "@/components/Common/Simulator/utils";
+import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
+import QuishingService from "@/api/quishing";
 export default {
-  name: 'CommonSimulatorPreviewDialog',
+  name: "CommonSimulatorPreviewDialog",
   components: {
     AppDialogFooterWithClose,
     AppDialog,
     AttachmentsPreview,
     KEmailPreview,
     TabsWithMfaSettings,
-    DatatableLoading
+    DatatableLoading,
   },
   props: {
     status: {
-      type: Boolean
+      type: Boolean,
     },
     selectedRow: {
-      type: Object
+      type: Object,
     },
     apiFunc: {
       type: Function,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: PREVIEW_DIALOG_TYPES.PHISHING
-    }
+      default: PREVIEW_DIALOG_TYPES.PHISHING,
+    },
   },
   data() {
     return {
@@ -149,76 +157,76 @@ export default {
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
-      category: '',
-      tab: 'email',
+      category: "",
+      tab: "email",
       isLoading: false,
       labels,
-      timeoutId: '',
-      isIndividualPrintoutButtonDisabled: false
-    }
+      timeoutId: "",
+      isIndividualPrintoutButtonDisabled: false,
+    };
   },
   computed: {
     getFirstTabLabel() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.JustEmail
-        : labels.QuishingTemplate
+        : labels.QuishingTemplate;
     },
     getIndividualPrintoutStyle() {
       const style = {
-        textTransform: 'capitalize'
-      }
+        textTransform: "capitalize",
+      };
       if (this.isIndividualPrintoutButtonDisabled) {
-        style.cursor = 'default'
-        style.opacity = 0.5
+        style.cursor = "default";
+        style.opacity = 0.5;
       }
-      return style
+      return style;
     },
     isQuishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+      return this.type === PREVIEW_DIALOG_TYPES.QUISHING;
     },
     isPhishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING;
     },
     isQuishingTypeIndividualPrintOut() {
-      if (!this.isQuishing) return false
+      if (!this.isQuishing) return false;
       return (
         this?.emailTemplateParams?.type?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
-      )
+      );
     },
     isAttachmentBasedScenario() {
-      return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
+      return this.selectedRow?.method ? this.selectedRow?.method === "Attachment" : false;
     },
     getTitle() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.PhishingScenarioPreview
-        : labels.QuishingScenarioPreview
+        : labels.QuishingScenarioPreview;
     },
     getSubtitle() {
-      return this.selectedRow?.name || ''
+      return this.selectedRow?.name || "";
     },
     getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
-    }
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content;
+    },
   },
   created() {
-    this.callForData()
+    this.callForData();
   },
   beforeDestroy() {
-    clearTimeout(this.timeoutId)
+    clearTimeout(this.timeoutId);
   },
   methods: {
     callForData() {
-      this.setLoading(true)
-      const params = [this.selectedRow.resourceId]
+      this.setLoading(true);
+      const params = [this.selectedRow.resourceId];
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-        params.push(this.selectedRow.quishingType.toLowerCase())
+        params.push(this.selectedRow.quishingType.toLowerCase());
       this.apiFunc(...params)
         .then((response) => {
-          const { data: { data = {} } = {} } = response
-          let { emailTemplate, landingPageTemplate, quishingTemplate, category = '' } = data
-          if (!emailTemplate) emailTemplate = quishingTemplate
-          this.category = category
+          const { data: { data = {} } = {} } = response;
+          let { emailTemplate, landingPageTemplate, quishingTemplate, category = "" } = data;
+          if (!emailTemplate) emailTemplate = quishingTemplate;
+          this.category = category;
           let {
             template,
             fromName,
@@ -228,8 +236,9 @@ export default {
             phishingFileName,
             subject,
             type,
-            resourceId
-          } = emailTemplate || {}
+            resourceId,
+            isAi = false,
+          } = emailTemplate || {};
 
           this.emailTemplateParams = {
             resourceId,
@@ -237,17 +246,18 @@ export default {
             fromAddress,
             name,
             subject,
+            isAi,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {
-                  name: phishingFileName
+                  name: phishingFileName,
                 }
               : null,
-            type
-          }
+            type,
+          };
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-            template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplate = template
+            template = template?.replaceAll("{QRCODEURLIMAGE}", qrCodeString);
+          this.emailTemplate = template;
 
           const {
             name: landingPageName,
@@ -255,53 +265,55 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            methodTypeId
-          } = landingPageTemplate || []
+            methodTypeId,
+            isAi: isLandingPageAi = false,
+          } = landingPageTemplate || [];
 
           this.landingPageParams = {
             name: landingPageName,
+            isAi: isLandingPageAi,
             description,
             urlTemplate,
-            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-            method: methods[methodTypeId - 1]?.text || '',
+            difficulty: difficulties[difficultyTypeId - 1]?.text || "",
+            method: methods[methodTypeId - 1]?.text || "",
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
-            mfaSmsSenderNumber: data.mfaSmsSenderNumber
-          }
-          this.landingPageTemplates = landingPages
-          this.isMethodMfa = data.methodTypeId === 4
+            mfaSmsSenderNumber: data.mfaSmsSenderNumber,
+          };
+          this.landingPageTemplates = landingPages;
+          this.isMethodMfa = data.methodTypeId === 4;
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
-            this.setLoading()
-          }, 500)
-        })
+            this.setLoading();
+          }, 500);
+        });
     },
     setLoading(flag = false) {
-      this.isLoading = flag
+      this.isLoading = flag;
     },
     handleClose() {
-      this.$emit('on-close')
+      this.$emit("on-close");
     },
     handlePreviewIndividualPrintout() {
-      this.isIndividualPrintoutButtonDisabled = true
+      this.isIndividualPrintoutButtonDisabled = true;
       QuishingService.getQuishingPdfPreviewContent(this.emailTemplateParams.resourceId)
         .then((response) => {
-          const file = new File([response.data], 'Quishing PDF Preview', {
-            type: 'application/pdf'
-          })
-          const fileURL = URL.createObjectURL(file)
-          const newWindow = window.open(fileURL)
+          const file = new File([response.data], "Quishing PDF Preview", {
+            type: "application/pdf",
+          });
+          const fileURL = URL.createObjectURL(file);
+          const newWindow = window.open(fileURL);
           newWindow.onload = function () {
             setTimeout(() => {
-              newWindow.document.title = 'Quishing PDF Preview'
-            }, 250)
-          }
+              newWindow.document.title = "Quishing PDF Preview";
+            }, 250);
+          };
         })
         .finally(() => {
-          this.isIndividualPrintoutButtonDisabled = false
-        })
-    }
-  }
-}
+          this.isIndividualPrintoutButtonDisabled = false;
+        });
+    },
+  },
+};
 </script>

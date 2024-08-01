@@ -116,7 +116,7 @@
               :style="{
                 width: '25% !important',
                 minWidth: '360px',
-                pointerEvents: loadingTemplates ? 'none' : 'inherit'
+                pointerEvents: loadingTemplates ? 'none' : 'inherit',
               }"
               @scroll="handleScroll"
             >
@@ -126,7 +126,7 @@
                 :class="{
                   'template-list': true,
                   'template-list--selected': item['selected'],
-                  'template-list--editing': isEditMode
+                  'template-list--editing': isEditMode,
                 }"
                 @click="setSelectedTemplate(item, index)"
               >
@@ -134,13 +134,19 @@
                   <div class="d-flex flex-column wrapWord">
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
+                      <VTooltip v-if="item.isAi" bottom>
+                        <template #activator="{ on }">
+                          <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                        </template>
+                        <span>This template was generated with AI</span>
+                      </VTooltip>
                     </div>
                     <div
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
                       <template v-if="!isCallback">
-                        {{ item['categoryName'] }}
+                        {{ item["categoryName"] }}
                       </template>
                       <span class="template-list--item__sub-header--span"
                         ><span v-if="!isCallback" style="font-size: 20px; vertical-align: sub;"
@@ -148,16 +154,16 @@
                         >
                         by</span
                       >
-                      {{ item['createdBy'] }}
+                      {{ item["createdBy"] }}
                     </div>
                   </div>
                   <div
                     :class="[
                       'template-list--item template-list--item__difficulty',
-                      getItemDifficultyClass(item['difficultyName'])
+                      getItemDifficultyClass(item['difficultyName']),
                     ]"
                   >
-                    {{ item['difficultyName'] }}
+                    {{ item["difficultyName"] }}
                   </div>
                 </div>
 
@@ -166,7 +172,7 @@
                 </div>
                 <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
-                  <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                  <div v-if="!item.tags || !item.tags.length">{{ "\xa0" }}</div>
                   <div class="d-flex align-center">
                     <div class="template-list--item__narrator mr-2">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
@@ -196,8 +202,8 @@
               >
                 {{
                   isQuishingTypeIndividualPrintOut
-                    ? 'You do not have any individual printout templates'
-                    : 'You do not have Email Template'
+                    ? "You do not have any individual printout templates"
+                    : "You do not have Email Template"
                 }}
               </div>
               <div
@@ -385,72 +391,72 @@
   </div>
 </template>
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import AppDialog from '@/components/AppDialog'
+import { Multipane, MultipaneResizer } from "vue-multipane";
+import AppDialog from "@/components/AppDialog";
 import {
   getEmailTemplatePreviewContent,
   getEmailTemplatesList,
   getMergedTextForPhishing,
   updatePhishingEmailTemplate,
-  createPhishingEmailTemplate
-} from '@/api/phishingsimulator'
-import KEmailPreview from '@/components/KEmailPreview'
-import ShowMoreTags from '@/components/ShowMoreTags'
-import InfiniteScroll from '@/directives/infinite-scroll'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+  createPhishingEmailTemplate,
+} from "@/api/phishingsimulator";
+import KEmailPreview from "@/components/KEmailPreview";
+import ShowMoreTags from "@/components/ShowMoreTags";
+import InfiniteScroll from "@/directives/infinite-scroll";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview";
 import {
   getDefaultEmailTemplatePayload,
   SCENARIO_DIFFICULTIES,
-  SCENARIO_METHODS
-} from '@/components/PhishingScenarios/utils'
-import useDebounce from '@/hooks/useDebounce'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
-import { isDifferent } from '@/utils/functions'
-import * as Validations from '@/utils/validations'
-import labels from '@/model/constants/labels'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+  SCENARIO_METHODS,
+} from "@/components/PhishingScenarios/utils";
+import useDebounce from "@/hooks/useDebounce";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
+import { SCENARIO_TYPES } from "@/components/Common/Simulator/utils";
+import EmailTemplate from "@/components/Company Settings/EmailTemplate";
+import { MERGED_TEXTS } from "@/components/PhishingScenarios/utils";
+import { isDifferent } from "@/utils/functions";
+import * as Validations from "@/utils/validations";
+import labels from "@/model/constants/labels";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
 export default {
-  name: 'EmailTemplateListPreview',
+  name: "EmailTemplateListPreview",
   props: {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false },
-    categoryResourceId: { type: String, default: '' },
+    categoryResourceId: { type: String, default: "" },
     defaultBodyData: {
-      type: Object
+      type: Object,
     },
     apiFuncs: {
       type: Object,
       default: () => ({
         list: getEmailTemplatesList,
-        content: getEmailTemplatePreviewContent
-      })
+        content: getEmailTemplatePreviewContent,
+      }),
     },
     quishingType: {
       type: String,
-      default: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+      default: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
     },
     languages: {
-      type: Array
+      type: Array,
     },
     isCallback: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isAttachmentBasedScenario: {
-      type: Boolean
+      type: Boolean,
     },
     type: {
       type: String,
-      default: SCENARIO_TYPES.PHISHING
-    }
+      default: SCENARIO_TYPES.PHISHING,
+    },
   },
   directives: {
-    'infinite-scroll': InfiniteScroll
+    "infinite-scroll": InfiniteScroll,
   },
   components: {
     KSelect,
@@ -461,7 +467,7 @@ export default {
     AppDialog,
     AttachmentsPreview,
     EmailTemplate,
-    AppDialogFooter
+    AppDialogFooter,
   },
   mixins: [useDebounce],
   data() {
@@ -469,7 +475,7 @@ export default {
       labels,
       isSaving: false,
       emailTemplateData: {},
-      attachmentName: '',
+      attachmentName: "",
       isRenameAttachmentModalVisible: false,
       isAttachmentError: false,
       isPhishingFileModified: false,
@@ -498,53 +504,53 @@ export default {
       selectedPreviousIndex: 0,
       initialEditData: {},
       editData: {
-        name: '',
+        name: "",
         fromAddress: null,
         fromName: null,
         subject: null,
         template: null,
         phishingFile: null,
-        phishingFileName: ''
+        phishingFileName: "",
       },
       commonRules: {
-        hint: '*Required',
+        hint: "*Required",
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
-      }
-    }
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName)),
+        ],
+      },
+    };
   },
   computed: {
     getEmailTemplateDialogSubtitle() {
       if (this.isQuishing)
         return this.isQuishingTypeIndividualPrintOut
-          ? 'Individual Printout Template Preview'
-          : 'Quishing Email Template Preview'
-      return 'Email Template Preview'
+          ? "Individual Printout Template Preview"
+          : "Quishing Email Template Preview";
+      return "Email Template Preview";
     },
     isQuishing() {
-      return this.type === SCENARIO_TYPES.QUISHING
+      return this.type === SCENARIO_TYPES.QUISHING;
     },
     isPhishing() {
-      return this.type === SCENARIO_TYPES.PHISHING
+      return this.type === SCENARIO_TYPES.PHISHING;
     },
     isQuishingTypeEmail() {
-      if (!this.isQuishing) return false
-      return this.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL.toLowerCase()
+      if (!this.isQuishing) return false;
+      return this.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL.toLowerCase();
     },
     isQuishingTypeIndividualPrintOut() {
-      if (!this.isQuishing) return false
+      if (!this.isQuishing) return false;
       return (
         this.quishingType.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
-      )
-    }
+      );
+    },
   },
   watch: {
     isEditMode(val) {
-      this.$emit('edit-mode', val)
+      this.$emit("edit-mode", val);
     },
     search(newVal, oldVal) {
       if (!newVal) {
@@ -552,72 +558,72 @@ export default {
           this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
           this.bodyData.filter.FilterGroups[0].FilterItems[1].value
         ) {
-          this.getTemplates(true)
+          this.getTemplates(true);
         } else {
           this.listData = [...this.defaultListData].map((item) => ({
             ...item,
-            selected: item.resourceId === this.emailTemplateResourceId
-          }))
-          this.templateHTML = this.activeTemplateHTML || this.templateHTML
+            selected: item.resourceId === this.emailTemplateResourceId,
+          }));
+          this.templateHTML = this.activeTemplateHTML || this.templateHTML;
         }
       } else {
         if (newVal !== oldVal) {
-          this.callForSearch()
+          this.callForSearch();
         }
       }
-    }
+    },
   },
   mounted() {
-    this.callForMergedTags()
-    this.getTemplates(true, this.emailTemplateResourceId)
+    this.callForMergedTags();
+    this.getTemplates(true, this.emailTemplateResourceId);
   },
   methods: {
     handleShowRenameAttachmentModal() {
-      this.isRenameAttachmentModalVisible = true
+      this.isRenameAttachmentModalVisible = true;
     },
     handleCloseRenameAttachmentModal() {
-      this.attachmentName = ''
-      this.isRenameAttachmentModalVisible = false
+      this.attachmentName = "";
+      this.isRenameAttachmentModalVisible = false;
     },
     handleConfirmRenameAttachment() {
       if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
-        let fileExtension = ''
-        const type = this.editData.phishingFile[0].type
+        let fileExtension = "";
+        const type = this.editData.phishingFile[0].type;
         if (this.editData.phishingFile[0].name) {
-          fileExtension = this.editData.phishingFile?.[0]?.name.split('.')[1]
-          const file = this.editData.phishingFile[0]
+          fileExtension = this.editData.phishingFile?.[0]?.name.split(".")[1];
+          const file = this.editData.phishingFile[0];
           this.editData.phishingFile = [
             new File([file], `${this.attachmentName}.${fileExtension}`, {
-              type
-            })
-          ]
+              type,
+            }),
+          ];
         } else {
-          fileExtension = this.editData.phishingFile?.[0]?.fileName?.split('.')?.[1]
+          fileExtension = this.editData.phishingFile?.[0]?.fileName?.split(".")?.[1];
           this.editData.phishingFile = [
             {
               ...this.editData.phishingFile[0],
-              fileName: `${this.attachmentName}.${fileExtension}`
-            }
-          ]
+              fileName: `${this.attachmentName}.${fileExtension}`,
+            },
+          ];
         }
-        this.isPhishingFileModified = true
-        this.handleCloseRenameAttachmentModal()
+        this.isPhishingFileModified = true;
+        this.handleCloseRenameAttachmentModal();
       }
     },
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
-        this.blockManagerComponents = response.data.data['mergeTags']
-        this.setActiveBlockManagerComponents(this.blockManagerComponents)
-      })
+        this.blockManagerComponents = response.data.data["mergeTags"];
+        this.setActiveBlockManagerComponents(this.blockManagerComponents);
+      });
     },
     setActiveBlockManagerComponents(activeComponent = []) {
       this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {
-        acc[item] = this.getTagsComponent(item)
-        return acc
-      }, {})
+        acc[item] = this.getTagsComponent(item);
+        return acc;
+      }, {});
     },
     getTagsComponent(item) {
-      return MERGED_TEXTS[item]
+      return MERGED_TEXTS[item];
     },
     handleEdit() {
       this.initialEditData = {
@@ -626,27 +632,27 @@ export default {
         fromName: this.templateFromName,
         subject: this.templateSubject,
         template: this.templateHTML,
-        phishingFile: this.phishingFile
-      }
-      this.editData = { ...this.initialEditData }
-      this.isEditMode = true
+        phishingFile: this.phishingFile,
+      };
+      this.editData = { ...this.initialEditData };
+      this.isEditMode = true;
     },
     handleExitEditing() {
-      const isChanged = isDifferent(this.editData, this.initialEditData)
+      const isChanged = isDifferent(this.editData, this.initialEditData);
       if (!isChanged) {
-        this.isEditMode = false
-        return
+        this.isEditMode = false;
+        return;
       }
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
         show: true,
         callback: () => {
-          this.isEditMode = false
-        }
-      })
+          this.isEditMode = false;
+        },
+      });
     },
     handleSaveAsNew() {
-      if (!this.validateEditData()) return
-      this.isSaving = true
+      if (!this.validateEditData()) return;
+      this.isSaving = true;
       let payload = {
         ...this.emailTemplateData,
         ...this.editData,
@@ -665,25 +671,25 @@ export default {
         phishingFileName:
           !this.isAddedNewPhishingFile && !!this.editData?.phishingFile?.length
             ? this.editData.phishingFile[0]?.fileName
-            : null
-      }
-      delete payload.attachments
-      delete payload.resourceId
+            : null,
+      };
+      delete payload.attachments;
+      delete payload.resourceId;
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then((response) => {
           this.insertTemplate(response?.data?.data?.resourceId, {
             ...payload,
-            ...response?.data?.data?.searchPsEmailTemplate
-          })
+            ...response?.data?.data?.searchPsEmailTemplate,
+          });
         })
         .finally(() => {
-          this.isSaving = false
-          this.isEditMode = false
-        })
+          this.isSaving = false;
+          this.isEditMode = false;
+        });
     },
     handleSaveChanges() {
-      if (!this.validateEditData()) return
-      this.isSaving = true
+      if (!this.validateEditData()) return;
+      this.isSaving = true;
       let payload = {
         ...this.emailTemplateData,
         ...this.editData,
@@ -698,301 +704,301 @@ export default {
         phishingFileName:
           !this.isAddedNewPhishingFile && !!this.editData?.phishingFile?.length
             ? this.editData.phishingFile[0]?.fileName
-            : null
-      }
-      delete payload.attachments
+            : null,
+      };
+      delete payload.attachments;
       updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then(() => {
-          this.updateTemplate(this.emailTemplateData.resourceId, payload)
+          this.updateTemplate(this.emailTemplateData.resourceId, payload);
         })
         .finally(() => {
-          this.isSaving = false
-          this.isEditMode = false
-        })
+          this.isSaving = false;
+          this.isEditMode = false;
+        });
     },
     updateTemplate(resourceId, newTemplate) {
       const templateIndex = this.listData.findIndex(
         (template) => template.resourceId === resourceId
-      )
+      );
       if (templateIndex !== -1) {
-        this.listData[templateIndex] = { ...this.listData[templateIndex], ...newTemplate }
-        this.selectedTemplateHeader = this.listData[templateIndex].name || ''
-        this.templateHTML = this.listData[templateIndex].template
-        this.templateFromName = this.listData[templateIndex].fromName || ''
-        this.templateSubject = this.listData[templateIndex].subject || ''
-        this.templateFromEmail = this.listData[templateIndex].fromAddress || ''
+        this.listData[templateIndex] = { ...this.listData[templateIndex], ...newTemplate };
+        this.selectedTemplateHeader = this.listData[templateIndex].name || "";
+        this.templateHTML = this.listData[templateIndex].template;
+        this.templateFromName = this.listData[templateIndex].fromName || "";
+        this.templateSubject = this.listData[templateIndex].subject || "";
+        this.templateFromEmail = this.listData[templateIndex].fromAddress || "";
         this.phishingFile = this.listData[templateIndex].phishingFileName
           ? [
               {
                 fileName: this.listData[templateIndex].phishingFileName,
-                url: this.listData[templateIndex].phishingFileUrl
-              }
+                url: this.listData[templateIndex].phishingFileUrl,
+              },
             ]
-          : []
+          : [];
       }
     },
     insertTemplate(resourceId, newTemplate) {
-      this.selectedTemplateHeader = newTemplate.name || ''
-      this.templateHTML = newTemplate.template
-      this.templateFromName = newTemplate.fromName || ''
-      this.templateSubject = newTemplate.subject || ''
-      this.templateFromEmail = newTemplate.fromAddress || ''
+      this.selectedTemplateHeader = newTemplate.name || "";
+      this.templateHTML = newTemplate.template;
+      this.templateFromName = newTemplate.fromName || "";
+      this.templateSubject = newTemplate.subject || "";
+      this.templateFromEmail = newTemplate.fromAddress || "";
       this.phishingFile = newTemplate.phishingFileName
         ? [
             {
               fileName: newTemplate.phishingFileName,
-              url: newTemplate.phishingFileUrl
-            }
+              url: newTemplate.phishingFileUrl,
+            },
           ]
-        : []
-      this.listData.unshift({ resourceId, ...newTemplate })
-      this.listData[0].selected = true
+        : [];
+      this.listData.unshift({ resourceId, ...newTemplate });
+      this.listData[0].selected = true;
       this.listData.forEach((item, index) => {
         if (index !== 0) {
-          item.selected = false
+          item.selected = false;
         }
-      })
-      this.emailTemplateData = { resourceId, ...newTemplate }
-      this.setSelectedTemplate({ resourceId, ...newTemplate }, 0)
+      });
+      this.emailTemplateData = { resourceId, ...newTemplate };
+      this.setSelectedTemplate({ resourceId, ...newTemplate }, 0);
     },
     validateEditData() {
-      if (!this.editData.name) return false
-      if (!this.editData.subject) return false
-      if (!this.editData.fromName) return false
+      if (!this.editData.name) return false;
+      if (!this.editData.subject) return false;
+      if (!this.editData.fromName) return false;
       if (!this.editData.fromAddress || Validations.email(this.editData.fromAddress) !== true)
-        return false
-      if (!this.editData.template) return false
-      if (this.isAttachmentBasedScenario && !this.editData.phishingFile) return false
-      return true
+        return false;
+      if (!this.editData.template) return false;
+      if (this.isAttachmentBasedScenario && !this.editData.phishingFile) return false;
+      return true;
     },
     setAttachmentFile(file) {
-      if (Array.isArray(file) && file.length === 0) return
+      if (Array.isArray(file) && file.length === 0) return;
       if (file && !file.type) {
-        let newFile = null
-        let fileExtension = ''
-        if (file?.name.includes('.')) {
-          fileExtension = file?.name?.split('.')?.pop()
+        let newFile = null;
+        let fileExtension = "";
+        if (file?.name.includes(".")) {
+          fileExtension = file?.name?.split(".")?.pop();
         }
-        if (fileExtension === '.doc') {
-          newFile = new File([file], file.name, { type: 'application/msword' })
-        } else if (fileExtension === 'docx') {
+        if (fileExtension === ".doc") {
+          newFile = new File([file], file.name, { type: "application/msword" });
+        } else if (fileExtension === "docx") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-          })
-        } else if (fileExtension === 'ppt') {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          });
+        } else if (fileExtension === "ppt") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.ms-powerpoint'
-          })
-        } else if (fileExtension === 'pptx') {
+            type: "application/vnd.ms-powerpoint",
+          });
+        } else if (fileExtension === "pptx") {
           newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-          })
+            type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          });
         }
-        this.editData.phishingFile = Array.isArray(newFile) ? newFile : [newFile] || []
-        this.isAttachmentError = false
+        this.editData.phishingFile = Array.isArray(newFile) ? newFile : [newFile] || [];
+        this.isAttachmentError = false;
       } else {
-        this.editData.phishingFile = Array.isArray(file) ? file : [file] || []
-        this.isAttachmentError = false
+        this.editData.phishingFile = Array.isArray(file) ? file : [file] || [];
+        this.isAttachmentError = false;
       }
-      this.isPhishingFileModified = true
-      this.isAddedNewPhishingFile = true
+      this.isPhishingFileModified = true;
+      this.isAddedNewPhishingFile = true;
     },
     handleDeleteAttachment() {
-      this.editData.phishingFile = null
-      this.isAddedNewPhishingFile = false
+      this.editData.phishingFile = null;
+      this.isAddedNewPhishingFile = false;
     },
     getItemDescription(item = {}) {
       if (!item?.description) {
-        return '\xa0'
+        return "\xa0";
       }
 
-      if (item?.description === 'null' || item?.description === 'undefined') {
-        return '\xa0'
+      if (item?.description === "null" || item?.description === "undefined") {
+        return "\xa0";
       }
 
-      return item?.description || '\xa0'
+      return item?.description || "\xa0";
     },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
+    getItemDifficultyClass(difficulty = "") {
+      return difficulty === "Easy"
+        ? "difficulty-easy"
+        : difficulty === "Medium"
+        ? "difficulty-medium"
+        : "difficulty-hard";
     },
     callForSearch() {
       this.debounce(() => {
-        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
-        copyOfBodyData.pageNumber = 1
-        copyOfBodyData.pageSize = 100
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
-        copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
-        this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
+        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData));
+        copyOfBodyData.pageNumber = 1;
+        copyOfBodyData.pageSize = 100;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[1].value = this.search;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search;
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search;
+        this.checkAndAddResourceIdToPayload(true, copyOfBodyData);
         this.apiFuncs
           .list(copyOfBodyData)
           .then((response) => {
-            const { data } = response
+            const { data } = response;
             if (!response.data.data.results.length) {
-              this.listData = []
-              this.activeTemplateHTML = this.templateHTML
-              this.templateHTML = null
+              this.listData = [];
+              this.activeTemplateHTML = this.templateHTML;
+              this.templateHTML = null;
             } else {
               this.listData = data.data.results.map((item) => {
                 return {
                   ...item,
-                  selected: item.resourceId === this.emailTemplateResourceId
-                }
-              })
+                  selected: item.resourceId === this.emailTemplateResourceId,
+                };
+              });
             }
           })
           .finally(() => {
-            this.loadingTemplates = false
-            this.showLoader = false
-            this.$emit('loading', false)
-          })
-      }, 500)
+            this.loadingTemplates = false;
+            this.showLoader = false;
+            this.$emit("loading", false);
+          });
+      }, 500);
     },
     getTemplatesForSearch() {
-      this.bodyData.pageSize = 100
+      this.bodyData.pageSize = 100;
       if (this.search) {
-        this.callForSearch()
+        this.callForSearch();
       } else {
-        this.getTemplates(true, this.emailTemplateResourceId, this.bodyData, true)
+        this.getTemplates(true, this.emailTemplateResourceId, this.bodyData, true);
       }
     },
     checkAndAddResourceIdToPayload(isInitial, bodyData) {
-      this.loadingTemplates = true
-      this.$emit('loading', true)
+      this.loadingTemplates = true;
+      this.$emit("loading", true);
       if (isInitial && this.emailTemplateResourceId) {
         bodyData.filter.FilterGroups[1].FilterItems.push({
-          FieldName: 'ResourceId',
-          Operator: 'Include',
-          value: this.emailTemplateResourceId
-        })
+          FieldName: "ResourceId",
+          Operator: "Include",
+          value: this.emailTemplateResourceId,
+        });
       }
     },
     getTemplates(
       isInitial = false,
-      emailTemplateResourceId = '',
+      emailTemplateResourceId = "",
       bodyData = this.bodyData,
       isSearch = false
     ) {
-      this.checkAndAddResourceIdToPayload(isInitial, bodyData)
+      this.checkAndAddResourceIdToPayload(isInitial, bodyData);
       if (this.isQuishingTypeIndividualPrintOut)
-        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT];
       else if (this.isQuishingTypeEmail)
-        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
+        bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL];
       this.apiFuncs
         .list(bodyData)
         .then((response) => {
-          const { data } = response
-          this.totalNumberOfPages = data.data.totalNumberOfPages
+          const { data } = response;
+          this.totalNumberOfPages = data.data.totalNumberOfPages;
           if (!response.data.data.results.length) {
-            this.listData = []
-            this.templateHTML = null
+            this.listData = [];
+            this.templateHTML = null;
           } else {
             data.data.results = data.data.results.map((item) => {
-              return { ...item, selected: false }
-            })
+              return { ...item, selected: false };
+            });
             if (isSearch) {
-              this.listData = data.data.results
+              this.listData = data.data.results;
             } else {
-              this.listData = [...this.listData, ...data.data.results]
-              this.defaultListData = [...this.listData]
+              this.listData = [...this.listData, ...data.data.results];
+              this.defaultListData = [...this.listData];
             }
             if (!emailTemplateResourceId) {
-              this.listData[this.selectedPreviousIndex].selected = true
+              this.listData[this.selectedPreviousIndex].selected = true;
             }
-            if (!isInitial) return
+            if (!isInitial) return;
             if (!!emailTemplateResourceId) {
               const index = this.listData.findIndex(
                 (item) => item.resourceId === emailTemplateResourceId
-              )
+              );
               if (index > -1) {
-                this.setSelectedTemplate(this.listData[index], index, true)
-                this.listData[index].selected = true
+                this.setSelectedTemplate(this.listData[index], index, true);
+                this.listData[index].selected = true;
               }
             } else {
-              this.setSelectedTemplate(this.listData[0], 0, true)
+              this.setSelectedTemplate(this.listData[0], 0, true);
             }
-            this.defaultListData = [...this.listData]
+            this.defaultListData = [...this.listData];
           }
         })
         .finally(() => {
-          this.loadingTemplates = false
-          this.showLoader = false
-          this.$emit('loading', false)
-        })
+          this.loadingTemplates = false;
+          this.showLoader = false;
+          this.$emit("loading", false);
+        });
     },
     handleScroll(e) {
-      const scrollPosition = e.target.scrollTop + e.target.offsetHeight
-      const scrollHeight = e.target.scrollHeight - 30
+      const scrollPosition = e.target.scrollTop + e.target.offsetHeight;
+      const scrollHeight = e.target.scrollHeight - 30;
       if (scrollPosition > scrollHeight) {
         this.debounce(() => {
-          this.getDataAfterValidScroll()
-        }, 250)
+          this.getDataAfterValidScroll();
+        }, 250);
       }
     },
     getDataAfterValidScroll() {
       if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
-        this.bodyData.pageNumber += 1
-        this.loadingTemplates = true
-        this.getTemplates()
+        this.bodyData.pageNumber += 1;
+        this.loadingTemplates = true;
+        this.getTemplates();
       }
     },
     handleTemplateEdit(val) {
-      this.$emit('template-edit', val)
+      this.$emit("template-edit", val);
     },
     setSelectedTemplate(item, index, isInitial = false) {
-      if (this.isSaving) return
-      const isChanged = isDifferent(this.editData, this.initialEditData)
+      if (this.isSaving) return;
+      const isChanged = isDifferent(this.editData, this.initialEditData);
       if (this.isEditMode && isChanged) {
-        this.handleExitEditing()
-        return
+        this.handleExitEditing();
+        return;
       }
-      this.isEditMode = false
+      this.isEditMode = false;
       this.listData = this.listData.map((item) => {
-        return { ...item, selected: false }
-      })
+        return { ...item, selected: false };
+      });
       if (index !== undefined) {
         if (this.listData[index]) {
-          this.listData[index].selected = true
+          this.listData[index].selected = true;
         }
-        this.selectedPreviousIndex = index
+        this.selectedPreviousIndex = index;
       }
-      this.loadingTemplatePreview = true
-      this.$emit('selectedEmailTemplateChange', item.id, item)
-      this.$emit('selectedEmailTemplateResourceId', item.resourceId)
+      this.loadingTemplatePreview = true;
+      this.$emit("selectedEmailTemplateChange", item.id, item);
+      this.$emit("selectedEmailTemplateResourceId", item.resourceId);
       if (isInitial) {
-        this.$emit('initialEmailTemplateId', item.id)
+        this.$emit("initialEmailTemplateId", item.id);
       }
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
-          let template = response?.data?.data?.template || ''
-          template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...item, ...response?.data?.data } || {}
-          this.selectedTemplateHeader = response?.data?.data?.name || ''
-          this.templateHTML = template
-          this.templateFromName = response?.data?.data?.fromName || ''
-          this.templateSubject = response?.data?.data?.subject || ''
-          this.templateFromEmail = response?.data?.data?.fromAddress || ''
+          let template = response?.data?.data?.template || "";
+          template = template?.replaceAll("{QRCODEURLIMAGE}", qrCodeString);
+          this.emailTemplateData = { ...item, ...response?.data?.data } || {};
+          this.selectedTemplateHeader = response?.data?.data?.name || "";
+          this.templateHTML = template;
+          this.templateFromName = response?.data?.data?.fromName || "";
+          this.templateSubject = response?.data?.data?.subject || "";
+          this.templateFromEmail = response?.data?.data?.fromAddress || "";
           this.phishingFile = response?.data?.data?.phishingFileName
             ? [
                 {
                   fileName: response?.data?.data?.phishingFileName,
-                  url: response?.data?.data?.phishingFileUrl
-                }
+                  url: response?.data?.data?.phishingFileUrl,
+                },
               ]
-            : []
+            : [];
         })
         .finally(() => {
-          this.loadingTemplatePreview = false
-        })
-    }
-  }
-}
+          this.loadingTemplatePreview = false;
+        });
+    },
+  },
+};
 </script>

@@ -152,7 +152,7 @@
                           />
                         </div>
                       </template>
-                      <email-template
+                      <EmailTemplate
                         ref="refEmailTemplate"
                         :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
