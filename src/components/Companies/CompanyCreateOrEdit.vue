@@ -942,6 +942,7 @@ export default {
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
       this.formData.DateFormat = this.selectedExtend?.dateFormat || 'dd/MM/yyyy'
+      this.correctDateFormat()
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
@@ -955,6 +956,17 @@ export default {
     }
   },
   methods: {
+    correctDateFormat() {
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'dd/mm/yyyy') {
+        this.formData.DateFormat = 'dd/MM/yyyy'
+      }
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'mm/dd/yyyy') {
+        this.formData.DateFormat = 'MM/dd/yyyy'
+      }
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'yyyy/mm/dd') {
+        this.formData.DateFormat = 'yyyy/MM/dd'
+      }
+    },
     handleCloseWarningModal() {
       this.isWarningModalVisible = false
     },
