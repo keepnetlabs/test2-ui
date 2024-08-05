@@ -243,10 +243,10 @@ export default {
         scheduleTypeId
       } = campaignInfo
       let senderPhoneNumbers = []
-      if (Array.isArray(settings?.smsProviderNumber)) {
-        senderPhoneNumbers.push(...settings?.smsProviderNumber.map(pn => new PhoneNumber(pn?.toString() || '')?.g?.number?.international))
+      if (Array.isArray(settings?.smsProviderNumbers)) {
+        senderPhoneNumbers.push(...settings?.smsProviderNumbers.map(pn => new PhoneNumber(pn?.toString() || '')?.g?.number?.international))
       } else {
-        senderPhoneNumbers.push(new PhoneNumber(settings?.smsProviderNumber?.toString() || '')?.g?.number?.international)
+        senderPhoneNumbers.push(new PhoneNumber(settings?.smsProviderNumbers?.toString() || '')?.g?.number?.international)
       }
       if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
         return {
@@ -271,12 +271,12 @@ export default {
     getSMSDeliveryHelperData() {
       const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
       const { smsDeliveredUserCount, smsNotDeliveredUserCount, totalTargetUserCount } = campaignInfo
-      const { smsProviderNumber } = settings
+      const { smsProviderNumbers } = settings
       return {
         smsDeliveredUserCount,
         smsNotDeliveredUserCount,
         totalTargetUserCount,
-        phoneNumbers: Array.isArray(smsProviderNumber) ? smsProviderNumber : [smsProviderNumber]
+        phoneNumbers: Array.isArray(smsProviderNumbers) ? smsProviderNumbers : [smsProviderNumbers]
       }
     },
     getResendDialogItems() {

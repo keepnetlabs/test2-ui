@@ -667,7 +667,7 @@ export default {
             sendRandomlyUsersCalculateTypeId: parseInt(
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
             ),
-            smsProviderNumberResourceId: deliverySettingsFormData.smsProviderNumberResourceId
+            smsProviderNumberResourceIds: deliverySettingsFormData.smsProviderNumberResourceIds
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

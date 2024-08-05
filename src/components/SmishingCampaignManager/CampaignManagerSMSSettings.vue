@@ -42,7 +42,7 @@
       @call-for-calculate-sending-info="callForCalculateSendingInfo"
     />
     <div
-      v-if="formData.smsProviderNumberResourceId"
+      v-if="formData.smsProviderNumberResourceIds.length"
       class="campaign-manager-advanced-settings__distribution-text mt-6"
     >
       {{ getDistributionText }}
