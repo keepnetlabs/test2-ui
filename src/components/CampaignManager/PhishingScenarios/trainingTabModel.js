@@ -6,6 +6,7 @@ export default class TrainingTabModel {
     isCheckboxSelected = false,
     enrollmentSendTypeId = '1',
     awardCertificate = false,
+    certificateConfigSendType = 1,
     enrollmentReminder = {
       periodCount: 1,
       periodType: 'Day',
@@ -21,6 +22,7 @@ export default class TrainingTabModel {
     this.isCheckboxSelected = isCheckboxSelected
     this.enrollmentSendTypeId = enrollmentSendTypeId
     this.awardCertificate = awardCertificate
+    this.certificateConfigSendType = certificateConfigSendType
     this.enrollmentReminder = enrollmentReminder
   }
 }

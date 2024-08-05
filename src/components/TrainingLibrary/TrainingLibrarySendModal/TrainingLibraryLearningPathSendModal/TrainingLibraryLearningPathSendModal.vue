@@ -485,6 +485,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds,
         distributionDays,
         name
@@ -514,6 +515,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds: newLanguageIds,
         distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null
       }

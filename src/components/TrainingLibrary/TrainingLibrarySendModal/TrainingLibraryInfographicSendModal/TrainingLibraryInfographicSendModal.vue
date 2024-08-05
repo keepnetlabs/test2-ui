@@ -505,6 +505,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds,
         name
       } = refSendTrainingSettings.formData
@@ -533,6 +534,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds: newLanguageIds
       }
 

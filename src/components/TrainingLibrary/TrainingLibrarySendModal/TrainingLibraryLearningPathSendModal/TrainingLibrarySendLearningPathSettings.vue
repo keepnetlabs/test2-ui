@@ -255,7 +255,9 @@
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </FormGroup>
-    <FormGroup v-if="!formData.isProxy && showCertificate" class="mt-6" :title="labels.Certificate">
+    <FormGroup v-if="!formData.isProxy && showCertificate" class="mt-6" :title="labels.Certificate"
+    style="max-width: 875px;">
+      <div class="d-flex align-center">
       <v-checkbox
         v-model="formData.awardCertificate"
         id="input--campaign-manager-advanced-settings-randomly-selected"
@@ -264,6 +266,19 @@
         label="Award certificate when a user completes the learning path"
       >
       </v-checkbox>
+      <KSelect
+          v-model.trim="formData.certificateConfigSendType"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          position="top"
+          style="max-width: 200px;"
+          :items="certificateTypeItems"
+          :disabled="!formData.awardCertificate"
+        />
+      </div>
     </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
@@ -363,6 +378,7 @@ import {
   endTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
   enrollmentAutoEnrollTypeItems,
+  certificateTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
 import { learningPathMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
@@ -436,6 +452,7 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
+        certificateConfigSendType: 1,
         isProxy: false,
         distributionDays: 2,
         enrollmentScheduler: {
@@ -468,6 +485,7 @@ export default {
       },
       periodTypeItems,
       endTypeItems,
+      certificateTypeItems,
       enrollmentAutoEnrollTypeItems,
       enrollmentAutoEnrollDayOfWeekItems
     }
