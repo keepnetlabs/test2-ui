@@ -1,12 +1,23 @@
 <template>
   <v-form ref="refForm">
-    <InputCallerPhoneNumber
-      title="Sender Phone Number"
-      subTitle="Select the SMS sender phone number"
-      :defaultPhoneNumbers="phoneNumbers"
-      :value="formData.phoneNumber"
+    <FormGroup has-hint class="mt-6" title="Sender Phone Number" sub-title="Select the SMS sender phone number">
+      <AlertBox
+              class="bg-aqua-light my-2"
+              icon-color="#2196F3"
+              icon-name="mdi-information"
+              text="When you select multiple numbers, messages will be sent from a randomly chosen number during delivery."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
+    <InputPhoneNumberComboBox
+      is-smishing
+      itemText="phoneNumber"
+      itemValue="resourceId"
+      :defaultPhoneNumbers="phoneNumberItems"
+      :value="formData.smsProviderNumberResourceIds"
+      :rules="[(v) => !!v.length || 'Required']"
       @input="handlePhoneNumberChange"
     />
+    </FormGroup>
     <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub" has-hint>
       <KSelect
         v-model.trim="formData.frequency"
@@ -33,7 +44,7 @@
       @call-for-calculate-sending-info="callForCalculateSendingInfo"
     />
     <div
-      v-if="formData.smsProviderNumberResourceId"
+      v-if="formData.smsProviderNumberResourceIds.length"
       class="campaign-manager-advanced-settings__distribution-text mt-6"
     >
       {{ getDistributionText }}
@@ -47,7 +58,7 @@ import * as Validations from '@/utils/validations'
 import SmishingService from '@/api/smishing'
 import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
-import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
+import InputPhoneNumberComboBox from "@/components/Common/Inputs/InputPhoneNumberComboBox"
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
@@ -58,6 +69,7 @@ import {
 import { mapGetters } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
+import AlertBox from '@/components/AlertBox'
 
 export default {
   name: 'CampaignManagerSMSSettings',
@@ -66,7 +78,8 @@ export default {
     KSelect,
     InputDistribution,
     InputSchedule,
-    InputCallerPhoneNumber
+    AlertBox,
+    InputPhoneNumberComboBox
   },
   mixins: [useDebounce],
   props: {
@@ -118,12 +131,11 @@ export default {
       isShowSmtpInputError: false,
       testEmailErrorMessage: '',
       emailDelivery: null,
-      phoneNumbers: [],
       phoneNumberItems: [],
       formData: {
         frequency: 0,
-        phoneNumber: '',
-        smsProviderNumberResourceId: ''
+        phoneNumbers: [],
+        smsProviderNumberResourceIds: []
       },
       inputScheduleFormData: {
         scheduleTypeId: SCHEDULE_TYPES.SCHEDULE_TO,
@@ -289,21 +301,13 @@ export default {
     }
   },
   methods: {
-    handlePhoneNumberChange(phoneNumber) {
-      const phoneNumberIndex = this.phoneNumberItems.findIndex(
-        (item) => item.phoneNumber === phoneNumber
-      )
-      if (phoneNumberIndex !== -1) {
-        this.formData.smsProviderNumberResourceId = this.phoneNumberItems[
-          phoneNumberIndex
-        ].resourceId
-        this.formData.phoneNumber = phoneNumber
-      }
+    handlePhoneNumberChange(phoneNumberResourceIds) {
+      this.formData.phoneNumbers = this.phoneNumberItems.filter(pn => phoneNumberResourceIds.includes(pn.resourceId)).map(pn => pn.phoneNumber)
+      this.formData.smsProviderNumberResourceIds = phoneNumberResourceIds
     },
     callForPhoneNumbers() {
       SmishingService.getSmishingPhoneNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
-        this.phoneNumbers = response.data.data.map((item) => item.phoneNumber)
       })
     },
     validateForm() {

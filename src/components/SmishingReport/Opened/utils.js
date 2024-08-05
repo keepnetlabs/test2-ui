@@ -38,6 +38,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  SENDER_PHONE_NUMBER: {
+    property: 'senderPhoneNumber',
+    align: 'right',
+    label: 'Sender Phone Number',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 250,
+    isEditable: false,
+    filterableType: 'text'
+  },
   ACTIVITY_TYPE: {
     property: PROPERTY_STORE.ACTIVITYTYPE,
     align: 'left',

@@ -118,6 +118,7 @@ export default {
   },
   data() {
     return {
+      isSenderPhoneNumbersModalVisible: false,
       trainingReportDialogItems: [],
       targetGroups: [],
       selectedScenarioTab: '',
@@ -241,36 +242,41 @@ export default {
         scheduledDate,
         scheduleTypeId
       } = campaignInfo
-      const senderPhoneNumber = settings?.smsProviderNumber
-        ? new PhoneNumber(settings.smsProviderNumber)?.g?.number?.international
-        : ''
+      let senderPhoneNumbers = []
+      if (Array.isArray(settings?.smsProviderNumbers)) {
+        senderPhoneNumbers.push(...settings?.smsProviderNumbers.map(pn => new PhoneNumber(pn?.toString() || '')?.g?.number?.international))
+      } else {
+        senderPhoneNumbers.push(new PhoneNumber(settings?.smsProviderNumbers?.toString() || '')?.g?.number?.international)
+      }
       if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
         return {
           'Sending Start - End': `Saved for later`,
           'Sending Status': '',
-          'Sender Phone Number': senderPhoneNumber
+          'Sender Phone Number': senderPhoneNumbers
         }
       }
       if (!smsDeliveryStartDate && !smsDeliveryEndDate) {
         return {
           'Scheduled Date': scheduledDate || '-',
           'Sending Status': '',
-          'Sender Phone Number': senderPhoneNumber
+          'Sender Phone Number': senderPhoneNumbers
         }
       }
       return {
         'Sending Start - End': `${smsDeliveryStartDate || ''} - ${smsDeliveryEndDate || ''}`,
         'Sending Status': '',
-        'Sender Phone Number': senderPhoneNumber
+        'Sender Phone Number': senderPhoneNumbers
       }
     },
     getSMSDeliveryHelperData() {
-      const { campaignInfo = {} } = this.campaignSummary || {}
+      const { campaignInfo = {}, settings = {} } = this.campaignSummary || {}
       const { smsDeliveredUserCount, smsNotDeliveredUserCount, totalTargetUserCount } = campaignInfo
+      const { smsProviderNumbers } = settings
       return {
         smsDeliveredUserCount,
         smsNotDeliveredUserCount,
-        totalTargetUserCount
+        totalTargetUserCount,
+        phoneNumbers: Array.isArray(smsProviderNumbers) ? smsProviderNumbers : [smsProviderNumbers]
       }
     },
     getResendDialogItems() {

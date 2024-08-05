@@ -95,6 +95,7 @@ export default {
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.SENDER_PHONE_NUMBER,
           COLUMNS.EMAIL_SEND_DATE
         ],
         addButton: {

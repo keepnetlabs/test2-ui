@@ -311,7 +311,7 @@ export default {
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
-        formData.senderPhoneNumber = refCampaignManagerDeliverySettings.formData.phoneNumber
+        formData.senderPhoneNumber = refCampaignManagerDeliverySettings.formData.phoneNumbers
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
@@ -668,7 +668,7 @@ export default {
             sendRandomlyUsersCalculateTypeId: parseInt(
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
             ),
-            smsProviderNumberResourceId: deliverySettingsFormData.smsProviderNumberResourceId
+            smsProviderNumberResourceIds: deliverySettingsFormData.smsProviderNumberResourceIds
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {
