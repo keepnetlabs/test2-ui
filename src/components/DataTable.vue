@@ -1222,7 +1222,7 @@ export default {
     pageSizes: {
       type: Array,
       required: false,
-      default: () => [5, 10, 25]
+      default: () => [5, 10, 25, 50, 100]
     },
     defaultSort: {
       type: String,
