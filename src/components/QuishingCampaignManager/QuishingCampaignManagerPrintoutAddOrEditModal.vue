@@ -53,6 +53,7 @@
               ref="refCampaignManagerCampaignInfo"
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               :is-action-button-disabled.sync="isActionButtonDisabled"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
             />

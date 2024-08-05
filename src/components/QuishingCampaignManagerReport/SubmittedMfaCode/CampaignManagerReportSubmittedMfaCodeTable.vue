@@ -62,7 +62,41 @@ export default {
       default: () => []
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
+    if (isQuishingTypePrintout) {
+      rowActions.push(
+        {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
+            icon: '$custom-details',
+            action: 'on-detail',
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+            ]
+          }
+      )
+    } else {
+      rowActions.push(
+          {
+            name: labels.Resend,
+            id: 'btn-resend--row-actions-campaign-manager-report-submitted-mfa-data',
+            icon: '$custom-resend',
+            action: 'on-resend'
+          },
+          {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
+            icon: '$custom-details',
+            action: 'on-detail',
+            disabled: !this.$store.getters[
+              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+            ]
+          }
+      )
+    }
     return {
       CONSTANTS: {
         id: 'campaign-manager-submitted-mfa-code-data-table',
@@ -96,23 +130,7 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignManagerReportSubmittedMfaData
         },
-        rowActions: [
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-submitted-mfa-data',
-            icon: '$custom-resend',
-            action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
-            ]
-          }
-        ]
+        rowActions
       }
     }
   },

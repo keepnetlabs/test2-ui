@@ -505,7 +505,8 @@ export default {
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
     getTargetGroupItems() {
-      return this.userCountDetailResponse?.data?.data || []
+      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''

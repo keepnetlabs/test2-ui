@@ -22,7 +22,9 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" isSmishing />
+    <InputSchedule v-model="inputScheduleFormData"
+    :isEditOrDuplicate="isEdit || isDuplicate"
+     ref="inputSchedule" class="mb-6" isSmishing />
     <InputDistribution
       v-model="inputDistributionFormData"
       :type="DISTRIBUTION_TYPES.SMISHING"
@@ -58,7 +60,7 @@ import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 
 export default {
-  name: 'CampaignManagerDeliverySettings',
+  name: 'CampaignManagerSMSSettings',
   components: {
     FormGroup,
     KSelect,
@@ -78,6 +80,9 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
       type: Boolean
     },
     targetGroupResourceIds: {

@@ -490,6 +490,7 @@ import {
   scenarioDistributionItems,
   SCENARIO_DISTRIBUTION
 } from '@/components/CampaignManager/utils'
+
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -856,6 +857,7 @@ export default {
       }, 500)
     },
     difficulty(val) {
+      this.debounce(() => {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'difficulty'
       )
@@ -870,8 +872,10 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
       this.callForPhishingScenarios()
+    }, 500)
     },
     method(val) {
+      this.debounce(() => {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'method'
       )
@@ -886,8 +890,10 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
       this.callForPhishingScenarios()
+    }, 500)
     },
     language(val) {
+      this.debounce(() => {
       if (val) {
         const languageIndex = this.languages.findIndex((lang) => lang.value === val)
         if (languageIndex !== -1) {
@@ -910,8 +916,10 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
       this.callForPhishingScenarios()
+    }, 500)
     },
     category(val) {
+      this.debounce(() => {
       if (!val?.length) {
         this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
       }
@@ -929,6 +937,7 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
       }
       this.callForPhishingScenarios()
+    }, 500)
     },
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({

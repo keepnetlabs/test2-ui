@@ -9,7 +9,9 @@
         :initial-rules="rules.name"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" class="mb-6" />
+    <InputSchedule v-model="inputScheduleFormData"
+    :isEditOrDuplicate="isEdit || isDuplicate"
+     ref="inputSchedule" class="mb-6" />
     <FormGroup
       v-if="showDuration"
       has-hint
@@ -66,6 +68,9 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
       type: Boolean
     },
     showDuration: {
