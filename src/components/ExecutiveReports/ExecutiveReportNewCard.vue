@@ -51,6 +51,7 @@
             :valueFormat="parsedFormat"
             :picker-options="pickerOptions"
             :prefix-icon="'el-icon-date'"
+            @input="dateRange = ''"
           />
           <VBtn
             class="training-library-card__footer-btn"
@@ -371,6 +372,7 @@ export default {
       isReportSaved: false,
       savedReportResourceId: '',
       dateFormat: null,
+      dateRange: '',
       activatePreview: this.isPreview,
       forcePreview: false,
       editMode: !this.isPreview,
@@ -784,6 +786,7 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
+      if (this.dateRange) return this.dateRange
       if (this.formData.executiveReportDateRange.length < 2) return
       const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
       const lastDateLeft = this.formData.executiveReportDateRange[1].split(' ')[0]
@@ -875,6 +878,7 @@ export default {
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
+        this.dateRange = data.dateRange
         if (this.isScheduledReport) {
           setTimeout(() => {
             this.handleDownloadClick()
