@@ -66,6 +66,20 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template #datatable-custom-column="{ scope }">
+        <span v-if="scope.column.property === 'name'">
+          {{ scope.row.name }}
+          <VTooltip v-if="scope.row.isAssistedByAI" bottom>
+            <template #activator="{ on }">
+              <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+            </template>
+            <span>This template was generated with AI</span>
+          </VTooltip>
+        </span>
+        <span v-else-if="scope.column.property === 'isAssistedByAI'">
+          {{ scope.row.isAssistedByAI ? 'AI Assistant' : 'Manual' }}
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
@@ -182,8 +196,7 @@ export default {
             label: labels.TemplateName,
             sortable: true,
             show: true,
-            type: 'text',
-            // type: "slot",
+            type: 'slot',
             fixed: 'left',
             width: 240,
             filterableType: 'text'
@@ -223,6 +236,21 @@ export default {
             show: true,
             type: 'status',
             filterableType: 'select',
+            width: 180
+          },
+          {
+            property: 'isAssistedByAI',
+            align: 'left',
+            editable: false,
+            label: labels.CreationType,
+            sortable: true,
+            show: true,
+            type: 'slot',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'AI Assistant', value: true },
+              { text: 'Manual', value: false }
+            ],
             width: 180
           },
           {
