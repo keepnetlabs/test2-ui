@@ -528,3 +528,17 @@ export const updateSandboxActivity = (resourceId, payload) => {
 export const searchScenarioInfo = (payload) => {
   return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
 }
+
+export const generateAIEmailTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/email-templates/generate`, payload)
+}
+
+export const generateAILandingPageTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/landing-page-template/generate`, payload)
+}
+export const getAIEmailTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/email-templates/ai-limit`)
+}
+export const getAILandingPageTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template/ai-limit`)
+}

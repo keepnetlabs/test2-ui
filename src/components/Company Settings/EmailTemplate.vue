@@ -199,7 +199,13 @@
         </div>
       </div>
     </div>
-    <div v-if="isAiAssistant" class="email-template__ai-assistant">
+    <div
+      v-if="isAiAssistant"
+      :class="[
+        'email-template__ai-assistant',
+        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
+      ]"
+    >
       <div class="email-template__ai-assistant-header">
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
@@ -296,7 +302,18 @@
           </div>
           <div class="email-template__ai-assistant-footer-right">
             <div class="email-template__ai-assistant-right-text">
-              Remaining Rights:
+              <VTooltip v-if="aiAssistantRemainingRight === 0" bottom max-width="300">
+                <template #activator="{ on }">
+                  <VIcon class="mr-1" style="font-size: 20px;" v-on="on" color="#2196F3" small
+                    >mdi-information</VIcon
+                  >
+                </template>
+                <span
+                  >Used the {{ aiAssistantTotalRight }} AI assistant template creation rights for
+                  this month. New rights will be available next month.</span
+                >
+              </VTooltip>
+              Remaining attempts:
               <span class="fw-600"
                 >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
               >
@@ -305,14 +322,10 @@
               class="white--text btn-util btn-download-add-in pl-4"
               color="#00bcd4"
               rounded
-              :style="
-                aiTemplateText.length === 0 || isEmailGenerating
-                  ? { opacity: '0.5', pointerEvents: 'none', textTransform: 'capitalize' }
-                  : { textTransform: 'capitalize' }
-              "
+              :style="getGenerateEmailButtonStyle"
               @click="handleGenerateEmail"
             >
-              Generate Email Template
+              {{ templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template' }}
             </v-btn>
           </div>
         </div>
@@ -384,6 +397,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
+import { generateAIEmailTemplate, generateAILandingPageTemplate } from '@/api/phishingsimulator'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -430,7 +444,8 @@ export default {
     'isAiAssistant',
     'aiAssistant',
     'aiAssistantRemainingRight',
-    'aiAssistantTotalRight'
+    'aiAssistantTotalRight',
+    'languageTypeResourceId'
   ],
   data() {
     return {
@@ -441,6 +456,11 @@ export default {
         'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
         'Phishing simulation email informing the user to download a critical software update to avoid security risks.'
       ],
+      landingPageBadgeContents: [
+        'Landing page that instructs the user to update their bank account password due to security concerns.',
+        'Landing page that guides the user through changing their email account password for security reasons.',
+        'Landing page prompting the user to update their online service password to enhance account security.'
+      ],
       previewTemplate: null,
       aiTemplateText: '',
       initialTemplate: null,
@@ -450,7 +470,12 @@ export default {
       Validations,
       attachmentListKey: `${createRandomCryptStringNumber()}-key`,
       aiTemplateMaxLength: (v) =>
-        Validations.maxLength(v, 500, labels.getMaxLengthMessage('Description', 500), 500),
+        Validations.maxLength(
+          v,
+          500,
+          'Description cannot exceed the 500 character limit. Please shorten description',
+          500
+        ),
       ccEmailRules: {
         email: (v) => {
           if (v.length > 0) {
@@ -529,6 +554,18 @@ export default {
   },
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    getGenerateEmailButtonStyle() {
+      const style = { textTransform: 'capitalize' }
+      if (
+        this.aiTemplateText.length === 0 ||
+        this.isEmailGenerating ||
+        this.aiAssistantRemainingRight === 0
+      ) {
+        style.opacity = '0.5'
+        style.pointerEvents = 'none'
+      }
+      return style
+    },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
     },
@@ -593,17 +630,40 @@ export default {
         ?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
       this.generatedTemplates.push({ text: this.aiTemplateText, content: '' })
       this.activeGeneratedTemplateIndex = this.activeGeneratedTemplateIndex + 1
+      const payload = {
+        name: this.name,
+        languageTypeResourceId: this.languageTypeResourceId,
+        subject: this.subject,
+        fromName: this.fromName,
+        fromAddress: this.fromAddress,
+        prompt: this.aiTemplateText,
+        phishingTypeId: 1
+      }
       console.log('this.generatedTemplates', this.generatedTemplates)
-      setTimeout(() => {
-        this.isEmailGenerating = false
-      }, 20000)
+      this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
+      if (this.templateType === 'landing') {
+        generateAILandingPageTemplate(payload).then((response) => {
+          console.log('response', response)
+        })
+      } else {
+        generateAIEmailTemplate(payload)
+          .then((response) => {
+            console.log('response', response)
+          })
+          .finally(() => {
+            this.isEmailGenerating = false
+          })
+      }
     },
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
       this.$emit('update:template', this.generatedTemplates[index].content)
     },
     handleAiAssistantBadgeClick(index) {
-      this.aiTemplateText = this.badgeContents[index]
+      this.aiTemplateText =
+        this.templateType === 'landing'
+          ? this.landingPageBadgeContents[index]
+          : this.badgeContents[index]
     },
     handleRenameItem() {
       this.$emit('handleRenameAttachment')
