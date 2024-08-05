@@ -164,8 +164,8 @@
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
                         :ai-assistant.sync="formValues.aiAssistant"
-                        :ai-assistant-remaining-right="aiAssistantRemainingRights"
-                        :ai-assistant-total-right="aiAssistantTotalRights"
+                        :ai-assistant-remaining-right="aiAssistantData.aiAssistantRemainingRights"
+                        :ai-assistant-total-right="aiAssistantData.aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
@@ -300,8 +300,10 @@ export default {
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
-      aiAssistantRemainingRights: 10,
-      aiAssistantTotalRights: 10,
+      aiAssistantData: {
+        aiAssistantRemainingRights: 10,
+        aiAssistantTotalRights: 10
+      },
       commonRules: {
         hint: '*Required',
         persistentHint: true,
