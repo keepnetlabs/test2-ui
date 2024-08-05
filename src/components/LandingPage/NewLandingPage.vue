@@ -203,6 +203,7 @@
                           :ai-assistant-remaining-right="aiAssistantRemainingRights"
                           :ai-assistant-total-right="aiAssistantTotalRights"
                           :language-type-resource-id="formValues.languageTypeResourceId"
+                          :is-assisted-by-a-i-template.sync="isAssistedByAI"
                           :active-block-manager-components="activeBlockManagerComponents"
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
@@ -353,6 +354,7 @@ export default {
       Validations,
       availableForRequests: [],
       initialFormValues: {},
+      isAssistedByAI: false,
       formValues: {
         phishingLink: {
           urlSchemaTypeId: '',
@@ -496,6 +498,7 @@ export default {
         delete formValues.phishingLink
         const payload = {
           ...formValues,
+          isAssistedByAI: this.isAssistedByAI,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
@@ -608,12 +611,14 @@ export default {
           parameterTypeId: data.parameterTypeId.toString(),
           domainRecordId: data.domainRecordId.toString()
         }
+        this.isAssistedByAI = data.isAssistedByAI
         delete data.urlSchemaTypeId
         delete data.pathTypeId
         delete data.extensionTypeId
         delete data.parameterTypeId
         delete data.domainRecordId
         delete data.subDomain
+        delete data.isAssistedByAI
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
         this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)

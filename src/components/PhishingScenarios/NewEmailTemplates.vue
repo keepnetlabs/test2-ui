@@ -164,14 +164,15 @@
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
                         :ai-assistant.sync="formValues.aiAssistant"
-                        :ai-assistant-remaining-right="aiAssistantData.aiAssistantRemainingRights"
-                        :ai-assistant-total-right="aiAssistantData.aiAssistantTotalRights"
+                        :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
+                        :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
                         :language-type-resource-id="formValues.languageTypeResourceId"
+                        :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -270,6 +271,7 @@ export default {
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
       isAttachmentError: false,
+      isAssistedByAI: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -300,10 +302,8 @@ export default {
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
-      aiAssistantData: {
-        aiAssistantRemainingRights: 10,
-        aiAssistantTotalRights: 10
-      },
+      aiAssistantRemainingRights: 10,
+      aiAssistantTotalRights: 10,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -408,6 +408,7 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
+        this.isAssistedByAI = this.formValues.isAssistedByAI
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
@@ -613,7 +614,8 @@ export default {
             : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
+        isAssistedByAI: this.isAssistedByAI
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {

@@ -13,6 +13,7 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
   formData.append('name', payload.name)
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
+  formData.append('isAssistedByAI', payload.isAssistedByAI)
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
@@ -541,4 +542,10 @@ export const getAIEmailTemplateLimit = () => {
 }
 export const getAILandingPageTemplateLimit = () => {
   return testRequest.get(`/phishing-simulator/landing-page-template/ai-limit`)
+}
+export const getGeneratedAIEmailTemplate = () => {
+  return testRequest.get(`/phishing-simulator/email-templates`)
+}
+export const getGeneratedAILandingPageTemplate = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template`)
 }

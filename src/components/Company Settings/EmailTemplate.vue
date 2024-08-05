@@ -209,7 +209,11 @@
       <div class="email-template__ai-assistant-header">
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
-            <VIcon class="cursor-pointer" color="#757575" @click="aiAssistant = !aiAssistant">
+            <VIcon
+              class="cursor-pointer"
+              color="#757575"
+              @click="$emit('update:aiAssistant', !aiAssistant)"
+            >
               {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
             </VIcon>
           </div>
@@ -279,23 +283,23 @@
         </div>
         <div class="email-template__ai-assistant-footer">
           <div class="email-template__ai-assistant-footer-left">
-            <div v-if="generatedTemplates.length">
+            <div v-if="generatedTemplates.length > 1">
               <VIcon
                 class="cursor-pointer"
                 color="#757575"
-                :disabled="activeGeneratedTemplateIndex <= 1"
+                :disabled="activeGeneratedTemplateIndex < 1"
                 @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
                 >mdi-chevron-left</VIcon
               >
               <VIcon
                 class="ml-1 cursor-pointer"
                 color="#757575"
-                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length"
+                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
                 @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
                 >mdi-chevron-right</VIcon
               >
               <span class="email-template__ai-assistant-footer-left-text"
-                >Generated email {{ activeGeneratedTemplateIndex }} of
+                >Generated email {{ activeGeneratedTemplateIndex + 1 }} of
                 {{ generatedTemplates.length }}</span
               >
             </div>
@@ -333,7 +337,7 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader />
+      <EmailTemplatesAILoader :title="getLoaderTitle" />
     </div>
     <div v-else id="email-template-content">
       <v-btn
@@ -397,7 +401,12 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
-import { generateAIEmailTemplate, generateAILandingPageTemplate } from '@/api/phishingsimulator'
+import {
+  generateAIEmailTemplate,
+  generateAILandingPageTemplate,
+  getGeneratedAIEmailTemplate,
+  getGeneratedAILandingPageTemplate
+} from '@/api/phishingsimulator'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -445,7 +454,8 @@ export default {
     'aiAssistant',
     'aiAssistantRemainingRight',
     'aiAssistantTotalRight',
-    'languageTypeResourceId'
+    'languageTypeResourceId',
+    'isAssistedByAITemplate'
   ],
   data() {
     return {
@@ -549,11 +559,16 @@ export default {
         (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
       ],
       generatedTemplates: [],
-      activeGeneratedTemplateIndex: 0
+      activeGeneratedTemplateIndex: -1
     }
   },
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    getLoaderTitle() {
+      return this.templateType === 'landing'
+        ? 'AI Assisted Landing Page Generate in Progress'
+        : 'AI Assisted Email Creation in Progress'
+    },
     getGenerateEmailButtonStyle() {
       const style = { textTransform: 'capitalize' }
       if (
@@ -620,16 +635,14 @@ export default {
         (item) => item.text === this.aiTemplateText
       )
       if (generatedEmailIndex !== -1) {
-        this.activeGeneratedTemplateIndex = generatedEmailIndex + 1
-        this.$emit('update:template', this.defaultTemplate)
+        this.activeGeneratedTemplateIndex = generatedEmailIndex
+        this.$emit('update:template', this.generatedTemplates[generatedEmailIndex].content)
         return
       }
       this.isEmailGenerating = true
       document
         ?.querySelector('#email-template-content')
         ?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
-      this.generatedTemplates.push({ text: this.aiTemplateText, content: '' })
-      this.activeGeneratedTemplateIndex = this.activeGeneratedTemplateIndex + 1
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,
@@ -640,22 +653,54 @@ export default {
         phishingTypeId: 1
       }
       console.log('this.generatedTemplates', this.generatedTemplates)
+      this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
       if (this.templateType === 'landing') {
         generateAILandingPageTemplate(payload).then((response) => {
-          console.log('response', response)
+          if (response?.data?.data?.isSuccess) {
+            this.callForGetGeneratedAILandingPageTemplate()
+          }
         })
       } else {
-        generateAIEmailTemplate(payload)
-          .then((response) => {
-            console.log('response', response)
-          })
-          .finally(() => {
-            this.isEmailGenerating = false
-          })
+        generateAIEmailTemplate(payload).then((response) => {
+          if (response?.data?.data?.isSuccess) {
+            this.callForGetGeneratedAIEmailTemplate()
+          }
+        })
       }
     },
+    callForGetGeneratedAIEmailTemplate() {
+      getGeneratedAIEmailTemplate()
+        .then((response) => {
+          this.generatedTemplates.push({
+            text: this.aiTemplateText,
+            content: response?.data?.data
+          })
+          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
+          this.$emit('update:template', response?.data?.data)
+          this.isEmailGenerating = false
+        })
+        .catch(() => {
+          setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
+        })
+    },
+    callForGetGeneratedAILandingPageTemplate() {
+      getGeneratedAILandingPageTemplate()
+        .then((response) => {
+          this.generatedTemplates.push({
+            text: this.aiTemplateText,
+            content: response?.data?.data
+          })
+          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
+          this.$emit('update:template', response?.data?.data)
+          this.isEmailGenerating = false
+        })
+        .catch(() => {
+          setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
+        })
+    },
     setActiveGeneratedTemplate(index) {
+      console.log('new Index', index)
       this.activeGeneratedTemplateIndex = index
       this.$emit('update:template', this.generatedTemplates[index].content)
     },
