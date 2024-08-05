@@ -204,11 +204,12 @@
             <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
               <ElTabPane name="scenarios" label="Scenarios" />
               <ElTabPane
-                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY"
+                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY  && isShowTrainingTab"
                 name="training"
                 label="Training"
               >
                 <CampaignManagerPhishingScenariosTrainingTab
+                  v-if="isShowTrainingTab"
                   v-model="trainingForCategory"
                   ref="categoryTrainingTab"
                   class="pb-4"
