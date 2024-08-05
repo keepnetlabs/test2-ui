@@ -14,6 +14,12 @@
       :items="getScheduledDialogItems"
       @on-close="toggleScheduleDialog"
     />
+    <CampaignManagerSenderPhoneNumbersModal
+      v-if="isSenderPhoneNumbersModalVisible"
+      :status="isSenderPhoneNumbersModalVisible"
+      :phoneNumbers="formData.senderPhoneNumber"
+      @on-close="handleCloseSenderPhoneNumbersModal"
+     />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
@@ -24,7 +30,34 @@
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingsItems"
-      />
+      >
+        <template  #body="{ items }">
+          <div class="campaign-manager-summary-card__body">
+            <div class="campaign-manager-summary-card__body-container">
+              <div
+                v-for="(val, key) in items"
+                :key="key"
+                class="campaign-manager-summary-card__body-item"
+              >
+                  <div class="campaign-manager-summary-card__body-item-key">
+                    {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+                  </div>
+                  <div v-if="key === 'Sender Phone Numbers'" class="campaign-manager-summary-card__body-item-value">
+                    <div class="d-flex align-center">
+                      <span style="color: #2196F3; font-weight: 600;">Multiple phone numbers</span>
+                      <v-btn class="ml-1" icon @click="handleSenderPhoneNumbersClick">
+                        <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
+                      </v-btn>
+                    </div>
+                  </div>
+                  <div v-else class="campaign-manager-summary-card__body-item-value">
+                    {{ val }}
+                  </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </CampaignManagerSummaryCard>
       <CampaignManagerSummaryCard
         v-if="Object.keys(getOtherSettingsItems).length"
         class="campaign-manager-last-step__other-settings"
@@ -191,6 +224,7 @@ import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
+import CampaignManagerSenderPhoneNumbersModal from '@/components/SmishingCampaignManager/CampaignManagerSenderPhoneNumbersModal'
 
 export default {
   name: 'CampaignManagerSummary',
@@ -201,8 +235,9 @@ export default {
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
     CampaignManagerSummaryLandingPage,
-    AlertBox
-  },
+    AlertBox,
+    CampaignManagerSenderPhoneNumbersModal
+},
   props: {
     formData: {
       type: Object
@@ -228,6 +263,7 @@ export default {
     return {
       DISTRIBUTION_TYPES,
       labels,
+      isSenderPhoneNumbersModalVisible: false,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false,
@@ -461,15 +497,25 @@ export default {
       }, 0)
     },
     getSettingsItems() {
-      const { selectedSchedule, duration, senderPhoneNumber, useTargetUserTimeZone } = this.formData
+      const { selectedSchedule, duration, senderPhoneNumber, useTargetUserTimeZone, frequency } = this.formData
       let startingText = selectedSchedule
       if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
         startingText = `${selectedSchedule} - Target users’ time zones`
       }
+
+      if (senderPhoneNumber?.length === 1) {
       return {
         Starting: startingText,
         Duration: duration,
-        'Sender Phone Number': senderPhoneNumber
+        'Sender Phone Number': senderPhoneNumber[0],
+        Frequency: frequency
+      }
+      }
+      return {
+        Starting: startingText,
+        Duration: duration,
+        'Sender Phone Numbers': senderPhoneNumber,
+        Frequency: frequency
       }
     },
     getOtherSettingsItems() {
@@ -609,6 +655,12 @@ export default {
     },
     toggleScheduleDialog() {
       this.isShowScheduleDialog = !this.isShowScheduleDialog
+    },
+    handleSenderPhoneNumbersClick() {
+      this.isSenderPhoneNumbersModalVisible = true
+    },
+    handleCloseSenderPhoneNumbersModal() {
+      this.isSenderPhoneNumbersModalVisible = false
     }
   }
 }

@@ -169,6 +169,7 @@ export default {
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.SENDER_PHONE_NUMBER,
           COLUMNS.DATE_SENT,
           COLUMNS.DELIVERY_STATUS
         ],
