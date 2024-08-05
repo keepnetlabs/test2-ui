@@ -220,7 +220,8 @@ export default {
   },
   computed: {
     getTargetGroupItems() {
-      return this.formData?.userCountDetailResponse?.data?.data || []
+      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''

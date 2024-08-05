@@ -155,7 +155,7 @@
       </div>
       <AlertBox
         v-if="isDistributionEnabled"
-        class="bg-aqua-light mt-2"
+        class="bg-aqua-light mt-4"
         icon-color="#2196F3"
         icon-name="mdi-information"
         text="If the delivery time falls on a weekend, it will be sent on the following Monday."
