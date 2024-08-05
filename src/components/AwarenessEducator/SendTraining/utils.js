@@ -41,3 +41,7 @@ export const enrollmentAutoEnrollDayOfWeekItems = [
   { text: 'Friday', value: 5 },
   { text: 'Saturday', value: 6 }
 ]
+export const certificateTypeItems = [
+  { text: 'on the first attempt', value: 0 },
+  { text: 'on any attempt', value: 1 }
+]

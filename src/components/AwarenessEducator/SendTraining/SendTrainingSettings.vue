@@ -311,28 +311,28 @@
 </template>
 
 <script>
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
-import InputDate from '@/components/Common/Inputs/InputDate'
-import InputTimezone from '@/components/Common/Inputs/InputTimezone'
-import { mapGetters } from 'vuex'
-import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
-import SendTrainingSMSSettings from '@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings'
-import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
-import { getTimeByTimeZone } from '@/api/company'
-import AlertBox from '@/components/AlertBox'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import labels from "@/model/constants/labels";
+import * as Validations from "@/utils/validations";
+import InputDate from "@/components/Common/Inputs/InputDate";
+import InputTimezone from "@/components/Common/Inputs/InputTimezone";
+import { mapGetters } from "vuex";
+import { getTimeZone, getTimeZoneForMoment } from "@/utils/functions";
+import SendTrainingSMSSettings from "@/components/AwarenessEducator/SendTraining/SendTrainingSMSSettings";
+import InputContentLanguage from "@/components/Common/Inputs/InputContentLanguage";
+import { getTimeByTimeZone } from "@/api/company";
+import AlertBox from "@/components/AlertBox";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName.vue";
 import {
   endTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
   enrollmentAutoEnrollTypeItems,
   periodTypeItems
-} from '@/components/AwarenessEducator/SendTraining/utils'
+} from "@/components/AwarenessEducator/SendTraining/utils";
 
 export default {
-  name: 'SendTrainingSettings',
+  name: "SendTrainingSettings",
   components: {
     InputEntityName,
     AlertBox,
@@ -341,39 +341,39 @@ export default {
     InputDate,
     KSelect,
     FormGroup,
-    SendTrainingSMSSettings
+    SendTrainingSMSSettings,
   },
   props: {
     selectedRow: {
-      type: Object
+      type: Object,
     },
     enumTypes: {
-      type: Object
+      type: Object,
     },
     distributionDelayTimeTypes: {
-      type: Array
+      type: Array,
     },
     totalPhoneNumberUserCount: {
-      type: Number
+      type: Number,
     },
     phoneNumberItems: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     phoneNumbers: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   inject: {
     getDistributionEmailOverTimeTypes: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     getDistributionSmtpDelayTimeTypes: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -384,76 +384,76 @@ export default {
       sendReminderEvery: false,
       isAutoEnroll: false,
       datePickerOptions: {
-        disabledDate: this.disabledEndDates
+        disabledDate: this.disabledEndDates,
       },
       formData: {
-        name: '',
+        name: "",
         isSendSMSNotification: false,
-        senderPhoneNumber: '',
-        smsText: '',
+        senderPhoneNumber: "",
+        smsText: "",
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
-        scheduleTypeId: '1',
+        scheduleTypeId: "1",
         isProxy: false,
         enrollmentScheduler: {
           scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          scheduledTimeZoneId: '',
-          useOwnTimeZone: true
+          scheduledTimeZoneId: "",
+          useOwnTimeZone: true,
         },
         enrollmentAutoEnroll: {
-          type: 'SameDay',
+          type: "SameDay",
           dayOfWeek: 0,
-          emailPeriodTypeEnum: 'Day',
-          periodCount: 1
+          emailPeriodTypeEnum: "Day",
+          periodCount: 1,
         },
         enrollmentReminder: {
           periodCount: 1,
-          periodType: 'Day',
-          endType: 'TrainingCompleted',
+          periodType: "Day",
+          endType: "TrainingCompleted",
           occurrenceCount: 1,
-          stopTime: ''
-        }
+          stopTime: "",
+        },
       },
-      radioItems: [{ text: 'Send now', value: '1' }],
+      radioItems: [{ text: "Send now", value: "1" }],
       rules: {
         number: [
-          (v) => /\d/.test(v) || 'Enter valid number',
-          (v) => v > 0 || 'Enter number greater than 0',
-          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
-        ]
+          (v) => /\d/.test(v) || "Enter valid number",
+          (v) => v > 0 || "Enter number greater than 0",
+          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`,
+        ],
       },
       periodTypeItems,
       endTypeItems,
       enrollmentAutoEnrollTypeItems,
-      enrollmentAutoEnrollDayOfWeekItems
-    }
+      enrollmentAutoEnrollDayOfWeekItems,
+    };
   },
   computed: {
     ...mapGetters({
-      selectedTimeZone: 'common/getSelectedTimeZone',
-      timezoneFormat: 'auth/getTimezoneFormat'
+      selectedTimeZone: "common/getSelectedTimeZone",
+      timezoneFormat: "auth/getTimezoneFormat",
     }),
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum.map((type, index) => ({
           text: this.periodTypeItems[index].text,
-          value: type.name
+          value: type.name,
         })) || this.periodTypeItems
-      )
+      );
     },
     isScheduledTimeDisabled() {
-      return this.formData.scheduleTypeId !== '2'
+      return this.formData.scheduleTypeId !== "2";
     },
     distributionSmtpDelayTimeTypes() {
-      return this.getDistributionSmtpDelayTimeTypes()
+      return this.getDistributionSmtpDelayTimeTypes();
     },
     trainingTimeItems() {
-      return this.getDistributionEmailOverTimeTypes()
-    }
+      return this.getDistributionEmailOverTimeTypes();
+    },
   },
   created() {
-    this.getSelectedTimeZone()
+    this.getSelectedTimeZone();
   },
   watch: {
     timezoneFormat: {
@@ -461,79 +461,79 @@ export default {
       immediate: true,
       handler(val) {
         if (val) {
-          this.parsedFormat = getTimeZone(false, val)
+          this.parsedFormat = getTimeZone(false, val);
         }
-      }
+      },
     },
-    'formData.enrollmentScheduler.scheduledTimeZoneId'(val) {
+    "formData.enrollmentScheduler.scheduledTimeZoneId"(val) {
       if (val) {
         getTimeByTimeZone(val).then((res) => {
           if (res?.data?.data) {
-            this.formData.enrollmentScheduler.scheduledDate = res.data.data
+            this.formData.enrollmentScheduler.scheduledDate = res.data.data;
           }
-        })
+        });
       }
     },
     selectedTimeZone(val) {
-      this.formData.enrollmentScheduler.scheduledTimeZoneId = val
+      this.formData.enrollmentScheduler.scheduledTimeZoneId = val;
     },
-    'formData.enrollmentScheduler.scheduledDate'() {
-      this.checkDateIsValid()
+    "formData.enrollmentScheduler.scheduledDate"() {
+      this.checkDateIsValid();
     },
-    'formData.scheduleTypeId'(val) {
-      if (val !== '2') {
-        this.isDateValid = true
+    "formData.scheduleTypeId"(val) {
+      if (val !== "2") {
+        this.isDateValid = true;
         if (!this.formData.enrollmentScheduler.scheduledDate) {
           this.formData.enrollmentScheduler.scheduledDate = this.$moment(Date.now()).format(
             getTimeZoneForMoment()
-          )
+          );
         }
         if (!this.formData.enrollmentScheduler.scheduledTimeZoneId) {
-          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone
+          this.formData.enrollmentScheduler.scheduledTimeZoneId = this.selectedTimeZone;
         }
       }
-    }
+    },
   },
   methods: {
     checkDateIsValid() {
-      let isDateValid
+      let isDateValid;
       if (this.formData) {
         isDateValid =
-          this.formData.scheduleTypeId === '2'
+          this.formData.scheduleTypeId === "2"
             ? this.formData.enrollmentScheduler.scheduledDate &&
               this.formData.enrollmentScheduler.scheduledDate.length > 0
-            : true
-      } else isDateValid = false
-      this.isDateValid = isDateValid
-      return this.isDateValid
+            : true;
+      } else isDateValid = false;
+      this.isDateValid = isDateValid;
+      return this.isDateValid;
     },
     disabledEndDates(val) {
-      return new Date().setHours(0, 0, 0, 0) > val.getTime()
+      return new Date().setHours(0, 0, 0, 0) > val.getTime();
     },
     getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
+      if (this.$store?.getters["common/getSelectedTimeZone"]) {
         this.formData.enrollmentScheduler.scheduledTimeZoneId = this.$store?.getters[
-          'common/getSelectedTimeZone'
-        ]
+          "common/getSelectedTimeZone"
+        ];
       } else {
-        this.$store.dispatch('common/callForSettings')
+        this.$store.dispatch("common/callForSettings");
       }
     },
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[2].text = "next";
+        this.enrollmentAutoEnrollTypeItems[3].text = "in...";
       } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
+        this.enrollmentAutoEnrollTypeItems[2].text = "next...";
+        this.enrollmentAutoEnrollTypeItems[3].text = "in";
       } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[2].text = "next...";
+        this.enrollmentAutoEnrollTypeItems[3].text = "in...";
       }
     },
     validateForm() {
-      return this.$refs.refForm.validate()
-    }
-  }
-}
+      return this.$refs.refForm.validate();
+    },
+  },
+};
 </script>

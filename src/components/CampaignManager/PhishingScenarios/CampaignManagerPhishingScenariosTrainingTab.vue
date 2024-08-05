@@ -186,71 +186,87 @@
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </FormGroup>
-    <FormGroup v-if="isShowReminder" class="ml-3 mt-6 mb-6" :title="labels.Certificate">
-      <v-checkbox
-        v-model="value.awardCertificate"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
-        hide-details
-        color="#2196f3"
-        label="Award certificate when a user completes the training"
-        :disabled="!isInputsEditable || isInputLanguageDisabled"
-      >
-      </v-checkbox>
+    <FormGroup v-if="isShowReminder" class="ml-3 mt-6 mb-6" :title="labels.Certificate" 
+      style="max-width: 875px;">
+      <div class="d-flex align-center">
+        <v-checkbox
+          v-model="value.awardCertificate"
+          id="input--campaign-manager-advanced-settings-randomly-selected"
+          hide-details
+          color="#2196f3"
+          label="Award certificate when a user completes the training"
+          :disabled="!isInputsEditable || isInputLanguageDisabled"
+        >
+        </v-checkbox>
+        <KSelect
+          v-model.trim="value.certificateConfigSendType"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          position="top"
+          style="max-width: 200px;"
+          :items="certificateTypeItems"
+          :disabled="!value.awardCertificate"
+        />
+      </div>
     </FormGroup>
   </div>
 </template>
 <script>
-import labels from '@/model/constants/labels'
-import AlertBox from '@/components/AlertBox'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
-import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import labels from "@/model/constants/labels";
+import AlertBox from "@/components/AlertBox";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import InputContentLanguage from "@/components/Common/Inputs/InputContentLanguage";
+import AwarenessEducatorService from "@/api/awarenessEducator";
+import { createRandomCryptStringNumber, getDefaultAxiosPayload } from "@/utils/functions";
+import TrainingTabModel from "@/components/CampaignManager/PhishingScenarios/trainingTabModel";
+import { SCENARIO_TYPES } from "@/components/Common/Simulator/utils";
 import {
   enrollmentItemsTrainingTab,
-  attachmentScenarioEnrollmentItems
-} from '@/components/CampaignManager/PhishingScenarios/utils'
-import InputDate from '@/components/Common/Inputs/InputDate.vue'
-import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
+  certificateTypeItems,
+  attachmentScenarioEnrollmentItems,
+} from "@/components/CampaignManager/PhishingScenarios/utils";
+import InputDate from "@/components/Common/Inputs/InputDate.vue";
+import { endTypeItems, periodTypeItems } from "@/components/AwarenessEducator/SendTraining/utils";
 export default {
-  name: 'CampaignManagerPhishingScenariosTrainingTab',
+  name: "CampaignManagerPhishingScenariosTrainingTab",
   components: { InputDate, InputContentLanguage, KSelect, AlertBox, FormGroup },
   props: {
     value: {
       type: Object,
       default() {
-        return new TrainingTabModel()
-      }
+        return new TrainingTabModel();
+      },
     },
     enumTypes: {
       type: Object,
       default() {
-        return {}
-      }
+        return {};
+      },
     },
     isEdit: {
       type: Boolean,
-      default: false
+      default: false,
     },
     type: {
       type: String,
-      default: SCENARIO_TYPES.PHISHING
+      default: SCENARIO_TYPES.PHISHING,
     },
     isShowReminder: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isCategory: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isAttachmentBasedScenario: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -260,121 +276,122 @@ export default {
       trainingItems: [],
       enrollmentItemsTrainingTab,
       attachmentScenarioEnrollmentItems,
+      certificateTypeItems,
       rules: {
         number: [
-          (v) => /\d/.test(v) || 'Enter valid number',
-          (v) => v > 0 || 'Enter number greater than 0',
-          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
-        ]
+          (v) => /\d/.test(v) || "Enter valid number",
+          (v) => v > 0 || "Enter number greater than 0",
+          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`,
+        ],
       },
       datePickerOptions: {
-        disabledDate: this.disabledEndDates
+        disabledDate: this.disabledEndDates,
       },
       periodTypeItems,
-      endTypeItems
-    }
+      endTypeItems,
+    };
   },
   watch: {
     value() {
-      this.inputContentLanguageKey = createRandomCryptStringNumber()
-    }
+      this.inputContentLanguageKey = createRandomCryptStringNumber();
+    },
   },
   computed: {
     getPeriodTypeItems() {
       return (
         this?.enumTypes?.EmailPeriodTypeEnum?.map((type, index) => ({
           text: this.periodTypeItems[index].text,
-          value: type.name
+          value: type.name,
         })) || this.periodTypeItems
-      )
+      );
     },
     getSubtitle() {
-      let type = SCENARIO_TYPES.PHISHING
-      if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING
-      else if (this.type === SCENARIO_TYPES.SMISHING) type = SCENARIO_TYPES.SMISHING
+      let type = SCENARIO_TYPES.PHISHING;
+      if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING;
+      else if (this.type === SCENARIO_TYPES.SMISHING) type = SCENARIO_TYPES.SMISHING;
       else if (this.type === SCENARIO_TYPES.CALLBACK) {
-        type = SCENARIO_TYPES.CALLBACK
-        return `The system sends the selected training to the target users who call the callback phone number, and enrollment is created`
+        type = SCENARIO_TYPES.CALLBACK;
+        return `The system sends the selected training to the target users who call the callback phone number, and enrollment is created`;
       }
-      return `The system sends the selected training to the target users who click on the ${type.toLowerCase()} link, and the enrollment is created`
+      return `The system sends the selected training to the target users who click on the ${type.toLowerCase()} link, and the enrollment is created`;
     },
     getAlertBoxText() {
-      let scenarioText = ''
+      let scenarioText = "";
       switch (this.type) {
         case SCENARIO_TYPES.PHISHING:
-          scenarioText = 'phishing'
-          break
+          scenarioText = "phishing";
+          break;
         case SCENARIO_TYPES.QUISHING:
-          scenarioText = 'quishing'
-          break
+          scenarioText = "quishing";
+          break;
         case SCENARIO_TYPES.SMISHING:
-          scenarioText = 'smishing'
-          break
+          scenarioText = "smishing";
+          break;
         case SCENARIO_TYPES.CALLBACK:
-          scenarioText = 'callback'
-          break
+          scenarioText = "callback";
+          break;
         default:
-          break
+          break;
       }
-      return `A ${scenarioText} scenario should be selected in order to be able to choose a training`
+      return `A ${scenarioText} scenario should be selected in order to be able to choose a training`;
     },
     isInputsEditable() {
-      return this?.value?.isCheckboxSelected || this.isCategory
+      return this?.value?.isCheckboxSelected || this.isCategory;
     },
     isInputLanguageDisabled() {
-      return !this.isInputsEditable || !this.value.trainingId
+      return !this.isInputsEditable || !this.value.trainingId;
     },
     isPreviewButtonDisabled() {
       return (
         !this.isInputsEditable || !this.value.trainingId || !this.value.trainingLanguageIds.length
-      )
+      );
     },
     getTrainingInputClassName() {
-      const classes = ['ml-3', this.isInputsEditable && 'mt-6']
-      return classes.filter(Boolean).join(' ')
+      const classes = ["ml-3", this.isInputsEditable && "mt-6"];
+      return classes.filter(Boolean).join(" ");
     },
     getTrainingId() {
-      return this?.value?.trainingId || ''
-    }
+      return this?.value?.trainingId || "";
+    },
   },
   created() {
-    this.callForTrainingItems()
+    this.callForTrainingItems();
   },
   methods: {
     callForTrainingItems() {
-      this.isTrainingLoading = true
+      this.isTrainingLoading = true;
       AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 }))
         .then((response) => {
           const {
-            data: { data = {} }
-          } = response
-          const { results = [] } = data
+            data: { data = {} },
+          } = response;
+          const { results = [] } = data;
           this.trainingItems = results.map((result) => ({
             text: result.trainingName,
-            value: result.trainingId
-          }))
+            value: result.trainingId,
+          }));
         })
         .finally(() => {
-          this.isTrainingLoading = false
-        })
+          this.isTrainingLoading = false;
+        });
     },
     handlePreview() {
-      this.$emit('on-preview', this.value)
+      this.$emit("on-preview", this.value);
     },
     handleTrainingItemSelect(item) {
-      this.$set(this.value, 'trainingId', item?.value ?? '')
-      this.$set(this.value, 'trainingName', item?.text ?? '')
-      this.$set(this.value, 'trainingLanguageIds', [])
+      this.$set(this.value, "trainingId", item?.value ?? "");
+      this.$set(this.value, "trainingName", item?.text ?? "");
+      this.$set(this.value, "trainingLanguageIds", []);
       this.$nextTick(() => {
-        this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
-      })
+        this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation();
+      });
     },
     handleApiCallFinished() {
-      if (!this.value.trainingLanguageIds.length) this.$refs.inputContentLanguage.setDefaultValue()
+      if (!this.value.trainingLanguageIds.length) this.$refs.inputContentLanguage.setDefaultValue();
     },
     disabledEndDates(val) {
-      return new Date().setHours(0, 0, 0, 0) > val.getTime()
-    }
-  }
-}
+      return new Date().setHours(0, 0, 0, 0) > val.getTime();
+    },
+  },
+};
 </script>
