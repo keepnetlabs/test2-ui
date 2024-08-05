@@ -21,7 +21,7 @@
           <v-stepper-step
             :class="{
               'k-stepper__step': true,
-              'k-stepper__step--hidden': isAttachmentBasedScenario
+              'k-stepper__step--hidden': isAttachmentBasedScenario,
             }"
             :complete="isAttachmentBasedScenario ? false : step > 3"
             :step="isAttachmentBasedScenario ? 10 : 3"
@@ -224,12 +224,12 @@
                     <div class="summary-header">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ isQuishingTypeIndividualPrintOut ? '$pdf-file' : 'mdi-email' }}
+                          {{ isQuishingTypeIndividualPrintOut ? "$pdf-file" : "mdi-email" }}
                         </v-icon>
                         {{
                           isQuishingTypeIndividualPrintOut
-                            ? 'Individual printout that will be given to users'
-                            : 'Email that will be sent to users'
+                            ? "Individual printout that will be given to users"
+                            : "Email that will be sent to users"
                         }}
                       </div>
                       <div>
@@ -243,7 +243,7 @@
                           <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
                           Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                            {{ showTemplate1 ? "mdi-menu-up" : "mdi-menu-down" }}
                           </v-icon></v-btn
                         >
                       </div>
@@ -253,6 +253,15 @@
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
+                            <VTooltip
+                              v-if="summaryData.emailTemplate && summaryData.emailTemplate.isAi"
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div
                             v-if="!isQuishingTypeIndividualPrintOut"
@@ -269,7 +278,7 @@
                               <AttachmentsPreview
                                 :deletable="false"
                                 :att="{
-                                  name: summaryData.emailTemplate.phishingFileName
+                                  name: summaryData.emailTemplate.phishingFileName,
                                 }"
                                 :isEmailTemplate="true"
                               />
@@ -363,7 +372,7 @@
                           <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
                           Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                            {{ showTemplate2 ? "mdi-menu-up" : "mdi-menu-down" }}
                           </v-icon></v-btn
                         >
                       </div>
@@ -386,6 +395,18 @@
                                   summaryData.landingPageTemplate &&
                                   summaryData.landingPageTemplate.name
                                 }}
+                                <VTooltip
+                                  v-if="
+                                    summaryData.landingPageTemplate &&
+                                    summaryData.landingPageTemplate.isAi
+                                  "
+                                  bottom
+                                >
+                                  <template #activator="{ on }">
+                                    <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                                  </template>
+                                  <span>This template was generated with AI</span>
+                                </VTooltip>
                               </div>
                               <div class="template-summary__sub-title mt-2">
                                 <b>{{ getURLText }}:</b>
@@ -449,6 +470,18 @@
                               summaryData.landingPageTemplate &&
                               summaryData.landingPageTemplate.name
                             }}
+                            <VTooltip
+                              v-if="
+                                summaryData.landingPageTemplate &&
+                                summaryData.landingPageTemplate.isAi
+                              "
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div class="template-summary__subtitle mt-2">
                             <b>{{ getLandingPageUrlLabel }}:</b>
@@ -534,7 +567,7 @@
           nextButton:
             isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
           submitButton:
-            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
         }"
         :disabledNextButtonTooltipText="
           isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
@@ -551,45 +584,45 @@
   </AppModal>
 </template>
 <script>
-import labels from '@/model/constants/labels'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import * as Validations from '@/utils/validations'
-import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
-import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
-import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
-import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
-import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
-import KEmailPreview from '@/components/KEmailPreview'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
-import InputTag from '@/components/Common/Inputs/InputTag'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import StepperFooter from '@/components/Stepper/StepperFooter'
-import { getAvailableForValueFromList } from '@/utils/helperFunctions'
+import labels from "@/model/constants/labels";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
+import * as Validations from "@/utils/validations";
+import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from "@/api/scenarios";
+import { getEmailTemplatePreviewContent, getEmailTemplatesList } from "@/api/phishingsimulator";
+import { getLandingPageList, getLandingPageTemplatePreviewContent } from "@/api/landingPage";
+import EmailTemplateListPreview from "@/components/workshop/EmailTemplateListPreview";
+import LandingPageListPreview from "@/components/workshop/LandingPageTemplateListPreview";
+import { scrollToComponent, isDifferent } from "@/utils/functions";
+import KEmailPreview from "@/components/KEmailPreview";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+import InputSelectLanguage from "@/components/Common/Inputs/InputSelectLanguage";
+import InputTag from "@/components/Common/Inputs/InputTag";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName";
+import InputDescription from "@/components/Common/Inputs/InputDescription";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview";
+import StepperFooter from "@/components/Stepper/StepperFooter";
+import { getAvailableForValueFromList } from "@/utils/helperFunctions";
 import {
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHOD_TYPES,
-  SCENARIO_METHODS
-} from '@/components/PhishingScenarios/utils'
-import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import AppModal from '@/components/AppModal'
+  SCENARIO_METHODS,
+} from "@/components/PhishingScenarios/utils";
+import CampaignManagerSummaryCard from "@/components/CampaignManager/Summary/CampaignManagerSummaryCard";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader";
+import AppModal from "@/components/AppModal";
 import {
   getDifficultyColor,
   quishingTypeItems,
-  SCENARIO_TYPES
-} from '@/components/Common/Simulator/utils'
-import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import QuishingService from '@/api/quishing'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import KSelect from '@/components/Common/Inputs/KSelect.vue'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+  SCENARIO_TYPES,
+} from "@/components/Common/Simulator/utils";
+import InputPhishingMethod from "@/components/Common/Inputs/InputPhishingMethod.vue";
+import QuishingService from "@/api/quishing";
+import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
+import KSelect from "@/components/Common/Inputs/KSelect.vue";
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
 export default {
-  name: 'CommonSimulatorNewScenario',
+  name: "CommonSimulatorNewScenario",
   components: {
     KSelect,
     InputPhishingMethod,
@@ -606,34 +639,34 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    AttachmentsPreview
+    AttachmentsPreview,
   },
   props: {
     status: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isEdit: {
-      type: Boolean
+      type: Boolean,
     },
     isDuplicate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isAttachmentBased: {
       type: Boolean,
-      default: false
+      default: false,
     },
     scenarioId: {
-      type: String
+      type: String,
     },
     scenarioDetailsLookup: {
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: SCENARIO_TYPES.PHISHING
-    }
+      default: SCENARIO_TYPES.PHISHING,
+    },
   },
   data() {
     return {
@@ -643,233 +676,233 @@ export default {
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
-        cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
-        backButton: 'btn-back--add-or-edit-scenario-modal',
-        nextButton: 'btn-next--add-or-edit-scenario-modal',
-        saveButton: 'btn-save--add-or-edit-scenario-modal'
+        cancelButton: "btn-cancel--add-or-edit-scenario-modal",
+        backButton: "btn-back--add-or-edit-scenario-modal",
+        nextButton: "btn-next--add-or-edit-scenario-modal",
+        saveButton: "btn-save--add-or-edit-scenario-modal",
       },
       isInitial: true,
-      emailDifficultyChipColor: '#217124',
+      emailDifficultyChipColor: "#217124",
       isFetched: false,
-      selectedTab: '1',
+      selectedTab: "1",
       summaryData: {},
       showTemplate1: false,
       showTemplate2: false,
       languageOptions: [],
       isSubmitDisabled: false,
       availableForRequests: [],
-      generalDifficultyTypeId: '',
+      generalDifficultyTypeId: "",
       labels,
       step: 1,
       Validations,
       initialFormValues: {},
-      quishingType: '',
-      categoryText: '',
+      quishingType: "",
+      categoryText: "",
       formValues: {
-        name: '',
-        description: '',
-        categoryId: '',
-        methodTypeId: '1',
-        difficultyTypeId: '1',
+        name: "",
+        description: "",
+        categoryId: "",
+        methodTypeId: "1",
+        difficultyTypeId: "1",
         emailTemplateId: null,
         landingPageTemplateId: null,
-        languageTypeResourceId: '862249c19aad',
-        tags: []
+        languageTypeResourceId: "862249c19aad",
+        tags: [],
       },
       commonRules: {
-        hint: '*Required',
+        hint: "*Required",
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
-        ]
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName)),
+        ],
       },
       mfaData: {
-        mfaSenderNumberResourceId: '',
-        mfaCallerPhoneNumber: '',
-        mfaTextTemplate: 'Your verification code: {MFA_CODE}'
+        mfaSenderNumberResourceId: "",
+        mfaCallerPhoneNumber: "",
+        mfaTextTemplate: "Your verification code: {MFA_CODE}",
       },
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null,
-      selectedEmailTemplate: null
-    }
+      selectedEmailTemplate: null,
+    };
   },
   computed: {
     getURLText() {
-      return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
+      return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase();
     },
     isPhishing() {
-      return this.type === SCENARIO_TYPES.PHISHING
+      return this.type === SCENARIO_TYPES.PHISHING;
     },
     getCategoryItems() {
-      return this.scenarioDetailsLookup?.categories || []
+      return this.scenarioDetailsLookup?.categories || [];
     },
     isQuishing() {
-      return this.type === SCENARIO_TYPES.QUISHING
+      return this.type === SCENARIO_TYPES.QUISHING;
     },
     isQuishingTypeIndividualPrintOut() {
-      if (!this.isQuishing) return false
+      if (!this.isQuishing) return false;
       return (
         this.quishingType.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
-      )
+      );
     },
     getEmailTemplateApiFuncs() {
       if (this.type === SCENARIO_TYPES.PHISHING) {
         return {
           list: getEmailTemplatesList,
-          content: getEmailTemplatePreviewContent
-        }
+          content: getEmailTemplatePreviewContent,
+        };
       } else if (this.isQuishingTypeIndividualPrintOut) {
         return {
           list: QuishingService.getEmailTemplatesList,
-          content: QuishingService.getQuishingTemplatePreviewContent
-        }
+          content: QuishingService.getQuishingTemplatePreviewContent,
+        };
       }
       return {
         list: QuishingService.getEmailTemplatesList,
-        content: QuishingService.getEmailTemplatePreviewContent
-      }
+        content: QuishingService.getEmailTemplatePreviewContent,
+      };
     },
     getLandingPageApiFuncs() {
       return this.type === SCENARIO_TYPES.PHISHING
         ? {
             list: getLandingPageList,
-            content: getLandingPageTemplatePreviewContent
+            content: getLandingPageTemplatePreviewContent,
           }
         : {
             list: QuishingService.getLandingPageList,
-            content: QuishingService.getLandingPageTemplatePreviewContent
-          }
+            content: QuishingService.getLandingPageTemplatePreviewContent,
+          };
     },
     getInputPhishingMethodSubtitle() {
       return this.type === SCENARIO_TYPES.PHISHING
-        ? 'Select the phishing technique for this template'
-        : 'Select the quishing technique for this template'
+        ? "Select the phishing technique for this template"
+        : "Select the quishing technique for this template";
     },
     getLandingPageCardTitle() {
       return this.type === SCENARIO_TYPES.PHISHING
-        ? 'Landing Page for users who clicked the phishing link'
-        : 'Landing Page for users who clicked the QR code link'
+        ? "Landing Page for users who clicked the phishing link"
+        : "Landing Page for users who clicked the QR code link";
     },
     getLandingPageUrlLabel() {
-      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
+      return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL;
     },
     maxStep() {
-      return this.isAttachmentBasedScenario ? 3 : 4
+      return this.isAttachmentBasedScenario ? 3 : 4;
     },
     getLastStepContainerStyle() {
       return this.isMethodMfa
         ? {
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            columnGap: '16px',
-            maxWidth: 'calc(100% - 96px)'
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            columnGap: "16px",
+            maxWidth: "calc(100% - 96px)",
           }
         : {
-            maxWidth: 'calc(100% - 96px)'
-          }
+            maxWidth: "calc(100% - 96px)",
+          };
     },
     getSummaryDifficulty() {
       return (
         SCENARIO_DIFFICULTIES.find(
           (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
-        )?.text || ''
-      )
+        )?.text || ""
+      );
     },
     getSummaryMethod() {
       return (
         SCENARIO_METHODS.find(
           (item) => item.value === this.summaryData.emailTemplate.categoryResourceId
-        )?.text || ''
-      )
+        )?.text || ""
+      );
     },
     getLandingPageDifficulty() {
       return (
         this.scenarioDetailsLookup.difficultyTypes.find(
           (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
-        )?.text || ''
-      )
+        )?.text || ""
+      );
     },
     getLandingPageMethod() {
       return this.getMethodTypes.find(
         (item) => item.value === this.summaryData.landingPageTemplate.methodTypeId.toString()
-      ).text
+      ).text;
     },
     getMethodTypes() {
-      return this.scenarioDetailsLookup?.methodTypes || []
+      return this.scenarioDetailsLookup?.methodTypes || [];
     },
     isMethodMfa() {
-      return this.formValues.methodTypeId === '4'
+      return this.formValues.methodTypeId === "4";
     },
     getScenarioInfoItems() {
       const obj = {
         Name: this.formValues.name,
         Difficulty: this.getDifficultyType,
         Method: this.getMethodText,
-        Category: this.categoryText
-      }
+        Category: this.categoryText,
+      };
       if (this.isQuishing) {
-        obj['Quishing Type'] = this.quishingType
-        delete obj['Category']
+        obj["Quishing Type"] = this.quishingType;
+        delete obj["Category"];
       }
-      return obj
+      return obj;
     },
     getMfaSettingsItems() {
       return {
-        'Sender Phone Number': this?.mfaData?.mfaCallerPhoneNumber,
-        'Verification Message': this?.mfaData?.mfaTextTemplate
-      }
+        "Sender Phone Number": this?.mfaData?.mfaCallerPhoneNumber,
+        "Verification Message": this?.mfaData?.mfaTextTemplate,
+      };
     },
     hasPhishingFile() {
-      return !!this.summaryData?.emailTemplate?.phishingFileName
+      return !!this.summaryData?.emailTemplate?.phishingFileName;
     },
     getSelectedMethod() {
-      if (!this.formValues?.methodTypeId) return ''
+      if (!this.formValues?.methodTypeId) return "";
       if (
         SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text ===
         SCENARIO_METHOD_TYPES.MFA
       ) {
         return this.selectedEmailTemplate.categoryName === labels.ClickOnly
           ? SCENARIO_METHOD_TYPES.CLICK_ONLY
-          : this.selectedEmailTemplate.categoryName
-      } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
+          : this.selectedEmailTemplate.categoryName;
+      } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text;
     },
     getStep2Title() {
       return this.isQuishingTypeIndividualPrintOut
         ? labels.SelectIndividualPrintoutTemplate
-        : labels.SelectEmailTemplate
+        : labels.SelectEmailTemplate;
     },
     getStep2Subtitle() {
       const type = this.isQuishingTypeIndividualPrintOut
-        ? 'individual printout template'
-        : 'email template'
+        ? "individual printout template"
+        : "email template";
       const mTypeText =
         this.scenarioDetailsLookup?.methodTypes?.find(
           (mType) => mType.value === this.formValues.methodTypeId
-        )?.text || ''
+        )?.text || "";
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
-        return `Choose your click only type ${type}`
+        return `Choose your click only type ${type}`;
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
-        return `Choose your data submission type ${type}`
+        return `Choose your data submission type ${type}`;
       else if (mTypeText === SCENARIO_METHOD_TYPES.ATTACHMENT)
-        return `Choose your attachment type ${type}`
-      else return `Choose your click only or data submission type ${type}`
+        return `Choose your attachment type ${type}`;
+      else return `Choose your click only or data submission type ${type}`;
     },
     getStep3Subtitle() {
       const mTypeText =
         this.scenarioDetailsLookup?.methodTypes?.find(
           (mType) => mType.value === this.formValues.methodTypeId
-        )?.text || ''
+        )?.text || "";
       if (mTypeText === SCENARIO_METHOD_TYPES.CLICK_ONLY)
-        return 'Choose your click only type landing page'
+        return "Choose your click only type landing page";
       else if (mTypeText === SCENARIO_METHOD_TYPES.DATA_SUBMISSION)
-        return 'Choose your data submission type landing page'
+        return "Choose your data submission type landing page";
       else if (mTypeText === SCENARIO_METHOD_TYPES.MFA)
-        return this?.selectedEmailTemplate?.categoryName === 'Click Only'
-          ? 'Choose your click only type landing page'
-          : 'Choose your data submission type landing page'
-      else return 'Choose your attachment type landing page'
+        return this?.selectedEmailTemplate?.categoryName === "Click Only"
+          ? "Choose your click only type landing page"
+          : "Choose your data submission type landing page";
+      else return "Choose your attachment type landing page";
     },
     isAttachmentBasedScenario() {
       if (
@@ -877,171 +910,171 @@ export default {
         (this.isEdit || this.isDuplicate) &&
         !this.isFetched
       ) {
-        return this.isAttachmentBased
+        return this.isAttachmentBased;
       }
 
       if (this.formValues?.methodTypeId) {
-        return this.formValues?.methodTypeId === '3'
+        return this.formValues?.methodTypeId === "3";
       }
 
-      return false
+      return false;
     },
     getModalTitle() {
       if (this.type === SCENARIO_TYPES.PHISHING) {
-        if (!this.isEdit) return 'New Phishing Scenario'
-        return this.isDuplicate ? 'Duplicate Phishing Scenario' : 'Edit Phishing Scenario'
+        if (!this.isEdit) return "New Phishing Scenario";
+        return this.isDuplicate ? "Duplicate Phishing Scenario" : "Edit Phishing Scenario";
       }
-      if (!this.isEdit) return 'New Quishing Scenario'
-      return this.isDuplicate ? 'Duplicate Quishing Scenario' : 'Edit Quishing Scenario'
+      if (!this.isEdit) return "New Quishing Scenario";
+      return this.isDuplicate ? "Duplicate Quishing Scenario" : "Edit Quishing Scenario";
     },
     getModalIcon() {
       if (this.type === SCENARIO_TYPES.PHISHING) {
-        return 'mdi-hook'
+        return "mdi-hook";
       }
-      return '$qr-code-selected'
+      return "$qr-code-selected";
     },
     getPhishingFile() {
       return this.summaryData?.emailTemplate?.phishingFileName
         ? {
-            name: this.summaryData?.emailTemplate?.phishingFileName
+            name: this.summaryData?.emailTemplate?.phishingFileName,
           }
-        : null
+        : null;
     },
     getLandingPageDifficultyColor() {
       const difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
         (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
-      )?.text
-      if (difficultyType === 'Easy') return '#217124'
-      else if (difficultyType === 'Medium') return '#2196F3'
-      else return '#F56C6C'
+      )?.text;
+      if (difficultyType === "Easy") return "#217124";
+      else if (difficultyType === "Medium") return "#2196F3";
+      else return "#F56C6C";
     },
     getDifficultyType() {
       return (
-        this.scenarioDetailsLookup['difficultyTypes'].find(
+        this.scenarioDetailsLookup["difficultyTypes"].find(
           (item) => item.value === this.generalDifficultyTypeId
-        )?.text || ''
-      )
+        )?.text || ""
+      );
     },
     getMethodText() {
       return (
         this.scenarioDetailsLookup?.methodTypes?.find(
           (item) => item.value === this.formValues.methodTypeId
-        )?.text || ''
-      )
+        )?.text || ""
+      );
     },
     getCurrentLandingPageTemplate() {
       return this.summaryData.landingPageTemplate?.landingPages?.length > 1
         ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
-            .content || ''
-        : this.summaryData.landingPageTemplate.landingPages[0].content || ''
-    }
+            .content || ""
+        : this.summaryData.landingPageTemplate.landingPages[0].content || "";
+    },
   },
   watch: {
     landingPageTemplateResourceId() {
-      this.selectedTab = '1'
+      this.selectedTab = "1";
     },
-    'formValues.methodTypeId'(val, oldVal) {
-      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
+    "formValues.methodTypeId"(val, oldVal) {
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection();
     },
     quishingType(val, oldVal) {
-      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
-    }
+      if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection();
+    },
   },
   created() {
-    if (this.isDuplicate) this.setFooterDuplicateIds()
-    this.callForLanguages()
+    if (this.isDuplicate) this.setFooterDuplicateIds();
+    this.callForLanguages();
     if (this.isEdit) {
-      this.callForScenario()
+      this.callForScenario();
     } else {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      this.isInitial = false
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      this.isInitial = false;
     }
   },
   methods: {
     getDifficultyColor,
     handleTemplateEdit(val) {
-      this.isTemplateEditing = val
+      this.isTemplateEditing = val;
     },
     handleEditModeChange(val) {
-      this.isEmailTemplateInEditMode = val
+      this.isEmailTemplateInEditMode = val;
     },
     handleLandingPageEditModeChange(val) {
-      this.isLandingPageTemplateInEditMode = val
+      this.isLandingPageTemplateInEditMode = val;
     },
     handleCategoryChange(categoryId) {
-      this.formValues.categoryId = categoryId
+      this.formValues.categoryId = categoryId;
       this.categoryText =
         this.scenarioDetailsLookup?.categories?.find((item) => item.value === categoryId)?.text ||
-        ''
+        "";
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
-        cancelButton: 'btn-cancel--duplicate-scenario-modal',
-        backButton: 'btn-back--duplicate-scenario-modal',
-        nextButton: 'btn-next--duplicate-scenario-modal',
-        saveButton: 'btn-save--duplicate-scenario-modal'
-      }
+        cancelButton: "btn-cancel--duplicate-scenario-modal",
+        backButton: "btn-back--duplicate-scenario-modal",
+        nextButton: "btn-next--duplicate-scenario-modal",
+        saveButton: "btn-save--duplicate-scenario-modal",
+      };
     },
     callForScenario() {
-      this.isSubmitDisabled = true
+      this.isSubmitDisabled = true;
       const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
+        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario;
       apiFunc(this.scenarioId)
         .then((response) => {
-          this.formValues = { ...response.data.data }
-          this.formValues.name = `${this.formValues.name}`
-          this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-          this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          this.formValues = { ...response.data.data };
+          this.formValues.name = `${this.formValues.name}`;
+          this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString();
+          this.formValues.methodTypeId = this.formValues.methodTypeId.toString();
           if (this.type === SCENARIO_TYPES.PHISHING) {
             this.formValues.categoryId = this.scenarioDetailsLookup?.categories?.find(
               (item) => item.text === response?.data?.data?.category
-            )?.value
+            )?.value;
             this.categoryText =
               this.scenarioDetailsLookup?.categories?.find(
                 (item) => item.value === this.formValues.categoryId
-              )?.text || ''
-            delete this.formValues.category
+              )?.text || "";
+            delete this.formValues.category;
           }
           const emailTemplateResourceId = this.isQuishing
             ? response.data.data.templateResourceId
-            : response.data.data.emailTemplateResourceId
-          this.formValues.emailTemplateId = emailTemplateResourceId
-          this.emailTemplateResourceId = emailTemplateResourceId
-          this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
-          this.formValues.tags = this.formValues.tags || []
-          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
-          this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
-          this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate
-          const availableForList = response?.data?.data?.availableForList
-          if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-          this.availableForRequests = getAvailableForValueFromList(availableForList)
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-          this.isFetched = true
-          if (this.isQuishing) this.quishingType = response.data.data.templateType
+            : response.data.data.emailTemplateResourceId;
+          this.formValues.emailTemplateId = emailTemplateResourceId;
+          this.emailTemplateResourceId = emailTemplateResourceId;
+          this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId;
+          this.formValues.tags = this.formValues.tags || [];
+          this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId;
+          this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber;
+          this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate;
+          const availableForList = response?.data?.data?.availableForList;
+          if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`;
+          this.availableForRequests = getAvailableForValueFromList(availableForList);
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+          this.isFetched = true;
+          if (this.isQuishing) this.quishingType = response.data.data.templateType;
         })
         .finally(() => {
-          this.isSubmitDisabled = false
-          this.isInitial = false
-        })
+          this.isSubmitDisabled = false;
+          this.isInitial = false;
+        });
     },
     getInitialEmailTemplateId(id) {
-      this.initialFormValues.emailTemplateId = id
+      this.initialFormValues.emailTemplateId = id;
     },
     getInitialLandingPageTemplateId(id) {
-      this.initialFormValues.landingPageTemplateId = id
+      this.initialFormValues.landingPageTemplateId = id;
     },
     selectedEmailTemplateResourceId(id) {
-      this.emailTemplateResourceId = id
+      this.emailTemplateResourceId = id;
     },
     selectedLandingPageTemplateResourceId(id) {
-      this.landingPageTemplateResourceId = id
+      this.landingPageTemplateResourceId = id;
     },
     selectedEmailTemplateChange(id, item) {
-      this.formValues.emailTemplateId = id
-      this.selectedEmailTemplate = item
+      this.formValues.emailTemplateId = id;
+      this.selectedEmailTemplate = item;
     },
     selectedLandingPageChange(id) {
-      this.formValues.landingPageTemplateId = id
+      this.formValues.landingPageTemplateId = id;
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
@@ -1049,230 +1082,230 @@ export default {
           response?.map((language) => ({
             text: language.name,
             value: language.resourceId,
-            description: language.description
-          })) || []
-      })
+            description: language.description,
+          })) || [];
+      });
     },
     setAttachmentFile(file) {
-      this.formValues.attachmentFiles = file
+      this.formValues.attachmentFiles = file;
     },
     validateAvailableFor(value = {}) {
-      this.isAvailableForValidated = true
-      this.isAvailableForValid = !!value.length
-      this.$emit('validation', this.isAvailableForValid)
+      this.isAvailableForValidated = true;
+      this.isAvailableForValid = !!value.length;
+      this.$emit("validation", this.isAvailableForValid);
     },
     changeNewScenarioModalStatus() {
-      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues);
       if (!isChanged) {
-        return this.$emit('changeNewScenarioModalStatus', false)
+        return this.$emit("changeNewScenarioModalStatus", false);
       }
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
         show: true,
         callback: () => {
-          this.$emit('changeNewScenarioModalStatus', false)
-        }
-      })
+          this.$emit("changeNewScenarioModalStatus", false);
+        },
+      });
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step))
-      let isValid = true
+      const currentStep = JSON.parse(JSON.stringify(this.step));
+      let isValid = true;
       if (this.$refs.refMakeAvailableFor) {
-        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
-        isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests);
+        isValid = this.$refs.refMakeAvailableFor.isAvailableForValid;
       }
       if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate() && isValid) {
-          this.step += 1
+          this.step += 1;
         } else {
-          const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
-          scrollToComponent(el)
+          const el = this.$refs.refFormStep1.$el.querySelector(".v-messages__message");
+          scrollToComponent(el);
         }
       }
       if (currentStep === 2 && !this.isAttachmentBasedScenario) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
-          this.step += 1
+          this.step += 1;
         }
       }
       if (currentStep === 2 && this.isAttachmentBasedScenario) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
-          this.isSubmitDisabled = true
+          this.isSubmitDisabled = true;
           this.getEmailTemplateApiFuncs
             .content(this.emailTemplateResourceId)
             .then((response) => {
               const languageShortCode = this.languageOptions.find(
                 (language) => language.value === response?.data?.data?.languageTypeResourceId
-              )?.description
+              )?.description;
               const emailTemplateData = {
                 ...response.data.data,
-                languageShortCode
-              }
+                languageShortCode,
+              };
               if (this.selectedEmailTemplate) {
                 this.generalDifficultyTypeId =
-                  this.scenarioDetailsLookup['difficultyTypes']
+                  this.scenarioDetailsLookup["difficultyTypes"]
                     ?.find(
                       (difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName
                     )
-                    ?.value.toString() || ''
+                    ?.value.toString() || "";
                 this.emailDifficultyChipColor = this.getDifficultyColor(
                   this.selectedEmailTemplate.difficultyName
-                )
+                );
               }
-              this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
-              this.step += 1
+              this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData));
+              this.step += 1;
             })
             .finally(() => {
-              this.isSubmitDisabled = false
-            })
+              this.isSubmitDisabled = false;
+            });
         }
       }
       if (currentStep === 3 && !this.isAttachmentBasedScenario) {
-        if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return
+        if (!this.$refs?.refLandingPageTemplateListPreview?.validateMfaForm()) return;
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
-          this.isSubmitDisabled = true
-          this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
+          this.isSubmitDisabled = true;
+          this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData;
           const apiFunc =
             this.type === SCENARIO_TYPES.PHISHING
               ? getSummaryOfScenario
-              : QuishingService.getSummaryOfScenario
-          let params = [this.emailTemplateResourceId, this.landingPageTemplateResourceId]
-          if (this.isQuishing) params.push(this.quishingType.toLowerCase())
+              : QuishingService.getSummaryOfScenario;
+          let params = [this.emailTemplateResourceId, this.landingPageTemplateResourceId];
+          if (this.isQuishing) params.push(this.quishingType.toLowerCase());
           apiFunc(...params)
             .then((response) => {
               const {
-                data: { data }
-              } = response
+                data: { data },
+              } = response;
               if (this.isQuishing) {
                 if (this.isQuishingTypeIndividualPrintOut)
-                  data.emailTemplate = data.quishingTemplate
+                  data.emailTemplate = data.quishingTemplate;
                 data.emailTemplate.template = data.emailTemplate.template?.replaceAll(
-                  '{QRCODEURLIMAGE}',
+                  "{QRCODEURLIMAGE}",
                   qrCodeString
-                )
+                );
               }
               data.emailTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.emailTemplate?.languageTypeResourceId
-              )?.description
+              )?.description;
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
-              )?.description
+              )?.description;
               this.emailDifficultyChipColor = this.getDifficultyColor(
-                this.selectedEmailTemplate?.difficultyName || ''
-              )
-              this.summaryData = data
-              this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
-              this.step += 1
+                this.selectedEmailTemplate?.difficultyName || ""
+              );
+              this.summaryData = data;
+              this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString();
+              this.step += 1;
             })
             .finally(() => {
-              this.isSubmitDisabled = false
-            })
+              this.isSubmitDisabled = false;
+            });
         }
       }
     },
     backStep() {
       if (this.step === 2 && this.isEmailTemplateInEditMode) {
-        const { editData, initialEditData } = this.$refs.refEmailTemplateListPreview
-        const isChanged = isDifferent(editData, initialEditData)
+        const { editData, initialEditData } = this.$refs.refEmailTemplateListPreview;
+        const isChanged = isDifferent(editData, initialEditData);
         if (!isChanged) {
           if (this.$refs?.refEmailTemplateListPreview)
-            this.$refs.refEmailTemplateListPreview.isEditMode = false
-          this.isSubmitDisabled = false
-          this.isEmailTemplateInEditMode = false
-          this.step -= 1
-          return
+            this.$refs.refEmailTemplateListPreview.isEditMode = false;
+          this.isSubmitDisabled = false;
+          this.isEmailTemplateInEditMode = false;
+          this.step -= 1;
+          return;
         }
-        this.$store.dispatch('common/setIsShowLeavingDialog', {
+        this.$store.dispatch("common/setIsShowLeavingDialog", {
           show: true,
           callback: () => {
             if (this.$refs?.refEmailTemplateListPreview)
-              this.$refs.refEmailTemplateListPreview.isEditMode = false
-            this.isSubmitDisabled = false
-            this.isEmailTemplateInEditMode = false
-            this.step -= 1
-            return
-          }
-        })
+              this.$refs.refEmailTemplateListPreview.isEditMode = false;
+            this.isSubmitDisabled = false;
+            this.isEmailTemplateInEditMode = false;
+            this.step -= 1;
+            return;
+          },
+        });
       } else if (
         !this.isAttachmentBasedScenario &&
         this.step === 3 &&
         this.isLandingPageTemplateInEditMode
       ) {
-        const { editData, initialEditData } = this.$refs.refLandingPageTemplateListPreview
-        const isChanged = isDifferent(editData, initialEditData)
+        const { editData, initialEditData } = this.$refs.refLandingPageTemplateListPreview;
+        const isChanged = isDifferent(editData, initialEditData);
         if (!isChanged) {
           if (this.$refs?.refLandingPageTemplateListPreview)
-            this.$refs.refLandingPageTemplateListPreview.isEditMode = false
-          this.isSubmitDisabled = false
-          this.isLandingPageTemplateInEditMode = false
-          this.step -= 1
-          return
+            this.$refs.refLandingPageTemplateListPreview.isEditMode = false;
+          this.isSubmitDisabled = false;
+          this.isLandingPageTemplateInEditMode = false;
+          this.step -= 1;
+          return;
         }
-        this.$store.dispatch('common/setIsShowLeavingDialog', {
+        this.$store.dispatch("common/setIsShowLeavingDialog", {
           show: true,
           callback: () => {
             if (this.$refs?.refLandingPageTemplateListPreview)
-              this.$refs.refLandingPageTemplateListPreview.isEditMode = false
-            this.isSubmitDisabled = false
-            this.isLandingPageTemplateInEditMode = false
-            this.step -= 1
-            return
-          }
-        })
+              this.$refs.refLandingPageTemplateListPreview.isEditMode = false;
+            this.isSubmitDisabled = false;
+            this.isLandingPageTemplateInEditMode = false;
+            this.step -= 1;
+            return;
+          },
+        });
       } else {
-        this.step -= 1
-        this.isSubmitDisabled = false
+        this.step -= 1;
+        this.isSubmitDisabled = false;
       }
     },
     submit() {
-      this.isSubmitDisabled = true
-      const { refMakeAvailableFor } = this.$refs
+      this.isSubmitDisabled = true;
+      const { refMakeAvailableFor } = this.$refs;
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests);
       }
       const payload = {
         ...this.formValues,
-        mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
-        mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
-        availableForRequests: this.availableForRequests
-      }
+        mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || "",
+        mfaTextTemplate: this.mfaData?.mfaTextTemplate || "",
+        availableForRequests: this.availableForRequests,
+      };
       if (!this.isPhishing) {
-        delete payload.categoryId
-        delete payload.category
+        delete payload.categoryId;
+        delete payload.category;
       }
       if (this.isQuishing) {
-        payload.templateType = this.quishingType
-        payload.templateResourceId = this.emailTemplateResourceId
-        delete payload.emailTemplateId
-        delete payload.emailTemplateResourceId
+        payload.templateType = this.quishingType;
+        payload.templateResourceId = this.emailTemplateResourceId;
+        delete payload.emailTemplateId;
+        delete payload.emailTemplateResourceId;
       }
       if (this.isEdit && !this.isDuplicate) {
         const apiFunc =
-          this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario
+          this.type === SCENARIO_TYPES.PHISHING ? updateScenario : QuishingService.updateScenario;
         apiFunc(payload, this.scenarioId)
           .then(() => {
-            this.$emit('changeNewScenarioModalStatus', false, true)
+            this.$emit("changeNewScenarioModalStatus", false, true);
           })
           .finally(() => {
-            this.isSubmitDisabled = false
-          })
+            this.isSubmitDisabled = false;
+          });
       } else {
         const apiFunc =
-          this.type === SCENARIO_TYPES.PHISHING ? createScenario : QuishingService.createScenario
+          this.type === SCENARIO_TYPES.PHISHING ? createScenario : QuishingService.createScenario;
         apiFunc(payload)
           .then(() => {
-            this.$emit('changeNewScenarioModalStatus', false, true)
+            this.$emit("changeNewScenarioModalStatus", false, true);
           })
           .finally(() => {
-            this.isSubmitDisabled = false
-          })
+            this.isSubmitDisabled = false;
+          });
       }
     },
     resetLandingPageAndEmailTemplateSelection() {
-      this.formValues.emailTemplateId = null
-      this.formValues.landingPageTemplateId = null
-      this.landingPageTemplateId = null
-      this.landingPageTemplateResourceId = null
-      this.emailTemplateResourceId = null
-    }
-  }
-}
+      this.formValues.emailTemplateId = null;
+      this.formValues.landingPageTemplateId = null;
+      this.landingPageTemplateId = null;
+      this.landingPageTemplateResourceId = null;
+      this.emailTemplateResourceId = null;
+    },
+  },
+};
 </script>
