@@ -269,6 +269,7 @@
                 :date-format="dateFormat"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
+                @on-set-default-widget-data="setDefaultWidgetData"
               />
             </smart-widget>
           </k-smart-grid>
@@ -1206,9 +1207,9 @@ export default {
         this.allWidgets[widget.widgetType].w = this.allWidgets[widget.widgetType].defaultW
       }
       newItem = widgetObj
-      newItem['y'] = this.newItemY
+      newItem['y'] = 0
       this.newItemY += newItem.h
-      this.layout.push(widgetObj)
+      this.layout.unshift(widgetObj)
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
@@ -1271,6 +1272,9 @@ export default {
       const lastYear = new Date()
       lastYear.setFullYear(lastYear.getFullYear() - 1)
       return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
+    },
+    setDefaultWidgetData(key, data) {
+      this.defaultWidgetData[key] = data
     }
   }
 }
