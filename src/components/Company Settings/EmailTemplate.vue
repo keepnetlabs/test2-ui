@@ -232,19 +232,19 @@
             class="email-template__ai-assistant-content-badge"
             @click="handleAiAssistantBadgeClick(0)"
           >
-            {{ badgeContents[0] }}
+            {{ templateType === 'landing' ? landingPageBadgeContents[0] : badgeContents[0] }}
           </div>
           <div
             class="email-template__ai-assistant-content-badge"
             @click="handleAiAssistantBadgeClick(1)"
           >
-            {{ badgeContents[1] }}
+            {{ templateType === 'landing' ? landingPageBadgeContents[1] : badgeContents[1] }}
           </div>
           <div
             class="email-template__ai-assistant-content-badge"
             @click="handleAiAssistantBadgeClick(2)"
           >
-            {{ badgeContents[2] }}
+            {{ templateType === 'landing' ? landingPageBadgeContents[2] : badgeContents[2] }}
           </div>
         </div>
         <div class="mt-2">
