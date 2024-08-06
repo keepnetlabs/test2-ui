@@ -56,6 +56,14 @@
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                      >mdi-creation</VIcon
+                    >
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--subject">
                 <span>Subject: </span>
@@ -299,7 +307,8 @@ export default {
               name: phishingScenarioPreviewDto?.[templateKey]?.phishingFileName
             }
           : null,
-        type: phishingScenarioPreviewDto?.[templateKey]?.type || ''
+        type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
+        isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
@@ -308,7 +317,10 @@ export default {
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
         name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
         description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
-        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
+        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
+        isAssistedByAI:
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI
       }
       this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
       this.tab = 'email'
