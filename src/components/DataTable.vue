@@ -893,7 +893,7 @@
           v-if="showPagination"
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="serverSideProps.totalNumberOfRecords"
           @current-change="handleServerSideCurrentChange"
           @size-change="handleServerSideSizeChange"
@@ -929,7 +929,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
@@ -953,7 +953,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
           @size-change="handleFilteredSizeChange"
