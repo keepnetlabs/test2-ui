@@ -40,9 +40,9 @@
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue'"
+        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue' || campaignDurationExpired()"
         :checkIsOwnerProperty="false"
-        disabledTooltipText="Can not resend when the status is In Queue."
+        :disabledTooltipText="scope.row.status === 'In Queue' ? 'Can not resend when the status is In Queue.' : campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend'"
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -170,6 +170,11 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {

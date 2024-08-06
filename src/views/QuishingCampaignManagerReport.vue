@@ -49,7 +49,8 @@ export default {
   components: { KContainer },
   provide() {
     return {
-      getQuishingTypePrintOut: () => this.isQuishingTypePrintout
+      getQuishingTypePrintOut: () => this.isQuishingTypePrintout,
+      campaignDurationExpired: () => this.campaignDurationExpired
     }
   },
   data() {
@@ -60,6 +61,7 @@ export default {
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
+      campaignDurationExpired: false,
       multipleType: [],
       tabItems: [
         {
@@ -165,6 +167,7 @@ export default {
       QuishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          this.campaignDurationExpired = response?.data?.data?.campaignDurationExpired || false
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
