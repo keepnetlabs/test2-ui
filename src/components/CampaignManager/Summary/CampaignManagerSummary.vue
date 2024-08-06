@@ -151,7 +151,15 @@
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ emailTemplateParams.name }}
+                <span>{{ emailTemplateParams.name }}</span>
+                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                      >mdi-creation</VIcon
+                    >
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
               </div>
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
@@ -695,6 +703,7 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate, category = '' } = data
+          console.log('landingPageTemplate', landingPageTemplate)
           let {
             template,
             fromName,
@@ -705,7 +714,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            isAssistedByAI
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -720,7 +730,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            template
+            template,
+            isAssistedByAI
           }
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
@@ -732,7 +743,9 @@ export default {
             urlTemplate,
             difficultyTypeId,
             languageTypeResourceId,
-            methodTypeId
+            methodTypeId,
+            isAssistedByAI: isAssistedByAILandingPage,
+            isAssistedbyAI: isAssistedByAILower
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -741,7 +754,8 @@ export default {
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
-            landingPageTemplates: landingPages
+            landingPageTemplates: landingPages,
+            isAssistedByAI: isAssistedByAILandingPage || isAssistedByAILower
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
