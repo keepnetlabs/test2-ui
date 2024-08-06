@@ -32,7 +32,9 @@
                   >{{ emailTemplateParams.name }}
                   <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
                     <template #activator="{ on }">
-                      <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                      <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
+                        >mdi-creation</VIcon
+                      >
                     </template>
                     <span>This template was generated with AI</span>
                   </VTooltip>
@@ -266,12 +268,13 @@ export default {
             urlTemplate,
             difficultyTypeId,
             methodTypeId,
-            isAssistedByAI: isLandingPageAi = false
+            isAssistedByAI: isLandingPageAi = false,
+            isAssistedbyAI: isLandingPageAi2 = false
           } = landingPageTemplate || []
 
           this.landingPageParams = {
             name: landingPageName,
-            isAssistedByAI: isLandingPageAi,
+            isAssistedByAI: isLandingPageAi || isLandingPageAi2,
             description,
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',

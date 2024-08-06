@@ -18,7 +18,7 @@
             <div>
               <span class="template-preview__text--title">Template Name: </span>
               <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+              <VTooltip v-if="false" bottom>
                 <template #activator="{ on }">
                   <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
                     >mdi-creation</VIcon
