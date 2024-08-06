@@ -46,12 +46,18 @@ import KContainer from '@/components/KContainer/KContainer'
 export default {
   name: 'SmishingReport',
   components: { KContainer },
+  provide() {
+    return {
+      campaignDurationExpired: () => this.campaignDurationExpired
+    }
+  },
   data() {
     return {
       customFields: [],
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
+      campaignDurationExpired: false,
       tabItems: [
         {
           name: labels.Summary,
@@ -141,6 +147,7 @@ export default {
       SmishingService.getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          this.campaignDurationExpired = response?.data?.data?.campaignDurationExpired || false
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return

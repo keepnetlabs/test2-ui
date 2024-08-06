@@ -46,6 +46,11 @@ import KContainer from '@/components/KContainer/KContainer'
 export default {
   name: 'CallbackReport',
   components: { KContainer },
+  provide() {
+    return {
+      campaignDurationExpired: () => this.campaignDurationExpired
+    }
+  },
   data() {
     return {
       languageItems: [],
@@ -53,6 +58,7 @@ export default {
       isLoading: false,
       tab: labels.Summary,
       apiResponse: {},
+      campaignDurationExpired: false,
       tabItems: [
         {
           name: labels.Summary,
@@ -141,6 +147,7 @@ export default {
       CallbackService.getCampaignSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          this.campaignDurationExpired = response?.data?.data?.campaignDurationExpired || false
         })
         .finally(() => {
           this.isLoading = false
