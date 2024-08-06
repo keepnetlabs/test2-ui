@@ -30,6 +30,25 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+        :disabledTooltipText="campaignDurationExpired ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[1].icon"
+        :id="tableOptions.rowActions[1].id"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <CampaignManagerReportTimeZoneColumn
         v-if="col.property === COLUMNS.LAST_REPORTED.property"
@@ -59,9 +78,11 @@ import {
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   name: 'CampaignManagerReportPhishingReportTable',
-  components: { DataTable, CampaignManagerReportTimeZoneColumn },
+  components: { DataTable, CampaignManagerReportTimeZoneColumn, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -73,6 +94,11 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
@@ -114,7 +140,8 @@ export default {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-phishing-reporter',
             icon: '$custom-resend',
-            action: 'on-resend'
+            action: 'on-resend',
+            disabled: false
           },
           {
             name: labels.Details,
