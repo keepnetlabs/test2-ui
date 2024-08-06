@@ -703,7 +703,6 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate, category = '' } = data
-          console.log('landingPageTemplate', landingPageTemplate)
           let {
             template,
             fromName,

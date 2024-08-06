@@ -220,7 +220,6 @@ export default {
           this.urlTemplate = data?.urlTemplate || ''
           this.method = this.methods[data.methodTypeId - 1].text
           this.difficulty = this.difficulties[data.difficultyTypeId - 1].text
-          console.log('data', data)
           this.isAssistedByAI = data?.isAssistedByAI || data?.isAssistedbyAI
         })
         .finally(this.setLoading)

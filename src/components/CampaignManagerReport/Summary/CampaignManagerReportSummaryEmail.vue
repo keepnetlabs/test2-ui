@@ -155,7 +155,6 @@ export default {
             const {
               data: { data }
             } = response
-            console.log('data', data)
             this.emailTemplate = data.template
             this.difficulty =
               this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
