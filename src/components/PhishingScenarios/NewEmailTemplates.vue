@@ -124,7 +124,7 @@
                       onsubmit="return false"
                     >
                       <template #title>
-                        <div style="display: flex; justify-content: space-between;">
+                        <div class="d-flex align-baseline justify-space-between mb-3">
                           <label class="k-form-group__title">Email Template</label>
                           <v-tooltip bottom opacity="1">
                             <template v-slot:activator="{ on }">
@@ -152,8 +152,9 @@
                           />
                         </div>
                       </template>
-                      <email-template
+                      <EmailTemplate
                         ref="refEmailTemplate"
+                        :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
@@ -162,11 +163,16 @@
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
+                        :ai-assistant.sync="formValues.aiAssistant"
+                        :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
+                        :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
+                        :language-type-resource-id="formValues.languageTypeResourceId"
+                        :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -208,6 +214,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import {
   createPhishingEmailTemplate,
+  getAIEmailTemplateLimit,
   getEmailTemplatePreviewContent,
   getMergedTextForPhishing,
   updatePhishingEmailTemplate
@@ -223,6 +230,7 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'NewEmailTemplates',
@@ -263,6 +271,7 @@ export default {
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
       isAttachmentError: false,
+      isAssistedByAI: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -287,11 +296,14 @@ export default {
         fromName: null,
         subject: null,
         template: null,
+        aiAssistant: false,
         attachmentFiles: [],
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
+      aiAssistantRemainingRights: 0,
+      aiAssistantTotalRights: 0,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -384,6 +396,7 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
+    this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -395,6 +408,7 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
+        this.isAssistedByAI = this.formValues.isAssistedByAI
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
@@ -421,6 +435,13 @@ export default {
     }
   },
   methods: {
+    callForAITemplateLimit() {
+      getAIEmailTemplateLimit().then((response) => {
+        const data = response?.data?.data || {}
+        this.aiAssistantRemainingRights = data?.remainingBalance
+        this.aiAssistantTotalRights = data?.totalBalance
+      })
+    },
     setFooterButtonIds() {
       if (!this.isDuplicate) return
       this.footerButtonsIds = {
@@ -540,6 +561,13 @@ export default {
       }
       if (this.$refs.refFormStep1.validate() && isMakeAvailableForValid) {
         this.step += 1
+        if (this.aiAssistantRemainingRights === 0) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: `Used the ${this.aiAssistantTotalRights} AI assistant template creation rights for this month. New rights will be available next month.`,
+            color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
+            icon: 'mdi-information'
+          })
+        }
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
@@ -586,7 +614,8 @@ export default {
             : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
+        isAssistedByAI: this.isAssistedByAI
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {

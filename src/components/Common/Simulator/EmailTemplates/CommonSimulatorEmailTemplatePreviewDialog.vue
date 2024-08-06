@@ -18,6 +18,14 @@
             <div>
               <span class="template-preview__text--title">Template Name: </span>
               <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+              <VTooltip v-if="false" bottom>
+                <template #activator="{ on }">
+                  <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                    >mdi-creation</VIcon
+                  >
+                </template>
+                <span>This template was generated with AI</span>
+              </VTooltip>
             </div>
             <div>
               <span class="template-preview__text--title">From Name: </span>
@@ -175,7 +183,8 @@ export default {
               ? {
                   name: phishingFileName
                 }
-              : null
+              : null,
+            isAssistedByAI: data.isAssistedByAI
           }
           if (this.type === SCENARIO_TYPES.QUISHING)
             data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)

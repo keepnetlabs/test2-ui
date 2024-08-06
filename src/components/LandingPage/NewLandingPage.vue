@@ -197,6 +197,13 @@
                         <email-template
                           ref="refEmailTemplate"
                           template-type="landing"
+                          :name="formValues.name"
+                          :is-ai-assistant="true"
+                          :ai-assistant.sync="formValues.aiAssistant"
+                          :ai-assistant-remaining-right="aiAssistantRemainingRights"
+                          :ai-assistant-total-right="aiAssistantTotalRights"
+                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :is-assisted-by-a-i-template.sync="isAssistedByAI"
                           :active-block-manager-components="activeBlockManagerComponents"
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
@@ -283,7 +290,7 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import { getMergedTextForPhishing } from '@/api/phishingsimulator'
+import { getAILandingPageTemplateLimit, getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
@@ -347,6 +354,7 @@ export default {
       Validations,
       availableForRequests: [],
       initialFormValues: {},
+      isAssistedByAI: false,
       formValues: {
         phishingLink: {
           urlSchemaTypeId: '',
@@ -372,10 +380,19 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
-      editItemsDisabled: false
+      editItemsDisabled: false,
+      aiAssistantRemainingRights: 0,
+      aiAssistantTotalRights: 0
     }
   },
   methods: {
+    callForAITemplateLimit() {
+      getAILandingPageTemplateLimit().then((response) => {
+        const data = response?.data?.data || {}
+        this.aiAssistantRemainingRights = data?.remainingBalance
+        this.aiAssistantTotalRights = data?.totalBalance
+      })
+    },
     handleAddBlankPage() {
       this.formValues.landingPages.push({
         name: `Page ${this.formValues.landingPages.length + 1}`,
@@ -481,6 +498,7 @@ export default {
         delete formValues.phishingLink
         const payload = {
           ...formValues,
+          isAssistedByAI: this.isAssistedByAI,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
@@ -578,6 +596,7 @@ export default {
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     this.callForLanguages()
+    this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -592,12 +611,14 @@ export default {
           parameterTypeId: data.parameterTypeId.toString(),
           domainRecordId: data.domainRecordId.toString()
         }
+        this.isAssistedByAI = data.isAssistedByAI
         delete data.urlSchemaTypeId
         delete data.pathTypeId
         delete data.extensionTypeId
         delete data.parameterTypeId
         delete data.domainRecordId
         delete data.subDomain
+        delete data.isAssistedByAI
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
         this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
