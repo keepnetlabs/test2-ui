@@ -253,6 +253,20 @@
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
+                            <VTooltip
+                              v-if="
+                                summaryData.emailTemplate &&
+                                summaryData.emailTemplate.isAssistedByAI
+                              "
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
+                                  >mdi-creation</VIcon
+                                >
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div
                             v-if="!isQuishingTypeIndividualPrintOut"
@@ -386,6 +400,19 @@
                                   summaryData.landingPageTemplate &&
                                   summaryData.landingPageTemplate.name
                                 }}
+                                <VTooltip
+                                  v-if="
+                                    summaryData.landingPageTemplate &&
+                                    (summaryData.landingPageTemplate.isAssistedByAI ||
+                                      summaryData.landingPageTemplate.isAssistedbyAI)
+                                  "
+                                  bottom
+                                >
+                                  <template #activator="{ on }">
+                                    <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                                  </template>
+                                  <span>This template was generated with AI</span>
+                                </VTooltip>
                               </div>
                               <div class="template-summary__sub-title mt-2">
                                 <b>{{ getURLText }}:</b>
@@ -449,6 +476,18 @@
                               summaryData.landingPageTemplate &&
                               summaryData.landingPageTemplate.name
                             }}
+                            <VTooltip
+                              v-if="
+                                summaryData.landingPageTemplate &&
+                                summaryData.landingPageTemplate.isAssistedByAI
+                              "
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div class="template-summary__subtitle mt-2">
                             <b>{{ getLandingPageUrlLabel }}:</b>

@@ -13,6 +13,7 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
   formData.append('name', payload.name)
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
+  formData.append('isAssistedByAI', payload.isAssistedByAI)
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
@@ -527,4 +528,24 @@ export const updateSandboxActivity = (resourceId, payload) => {
 
 export const searchScenarioInfo = (payload) => {
   return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
+}
+
+export const generateAIEmailTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/email-templates/generate`, payload)
+}
+
+export const generateAILandingPageTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/landing-page-template/generate`, payload)
+}
+export const getAIEmailTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/email-templates/ai-limit`)
+}
+export const getAILandingPageTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template/ai-limit`)
+}
+export const getGeneratedAIEmailTemplate = () => {
+  return testRequest.get(`/phishing-simulator/email-templates`)
+}
+export const getGeneratedAILandingPageTemplate = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template`)
 }

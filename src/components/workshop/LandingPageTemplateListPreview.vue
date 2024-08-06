@@ -106,8 +106,17 @@
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
-                    <div class="template-list--item template-list--item__header">
-                      {{ item.name }}
+                    <div
+                      class="template-list--item template-list--item__header"
+                      :id="`template-${index}`"
+                    >
+                      <span>{{ item.name }}</span>
+                      <VTooltip v-if="item.isAssistedByAI" bottom :attach="`#template-${index}`">
+                        <template #activator="{ on }">
+                          <VIcon v-on="on" class="ml-1" color="#2196F3" small>mdi-creation</VIcon>
+                        </template>
+                        <span>This template was generated with AI</span>
+                      </VTooltip>
                     </div>
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}

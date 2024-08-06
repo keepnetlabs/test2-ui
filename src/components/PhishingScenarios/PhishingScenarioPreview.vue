@@ -18,7 +18,15 @@
             <div class="template-preview__text" v-if="!!emailTemplate">
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <span class="template-preview__text--body"
+                  >{{ emailTemplateParams.name }}
+                  <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip></span
+                >
               </div>
               <div>
                 <span class="template-preview__text--title">From Name: </span>
@@ -185,7 +193,8 @@ export default {
             name,
             difficultyResourceId,
             phishingFileName,
-            subject
+            subject,
+            isAssistedByAI
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
@@ -193,6 +202,7 @@ export default {
             fromAddress,
             name,
             subject,
+            isAssistedByAI,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {

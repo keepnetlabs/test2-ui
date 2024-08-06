@@ -18,6 +18,7 @@ export const labels = {
   ScheduleName: 'Schedule Name',
   Inactive: 'Inactive',
   Incomplete: 'Incomplete',
+  CreationType: 'Creation Type',
   ReportType: 'Report Type',
   Report: 'Report',
   AddScheduledReport: 'Add Scheduled Report',
