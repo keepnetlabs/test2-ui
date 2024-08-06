@@ -652,7 +652,6 @@ export default {
         prompt: this.aiTemplateText,
         phishingTypeId: 1
       }
-      console.log('this.generatedTemplates', this.generatedTemplates)
       this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
       if (this.templateType === 'landing') {
@@ -700,7 +699,6 @@ export default {
         })
     },
     setActiveGeneratedTemplate(index) {
-      console.log('new Index', index)
       this.activeGeneratedTemplateIndex = index
       this.$emit('update:template', this.generatedTemplates[index].content)
     },

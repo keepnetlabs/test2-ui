@@ -12,7 +12,7 @@
             <span class="template-preview__text--title">Template Name: </span>
             <span class="template-preview__text--body"
               >{{ landingPageParams.name }}
-              <VTooltip v-if="landingPageParams.isAi" bottom>
+              <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
                 <template #activator="{ on }">
                   <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
                 </template>
@@ -40,7 +40,7 @@
             <span class="template-preview__text--title">Template Name: </span>
             <span class="template-preview__text--body"
               >{{ landingPageParams.name }}
-              <VTooltip v-if="landingPageParams.isAi" bottom>
+              <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
                 <template #activator="{ on }">
                   <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
                 </template>
@@ -107,59 +107,59 @@
 </template>
 
 <script>
-import KEmailPreview from "@/components/KEmailPreview";
-import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
+import KEmailPreview from '@/components/KEmailPreview'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 export default {
-  name: "TabsWithMfaSettings",
+  name: 'TabsWithMfaSettings',
   components: { KEmailPreview },
   props: {
     landingPageTemplates: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     landingPageParams: {
       type: Object,
-      default: () => ({}),
+      default: () => ({})
     },
     isMethodMfa: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isSubTab: {
       type: Boolean,
-      default: true,
+      default: true
     },
     isPhishingScenario: {
       type: Boolean,
-      default: true,
+      default: true
     },
     isSmishing: {
       type: Boolean,
-      default: false,
+      default: false
     },
     type: {
       type: String,
-      default: PREVIEW_DIALOG_TYPES.PHISHING,
-    },
+      default: PREVIEW_DIALOG_TYPES.PHISHING
+    }
   },
   data() {
     return {
-      landingPageTab: "1",
-    };
+      landingPageTab: '1'
+    }
   },
   computed: {
     getUrlTitle() {
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? "Phishing URL" : "Quishing URL";
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing URL' : 'Quishing URL'
     },
     getTextOfScenariosPage() {
-      if (this.isSmishing) return "Smishing";
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? "Phishing" : "Quishing";
-    },
+      if (this.isSmishing) return 'Smishing'
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing' : 'Quishing'
+    }
   },
   watch: {
     landingPageTemplates() {
-      this.landingPageTab = "1";
-    },
-  },
-};
+      this.landingPageTab = '1'
+    }
+  }
+}
 </script>
