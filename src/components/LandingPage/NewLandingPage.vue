@@ -381,8 +381,8 @@ export default {
         ]
       },
       editItemsDisabled: false,
-      aiAssistantRemainingRights: 10,
-      aiAssistantTotalRights: 10
+      aiAssistantRemainingRights: 0,
+      aiAssistantTotalRights: 0
     }
   },
   methods: {

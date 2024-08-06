@@ -302,8 +302,8 @@ export default {
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
-      aiAssistantRemainingRights: 10,
-      aiAssistantTotalRights: 10,
+      aiAssistantRemainingRights: 0,
+      aiAssistantTotalRights: 0,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
