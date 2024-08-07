@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom>
+  <v-tooltip disabled bottom>
     <template v-slot:activator="{ on }">
       <v-list-item
         v-on="on"
@@ -25,6 +25,10 @@ export default {
   props: {
     scope: {
       type: Object
+    },
+    isScimGroup: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -32,14 +36,15 @@ export default {
       getTargetGroupsDeleteUsersPermissions: 'permissions/getTargetGroupsDeleteUsersPermissions'
     }),
     getTooltipMessage() {
-      const { row } = this.scope
-      if (!row.isEditable)
-        return `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
+      // const { row } = this.scope
+      // if (!row.isEditable)
+      //   return `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
       return !this.getDisabledStatusOfAction ? 'Remove from group' : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope
-      return !row.isEditable || !this.getTargetGroupsDeleteUsersPermissions
+      if (!this.isScimGroup || !this.getTargetGroupsDeleteUsersPermissions) return false
+      return this.isScimGroup || !row.isEditable || !this.getTargetGroupsDeleteUsersPermissions
     }
   }
 }
