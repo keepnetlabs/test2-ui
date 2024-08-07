@@ -26,7 +26,7 @@ export default {
     scope: {
       type: Object
     },
-    isScimGroup: {
+    isGroupEditable: {
       type: Boolean,
       default: false
     }
@@ -42,9 +42,7 @@ export default {
       return !this.getDisabledStatusOfAction ? 'Remove from group' : 'No Permission'
     },
     getDisabledStatusOfAction() {
-      const { row } = this.scope
-      if (!this.isScimGroup || !this.getTargetGroupsDeleteUsersPermissions) return false
-      return this.isScimGroup || !row.isEditable || !this.getTargetGroupsDeleteUsersPermissions
+      return !this.isGroupEditable || !this.getTargetGroupsDeleteUsersPermissions
     }
   }
 }
