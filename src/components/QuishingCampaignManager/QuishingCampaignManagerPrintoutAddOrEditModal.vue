@@ -266,11 +266,21 @@ export default {
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const { name, duration, excludeFromReports } = this.selectedRowFormData
+      const {
+        name,
+        duration,
+        excludeFromReports,
+        scheduleTypeId,
+        scheduledDate,
+        scheduledDateTimeZoneId
+      } = this.selectedRowFormData
       return {
         name,
         duration,
-        excludeFromReports
+        excludeFromReports,
+        scheduleTypeId: '3',
+        scheduledDate,
+        scheduledDateTimeZoneId
       }
     },
     getDefaultValuesOfPhishingScenarios() {

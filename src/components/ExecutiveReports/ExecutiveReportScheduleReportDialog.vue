@@ -167,22 +167,27 @@
           ></KSelect>
         </FormGroup>
         <FormGroup title="Send to Target Group" sub-title="Send report to multiple target groups ">
-          <KSelect
+          <v-autocomplete
             v-model="formData.targetGroupResourceIds"
             id="input--schedule-report-target-group"
             type="select"
             placeholder="Select target group"
+            auto-select-first
             multiple
             dense
             deletable-chips
-            autocomplete="disabled"
+            autocomplete="off"
             small-chips
             outlined
             class="pop-up-card__invite-member"
             persistent-hint
             position="top"
+            :menu-props="{
+              contentClass: 'scheduled-reports-send-to-target-group-menu',
+              auto: true
+            }"
             :items="targetGroupItems"
-          ></KSelect>
+          />
         </FormGroup>
       </VForm>
     </template>
@@ -366,7 +371,10 @@ export default {
         const {
           data: { data }
         } = response || {}
-        this.reportItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+        this.reportItems = data.map((item) => ({
+          text: item.name,
+          value: item.resourceId
+        }))
       })
     },
     callForSelectedSchedule() {
@@ -415,7 +423,10 @@ export default {
         const {
           data: { data }
         } = response
-        this.targetGroupItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+        this.targetGroupItems = data.map((item) => ({
+          text: item.name,
+          value: item.resourceId
+        }))
       })
     },
     handleClose() {
