@@ -22,7 +22,7 @@
           :show-filter-options="false"
           :showHeader="true"
           :selectable="false"
-          :pageSizes="[5, 10, 25]"
+          :pageSizes="[5, 10, 25, 50, 100]"
           :filterable="true"
           :options="true"
           :count-row="5"
