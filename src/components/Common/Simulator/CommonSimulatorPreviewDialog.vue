@@ -28,7 +28,17 @@
               </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <span class="template-preview__text--body"
+                  >{{ emailTemplateParams.name }}
+                  <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
+                        >mdi-creation</VIcon
+                      >
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip>
+                </span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title">From: </span>
@@ -228,7 +238,8 @@ export default {
             phishingFileName,
             subject,
             type,
-            resourceId
+            resourceId,
+            isAssistedByAI = false
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
@@ -243,7 +254,8 @@ export default {
                   name: phishingFileName
                 }
               : null,
-            type
+            type,
+            isAssistedByAI
           }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -255,11 +267,14 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            methodTypeId
+            methodTypeId,
+            isAssistedByAI: isLandingPageAi = false,
+            isAssistedbyAI: isLandingPageAi2 = false
           } = landingPageTemplate || []
 
           this.landingPageParams = {
             name: landingPageName,
+            isAssistedByAI: isLandingPageAi || isLandingPageAi2,
             description,
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',

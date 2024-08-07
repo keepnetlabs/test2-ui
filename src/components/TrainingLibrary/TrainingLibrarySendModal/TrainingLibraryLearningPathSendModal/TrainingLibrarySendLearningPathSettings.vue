@@ -452,7 +452,7 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
-        certificateConfigSendType: 1,
+        certificateConfigSendType: 2,
         isProxy: false,
         distributionDays: 2,
         enrollmentScheduler: {

@@ -28,7 +28,20 @@
     @downloadEvent="exportCampaignManagerReportNoResponseTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
-  />
+  >
+  <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        v-if="!getQuishingTypePrintOut()"
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        @on-click="handleOnResend(scope.row)"
+      />
+      </template>
+  </DataTable>
 </template>
 
 <script>
@@ -45,9 +58,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   name: 'CampaignManagerReportNoResponseTable',
-  components: { DataTable },
+  components: { DataTable, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -61,7 +76,14 @@ export default {
       default: () => []
     }
   },
-  inject: ['getQuishingTypePrintOut'],
+  inject: {
+    getQuishingTypePrintOut : {
+      type: Function
+    },
+    campaignDurationExpired: {
+      type: Function
+    },
+  },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
@@ -79,7 +101,8 @@ export default {
         name: labels.Resend,
         id: 'btn-resend--row-actions-campaign-manager-report-no-response',
         icon: '$custom-resend',
-        action: 'on-resend'
+        action: 'on-resend',
+        disabled: false
       })
       columns.push(COLUMNS.EMAIL_SEND_DATE)
     }
