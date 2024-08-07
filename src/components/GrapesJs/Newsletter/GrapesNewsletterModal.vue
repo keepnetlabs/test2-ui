@@ -539,7 +539,7 @@ export default {
             left: -172
           },
           customProps: {
-            'z-index': 1000
+            zIndex: 10
           }
         }
       })
