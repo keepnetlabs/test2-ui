@@ -141,6 +141,10 @@ export default {
     isEditOrDuplicate: {
       type: Boolean,
       default: false
+    },
+    isInidividualPrintOut: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -151,7 +155,9 @@ export default {
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
-      radioItems: [{ text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }]
+      radioItems: this.isInidividualPrintOut
+        ? []
+        : [{ text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }]
     }
   },
   computed: {

@@ -9,9 +9,13 @@
         :initial-rules="rules.name"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData"
-    :isEditOrDuplicate="isEdit || isDuplicate"
-     ref="inputSchedule" class="mb-6" />
+    <InputSchedule
+      v-model="inputScheduleFormData"
+      :isEditOrDuplicate="isEdit || isDuplicate"
+      isInidividualPrintOut
+      ref="inputSchedule"
+      class="mb-6"
+    />
     <FormGroup
       v-if="showDuration"
       has-hint
@@ -142,6 +146,14 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
+        const inputScheduleFormData = {
+          scheduledDate: val?.scheduledDate,
+          scheduledDateTimeZoneId: val?.scheduledDateTimeZoneId
+        }
+        this.inputScheduleFormData = {
+          ...this.inputScheduleFormData,
+          ...inputScheduleFormData
+        }
         for (const key of Object.keys(val)) {
           this.formData[key] = val[key]
         }
