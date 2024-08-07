@@ -1602,6 +1602,7 @@ export default {
     changeDropdownItem(item) {
       if (item === 'logout') {
         this.logoutUser()
+        this.$store.dispatch('login/getWhiteLabelByUrl')
       }
       if (item === 'changePassword') {
         this.openPasswordChange = true

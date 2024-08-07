@@ -397,7 +397,7 @@ export default {
     handleGroupNameClick(row) {
       this.$router.push({
         name: 'Target Group Users',
-        params: { id: row.resourceId, label: row.name, isScimGroup: row.isScimGroup }
+        params: { id: row.resourceId, label: row.name, isGroupEditable: row.isEditable }
       })
     },
     handleMultipleDelete(selection) {
