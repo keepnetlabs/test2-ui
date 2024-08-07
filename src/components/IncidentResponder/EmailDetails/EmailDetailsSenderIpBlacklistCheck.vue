@@ -19,7 +19,6 @@
       :empty="tableOptions.empty"
       :download-button="tableOptions.downloadButton"
       :addButton="tableOptions.addButton"
-      :pageSizes="tableOptions.pageSizes"
       :select-event="tableOptions.selectEvent"
       @refreshAction="callForEmailDetails"
     >
