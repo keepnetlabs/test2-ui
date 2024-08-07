@@ -69,7 +69,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   VENDOR: {
     label: 'Vendor',
     property: PROPERTY_STORE.VENDORNAME,
-    show: false
+    show: true
   },
   DATE_CREATED: {
     label: 'Date Created',
@@ -116,7 +116,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   VENDOR: {
     label: 'Vendor',
     property: PROPERTY_STORE.VENDOR,
-    show: false
+    show: true
   },
   MATERIAL_NAME: {
     label: 'Material Name',
