@@ -81,7 +81,7 @@
         <TargetUserRowActionsRemoveFromGroupButton
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
-          :isScimGroup="$route.params.isScimGroup"
+          :isGroupEditable="$route.params.isGroupEditable"
           @on-remove="handleRemoveToGroup"
         />
       </RowActionsMenu>
