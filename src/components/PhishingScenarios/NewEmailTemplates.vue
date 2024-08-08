@@ -173,6 +173,7 @@
                         :size="5"
                         :language-type-resource-id="formValues.languageTypeResourceId"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
+                        :method-type-id="getMethodTypeId"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -387,6 +388,11 @@ export default {
     },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
+    },
+    getMethodTypeId() {
+      return this.methodItems?.find(
+        (item) => item.resourceId === this.formValues.categoryResourceId
+      )?.code
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
