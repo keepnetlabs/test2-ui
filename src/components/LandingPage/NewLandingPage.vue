@@ -207,6 +207,7 @@
                           :active-block-manager-components="activeBlockManagerComponents"
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
+                          :method-type-id="formValues.methodTypeId"
                           :is-edit="!!isEdit"
                           :is-phishing-template="true"
                           :onlyGrapes="true"

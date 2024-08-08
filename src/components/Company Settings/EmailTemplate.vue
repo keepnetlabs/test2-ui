@@ -459,7 +459,8 @@ export default {
     'aiAssistantRemainingRight',
     'aiAssistantTotalRight',
     'languageTypeResourceId',
-    'isAssistedByAITemplate'
+    'isAssistedByAITemplate',
+    'methodTypeId'
   ],
   data() {
     return {
@@ -659,7 +660,8 @@ export default {
         fromName: this.fromName,
         fromAddress: this.fromAddress,
         prompt: this.aiTemplateText,
-        phishingTypeId: 1
+        phishingTypeId: 1,
+        methodTypeId: parseInt(this.methodTypeId)
       }
       this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
