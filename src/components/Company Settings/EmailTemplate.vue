@@ -220,8 +220,11 @@
           <div>
             <div class="email-template__ai-assistant-left-title">AI Assistant</div>
             <div class="email-template__ai-assistant-left-description">
-              AI will generate an email based on your description. Describe what your email should
-              be about
+              {{
+                templateType === 'landing'
+                  ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
+                  : 'AI will generate an email based on your description. Describe what your email should be about'
+              }}
             </div>
           </div>
         </div>
@@ -257,7 +260,7 @@
             persistent-hint
             rows="2"
             height="76"
-            placeholder="Provide a detailed description of your email template content enter"
+            :placeholder="getAITemplateTextAreaPlaceholder"
             :rules="[aiTemplateMaxLength]"
           >
             <template #append>
@@ -407,6 +410,7 @@ import {
   getGeneratedAIEmailTemplate,
   getGeneratedAILandingPageTemplate
 } from '@/api/phishingsimulator'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -564,6 +568,11 @@ export default {
   },
   computed: {
     ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    getAITemplateTextAreaPlaceholder() {
+      return this.templateType === 'landing'
+        ? 'Provide a detailed description of your landing page content enter'
+        : 'Provide a detailed description of your email template content enter'
+    },
     getLoaderTitle() {
       return this.templateType === 'landing'
         ? 'AI Assisted Landing Page Generate in Progress'
@@ -693,6 +702,13 @@ export default {
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', response?.data?.data)
           this.isEmailGenerating = false
+          if (this.aiAssistantRemainingRight === 0) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: `Used the ${this.aiAssistantTotalRight} AI assistant template creation rights for this month. New rights will be available next month.`,
+              color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
+              icon: 'mdi-information'
+            })
+          }
         })
         .catch(() => {
           setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
