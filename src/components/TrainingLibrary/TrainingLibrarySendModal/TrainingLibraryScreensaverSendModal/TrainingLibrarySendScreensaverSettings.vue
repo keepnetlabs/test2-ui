@@ -219,18 +219,22 @@
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </FormGroup>
-    <FormGroup v-if="!formData.isProxy && showCertificate" class="mt-6" :title="labels.Certificate"
-    style="max-width: 875px;">
+    <FormGroup
+      v-if="!formData.isProxy && showCertificate"
+      class="mt-6"
+      :title="labels.Certificate"
+      style="max-width: 875px;"
+    >
       <div class="d-flex align-center">
-      <v-checkbox
-        v-model="formData.awardCertificate"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
-        hide-details
-        color="#2196f3"
-        label="Award certificate when a user completes the training"
-      >
-      </v-checkbox>
-      <KSelect
+        <v-checkbox
+          v-model="formData.awardCertificate"
+          id="input--campaign-manager-advanced-settings-randomly-selected"
+          hide-details
+          color="#2196f3"
+          label="Award certificate when a user completes the training"
+        >
+        </v-checkbox>
+        <KSelect
           v-model.trim="formData.certificateConfigSendType"
           class="ml-2"
           outlined
@@ -417,7 +421,7 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
-        certificateConfigSendType: 2,
+        certificateConfigSendType: 1,
         scheduleTypeId: '1',
         isProxy: false,
         enrollmentScheduler: {
