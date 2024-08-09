@@ -29,6 +29,7 @@
         :form-details="formDetails"
         :trainingSummary="selectedTrainingSummary"
         :isScormProxy="isScormProxy"
+        isLearningPath
       />
     </ElTabPane>
   </ElTabs>

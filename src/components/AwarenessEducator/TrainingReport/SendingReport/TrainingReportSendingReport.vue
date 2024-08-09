@@ -43,7 +43,7 @@
         />
       </ElTabPane>
     </ElTabs>
-    <div v-else-if="isTypePoster">
+    <div v-else>
       <CampaignManagerReportHeader
         class="mb-6"
         title="Sending Report"
@@ -92,6 +92,9 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    isLearningPath: {
+      type: Boolean
     }
   },
   data() {
@@ -124,7 +127,8 @@ export default {
     isTypeTrainingOrInfographic() {
       return (
         this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ||
-        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+        (this.isLearningPath &&
+          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
       )
     },
     isTypePoster() {
