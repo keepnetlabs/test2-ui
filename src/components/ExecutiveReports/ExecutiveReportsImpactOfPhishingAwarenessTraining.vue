@@ -104,7 +104,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 6, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
             })
