@@ -297,7 +297,6 @@ export default {
   },
   watch: {
     value(val) {
-      console.log('value', val)
       this.inputContentLanguageKey = createRandomCryptStringNumber()
     }
   },
