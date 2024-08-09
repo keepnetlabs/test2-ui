@@ -677,6 +677,7 @@ export default {
               isCheckboxSelected,
               enrollmentReminder,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
@@ -690,6 +691,7 @@ export default {
               quishingScenarioResourceId: phishingScenarioResourceId,
               enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             })
           })

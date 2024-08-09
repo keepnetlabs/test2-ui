@@ -36,8 +36,8 @@ export const attachmentScenarioEnrollmentItems = [
   }
 ]
 export const certificateTypeItems = [
-  { text: 'on the first attempt', value: 1 },
-  { text: 'on any attempt', value: 2 }
+  { text: 'on the first attempt', value: 'SendOnFirstAttempt' },
+  { text: 'on any attempt', value: 'SendOnAnyAttempt' }
 ]
 
 export const getEnrollmentSendTypeIdByEnum = (enrollmentSendTypeId) => {

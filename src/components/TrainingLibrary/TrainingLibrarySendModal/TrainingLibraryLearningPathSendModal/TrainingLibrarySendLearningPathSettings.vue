@@ -444,7 +444,7 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
-        certificateConfigSendType: 1,
+        certificateConfigSendType: 'SendOnFirstAttempt',
         isProxy: false,
         distributionDays: 2,
         enrollmentScheduler: {
