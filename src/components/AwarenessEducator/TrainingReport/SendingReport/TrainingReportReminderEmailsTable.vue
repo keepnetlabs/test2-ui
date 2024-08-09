@@ -334,6 +334,21 @@ export default {
   created() {
     this.callForData()
   },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'email'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
+  },
   methods: {
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
@@ -379,7 +394,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },
