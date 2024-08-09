@@ -14,6 +14,7 @@
             <BarChart
               v-if="chartData.datasets"
               add-data-plugin
+              :add-custom-legend-label-height="6"
               :chart-data="chartData"
               :chart-options="chartOptions"
               :custom-plugin="customPlugins"
@@ -104,7 +105,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.fillText('(85%)', x + ctx.measureText(text).width - 6, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
             })
