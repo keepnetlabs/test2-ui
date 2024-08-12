@@ -12,52 +12,102 @@
       <div>
         <div class="mb-3">Resend this campaign to:</div>
         <div>
-          <v-checkbox
-            v-model="types"
-            id="input--callback-report-message-failed-to-send"
-            color="#2196f3"
-            :disabled="!items.notDelivered"
-            :value="REPORT_TABS.FAILED"
-          >
-            <template #label> Email failed to send {{ `(${items.notDelivered || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--callback-report-opened"
-            color="#2196f3"
-            :disabled="!items.openedEmail"
-            :value="REPORT_TABS.OPENED"
-          >
-            <template #label> Only opened email {{ `(${items.openedEmail || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--callback-report-called-back"
-            color="#2196f3"
-            :disabled="!items.calledBack"
-            :value="REPORT_TABS.CALLBACK"
-          >
-            <template #label> Called back {{ `(${items.calledBack || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--campaign-manager-report-entered-digits"
-            color="#2196f3"
-            :disabled="!items.enteredDigits"
-            :value="REPORT_TABS.ENTERED_DIGITS"
-          >
-            <template #label> Times entered digits {{ `(${items.enteredDigits || 0})` }}</template>
-          </v-checkbox>
-          <v-checkbox
-            v-model="types"
-            id="input--campaign-manager-report-no-response"
-            color="#2196f3"
-            hide-details
-            :disabled="!items.noResponseEmail"
-            :value="REPORT_TABS.NO_RESPONSE"
-          >
-            <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
-          </v-checkbox>
+          <v-tooltip :disabled="!campaignDurationExpired()" nudge-bottom="-16" bottom opacity="1">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="types"
+                  v-on="on"
+                  id="input--callback-report-message-failed-to-send"
+                  color="#2196f3"
+                  :disabled="!items.notDelivered || campaignDurationExpired()"
+                  :value="REPORT_TABS.FAILED"
+                >
+                  <template #label>
+                    Email failed to send {{ `(${items.notDelivered || 0})` }}</template
+                  >
+                </v-checkbox>
+              </div>
+            </template>
+            <span class="tooltip-span"
+              >You cannot resend this campaign because its lifetime has expired</span
+            >
+          </v-tooltip>
+          <v-tooltip :disabled="!campaignDurationExpired()" nudge-bottom="-16" bottom opacity="1">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="types"
+                  id="input--callback-report-opened"
+                  color="#2196f3"
+                  :disabled="!items.openedEmail || campaignDurationExpired()"
+                  :value="REPORT_TABS.OPENED"
+                >
+                  <template #label> Only opened email {{ `(${items.openedEmail || 0})` }}</template>
+                </v-checkbox>
+              </div>
+            </template>
+            <span class="tooltip-span"
+              >You cannot resend this campaign because its lifetime has expired</span
+            >
+          </v-tooltip>
+          <v-tooltip :disabled="!campaignDurationExpired()" nudge-bottom="-16" bottom opacity="1">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="types"
+                  id="input--callback-report-called-back"
+                  color="#2196f3"
+                  :disabled="!items.calledBack || campaignDurationExpired()"
+                  :value="REPORT_TABS.CALLBACK"
+                >
+                  <template #label> Called back {{ `(${items.calledBack || 0})` }}</template>
+                </v-checkbox>
+              </div>
+            </template>
+            <span class="tooltip-span"
+              >You cannot resend this campaign because its lifetime has expired</span
+            >
+          </v-tooltip>
+          <v-tooltip :disabled="!campaignDurationExpired()" nudge-bottom="-16" bottom opacity="1">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="types"
+                  id="input--campaign-manager-report-entered-digits"
+                  color="#2196f3"
+                  :disabled="!items.enteredDigits || campaignDurationExpired()"
+                  :value="REPORT_TABS.ENTERED_DIGITS"
+                >
+                  <template #label>
+                    Times entered digits {{ `(${items.enteredDigits || 0})` }}</template
+                  >
+                </v-checkbox>
+              </div>
+            </template>
+            <span class="tooltip-span"
+              >You cannot resend this campaign because its lifetime has expired</span
+            >
+          </v-tooltip>
+          <v-tooltip :disabled="!campaignDurationExpired()" nudge-bottom="-16" bottom opacity="1">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="types"
+                  id="input--campaign-manager-report-no-response"
+                  color="#2196f3"
+                  hide-details
+                  :disabled="!items.noResponseEmail || campaignDurationExpired()"
+                  :value="REPORT_TABS.NO_RESPONSE"
+                >
+                  <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
+                </v-checkbox>
+              </div>
+            </template>
+            <span class="tooltip-span"
+              >You cannot resend this campaign because its lifetime has expired</span
+            >
+          </v-tooltip>
         </div>
       </div>
     </template>
@@ -94,6 +144,11 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
