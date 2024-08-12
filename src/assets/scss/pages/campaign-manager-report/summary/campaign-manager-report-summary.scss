@@ -62,3 +62,8 @@
     }
   }
 }
+
+#btn-resend-campaign--campaign-reports:disabled {
+  opacity: 0.5;
+  background-color: #2195f3 !important;
+}
