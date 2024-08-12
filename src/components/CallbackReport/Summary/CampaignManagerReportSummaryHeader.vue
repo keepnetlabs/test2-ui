@@ -29,14 +29,24 @@ import { mdiConsoleNetworkOutline } from '@mdi/js'
         @click="handleDownloadReport"
         >{{ labels.DownloadReport }}</v-btn
       >
-      <v-btn
-        id="btn-resend-campaign--campaign-reports"
-        class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
-        rounded
-        color="#2196f3"
-        @click="toggleShowResendDialog"
-        >{{ labels.ResendCampaign }}</v-btn
-      >
+      <v-tooltip :disabled="!campaignDurationExpired()" nudge-top="16" bottom opacity="1">
+        <template #activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              id="btn-resend-campaign--campaign-reports"
+              class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
+              rounded
+              color="#2196f3"
+              @click="toggleShowResendDialog"
+              :disabled="campaignDurationExpired()"
+              >{{ labels.ResendCampaign }}</v-btn
+            >
+          </div>
+        </template>
+        <span class="tooltip-span">
+          You cannot resend this campaign because its lifetime has expired
+        </span>
+      </v-tooltip>
     </div>
   </div>
 </template>
@@ -62,6 +72,11 @@ export default {
     },
     instanceGroup: {
       type: [String, Number]
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
