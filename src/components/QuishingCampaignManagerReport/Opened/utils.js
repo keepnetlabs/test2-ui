@@ -281,12 +281,12 @@ export const COLUMNS = {
   SUBMITTED_TIME: {
     property: 'submittedTime',
     align: 'left',
-    label: labels.DateClicked,
+    label: `Date Submitted Data`,
     fixed: 'left',
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
+    width: 200,
     isEditable: false,
     filterableType: 'date'
   },
