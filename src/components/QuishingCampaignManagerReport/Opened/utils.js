@@ -266,6 +266,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  DATE_SCANNED: {
+    property: 'clickedTime',
+    align: 'left',
+    label: `Date Scanned`,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   SUBMITTED_TIME: {
     property: 'submittedTime',
     align: 'left',
