@@ -17,7 +17,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'AI Assisted Email Creation in Progress'
+      default: 'AI Assisted Email Generate in Progress'
     },
     description: {
       type: String,

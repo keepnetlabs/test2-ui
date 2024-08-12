@@ -223,7 +223,7 @@
               {{
                 templateType === 'landing'
                   ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
-                  : 'AI will generate an email based on your description. Describe what your email should be about'
+                  : 'AI will generate an email based on your description. Describe what your email template should be about'
               }}
             </div>
           </div>
@@ -577,7 +577,7 @@ export default {
     getLoaderTitle() {
       return this.templateType === 'landing'
         ? 'AI Assisted Landing Page Generate in Progress'
-        : 'AI Assisted Email Creation in Progress'
+        : 'AI Assisted Email Generate in Progress'
     },
     getGenerateEmailButtonStyle() {
       const style = { textTransform: 'capitalize' }
