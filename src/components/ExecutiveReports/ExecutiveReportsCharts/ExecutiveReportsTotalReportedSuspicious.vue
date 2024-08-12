@@ -15,7 +15,6 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
-              :custom-plugin="customPlugin"
             />
           </template>
           <div
@@ -44,7 +43,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 export default {
-  name: 'ExecutiveReportsTopRiskiestDepartments',
+  name: 'ExecutiveReportsTotalReportedSuspicious',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -86,53 +85,7 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {},
-      customPlugin: {
-        id: 'customPlugin',
-        afterDraw(chart) {
-          const ctx = chart.ctx
-          const dataset = chart.data.datasets[0]
-          const meta = chart.getDatasetMeta(0)
-          const maxIndexes = []
-          let maxX = -Infinity
-          for (let i = 0; i < dataset.data.length; i++) {
-            if (dataset.data[i].x > 60) {
-              maxX = dataset.data[i].x
-              maxIndexes.push(i)
-            }
-          }
-          if (maxIndexes.length) {
-            for (let maxIndex of maxIndexes) {
-              const maxData = meta.data[maxIndex]
-              if (maxData && maxData._model) {
-                const fontSize = 9
-                const fontFamily = 'Open Sans, sans-serif'
-                const padding = 18
-                const text = 'Critical Risk Level. Immediate training is needed.'
-                //ctx.measureText(text).width;
-                const x = Math.floor(maxData._model.x / 2.3)
-                const y = maxData._model.y - padding + 2
-                ctx.fillStyle = '#383B41'
-                ctx.textAlign = 'left'
-                ctx.textBaseline = 'bottom'
-                ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText(text, x < 176 ? 176 : x, y)
-              }
-            }
-          }
-          ctx.save()
-          ctx.strokeStyle = '#757575'
-          ctx.lineWidth = 2
-          const xAxis = chart.scales['x-axis-0']
-          const yAxis = chart.scales['y-axis-0']
-          const xTickStart = xAxis.left
-          ctx.beginPath()
-          ctx.moveTo(xTickStart, yAxis.bottom)
-          ctx.lineTo(xAxis.right, yAxis.bottom)
-          ctx.stroke()
-          ctx.restore()
-        }
-      }
+      chartData: {}
     }
   },
   watch: {
@@ -187,6 +140,11 @@ export default {
                 display: false,
                 drawBorder: false
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'Category',
+                fontColor: '#383B41'
+              },
               ticks: {
                 labelOffset: 0,
                 beginAtZero: true,
@@ -206,7 +164,7 @@ export default {
               offset: false,
               scaleLabel: {
                 display: true,
-                labelString: 'Human Risk Score',
+                labelString: 'Percentage of Emails Reported',
                 fontColor: '#383B41'
               },
               gridLines: {
@@ -325,7 +283,7 @@ export default {
             clamp: true,
             formatter: function (value) {
               if (!value.x) return ''
-              return value.x + '%'
+              return `50 (${value.x}%)`
             },
             borderRadius: 4,
             padding: 6
@@ -358,9 +316,12 @@ export default {
             barThickness: 24,
             backgroundColor: function (context) {
               const index = context.dataIndex
-              console.log('context.dataset.data[index', context.dataset.data[index])
-              const value = context.dataset.data[index].x
-              return value > 60 ? '#B83A3A' : '#F56C6C'
+              const valueObj = context.dataset.data[index]
+              const value = valueObj.y
+              if (value.y === 'Undetected') return '#757575'
+              else if (value.y === 'Malicious') return '#F56C6C'
+              else if (value.y === 'Phishing') return '#B83A3A'
+              return '#2196F3'
             },
             borderWidth: 1
           }

@@ -147,11 +147,12 @@ export default {
       valueEnums.sort((a, b) => (b > a ? 1 : -1))
       for (let itemType of valueEnums) {
         const typedItems = datasets.filter((item) => item.result === itemType)
+        const chartColorType = itemType === 'Clicked (%)' ? 'Clicked Email Trends' : itemType
         newDatasets.push({
           type: 'bar',
           barThickness: 32,
           label: itemType,
-          ...CHART_COLORS[itemType],
+          ...CHART_COLORS[chartColorType],
           data: typedItems
         })
       }
@@ -352,8 +353,10 @@ export default {
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel =
                   dataset.label === 'Clicked (%)'
-                    ? 'Clicked Report Rate'
-                    : 'Not Clicked Report Rate'
+                    ? 'Clicked Rate'
+                    : dataset.label === 'Not Clicked (%)'
+                    ? 'Not clicked Rate'
+                    : 'Not Report Rate'
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'
 
@@ -413,29 +416,18 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            offset: 12,
-            color: '#383B41',
+            align: 'end',
+            anchor: 'center',
+            color: '#000',
             formatter: function (value, context) {
-              if (context.dataset.label === 'Not Clicked (%)' && value.annotations && value.y) {
+              if (context.dataset.label === 'Company Phishing Risk Score' && value.annotations) {
                 return value.annotations.definition
               }
               return ''
             },
-            align: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
-            anchor: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
             font: {
-              size: 10,
-              color: '#383B41',
+              size: 9,
+              family: 'Open Sans, sans-serif',
               weight: 'normal'
             },
             borderRadius: 4,
