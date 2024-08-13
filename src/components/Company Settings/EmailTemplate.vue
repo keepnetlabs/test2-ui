@@ -206,14 +206,13 @@
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
       ]"
     >
-      <div class="email-template__ai-assistant-header">
+      <div
+        class="email-template__ai-assistant-header cursor-pointer"
+        @click="$emit('update:aiAssistant', !aiAssistant)"
+      >
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
-            <VIcon
-              class="cursor-pointer"
-              color="#757575"
-              @click="$emit('update:aiAssistant', !aiAssistant)"
-            >
+            <VIcon class="cursor-pointer" color="#757575">
               {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
             </VIcon>
           </div>
@@ -473,9 +472,9 @@ export default {
         'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
       ],
       landingPageBadgeContents: [
-        'Landing page that instructs the user to update their bank account password due to security concerns.',
-        'Landing page that guides the user through changing their email account password for security reasons.',
-        'Landing page prompting the user to update their online service password to enhance account security.'
+        'Landing page that allows the user to update their bank account password due to security concerns.',
+        'Landing page where the user can change their email account password.',
+        'Landing page where the user can update their online service password.'
       ],
       timeoutId: null,
       previewTemplate: null,
@@ -636,8 +635,10 @@ export default {
       immediate: true
     },
     prompt(val) {
-      this.aiTemplateText = val
-      this.isAiAssistant
+      if (val !== this.aiTemplateText) this.aiTemplateText = val || ''
+    },
+    aiTemplateText(val) {
+      this.$emit('update:prompt', val || '')
     }
   },
   mounted() {
