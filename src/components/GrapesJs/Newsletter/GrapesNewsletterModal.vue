@@ -531,6 +531,16 @@ export default {
               buildProps: ['display']
             }
           ]
+        },
+        colorPicker: {
+          appendTo: 'parent',
+          offset: {
+            top: 24,
+            left: -172
+          },
+          customProps: {
+            zIndex: 10
+          }
         }
       })
       this.changeEditorComponentFunction()
