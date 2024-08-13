@@ -460,7 +460,8 @@ export default {
     'aiAssistantTotalRight',
     'languageTypeResourceId',
     'isAssistedByAITemplate',
-    'methodTypeId'
+    'methodTypeId',
+    'prompt'
   ],
   data() {
     return {
@@ -469,7 +470,7 @@ export default {
       badgeContents: [
         'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.',
         'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
-        'Phishing simulation email informing the user to download a critical software update to avoid security risks.'
+        'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
       ],
       landingPageBadgeContents: [
         'Landing page that instructs the user to update their bank account password due to security concerns.',
@@ -633,6 +634,10 @@ export default {
           val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
       },
       immediate: true
+    },
+    prompt(val) {
+      this.aiTemplateText = val
+      this.isAiAssistant
     }
   },
   mounted() {
@@ -722,6 +727,7 @@ export default {
     },
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
+      this.aiTemplateText = this.generatedTemplates[index].text
       this.$emit('update:template', this.generatedTemplates[index].content)
     },
     handleAiAssistantBadgeClick(index) {
