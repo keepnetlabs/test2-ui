@@ -586,7 +586,7 @@ export default {
       this.step -= 1
     },
     submit() {
-      if (this.isAttachmentBasedTemplate && this.formValues.attachmentFiles.length === 0) {
+      if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
         this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
         return
       }
@@ -604,7 +604,7 @@ export default {
         this.isSubmitDisabled = false
         return
       }
-      this.formValues.prompt = this?.$refs.refEmailTemplateContent?.aiTemplateText
+      this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
 
       let payload = {
         ...this.formValues,
@@ -625,8 +625,7 @@ export default {
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         ),
-        isAssistedByAI: this.isAssistedByAI,
-        prompt: this.formValues.prompt
+        isAssistedByAI: this.isAssistedByAI
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
