@@ -191,7 +191,6 @@ export default {
           yAxes: [
             {
               beginAtZero: true,
-              offset: true,
               gridLines: {
                 display: false,
                 drawBorder: false
@@ -202,8 +201,6 @@ export default {
                 fontColor: '#383B41'
               },
               ticks: {
-                labelOffset: 0,
-                beginAtZero: true,
                 padding: 0,
                 fontSize: 9,
                 fontFamily: 'Open Sans, sans-serif',
@@ -231,14 +228,11 @@ export default {
               },
               ticks: {
                 min: 0,
-                max: 100,
-                stepSize: 20,
+                max: 600,
+                stepSize: 100,
                 fontFamily: 'Open Sans, sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
-                fontSize: 12,
-                callback: function (value) {
-                  return ((value / this.max) * 100).toFixed(0) + '%'
-                }
+                fontSize: 12
               }
             }
           ]
@@ -254,48 +248,18 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              const splittedRepeatOffenders = labels.RepeatOffenders.split(' ')
-              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
               return [
                 {
-                  text: Array.from(
-                    labels.RepeatOffenders +
-                      labels.RepeatOffenders +
-                      data.datasets[0].data[0] +
-                      ' (users) '
-                  )
-                    .fill('')
-                    .join(' '),
-                  fillStyle: CHART_COLORS[labels.RepeatOffenders]
-                    ? CHART_COLORS[labels.RepeatOffenders].backgroundColor
-                    : null,
+                  text: `${data.datasets[0].label}`,
+                  fillStyle: data.datasets[0].backgroundColor,
                   lineWidth: 0,
-                  datasetIndex: 0,
-                  textParts: [
-                    splittedRepeatOffenders[0] + ' ' + splittedRepeatOffenders[1],
-                    offenders
-                  ],
-                  customMarginLeft: 8
+                  datasetIndex: 0
                 },
                 {
-                  text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[1].data[0] +
-                      ' (users) '
-                  )
-                    .fill('')
-                    .join(' '),
-                  fillStyle: CHART_COLORS[labels.SimulatedUsers]
-                    ? CHART_COLORS[labels.SimulatedUsers].backgroundColor
-                    : null,
+                  text: `${data.datasets[1].label}`,
+                  fillStyle: data.datasets[1].backgroundColor,
                   lineWidth: 0,
-                  datasetIndex: 1,
-                  textParts: [
-                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
-                    simulated
-                  ],
-                  customMarginLeft: 2
+                  datasetIndex: 1
                 }
               ]
             }
@@ -378,26 +342,130 @@ export default {
         }
       }
       this.chartData = {
-        xLabels: [0, 100],
-        yLabels: ['Users'],
+        yLabels: [60, 50, 40, 30, 20, 10, 0],
         datasets: [
           {
-            type: 'bar',
             label: 'Clicked',
-            data: [offendersPercentage],
-            barThickness: 10,
+            data: [
+              { x: 0, y: 0 },
+              { x: 50, y: 10 },
+              { x: 80, y: 20 },
+              { x: 250, y: 30 },
+              { x: 170, y: 40 },
+              { x: 170, y: 50 },
+              { x: 400, y: 60 }
+            ],
+            barThickness: 20,
             backgroundColor: '#F56C6C',
             borderWidth: 1,
-            stack: 'Stack 1'
+            stack: 'Stack 1',
+            order: 1
           },
           {
-            type: 'bar',
             label: 'Submitted Data',
-            data: [simulatedPercentage],
+            data: [
+              { x: 50, y: 0 },
+              { x: 50, y: 10 },
+              { x: 80, y: 20 },
+              { x: 250, y: 30 },
+              { x: 170, y: 40 },
+              { x: 170, y: 50 },
+              { x: 40, y: 60 }
+            ],
             barThickness: 20,
-            backgroundColor: '#2196F3',
+            backgroundColor: '#B83A3A',
             borderWidth: 1,
-            stack: 'Stack 1'
+            stack: 'Stack 1',
+            order: 1
+          },
+          {
+            label: 'Company Avg Link Click',
+            type: 'line',
+            id: 'avg-link-click',
+            data: [
+              { x: 0, y: 20 },
+              { x: 100, y: 20 },
+              { x: 200, y: 20 },
+              { x: 300, y: 20 },
+              { x: 400, y: 20 },
+              { x: 500, y: 20 }
+            ],
+            backgroundColor: '#1173C1',
+            borderColor: '#1173C1',
+            fill: false,
+            pointRadius: 0,
+            pointStyle: 'dash',
+            lineTension: 0,
+            stack: 'Stack 2',
+            order: 0
+          },
+          {
+            label: 'Company Avg Data Submit',
+            type: 'line',
+            id: 'avg-data-submit',
+            data: [
+              { x: 0, y: 50 },
+              { x: 100, y: 50 },
+              { x: 200, y: 50 },
+              { x: 300, y: 50 },
+              { x: 400, y: 50 },
+              { x: 500, y: 50 }
+            ],
+            backgroundColor: '#D1AD0C',
+            borderColor: '#D1AD0C',
+            fill: false,
+            pointRadius: 0,
+            pointStyle: 'dash',
+            lineTension: 0,
+            order: 0
+          },
+          {
+            label: 'Industry Avg Link Click',
+            type: 'line',
+            id: 'avg-link-click',
+            data: [
+              { x: 0, y: 40 },
+              { x: 100, y: 40 },
+              { x: 200, y: 40 },
+              { x: 300, y: 40 },
+              { x: 400, y: 40 },
+              { x: 500, y: 40 },
+              { x: 600, y: 40 }
+            ],
+            backgroundColor: '#D1AD0C',
+            borderColor: '#D1AD0C',
+            pointHoverRadius: 0,
+            pointRadius: 0,
+            borderDash: [10, 10],
+            borderWidth: 2,
+            fill: false,
+            pointStyle: 'dash',
+            lineTension: 0,
+            order: 0
+          },
+          {
+            label: 'Industry Avg Data Submit',
+            type: 'line',
+            id: 'avg-data-submit',
+            data: [
+              { x: 0, y: 10 },
+              { x: 100, y: 10 },
+              { x: 200, y: 10 },
+              { x: 300, y: 10 },
+              { x: 400, y: 10 },
+              { x: 500, y: 10 },
+              { x: 600, y: 10 }
+            ],
+            backgroundColor: '#1173C1',
+            borderColor: '#1173C1',
+            pointHoverRadius: 0,
+            pointRadius: 0,
+            borderDash: [10, 10],
+            borderWidth: 2,
+            fill: false,
+            pointStyle: 'dash',
+            lineTension: 0,
+            order: 0
           }
         ]
       }
