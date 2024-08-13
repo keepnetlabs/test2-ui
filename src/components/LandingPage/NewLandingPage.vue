@@ -601,7 +601,7 @@ export default {
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     this.callForLanguages()
-    this.callForAITemplateLimit()
+    //this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
