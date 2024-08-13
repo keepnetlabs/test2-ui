@@ -476,6 +476,7 @@ export default {
         'Landing page that guides the user through changing their email account password for security reasons.',
         'Landing page prompting the user to update their online service password to enhance account security.'
       ],
+      timeoutId: null,
       previewTemplate: null,
       aiTemplateText: '',
       initialTemplate: null,
@@ -639,6 +640,9 @@ export default {
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
+  beforeDestroy() {
+    if (this.timeoutId) clearTimeout(this.timeoutId)
+  },
   methods: {
     handleGenerateEmail() {
       const generatedEmailIndex = this.generatedTemplates.findIndex(
@@ -691,7 +695,7 @@ export default {
           this.isEmailGenerating = false
         })
         .catch(() => {
-          setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
         })
     },
     callForGetGeneratedAILandingPageTemplate() {
@@ -713,7 +717,7 @@ export default {
           }
         })
         .catch(() => {
-          setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
         })
     },
     setActiveGeneratedTemplate(index) {
