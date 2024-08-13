@@ -174,6 +174,7 @@
                         :language-type-resource-id="formValues.languageTypeResourceId"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :method-type-id="getMethodTypeId"
+                        :prompt.sync="formValues.prompt"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -301,7 +302,8 @@ export default {
         attachmentFiles: [],
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad'
+        languageTypeResourceId: '862249c19aad',
+        prompt: ''
       },
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
@@ -415,6 +417,7 @@ export default {
         }
         this.formValues.name = `${this.formValues.name}`
         this.isAssistedByAI = this.formValues.isAssistedByAI
+        this.formValues.aiAssistant = this.isAssistedByAI
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
@@ -601,6 +604,7 @@ export default {
         this.isSubmitDisabled = false
         return
       }
+      this.formValues.prompt = this?.$refs.refEmailTemplateContent?.aiTemplateText
 
       let payload = {
         ...this.formValues,
@@ -621,7 +625,8 @@ export default {
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         ),
-        isAssistedByAI: this.isAssistedByAI
+        isAssistedByAI: this.isAssistedByAI,
+        prompt: this.formValues.prompt
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
