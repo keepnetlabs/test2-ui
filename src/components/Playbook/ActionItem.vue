@@ -262,9 +262,8 @@
               :return-object="false"
               persistent-hint
               small-chips
-              hide-details
               :items="systemUsersItems"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[(v) => (!v?.length ? 'Required' : true)]"
               :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
             />
           </v-col>
@@ -298,9 +297,8 @@
               auto-select-first
               persistent-hint
               small-chips
-              hide-details
               :return-object="false"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[(v) => (!v?.length ? 'Required' : true)]"
               :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
               :slots="{ selection: true, item: false }"
             >
@@ -343,7 +341,7 @@
               outlined
               min-width-type="ultra"
               nudge-width="40"
-              hide-details
+              :rules="[(v) => (!v ? 'Required' : true)]"
             />
             <data-table-tooltip
               v-if="showOverFlowTooltip"
