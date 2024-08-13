@@ -404,7 +404,7 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    this.callForAITemplateLimit()
+    //this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -416,8 +416,8 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
-        this.isAssistedByAI = this.formValues.isAssistedByAI
-        this.$set(this.formValues, 'aiAssistant', this.formValues.isAssistedByAI || false)
+        this.isAssistedByAI = this?.formValues?.isAssistedByAI
+        this.$set(this.formValues, 'aiAssistant', this?.formValues?.isAssistedByAI || false)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList

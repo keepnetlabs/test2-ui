@@ -200,7 +200,7 @@
       </div>
     </div>
     <div
-      v-if="isAiAssistant"
+      v-if="false"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
