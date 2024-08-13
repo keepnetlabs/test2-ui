@@ -617,7 +617,7 @@ export default {
           domainRecordId: data.domainRecordId.toString()
         }
         this.isAssistedByAI = data.isAssistedByAI
-        this.aiAssistant = this.isAssistedByAI
+        this.aiAssistant = this.isAssistedByAI || false
         delete data.urlSchemaTypeId
         delete data.pathTypeId
         delete data.extensionTypeId
