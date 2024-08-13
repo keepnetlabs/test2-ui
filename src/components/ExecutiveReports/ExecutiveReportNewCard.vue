@@ -322,6 +322,7 @@ import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports
 import ExecutiveReportPhishingAndQuickResponseTime from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingAndQuickResponseTime.vue'
 import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
 import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspicious.vue'
+import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1238,6 +1239,7 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
+      return ExecutiveReportsUsersTimeToFailure
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries

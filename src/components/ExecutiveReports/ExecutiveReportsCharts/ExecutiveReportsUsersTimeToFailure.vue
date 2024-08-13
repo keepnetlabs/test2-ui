@@ -47,7 +47,7 @@ import { getExecutiveReportChartData } from '@/api/reports'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import labels from '@/model/constants/labels'
 export default {
-  name: 'ExecutiveReportsResponseTimeToPhishing',
+  name: 'ExecutiveReportsUsersTimeToFailure',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
@@ -196,6 +196,11 @@ export default {
                 display: false,
                 drawBorder: false
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'Time to Respond (Seconds)',
+                fontColor: '#383B41'
+              },
               ticks: {
                 labelOffset: 0,
                 beginAtZero: true,
@@ -215,7 +220,7 @@ export default {
               offset: false,
               scaleLabel: {
                 display: true,
-                labelString: 'Percentage of Users',
+                labelString: 'Number Of Users',
                 fontColor: '#383B41'
               },
               gridLines: {
@@ -377,17 +382,19 @@ export default {
         yLabels: ['Users'],
         datasets: [
           {
-            label: 'Repeat Offenders',
+            type: 'bar',
+            label: 'Clicked',
             data: [offendersPercentage],
-            barThickness: 150,
+            barThickness: 10,
             backgroundColor: '#F56C6C',
             borderWidth: 1,
             stack: 'Stack 1'
           },
           {
-            label: 'Simulated Users',
+            type: 'bar',
+            label: 'Submitted Data',
             data: [simulatedPercentage],
-            barThickness: 150,
+            barThickness: 20,
             backgroundColor: '#2196F3',
             borderWidth: 1,
             stack: 'Stack 1'
