@@ -417,7 +417,7 @@ export default {
         }
         this.formValues.name = `${this.formValues.name}`
         this.isAssistedByAI = this.formValues.isAssistedByAI
-        this.formValues.aiAssistant = this.isAssistedByAI
+        this.$set(this.formValues, 'aiAssistant', this.formValues.isAssistedByAI || false)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
