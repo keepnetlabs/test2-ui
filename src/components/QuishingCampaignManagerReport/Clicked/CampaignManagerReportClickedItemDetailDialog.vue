@@ -150,7 +150,7 @@ export default {
       ]
     } else {
       columns = [
-        COLUMNS.DATE_CLICKED,
+        COLUMNS.DATE_SCANNED,
         COLUMNS.USER_AGENT_SLOT,
         COLUMNS.BROWSER,
         COLUMNS.GEOLOCATION,

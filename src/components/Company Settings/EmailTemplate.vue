@@ -200,20 +200,19 @@
       </div>
     </div>
     <div
-      v-if="isAiAssistant"
+      v-if="false"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
       ]"
     >
-      <div class="email-template__ai-assistant-header">
+      <div
+        class="email-template__ai-assistant-header cursor-pointer"
+        @click="$emit('update:aiAssistant', !aiAssistant)"
+      >
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
-            <VIcon
-              class="cursor-pointer"
-              color="#757575"
-              @click="$emit('update:aiAssistant', !aiAssistant)"
-            >
+            <VIcon class="cursor-pointer" color="#757575">
               {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
             </VIcon>
           </div>
@@ -223,7 +222,7 @@
               {{
                 templateType === 'landing'
                   ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
-                  : 'AI will generate an email based on your description. Describe what your email should be about'
+                  : 'AI will generate an email based on your description. Describe what your email template should be about'
               }}
             </div>
           </div>
@@ -460,7 +459,8 @@ export default {
     'aiAssistantTotalRight',
     'languageTypeResourceId',
     'isAssistedByAITemplate',
-    'methodTypeId'
+    'methodTypeId',
+    'prompt'
   ],
   data() {
     return {
@@ -469,13 +469,14 @@ export default {
       badgeContents: [
         'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.',
         'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
-        'Phishing simulation email informing the user to download a critical software update to avoid security risks.'
+        'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
       ],
       landingPageBadgeContents: [
-        'Landing page that instructs the user to update their bank account password due to security concerns.',
-        'Landing page that guides the user through changing their email account password for security reasons.',
-        'Landing page prompting the user to update their online service password to enhance account security.'
+        'Landing page that allows the user to update their bank account password due to security concerns.',
+        'Landing page where the user can change their email account password.',
+        'Landing page where the user can update their online service password.'
       ],
+      timeoutId: null,
       previewTemplate: null,
       aiTemplateText: '',
       initialTemplate: null,
@@ -577,7 +578,7 @@ export default {
     getLoaderTitle() {
       return this.templateType === 'landing'
         ? 'AI Assisted Landing Page Generate in Progress'
-        : 'AI Assisted Email Creation in Progress'
+        : 'AI Assisted Email Generate in Progress'
     },
     getGenerateEmailButtonStyle() {
       const style = { textTransform: 'capitalize' }
@@ -632,12 +633,21 @@ export default {
           val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
       },
       immediate: true
+    },
+    prompt(val) {
+      if (val !== this.aiTemplateText) this.aiTemplateText = val || ''
+    },
+    aiTemplateText(val) {
+      this.$emit('update:prompt', val || '')
     }
   },
   mounted() {
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
+  },
+  beforeDestroy() {
+    if (this.timeoutId) clearTimeout(this.timeoutId)
   },
   methods: {
     handleGenerateEmail() {
@@ -691,7 +701,7 @@ export default {
           this.isEmailGenerating = false
         })
         .catch(() => {
-          setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
         })
     },
     callForGetGeneratedAILandingPageTemplate() {
@@ -705,19 +715,23 @@ export default {
           this.$emit('update:template', response?.data?.data)
           this.isEmailGenerating = false
           if (this.aiAssistantRemainingRight === 0) {
+            /*
             this.$store.dispatch('common/createSnackBar', {
               message: `Used the ${this.aiAssistantTotalRight} AI assistant template creation rights for this month. New rights will be available next month.`,
               color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
               icon: 'mdi-information'
             })
+
+             */
           }
         })
         .catch(() => {
-          setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
         })
     },
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
+      this.aiTemplateText = this.generatedTemplates[index].text
       this.$emit('update:template', this.generatedTemplates[index].content)
     },
     handleAiAssistantBadgeClick(index) {

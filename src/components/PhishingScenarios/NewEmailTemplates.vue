@@ -174,6 +174,7 @@
                         :language-type-resource-id="formValues.languageTypeResourceId"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :method-type-id="getMethodTypeId"
+                        :prompt.sync="formValues.prompt"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -301,7 +302,8 @@ export default {
         attachmentFiles: [],
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad'
+        languageTypeResourceId: '862249c19aad',
+        prompt: ''
       },
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
@@ -402,7 +404,7 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    this.callForAITemplateLimit()
+    //this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -414,7 +416,8 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
-        this.isAssistedByAI = this.formValues.isAssistedByAI
+        this.isAssistedByAI = this?.formValues?.isAssistedByAI
+        this.$set(this.formValues, 'aiAssistant', this?.formValues?.isAssistedByAI || false)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
@@ -567,12 +570,16 @@ export default {
       }
       if (this.$refs.refFormStep1.validate() && isMakeAvailableForValid) {
         this.step += 1
+
         if (this.aiAssistantRemainingRights === 0) {
+          /*
           this.$store.dispatch('common/createSnackBar', {
             message: `Used the ${this.aiAssistantTotalRights} AI assistant template creation rights for this month. New rights will be available next month.`,
             color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
             icon: 'mdi-information'
           })
+
+           */
         }
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
@@ -583,7 +590,7 @@ export default {
       this.step -= 1
     },
     submit() {
-      if (this.isAttachmentBasedTemplate && this.formValues.attachmentFiles.length === 0) {
+      if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
         this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
         return
       }
@@ -601,6 +608,7 @@ export default {
         this.isSubmitDisabled = false
         return
       }
+      this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
 
       let payload = {
         ...this.formValues,
