@@ -478,6 +478,13 @@ export default {
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.refFormStep1.validate() && isValid) {
+        if (this.aiAssistantRemainingRights === 0) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: `Used the ${this.aiAssistantTotalRights} AI assistant template creation rights for this month. New rights will be available next month.`,
+            color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
+            icon: 'mdi-information'
+          })
+        }
         this.step += 1
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
