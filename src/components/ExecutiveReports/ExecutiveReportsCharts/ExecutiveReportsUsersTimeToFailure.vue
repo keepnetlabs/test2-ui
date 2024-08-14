@@ -175,6 +175,8 @@ export default {
       const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
         ?.value
       const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
+      const img = new Image()
+      img.src = require('../../../assets/img/selected-bulletin-list.svg')
       this.chartOptions = {
         indexAxis: 'y',
         devicePixelRatio: 2,
@@ -257,6 +259,23 @@ export default {
                 },
                 {
                   text: `${data.datasets[1].label}`,
+                  fillStyle: data.datasets[1].backgroundColor,
+                  lineWidth: 0,
+                  datasetIndex: 1
+                },
+                {
+                  text: `Company Avg (Link Click/Data Submit)`,
+                  fillStyle: '#D1AD0C',
+                  strokeStyle: '#D1AD0C',
+                  lineWidth: 1,
+                  datasetIndex: 2,
+                  pointStyle: img,
+                  onClick() {
+                    console.log('iam clicked')
+                  }
+                },
+                {
+                  text: `Industry Avg (Link Click/Data Submit)`,
                   fillStyle: data.datasets[1].backgroundColor,
                   lineWidth: 0,
                   datasetIndex: 1
