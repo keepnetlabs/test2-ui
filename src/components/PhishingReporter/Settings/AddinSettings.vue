@@ -358,69 +358,50 @@
                   :required="setting.isConfirmationBeforeAnalysis"
                 />
               </div>
-              <div class="add-in-settings__body-item mb-4 d-flex flex-column" style="gap: 16px;">
+              <div class="add-in-settings__body-item mb-4">
                 <v-checkbox
                   color="#2196f3"
-                  label="Can delete suspicious email"
+                  label="Delete reported emails"
                   class="k-checkbox add-in-settings__list-item-checkbox"
                   id="input--phishing-reporter-is-delete-email-before-analysis"
                   v-model="setting.isDeleteEmailBeforeAnalysis"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                 ></v-checkbox>
-                <v-radio-group
-                  v-model="setting.isDeleteEmailManually"
-                  id="input--settings-modal-type"
-                  :mandatory="true"
-                  :disabled="!setting.isDeleteEmailBeforeAnalysis"
-                  hide-details
-                  class="ml-10 mt-0"
-                >
-                  <div class="d-flex">
-                    <v-radio
-                      :value="true"
-                      label="Delete manually with confirmation"
-                      color="#2196f3"
-                      class="align-self-start"
-                    >
-                    </v-radio>
-                    <InputDescription
-                      v-model.trim="setting.analysisEmailDeleteMessage"
-                      style="min-width: 320px; flex-shrink: 0;"
-                      class="ml-4 mt-0"
-                      initialPlaceholder="Enter a confirmation message to delete email"
-                      entityName="confirmation message to delete email"
-                      id="input--phishing-reporter-analysis-email-delete-message"
-                      rows="2"
-                      height="80"
-                      :disabled="
-                        !setting.isDeleteEmailBeforeAnalysis || !setting.isDeleteEmailManually
-                      "
-                      :initialRules="
-                        setting.isDeleteEmailBeforeAnalysis && setting.isDeleteEmailManually
-                          ? textAreaRules
-                          : []
-                      "
-                      :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                      :maxLength="256"
-                      :required="
-                        setting.isDeleteEmailBeforeAnalysis && setting.isDeleteEmailManually
-                      "
-                    />
-                  </div>
-                  <v-radio
-                    :value="false"
-                    label="Delete automatically without confirmation"
-                    color="#2196f3"
-                  ></v-radio>
-                </v-radio-group>
-                <AlertBox
-                  v-if="setting.isDeleteEmailBeforeAnalysis"
-                  class="bg-aqua-light ml-10"
-                  icon-color="#2196F3"
-                  icon-name="mdi-information"
-                  text="Emails that are deleted may be moved to the trash folder due to Microsoft's policies."
-                  :slots="{ primaryAction: false, secondaryAction: false }"
-                />
+                <div class="">
+                  <KSelect
+                    v-model.trim="setting.deleteEmails"
+                    style="max-width: 200px;"
+                    itemText="text"
+                    itemValue="value"
+                    :items="deleteEmailOptions"
+                    outlined
+                    placeholder="Select delete reported emails option"
+                    :disabled="!showForm || !setting.isDeleteEmailBeforeAnalysis"
+                  ></KSelect>
+                  <InputDescription
+                    v-if="setting.deleteEmails === 1"
+                    v-model.trim="setting.analysisEmailDeleteMessage"
+                    initialPlaceholder="Enter a confirmation message to delete email"
+                    entityName="confirmation message to delete email"
+                    id="input--phishing-reporter-analysis-email-delete-message"
+                    rows="2"
+                    height="80"
+                    :disabled="!setting.isDeleteEmailBeforeAnalysis"
+                    :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
+                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                    :maxLength="256"
+                    :required="setting.isDeleteEmailBeforeAnalysis"
+                  />
+                  <AlertBox
+                    v-if="setting.isDeleteEmailBeforeAnalysis"
+                    class="bg-aqua-light"
+                    style="width: 362px;"
+                    icon-color="#2196F3"
+                    icon-name="mdi-information"
+                    text="Emails that are deleted may be moved to the trash folder due to Microsoft's policies."
+                    :slots="{ primaryAction: false, secondaryAction: false }"
+                  />
+                </div>
               </div>
               <div class="add-in-settings__body-item">
                 <v-checkbox
@@ -543,10 +524,12 @@ import LanguageDeletionDialog from '@/components/PhishingReporter/Settings/Langu
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   defaultDialogBoxSettings,
+  deleteEmailOptions,
   checkDialogBoxSettings
 } from '@/components/PhishingReporter/Settings/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'AddinSettings',
   components: {
@@ -598,6 +581,7 @@ export default {
     return {
       isValid: false,
       files: [],
+      deleteEmailOptions,
       labels,
       isFetchingDefaultSettingsForLanguage: false,
       isLanguageDeletionDialogVisible: false,
@@ -865,6 +849,11 @@ export default {
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
       this.formValues.dialogBoxSettings = dialogBoxSettings
+      this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => {
+        const deleteEmailsOption =
+          setting.isDeleteEmailBeforeAnalysis && settings.analysisEmailDeleteMessage ? 1 : 2
+        return { ...setting, deleteEmails: deleteEmailsOption }
+      })
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
       })
