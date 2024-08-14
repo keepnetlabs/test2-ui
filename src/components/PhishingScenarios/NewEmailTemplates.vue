@@ -404,7 +404,7 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    //this.callForAITemplateLimit()
+    this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -572,14 +572,11 @@ export default {
         this.step += 1
 
         if (this.aiAssistantRemainingRights === 0) {
-          /*
           this.$store.dispatch('common/createSnackBar', {
             message: `Used the ${this.aiAssistantTotalRights} AI assistant template creation rights for this month. New rights will be available next month.`,
             color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
             icon: 'mdi-information'
           })
-
-           */
         }
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')

@@ -200,7 +200,6 @@
       </div>
     </div>
     <div
-      v-if="false"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
@@ -715,14 +714,11 @@ export default {
           this.$emit('update:template', response?.data?.data)
           this.isEmailGenerating = false
           if (this.aiAssistantRemainingRight === 0) {
-            /*
             this.$store.dispatch('common/createSnackBar', {
               message: `Used the ${this.aiAssistantTotalRight} AI assistant template creation rights for this month. New rights will be available next month.`,
               color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
               icon: 'mdi-information'
             })
-
-             */
           }
         })
         .catch(() => {
