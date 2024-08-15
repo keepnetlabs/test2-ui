@@ -358,7 +358,6 @@ export default {
             barThickness: 24,
             backgroundColor: function (context) {
               const index = context.dataIndex
-              console.log('context.dataset.data[index', context.dataset.data[index])
               const value = context.dataset.data[index].x
               return value > 60 ? '#B83A3A' : '#F56C6C'
             },

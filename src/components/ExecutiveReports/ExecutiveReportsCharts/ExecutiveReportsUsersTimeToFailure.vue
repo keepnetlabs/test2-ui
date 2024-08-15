@@ -175,8 +175,10 @@ export default {
       const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
         ?.value
       const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
-      const img = new Image()
-      img.src = require('../../../assets/img/selected-bulletin-list.svg')
+      const companyAvg = new Image()
+      companyAvg.src = require('../../../assets/img/company-avg.svg')
+      const industryAvg = new Image()
+      industryAvg.src = require('../../../assets/img/industry-avg.svg')
       this.chartOptions = {
         indexAxis: 'y',
         devicePixelRatio: 2,
@@ -204,11 +206,10 @@ export default {
               },
               ticks: {
                 padding: 0,
-                fontSize: 9,
+                fontSize: 12,
                 fontFamily: 'Open Sans, sans-serif',
-                fontStyle: '600',
-                fontColor: 'rgba(56, 59, 65, 0.72)',
-                lineHeight: 1.58
+                fontStyle: '400',
+                fontColor: 'rgba(56, 59, 65, 0.72)'
               }
             }
           ],
@@ -234,7 +235,8 @@ export default {
                 stepSize: 100,
                 fontFamily: 'Open Sans, sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
-                fontSize: 12
+                fontStyle: '600',
+                fontSize: 9
               }
             }
           ]
@@ -265,23 +267,39 @@ export default {
                 },
                 {
                   text: `Company Avg (Link Click/Data Submit)`,
-                  fillStyle: '#D1AD0C',
-                  strokeStyle: '#D1AD0C',
-                  lineWidth: 1,
                   datasetIndex: 2,
-                  pointStyle: img,
-                  onClick() {
-                    console.log('iam clicked')
-                  }
+                  pointStyle: companyAvg
                 },
                 {
                   text: `Industry Avg (Link Click/Data Submit)`,
                   fillStyle: data.datasets[1].backgroundColor,
-                  lineWidth: 0,
-                  datasetIndex: 1
+                  pointStyle: industryAvg,
+                  datasetIndex: 3
                 }
               ]
             }
+          },
+          onClick(e, legendItem) {
+            const index = legendItem.datasetIndex
+            const label = legendItem.text
+            const ci = this.chart
+            const meta = ci.getDatasetMeta(index)
+            if (label === 'Company Avg (Link Click/Data Submit)') {
+              const dataSubmitMeta = ci.getDatasetMeta(3)
+              meta.hidden = meta.hidden === null ? !ci.data.datasets[2].hidden : null
+              dataSubmitMeta.hidden =
+                dataSubmitMeta.hidden === null ? !ci.data.datasets[3].hidden : null
+            } else if (label === 'Industry Avg (Link Click/Data Submit)') {
+              const dataSubmitMeta = ci.getDatasetMeta(5)
+              const linkMeta = ci.getDatasetMeta(4)
+              linkMeta.hidden = linkMeta.hidden === null ? !ci.data.datasets[4].hidden : null
+              dataSubmitMeta.hidden =
+                dataSubmitMeta.hidden === null ? !ci.data.datasets[5].hidden : null
+            } else {
+              meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null
+            }
+
+            ci.update()
           }
         },
         tooltips: {

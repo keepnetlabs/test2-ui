@@ -313,7 +313,7 @@ export default {
             let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
             tooltipFooter.style.marginTop = '2px'
             tooltipFooter.style.fontFamily = 'Open-sans,sans-serif'
-            tooltipFooter.style.fontSize = '14px'
+            tooltipFooter.style.fontSize = '12px'
             tooltipFooter.style.borderRadius = '8px'
             tooltipFooter.style.color = '#fff'
             tooltipFooter.style.padding = '16px'
@@ -368,12 +368,11 @@ export default {
                 </td>
                 <td style="font-weight:600">${dataValue.y}%</td>
             `
-
+                console.log('tooltipModel', tooltipModel)
                 if (
                   dataset.label ===
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
-                  tr.style.fontWeight = '600'
                   selectedValue = dataValue
                   selectedLabel = dataset.label
                   selectedBackgroundColor = backgroundColor
@@ -399,12 +398,11 @@ export default {
               lastTr.style.justifyContent = 'space-between'
               lastTr.style.paddingTop = '8px'
               tableRoot.appendChild(lastTr)
-              tooltipFooter.style.background = selectedBackgroundColor
+              let isIncreased = true
+              tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
               const explanationText =
-                selectedLabel === 'Clicked (%)'
-                  ? ' of the users who did click the email also reporting it.'
-                  : ' of users identifying and reporting phishing in simulation engagements'
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explanationText}</th>`
+                selectedLabel === 'Clicked (%)' ? ' increased by' : ' decreased by'
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${selectedValue.y}%</span> in simulation users</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
