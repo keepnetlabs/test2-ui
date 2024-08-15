@@ -173,13 +173,77 @@ export default {
             borderWidth: 0
           }
         },
-        rotation: 45,
+        rotation: 180,
         showLabels: true,
         labels: this.valueEnums,
         responsive: true,
         maintainAspectRatio: false,
         tooltips: {
-          enabled: false
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-total-reported-suspicious-pie')
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-total-reported-suspicious-pie'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
+              document.body.appendChild(tooltipEl)
+            }
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0
+              return
+            }
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            if (tooltipModel.body) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const valArr = tooltipModel.body[0].lines[0].split(':')
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 14px;">${valArr[0]}</th>`
+              tableRoot.appendChild(titleRow)
+              const addTr = (label, val, addPaddingBottom = true) => {
+                let tr = document.createElement('tr')
+                tr.innerHTML = `
+                <td style="color: #383B41;font-size:12px;">${label}:&nbsp;
+                </td>
+                <td style="font-weight:600;font-size:14px;color:#383B41;padding-left: 8px;">${val}</td>
+            `
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (addPaddingBottom) tr.style.paddingBottom = '8px'
+                tableRoot.appendChild(tr)
+              }
+              addTr('Number of Reporting', 50)
+              addTr('Percentage of Reporting', '50%', false)
+            }
+            const position = this._chart.canvas.getBoundingClientRect()
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+          },
+          xPadding: 16,
+          yPadding: 16
         },
         legend: {
           display: true,
@@ -199,7 +263,7 @@ export default {
                   splittedLabel.length === 1
                     ? [splittedLabel[0], d]
                     : [splittedLabel[0] + ' ' + splittedLabel[1], d]
-                const comparatorVal = label === 'Completed' ? 2 : 4
+                const comparatorVal = 4
                 return {
                   text: Array.from(
                     label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
@@ -212,7 +276,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Completed' ? 4 : 0
+                  customMarginLeft: label === 'Undetected' ? 6 : 1
                 }
               })
             }
@@ -251,7 +315,7 @@ export default {
           }
         }
       }
-      this.chartData = [completed, inProgress, incomplete, simulation]
+      this.chartData = [25, 25, 25, 25]
       this.isLoading = false
       this.isEmpty = false
     },

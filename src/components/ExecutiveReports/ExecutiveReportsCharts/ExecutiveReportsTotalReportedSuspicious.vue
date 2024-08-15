@@ -15,6 +15,7 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugin"
             />
           </template>
           <div
@@ -85,7 +86,23 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugin: {
+        id: 'customPlugin',
+        afterDraw(chart) {
+          const ctx = chart.ctx
+          ctx.strokeStyle = '#757575'
+          ctx.lineWidth = 2
+          const xAxis = chart.scales['x-axis-0']
+          const yAxis = chart.scales['y-axis-0']
+          const xTickStart = xAxis.left
+          ctx.beginPath()
+          ctx.moveTo(xTickStart, yAxis.bottom)
+          ctx.lineTo(xAxis.right, yAxis.bottom)
+          ctx.stroke()
+          ctx.restore()
+        }
+      }
     }
   },
   watch: {
@@ -138,7 +155,8 @@ export default {
               offset: true,
               gridLines: {
                 display: false,
-                drawBorder: false
+                drawBorder: false,
+                zeroLineColor: '#F2F2F2'
               },
               scaleLabel: {
                 display: true,
@@ -244,9 +262,9 @@ export default {
               let titleRow = document.createElement('div')
               titleRow.style.fontWeight = 'bold'
               titleRow.style.paddingBottom = '8px'
+              titleRow.style.fontSize = '14px'
               titleRow.textContent = dataPoint.y
               tableRoot.appendChild(titleRow)
-              dataPoint.details.Score = dataPoint.x
               for (const [key, value] of Object.entries(dataPoint.details)) {
                 let fieldRow = document.createElement('div')
                 fieldRow.style.display = 'flex'
@@ -302,13 +320,12 @@ export default {
           x: obj.values[0].value,
           y: obj.dataObject.department,
           details: {
-            Score: obj.values[0].value,
-            'Number of Users': obj.values[1].value
+            'Number of Reporting': obj.values[0].value,
+            'Percentage of Reporting': obj.values[1].value
           }
         }
       })
       this.chartData = {
-        xLabels: [0, 100],
         yLabels: departments,
         datasets: [
           {
