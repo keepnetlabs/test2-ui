@@ -24,13 +24,13 @@
         padding: 24px 24px 16px 24px;
     }
     &__ai-assistant{
-      border-radius: 8px;
-      border: 1px solid #E0E0E0;
+      border-radius: 8px !important;
+      border: 3px #1173C1 solid;
       background: #fff;
       padding:24px;
       margin-left: 24px;
       margin-right: 24px;
-      margin-bottom: 16px;
+      margin-top:24px;
       .v-input--switch{
         margin-top: 0 !important;
         padding-top: 0 !important;
@@ -114,6 +114,32 @@
           align-items: center;
           gap:6px;
           bottom: 8px;
+        }
+      }
+      &-btn{
+        text-transform: uppercase;
+        padding:8px 16px !important;
+        min-height: 38px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        box-shadow: none !important;
+        background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
+        border-radius: 18px !important;
+        transition: background ease-in-out;
+        border: 4px #2A9FFC solid !important;
+        .mdi-creation {
+          margin-top: -1px !important;
+          font-size: 18px !important;
+        }
+        &:hover {
+          background: linear-gradient(270deg, #3DA9FF 0%, #468AC1 100%) !important;
+        }
+        &:focus {
+          background: linear-gradient(270deg, #3DA9FF 0%, #468AC1 100%) !important;
+        }
+        &:active {
+          background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
         }
       }
       &--landing{

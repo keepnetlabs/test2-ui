@@ -25,6 +25,160 @@
       </template>
     </app-modal>
     <div
+      :class="[
+        'email-template__ai-assistant',
+        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
+      ]"
+    >
+      <div
+        class="email-template__ai-assistant-header cursor-pointer"
+        @click="$emit('update:aiAssistant', !aiAssistant)"
+      >
+        <div class="email-template__ai-assistant-left">
+          <div class="mr-4">
+            <VIcon class="cursor-pointer" color="#757575">
+              {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+            </VIcon>
+          </div>
+          <div>
+            <div class="email-template__ai-assistant-left-title">AI Assistant</div>
+            <div class="email-template__ai-assistant-left-description">
+              {{
+                templateType === 'landing'
+                  ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
+                  : 'AI will generate an email based on your description. Describe what your email template should be about'
+              }}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div v-if="!aiAssistant">
+            <VBtn
+              class="white--text btn-util email-template__ai-assistant-btn"
+              rounded
+              @click="handleGenerateEmail"
+            >
+              <VIcon class="cursor-pointer mr-1" color="#fff">
+                mdi-creation
+              </VIcon>
+              USE AI Assistant
+            </VBtn>
+          </div>
+          <VIcon v-else class="cursor-pointer" color="#757575">
+            mdi-close
+          </VIcon>
+        </div>
+      </div>
+      <div v-if="aiAssistant" class="email-template__ai-assistant-content">
+        <div class="d-flex gap-2">
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(0)"
+          >
+            {{ templateType === 'landing' ? landingPageBadgeContents[0] : badgeContents[0] }}
+          </div>
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(1)"
+          >
+            {{ templateType === 'landing' ? landingPageBadgeContents[1] : badgeContents[1] }}
+          </div>
+          <div
+            class="email-template__ai-assistant-content-badge"
+            @click="handleAiAssistantBadgeClick(2)"
+          >
+            {{ templateType === 'landing' ? landingPageBadgeContents[2] : badgeContents[2] }}
+          </div>
+        </div>
+        <div class="mt-2">
+          <VTextarea
+            v-model.trim="aiTemplateText"
+            class="email-template__ai-assistant-textarea"
+            outlined
+            dense
+            no-resize
+            persistent-hint
+            rows="2"
+            height="76"
+            :placeholder="getAITemplateTextAreaPlaceholder"
+            :rules="[aiTemplateMaxLength]"
+          >
+            <template #append>
+              <div
+                class="email-template__ai-assistant-footer-text"
+                :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
+              >
+                <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
+                  <template #activator="{ on }">
+                    <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
+                      >mdi-information</VIcon
+                    >
+                  </template>
+                  <span
+                    >Description cannot exceed the 500 character limit. Please shorten
+                    description.</span
+                  >
+                </VTooltip>
+                {{ aiTemplateText.length }} / 500 characters
+              </div>
+            </template>
+          </VTextarea>
+        </div>
+        <div class="email-template__ai-assistant-footer">
+          <div class="email-template__ai-assistant-footer-left">
+            <div v-if="generatedTemplates.length > 1">
+              <VIcon
+                class="cursor-pointer"
+                color="#757575"
+                :disabled="activeGeneratedTemplateIndex < 1"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
+                >mdi-chevron-left</VIcon
+              >
+              <VIcon
+                class="ml-1 cursor-pointer"
+                color="#757575"
+                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
+                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
+                >mdi-chevron-right</VIcon
+              >
+              <span class="email-template__ai-assistant-footer-left-text"
+                >Generated email {{ activeGeneratedTemplateIndex + 1 }} of
+                {{ generatedTemplates.length }}</span
+              >
+            </div>
+          </div>
+          <div class="email-template__ai-assistant-footer-right">
+            <div class="email-template__ai-assistant-right-text">
+              <VTooltip v-if="aiAssistantRemainingRight === 0" bottom max-width="300">
+                <template #activator="{ on }">
+                  <VIcon class="mr-1" style="font-size: 20px;" v-on="on" color="#2196F3" small
+                    >mdi-information</VIcon
+                  >
+                </template>
+                <span
+                  >Used the {{ aiAssistantTotalRight }} AI assistant template creation rights for
+                  this month. New rights will be available next month.</span
+                >
+              </VTooltip>
+              Remaining attempts:
+              <span class="fw-600"
+                >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
+              >
+            </div>
+            <VBtn
+              class="white--text btn-util btn-download-add-in pl-4"
+              color="#00bcd4"
+              rounded
+              :style="getGenerateEmailButtonStyle"
+              @click="handleGenerateEmail"
+            >
+              {{ templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template' }}
+            </VBtn>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
       :class="['mx-4', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
       v-if="!onlyGrapes && showNameField"
     >
@@ -195,143 +349,6 @@
                 </v-menu>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      :class="[
-        'email-template__ai-assistant',
-        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
-      ]"
-    >
-      <div
-        class="email-template__ai-assistant-header cursor-pointer"
-        @click="$emit('update:aiAssistant', !aiAssistant)"
-      >
-        <div class="email-template__ai-assistant-left">
-          <div class="mr-4">
-            <VIcon class="cursor-pointer" color="#757575">
-              {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
-            </VIcon>
-          </div>
-          <div>
-            <div class="email-template__ai-assistant-left-title">AI Assistant</div>
-            <div class="email-template__ai-assistant-left-description">
-              {{
-                templateType === 'landing'
-                  ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
-                  : 'AI will generate an email based on your description. Describe what your email template should be about'
-              }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="aiAssistant" class="email-template__ai-assistant-content">
-        <div class="d-flex gap-2">
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(0)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[0] : badgeContents[0] }}
-          </div>
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(1)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[1] : badgeContents[1] }}
-          </div>
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(2)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[2] : badgeContents[2] }}
-          </div>
-        </div>
-        <div class="mt-2">
-          <VTextarea
-            v-model.trim="aiTemplateText"
-            class="email-template__ai-assistant-textarea"
-            outlined
-            dense
-            no-resize
-            persistent-hint
-            rows="2"
-            height="76"
-            :placeholder="getAITemplateTextAreaPlaceholder"
-            :rules="[aiTemplateMaxLength]"
-          >
-            <template #append>
-              <div
-                class="email-template__ai-assistant-footer-text"
-                :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
-              >
-                <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
-                  <template #activator="{ on }">
-                    <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
-                      >mdi-information</VIcon
-                    >
-                  </template>
-                  <span
-                    >Description cannot exceed the 500 character limit. Please shorten
-                    description.</span
-                  >
-                </VTooltip>
-                {{ aiTemplateText.length }} / 500 characters
-              </div>
-            </template>
-          </VTextarea>
-        </div>
-        <div class="email-template__ai-assistant-footer">
-          <div class="email-template__ai-assistant-footer-left">
-            <div v-if="generatedTemplates.length > 1">
-              <VIcon
-                class="cursor-pointer"
-                color="#757575"
-                :disabled="activeGeneratedTemplateIndex < 1"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
-                >mdi-chevron-left</VIcon
-              >
-              <VIcon
-                class="ml-1 cursor-pointer"
-                color="#757575"
-                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
-                >mdi-chevron-right</VIcon
-              >
-              <span class="email-template__ai-assistant-footer-left-text"
-                >Generated email {{ activeGeneratedTemplateIndex + 1 }} of
-                {{ generatedTemplates.length }}</span
-              >
-            </div>
-          </div>
-          <div class="email-template__ai-assistant-footer-right">
-            <div class="email-template__ai-assistant-right-text">
-              <VTooltip v-if="aiAssistantRemainingRight === 0" bottom max-width="300">
-                <template #activator="{ on }">
-                  <VIcon class="mr-1" style="font-size: 20px;" v-on="on" color="#2196F3" small
-                    >mdi-information</VIcon
-                  >
-                </template>
-                <span
-                  >Used the {{ aiAssistantTotalRight }} AI assistant template creation rights for
-                  this month. New rights will be available next month.</span
-                >
-              </VTooltip>
-              Remaining attempts:
-              <span class="fw-600"
-                >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
-              >
-            </div>
-            <v-btn
-              class="white--text btn-util btn-download-add-in pl-4"
-              color="#00bcd4"
-              rounded
-              :style="getGenerateEmailButtonStyle"
-              @click="handleGenerateEmail"
-            >
-              {{ templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template' }}
-            </v-btn>
           </div>
         </div>
       </div>
@@ -578,18 +595,6 @@ export default {
       return this.templateType === 'landing'
         ? 'AI Assisted Landing Page Generate in Progress'
         : 'AI Assisted Email Generate in Progress'
-    },
-    getGenerateEmailButtonStyle() {
-      const style = { textTransform: 'capitalize' }
-      if (
-        this.aiTemplateText.length === 0 ||
-        this.isEmailGenerating ||
-        this.aiAssistantRemainingRight === 0
-      ) {
-        style.opacity = '0.5'
-        style.pointerEvents = 'none'
-      }
-      return style
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
