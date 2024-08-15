@@ -15,6 +15,7 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :add-custom-legend-label-height="16"
             />
           </template>
           <div
@@ -156,9 +157,35 @@ export default {
           data: typedItems
         })
       }
+      newDatasets.push({
+        type: 'bar',
+        barThickness: 32,
+        label: 'Not Reported (%)',
+        ...CHART_COLORS['Not Reported (%)'],
+        data: [
+          {
+            x: 1717189200000,
+            y: 99,
+            result: 'Not Reported (%)'
+          },
+          {
+            x: 1719781200000,
+            y: 25,
+            result: 'Not Reported (%)'
+          },
+          {
+            x: 1722459600000,
+            y: 50,
+            result: 'Not Reported (%)'
+          }
+        ]
+      })
+      console.log('newDatasets', newDatasets)
       const maxYData = []
       for (let i = 0; i < newDatasets[0].data.length; i++) {
-        maxYData.push(newDatasets[0].data[i].y + newDatasets[1].data[i].y)
+        maxYData.push(
+          newDatasets[0].data[i].y + newDatasets[1].data[i].y + newDatasets[2].data[i].y
+        )
       }
       let maxY = Math.max(...maxYData)
       if (maxY < 20) {
@@ -168,6 +195,8 @@ export default {
       } else if (maxY < 60) {
         maxY = 80
       } else if (maxY < 80) {
+        maxY = 100
+      } else {
         maxY = 100
       }
       this.chartData = {
@@ -368,7 +397,6 @@ export default {
                 </td>
                 <td style="font-weight:600">${dataValue.y}%</td>
             `
-                console.log('tooltipModel', tooltipModel)
                 if (
                   dataset.label ===
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
@@ -398,11 +426,28 @@ export default {
               lastTr.style.justifyContent = 'space-between'
               lastTr.style.paddingTop = '8px'
               tableRoot.appendChild(lastTr)
-              let isIncreased = true
+              let isIncreased = false
+              let comparatorValue = 0
+              let dataIndex = tooltipModel.dataPoints[0].index
+              console.log('tooltipModel', tooltipModel)
+              if (dataIndex > 0) {
+                const datasets = this._chart.data.datasets
+                const beforeClickedData = datasets[0].data[dataIndex - 1]?.y
+                const beforeNotClickedData = datasets[1].data[dataIndex - 1]?.y
+                const currentClickedData = datasets[0].data[dataIndex]?.y
+                const currentNotClickedData = datasets[1].data[dataIndex]?.y
+                if (currentClickedData > beforeClickedData) {
+                  isIncreased = true
+                  comparatorValue = currentClickedData - beforeClickedData
+                } else if (currentNotClickedData > beforeNotClickedData) {
+                  isIncreased = false
+                  comparatorValue = -(currentClickedData - beforeClickedData)
+                }
+              }
               tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
-              const explanationText =
-                selectedLabel === 'Clicked (%)' ? ' increased by' : ' decreased by'
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${selectedValue.y}%</span> in simulation users</th>`
+              const explanationText = isIncreased ? ' increased by' : ' decreased by'
+              tooltipFooter.style.opacity = dataIndex === 0 ? 0 : 1
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${comparatorValue}%</span> in simulation users</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
@@ -415,10 +460,11 @@ export default {
           datalabels: {
             display: true,
             align: 'end',
-            anchor: 'center',
+            anchor: 'end',
+            offset: -2,
             color: '#000',
             formatter: function (value, context) {
-              if (context.dataset.label === 'Company Phishing Risk Score' && value.annotations) {
+              if (context.dataset.label === 'Not Reported (%)' && value.annotations) {
                 return value.annotations.definition
               }
               return ''
