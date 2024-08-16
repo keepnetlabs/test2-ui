@@ -208,6 +208,8 @@
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
                           :method-type-id="formValues.methodTypeId"
+                          :language-options="languageOptions"
+                          :selected-method="getSelectedMethod"
                           :is-edit="!!isEdit"
                           :is-phishing-template="true"
                           :onlyGrapes="true"
@@ -592,6 +594,11 @@ export default {
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    },
+    getSelectedMethod() {
+      return this.landingPageData.methodTypes?.find(
+        (item) => item.resourceId === this.formValues.methodTypeId
+      )?.name
     }
   },
   created() {

@@ -13,6 +13,7 @@
     :disabled="disabled"
     :menu-props="menuProps"
     :placeholder="placeholder"
+    :hide-details="hideDetails"
     @input="handleLanguageChange"
   />
 </template>
@@ -69,6 +70,10 @@ export default {
       default: false
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    hideDetails: {
       type: Boolean,
       default: false
     }

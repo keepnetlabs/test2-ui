@@ -25,8 +25,7 @@
     }
     &__ai-assistant{
       border-radius: 8px !important;
-      border: 3px #1173C1 solid;
-      background: #fff;
+      background: #D0EAFF;
       padding:24px;
       margin-left: 24px;
       margin-right: 24px;
@@ -40,21 +39,27 @@
         display: flex;
         justify-content: space-between;
       }
-      &-textarea textarea{
-        scrollbar-width: none;
-        margin-top: 8px !important;
+      &-textarea{
+        .v-input__slot{
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+        textarea{
+          scrollbar-width: none;
+          margin-top: 8px !important;
+        }
       }
       &-left{
         display: flex;
         align-items: center;
         &-title{
-          color:#383B41;
+          color:#00559B;
           font-size: 20px;
           font-weight:600;
           line-height: 24px;
         }
         &-description{
-          color:#383B41;
+          color:#00559B;
           font-size: 14px;
           font-weight: 400;
           line-height: 21px;
@@ -70,22 +75,46 @@
         }
       }
       &-content{
-        margin-top: 16px;
+        padding-top:16px;
+        display:flex;
+        gap:16px;
         &-badge{
           border-radius: 4px;
-          background-color: #E0E0E0;
           font-size: 12px;
           font-weight: 400;
           color:#383B41;
-          padding:8px;
+          background: #C4E3FF;
+          padding:4px;
+          width:100%;
           line-height: 19px;
           cursor:pointer;
+          &:hover{
+            background: #A2CEF6;
+          }
+        }
+        &__left{
+          max-width:191px;
+          min-width:191px;
+          &-title{
+            color: #00559B;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 19px;
+          }
+        }
+        &__right{
+          flex-grow: 1;
         }
       }
       &-footer{
         display: flex;
+        padding:8px;
         justify-content: space-between;
-        align-items: center;
+        border-radius: 0 0 8px 8px;
+        border-right: 1px solid #E0E0E0;
+        border-bottom: 1px solid #E0E0E0;
+        border-left: 1px solid #E0E0E0;
+        background: #F2F2F2;
         &-left{
           display: flex;
           align-items: center;
@@ -95,12 +124,24 @@
             font-weight: 400;
             line-height: 19px;
           }
+          &-checkbox{
+            margin-left: 8px;
+            label {
+              color:#757575;
+            }
+          }
         }
         &-right{
           flex-shrink: 1;
           display: flex;
-          align-items: center;
           gap: 16px;
+          &-feedback{
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 19px;
+            color:#1173C1;
+            text-decoration-line: underline;
+          }
         }
         &-text{
           color:#383B41;
@@ -115,19 +156,32 @@
           gap:6px;
           bottom: 8px;
         }
+        &-method{
+          font-size: 12px;
+          color:#383B41;
+          opacity:0.5;
+          font-weight: 400;
+          line-height: 19px;
+          position: absolute;
+          left: 8px;
+          bottom:8px;
+          i{
+            margin-top:-1px;
+          }
+        }
       }
       &-btn{
         text-transform: uppercase;
         padding:8px 16px !important;
-        min-height: 38px;
+        min-height: 32px;
+        max-height: 32px;
         font-size: 14px;
         font-style: normal;
         font-weight: 600;
         box-shadow: none !important;
+        transition:background 0.5s ease-in-out;
         background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
         border-radius: 18px !important;
-        transition: background ease-in-out;
-        border: 4px #2A9FFC solid !important;
         .mdi-creation {
           margin-top: -1px !important;
           font-size: 18px !important;
@@ -140,6 +194,12 @@
         }
         &:active {
           background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
+        }
+        &-close{
+          box-shadow: 0 1px 4px 0 rgba(17, 115, 193, 0.25), 0 1px 4px 1px rgba(0, 0, 0, 0.08);
+          padding:4px;
+          background-color: #B3D4FC;
+          border-radius: 50%;
         }
       }
       &--landing{

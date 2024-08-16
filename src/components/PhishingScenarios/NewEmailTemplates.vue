@@ -171,10 +171,12 @@
                         :is-phishing-template="isAttachmentBasedTemplate"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
-                        :language-type-resource-id="formValues.languageTypeResourceId"
+                        :language-type-resource-id.sync="formValues.languageTypeResourceId"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :method-type-id="getMethodTypeId"
                         :prompt.sync="formValues.prompt"
+                        :language-options="languageOptions"
+                        :selected-method="getSelectedMethod"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -387,6 +389,11 @@ export default {
       }
 
       return 'New Email Template'
+    },
+    getSelectedMethod() {
+      return this.methodItems?.find(
+        (item) => item.resourceId === this.formValues.categoryResourceId
+      )?.name
     },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
