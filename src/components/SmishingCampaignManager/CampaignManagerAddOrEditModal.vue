@@ -184,7 +184,7 @@ import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/Cam
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { getErrorMessage } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
-import { mapGetters } from 'vuex'
+
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -243,9 +243,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
-    }),
     isMFAScenarioSelected() {
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
     },
@@ -572,12 +569,7 @@ export default {
             this.setActionButtonDisability(false)
             return
           }
-          if (
-            !this.getPhishingReporterSummaryPermissions ||
-            (this.getPhishingReporterSummaryPermissions &&
-              refCampaignManagerTargetAudience?.$refs?.refForm?.validate())
-          )
-            this.changeStep()
+          if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           this.setActionButtonDisability(false)
           return
         case 4:
