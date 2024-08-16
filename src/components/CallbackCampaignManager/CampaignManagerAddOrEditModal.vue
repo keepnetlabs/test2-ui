@@ -198,7 +198,6 @@ import AlertBox from '@/components/AlertBox'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { mapGetters } from 'vuex'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -262,9 +261,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
-    }),
     getAvailableNumberCount() {
       return this.availableNumbers || 0
     },
@@ -612,12 +608,7 @@ export default {
             this.setActionButtonDisability(false)
             return
           }
-          if (
-            !this.getPhishingReporterSummaryPermissions ||
-            (this.getPhishingReporterSummaryPermissions &&
-              refCampaignManagerTargetAudience?.$refs?.refForm?.validate())
-          )
-            this.changeStep()
+          if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           this.setActionButtonDisability(false)
           return
         case 4:
