@@ -153,6 +153,7 @@ import CampaignManagerPrintOutPhishingScenarios from '@/components/CampaignManag
 import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
+import { mapGetters } from 'vuex'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -207,6 +208,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
+    }),
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
       return this.selectedTargetGroupsMapped.reduce(
@@ -442,7 +446,12 @@ export default {
                 0
               )
             }
-            if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
+            if (
+              !this.getPhishingReporterSummaryPermissions ||
+              (this.getPhishingReporterSummaryPermissions &&
+                refCampaignManagerTargetAudience?.$refs?.refForm?.validate())
+            )
+              this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false

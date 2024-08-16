@@ -202,6 +202,7 @@ import { SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignMana
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import { mapGetters } from 'vuex'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -269,6 +270,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
+    }),
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
         ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
@@ -640,7 +644,12 @@ export default {
                 0
               )
             }
-            if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
+            if (
+              !this.getPhishingReporterSummaryPermissions ||
+              (this.getPhishingReporterSummaryPermissions &&
+                refCampaignManagerTargetAudience?.$refs?.refForm?.validate())
+            )
+              this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false

@@ -194,7 +194,7 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import { getErrorMessage } from '@/utils/functions'
-
+import { mapGetters } from 'vuex'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -252,6 +252,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
+    }),
     isMFAScenarioSelected() {
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
     },
@@ -571,7 +574,12 @@ export default {
                 0
               )
             }
-            if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
+            if (
+              !this.getPhishingReporterSummaryPermissions ||
+              (this.getPhishingReporterSummaryPermissions &&
+                refCampaignManagerTargetAudience?.$refs?.refForm?.validate())
+            )
+              this.changeStep()
           } else {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false

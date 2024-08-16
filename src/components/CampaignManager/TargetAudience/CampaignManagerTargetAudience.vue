@@ -28,7 +28,7 @@
       :is-valid="isTargetGroupsValid"
       :error-message="getTargetGroupErrorMessage"
     />
-    <VForm ref="refForm">
+    <VForm v-if="getPhishingReporterSummaryPermissions" ref="refForm">
       <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
         <div>
           <VCheckbox
@@ -94,7 +94,7 @@ import * as Validations from '@/utils/validations'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import AlertBox from '@/components/AlertBox'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerTargetAudience',
   components: { AlertBox, KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
@@ -187,6 +187,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
+    }),
     getTargetGroupErrorMessage() {
       return this.selectedTargetGroupsMapped.length
         ? this.getTargetGroupErrorText
@@ -255,7 +258,7 @@ export default {
           fourMinutesBeforeSeconds
         )}`
       }
-      if (!this.isVishing) {
+      if (!this.isVishing && this.getPhishingReporterSummaryPermissions) {
         getPhishingReportSummary({
           startDate: dateObj.startDate,
           endDate: dateObj.endDate
