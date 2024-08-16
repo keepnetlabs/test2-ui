@@ -28,11 +28,11 @@
       :is-valid="isTargetGroupsValid"
       :error-message="getTargetGroupErrorMessage"
     />
-    <VForm v-if="getPhishingReporterSummaryPermissions" ref="refForm">
+    <VForm ref="refForm">
       <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
         <div>
           <VCheckbox
-            v-if="!isVishing && !isQuishingPrintOut"
+            v-if="!isVishing && !isQuishingPrintOut && getPhishingReporterSummaryPermissions"
             v-model="formData.sendOnlyActiveUsers"
             id="input--campaign-manager-advanced-settings-only-active-users"
             color="#2196f3"
@@ -258,7 +258,11 @@ export default {
           fourMinutesBeforeSeconds
         )}`
       }
-      if (!this.isVishing && this.getPhishingReporterSummaryPermissions) {
+      if (
+        !this.isVishing &&
+        !this.isQuishingPrintOut &&
+        this.getPhishingReporterSummaryPermissions
+      ) {
         getPhishingReportSummary({
           startDate: dateObj.startDate,
           endDate: dateObj.endDate
