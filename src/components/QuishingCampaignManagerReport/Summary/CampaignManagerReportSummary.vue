@@ -238,6 +238,7 @@ export default {
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
+        'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
         Languages: languages.size ? [...languages].join(', ') : '',
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
@@ -250,6 +251,7 @@ export default {
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
+        targetGroups: this?.targetGroups || [],
         randomlyUsersCount,
         sendOnlyActiveUsers,
         sendRandomlyUsers,

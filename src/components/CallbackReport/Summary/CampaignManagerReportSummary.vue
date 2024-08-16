@@ -155,6 +155,7 @@ export default {
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
+        'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : ''
@@ -166,6 +167,7 @@ export default {
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
+        targetGroups: this?.targetGroups || [],
         randomlyUsersCount,
         sendOnlyActiveUsers,
         sendRandomlyUsers,
@@ -457,7 +459,7 @@ export default {
     callForTargetGroups() {
       CallbackService.getCampaignSummaryTargetGroups(this.id, this.instanceGroup).then(
         (response) => {
-          this.targetGroups = response?.data?.data?.groups || []
+          this.targetGroups = response?.data?.data || []
         }
       )
     },
