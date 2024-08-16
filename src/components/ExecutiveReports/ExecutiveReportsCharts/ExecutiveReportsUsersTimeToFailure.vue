@@ -44,8 +44,6 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
-import labels from '@/model/constants/labels'
 export default {
   name: 'ExecutiveReportsUsersTimeToFailure',
   components: {
@@ -304,12 +302,14 @@ export default {
         },
         tooltips: {
           enabled: false,
+          mode: 'nearest',
+
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-repeat-offenders-users-bar')
+            let tooltipEl = document.getElementById('chartjs-tooltip-users-time-to-failure')
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-repeat-offenders-users-bar'
+              tooltipEl.id = 'chartjs-tooltip-users-time-to-failure'
               tooltipEl.innerHTML =
                 '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
               document.body.appendChild(tooltipEl)
@@ -346,9 +346,33 @@ export default {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
-              this._chart.data.datasets.forEach((dataset, i) => {
+              const datasetIndex = tooltipModel.dataPoints[0].datasetIndex
+              let titleRow = document.createElement('tr')
+              console.log(tooltipModel)
+              const index = tooltipModel.dataPoints[0].index
+              const activeIndex = yLabels.length - 1 - index
+              const yValue = yLabels[activeIndex]
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${yValue}th second</th>`
+              if (datasetIndex === 0 || datasetIndex === 1) tableRoot.appendChild(titleRow)
+              const addRow = (datasetIndex, addPaddingBottom = true) => {
+                const dataset = this._chart.data.datasets[datasetIndex]
                 let datasetLabel = dataset.label
-                let dataValue = dataset.data[0]
+                if (datasetLabel === 'Clicked') {
+                  datasetLabel = 'Users Clicked Link'
+                } else if (datasetLabel === 'Submitted Data') {
+                  datasetLabel = 'Users Submitted Data'
+                } else if (datasetLabel === 'Company Avg Link Click') {
+                  datasetLabel = 'Avg Time to Link Clicked'
+                } else if (datasetLabel === 'Industry Avg Link Click') {
+                  datasetLabel = 'Industry Avg Time to Link Clicked'
+                } else if (datasetLabel === 'Company Avg Data Submit') {
+                  datasetLabel = 'Avg Time to Submitted Data'
+                } else if (datasetLabel === 'Industry Avg Data Submit') {
+                  datasetLabel = 'Industry Avg Time to Submitted Data'
+                }
+
+                let dataValue = dataset.data[index]
+                console.log('dataValue', dataValue)
                 let backgroundColor = dataset.backgroundColor
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
@@ -356,14 +380,32 @@ export default {
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:&nbsp;
                 </td>
-                <td style="font-weight: 600">${dataValue || 0}%</td>
+                <td style="font-weight: 600">${dataValue.x || 0}</td>
             `
-
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
-                if (i === 0) tr.style.paddingBottom = '6px'
+                if (addPaddingBottom) tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
-              })
+              }
+              if (datasetIndex === 0 || datasetIndex === 1) {
+                addRow(0)
+                addRow(1)
+                let lastTr = document.createElement('tr')
+                lastTr.innerHTML = `
+                <td>
+
+                    Phishing Report Rate:
+                </td>
+                <td style="font-weight:600;">20</td>
+            `
+                lastTr.style.borderTop = '1px solid #E0E0E0'
+                lastTr.style.display = 'flex'
+                lastTr.style.justifyContent = 'space-between'
+                lastTr.style.paddingTop = '8px'
+                tableRoot.appendChild(lastTr)
+              } else {
+                addRow(tooltipModel.dataPoints[0].datasetIndex, false)
+              }
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
@@ -378,8 +420,9 @@ export default {
           }
         }
       }
+      const yLabels = [60, 50, 40, 30, 20, 10, 0]
       this.chartData = {
-        yLabels: [60, 50, 40, 30, 20, 10, 0],
+        yLabels,
         datasets: [
           {
             label: 'Clicked',
@@ -430,7 +473,7 @@ export default {
             backgroundColor: '#1173C1',
             borderColor: '#1173C1',
             fill: false,
-            pointRadius: 0,
+            pointRadius: 2,
             pointStyle: 'dash',
             lineTension: 0,
             stack: 'Stack 2',
@@ -451,7 +494,7 @@ export default {
             backgroundColor: '#D1AD0C',
             borderColor: '#D1AD0C',
             fill: false,
-            pointRadius: 0,
+            pointRadius: 2,
             pointStyle: 'dash',
             lineTension: 0,
             order: 0
@@ -471,8 +514,7 @@ export default {
             ],
             backgroundColor: '#D1AD0C',
             borderColor: '#D1AD0C',
-            pointHoverRadius: 0,
-            pointRadius: 0,
+            pointRadius: 2,
             borderDash: [10, 10],
             borderWidth: 2,
             fill: false,
@@ -495,8 +537,7 @@ export default {
             ],
             backgroundColor: '#1173C1',
             borderColor: '#1173C1',
-            pointHoverRadius: 0,
-            pointRadius: 0,
+            pointRadius: 2,
             borderDash: [10, 10],
             borderWidth: 2,
             fill: false,
