@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :custom-fields="customFields"
           :isLoading="isLoading"
           :training-name="getTrainingName"
           :form-details="formDetails"
@@ -46,11 +47,13 @@ import { mapActions } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import TrainingReportLearningPathContainer from '../components/AwarenessEducator/TrainingReport/TrainingReportLearningPathContainer/TrainingReportLearningPathContainer.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 export default {
   name: 'TrainingReport',
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       trainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
@@ -137,6 +140,7 @@ export default {
     }
   },
   created() {
+    this.callForCustomFields()
     this.callForFormDetails()
     this.callForSummary()
     this.callForLanguages()
@@ -145,6 +149,11 @@ export default {
     ...mapActions({
       callForLanguages: 'trainingLibraryHelpers/callForLanguages'
     }),
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data
+      })
+    },
     callForSummary() {
       this.isLoading = true
       AwarenessEducatorService.getTrainingReportSummary(
