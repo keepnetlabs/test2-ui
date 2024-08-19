@@ -90,27 +90,27 @@
 </template>
 
 <script>
-import AppDialog from "@/components/AppDialog";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import { ACTIVITY_TYPES, COLUMNS } from "@/components/QuishingCampaignManagerReport/Opened/utils";
-import labels from "@/model/constants/labels";
-import DataTable from "@/components/DataTable";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import { useLoading } from "@/hooks/useLoading";
-import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
-import CampaignManagerReportUserAgentColumn from "@/components/QuishingCampaignManagerReport/CampaignManagerReportUserAgentColumn.vue";
-import CampaignManagerReportIPColumn from "@/components/QuishingCampaignManagerReport/CampaignManagerReportIPColumn";
-import AppDialogFooterWithClose from "@/components/SmallComponents/AppDialogFooterWithClose.vue";
-import QuishingService from "@/api/quishing";
-import CampaignManagerReportActivityColumn from "@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue";
-import useSandboxTableActionLabel from "@/hooks/useSandboxTableActionLabel";
-import SandboxDetailDialogAlerts from "@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue";
-import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue";
-import CampaignManagerReportHumanActivityDialog from "@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue";
-import CampaignManagerReportSandboxActivityDialog from "@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue";
+import AppDialog from '@/components/AppDialog'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { ACTIVITY_TYPES, COLUMNS } from '@/components/QuishingCampaignManagerReport/Opened/utils'
+import labels from '@/model/constants/labels'
+import DataTable from '@/components/DataTable'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import CampaignManagerReportUserAgentColumn from '@/components/QuishingCampaignManagerReport/CampaignManagerReportUserAgentColumn.vue'
+import CampaignManagerReportIPColumn from '@/components/QuishingCampaignManagerReport/CampaignManagerReportIPColumn'
+import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import QuishingService from '@/api/quishing'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+import SandboxDetailDialogAlerts from '@/components/CampaignManagerReport/SandboxDetailDialogAlerts.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction.vue'
+import CampaignManagerReportHumanActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportHumanActivityDialog.vue'
+import CampaignManagerReportSandboxActivityDialog from '@/components/CampaignManagerReport/CampaignManagerReportSandboxActivityDialog.vue'
 
 export default {
-  name: "CampaignManagerReportClickedItemDetailDialog",
+  name: 'CampaignManagerReportClickedItemDetailDialog',
   components: {
     AppDialogFooterWithClose,
     CampaignManagerReportUserAgentColumn,
@@ -121,46 +121,46 @@ export default {
     DataTable,
     AppDialog,
     SandboxDetailDialogAlerts,
-    DefaultButtonRowAction,
+    DefaultButtonRowAction
   },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     status: {
-      type: Boolean,
+      type: Boolean
     },
     item: {
-      type: Object,
+      type: Object
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
-  inject: ["getQuishingTypePrintOut"],
+  inject: ['getQuishingTypePrintOut'],
   data() {
-    const isQuishingTypePrintout = this.getQuishingTypePrintOut();
-    let columns;
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    let columns
     if (isQuishingTypePrintout) {
       columns = [
-        COLUMNS.DATE_CLICKED,
+        COLUMNS.DATE_SCANNED,
         COLUMNS.USER_AGENT_SLOT,
         COLUMNS.BROWSER,
         COLUMNS.GEOLOCATION,
-        COLUMNS.IP,
-      ];
+        COLUMNS.IP
+      ]
     } else {
       columns = [
-        COLUMNS.DATE_CLICKED,
+        COLUMNS.DATE_SCANNED,
         COLUMNS.USER_AGENT_SLOT,
         COLUMNS.BROWSER,
         COLUMNS.GEOLOCATION,
         COLUMNS.IP_SLOT_NON_FIXED,
-        COLUMNS.ACTIVITY_TYPE,
-      ];
+        COLUMNS.ACTIVITY_TYPE
+      ]
     }
     const sandboxText = this.isShowSandboxFromParent
-      ? "HIDE SANDBOX ACTIVITY"
-      : "SHOW SANDBOX ACTIVITY";
+      ? 'HIDE SANDBOX ACTIVITY'
+      : 'SHOW SANDBOX ACTIVITY'
     return {
       isQuishingTypePrintout,
       COLUMNS,
@@ -170,11 +170,11 @@ export default {
       isShowSandbox: this.isShowSandboxFromParent,
       tableActionLabel: sandboxText,
       CONSTANTS: {
-        icon: "mdi-text-box",
-        id: "campaign-manager-clicked-detail-item-data-table",
-        ascending: "ascending",
+        icon: 'mdi-text-box',
+        id: 'campaign-manager-clicked-detail-item-data-table',
+        ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: "ClickedTime", pageSize: 5 }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime', pageSize: 5 }),
       isLoading: false,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -186,50 +186,50 @@ export default {
               show: true,
               icon: null,
               label: sandboxText,
-              action: "on-activity",
+              action: 'on-activity',
               tooltip: sandboxText,
               hideTooltip: true,
-              type: "outlined",
-              id: "btn-select--hide-sandbox-activity",
+              type: 'outlined',
+              id: 'btn-select--hide-sandbox-activity'
             },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportOpenedDetail,
+          message: labels.EmptyCampaignManagerReportOpenedDetail
         },
         rowActions: isQuishingTypePrintout
           ? []
           : [
               {
-                name: "Mark as human activity",
-                id: "btn-mark-as--row-actions-campaign-manager-report-clicked",
-                icon: "mdi-account-check",
-                action: "on-mark-as",
-              },
+                name: 'Mark as human activity',
+                id: 'btn-mark-as--row-actions-campaign-manager-report-clicked',
+                icon: 'mdi-account-check',
+                action: 'on-mark-as'
+              }
             ],
         downloadButton: {
-          show: false,
+          show: false
         },
-        countRow: 5,
+        countRow: 5
       },
-      tableData: [],
-    };
+      tableData: []
+    }
   },
   computed: {
     getTitle() {
-      return `Scanned QR Code Email ${this.item?.["clickedCount"] || 0} Time(s)`;
+      return `Scanned QR Code Email ${this.item?.['clickedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return `${this.item?.firstName || ""} ${this.item?.lastName || ""}`;
-    },
+      return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
+    }
   },
   created() {
-    this.serverSideProps.pageSize = 5;
-    this.callForData();
+    this.serverSideProps.pageSize = 5
+    this.callForData()
   },
   methods: {
     callForData() {
-      this.setLoading(true);
-      if (typeof this.axiosPayload.activityType === "undefined")
-        this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0;
+      this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined')
+        this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0
       QuishingService.searchCampaignJobUserEmailClickedDetails(
         this.axiosPayload,
         this.item?.resourceId
@@ -237,54 +237,54 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber },
-            },
-          } = response;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
-          this.tableData = results;
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
         })
-        .finally(this.setLoading);
+        .finally(this.setLoading)
     },
     toggleShowMarkAsActivityDialog(row, forceUpdate = false) {
-      if (forceUpdate) this.callForData();
-      this.selectedRow = row;
-      this.isShowMarkAsHumanActivityDialog = !this.isShowMarkAsHumanActivityDialog;
+      if (forceUpdate) this.callForData()
+      this.selectedRow = row
+      this.isShowMarkAsHumanActivityDialog = !this.isShowMarkAsHumanActivityDialog
     },
     toggleShowSandboxActivityDialog(row, forceUpdate = false) {
-      if (forceUpdate) this.callForData();
-      this.selectedRow = row;
-      this.isShowMarkAsSandboxActivityDialog = !this.isShowMarkAsSandboxActivityDialog;
+      if (forceUpdate) this.callForData()
+      this.selectedRow = row
+      this.isShowMarkAsSandboxActivityDialog = !this.isShowMarkAsSandboxActivityDialog
     },
     toggleShowMarkAsDialog(row, forceUpdate = false) {
       if (row.isChangedActivity && row.activityType === ACTIVITY_TYPES.HUMAN)
-        this.toggleShowSandboxActivityDialog(row, forceUpdate);
-      else this.toggleShowMarkAsActivityDialog(row, forceUpdate);
+        this.toggleShowSandboxActivityDialog(row, forceUpdate)
+      else this.toggleShowMarkAsActivityDialog(row, forceUpdate)
     },
     getRowActionDisabledStatus(row) {
-      return row.activityType === ACTIVITY_TYPES.HUMAN && !row.isChangedActivity;
+      return row.activityType === ACTIVITY_TYPES.HUMAN && !row.isChangedActivity
     },
     getRowActionIcon(row) {
       if (row.isChangedActivity && row.activityType === ACTIVITY_TYPES.HUMAN)
-        return "mdi-account-cancel";
-      return this.tableOptions.rowActions[0].icon;
+        return 'mdi-account-cancel'
+      return this.tableOptions.rowActions[0].icon
     },
     getRowActionText(row) {
       if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return "Mark as sandbox activity";
-      return this.tableOptions.rowActions[0].name;
+        return 'Mark as sandbox activity'
+      return this.tableOptions.rowActions[0].name
     },
     handleClose() {
-      this.$emit("on-close");
+      this.$emit('on-close')
     },
     getActivityTooltipText(row) {
       if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return "Sandbox activity has been changed to human activity";
+        return 'Sandbox activity has been changed to human activity'
       return row.sandboxType === 1 || row.sandoxType === 2
-        ? "Sandbox Activity Rules: A1"
-        : "Sandbox Activity Rules: A2";
-    },
-  },
-};
+        ? 'Sandbox Activity Rules: A1'
+        : 'Sandbox Activity Rules: A2'
+    }
+  }
+}
 </script>

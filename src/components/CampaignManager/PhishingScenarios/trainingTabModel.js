@@ -6,7 +6,7 @@ export default class TrainingTabModel {
     isCheckboxSelected = false,
     enrollmentSendTypeId = '1',
     awardCertificate = false,
-    certificateConfigSendType = 1,
+    certificateConfigSendType = 'SendOnFirstAttempt',
     enrollmentReminder = {
       periodCount: 1,
       periodType: 'Day',

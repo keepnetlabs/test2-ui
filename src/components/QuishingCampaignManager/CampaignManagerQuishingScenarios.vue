@@ -499,6 +499,7 @@ export default {
             true,
             getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
             val.awardCertificate,
+            val.certificateConfigSendType,
             {
               periodCount: val.periodCount || 1,
               periodType: val.emailPeriodTypeId || 'Day',

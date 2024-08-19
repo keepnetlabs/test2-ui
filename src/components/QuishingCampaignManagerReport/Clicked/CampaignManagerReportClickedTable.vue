@@ -39,7 +39,11 @@
         :text="tableOptions.rowActions[1].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
-        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -61,102 +65,102 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
+import DataTable from '@/components/DataTable'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { COLUMNS } from "@/components/QuishingCampaignManagerReport/Opened/utils";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import { useLoading } from "@/hooks/useLoading";
-import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
-import { createCustomFieldColumns } from "@/utils/helperFunctions";
-import QuishingService from "@/api/quishing";
-import CampaignManagerReportActivityColumn from "@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue";
-import useSandboxTableActionLabel from "@/hooks/useSandboxTableActionLabel";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { COLUMNS } from '@/components/QuishingCampaignManagerReport/Opened/utils'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import QuishingService from '@/api/quishing'
+import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
-  name: "CampaignManagerReportClickedTable",
+  name: 'CampaignManagerReportClickedTable',
   components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
-      type: String,
+      type: String
     },
     instanceGroup: {
-      type: [String, Number],
+      type: [String, Number]
     },
     customFields: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   inject: {
-    getQuishingTypePrintOut : {
+    getQuishingTypePrintOut: {
       type: Function
     },
     campaignDurationExpired: {
       type: Function
-    },
+    }
   },
   data() {
-    const isQuishingTypePrintout = this.getQuishingTypePrintOut();
-    const rowActions = [];
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    const rowActions = []
     const columns = [
       COLUMNS.FIRST_NAME,
       COLUMNS.LAST_NAME,
       COLUMNS.EMAIL,
       COLUMNS.DEPARTMENT,
       COLUMNS.PHISHING_SCENARIO_NAME,
-      COLUMNS.LAST_CLICKED,
-    ];
+      COLUMNS.LAST_CLICKED
+    ]
     if (isQuishingTypePrintout) {
-      columns.push(COLUMNS.TIMES_CLICKED_PRINTOUT);
-      rowActions.push({}, {
+      columns.push(COLUMNS.TIMES_CLICKED_PRINTOUT)
+      rowActions.push({
         name: labels.Details,
-        id: "btn-details--row-actions-campaign-manager-report-clicked",
-        icon: "$custom-details",
-        action: "on-detail",
+        id: 'btn-details--row-actions-campaign-manager-report-clicked',
+        icon: '$custom-details',
+        action: 'on-detail',
         disabled: !this.$store.getters[
-          "permissions/getQuishingCampaignReportsClickedDetailsPermissions"
-        ],
-      });
+          'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
+        ]
+      })
     } else {
-      columns.push(COLUMNS.TIMES_CLICKED);
+      columns.push(COLUMNS.TIMES_CLICKED)
       rowActions.push(
         {
           name: labels.Details,
-          id: "btn-details--row-actions-campaign-manager-report-clicked",
-          icon: "$custom-details",
-          action: "on-detail",
+          id: 'btn-details--row-actions-campaign-manager-report-clicked',
+          icon: '$custom-details',
+          action: 'on-detail',
           disabled: !this.$store.getters[
-            "permissions/getQuishingCampaignReportsClickedDetailsPermissions"
-          ],
+            'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
+          ]
         },
         {
           name: labels.Resend,
-          id: "btn-resend--row-actions-campaign-manager-report-clicked",
-          icon: "$custom-resend",
-          action: "on-resend",
+          id: 'btn-resend--row-actions-campaign-manager-report-clicked',
+          icon: '$custom-resend',
+          action: 'on-resend',
           disabled: false
         }
-      );
+      )
     }
     return {
       COLUMNS,
       CONSTANTS: {
-        id: "campaign-manager-clicked-data-table",
-        ascending: "ascending",
+        id: 'campaign-manager-clicked-data-table',
+        ascending: 'ascending'
       },
       isLoading: false,
-      axiosPayload: getDefaultAxiosPayload({ orderBy: "FirstName" }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
@@ -174,56 +178,56 @@ export default {
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_SCANNED,
           COLUMNS.TIMES_SCANNED,
-          isQuishingTypePrintout ? null : Object.assign({}, COLUMNS.ACTIVITY_TYPE),
+          isQuishingTypePrintout ? null : Object.assign({}, COLUMNS.ACTIVITY_TYPE)
         ].filter(Boolean),
         addButton: isQuishingTypePrintout
           ? {
-              show: false,
+              show: false
             }
           : {
               show: true,
               icon: null,
-              label: "HIDE SANDBOX ACTIVITY",
-              action: "on-activity",
+              label: 'HIDE SANDBOX ACTIVITY',
+              action: 'on-activity',
               hideTooltip: true,
-              type: "outlined",
-              id: "btn-select--hide-sandbox-activity",
+              type: 'outlined',
+              id: 'btn-select--hide-sandbox-activity'
             },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportClicked,
+          message: labels.EmptyCampaignManagerReportClicked
         },
         selectEvent: {
-          resend: !isQuishingTypePrintout,
+          resend: !isQuishingTypePrintout
         },
-        rowActions,
-      },
-    };
+        rowActions
+      }
+    }
   },
   created() {
-    this.callForData();
+    this.callForData()
   },
   watch: {
     customFields: {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = createCustomFieldColumns(val);
+        const fields = createCustomFieldColumns(val)
         const departmentIndex = this.tableOptions.columns.findIndex(
-          (column) => column.property === "department"
-        );
+          (column) => column.property === 'department'
+        )
         if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields);
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
-      },
+      }
     },
     isShowSandbox(val) {
-      this.$emit("update:is-show-sandbox-from-parent", val);
-    },
+      this.$emit('update:is-show-sandbox-from-parent', val)
+    }
   },
   methods: {
     callForData() {
-      this.setLoading(true);
-      if (typeof this.axiosPayload.activityType === "undefined") this.axiosPayload.activityType = 2;
+      this.setLoading(true)
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
       QuishingService.searchCampaignJobUserEmailClicked(
         this.axiosPayload,
         this.id,
@@ -232,21 +236,21 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber },
-            },
-          } = response;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => {
-            let customFields = {};
+            let customFields = {}
             row.customFieldValues.forEach((field) => {
-              customFields[`${field.name}`] = field?.value;
-            });
-            return { ...row, ...customFields };
-          });
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
-        .finally(this.setLoading);
+        .finally(this.setLoading)
     },
     exportCampaignManagerReportClickedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -256,24 +260,24 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === "XLS" ? "Excel" : item,
+          exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter,
-          activityType: this.axiosPayload.activityType,
-        };
+          activityType: this.axiosPayload.activityType
+        }
         QuishingService.exportCampaignJobUserEmailClicked(
           payload,
           this.id,
           this.instanceGroup
         ).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `Campaign-Report-Clicked.${
-            item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
@@ -281,13 +285,13 @@ export default {
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter,
-      };
-      this.$emit("on-resend", payload);
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
-      this.$emit("on-detail", row);
-    },
-  },
-};
+      this.$emit('on-detail', row)
+    }
+  }
+}
 </script>

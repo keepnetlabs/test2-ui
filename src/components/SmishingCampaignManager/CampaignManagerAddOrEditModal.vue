@@ -399,8 +399,6 @@ export default {
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId,
-        phoneNumber: smsProvider.text,
-        smsProviderNumberResourceId: smsProvider.value,
         scheduledDate,
         scheduledDateTimeZoneId,
         scheduleTypeId: scheduleTypeId.toString(),
@@ -622,6 +620,7 @@ export default {
               isCheckboxSelected,
               enrollmentReminder,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
@@ -635,6 +634,7 @@ export default {
               phishingScenarioResourceId,
               enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             })
           })

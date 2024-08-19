@@ -266,15 +266,27 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
-  SUBMITTED_TIME: {
-    property: 'submittedTime',
+  DATE_SCANNED: {
+    property: 'clickedTime',
     align: 'left',
-    label: labels.DateClicked,
+    label: `Date Scanned`,
     fixed: 'left',
     sortable: true,
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  SUBMITTED_TIME: {
+    property: 'submittedTime',
+    align: 'left',
+    label: `Date Submitted Data`,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
     isEditable: false,
     filterableType: 'date'
   },

@@ -204,7 +204,10 @@
             <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
               <ElTabPane name="scenarios" label="Scenarios" />
               <ElTabPane
-                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY  && getTrainingSearchPermission"
+                v-if="
+                  scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+                  getTrainingSearchPermission
+                "
                 name="training"
                 label="Training"
               >
@@ -818,6 +821,7 @@ export default {
             true,
             getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
             val.awardCertificate,
+            val.certificateConfigSendType,
             {
               periodCount: val.periodCount || 1,
               periodType: val.emailPeriodTypeId || 'Day',
@@ -858,86 +862,86 @@ export default {
     },
     difficulty(val) {
       this.debounce(() => {
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'difficulty'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item.text)?.join(',') || '',
-        FieldName: 'difficulty',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
-    }, 500)
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'difficulty'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item.text)?.join(',') || '',
+          FieldName: 'difficulty',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     method(val) {
       this.debounce(() => {
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'method'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item.text)?.join(',') || '',
-        FieldName: 'method',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
-    }, 500)
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'method'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item.text)?.join(',') || '',
+          FieldName: 'method',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     language(val) {
       this.debounce(() => {
-      if (val) {
-        const languageIndex = this.languages.findIndex((lang) => lang.value === val)
-        if (languageIndex !== -1) {
-          this.languageText = this.languages?.[languageIndex]?.name || ''
+        if (val) {
+          const languageIndex = this.languages.findIndex((lang) => lang.value === val)
+          if (languageIndex !== -1) {
+            this.languageText = this.languages?.[languageIndex]?.name || ''
+          }
+        } else {
+          this.languageText = ''
         }
-      } else {
-        this.languageText = ''
-      }
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'LanguageTypeResourceId'
-      )
-      const obj = {
-        Value: val,
-        FieldName: 'LanguageTypeResourceId',
-        Operator: 'Contains'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
-    }, 500)
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'LanguageTypeResourceId'
+        )
+        const obj = {
+          Value: val,
+          FieldName: 'LanguageTypeResourceId',
+          Operator: 'Contains'
+        }
+        if (index > -1) {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     category(val) {
       this.debounce(() => {
-      if (!val?.length) {
-        this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
-      }
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'Category'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item)?.join(',') || '',
-        FieldName: 'Category',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
-    }, 500)
+        if (!val?.length) {
+          this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
+        }
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'Category'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item)?.join(',') || '',
+          FieldName: 'Category',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({

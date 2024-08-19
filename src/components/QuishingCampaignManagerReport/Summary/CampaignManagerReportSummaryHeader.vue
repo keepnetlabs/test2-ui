@@ -34,15 +34,25 @@
         @click="handleDownloadReport"
         >{{ labels.DownloadReport }}</VBtn
       >
-      <VBtn
-        v-if="isShowResendDialogButton"
-        id="btn-resend-campaign--campaign-reports"
-        class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
-        rounded
-        color="#2196f3"
-        @click="toggleShowResendDialog"
-        >{{ labels.ResendCampaign }}</VBtn
-      >
+      <v-tooltip :disabled="!campaignDurationExpired()" nudge-top="16" bottom opacity="1">
+        <template #activator="{ on }">
+          <div v-on="on">
+            <VBtn
+              v-if="isShowResendDialogButton"
+              id="btn-resend-campaign--campaign-reports"
+              class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
+              rounded
+              color="#2196f3"
+              @click="toggleShowResendDialog"
+              :disabled="campaignDurationExpired()"
+              >{{ labels.ResendCampaign }}</VBtn
+            >
+          </div>
+        </template>
+        <span class="tooltip-span">
+          You cannot resend this campaign because its lifetime has expired
+        </span>
+      </v-tooltip>
       <VBtn
         v-if="isShowTrainingReportButton"
         id="btn-training-report--campaign-reports"
@@ -103,6 +113,11 @@ export default {
     trainingReportDialogItems: {
       type: Array,
       default: () => []
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
