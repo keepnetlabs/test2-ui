@@ -141,16 +141,17 @@
             </div>
             <div class="email-template__ai-assistant-footer">
               <div class="email-template__ai-assistant-footer-left">
-                <VForm>
+                <VForm ref="refSelectLanguage">
                   <InputSelectLanguage
                     v-bind="selectLanguageRules"
-                    v-model="languageTypeResourceId"
+                    :value="languageTypeResourceId"
                     required
                     hide-details
                     item-text="text"
                     item-value="value"
                     :items="languageOptions"
                     :menu-props="{ offsetY: true }"
+                    @input="$emit('update:languageTypeResourceId', $event)"
                   />
                 </VForm>
                 <VCheckbox
@@ -404,7 +405,7 @@
         class="email-template-preview__button"
         @click="editHtmlTemplate"
       >
-        <v-icon style="margin-right: 2px; margin-top: -1p x;" class="text-h6">mdi-pencil</v-icon>
+        <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6">mdi-pencil</v-icon>
         EDIT
       </v-btn>
       <div class="email-template-preview" style="pointer-events: none;">
@@ -527,56 +528,56 @@ export default {
       isEmailGenerating: false,
       badgeContents: [
         {
-          title: 'Change bank password',
+          title: 'Finance Department Alert',
           content:
-            'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.'
+            'Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.'
         },
         {
-          title: 'Download Important File',
+          title: 'HR Benefits Update',
           content:
-            'Phishing simulation email asking the user to verify their email account because of unusual login attempts.'
+            'Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.'
         },
         {
-          title: 'Verify email address',
+          title: 'Suspicious Login Alert',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            'Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.'
         },
         {
-          title: 'Review Recent Activity',
+          title: 'Payroll Adjustment Notification',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            'Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.'
         },
         {
-          title: 'Authorize New Device',
+          title: 'Account Deactivation Notice',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            'Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.'
         }
       ],
       landingPageBadgeContents: [
         {
-          title: 'Change bank password',
+          title: 'Company Event Registration Form',
           content:
-            'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.'
+            'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
         },
         {
-          title: 'Download Important File',
+          title: 'Password Reset Page',
           content:
-            'Phishing simulation email asking the user to verify their email account because of unusual login attempts.'
+            'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.'
         },
         {
-          title: 'Verify email address',
+          title: 'Bank Account Login Page',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
         },
         {
-          title: 'Review Recent Activity',
+          title: 'Bank Account Login Page',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
         },
         {
-          title: 'Authorize New Device',
+          title: 'Phishing Awareness Oops Page',
           content:
-            'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+            "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational."
         }
       ],
       selectLanguageRules: {
@@ -684,7 +685,8 @@ export default {
     getGenerateEmailButtonStyle() {
       return this.aiTemplateText.length > 0 &&
         this.aiTemplateText.length <= 500 &&
-        !this.isEmailGenerating
+        !this.isEmailGenerating &&
+        this.languageTypeResourceId
         ? { opacity: 1, pointerEvents: '' }
         : { opacity: 0.5, pointerEvents: 'none' }
     },
@@ -772,6 +774,7 @@ export default {
       if (generatedEmailIndex !== -1) {
         this.activeGeneratedTemplateIndex = generatedEmailIndex
         this.$emit('update:template', this.generatedTemplates[generatedEmailIndex].content)
+        this.$emit('update:subject', this.generatedTemplates[generatedEmailIndex].subject)
         return
       }
       this.isEmailGenerating = true
@@ -811,7 +814,8 @@ export default {
           const { template, subject } = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: template
+            content: template,
+            subject
           })
           this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
@@ -828,7 +832,8 @@ export default {
           const { template, subject } = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: template
+            content: template,
+            subject
           })
           this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
@@ -843,6 +848,7 @@ export default {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
       this.$emit('update:template', this.generatedTemplates[index].content)
+      this.$emit('update:subject', this.generatedTemplates[index].subject)
     },
     handleAiAssistantBadgeClick(index) {
       this.aiTemplateText =

@@ -14,6 +14,7 @@
     :menu-props="menuProps"
     :placeholder="placeholder"
     :hide-details="hideDetails"
+    :rules="rules"
     @input="handleLanguageChange"
   />
 </template>
@@ -76,6 +77,9 @@ export default {
     hideDetails: {
       type: Boolean,
       default: false
+    },
+    rules: {
+      type: Array
     }
   },
   methods: {
