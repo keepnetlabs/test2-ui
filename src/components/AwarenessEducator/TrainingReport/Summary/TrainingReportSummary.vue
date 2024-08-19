@@ -81,6 +81,7 @@
         is-add-training-type-key-to-payload
         :id="id"
         :is-loading="isLoading"
+        :custom-fields="customFields"
         :training-type="getTrainingType"
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
@@ -136,6 +137,10 @@ export default {
     formDetails: {
       type: Object,
       default: () => ({})
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

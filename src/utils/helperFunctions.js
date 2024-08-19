@@ -122,7 +122,7 @@ export function downloadExportedFile(data = {}, fileName = '', type = '') {
   link.click()
 }
 
-export function createCustomFieldColumns(customFields = []) {
+export function createCustomFieldColumns(customFields = [], isFilterable = true) {
   return customFields.map((field) => {
     const { name, fieldDataType } = field
     const filterableProps = {}
@@ -148,6 +148,9 @@ export function createCustomFieldColumns(customFields = []) {
     }
     if (fieldDataType.toLowerCase() === 'datetime') {
       filterableProps['filterableType'] = 'date'
+    }
+    if (!isFilterable) {
+      delete filterableProps['filterableType']
     }
     return {
       property: name,

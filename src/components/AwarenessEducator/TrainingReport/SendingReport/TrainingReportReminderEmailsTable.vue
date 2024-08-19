@@ -109,6 +109,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -131,6 +132,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -352,7 +357,9 @@ export default {
   methods: {
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
       ]
       const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
         (col) => col.FieldName === 'SmtpName'

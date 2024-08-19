@@ -24,6 +24,7 @@
         v-if="item.name === tab"
         :is="item.component"
         :id="id"
+        :custom-fields="customFields"
         :isLoading="isLoading"
         :training-name="getTrainingName"
         :form-details="formDetails"
@@ -51,6 +52,7 @@ import {
   TRAINING_LIBRARY_PAYLOAD_TYPES,
   TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 
 export default {
   name: 'TrainingReportLearningPathContainer',
@@ -67,6 +69,10 @@ export default {
     formDetails: {
       type: Object,
       default: () => ({})
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

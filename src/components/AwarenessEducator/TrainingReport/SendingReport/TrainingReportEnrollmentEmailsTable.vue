@@ -394,7 +394,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = createCustomFieldColumns(val)
+        const fields = createCustomFieldColumns(val, false)
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
@@ -418,6 +418,16 @@ export default {
     }
   },
   methods: {
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingSendingReportPoster

@@ -21,6 +21,7 @@
           v-if="tab === 'enrollment'"
           ref="refEnrollmentTable"
           class="mt-6"
+          :customFields="customFields"
           :isScormProxy="isScormProxy"
           :id="id"
           :form-details="formDetails"
@@ -38,6 +39,7 @@
           v-if="tab === 'reminder'"
           ref="refReminderTable"
           class="mt-6"
+          :customFields="customFields"
           :id="id"
           :form-details="formDetails"
         />
@@ -53,6 +55,7 @@
         v-if="tab === 'enrollment'"
         ref="refEnrollmentTable"
         class="mt-6"
+        :customFields="customFields"
         :isScormProxy="isScormProxy"
         :id="id"
         :form-details="formDetails"
@@ -92,6 +95,10 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
