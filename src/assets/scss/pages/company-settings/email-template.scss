@@ -1,3 +1,19 @@
+@property --aiLeftColor {
+  syntax: '<color>';
+  initial-value: #1173C1;
+  inherits: false;
+}
+
+@property --aiRightColor {
+  syntax: '<color>';
+  initial-value: #2196F3;
+  inherits: false;
+}
+@property --aiDegree {
+  syntax: '<angle>';
+  initial-value: 90deg;
+  inherits: false;
+}
 .email-template {
     max-width: 100% !important;
 
@@ -179,21 +195,17 @@
         font-style: normal;
         font-weight: 600;
         box-shadow: none !important;
-        transition:background 0.5s ease-in-out;
-        background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
+        transition: --aiLeftColor 1s, --aiRightColor 1s;
+        background: linear-gradient(var(--aiDegree), var(--aiLeftColor), var(--aiRightColor)) !important;
         border-radius: 18px !important;
         .mdi-creation {
           margin-top: -1px !important;
           font-size: 18px !important;
         }
         &:hover {
-          background: linear-gradient(270deg, #3DA9FF 0%, #468AC1 100%) !important;
-        }
-        &:focus {
-          background: linear-gradient(270deg, #3DA9FF 0%, #468AC1 100%) !important;
-        }
-        &:active {
-          background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%) !important;
+          --aiDegree: 270deg;
+          --aiLeftColor: #3DA9FF;
+          --aiRightColor: #468AC1;
         }
         &-close{
           box-shadow: 0 1px 4px 0 rgba(17, 115, 193, 0.25), 0 1px 4px 1px rgba(0, 0, 0, 0.08);
