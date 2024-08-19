@@ -111,7 +111,7 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -139,6 +139,10 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -386,6 +390,19 @@ export default {
     this.callForData()
   },
   watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val, false)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {
@@ -401,6 +418,16 @@ export default {
     }
   },
   methods: {
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingSendingReportPoster
@@ -450,7 +477,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

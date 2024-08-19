@@ -1,5 +1,8 @@
 <template>
   <v-card class="email-template__container" :style="'overflow-y:hidden'">
+    <v-dialog v-if="feedbackDialog" v-model="feedbackDialog" persistent :width="600">
+      <feedback-popup></feedback-popup>
+    </v-dialog>
     <app-modal
       v-if="showGrapesModal"
       :status="showGrapesModal"
@@ -24,6 +27,195 @@
         />
       </template>
     </app-modal>
+    <div
+      :class="[
+        'email-template__ai-assistant',
+        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
+      ]"
+    >
+      <div class="email-template__ai-assistant-header">
+        <div class="email-template__ai-assistant-left">
+          <div class="mr-4">
+            <VIcon style="font-size: 32px;" color="#00559B">
+              mdi-creation
+            </VIcon>
+          </div>
+          <div>
+            <div class="email-template__ai-assistant-left-title">AI Ally</div>
+            <div class="email-template__ai-assistant-left-description">
+              {{
+                templateType === 'landing'
+                  ? 'Let your intelligent AI assistant craft perfect landing page templates for you—effortlessly and on demand!'
+                  : 'Let your intelligent AI assistant craft perfect email templates for you—effortlessly and on demand!'
+              }}
+            </div>
+          </div>
+        </div>
+        <div
+          :style="
+            !aiAssistant &&
+            'padding: 3px;background: linear-gradient(90deg, #1173c1 0%, #79c4ff 100%);border-radius: 18px;max-height:38px;'
+          "
+        >
+          <div v-if="!aiAssistant">
+            <VBtn
+              class="white--text btn-util email-template__ai-assistant-btn"
+              rounded
+              :ripple="false"
+              @click="$emit('update:aiAssistant', true)"
+            >
+              <VIcon class="cursor-pointer mr-1" color="#fff">
+                mdi-creation
+              </VIcon>
+              USE AI ALLY
+            </VBtn>
+          </div>
+          <VIcon
+            v-else
+            class="cursor-pointer email-template__ai-assistant-btn-close"
+            color="#1173C1"
+            @click="$emit('update:aiAssistant', false)"
+          >
+            mdi-close
+          </VIcon>
+        </div>
+      </div>
+      <transition>
+        <div v-show="aiAssistant" class="email-template__ai-assistant-content">
+          <div class="email-template__ai-assistant-content__left">
+            <div class="email-template__ai-assistant-content__left-title mb-2">
+              TRY SUGGESTIONS
+            </div>
+            <div class="d-flex gap-2 flex-column">
+              <div
+                v-for="(i, index) in templateType === 'landing'
+                  ? landingPageBadgeContents
+                  : badgeContents"
+                :key="index"
+                class="email-template__ai-assistant-content-badge"
+                @click="handleAiAssistantBadgeClick(index)"
+              >
+                {{ i.title }}
+              </div>
+            </div>
+          </div>
+          <div class="email-template__ai-assistant-content__right">
+            <div>
+              <VTextarea
+                v-model.trim="aiTemplateText"
+                class="email-template__ai-assistant-textarea"
+                outlined
+                dense
+                no-resize
+                hide-details
+                persistent-hint
+                rows="2"
+                height="143"
+                :rules="aiTemplateTextRules"
+                :placeholder="getAITemplateTextAreaPlaceholder"
+              >
+                <template #append>
+                  <div
+                    class="email-template__ai-assistant-footer-text"
+                    :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
+                  >
+                    <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
+                      <template #activator="{ on }">
+                        <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
+                          >mdi-information</VIcon
+                        >
+                      </template>
+                      <span
+                        >Description cannot exceed the 500 character limit. Please shorten
+                        description.</span
+                      >
+                    </VTooltip>
+                    {{ aiTemplateText.length }} / 500 characters
+                  </div>
+                  <div class="email-template__ai-assistant-footer-method">
+                    <VIcon>mdi-information-outline</VIcon>
+                    Selected template method is <span class="fw-600">{{ selectedMethod }}</span>
+                  </div>
+                </template>
+              </VTextarea>
+            </div>
+            <div class="email-template__ai-assistant-footer">
+              <div class="email-template__ai-assistant-footer-left">
+                <VForm ref="refSelectLanguage">
+                  <InputSelectLanguage
+                    v-bind="selectLanguageRules"
+                    :value="languageTypeResourceId"
+                    required
+                    hide-details
+                    item-text="text"
+                    item-value="value"
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                    @input="$emit('update:languageTypeResourceId', $event)"
+                  />
+                </VForm>
+                <VCheckbox
+                  v-model="isPlainText"
+                  class="email-template__ai-assistant-footer-left-checkbox"
+                  hide-details
+                  :ripple="false"
+                  color="#2196f3"
+                  label="Enable styled HTML format"
+                  @click.stop
+                />
+              </div>
+              <div class="email-template__ai-assistant-footer-right">
+                <VBtn
+                  class="white--text btn-util btn-download-add-in pl-4"
+                  style="text-transform: capitalize;"
+                  color="#2196F3"
+                  rounded
+                  :style="getGenerateEmailButtonStyle"
+                  @click="handleGenerateEmail"
+                >
+                  {{
+                    templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template'
+                  }}
+                </VBtn>
+              </div>
+            </div>
+            <div
+              :class="[
+                'd-flex mt-2 w-full items-center',
+                generatedTemplates.length > 1 ? 'justify-space-between' : 'justify-end'
+              ]"
+            >
+              <div v-if="generatedTemplates.length > 1">
+                <VIcon
+                  class="cursor-pointer"
+                  color="#757575"
+                  :disabled="activeGeneratedTemplateIndex < 1"
+                  @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
+                  >mdi-chevron-left</VIcon
+                >
+                <VIcon
+                  class="ml-1 cursor-pointer"
+                  color="#757575"
+                  :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
+                  @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
+                  >mdi-chevron-right</VIcon
+                >
+                <span class="email-template__ai-assistant-footer-left-text"
+                  >Generated {{ templateType === 'landing' ? 'landing page' : 'email' }}
+                  {{ activeGeneratedTemplateIndex + 1 }} of {{ generatedTemplates.length }}</span
+                >
+              </div>
+              <div
+                class="email-template__ai-assistant-footer-right-feedback cursor-pointer"
+                @click="changeFeedbackPopup(true)"
+              >
+                Give us feedback!
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
     <div
       :class="['mx-4', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
       v-if="!onlyGrapes && showNameField"
@@ -199,143 +391,6 @@
         </div>
       </div>
     </div>
-    <div
-      :class="[
-        'email-template__ai-assistant',
-        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
-      ]"
-    >
-      <div
-        class="email-template__ai-assistant-header cursor-pointer"
-        @click="$emit('update:aiAssistant', !aiAssistant)"
-      >
-        <div class="email-template__ai-assistant-left">
-          <div class="mr-4">
-            <VIcon class="cursor-pointer" color="#757575">
-              {{ aiAssistant ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
-            </VIcon>
-          </div>
-          <div>
-            <div class="email-template__ai-assistant-left-title">AI Assistant</div>
-            <div class="email-template__ai-assistant-left-description">
-              {{
-                templateType === 'landing'
-                  ? 'AI will generate an landing page based on your description. Describe what your landing page should be about'
-                  : 'AI will generate an email based on your description. Describe what your email template should be about'
-              }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="aiAssistant" class="email-template__ai-assistant-content">
-        <div class="d-flex gap-2">
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(0)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[0] : badgeContents[0] }}
-          </div>
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(1)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[1] : badgeContents[1] }}
-          </div>
-          <div
-            class="email-template__ai-assistant-content-badge"
-            @click="handleAiAssistantBadgeClick(2)"
-          >
-            {{ templateType === 'landing' ? landingPageBadgeContents[2] : badgeContents[2] }}
-          </div>
-        </div>
-        <div class="mt-2">
-          <VTextarea
-            v-model.trim="aiTemplateText"
-            class="email-template__ai-assistant-textarea"
-            outlined
-            dense
-            no-resize
-            persistent-hint
-            rows="2"
-            height="76"
-            :placeholder="getAITemplateTextAreaPlaceholder"
-            :rules="[aiTemplateMaxLength]"
-          >
-            <template #append>
-              <div
-                class="email-template__ai-assistant-footer-text"
-                :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
-              >
-                <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
-                  <template #activator="{ on }">
-                    <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
-                      >mdi-information</VIcon
-                    >
-                  </template>
-                  <span
-                    >Description cannot exceed the 500 character limit. Please shorten
-                    description.</span
-                  >
-                </VTooltip>
-                {{ aiTemplateText.length }} / 500 characters
-              </div>
-            </template>
-          </VTextarea>
-        </div>
-        <div class="email-template__ai-assistant-footer">
-          <div class="email-template__ai-assistant-footer-left">
-            <div v-if="generatedTemplates.length > 1">
-              <VIcon
-                class="cursor-pointer"
-                color="#757575"
-                :disabled="activeGeneratedTemplateIndex < 1"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
-                >mdi-chevron-left</VIcon
-              >
-              <VIcon
-                class="ml-1 cursor-pointer"
-                color="#757575"
-                :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
-                @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
-                >mdi-chevron-right</VIcon
-              >
-              <span class="email-template__ai-assistant-footer-left-text"
-                >Generated email {{ activeGeneratedTemplateIndex + 1 }} of
-                {{ generatedTemplates.length }}</span
-              >
-            </div>
-          </div>
-          <div class="email-template__ai-assistant-footer-right">
-            <div class="email-template__ai-assistant-right-text">
-              <VTooltip v-if="aiAssistantRemainingRight === 0" bottom max-width="300">
-                <template #activator="{ on }">
-                  <VIcon class="mr-1" style="font-size: 20px;" v-on="on" color="#2196F3" small
-                    >mdi-information</VIcon
-                  >
-                </template>
-                <span
-                  >Used the {{ aiAssistantTotalRight }} AI assistant template creation rights for
-                  this month. New rights will be available next month.</span
-                >
-              </VTooltip>
-              Remaining attempts:
-              <span class="fw-600"
-                >{{ aiAssistantRemainingRight }} / {{ aiAssistantTotalRight }}</span
-              >
-            </div>
-            <v-btn
-              class="white--text btn-util btn-download-add-in pl-4"
-              color="#00bcd4"
-              rounded
-              :style="getGenerateEmailButtonStyle"
-              @click="handleGenerateEmail"
-            >
-              {{ templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template' }}
-            </v-btn>
-          </div>
-        </div>
-      </div>
-    </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
       <EmailTemplatesAILoader :title="getLoaderTitle" />
@@ -350,7 +405,8 @@
         class="email-template-preview__button"
         @click="editHtmlTemplate"
       >
-        <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit Content
+        <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6">mdi-pencil</v-icon>
+        EDIT
       </v-btn>
       <div class="email-template-preview" style="pointer-events: none;">
         <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
@@ -388,7 +444,7 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import KEmailPreview from '@/components/KEmailPreview'
@@ -408,10 +464,13 @@ import {
   getGeneratedAIEmailTemplate,
   getGeneratedAILandingPageTemplate
 } from '@/api/phishingsimulator'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
+import FeedbackPopup from '@/components/FeedbackPopup.vue'
 export default {
   name: 'EmailTemplate',
   components: {
+    FeedbackPopup,
+    InputSelectLanguage,
     EmailTemplatesAILoader,
     KSelect,
     QuishingEmailTemplateDefault,
@@ -459,26 +518,77 @@ export default {
     'languageTypeResourceId',
     'isAssistedByAITemplate',
     'methodTypeId',
-    'prompt'
+    'prompt',
+    'languageOptions',
+    'selectedMethod'
   ],
   data() {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
       isEmailGenerating: false,
       badgeContents: [
-        'Phishing simulation email prompting the user to change their bank account password due to suspicious activity.',
-        'Phishing simulation email asking the user to verify their email account because of unusual login attempts.',
-        'Phishing simulation email informing the user to download from attachment a critical software update to avoid security risks.'
+        {
+          title: 'Finance Department Alert',
+          content:
+            'Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.'
+        },
+        {
+          title: 'HR Benefits Update',
+          content:
+            'Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.'
+        },
+        {
+          title: 'Suspicious Login Alert',
+          content:
+            'Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.'
+        },
+        {
+          title: 'Payroll Adjustment Notification',
+          content:
+            'Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.'
+        },
+        {
+          title: 'Account Deactivation Notice',
+          content:
+            'Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.'
+        }
       ],
       landingPageBadgeContents: [
-        'Landing page that allows the user to update their bank account password due to security concerns.',
-        'Landing page where the user can change their email account password.',
-        'Landing page where the user can update their online service password.'
+        {
+          title: 'Company Event Registration',
+          content:
+            'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
+        },
+        {
+          title: 'Password Reset Page',
+          content:
+            'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.'
+        },
+        {
+          title: 'Bank Account Login Page',
+          content:
+            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
+        },
+        {
+          title: 'Bank Account Login Page',
+          content:
+            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
+        },
+        {
+          title: 'Phishing Awareness Oops Page',
+          content:
+            "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational."
+        }
       ],
+      selectLanguageRules: {
+        rules: [(v) => Validations.required(v, labels.Required)]
+      },
+      aiTemplateTextRules: [(v) => v.length <= 500],
       timeoutId: null,
       previewTemplate: null,
       aiTemplateText: '',
       initialTemplate: null,
+      isPlainText: false,
       labels,
       showGrapesModal: false,
       grapeJsKey: `${createRandomCryptStringNumber()}-key`,
@@ -568,28 +678,27 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    ...mapGetters({
+      emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
+      isFeedbackPopupOpened: 'dashboard/isPopupOpened'
+    }),
+    getGenerateEmailButtonStyle() {
+      return this.aiTemplateText.length > 0 &&
+        this.aiTemplateText.length <= 500 &&
+        !this.isEmailGenerating &&
+        this.languageTypeResourceId
+        ? { opacity: 1, pointerEvents: '' }
+        : { opacity: 0.5, pointerEvents: 'none' }
+    },
     getAITemplateTextAreaPlaceholder() {
       return this.templateType === 'landing'
-        ? 'Provide a detailed description of your landing page content enter'
-        : 'Provide a detailed description of your email template content enter'
+        ? 'Describe the scenario and key details for the phishing simulation landing page you want to generate.'
+        : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
     },
     getLoaderTitle() {
       return this.templateType === 'landing'
-        ? 'AI Assisted Landing Page Generate in Progress'
-        : 'AI Assisted Email Generate in Progress'
-    },
-    getGenerateEmailButtonStyle() {
-      const style = { textTransform: 'capitalize' }
-      if (
-        this.aiTemplateText.length === 0 ||
-        this.isEmailGenerating ||
-        this.aiAssistantRemainingRight === 0
-      ) {
-        style.opacity = '0.5'
-        style.pointerEvents = 'none'
-      }
-      return style
+        ? 'AI Ally is carefully crafting your Landing Page template'
+        : 'AI Ally is carefully crafting your Email template'
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
@@ -620,6 +729,14 @@ export default {
         return [...this.subjectRules, ...this.mergeTagRules]
       }
       return this.subjectRules
+    },
+    feedbackDialog: {
+      get() {
+        return this.isFeedbackPopupOpened
+      },
+      set(newValue) {
+        this.changeFeedbackPopup(newValue)
+      }
     }
   },
   watch: {
@@ -649,6 +766,7 @@ export default {
     if (this.timeoutId) clearTimeout(this.timeoutId)
   },
   methods: {
+    ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     handleGenerateEmail() {
       const generatedEmailIndex = this.generatedTemplates.findIndex(
         (item) => item.text === this.aiTemplateText
@@ -656,6 +774,7 @@ export default {
       if (generatedEmailIndex !== -1) {
         this.activeGeneratedTemplateIndex = generatedEmailIndex
         this.$emit('update:template', this.generatedTemplates[generatedEmailIndex].content)
+        this.$emit('update:subject', this.generatedTemplates[generatedEmailIndex].subject)
         return
       }
       this.isEmailGenerating = true
@@ -670,7 +789,8 @@ export default {
         fromAddress: this.fromAddress,
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
-        methodTypeId: parseInt(this.methodTypeId)
+        methodTypeId: parseInt(this.methodTypeId),
+        isPlainText: this.isPlainText
       }
       this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
@@ -691,12 +811,15 @@ export default {
     callForGetGeneratedAIEmailTemplate() {
       getGeneratedAIEmailTemplate()
         .then((response) => {
+          const { template, subject } = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: response?.data?.data
+            content: template,
+            subject
           })
+          this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
-          this.$emit('update:template', response?.data?.data)
+          this.$emit('update:template', template)
           this.isEmailGenerating = false
         })
         .catch(() => {
@@ -706,20 +829,14 @@ export default {
     callForGetGeneratedAILandingPageTemplate() {
       getGeneratedAILandingPageTemplate()
         .then((response) => {
+          const template = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: response?.data?.data
+            content: template
           })
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
-          this.$emit('update:template', response?.data?.data)
+          this.$emit('update:template', template)
           this.isEmailGenerating = false
-          if (this.aiAssistantRemainingRight === 0) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: `Used the ${this.aiAssistantTotalRight} AI assistant template creation rights for this month. New rights will be available next month.`,
-              color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
-              icon: 'mdi-information'
-            })
-          }
         })
         .catch(() => {
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
@@ -729,12 +846,13 @@ export default {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
       this.$emit('update:template', this.generatedTemplates[index].content)
+      this.$emit('update:subject', this.generatedTemplates[index].subject)
     },
     handleAiAssistantBadgeClick(index) {
       this.aiTemplateText =
         this.templateType === 'landing'
-          ? this.landingPageBadgeContents[index]
-          : this.badgeContents[index]
+          ? this.landingPageBadgeContents[index].content
+          : this.badgeContents[index].content
     },
     handleRenameItem() {
       this.$emit('handleRenameAttachment')
