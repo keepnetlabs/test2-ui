@@ -155,6 +155,7 @@
                   />
                 </VForm>
                 <VCheckbox
+                  v-if="templateType !== 'landing'"
                   v-model="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
                   hide-details
