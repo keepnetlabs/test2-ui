@@ -340,8 +340,7 @@
               item-text="name"
               outlined
               min-width-type="ultra"
-              nudge-width="40"
-              :rules="[(v) => (!v ? 'Required' : true)]"
+              :rules="[(v) => validations.required(v, 'Required')]"
             />
             <data-table-tooltip
               v-if="showOverFlowTooltip"
