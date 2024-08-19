@@ -201,8 +201,8 @@
                   >mdi-chevron-right</VIcon
                 >
                 <span class="email-template__ai-assistant-footer-left-text"
-                  >Generated email {{ activeGeneratedTemplateIndex + 1 }} of
-                  {{ generatedTemplates.length }}</span
+                  >Generated {{ templateType === 'landing' ? 'landing page' : 'email' }}
+                  {{ activeGeneratedTemplateIndex + 1 }} of {{ generatedTemplates.length }}</span
                 >
               </div>
               <div
@@ -555,7 +555,7 @@ export default {
       ],
       landingPageBadgeContents: [
         {
-          title: 'Company Event Registration Form',
+          title: 'Company Event Registration',
           content:
             'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
         },
@@ -829,13 +829,11 @@ export default {
     callForGetGeneratedAILandingPageTemplate() {
       getGeneratedAILandingPageTemplate()
         .then((response) => {
-          const { template, subject } = response?.data?.data || {}
+          const template = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: template,
-            subject
+            content: template
           })
-          this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', template)
           this.isEmailGenerating = false

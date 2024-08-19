@@ -202,7 +202,7 @@
                           :ai-assistant.sync="aiAssistant"
                           :ai-assistant-remaining-right="aiAssistantRemainingRights"
                           :ai-assistant-total-right="aiAssistantTotalRights"
-                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :language-type-resource-id.sync="formValues.languageTypeResourceId"
                           :is-assisted-by-a-i-template.sync="isAssistedByAI"
                           :active-block-manager-components="activeBlockManagerComponents"
                           :edit-items-disabled="editItemsDisabled"
@@ -392,11 +392,14 @@ export default {
   },
   methods: {
     callForAITemplateLimit() {
+      /*
       getAILandingPageTemplateLimit().then((response) => {
         const data = response?.data?.data || {}
         this.aiAssistantRemainingRights = data?.remainingBalance
         this.aiAssistantTotalRights = data?.totalBalance
       })
+
+       */
     },
     handleAddBlankPage() {
       this.formValues.landingPages.push({
@@ -480,13 +483,6 @@ export default {
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.refFormStep1.validate() && isValid) {
-        if (this.aiAssistantRemainingRights === 0) {
-          this.$store.dispatch('common/createSnackBar', {
-            message: `Used the ${this.aiAssistantTotalRights} AI assistant template creation rights for this month. New rights will be available next month.`,
-            color: COMMON_CONSTANTS.INFOSNACKBARCOLOR,
-            icon: 'mdi-information'
-          })
-        }
         this.step += 1
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
@@ -504,7 +500,11 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
-      if (this.$refs.refEmailTemplateContent.validate() && isValid) {
+      if (
+        this.$refs.refEmailTemplateContent.validate() &&
+        isValid &&
+        this.formValues.languageTypeResourceId
+      ) {
         const formValues = {
           ...this.formValues.phishingLink,
           ...this.formValues
@@ -597,8 +597,8 @@ export default {
     },
     getSelectedMethod() {
       return this.landingPageData.methodTypes?.find(
-        (item) => item.resourceId === this.formValues.methodTypeId
-      )?.name
+        (item) => item.value === this.formValues.methodTypeId
+      )?.text
     }
   },
   created() {
@@ -615,7 +615,6 @@ export default {
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     this.callForLanguages()
-    this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
