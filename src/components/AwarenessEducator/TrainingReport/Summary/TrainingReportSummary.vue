@@ -205,12 +205,21 @@ export default {
     },
     getTrainingInfoData() {
       const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
-      const { targetGroupCount = 0, autoEnrollDescription = 'No', languages = ['EN'] } = this
-        .trainingSummary || {
+      const {
+        targetGroupCount = 0,
+        autoEnrollDescription = 'No',
+        languages = ['EN'],
+        targetGroupNames = []
+      } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
-        languages: ['EN']
+        languages: ['EN'],
+        targetGroupNames: []
       }
       return {
+        'Target Groups': {
+          show: true,
+          value: targetGroupNames
+        },
         'Target Users': {
           show: true,
           value: totalTargetUserCount

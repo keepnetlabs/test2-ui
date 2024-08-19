@@ -101,8 +101,13 @@ export default {
       }
     },
     getVishingInfoData() {
-      const { targetUserCount = 0, vishingTemplateDto = {} } = this.vishingSummary || {}
+      const { targetUserCount = 0, vishingTemplateDto = {}, targetGroupNames = [] } =
+        this.vishingSummary || {}
       return {
+        'Target Groups': {
+          show: true,
+          value: targetGroupNames
+        },
         'Target Users': {
           show: true,
           value: targetUserCount
