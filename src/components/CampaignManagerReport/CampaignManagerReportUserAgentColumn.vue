@@ -29,7 +29,10 @@ export default {
     isRenderTooltip() {
       if (!this.scope?.row?.sandBoxType) return false
       const binaryArray = this.scope.row.sandBoxType.toString(2).split('').reverse().join('')
-      return [binaryArray[UNUSUAL_TYPES.USER_AGENT]].includes('1')
+      return (
+        [binaryArray[UNUSUAL_TYPES.USER_AGENT]].includes('1') ||
+        [binaryArray[UNUSUAL_TYPES.USER_AGENT_MATCHED]].includes('1')
+      )
     }
   }
 }
