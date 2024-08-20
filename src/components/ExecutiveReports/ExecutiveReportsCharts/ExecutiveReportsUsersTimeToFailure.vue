@@ -348,7 +348,6 @@ export default {
               tableRoot.style.width = '100%'
               const datasetIndex = tooltipModel.dataPoints[0].datasetIndex
               let titleRow = document.createElement('tr')
-              console.log(tooltipModel)
               const index = tooltipModel.dataPoints[0].index
               const activeIndex = yLabels.length - 1 - index
               const yValue = yLabels[activeIndex]
@@ -372,7 +371,6 @@ export default {
                 }
 
                 let dataValue = dataset.data[index]
-                console.log('dataValue', dataValue)
                 let backgroundColor = dataset.backgroundColor
                 let tr = document.createElement('tr')
                 tr.innerHTML = `

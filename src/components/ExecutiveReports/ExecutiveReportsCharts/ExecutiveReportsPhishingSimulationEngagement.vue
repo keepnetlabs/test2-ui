@@ -149,38 +149,15 @@ export default {
       for (let itemType of valueEnums) {
         const typedItems = datasets.filter((item) => item.result === itemType)
         const chartColorType = itemType === 'Clicked (%)' ? 'Clicked Email Trends' : itemType
-        newDatasets.push({
+        const index = itemType === 'Clicked (%)' ? 1 : itemType === 'Not Clicked (%)' ? 0 : 2
+        newDatasets[index] = {
           type: 'bar',
           barThickness: 32,
           label: itemType,
           ...CHART_COLORS[chartColorType],
           data: typedItems
-        })
+        }
       }
-      newDatasets.push({
-        type: 'bar',
-        barThickness: 32,
-        label: 'Not Reported (%)',
-        ...CHART_COLORS['Not Reported (%)'],
-        data: [
-          {
-            x: 1717189200000,
-            y: 99,
-            result: 'Not Reported (%)'
-          },
-          {
-            x: 1719781200000,
-            y: 25,
-            result: 'Not Reported (%)'
-          },
-          {
-            x: 1722459600000,
-            y: 50,
-            result: 'Not Reported (%)'
-          }
-        ]
-      })
-      console.log('newDatasets', newDatasets)
       const maxYData = []
       for (let i = 0; i < newDatasets[0].data.length; i++) {
         maxYData.push(
@@ -283,8 +260,18 @@ export default {
             generateLabels(chart = {}) {
               const { data } = chart
               return data.datasets.map((item, index) => {
+                const average =
+                  item.data.reduce((total, current) => total + current.y, 0) / item.data.length
+                const label =
+                  item.label === 'Clicked (%)'
+                    ? 'Clicked'
+                    : item.label === 'Not Clicked (%)'
+                    ? 'Not Clicked'
+                    : 'Not Reported'
                 return {
-                  text: item.label,
+                  text: `${label} (${
+                    average.toString().includes('.') ? average.toFixed(2) : average
+                  }%)`,
                   fillStyle: item.borderColor,
                   lineWidth: 0,
                   datasetIndex: index
@@ -375,20 +362,15 @@ export default {
               let selectedBackgroundColor = ''
               let selectedLabel = ''
               let selectedValue = ''
-              const totalPhishingReportRate = this._chart.data.datasets.reduce((acc, item) => {
-                let val = item.data[tooltipModel.dataPoints[0].index]
-                return acc + val.y
-              }, 0)
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel =
                   dataset.label === 'Clicked (%)'
                     ? 'Clicked Rate'
                     : dataset.label === 'Not Clicked (%)'
                     ? 'Not clicked Rate'
-                    : 'Not Report Rate'
+                    : 'Not Reported Rate'
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'
-
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -413,6 +395,10 @@ export default {
                 tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
+              const index = tooltipModel.dataPoints[0].index
+              const totalPhishingReportRate =
+                this._chart.data.datasets[0].data[index].y +
+                this._chart.data.datasets[1].data[index].y
               let lastTr = document.createElement('tr')
               lastTr.innerHTML = `
                 <td>
@@ -429,24 +415,23 @@ export default {
               let isIncreased = false
               let comparatorValue = 0
               let dataIndex = tooltipModel.dataPoints[0].index
-              console.log('tooltipModel', tooltipModel)
               if (dataIndex > 0) {
                 const datasets = this._chart.data.datasets
                 const beforeClickedData = datasets[0].data[dataIndex - 1]?.y
                 const beforeNotClickedData = datasets[1].data[dataIndex - 1]?.y
                 const currentClickedData = datasets[0].data[dataIndex]?.y
                 const currentNotClickedData = datasets[1].data[dataIndex]?.y
+                comparatorValue = currentClickedData - beforeClickedData
                 if (currentClickedData > beforeClickedData) {
                   isIncreased = true
-                  comparatorValue = currentClickedData - beforeClickedData
                 } else if (currentNotClickedData > beforeNotClickedData) {
                   isIncreased = false
-                  comparatorValue = -(currentClickedData - beforeClickedData)
                 }
               }
+              if (comparatorValue < 0) comparatorValue = -comparatorValue
               tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
               const explanationText = isIncreased ? ' increased by' : ' decreased by'
-              tooltipFooter.style.opacity = dataIndex === 0 ? 0 : 1
+              tooltipFooter.style.opacity = dataIndex === 0 || comparatorValue === 0 ? 0 : 1
               tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${comparatorValue}%</span> in simulation users</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
