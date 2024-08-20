@@ -10,7 +10,7 @@
           >mdi-information</v-icon
         >
       </template>
-      <span>{{ tooltipText }}</span>
+      <span>{{ getActivityTooltipText() }}</span>
     </v-tooltip>
   </span>
 </template>
@@ -40,6 +40,28 @@ export default {
       return (
         this.scope?.row?.activityType === ACTIVITY_TYPES.HUMAN && this.scope.row.isChangedActivity
       )
+    }
+  },
+  methods: {
+    getActivityTooltipText() {
+      if (
+        this?.scope?.row?.activityType === ACTIVITY_TYPES.SYSTEM &&
+        this?.scope?.row?.sandBoxType === undefined
+      ) {
+        return 'Sandbox activities are displayed in the details list'
+      }
+      if (
+        this?.scope?.row?.activityType === ACTIVITY_TYPES.HUMAN &&
+        this?.scope?.row?.isChangedActivity
+      )
+        return 'Sandbox activity has been changed to human activity'
+      if (this?.scope?.row?.sandBoxType === 1 || this?.scope?.row?.sandBoxType === 2) {
+        return 'Sandbox Activity Rules: A1'
+      }
+      if (this?.scope?.row?.sandBoxType <= 8) {
+        return 'Sandbox Activity Rules: A3'
+      }
+      return 'Sandbox Activity Rules: A2'
     }
   }
 }

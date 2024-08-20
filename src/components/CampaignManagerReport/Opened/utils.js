@@ -571,7 +571,8 @@ export function getStatusBadgeProps(status) {
 export const UNUSUAL_TYPES = {
   USER_AGENT: 0,
   IP: 1,
-  HONEYPOT: 2
+  HONEYPOT: 2,
+  USER_AGENT_MATCHED: 3
 }
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
