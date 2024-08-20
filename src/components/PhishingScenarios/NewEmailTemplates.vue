@@ -218,7 +218,6 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import {
   createPhishingEmailTemplate,
-  getAIEmailTemplateLimit,
   getEmailTemplatePreviewContent,
   getMergedTextForPhishing,
   updatePhishingEmailTemplate
@@ -234,8 +233,6 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -411,7 +408,6 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    this.callForAITemplateLimit()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -451,13 +447,6 @@ export default {
     }
   },
   methods: {
-    callForAITemplateLimit() {
-      getAIEmailTemplateLimit().then((response) => {
-        const data = response?.data?.data || {}
-        this.aiAssistantRemainingRights = data?.remainingBalance
-        this.aiAssistantTotalRights = data?.totalBalance
-      })
-    },
     setFooterButtonIds() {
       if (!this.isDuplicate) return
       this.footerButtonsIds = {
