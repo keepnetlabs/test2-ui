@@ -10,21 +10,20 @@
       <div class="alert-box__default-content justify-space-between w-100 d-flex">
         <div class="d-flex">
           <v-icon color="#2196f3">mdi-information</v-icon>
-          <p style="margin-top: 2px;">
-            Sandbox Activity Rules:
-          </p>
+          <p style="margin-top: 2px;">Sandbox Activity Rules:</p>
         </div>
         <v-icon class="cursor-pointer" color="#2196F3" @click="toggleAccordionDetail">{{
           isShowAccordion ? 'mdi-chevron-up' : 'mdi-chevron-down'
         }}</v-icon>
       </div>
       <div v-if="isShowAccordion">
-        <p class="mb-0 ml-8">
-          &bull; A1: Unusual User-Agent Interacted
-        </p>
+        <p class="mb-0 ml-8">&bull; A1: Unusual User-Agent Interacted</p>
         <p class="mb-0 ml-8">
           &bull; A2: The honeypot link is clicked by the same User Agent and Same Source IP in 5
           minutes
+        </p>
+        <p class="mb-0 ml-8">
+          &bull; A3: Sandbox activity that happened in the same second that matched other rules.
         </p>
       </div>
     </div>

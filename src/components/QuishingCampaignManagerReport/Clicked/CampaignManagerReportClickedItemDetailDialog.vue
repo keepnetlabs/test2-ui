@@ -68,7 +68,6 @@
           <CampaignManagerReportActivityColumn
             v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
             :scope="scope"
-            :tooltip-text="getActivityTooltipText(scope.row)"
           />
         </template>
         <template #datatable-row-actions="{ scope }">
@@ -277,13 +276,6 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
-    },
-    getActivityTooltipText(row) {
-      if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Sandbox activity has been changed to human activity'
-      return row.sandboxType === 1 || row.sandoxType === 2
-        ? 'Sandbox Activity Rules: A1'
-        : 'Sandbox Activity Rules: A2'
     }
   }
 }
