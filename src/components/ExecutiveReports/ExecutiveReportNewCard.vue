@@ -321,6 +321,10 @@ import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/Ex
 import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
 import ExecutiveReportPhishingAndQuickResponseTime from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingAndQuickResponseTime.vue'
 import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
+import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspicious.vue'
+import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
+import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
+import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -618,6 +622,27 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Companies with Highest Risk Scores',
           key: 'HumanRiskScoreforHighestRiskCompaniesWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TotalReportedSuspicious: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Total Reported Suspicious Emails and Percentage',
+          key: 'TotalReportedSuspicious',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -1245,6 +1270,12 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
+        case 'TotalReportedSuspicious':
+          if (item?.chartType?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportsTotalReportedSuspicious
+          else if (item?.chartType?.toLowerCase()?.includes('pie'))
+            return ExecutiveReportsTotalReportedSuspicious
+          return ExecutiveReportsTotalReportedSuspicious
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
         case 'PhishingDwellTimeDistributionWidget':

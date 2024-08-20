@@ -28,6 +28,72 @@ export const CHART_COLORS = {
     order: 3,
     pointHoverRadius: 3
   },
+  Malicious: {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Undetected: {
+    backgroundColor: '#757575',
+    borderColor: '#757575',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Phishing: {
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Simulation: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  'Clicked Email Trends': {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  'Not Reported (%)': {
+    backgroundColor: '#757575',
+    borderColor: '#757575',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
   'Quickest Response': {
     backgroundColor: '#00BCD4',
     borderColor: '#00BCD4',
