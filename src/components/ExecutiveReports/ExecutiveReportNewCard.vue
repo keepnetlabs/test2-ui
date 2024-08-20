@@ -1241,7 +1241,6 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
-      //return ExecutiveReportsUsersTimeToFailure
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
