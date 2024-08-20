@@ -104,6 +104,7 @@
               <VTextarea
                 v-model.trim="aiTemplateText"
                 class="email-template__ai-assistant-textarea"
+                id="email-template__ai-assistant-textarea"
                 outlined
                 dense
                 no-resize
@@ -111,6 +112,7 @@
                 persistent-hint
                 rows="2"
                 height="143"
+                :disabled="isEmailGenerating"
                 :rules="aiTemplateTextRules"
                 :placeholder="getAITemplateTextAreaPlaceholder"
               >
@@ -145,12 +147,14 @@
                   <InputSelectLanguage
                     v-bind="selectLanguageRules"
                     :value="languageTypeResourceId"
+                    class="email-template__ai-assistant-footer-left-select"
                     required
                     hide-details
                     item-text="text"
                     item-value="value"
                     :items="languageOptions"
                     :menu-props="{ offsetY: true }"
+                    :disabled="isEmailGenerating"
                     @input="$emit('update:languageTypeResourceId', $event)"
                   />
                 </VForm>
@@ -158,6 +162,7 @@
                   v-if="templateType !== 'landing'"
                   v-model="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
+                  :style="isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''"
                   hide-details
                   :ripple="false"
                   color="#2196f3"
@@ -174,9 +179,7 @@
                   :style="getGenerateEmailButtonStyle"
                   @click="handleGenerateEmail"
                 >
-                  {{
-                    templateType === 'landing' ? 'Generate Landing Page' : 'Generate Email Template'
-                  }}
+                  {{ getGenerateButtonLabel }}
                 </VBtn>
               </div>
             </div>
@@ -571,9 +574,9 @@ export default {
             'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
         },
         {
-          title: 'Bank Account Login Page',
+          title: 'Subscription Confirmation Page',
           content:
-            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
+            'Create a landing page for subscription confirmation. Include a message saying "Thank you for subscribing!", a field for entering an email address to confirm the subscription, and a "Confirm Subscription" button. Add a small note about privacy at the bottom. The design should be clean and modern, with a focus on ease of use.'
         },
         {
           title: 'Phishing Awareness Oops Page',
@@ -683,6 +686,13 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    getGenerateButtonLabel() {
+      const isLanding = this.templateType === 'landing'
+      if (isLanding) {
+        return this.isEmailGenerating ? 'Generating Landing Page...' : 'Generate Landing Page'
+      }
+      return this.isEmailGenerating ? 'Generating Email Template...' : 'Generate Email Template'
+    },
     getGenerateEmailButtonStyle() {
       return this.aiTemplateText.length > 0 &&
         this.aiTemplateText.length <= 500 &&

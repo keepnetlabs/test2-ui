@@ -60,6 +60,9 @@
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
         }
+        fieldset{
+          border:1px solid #E0E0E0 !important;
+        }
         textarea{
           scrollbar-width: none;
           margin-top: 8px !important;
@@ -79,6 +82,9 @@
           font-size: 14px;
           font-weight: 400;
           line-height: 21px;
+        }
+        &-select.v-input--is-disabled input{
+          color:rgba(56, 59, 65, 0.72);
         }
       }
       &-right{
@@ -125,12 +131,13 @@
       &-footer{
         display: flex;
         padding:8px;
+        margin-top:-1px;
         justify-content: space-between;
         border-radius: 0 0 8px 8px;
         border-right: 1px solid #E0E0E0;
         border-bottom: 1px solid #E0E0E0;
         border-left: 1px solid #E0E0E0;
-        background: #F2F2F2;
+        background: #FAFAFA;
         &-left{
           display: flex;
           align-items: center;
@@ -437,7 +444,14 @@
     }
   }
 }
-
+#app .email-template__ai-assistant-textarea.v-input--is-disabled {
+  textarea{
+    color:rgba(56, 59, 65, 0.72) !important;
+  }
+  fieldset{
+    background: #FAFAFA;
+  }
+}
 .grapesjs-reset-css {
     .form-group {
         font-family: initial;
