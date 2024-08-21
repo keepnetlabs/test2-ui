@@ -1,7 +1,16 @@
-.common-report-target-groups {
+.common-report-target-groups-container {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  max-height: 220px;
+}
+
+.common-report-target-groups-search-container {
+  padding: 1rem;
+  background-color: #F2F2F2;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.common-report-target-groups {
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -12,7 +21,8 @@
   align-items: center;
 
   &__name {
-    color: #383b41b8;
+    color: #383B41;
+    font-size: 14px;
   }
 
   &__divider {

@@ -218,7 +218,7 @@ export default {
       return {
         'Target Groups': {
           show: true,
-          value: targetGroupNames
+          value: targetGroupNames?.map?.((tg) => ({ name: tg })) || []
         },
         'Target Users': {
           show: true,

@@ -24,19 +24,16 @@
         <div class="campaign-manager-summary-card__body-item-key">
           {{ val.length > 1 ? 'Target Groups' : 'Target Group' }}
         </div>
-        <div
-          v-if="Array.isArray(val) && val.length > 1"
-          class="campaign-manager-summary-card__body-item-value"
-        >
+        <div class="campaign-manager-summary-card__body-item-value">
           <div class="d-flex align-center">
-            <span style="color: #2196f3; font-weight: 600;">Multiple target groups</span>
-            <v-btn class="ml-1" icon @click="handleViewTargetGroupsClick">
+            <v-btn class="mr-1" icon @click="handleViewTargetGroupsClick">
               <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
             </v-btn>
+            <span style="color: #2196f3; font-weight: 600;"
+              >{{ getTargetGroups.length }}
+              {{ getTargetGroups.length > 1 ? 'groups' : 'group' }}</span
+            >
           </div>
-        </div>
-        <div v-else class="campaign-manager-summary-card__body-item-value">
-          {{ val[0] && val[0].name }}
         </div>
       </template>
       <template v-if="isTestTraining" #header-right>
@@ -58,7 +55,12 @@ import { Fragment } from 'vue-frag'
 
 export default {
   name: 'VishingReportCampaignInfo',
-  components: { Badge, CampaignManagerSummaryCard, CommonReportViewTargetGroupsModal, Fragment },
+  components: {
+    Badge,
+    CampaignManagerSummaryCard,
+    CommonReportViewTargetGroupsModal,
+    Fragment
+  },
   props: {
     items: {
       type: Object

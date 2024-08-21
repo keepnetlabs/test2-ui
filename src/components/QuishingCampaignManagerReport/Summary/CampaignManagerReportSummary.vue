@@ -28,7 +28,7 @@
     <div
       :class="[
         isQuishingTypePrintout
-          ? 'common-simulator-new-scenario-campaign-info '
+          ? 'quishing-report-inidividual-printout-campaign-info'
           : 'campaign-manager-report-summary__general-info',
         'mt-6'
       ]"
