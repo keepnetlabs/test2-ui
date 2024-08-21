@@ -1,0 +1,23 @@
+.quishing-report-inidividual-printout-campaign-info{
+  .campaign-manager-summary-card__body-container{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    .campaign-manager-summary-card__body-item{
+      &:first-child, &:nth-child(3){
+        padding-right: 40px !important;
+        border-right: 1px solid #F2F2F2;
+      }
+      &:nth-child(2),&:nth-child(4) {
+        padding-left: 40px;
+      }
+      &:nth-child(2){
+        padding-top: 0;
+      }
+      &:nth-child(5){
+        border-top: 1px solid #F2F2F2;
+        padding-right: 40px !important;
+        border-right: 1px solid #F2F2F2;
+      }
+    }
+  }
+}
