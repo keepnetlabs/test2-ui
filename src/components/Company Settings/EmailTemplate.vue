@@ -779,15 +779,6 @@ export default {
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     handleGenerateEmail() {
-      const generatedEmailIndex = this.generatedTemplates.findIndex(
-        (item) => item.text === this.aiTemplateText
-      )
-      if (generatedEmailIndex !== -1) {
-        this.activeGeneratedTemplateIndex = generatedEmailIndex
-        this.$emit('update:template', this.generatedTemplates[generatedEmailIndex].content)
-        this.$emit('update:subject', this.generatedTemplates[generatedEmailIndex].subject)
-        return
-      }
       this.isEmailGenerating = true
       document
         ?.querySelector('#email-template-content')
