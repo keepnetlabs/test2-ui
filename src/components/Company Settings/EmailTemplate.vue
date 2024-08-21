@@ -807,7 +807,9 @@ export default {
           this.generatedTemplates.push({
             text: this.aiTemplateText,
             content: template,
-            subject
+            subject,
+            isPlainText: this.isPlainText,
+            languageTypeResourceId: this.languageTypeResourceId
           })
           this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
@@ -837,6 +839,11 @@ export default {
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
+      this.isPlainText = this.generatedTemplates[index].isPlainText
+      this.$emit(
+        'update:languageTypeResourceId',
+        this.generatedTemplates[index].languageTypeResourceId
+      )
       this.$emit('update:template', this.generatedTemplates[index].content)
       this.$emit('update:subject', this.generatedTemplates[index].subject)
     },
