@@ -24,7 +24,7 @@
                 v-if="key === 'Sender Phone Number'"
                 class="campaign-manager-summary-card__body-item-key"
               >
-                {{ val.length > 1 ? "Sender Phone Numbers" : "Sender Phone Number" }}
+                {{ val.length > 1 ? 'Sender Phone Numbers' : 'Sender Phone Number' }}
               </div>
               <div v-else class="campaign-manager-summary-card__body-item-key">
                 {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
@@ -76,55 +76,55 @@
 </template>
 
 <script>
-import CampaignManagerSummaryCard from "@/components/CampaignManager/Summary/CampaignManagerSummaryCard";
-import labels from "@/model/constants/labels";
-import CampaignManagerSenderPhoneNumbersModal from "@/components/SmishingCampaignManager/CampaignManagerSenderPhoneNumbersModal";
-import { Fragment } from "vue-frag";
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import labels from '@/model/constants/labels'
+import CampaignManagerSenderPhoneNumbersModal from '@/components/SmishingCampaignManager/CampaignManagerSenderPhoneNumbersModal'
+import { Fragment } from 'vue-frag'
 
 export default {
-  name: "CampaignManagerReportSMSDelivery",
+  name: 'CampaignManagerReportSMSDelivery',
   components: { Fragment, CampaignManagerSummaryCard, CampaignManagerSenderPhoneNumbersModal },
   props: {
     items: {
-      type: Object,
+      type: Object
     },
     helperData: {
-      type: Object,
+      type: Object
     },
     isLoading: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       isSenderPhoneNumbersModalVisible: false,
-      labels,
-    };
+      labels
+    }
   },
   computed: {
     isNotDelivered() {
-      return !!(this.helperData?.smsNotDeliveredUserCount || 0);
+      return !!(this.helperData?.smsNotDeliveredUserCount || 0)
     },
     getDeliveryValue() {
-      const { smsDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData;
-      return `${smsDeliveredUserCount} / ${totalTargetUserCount} sent`;
+      const { smsDeliveredUserCount = 0, totalTargetUserCount = 0 } = this.helperData
+      return `${smsDeliveredUserCount} / ${totalTargetUserCount} sent`
     },
     getNotDeliveredValue() {
-      const { smsNotDeliveredUserCount = "" } = this.helperData;
-      return `${smsNotDeliveredUserCount} not delivered`;
+      const { smsNotDeliveredUserCount = '' } = this.helperData
+      return `${smsNotDeliveredUserCount} not delivered`
     },
     getPhoneNumbers() {
-      return this.helperData?.phoneNumbers || [];
-    },
+      return this.helperData?.phoneNumbers || []
+    }
   },
   methods: {
     handleSenderPhoneNumbersClick() {
-      this.isSenderPhoneNumbersModalVisible = true;
+      this.isSenderPhoneNumbersModalVisible = true
     },
     handleCloseSenderPhoneNumbersModal() {
-      this.isSenderPhoneNumbersModalVisible = false;
-    },
-  },
-};
+      this.isSenderPhoneNumbersModalVisible = false
+    }
+  }
+}
 </script>

@@ -202,6 +202,7 @@ export default {
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
+        'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : ''
@@ -213,6 +214,7 @@ export default {
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
+        targetGroups: this?.targetGroups || [],
         randomlyUsersCount,
         sendOnlyActiveUsers,
         sendRandomlyUsers,
@@ -244,9 +246,15 @@ export default {
       } = campaignInfo
       let senderPhoneNumbers = []
       if (Array.isArray(settings?.smsProviderNumbers)) {
-        senderPhoneNumbers.push(...settings?.smsProviderNumbers.map(pn => new PhoneNumber(pn?.toString() || '')?.g?.number?.international))
+        senderPhoneNumbers.push(
+          ...settings?.smsProviderNumbers.map(
+            (pn) => new PhoneNumber(pn?.toString() || '')?.g?.number?.international
+          )
+        )
       } else {
-        senderPhoneNumbers.push(new PhoneNumber(settings?.smsProviderNumbers?.toString() || '')?.g?.number?.international)
+        senderPhoneNumbers.push(
+          new PhoneNumber(settings?.smsProviderNumbers?.toString() || '')?.g?.number?.international
+        )
       }
       if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
         return {
