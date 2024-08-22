@@ -361,25 +361,47 @@
               <div class="add-in-settings__body-item mb-4">
                 <v-checkbox
                   color="#2196f3"
-                  label="Show confirmation message to delete email"
+                  label="Delete reported emails"
                   class="k-checkbox add-in-settings__list-item-checkbox"
                   id="input--phishing-reporter-is-delete-email-before-analysis"
                   v-model="setting.isDeleteEmailBeforeAnalysis"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                 ></v-checkbox>
-                <InputDescription
-                  v-model.trim="setting.analysisEmailDeleteMessage"
-                  initialPlaceholder="Enter a confirmation message to delete email"
-                  entityName="confirmation message to delete email"
-                  id="input--phishing-reporter-analysis-email-delete-message"
-                  rows="2"
-                  height="80"
-                  :disabled="!setting.isDeleteEmailBeforeAnalysis"
-                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
-                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                  :maxLength="256"
-                  :required="setting.isDeleteEmailBeforeAnalysis"
-                />
+                <div class="">
+                  <KSelect
+                    v-model.trim="setting.isDeleteWithoutConfirmation"
+                    style="max-width: 200px;"
+                    itemText="text"
+                    itemValue="value"
+                    :items="deleteEmailOptions"
+                    outlined
+                    placeholder="Select delete reported emails option"
+                    :disabled="!showForm || !setting.isDeleteEmailBeforeAnalysis"
+                  ></KSelect>
+                  <InputDescription
+                    v-if="setting.isDeleteWithoutConfirmation === false"
+                    v-model.trim="setting.analysisEmailDeleteMessage"
+                    initialPlaceholder="Enter a confirmation message to delete email"
+                    entityName="confirmation message to delete email"
+                    id="input--phishing-reporter-analysis-email-delete-message"
+                    rows="2"
+                    height="80"
+                    :disabled="!setting.isDeleteEmailBeforeAnalysis"
+                    :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
+                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                    :maxLength="256"
+                    :required="setting.isDeleteEmailBeforeAnalysis"
+                  />
+                  <AlertBox
+                    v-if="setting.isDeleteEmailBeforeAnalysis"
+                    class="bg-aqua-light"
+                    style="width: 362px;"
+                    icon-color="#2196F3"
+                    icon-name="mdi-information"
+                    text="Emails that are deleted may be moved to the trash folder due to Microsoft's policies."
+                    :slots="{ primaryAction: false, secondaryAction: false }"
+                  />
+                </div>
               </div>
               <div class="add-in-settings__body-item">
                 <v-checkbox
@@ -502,12 +524,16 @@ import LanguageDeletionDialog from '@/components/PhishingReporter/Settings/Langu
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   defaultDialogBoxSettings,
+  deleteEmailOptions,
   checkDialogBoxSettings
 } from '@/components/PhishingReporter/Settings/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'AddinSettings',
   components: {
+    AlertBox,
     KFileUpload,
     ReporterVersionModal,
     VersionHistoryModal,
@@ -555,6 +581,7 @@ export default {
     return {
       isValid: false,
       files: [],
+      deleteEmailOptions,
       labels,
       isFetchingDefaultSettingsForLanguage: false,
       isLanguageDeletionDialogVisible: false,
@@ -822,6 +849,11 @@ export default {
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
       this.formValues.dialogBoxSettings = dialogBoxSettings
+      this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => {
+        const deleteEmailsOption =
+          setting.isDeleteEmailBeforeAnalysis && setting.analysisEmailDeleteMessage ? false : true
+        return { ...setting, isDeleteWithoutConfirmation: deleteEmailsOption }
+      })
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
       })
