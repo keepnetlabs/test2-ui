@@ -272,6 +272,10 @@ export default {
               newFormData?.dialogBoxSettings?.[i]?.simulationMailMessage || ''
             )
             formData.append(
+              `DialogBoxSettings[${i}].IsDeleteWithoutConfirmation`,
+              newFormData?.dialogBoxSettings?.[i]?.isDeleteWithoutConfirmation || false
+            )
+            formData.append(
               `DialogBoxSettings[${i}].IsDefault`,
               newFormData?.dialogBoxSettings?.[i]?.isDefault || false
             )
