@@ -10,7 +10,7 @@ export const defaultDialogBoxSettings = {
   analysisThankYouMessage:
     'Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.',
   isDeleteEmailBeforeAnalysis: true,
-  deleteEmails: 1,
+  isDeleteWithoutConfirmation: false,
   msgBoxBtnYesText: 'Yes',
   msgBoxBtnNoText: 'No',
   msgBoxBtnOkText: 'Okay',
@@ -28,8 +28,8 @@ export const defaultDialogBoxSettings = {
 }
 
 export const deleteEmailOptions = [
-  { text: 'with confirmation', value: 1 },
-  { text: 'automatically', value: 2 }
+  { text: 'with confirmation', value: false },
+  { text: 'automatically', value: true }
 ]
 
 export const checkDialogBoxSettings = (settings) => {
@@ -47,7 +47,7 @@ export const checkDialogBoxSettings = (settings) => {
   if (settings.isConfirmationBeforeAnalysis && !settings.analysisConfirmationMessage) return false
   if (
     settings.isDeleteEmailBeforeAnalysis &&
-    settings.deleteEmails === 1 &&
+    settings.isDeleteWithoutConfirmation === false &&
     !settings.analysisEmailDeleteMessage
   )
     return false

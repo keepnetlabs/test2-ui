@@ -369,7 +369,7 @@
                 ></v-checkbox>
                 <div class="">
                   <KSelect
-                    v-model.trim="setting.deleteEmails"
+                    v-model.trim="setting.isDeleteWithoutConfirmation"
                     style="max-width: 200px;"
                     itemText="text"
                     itemValue="value"
@@ -379,7 +379,7 @@
                     :disabled="!showForm || !setting.isDeleteEmailBeforeAnalysis"
                   ></KSelect>
                   <InputDescription
-                    v-if="setting.deleteEmails === 1"
+                    v-if="setting.isDeleteWithoutConfirmation === false"
                     v-model.trim="setting.analysisEmailDeleteMessage"
                     initialPlaceholder="Enter a confirmation message to delete email"
                     entityName="confirmation message to delete email"
@@ -851,8 +851,8 @@ export default {
       this.formValues.dialogBoxSettings = dialogBoxSettings
       this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => {
         const deleteEmailsOption =
-          setting.isDeleteEmailBeforeAnalysis && settings.analysisEmailDeleteMessage ? 1 : 2
-        return { ...setting, deleteEmails: deleteEmailsOption }
+          setting.isDeleteEmailBeforeAnalysis && setting.analysisEmailDeleteMessage ? false : true
+        return { ...setting, isDeleteWithoutConfirmation: deleteEmailsOption }
       })
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
