@@ -7,8 +7,8 @@
         </figure>
       </div>
       <h1 class="phished-landing-page__title">
-        Because you were phished during a phishing simulation test, you were directed to the
-        training selected by the company admin
+        Because you failed the phishing simulation test, you have been assigned to a training
+        selected by the company admin
       </h1>
       <p class="phished-landing-page__subtitle">
         {{ subtitleText }}
