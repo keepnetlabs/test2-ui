@@ -77,7 +77,7 @@
           </VTooltip>
         </span>
         <span v-else-if="scope.column.property === 'isAssistedByAI'">
-          {{ scope.row.isAssistedByAI ? 'AI Assistant' : 'Manual' }}
+          {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
         </span>
       </template>
       <template #datatable-row-actions="{ scope }">
@@ -248,7 +248,7 @@ export default {
             type: 'slot',
             filterableType: 'select',
             filterableItems: [
-              { text: 'AI Assistant', value: true },
+              { text: 'AI Ally', value: true },
               { text: 'Manual', value: false }
             ],
             width: 180
