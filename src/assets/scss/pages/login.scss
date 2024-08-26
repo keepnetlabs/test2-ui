@@ -275,6 +275,13 @@
         &__success {
             min-height: 231px;
         }
+      .captcha-reset-error{
+        .v-messages__message{
+          font-size: 10px !important;
+          max-width: 304px;
+          margin: 0 auto;
+        }
+      }
     }
 
     .forgot-password {
@@ -428,10 +435,16 @@
         justify-content: center;
         width: 100%;
         margin-top: 16px;
-
         >div {
             max-width: 300px;
         }
+    }
+    .captcha-reset-wrapper-error{
+      border:1px solid rgb(255, 82, 82);
+      border-radius: 4px;
+      width: 304px !important;
+      max-width: 304px !important;
+      max-height:78px;
     }
 
     .login-user-pass-wrapper {

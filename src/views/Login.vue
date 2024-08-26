@@ -256,19 +256,27 @@
                           <InputEmail
                             v-model.trim="mailForResetPassword"
                             id="input--login-reset-password"
-                            class="reset-pass-textfield"
-                            @click="resetPasswordError = false"
-                            :class="{ 'input-error': isErrorActive }"
+                            :class="{ 'reset-pass-textfield': true, 'input-error': isErrorActive }"
+                            style="padding: 0 !important;"
                             validate-on-blur
+                            @click="resetPasswordError = false"
                           />
-                          <div class="captcha-wrapper p-0" style="height: 78px;">
-                            <vue-recaptcha
-                              :sitekey="recaptcha"
-                              :loadRecaptchaScript="true"
-                              ref="resetRecaptcha"
-                              @verify="captchaVerifiedForReset"
-                              @expired="onCaptchaExpired"
-                            ></vue-recaptcha>
+                          <div :class="['captcha-wrapper p-0']" style="height: 78px;">
+                            <div :class="isShowResetFormError ? 'captcha-reset-wrapper-error' : ''">
+                              <vue-recaptcha
+                                :sitekey="recaptcha"
+                                :loadRecaptchaScript="true"
+                                ref="resetRecaptcha"
+                                @verify="captchaVerifiedForReset"
+                                @expired="onCaptchaExpired"
+                              ></vue-recaptcha>
+                            </div>
+                          </div>
+                          <div class="captcha-reset-error">
+                            <CustomError
+                              :is-valid="!isShowResetFormError"
+                              :style="!isShowResetFormError && { marginLeft: '12px' }"
+                            />
                           </div>
                         </v-form>
                       </v-col>
@@ -281,6 +289,7 @@
                     color="blue"
                     class="pl-4 white--text"
                     rounded
+                    :disabled="isResentLinkApiCalling"
                     @click="onResetClick"
                   >
                     SEND RESET LINK
@@ -554,9 +563,11 @@ import * as Sentry from '@sentry/browser'
 
 import { getSystemUserSettings } from '@/api/settings'
 import CookieKeys from '@/model/constants/cookieKeys'
+import CustomError from '@/components/CustomError.vue'
 export default {
   name: 'Login',
   components: {
+    CustomError,
     MFALogin,
     MFACantLogin,
     MFASetup,
@@ -571,6 +582,8 @@ export default {
       isShowSamlError: false,
       samlErrorMessage: '',
       showMfaLoginError: false,
+      isResentLinkApiCalling: false,
+      isShowResetFormError: false,
       mfaLoginErrors: [],
       showMfaMessage: false,
       mfaSetupErrorText: null,
@@ -1215,6 +1228,7 @@ export default {
     },
     onCaptchaExpired() {
       this.captchaVerified = false
+      this.isShowResetFormError = true
       if (this.$refs && this.$refs.recaptcha) {
         this.$refs.recaptcha.reset()
       }
@@ -1222,21 +1236,28 @@ export default {
     captchaVerifiedForReset() {
       this.resetPasswordError = false
       this.captchaVerified = true
+      this.isShowResetFormError = false
     },
     onResetClick() {
-      if (this.$refs.resetEmail.validate() && this.captchaVerified) {
-        resetPassword(this.mailForResetPassword)
-          .then(() => {
-            this.resetPasswordError = false
-            this.resetPasswordErrorText = null
-            this.pageNumber = 3
-          })
-          .catch((error) => {
-            this.resetPasswordError = true
-            this.resetPasswordErrorText =
-              error?.response?.data?.message || error?.response?.data?.Message || ''
-          })
+      if (!this.$refs.resetEmail.validate() || !this.captchaVerified) {
+        this.isShowResetFormError = true
+        return
       }
+      this.isResentLinkApiCalling = true
+      resetPassword(this.mailForResetPassword)
+        .then(() => {
+          this.resetPasswordError = false
+          this.resetPasswordErrorText = null
+          this.pageNumber = 3
+        })
+        .catch((error) => {
+          this.resetPasswordError = true
+          this.resetPasswordErrorText =
+            error?.response?.data?.message || error?.response?.data?.Message || ''
+        })
+        .finally(() => {
+          this.isResentLinkApiCalling = false
+        })
     }
   },
   watch: {
