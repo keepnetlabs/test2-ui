@@ -1202,6 +1202,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import PostIncidentPreviewPost from '@/components/ThreatSharing/PostIncident/PostIncidentPreviewPost'
+import useHTMLSanitizer from '@/hooks/useHTMLSanitizer'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1724,10 +1725,11 @@ export default {
       }).then((response) => {
         this.selectedEmail = response.data.data.from
         this.uploadRespond = response.data.data
-        this.uploadRespond.initialBody = response.data.data.initialBody
-        this.uploadRespond.visibleBody = response.data.data.initialBody
-        this.uploadRespond.editableBody = response.data.data.initialBody
-        this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+        const sanitizedInitialBody = useHTMLSanitizer(response.data.data.initialBody)
+        this.uploadRespond.initialBody = sanitizedInitialBody
+        this.uploadRespond.visibleBody = sanitizedInitialBody
+        this.uploadRespond.editableBody = sanitizedInitialBody
+        this.uploadRespond.visibleBodyForPreview = sanitizedInitialBody
         this.setShadowRootMalicousLink('incident-preview-1')
       })
     },
@@ -1738,10 +1740,11 @@ export default {
           .then((response) => {
             const { data } = response
             this.uploadRespond = data.data.communityPostEmail
-            this.uploadRespond.visibleBodyForPreview =
+            const previewedBody =
               data.data.communityPostEmail.editableBody ||
               data.data.communityPostEmail.visibleBody ||
               data.data.communityPostEmail.initialBody
+            this.uploadRespond.visibleBodyForPreview = useHTMLSanitizer(previewedBody)
             if (this.editItem) {
               this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
               this.uploadRespond.Title = this.editItem.title
@@ -1781,10 +1784,11 @@ export default {
           .then((response) => {
             const { data } = response
             this.uploadRespond = data.data
-            this.uploadRespond.initialBody = data.data.initialBody
-            this.uploadRespond.visibleBody = data.data.initialBody
-            this.uploadRespond.editableBody = response.data.data.initialBody
-            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+            const sanitizedInitialBody = useHTMLSanitizer(response.data.data.initialBody)
+            this.uploadRespond.initialBody = sanitizedInitialBody
+            this.uploadRespond.visibleBody = sanitizedInitialBody
+            this.uploadRespond.editableBody = sanitizedInitialBody
+            this.uploadRespond.visibleBodyForPreview = sanitizedInitialBody
             if (isInitial) {
               this.initialFormValues = {
                 ...this.initialFormValues,
