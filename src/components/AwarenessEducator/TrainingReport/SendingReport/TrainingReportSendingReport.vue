@@ -7,6 +7,7 @@
       :payload="resendPayload"
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -27,6 +28,7 @@
           :form-details="formDetails"
           :training-summary="trainingSummary"
           @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
         />
       </ElTabPane>
       <ElTabPane label="Reminder Emails" name="reminder" id="reminder-emails-content">
@@ -61,6 +63,7 @@
         :form-details="formDetails"
         :training-summary="trainingSummary"
         @on-resend="handleOnResend"
+        @on-selection-text-change="handleSelectionChange"
       />
     </div>
   </div>
@@ -106,6 +109,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       tab: 'enrollment',
       isShowResendDialog: false,
       isResendActionButtonDisabled: false,
@@ -148,6 +152,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     resendItem() {
       this.isResendActionButtonDisabled = true
       AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)

@@ -33,6 +33,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -40,9 +41,19 @@
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue' || campaignDurationExpired()"
+        :disabled="
+          tableOptions.rowActions[0].disabled ||
+          scope.row.status === 'In Queue' ||
+          campaignDurationExpired()
+        "
         :checkIsOwnerProperty="false"
-        :disabledTooltipText="scope.row.status === 'In Queue' ? 'Can not resend when the status is In Queue.' : campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend'"
+        :disabledTooltipText="
+          scope.row.status === 'In Queue'
+            ? 'Can not resend when the status is In Queue.'
+            : campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -333,6 +344,9 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       searchCampaignJobUserSendingReport(this.axiosPayload, this.id, this.instanceGroup)

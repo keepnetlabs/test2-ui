@@ -29,6 +29,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -37,7 +38,11 @@
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
-        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
     </template>
@@ -146,6 +151,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       CallbackService.getCampaignTabUsers(
