@@ -179,7 +179,7 @@ export default {
       const industryAvgLinkClickData = []
       const companyAvgDataSubmitData = []
       const industryAvgDataSubmitData = []
-      let realMaxX = data[0].widgetDatas.reduce((acc, curr) => {
+      let maxX = data[0].widgetDatas.reduce((acc, curr) => {
         const currentMax = curr.values.reduce((innerAcc, innerCurr) => {
           if (innerCurr.name === 'Clicked') {
             return innerAcc + innerCurr.value
@@ -190,7 +190,6 @@ export default {
         }, 0)
         return Math.max(acc, currentMax)
       }, 0)
-      let maxX = realMaxX
       const remainder = Math.floor(maxX / 50)
       if (!remainder) {
         maxX = 100
@@ -231,26 +230,9 @@ export default {
           } else if (item.name === 'SubmittedData') {
             submittedData[iIndex] = { x: 0, y: yLabels[iIndex] }
           }
-          if (item.name === 'AverageClickTime') {
-            companyAvgLinkClickData[iIndex] = { x: 0, y: item.value }
-          } else if (item.name === 'industryAverageClickTime') {
-            industryAvgLinkClickData[iIndex] = { x: 0, y: item.value }
-          } else if (item.name === 'AverageDataSubmitTime') {
-            companyAvgDataSubmitData[iIndex] = { x: 0, y: item.value }
-          } else if (item.name === 'industryAverageDataSubmitTime') {
-            industryAvgDataSubmitData[iIndex] = { x: 0, y: item.value }
-          }
         })
       })
-      /*
-      console.log('clickedData', clickedData)
-      console.log('submittedData', submittedData)
-      console.log('companyAvgLinkClickData', companyAvgLinkClickData)
-      console.log('industryAvgLinkClickData', industryAvgLinkClickData)
-      console.log('companyAvgDataSubmitData', companyAvgDataSubmitData)
-      console.log('industryAvgDataSubmitData', industryAvgDataSubmitData)
-
-       */
+      const stepSize = maxX > 100 ? Math.ceil(maxX / 5 / 2) * 2 : 20
       data[0].widgetDatas.forEach((item) => {
         const yLabelIndex = yLabels.findIndex((v) => v === parseInt(item.dataObject.ActionRange))
         item.values.forEach((inner) => {
@@ -258,17 +240,35 @@ export default {
             clickedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
           } else if (inner.name === 'SubmittedData') {
             submittedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
-          } else if (inner.name === 'AverageClickTime') {
-            companyAvgLinkClickData[yLabelIndex] = { x: realMaxX, y: inner.value }
-          } else if (inner.name === 'industryAverageClickTime') {
-            industryAvgLinkClickData[yLabelIndex] = { x: maxX, y: inner.value }
-          } else if (inner.name === 'AverageDataSubmitTime') {
-            companyAvgDataSubmitData[yLabelIndex] = { x: realMaxX, y: inner.value }
-          } else if (inner.name === 'industryAverageDataSubmitTime') {
-            industryAvgDataSubmitData[yLabelIndex] = { x: maxX, y: inner.value }
           }
         })
       })
+      yLabels.forEach((lIndex, index) => {
+        const multiplier = stepSize * index
+        data[0].widgetDatas[0].values.forEach((item) => {
+          if (item.name === 'AverageClickTime') {
+            companyAvgLinkClickData[index] = { x: multiplier, y: item.value }
+          } else if (item.name === 'industryAverageClickTime') {
+            industryAvgLinkClickData[index] = { x: multiplier, y: item.value }
+            if (index === yLabels.length - 1) {
+              industryAvgLinkClickData[index + 1] = { x: maxX, y: item.value }
+            }
+          } else if (item.name === 'AverageDataSubmitTime') {
+            companyAvgDataSubmitData[index] = { x: multiplier, y: item.value }
+          } else if (item.name === 'industryAverageDataSubmitTime') {
+            industryAvgDataSubmitData[index] = { x: multiplier, y: item.value }
+            if (index === yLabels.length - 1) {
+              industryAvgDataSubmitData[index + 1] = { x: maxX, y: item.value }
+            }
+          }
+        })
+      })
+      console.log('clickedData', clickedData)
+      console.log('submittedData', submittedData)
+      console.log('companyAvgLinkClickData', companyAvgLinkClickData)
+      console.log('industryAvgLinkClickData', industryAvgLinkClickData)
+      console.log('companyAvgDataSubmitData', companyAvgDataSubmitData)
+      console.log('industryAvgDataSubmitData', industryAvgDataSubmitData)
       yLabels = yLabels.reverse()
       const companyAvg = new Image()
       companyAvg.src = require('../../../assets/img/company-avg.svg')
@@ -327,7 +327,7 @@ export default {
               ticks: {
                 min: 0,
                 max: maxX,
-                stepSize: maxX > 100 ? Math.ceil(maxX / 5 / 2) * 2 : 20,
+                stepSize,
                 fontFamily: 'Open Sans, sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
                 fontStyle: '600',
@@ -461,15 +461,19 @@ export default {
                   datasetLabel = 'Users Submitted Data'
                 } else if (datasetLabel === 'Company Avg Link Click') {
                   datasetLabel = 'Avg Time to Link Clicked'
+                  value = dataValue.y
                   value += 's'
                 } else if (datasetLabel === 'Industry Avg Link Click') {
                   datasetLabel = 'Industry Avg Time to Link Clicked'
+                  value = dataValue.y
                   value += 's'
                 } else if (datasetLabel === 'Company Avg Data Submit') {
                   datasetLabel = 'Avg Time to Submitted Data'
+                  value = dataValue.y
                   value += 's'
                 } else if (datasetLabel === 'Industry Avg Data Submit') {
                   datasetLabel = 'Industry Avg Time to Submitted Data'
+                  value = dataValue.y
                   value += 's'
                 }
                 let backgroundColor = dataset.backgroundColor
@@ -590,7 +594,7 @@ export default {
             data: industryAvgDataSubmitData,
             backgroundColor: '#1173C1',
             borderColor: '#1173C1',
-            pointRadius: 10,
+            pointRadius: 2,
             borderDash: [10, 10],
             borderWidth: 2,
             fill: false,
