@@ -167,7 +167,6 @@ export default {
         this.isEmpty = true
         return
       }
-      console.log('data[0].widgetDatas', data[0].widgetDatas)
       let yLabels = data[0].widgetDatas.reduce((acc, curr) => {
         acc.push(parseInt(curr.dataObject.ActionRange))
         return acc
@@ -223,7 +222,6 @@ export default {
         }
       })
       addedYLabelsIndex.forEach((iIndex) => {
-        console.log('iIndex', iIndex)
         data[0].widgetDatas[0].values.forEach((item) => {
           if (item.name === 'Clicked') {
             clickedData[iIndex] = { x: 0, y: yLabels[iIndex] }
@@ -263,12 +261,6 @@ export default {
           }
         })
       })
-      console.log('clickedData', clickedData)
-      console.log('submittedData', submittedData)
-      console.log('companyAvgLinkClickData', companyAvgLinkClickData)
-      console.log('industryAvgLinkClickData', industryAvgLinkClickData)
-      console.log('companyAvgDataSubmitData', companyAvgDataSubmitData)
-      console.log('industryAvgDataSubmitData', industryAvgDataSubmitData)
       yLabels = yLabels.reverse()
       const companyAvg = new Image()
       companyAvg.src = require('../../../assets/img/company-avg.svg')
@@ -520,7 +512,33 @@ export default {
         },
         plugins: {
           datalabels: {
-            display: false
+            display: true,
+            align: 'right',
+            anchor: 'left',
+            color: '#000',
+            formatter: function (value, context) {
+              console.log('context', context)
+              console.log('value', value)
+              if (
+                context.dataset.label === 'Company Avg Link Click' &&
+                context.dataIndex === companyAvgLinkClickData.length - 1
+              ) {
+                return 'Users are phished more quickly \n than industry avg'
+              } else if (
+                context.dataset.label === 'Company Avg Data Submit' &&
+                context.dataIndex === companyAvgDataSubmitData.length - 1
+              ) {
+                return 'Users are phished more quickly \n than industry avg'
+              }
+              return ''
+            },
+            font: {
+              size: 9,
+              family: 'Open Sans, sans-serif',
+              weight: 'normal'
+            },
+            borderRadius: 4,
+            padding: 6
           }
         }
       }
