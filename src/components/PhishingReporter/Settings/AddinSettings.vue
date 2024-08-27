@@ -849,11 +849,6 @@ export default {
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
       this.formValues.dialogBoxSettings = dialogBoxSettings
-      this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => {
-        const deleteEmailsOption =
-          setting.isDeleteEmailBeforeAnalysis && setting.analysisEmailDeleteMessage ? false : true
-        return { ...setting, isDeleteWithoutConfirmation: deleteEmailsOption }
-      })
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
       })
