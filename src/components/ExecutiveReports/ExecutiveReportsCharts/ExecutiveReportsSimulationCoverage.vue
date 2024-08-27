@@ -227,7 +227,7 @@ export default {
                     splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
                     simulatedUsers
                   ],
-                  customMarginLeft: 8
+                  customMarginLeft: 7
                 },
                 {
                   text: Array.from(
