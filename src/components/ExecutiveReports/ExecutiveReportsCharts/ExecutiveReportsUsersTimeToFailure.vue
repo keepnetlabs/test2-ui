@@ -167,12 +167,109 @@ export default {
         this.isEmpty = true
         return
       }
-      const { values } = data[0].widgetDatas[0]
-      const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
-      const simulated = values.find((data) => data.name === 'CountSimulated')?.value
-      const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
-        ?.value
-      const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
+      console.log('data[0].widgetDatas', data[0].widgetDatas)
+      let yLabels = data[0].widgetDatas.reduce((acc, curr) => {
+        acc.push(parseInt(curr.dataObject.ActionRange))
+        return acc
+      }, [])
+      const addedYLabelsIndex = []
+      const clickedData = []
+      const submittedData = []
+      const companyAvgLinkClickData = []
+      const industryAvgLinkClickData = []
+      const companyAvgDataSubmitData = []
+      const industryAvgDataSubmitData = []
+      let realMaxX = data[0].widgetDatas.reduce((acc, curr) => {
+        const currentMax = curr.values.reduce((innerAcc, innerCurr) => {
+          if (innerCurr.name === 'Clicked') {
+            return innerAcc + innerCurr.value
+          } else if (innerCurr.name === 'SubmittedData') {
+            return innerAcc + innerCurr.value
+          }
+          return innerAcc
+        }, 0)
+        return Math.max(acc, currentMax)
+      }, 0)
+      let maxX = realMaxX
+      const remainder = Math.floor(maxX / 50)
+      if (!remainder) {
+        maxX = 100
+      } else {
+        maxX = remainder * 50 + 50
+      }
+      const addYLabelItem = (item) => {
+        const index = yLabels.findIndex((v) => v === item.value)
+        if (index !== -1) return
+        let newIndex = 0
+        for (let i = 0; i < yLabels.length; i++) {
+          if (yLabels[i] < item.value) {
+            newIndex = i + 1
+          }
+        }
+        const addedIndex = addedYLabelsIndex.push(newIndex)
+        for (let i = 0; i < addedIndex - 1; i++) {
+          addedYLabelsIndex[i] += 1
+        }
+        yLabels.splice(newIndex, 0, item.value)
+      }
+      data[0].widgetDatas[0].values.forEach((item) => {
+        if (item.name === 'AverageClickTime') {
+          addYLabelItem(item)
+        } else if (item.name === 'industryAverageClickTime') {
+          addYLabelItem(item)
+        } else if (item.name === 'AverageDataSubmitTime') {
+          addYLabelItem(item)
+        } else if (item.name === 'industryAverageDataSubmitTime') {
+          addYLabelItem(item)
+        }
+      })
+      addedYLabelsIndex.forEach((iIndex) => {
+        console.log('iIndex', iIndex)
+        data[0].widgetDatas[0].values.forEach((item) => {
+          if (item.name === 'Clicked') {
+            clickedData[iIndex] = { x: 0, y: yLabels[iIndex] }
+          } else if (item.name === 'SubmittedData') {
+            submittedData[iIndex] = { x: 0, y: yLabels[iIndex] }
+          }
+          if (item.name === 'AverageClickTime') {
+            companyAvgLinkClickData[iIndex] = { x: 0, y: item.value }
+          } else if (item.name === 'industryAverageClickTime') {
+            industryAvgLinkClickData[iIndex] = { x: 0, y: item.value }
+          } else if (item.name === 'AverageDataSubmitTime') {
+            companyAvgDataSubmitData[iIndex] = { x: 0, y: item.value }
+          } else if (item.name === 'industryAverageDataSubmitTime') {
+            industryAvgDataSubmitData[iIndex] = { x: 0, y: item.value }
+          }
+        })
+      })
+      /*
+      console.log('clickedData', clickedData)
+      console.log('submittedData', submittedData)
+      console.log('companyAvgLinkClickData', companyAvgLinkClickData)
+      console.log('industryAvgLinkClickData', industryAvgLinkClickData)
+      console.log('companyAvgDataSubmitData', companyAvgDataSubmitData)
+      console.log('industryAvgDataSubmitData', industryAvgDataSubmitData)
+
+       */
+      data[0].widgetDatas.forEach((item) => {
+        const yLabelIndex = yLabels.findIndex((v) => v === parseInt(item.dataObject.ActionRange))
+        item.values.forEach((inner) => {
+          if (inner.name === 'Clicked') {
+            clickedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+          } else if (inner.name === 'SubmittedData') {
+            submittedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+          } else if (inner.name === 'AverageClickTime') {
+            companyAvgLinkClickData[yLabelIndex] = { x: realMaxX, y: inner.value }
+          } else if (inner.name === 'industryAverageClickTime') {
+            industryAvgLinkClickData[yLabelIndex] = { x: maxX, y: inner.value }
+          } else if (inner.name === 'AverageDataSubmitTime') {
+            companyAvgDataSubmitData[yLabelIndex] = { x: realMaxX, y: inner.value }
+          } else if (inner.name === 'industryAverageDataSubmitTime') {
+            industryAvgDataSubmitData[yLabelIndex] = { x: maxX, y: inner.value }
+          }
+        })
+      })
+      yLabels = yLabels.reverse()
       const companyAvg = new Image()
       companyAvg.src = require('../../../assets/img/company-avg.svg')
       const industryAvg = new Image()
@@ -229,8 +326,8 @@ export default {
               },
               ticks: {
                 min: 0,
-                max: 600,
-                stepSize: 100,
+                max: maxX,
+                stepSize: maxX > 100 ? Math.ceil(maxX / 5 / 2) * 2 : 20,
                 fontFamily: 'Open Sans, sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
                 fontStyle: '600',
@@ -356,21 +453,25 @@ export default {
               const addRow = (datasetIndex, addPaddingBottom = true) => {
                 const dataset = this._chart.data.datasets[datasetIndex]
                 let datasetLabel = dataset.label
+                let dataValue = dataset.data[index]
+                let value = dataValue.x
                 if (datasetLabel === 'Clicked') {
                   datasetLabel = 'Users Clicked Link'
                 } else if (datasetLabel === 'Submitted Data') {
                   datasetLabel = 'Users Submitted Data'
                 } else if (datasetLabel === 'Company Avg Link Click') {
                   datasetLabel = 'Avg Time to Link Clicked'
+                  value += 's'
                 } else if (datasetLabel === 'Industry Avg Link Click') {
                   datasetLabel = 'Industry Avg Time to Link Clicked'
+                  value += 's'
                 } else if (datasetLabel === 'Company Avg Data Submit') {
                   datasetLabel = 'Avg Time to Submitted Data'
+                  value += 's'
                 } else if (datasetLabel === 'Industry Avg Data Submit') {
                   datasetLabel = 'Industry Avg Time to Submitted Data'
+                  value += 's'
                 }
-
-                let dataValue = dataset.data[index]
                 let backgroundColor = dataset.backgroundColor
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
@@ -378,23 +479,24 @@ export default {
                     <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
                     ${datasetLabel}:&nbsp;
                 </td>
-                <td style="font-weight: 600">${dataValue.x || 0}</td>
+                <td style="font-weight: 600">${value || 0}</td>
             `
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
                 if (addPaddingBottom) tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
+                return value
               }
               if (datasetIndex === 0 || datasetIndex === 1) {
-                addRow(0)
-                addRow(1)
+                const firstDataIndexVal = addRow(0)
+                const secondDataIndexVal = addRow(1)
                 let lastTr = document.createElement('tr')
                 lastTr.innerHTML = `
                 <td>
 
-                    Phishing Report Rate:
+                    Total Number of Users:
                 </td>
-                <td style="font-weight:600;">20</td>
+                <td style="font-weight:600;">${firstDataIndexVal + secondDataIndexVal}</td>
             `
                 lastTr.style.borderTop = '1px solid #E0E0E0'
                 lastTr.style.display = 'flex'
@@ -418,21 +520,12 @@ export default {
           }
         }
       }
-      const yLabels = [60, 50, 40, 30, 20, 10, 0]
       this.chartData = {
         yLabels,
         datasets: [
           {
             label: 'Clicked',
-            data: [
-              { x: 0, y: 0 },
-              { x: 50, y: 10 },
-              { x: 80, y: 20 },
-              { x: 250, y: 30 },
-              { x: 170, y: 40 },
-              { x: 170, y: 50 },
-              { x: 400, y: 60 }
-            ],
+            data: clickedData,
             barThickness: 20,
             backgroundColor: '#F56C6C',
             borderWidth: 1,
@@ -441,15 +534,7 @@ export default {
           },
           {
             label: 'Submitted Data',
-            data: [
-              { x: 50, y: 0 },
-              { x: 50, y: 10 },
-              { x: 80, y: 20 },
-              { x: 250, y: 30 },
-              { x: 170, y: 40 },
-              { x: 170, y: 50 },
-              { x: 40, y: 60 }
-            ],
+            data: submittedData,
             barThickness: 20,
             backgroundColor: '#B83A3A',
             borderWidth: 1,
@@ -460,14 +545,7 @@ export default {
             label: 'Company Avg Link Click',
             type: 'line',
             id: 'avg-link-click',
-            data: [
-              { x: 0, y: 20 },
-              { x: 100, y: 20 },
-              { x: 200, y: 20 },
-              { x: 300, y: 20 },
-              { x: 400, y: 20 },
-              { x: 500, y: 20 }
-            ],
+            data: companyAvgLinkClickData,
             backgroundColor: '#1173C1',
             borderColor: '#1173C1',
             fill: false,
@@ -481,14 +559,7 @@ export default {
             label: 'Company Avg Data Submit',
             type: 'line',
             id: 'avg-data-submit',
-            data: [
-              { x: 0, y: 50 },
-              { x: 100, y: 50 },
-              { x: 200, y: 50 },
-              { x: 300, y: 50 },
-              { x: 400, y: 50 },
-              { x: 500, y: 50 }
-            ],
+            data: companyAvgDataSubmitData,
             backgroundColor: '#D1AD0C',
             borderColor: '#D1AD0C',
             fill: false,
@@ -501,15 +572,7 @@ export default {
             label: 'Industry Avg Link Click',
             type: 'line',
             id: 'avg-link-click',
-            data: [
-              { x: 0, y: 40 },
-              { x: 100, y: 40 },
-              { x: 200, y: 40 },
-              { x: 300, y: 40 },
-              { x: 400, y: 40 },
-              { x: 500, y: 40 },
-              { x: 600, y: 40 }
-            ],
+            data: industryAvgLinkClickData,
             backgroundColor: '#D1AD0C',
             borderColor: '#D1AD0C',
             pointRadius: 2,
@@ -524,18 +587,10 @@ export default {
             label: 'Industry Avg Data Submit',
             type: 'line',
             id: 'avg-data-submit',
-            data: [
-              { x: 0, y: 10 },
-              { x: 100, y: 10 },
-              { x: 200, y: 10 },
-              { x: 300, y: 10 },
-              { x: 400, y: 10 },
-              { x: 500, y: 10 },
-              { x: 600, y: 10 }
-            ],
+            data: industryAvgDataSubmitData,
             backgroundColor: '#1173C1',
             borderColor: '#1173C1',
-            pointRadius: 2,
+            pointRadius: 10,
             borderDash: [10, 10],
             borderWidth: 2,
             fill: false,

@@ -629,6 +629,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        ResponseTimesToPhishingActionsWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 6,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: "Users' Time to Failure",
+          key: 'ResponseTimesToPhishingActionsWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         TotalReportedSuspicious: {
           x: 0,
           y: 0,
@@ -1280,6 +1301,8 @@ export default {
           return ExecutiveReportPhishingAndQuickResponseTime
         case 'PhishingDwellTimeDistributionWidget':
           return ExecutiveReportsPhishingDwellTimeDistribution
+        case 'ResponseTimesToPhishingActionsWidget':
+          return ExecutiveReportsUsersTimeToFailure
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
