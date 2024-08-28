@@ -168,7 +168,7 @@
                   color="#2196f3"
                   label="Enable styled HTML format"
                   @click.stop
-                  @change="$emit('update:isPlainText', $event)"
+                  @change="$emit('update:isPlainText', !!$event)"
                 />
               </div>
               <div class="email-template__ai-assistant-footer-right">
