@@ -1722,10 +1722,10 @@ export default {
       this.msgEmlFile = e
       uploadEmlOrMsg(this.msgEmlFile, (e) => {
         this.onUploadProgress = e
-      }).then((response) => {
+      }).then(async (response) => {
         this.selectedEmail = response.data.data.from
         this.uploadRespond = response.data.data
-        const sanitizedInitialBody = useHTMLSanitizer(response.data.data.initialBody)
+        const sanitizedInitialBody = await useHTMLSanitizer(response.data.data.initialBody)
         this.uploadRespond.initialBody = sanitizedInitialBody
         this.uploadRespond.visibleBody = sanitizedInitialBody
         this.uploadRespond.editableBody = sanitizedInitialBody
@@ -1737,14 +1737,14 @@ export default {
       if (this.editItem) {
         this.isIncidentPreviewLoading = true
         getCommunityPostEditableData(this.editItem.communityPostResourceId)
-          .then((response) => {
+          .then(async (response) => {
             const { data } = response
             this.uploadRespond = data.data.communityPostEmail
             const previewedBody =
               data.data.communityPostEmail.editableBody ||
               data.data.communityPostEmail.visibleBody ||
               data.data.communityPostEmail.initialBody
-            this.uploadRespond.visibleBodyForPreview = useHTMLSanitizer(previewedBody)
+            this.uploadRespond.visibleBodyForPreview = await useHTMLSanitizer(previewedBody)
             if (this.editItem) {
               this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
               this.uploadRespond.Title = this.editItem.title
@@ -1781,10 +1781,10 @@ export default {
       } else if (selectedItem?.resourceId) {
         this.isIncidentPreviewLoading = true
         getSelectedEmailPreview(selectedItem.resourceId)
-          .then((response) => {
+          .then(async (response) => {
             const { data } = response
             this.uploadRespond = data.data
-            const sanitizedInitialBody = useHTMLSanitizer(response.data.data.initialBody)
+            const sanitizedInitialBody = await useHTMLSanitizer(response.data.data.initialBody)
             this.uploadRespond.initialBody = sanitizedInitialBody
             this.uploadRespond.visibleBody = sanitizedInitialBody
             this.uploadRespond.editableBody = sanitizedInitialBody

@@ -1,7 +1,8 @@
-import sanitizeHtml from 'sanitize-html'
-export default function (html) {
-  return sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'center']),
+export default async function (html) {
+  const sanitizeHtml = await import('sanitize-html')
+
+  return sanitizeHtml.default(html, {
+    allowedTags: sanitizeHtml.default.defaults.allowedTags.concat(['img', 'center']),
     allowedAttributes: {
       '*': ['style', 'align', 'width', 'height', 'valign', 'bgcolor'],
       img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
