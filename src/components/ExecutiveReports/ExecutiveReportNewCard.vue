@@ -633,7 +633,7 @@ export default {
           x: 0,
           y: 0,
           w: 12,
-          minW: 6,
+          minW: 12,
           defaultW: 12,
           midW: 12,
           h: 6,

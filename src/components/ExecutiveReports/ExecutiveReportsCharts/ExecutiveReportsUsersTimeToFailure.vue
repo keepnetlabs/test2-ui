@@ -245,14 +245,18 @@ export default {
         const multiplier = stepSize * index
         data[0].widgetDatas[0].values.forEach((item) => {
           if (item.name === 'AverageClickTime') {
-            companyAvgLinkClickData[index] = { x: multiplier, y: item.value }
+            if (index < yLabels.length - 1) {
+              companyAvgLinkClickData[index] = { x: multiplier, y: item.value }
+            }
           } else if (item.name === 'industryAverageClickTime') {
             industryAvgLinkClickData[index] = { x: multiplier, y: item.value }
             if (index === yLabels.length - 1) {
               industryAvgLinkClickData[index + 1] = { x: maxX, y: item.value }
             }
           } else if (item.name === 'AverageDataSubmitTime') {
-            companyAvgDataSubmitData[index] = { x: multiplier, y: item.value }
+            if (index < yLabels.length - 1) {
+              companyAvgDataSubmitData[index] = { x: multiplier, y: item.value }
+            }
           } else if (item.name === 'industryAverageDataSubmitTime') {
             industryAvgDataSubmitData[index] = { x: multiplier, y: item.value }
             if (index === yLabels.length - 1) {
@@ -273,7 +277,7 @@ export default {
         padding: 24,
         layout: {
           padding: {
-            right: 0,
+            right: 20,
             left: 0
           }
         },
@@ -288,7 +292,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'Time to Respond (Seconds)',
+                labelString: 'Time to Respond (Minutes)',
                 fontColor: '#383B41'
               },
               ticks: {
@@ -440,7 +444,7 @@ export default {
               const index = tooltipModel.dataPoints[0].index
               const activeIndex = yLabels.length - 1 - index
               const yValue = yLabels[activeIndex]
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${yValue}th second</th>`
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${yValue}th minute</th>`
               if (datasetIndex === 0 || datasetIndex === 1) tableRoot.appendChild(titleRow)
               const addRow = (datasetIndex, addPaddingBottom = true) => {
                 const dataset = this._chart.data.datasets[datasetIndex]
@@ -454,19 +458,19 @@ export default {
                 } else if (datasetLabel === 'Company Avg Link Click') {
                   datasetLabel = 'Avg Time to Link Clicked'
                   value = dataValue.y
-                  value += 's'
+                  value += 'm'
                 } else if (datasetLabel === 'Industry Avg Link Click') {
                   datasetLabel = 'Industry Avg Time to Link Clicked'
                   value = dataValue.y
-                  value += 's'
+                  value += 'm'
                 } else if (datasetLabel === 'Company Avg Data Submit') {
                   datasetLabel = 'Avg Time to Submitted Data'
                   value = dataValue.y
-                  value += 's'
+                  value += 'm'
                 } else if (datasetLabel === 'Industry Avg Data Submit') {
                   datasetLabel = 'Industry Avg Time to Submitted Data'
                   value = dataValue.y
-                  value += 's'
+                  value += 'm'
                 }
                 let backgroundColor = dataset.backgroundColor
                 let tr = document.createElement('tr')
@@ -523,12 +527,18 @@ export default {
                 context.dataset.label === 'Company Avg Link Click' &&
                 context.dataIndex === companyAvgLinkClickData.length - 1
               ) {
-                return 'Users are phished more quickly \n than industry avg'
+                if (value.y === industryAvgLinkClickData[0].y) {
+                  return 'Users are phished more quickly \n than industry avg'
+                }
+                return 'Users are phished more quickly than industry avg'
               } else if (
                 context.dataset.label === 'Company Avg Data Submit' &&
                 context.dataIndex === companyAvgDataSubmitData.length - 1
               ) {
-                return 'Users are phished more quickly \n than industry avg'
+                if (value.y === industryAvgDataSubmitData[0].y) {
+                  return 'Users are phished more quickly \n than industry avg'
+                }
+                return 'Users are phished more quickly than industry avg'
               }
               return ''
             },
