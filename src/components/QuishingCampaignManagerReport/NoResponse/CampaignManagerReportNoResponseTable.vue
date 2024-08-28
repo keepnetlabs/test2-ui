@@ -29,7 +29,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
   >
-  <template #datatable-row-actions="{ scope }">
+    <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         v-if="!getQuishingTypePrintOut()"
         :icon="tableOptions.rowActions[0].icon"
@@ -37,10 +37,14 @@
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
-        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
-      </template>
+    </template>
   </DataTable>
 </template>
 
@@ -77,26 +81,18 @@ export default {
     }
   },
   inject: {
-    getQuishingTypePrintOut : {
+    getQuishingTypePrintOut: {
       type: Function
     },
     campaignDurationExpired: {
       type: Function
-    },
+    }
   },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
-    const columns = [
-      COLUMNS.FIRST_NAME,
-      COLUMNS.LAST_NAME,
-      COLUMNS.EMAIL,
-      COLUMNS.DEPARTMENT,
-      COLUMNS.PHISHING_SCENARIO_NAME
-    ]
-    if (isQuishingTypePrintout) {
-      columns.push(COLUMNS.EMAIL_SEND_DATE_PRINTOUT)
-    } else {
+    const columns = [COLUMNS.FIRST_NAME, COLUMNS.LAST_NAME, COLUMNS.EMAIL, COLUMNS.DEPARTMENT]
+    if (!isQuishingTypePrintout) {
       rowActions.push({
         name: labels.Resend,
         id: 'btn-resend--row-actions-campaign-manager-report-no-response',
@@ -104,7 +100,9 @@ export default {
         action: 'on-resend',
         disabled: false
       })
-      columns.push(COLUMNS.EMAIL_SEND_DATE)
+      columns.push(COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.EMAIL_SEND_DATE)
+    } else {
+      columns.push({ ...COLUMNS.PHISHING_SCENARIO_NAME, fixed: 'right' })
     }
     return {
       CONSTANTS: {
