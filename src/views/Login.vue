@@ -313,10 +313,7 @@
                       <div
                         id="text--login-check-your-email-i-didnt-receive-email"
                         class="back-to-reset-password"
-                        @click="
-                          pageNumber = 2
-                          clearError()
-                        "
+                        @click="handleDidntReceiveEmailClick"
                       >
                         I didn’t recieve the email
                         <v-icon right dark class="pr-2">mdi-arrow-right</v-icon>
@@ -885,6 +882,11 @@ export default {
         `/threat-sharing?CommunityRequestId=${this.$route.query.CommunityRequestId}`
       )
     },
+    handleDidntReceiveEmailClick() {
+      this.pageNumber = 2
+      this.captchaVerified = false
+      this.clearError()
+    },
     handleContinueClick() {
       if (this.showPasswordField) {
         this.onLoginClicked()
@@ -1131,6 +1133,7 @@ export default {
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
       this.showPasswordField = false
+      this.captchaVerified = false
       if (this.pageNumber === 1) {
         this.$nextTick(() => {
           if (this.$refs && this.$refs.email) {
@@ -1240,7 +1243,7 @@ export default {
     },
     onResetClick() {
       if (!this.$refs.resetEmail.validate() || !this.captchaVerified) {
-        this.isShowResetFormError = true
+        if (!this.captchaVerified) this.isShowResetFormError = true
         return
       }
       this.isResentLinkApiCalling = true
