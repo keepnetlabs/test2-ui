@@ -836,7 +836,8 @@ export default {
           const template = response?.data?.data || {}
           this.generatedTemplates.push({
             text: this.aiTemplateText,
-            content: template
+            content: template,
+            languageTypeResourceId: this.languageTypeResourceId
           })
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', template)
