@@ -160,7 +160,7 @@
                 </VForm>
                 <VCheckbox
                   v-if="templateType !== 'landing'"
-                  v-model="isPlainText"
+                  :value="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
                   :style="isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''"
                   hide-details
@@ -168,6 +168,7 @@
                   color="#2196f3"
                   label="Enable styled HTML format"
                   @click.stop
+                  @change="$emit('update:isPlainText', $event)"
                 />
               </div>
               <div class="email-template__ai-assistant-footer-right">
@@ -524,7 +525,8 @@ export default {
     'methodTypeId',
     'prompt',
     'languageOptions',
-    'selectedMethod'
+    'selectedMethod',
+    'isPlainText'
   ],
   data() {
     return {
@@ -592,7 +594,6 @@ export default {
       previewTemplate: null,
       aiTemplateText: '',
       initialTemplate: null,
-      isPlainText: false,
       labels,
       showGrapesModal: false,
       grapeJsKey: `${createRandomCryptStringNumber()}-key`,
@@ -792,7 +793,7 @@ export default {
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
         methodTypeId: parseInt(this.methodTypeId),
-        isPlainText: this.isPlainText
+        isPlainText: !this.isPlainText
       }
       this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
@@ -850,7 +851,7 @@ export default {
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
-      this.isPlainText = this.generatedTemplates[index].isPlainText
+      this.$emit('update:isPlainText', this.generatedTemplates[index].isPlainText)
       this.$emit(
         'update:languageTypeResourceId',
         this.generatedTemplates[index].languageTypeResourceId
