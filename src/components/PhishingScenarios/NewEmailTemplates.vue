@@ -177,6 +177,7 @@
                         :prompt.sync="formValues.prompt"
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
+                        :is-plain-text.sync="isPlainText"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -273,6 +274,7 @@ export default {
       },
       isAttachmentError: false,
       isAssistedByAI: false,
+      isPlainText: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -420,6 +422,7 @@ export default {
         }
         this.formValues.name = `${this.formValues.name}`
         this.isAssistedByAI = this?.formValues?.isAssistedByAI
+        this.isPlainText = !this?.formValues?.isPlainText
         this.$set(this.formValues, 'aiAssistant', this?.formValues?.isAssistedByAI || false)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
@@ -614,7 +617,8 @@ export default {
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         ),
-        isAssistedByAI: this.isAssistedByAI
+        isAssistedByAI: this.isAssistedByAI,
+        isPlainText: this.isPlainText
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
