@@ -597,7 +597,6 @@ export default {
         return
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
-
       let payload = {
         ...this.formValues,
         isDuplicated: this.isDuplicate,
@@ -618,7 +617,7 @@ export default {
           this.availableForRequests
         ),
         isAssistedByAI: this.isAssistedByAI,
-        isPlainText: this.isPlainText
+        isPlainText: !this.isPlainText
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
