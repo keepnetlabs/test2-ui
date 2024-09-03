@@ -109,7 +109,7 @@ export default {
     },
     getRules() {
       if (['from', 'to', 'cc', 'bcc'].includes(this.query.operand))
-        return this.rule.textFieldValidations.email
+        return this.rule.textFieldValidations.emailOrDomain
       return this.rule.textFieldValidations[this.query.operand] || []
     },
     getErrorMessages() {
@@ -139,7 +139,10 @@ export default {
       this.checkSingularity()
     },
     checkSingularity() {
-      this.handleInputSingularityChange({ operand: this.query.operand, value: this.query.value })
+      this.handleInputSingularityChange({
+        operand: this.query.operand,
+        value: this.query.value
+      })
     }
   }
 }
