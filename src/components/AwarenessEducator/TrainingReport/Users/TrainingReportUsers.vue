@@ -7,6 +7,7 @@
       :payload="resendPayload"
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -51,6 +52,7 @@
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template v-if="canRenderExamStatusFilter" #addUsers>
         <v-menu
@@ -329,6 +331,7 @@ export default {
       })
     }
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -542,6 +545,9 @@ export default {
     if (!this.canRenderExamStatusFilter) this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleSearchChange(searchFilter = {}) {
       const customFieldNames = this.customFields?.map?.((field) => field.name)
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [

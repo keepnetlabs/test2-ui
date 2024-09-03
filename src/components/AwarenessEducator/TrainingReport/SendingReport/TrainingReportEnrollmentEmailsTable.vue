@@ -34,6 +34,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-details="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
@@ -418,6 +419,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     handleSearchChange(searchFilter = {}) {
       const customFieldNames = this.customFields?.map?.((field) => field.name)
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [

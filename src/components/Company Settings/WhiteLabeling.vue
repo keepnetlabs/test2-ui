@@ -321,7 +321,7 @@
           class="white-labeling__footer-reset-to-default"
           text
           color="#2196f3"
-          :disabled="!getWhiteLabelingDeletePermissions"
+          :disabled="!getWhiteLabelingUpdatePermissions || isCompanyAdmin"
           @click="toggleWhiteLabelingDialog"
         >
           RESET TO DEFAULT</v-btn

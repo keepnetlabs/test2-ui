@@ -834,9 +834,7 @@
               <div class="empty-table" v-if="!loading">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
-                    <h2>
-                      Sorry, that search and filter criteria has no results.
-                    </h2>
+                    <h2>Sorry, that search and filter criteria has no results.</h2>
                     <p>Please try adjusting your search or filter</p>
                   </slot>
                 </div>
@@ -1552,6 +1550,13 @@ export default {
     }
   },
   watch: {
+    getSelectionText() {
+      const selectionCount =
+        this.isServerSide && this.isServerSideSelection
+          ? this.serverSideSelectionCount
+          : this.multipleSelection.length
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     table(table, oldTable) {
       this.columnStandardisation(this.columns)
       this.initialData = this.isServerSide ? table : [...table]

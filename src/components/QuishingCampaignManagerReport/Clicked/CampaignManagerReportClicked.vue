@@ -5,6 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -28,6 +29,7 @@
       :is-show-sandbox-from-parent.sync="isShowSandboxFromParent"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -65,6 +67,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       labels,
       selectedRow: {},
       isShowDetailDialog: false,
@@ -72,6 +75,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(payload) {
       this.resendPayload = payload
       this.toggleIsShowResendDialog()
