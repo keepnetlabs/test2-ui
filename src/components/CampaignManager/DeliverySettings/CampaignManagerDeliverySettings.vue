@@ -127,7 +127,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
+import { getSmtpSettings, testSmtpConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import {
   calculateSendingInfo,
@@ -549,7 +549,6 @@ export default {
         if (this.type === SCENARIO_TYPES.QUISHING)
           template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
         const payload = {
-          ...smtpData,
           to: this.$store.state.auth.user.email,
           from: fromAddress,
           fromName,
@@ -557,7 +556,7 @@ export default {
         }
         if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
         try {
-          await testConnection(payload)
+          await testSmtpConnection(payload)
           this.isTestMailSend = true
           this.isShowSmtpInputError = false
           this.$nextTick(() => {

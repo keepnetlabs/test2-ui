@@ -135,6 +135,7 @@
               :is-edit="isEdit"
               :isDuplicate="isDuplicate"
               :type="SCENARIO_TYPES.CALLBACK"
+              :phishing-type-id="4"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>

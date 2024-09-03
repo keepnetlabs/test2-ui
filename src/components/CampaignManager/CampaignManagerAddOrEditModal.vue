@@ -133,6 +133,7 @@
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
               :isDuplicate="isDuplicate"
+              :phishing-type-id="1"
               :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />

@@ -35,8 +35,13 @@ export function searchAvailableFor(payload = {}) {
   return testRequest.post('/available-for/search', payload)
 }
 
-export function testConnection(payload = {}) {
-  return testRequest.post('/companies/smtp-settings/test', payload, {
+export function testSmtpConnection(payload = {}, resourceId = '') {
+  return testRequest.post(`/companies/smtp-settings/${resourceId}/test`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export function testConnectionWhenSmtpCreated(payload = {}) {
+  return testRequest.post(`/companies/smtp-settings/test`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
