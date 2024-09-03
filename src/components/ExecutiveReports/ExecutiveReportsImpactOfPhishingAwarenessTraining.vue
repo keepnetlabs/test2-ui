@@ -231,6 +231,7 @@ export default {
         scales: {
           xAxes: [
             {
+              offset: true,
               scaleLabel: {
                 display: true,
                 labelString: 'Month/Year',

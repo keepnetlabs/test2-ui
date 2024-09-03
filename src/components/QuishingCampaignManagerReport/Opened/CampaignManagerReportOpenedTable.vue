@@ -30,6 +30,7 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
     @on-activity="handleActivity"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -39,7 +40,11 @@
         :text="tableOptions.rowActions[1].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
-        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -100,12 +105,12 @@ export default {
     }
   },
   inject: {
-    getQuishingTypePrintOut : {
+    getQuishingTypePrintOut: {
       type: Function
     },
     campaignDurationExpired: {
       type: Function
-    },
+    }
   },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
@@ -138,7 +143,7 @@ export default {
           icon: '$custom-resend',
           action: 'on-resend',
           disabled: false
-        },
+        }
       )
     }
     columns.push(Object.assign({}, COLUMNS.ACTIVITY_TYPE))
@@ -199,6 +204,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2

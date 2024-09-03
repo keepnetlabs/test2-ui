@@ -5,6 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -50,6 +51,7 @@
       @refreshAction="callForData"
       @on-details="handleDetails"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-progress__progress-column">
@@ -101,6 +103,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -283,6 +286,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)

@@ -29,6 +29,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -38,7 +39,11 @@
         :text="tableOptions.rowActions[1].name"
         :scope="scope"
         :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
-        :disabledTooltipText="campaignDurationExpired() ? 'You cannot resend this campaign because its lifetime has expired' : 'Resend' "
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -86,46 +91,44 @@ export default {
     }
   },
   inject: {
-    getQuishingTypePrintOut : {
+    getQuishingTypePrintOut: {
       type: Function
     },
     campaignDurationExpired: {
       type: Function
-    },
+    }
   },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
     if (isQuishingTypePrintout) {
-      rowActions.push(
-        {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
-            ]
-          }
-      )
+      rowActions.push({
+        name: labels.Details,
+        id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
+        icon: '$custom-details',
+        action: 'on-detail',
+        disabled: !this.$store.getters[
+          'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+        ]
+      })
     } else {
       rowActions.push(
         {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters[
-              'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
-            ]
-          },
-          {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-submitted-mfa-data',
-            icon: '$custom-resend',
-            action: 'on-resend',
-            disabled: false
-          }
+          name: labels.Details,
+          id: 'btn-details--row-actions-campaign-manager-report-submitted-mfa-data',
+          icon: '$custom-details',
+          action: 'on-detail',
+          disabled: !this.$store.getters[
+            'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+          ]
+        },
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-submitted-mfa-data',
+          icon: '$custom-resend',
+          action: 'on-resend',
+          disabled: false
+        }
       )
     }
     return {
@@ -184,6 +187,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       QuishingService.searchCampaignJobUserEmailSubmittedMfa(

@@ -8,6 +8,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -29,6 +30,7 @@
       :custom-fields="customFields"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -67,12 +69,16 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       labels,
       isShowDetailDialog: false,
       selectedRow: null
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(payload) {
       this.resendPayload = payload
       this.toggleIsShowResendDialog()

@@ -4,6 +4,8 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -18,6 +20,7 @@
       :instance-group="instanceGroup"
       :custom-fields="customFields"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -53,7 +56,13 @@ export default {
   },
   data() {
     return {
-      labels
+      labels,
+      resendItemCount: 0
+    }
+  },
+  methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
     }
   }
 }

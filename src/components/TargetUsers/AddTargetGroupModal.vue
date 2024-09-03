@@ -92,7 +92,13 @@ import { bulkImportTargetUsersToGroups, createTargetGroup } from '@/api/targetUs
 
 export default {
   name: 'AddTargetGroupModal',
-  components: { TargetGroupUsersTable, FormGroup, InputEntityName, AppModalBodyHeader, AppModal },
+  components: {
+    TargetGroupUsersTable,
+    FormGroup,
+    InputEntityName,
+    AppModalBodyHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean,
@@ -144,35 +150,39 @@ export default {
       createTargetGroup({
         name: this.formData.name,
         priority: this.formData.priority
-      }).then((response) => {
-        const { resourceId } = response?.data?.data || {}
-        if (!this.selectedUsers.length)
-          return this.$router.push({
-            name: 'Target Group Users',
-            params: { id: resourceId, label: this.formData.name }
-          })
-        const serverSideParams = this.$refs?.refTargetGroupUsersTable?.$refs?.refTargetGroupUsersTable?.getServerSideSelectionParams() || {
-          isSelectedAllEver: false,
-          excludedResourceIdList: []
-        }
-        this.payload = {
-          ...this.payload,
-          selectAll: serverSideParams?.isSelectedAllEver || false,
-          excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
-          targetGroupResourceIds: [resourceId],
-          targetUserResourceIds: serverSideParams?.isSelectedAllEver ? [] : this.selectedUsers
-        }
-        bulkImportTargetUsersToGroups(this.payload)
-          .then(() => {
-            this.$router.push({
+      })
+        .then((response) => {
+          const { resourceId } = response?.data?.data || {}
+          if (!this.selectedUsers.length)
+            return this.$router.push({
               name: 'Target Group Users',
               params: { id: resourceId, label: this.formData.name }
             })
-          })
-          .finally(() => {
-            this.saveDisable = false
-          })
-      })
+          const serverSideParams = this.$refs?.refTargetGroupUsersTable?.$refs?.refTargetGroupUsersTable?.getServerSideSelectionParams() || {
+            isSelectedAllEver: false,
+            excludedResourceIdList: []
+          }
+          this.payload = {
+            ...this.payload,
+            selectAll: serverSideParams?.isSelectedAllEver || false,
+            excludedResourceIdList: serverSideParams?.excludedResourceIdList || [],
+            targetGroupResourceIds: [resourceId],
+            targetUserResourceIds: serverSideParams?.isSelectedAllEver ? [] : this.selectedUsers
+          }
+          bulkImportTargetUsersToGroups(this.payload)
+            .then(() => {
+              this.$router.push({
+                name: 'Target Group Users',
+                params: { id: resourceId, label: this.formData.name }
+              })
+            })
+            .finally(() => {
+              this.isActionButtonDisabled = false
+            })
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }
