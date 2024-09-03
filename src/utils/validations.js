@@ -126,6 +126,26 @@ export function phone(value, message) {
   return /^\+[1-9]\d{10,14}$/gi.test(value) || message
 }
 
+export function emailOrDomain(value, message = 'Invalid email address') {
+  value = getValue(value)
+  if (value.startsWith('@')) {
+    return value
+      ? (/^@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
+          value
+        ) &&
+          isEmailSpecialCharacter(value)) ||
+          'Invalid domain'
+      : true
+  }
+  return value
+    ? (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
+        value
+      ) &&
+        isEmailSpecialCharacter(value)) ||
+        message
+    : true
+}
+
 export function email(value, message = 'Invalid email address') {
   value = getValue(value)
   return value
