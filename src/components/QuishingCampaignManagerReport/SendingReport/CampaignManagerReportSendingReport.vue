@@ -5,6 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -18,6 +19,7 @@
       :last-sending-status-items="getLastSendingStatusItems"
       :is-quishing-type-printout="isQuishingTypePrintout"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -60,6 +62,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       labels,
       selectedRow: null
     }
@@ -81,6 +84,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(payload) {
       this.resendPayload = payload
       this.toggleIsShowResendDialog()

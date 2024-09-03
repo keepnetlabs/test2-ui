@@ -4,6 +4,8 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -47,6 +49,7 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -153,6 +156,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -412,6 +416,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)

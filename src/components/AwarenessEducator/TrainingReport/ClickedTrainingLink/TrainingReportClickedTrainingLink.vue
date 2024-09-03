@@ -7,6 +7,7 @@
       :payload="resendPayload"
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -54,6 +55,7 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -97,6 +99,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -272,6 +275,9 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportDownloadedPoster
