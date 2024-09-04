@@ -225,7 +225,7 @@ import { scrollToComponent, isDifferent } from '@/utils/functions'
 import {
   createSMTPSettings,
   getSmtpSettings,
-  testConnection,
+  testConnectionWhenSmtpCreated,
   updateSmtpSettings
 } from '@/api/smtpSettings'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -416,7 +416,7 @@ export default {
         useAuthentication: Number(this.formValues.useAuthentication),
         useSsl: Number(this.formValues.useSSL)
       }
-      testConnection(payload)
+      testConnectionWhenSmtpCreated(payload)
         .then(() => {
           this.isTestEmailDialogShowing = false
           this.isTestMailSend = true
