@@ -545,7 +545,6 @@ export default {
       try {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
-        console.log('smtpData', smtpData)
         let { fromAddress, fromName, template } = this.selectedPhishingScenario
         if (this.type === SCENARIO_TYPES.QUISHING)
           template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
