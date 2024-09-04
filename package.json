@@ -35,6 +35,7 @@
     "jwt-decode": "^3.0.0-beta.2",
     "powerbi-client": "2.22.4",
     "regenerator-runtime": "^0.13.7",
+    "sanitize-html": "2.7.3",
     "v-mask": "^2.2.3",
     "v-offline": "^1.1.0",
     "vue": "2.7.8",
