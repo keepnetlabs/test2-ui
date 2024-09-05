@@ -229,7 +229,10 @@ export default {
   },
   computed: {
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
@@ -288,7 +291,7 @@ export default {
       return this.getSettingItems?.Reminder
     },
     isPhoneNumber() {
-      return this.getSettingItems && this.getSettingItems['Sender Phone Number']
+      return this.getSettingItems && this.getSettingItems['SMS Notification'].senderPhoneNumber
     }
   },
   watch: {
