@@ -542,13 +542,13 @@ export default {
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       }
     },
     validateForm() {

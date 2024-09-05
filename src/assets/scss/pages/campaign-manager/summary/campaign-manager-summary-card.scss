@@ -148,9 +148,37 @@
     }
   }
   &.campaign-manager-summary-card__body-container-poster-phone-number{
+    .campaign-manager-summary-card__body-item-one-line:nth-child(3){
+      border-bottom:1px solid #F2F2F2 !important;
+      padding-bottom: 16px !important;
+    }
+  }
+  &.campaign-manager-summary-card__body-container-poster-phone-number{
     .campaign-manager-summary-card__body-item-one-line:nth-child(5),.campaign-manager-summary-card__body-item-one-line:nth-child(6){
       border-bottom: none;
       padding-bottom: 0;
     }
+  }
+}
+
+.campaign-manager-summary-card__body-container-poster-original {
+  .campaign-manager-summary-card__body-item-one-line:nth-child(3){
+    border-bottom:1px solid #F2F2F2 !important;
+    padding-bottom: 16px !important;
+  }
+  .campaign-manager-summary-card__body-item-one-line:nth-child(4){
+    border-bottom:1px solid #F2F2F2 !important;
+    padding-bottom: 16px !important;
+  }
+}
+
+.campaign-manager-summary-card__body-container-infographic {
+  .campaign-manager-summary-card__body-item-one-line:nth-child(3){
+    border-bottom:1px solid #F2F2F2 !important;
+    padding-bottom: 16px !important;
+  }
+  .campaign-manager-summary-card__body-item-one-line:nth-child(4){
+    border-bottom:1px solid #F2F2F2 !important;
+    padding-bottom: 16px !important;
   }
 }

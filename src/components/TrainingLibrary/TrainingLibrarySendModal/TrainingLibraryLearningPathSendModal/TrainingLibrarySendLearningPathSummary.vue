@@ -10,7 +10,27 @@
         icon="mdi-cog"
         :title="labels.Settings"
         :items="getSettingItems"
-      />
+      >
+        <template #SMSNotification="{ props: { key, val } }">
+          <div class="campaign-manager-summary-card__body-item-key">{{ key }}</div>
+          <div v-if="val === 'Off'" class="campaign-manager-summary-card__body-item-value">
+            {{ val }}
+          </div>
+          <div v-else class="campaign-manager-summary-card__body-item-value d-flex flex-column">
+            <div class="campaign-manager-sender-phone-number justify-end p-0">
+              <span class="campaign-manager-sender-phone-number__number mr-2">{{
+                getPhoneNumberFormatted(val.senderPhoneNumber)
+              }}</span>
+              <span class="campaign-manager-sender-phone-number__country">{{
+                getPhoneNumberCountry(val.senderPhoneNumber)
+              }}</span>
+            </div>
+            <div>
+              <span style="font-weight: 600;" class="mr-1">SMS Text:</span>{{ val.smsText }}
+            </div>
+          </div>
+        </template>
+      </CampaignManagerSummaryCardOneLine>
     </div>
     <div v-if="!isProxy" class="campaign-manager-last-step__target-users mt-4">
       <CampaignManagerSummaryCard
@@ -205,7 +225,7 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
 import { mapActions } from 'vuex'
-
+import PhoneNumber from 'awesome-phonenumber'
 export default {
   name: 'TrainingLibrarySendLearningPathSummary',
   components: {
@@ -235,7 +255,10 @@ export default {
   },
   computed: {
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
@@ -284,9 +307,6 @@ export default {
     isEnrollmentData() {
       return this?.formData?.enrollmentData
     },
-    isPhoneNumber() {
-      return this.getSettingItems && this.getSettingItems['Sender Phone Number']
-    },
     isTrainingData() {
       return this?.formData?.trainingData
     },
@@ -321,7 +341,20 @@ export default {
   methods: {
     ...mapActions({
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog'
-    })
+    }),
+    createPhoneNumberObj(phoneNumber = '') {
+      return new PhoneNumber(phoneNumber)
+    },
+    getPhoneNumberFormatted(phoneNumber) {
+      const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
+      return phoneNumberObj?.g?.number?.international
+    },
+    getPhoneNumberCountry(phoneNumber) {
+      if (!phoneNumber) return ''
+      const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
+      return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+    }
   }
 }
 </script>
