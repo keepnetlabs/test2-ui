@@ -650,7 +650,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        TotalReportedSuspicious: {
+        TotalReportedSuspiciousEmailsAndPercentageWidget: {
           x: 0,
           y: 0,
           w: 6,
@@ -663,7 +663,7 @@ export default {
           maxH: 6,
           i: createRandomCryptStringNumber(),
           title: 'Total Reported Suspicious Emails and Percentage',
-          key: 'TotalReportedSuspicious',
+          key: 'TotalReportedSuspiciousEmailsAndPercentageWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -1291,7 +1291,7 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
-        case 'TotalReportedSuspicious':
+        case 'TotalReportedSuspiciousEmailsAndPercentageWidget':
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsTotalReportedSuspicious
           else if (item?.chartType?.toLowerCase()?.includes('pie'))

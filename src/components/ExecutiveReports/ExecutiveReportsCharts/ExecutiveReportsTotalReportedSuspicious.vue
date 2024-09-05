@@ -136,6 +136,11 @@ export default {
         })
     },
     setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      console.log('data[0].widgetDatas', data[0].widgetDatas)
       this.chartOptions = {
         devicePixelRatio: 2,
         indexAxis: 'y',
@@ -307,10 +312,6 @@ export default {
             padding: 6
           }
         }
-      }
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
       }
       const departments = data[0].widgetDatas.map((obj) => {
         return obj.dataObject.department
