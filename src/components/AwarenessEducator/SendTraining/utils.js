@@ -27,10 +27,10 @@ export const endTypeItems = [
 ]
 
 export const enrollmentAutoEnrollTypeItems = [
-  { text: 'the same day', value: 'SameDay' },
-  { text: 'the next day', value: 'NextDay' },
-  { text: 'next...', value: 'Next' },
-  { text: 'in...', value: 'In' }
+  { text: 'on the same day', value: 'SameDay' },
+  { text: 'on the next day', value: 'NextDay' },
+  { text: 'next', value: 'Next' },
+  { text: 'in', value: 'In' }
 ]
 export const enrollmentAutoEnrollDayOfWeekItems = [
   { text: 'Sunday', value: 0 },
@@ -44,4 +44,8 @@ export const enrollmentAutoEnrollDayOfWeekItems = [
 export const certificateTypeItems = [
   { text: 'on the first attempt', value: 'SendOnFirstAttempt' },
   { text: 'on any attempt', value: 'SendOnAnyAttempt' }
+]
+export const awardCertificateTypes = [
+  { text: 'When a user completes the training on the first attempt', value: 'SendOnFirstAttempt' },
+  { text: 'When a user completes the training on any attempt', value: 'SendOnAnyAttempt' }
 ]
