@@ -629,7 +629,28 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        TotalReportedSuspicious: {
+        ResponseTimesToPhishingActionsWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: "Users' Time to Failure",
+          key: 'ResponseTimesToPhishingActionsWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TotalReportedSuspiciousEmailsAndPercentageWidget: {
           x: 0,
           y: 0,
           w: 6,
@@ -642,7 +663,7 @@ export default {
           maxH: 6,
           i: createRandomCryptStringNumber(),
           title: 'Total Reported Suspicious Emails and Percentage',
-          key: 'TotalReportedSuspicious',
+          key: 'TotalReportedSuspiciousEmailsAndPercentageWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -895,7 +916,9 @@ export default {
             widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
             widget.widgetType === 'TrainingCompletionWidget' ||
             widget.widgetType === 'SimulationCoverageWidget' ||
-            widget.widgetType === 'PhishingDwellTimeDistributionWidget'
+            widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
+            widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
+            widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1270,16 +1293,18 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
-        case 'TotalReportedSuspicious':
+        case 'TotalReportedSuspiciousEmailsAndPercentageWidget':
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsTotalReportedSuspicious
           else if (item?.chartType?.toLowerCase()?.includes('pie'))
-            return ExecutiveReportsTotalReportedSuspicious
-          return ExecutiveReportsTotalReportedSuspicious
+            return ExecutiveReportsTotalReportedSuspiciousPie
+          return ExecutiveReportsTotalReportedSuspiciousDoughnut
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
         case 'PhishingDwellTimeDistributionWidget':
           return ExecutiveReportsPhishingDwellTimeDistribution
+        case 'ResponseTimesToPhishingActionsWidget':
+          return ExecutiveReportsUsersTimeToFailure
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:

@@ -136,6 +136,35 @@ export default {
         })
     },
     setChartData(data) {
+      if (!data[0].widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+      const yLabels = data[0].widgetDatas.map((obj) => {
+        return obj.dataObject.ActionRange
+      })
+      const dataSetsData = data[0].widgetDatas.map((obj) => {
+        return {
+          x: obj.values[0].value,
+          y: obj.dataObject.ActionRange,
+          details: {
+            'Number of Reporting': obj.values[1].value,
+            'Percentage of Reporting': obj.values[0].value + '%'
+          }
+        }
+      })
+      let maxX = Math.max(...dataSetsData.map((obj) => obj.x))
+      if (maxX < 20) {
+        maxX = 40
+      } else if (maxX < 40) {
+        maxX = 60
+      } else if (maxX < 60) {
+        maxX = 80
+      } else if (maxX < 80) {
+        maxX = 100
+      } else {
+        maxX = 100
+      }
       this.chartOptions = {
         devicePixelRatio: 2,
         indexAxis: 'y',
@@ -193,8 +222,8 @@ export default {
               },
               ticks: {
                 min: 0,
-                max: 100,
-                stepSize: 20,
+                max: maxX,
+                stepSize: maxX / 5,
                 fontFamily: 'Open Sans, sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
                 fontSize: 12,
@@ -265,11 +294,12 @@ export default {
               titleRow.style.fontSize = '14px'
               titleRow.textContent = dataPoint.y
               tableRoot.appendChild(titleRow)
+              let index = 0
               for (const [key, value] of Object.entries(dataPoint.details)) {
                 let fieldRow = document.createElement('div')
                 fieldRow.style.display = 'flex'
                 fieldRow.style.justifyContent = 'space-between'
-                fieldRow.style.paddingBottom = '4px'
+                if (index < 1) fieldRow.style.paddingBottom = '8px'
 
                 let fieldLabel = document.createElement('span')
                 fieldLabel.textContent = `${key}:`
@@ -278,18 +308,19 @@ export default {
                 let fieldValue = document.createElement('span')
                 fieldValue.style.fontWeight = '700'
                 fieldValue.style.paddingLeft = '8px'
+                fieldValue.style.fontSize = '14px'
                 fieldValue.textContent = value
                 fieldRow.appendChild(fieldValue)
-
                 tableRoot.appendChild(fieldRow)
+                index++
               }
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
             })
           },
-          xPadding: 12,
-          yPadding: 12
+          xPadding: 16,
+          yPadding: 16
         },
         plugins: {
           datalabels: {
@@ -301,32 +332,15 @@ export default {
             clamp: true,
             formatter: function (value) {
               if (!value.x) return ''
-              return `50 (${value.x}%)`
+              return `${value.details['Number of Reporting']} (${value.x}%)`
             },
             borderRadius: 4,
             padding: 6
           }
         }
       }
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
-      }
-      const departments = data[0].widgetDatas.map((obj) => {
-        return obj.dataObject.department
-      })
-      const dataSetsData = data[0].widgetDatas.map((obj) => {
-        return {
-          x: obj.values[0].value,
-          y: obj.dataObject.department,
-          details: {
-            'Number of Reporting': obj.values[0].value,
-            'Percentage of Reporting': obj.values[1].value
-          }
-        }
-      })
       this.chartData = {
-        yLabels: departments,
+        yLabels,
         datasets: [
           {
             data: dataSetsData,
@@ -335,9 +349,9 @@ export default {
               const index = context.dataIndex
               const valueObj = context.dataset.data[index]
               const value = valueObj.y
-              if (value.y === 'Undetected') return '#757575'
-              else if (value.y === 'Malicious') return '#F56C6C'
-              else if (value.y === 'Phishing') return '#B83A3A'
+              if (value === 'Undetected') return '#757575'
+              else if (value === 'Malicious') return '#F56C6C'
+              else if (value === 'Phishing') return '#B83A3A'
               return '#2196F3'
             },
             borderWidth: 1
