@@ -140,7 +140,6 @@ export default {
         this.isEmpty = true
         return
       }
-      console.log('data[0].widgetDatas', data[0].widgetDatas)
       const yLabels = data[0].widgetDatas.map((obj) => {
         return obj.dataObject.ActionRange
       })

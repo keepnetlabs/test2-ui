@@ -521,8 +521,6 @@ export default {
             anchor: 'left',
             color: '#000',
             formatter: function (value, context) {
-              console.log('context', context)
-              console.log('value', value)
               if (
                 context.dataset.label === 'Company Avg Link Click' &&
                 context.dataIndex === companyAvgLinkClickData.length - 1
