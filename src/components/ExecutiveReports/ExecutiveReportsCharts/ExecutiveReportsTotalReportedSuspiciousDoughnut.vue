@@ -161,11 +161,21 @@ export default {
         this.isEmpty = true
         return
       }
-      const { values } = data[0].widgetDatas[0]
-      const completed = values.find((obj) => obj.name === 'Completed')?.value
-      const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
-      const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
-      const simulation = values.find((obj) => obj.name === 'Simulation')?.value
+      const undetected = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Undetected'
+      )?.values
+      const undetectedPercentage = undetected ? undetected[0].value : 0
+      const malicious = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Malicious'
+      )?.values
+      const maliciousPercentage = malicious ? malicious[0].value : 0
+      const phishing = data[0].widgetDatas.find((obj) => obj.dataObject.ActionRange === 'Phishing')
+        ?.values
+      const phishingPercentage = phishing ? phishing[0].value : 0
+      const simulation = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Simulation'
+      )?.values
+      const simulationPercentage = simulation ? simulation[0].value : 0
       const chartOptions = {
         showLabels: true,
         responsive: true,
@@ -199,7 +209,7 @@ export default {
               tableRoot.style.width = '100%'
               let titleRow = document.createElement('tr')
               const valArr = tooltipModel.body[0].lines[0].split(':')
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size:14px;">${valArr[0]}</th>`
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 14px;">${valArr[0]}</th>`
               tableRoot.appendChild(titleRow)
               const addTr = (label, val, addPaddingBottom = true) => {
                 let tr = document.createElement('tr')
@@ -213,8 +223,19 @@ export default {
                 if (addPaddingBottom) tr.style.paddingBottom = '8px'
                 tableRoot.appendChild(tr)
               }
-              addTr('Number of Reporting', 50)
-              addTr('Percentage of Reporting', '50%', false)
+              const type = valArr[0]
+              let val = 0
+              if (type === 'Undetected') {
+                val = undetected[1].value
+              } else if (type === 'Malicious') {
+                val = malicious[1].value
+              } else if (type === 'Phishing') {
+                val = phishing[1].value
+              } else if (type === 'Simulation') {
+                val = simulation[1].value
+              }
+              addTr('Number of Reporting', val, true)
+              addTr('Percentage of Reporting', valArr[1] + '%', false)
             }
             const position = this._chart.canvas.getBoundingClientRect()
             tooltipEl.style.opacity = 1
@@ -270,7 +291,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Undetected' ? 6 : 1
+                  customMarginLeft: label === 'Undetected' ? 6 : label === 'Simulation' ? 3 : 1
                 }
               })
             }
@@ -309,7 +330,12 @@ export default {
         labels: this.valueEnums,
         datasets: [
           {
-            data: [25, 25, 25, 25],
+            data: [
+              undetectedPercentage,
+              maliciousPercentage,
+              phishingPercentage,
+              simulationPercentage
+            ],
             backgroundColor
           }
         ]
