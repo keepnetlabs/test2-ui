@@ -916,7 +916,9 @@ export default {
             widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
             widget.widgetType === 'TrainingCompletionWidget' ||
             widget.widgetType === 'SimulationCoverageWidget' ||
-            widget.widgetType === 'PhishingDwellTimeDistributionWidget'
+            widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
+            widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
+            widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1295,8 +1297,8 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsTotalReportedSuspicious
           else if (item?.chartType?.toLowerCase()?.includes('pie'))
-            return ExecutiveReportsTotalReportedSuspicious
-          return ExecutiveReportsTotalReportedSuspicious
+            return ExecutiveReportsTotalReportedSuspiciousPie
+          return ExecutiveReportsTotalReportedSuspiciousDoughnut
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
         case 'PhishingDwellTimeDistributionWidget':
