@@ -319,14 +319,10 @@ export default {
             font: { family: 'Open Sans, sans-serif' },
             display: true,
             clamp: true,
-            anchor: function (context) {
-              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
-              if (isZeroTwice) return 'start'
+            anchor: function () {
               return 'center'
             },
             align: function (context) {
-              const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
-              if (isZeroTwice) return 'center'
               return 'center'
             },
             formatter(value) {
