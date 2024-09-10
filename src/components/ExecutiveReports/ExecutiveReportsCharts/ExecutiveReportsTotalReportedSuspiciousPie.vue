@@ -297,7 +297,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Undetected' ? 6 : label === 'Simulation' ? 3 : 1
+                  customMarginLeft: label === 'Undetected' ? 5 : label === 'Simulation' ? 3 : 1
                 }
               })
             }
