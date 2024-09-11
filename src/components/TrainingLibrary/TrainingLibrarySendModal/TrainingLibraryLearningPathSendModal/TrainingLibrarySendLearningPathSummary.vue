@@ -8,6 +8,7 @@
     >
       <CampaignManagerSummaryCardOneLine
         icon="mdi-cog"
+        class="campaign-manager-summary-card__body-container-learning-path-original"
         :title="labels.Settings"
         :items="getSettingItems"
       >
