@@ -247,8 +247,8 @@ export default {
         const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
         formData.settings = {
           'Training Delivery for Your LMS': isProxy ? 'On' : 'Off',
-          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
           Reminder: sendReminderEvery,
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
           'Award Certificate': refSendTrainingSettings.formData.awardCertificate
             ? awardCertificateTypes?.find?.(
                 (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
