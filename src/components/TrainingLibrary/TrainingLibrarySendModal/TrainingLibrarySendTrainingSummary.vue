@@ -10,7 +10,7 @@
         :class="{
           'campaign-manager-summary-card__body-container-reminder': isReminder,
           'campaign-manager-summary-card__body-container-is-proxy': isProxy,
-          'campaign-manager-summary-card__body-container-phone-number': isPhoneNumber
+          'campaign-manager-summary-card__body-container-phone-number': true
         }"
         icon="mdi-cog"
         :title="labels.Settings"
