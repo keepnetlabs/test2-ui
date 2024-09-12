@@ -9,8 +9,8 @@
     title-id="text--phishing-reporters-versions-title"
     subtitle-id="text--phishing-reporters-versions-subtitle"
     :class-name="'matching-modal version-history'"
-    :max-height="selectedVersionRow.applicationType === 'Outlook'"
-    :maxHeightSize="selectedVersionRow.applicationType === 'Outlook' ? '500px' : '240px'"
+    :max-height="!this.isDiagnostic"
+    :maxHeightSize="!this.isDiagnostic ? '500px' : '310px'"
     @changeStatus="$emit('changeReporterVersionModalStatus', false)"
   >
     <template #app-dialog-body>
@@ -59,14 +59,16 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${
-        this.selectedVersionRow.applicationType === 'Outlook'
-          ? 'Phishing Reporter Version '
-          : 'Diagnostic Tool Version'
-      } ${this.selectedVersionRow.version}`
+      return `${!this.isDiagnostic ? 'Phishing Reporter Version ' : 'Diagnostic Tool Version'} ${
+        this.selectedVersionRow.version
+      }`
+    },
+    isDiagnostic() {
+      return this.selectedVersionRow.applicationType === 'DiagnosticTool'
     }
   },
   created() {
+    console.log(this.selectedVersionRow)
     const payload = JSON.parse(this.selectedVersionRow.argument)
     const formData = {}
     for (let key of Object.keys(payload)) {
