@@ -68,7 +68,6 @@ export default {
     }
   },
   created() {
-    console.log(this.selectedVersionRow)
     const payload = JSON.parse(this.selectedVersionRow.argument)
     const formData = {}
     for (let key of Object.keys(payload)) {
