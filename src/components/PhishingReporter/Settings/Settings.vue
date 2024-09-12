@@ -15,11 +15,11 @@
     <el-tabs
       id="settings-el-tabs"
       v-model="tab"
-      v-if="!inModal || applicationType === 'Outlook'"
+      v-if="!inModal || applicationType !== 'DiagnosticTool'"
       class="k-sub-tab mt-2"
     >
       <el-tab-pane
-        v-if="!inModal || applicationType === 'Outlook'"
+        v-if="!inModal || applicationType !== 'DiagnosticTool'"
         class="pt-6"
         label="Add-in Settings"
         name="phishing-reporter-settings-add-in-settings"
@@ -36,7 +36,7 @@
           @updateForm="callForCreatePhishingReporter"
       /></el-tab-pane>
       <el-tab-pane
-        v-if="!inModal || applicationType === 'Outlook'"
+        v-if="!inModal || applicationType !== 'DiagnosticTool'"
         class="pt-6"
         label="Email Settings"
         name="phishing-reporter-settings-email-settings"
@@ -53,7 +53,7 @@
         />
       </el-tab-pane>
       <el-tab-pane
-        v-if="!inModal || applicationType === 'Outlook'"
+        v-if="!inModal || applicationType !== 'DiagnosticTool'"
         class="pt-6"
         label="Other Settings"
         name="phishing-reporter-settings-other-settings"
