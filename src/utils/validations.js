@@ -128,14 +128,8 @@ export function phone(value, message) {
 
 export function emailOrDomain(value, message = 'Invalid email address') {
   value = getValue(value)
-  if (value.startsWith('@')) {
-    return value
-      ? (/^@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
-          value
-        ) &&
-          isEmailSpecialCharacter(value)) ||
-          'Invalid domain'
-      : true
+  if (!value.includes('@')) {
+    return domain(value, 'Invalid domain')
   }
   return value
     ? (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
