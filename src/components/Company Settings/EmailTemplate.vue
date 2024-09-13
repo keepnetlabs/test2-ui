@@ -31,7 +31,7 @@
       v-if="isAiAssistant"
       :class="[
         'email-template__ai-assistant',
-        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
+        templateType === 'landing' ? 'email-template__ai-assistant--landing' : '',
       ]"
     >
       <div class="email-template__ai-assistant-header">
@@ -45,9 +45,9 @@
             <div class="email-template__ai-assistant-left-title">AI Ally</div>
             <div class="email-template__ai-assistant-left-description">
               {{
-                templateType === 'landing'
-                  ? 'Let your intelligent AI assistant craft perfect landing page templates for you—effortlessly and on demand!'
-                  : 'Let your intelligent AI assistant craft perfect email templates for you—effortlessly and on demand!'
+                templateType === "landing"
+                  ? "Let your intelligent AI assistant craft perfect landing page templates for you—effortlessly and on demand!"
+                  : "Let your intelligent AI assistant craft perfect email templates for you—effortlessly and on demand!"
               }}
             </div>
           </div>
@@ -101,7 +101,101 @@
             </div>
           </div>
           <div class="email-template__ai-assistant-content__right">
-            <div>
+            <div class="d-flex flex-column">
+              <div class="email-template__ai-assistant__selects">
+                <InputSelectLanguage
+                  v-bind="selectLanguageRules"
+                  style="max-width: 160px;"
+                  :value="languageTypeResourceId"
+                  class="email-template__ai-assistant-footer-left-select"
+                  required
+                  hide-details
+                  item-text="text"
+                  item-value="value"
+                  label="Language"
+                  :items="languageOptions"
+                  :menu-props="{ offsetY: true }"
+                  :disabled="isEmailGenerating"
+                  @input="$emit('update:languageTypeResourceId', $event)"
+                />
+                <KSelect
+                  :value="selectedTone"
+                  class="add-in-settings__default-language-select"
+                  style="max-width: 160px;"
+                  :items="toneOptions"
+                  outlined
+                  hide-details
+                  required
+                  label="Tone"
+                  placeholder="Set a tone"
+                  :disabled="isEmailGenerating"
+                  @input="$emit('update:selectedTone', $event)"
+                ></KSelect>
+                <KSelect
+                  :value="selectedLocale"
+                  class="add-in-settings__default-language-select"
+                  style="max-width: 200px;"
+                  :items="localeOptions"
+                  item-test="text"
+                  item-value="value"
+                  outlined
+                  hide-details
+                  required
+                  label="Locale"
+                  placeholder="Set a locale"
+                  :selectable="(option) => option.isVisible"
+                  :disabled="isEmailGenerating"
+                  :slots="{ item: true }"
+                  @input="$emit('update:selectedLocale', $event)"
+                >
+                  <template #item="data">
+                    <VMenu
+                      v-if="!!data.item.children"
+                      right
+                      offset-x
+                      nudge-top="50"
+                      min-width="240"
+                      max-width="240"
+                      open-on-hover
+                      close-on-content-click
+                    >
+                      <template #activator="{ on }">
+                        <div
+                          v-on="on"
+                          :class="['mail-configuration-select-sources__item-container']"
+                        >
+                          <div class="mail-configuration-select-sources__item">
+                            <div style="font-size: 14px;" class="mr-2 mr-auto">
+                              {{ data.item.text }}
+                            </div>
+                            <v-icon>mdi-menu-right</v-icon>
+                          </div>
+                        </div>
+                      </template>
+                      <VListItem
+                        v-for="state in data.item.children"
+                        :key="state.text"
+                        :class="{
+                          'training-library-filtering-options-parent-list-item': true,
+                          'v-list-item--active': selectedLocale === state.value,
+                        }"
+                        @click="handleStateChange(state)"
+                      >
+                        <VListItemTitle
+                          class="training-library-filtering-options-parent-list-item-title justify-start"
+                        >
+                          {{ state.text }}
+                        </VListItemTitle>
+                      </VListItem>
+                    </VMenu>
+                    <div v-else :class="['mail-configuration-select-sources__item-container']">
+                      <div style="font-size: 14px;" class="mail-configuration-select-sources__item">
+                        {{ data.item.text }}
+                      </div>
+                    </div>
+                  </template>
+                </KSelect>
+              </div>
               <VTextarea
                 v-model.trim="aiTemplateText"
                 class="email-template__ai-assistant-textarea"
@@ -144,21 +238,6 @@
             </div>
             <div class="email-template__ai-assistant-footer">
               <div class="email-template__ai-assistant-footer-left">
-                <VForm ref="refSelectLanguage">
-                  <InputSelectLanguage
-                    v-bind="selectLanguageRules"
-                    :value="languageTypeResourceId"
-                    class="email-template__ai-assistant-footer-left-select"
-                    required
-                    hide-details
-                    item-text="text"
-                    item-value="value"
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                    :disabled="isEmailGenerating"
-                    @input="$emit('update:languageTypeResourceId', $event)"
-                  />
-                </VForm>
                 <VCheckbox
                   v-if="templateType !== 'landing'"
                   :value="isPlainText"
@@ -188,7 +267,7 @@
             <div
               :class="[
                 'd-flex mt-2 w-full items-center',
-                generatedTemplates.length > 1 ? 'justify-space-between' : 'justify-end'
+                generatedTemplates.length > 1 ? 'justify-space-between' : 'justify-end',
               ]"
             >
               <div v-if="generatedTemplates.length > 1">
@@ -207,7 +286,7 @@
                   >mdi-chevron-right</VIcon
                 >
                 <span class="email-template__ai-assistant-footer-left-text"
-                  >Generated {{ templateType === 'landing' ? 'landing page' : 'email' }}
+                  >Generated {{ templateType === "landing" ? "landing page" : "email" }}
                   {{ activeGeneratedTemplateIndex + 1 }} of {{ generatedTemplates.length }}</span
                 >
               </div>
@@ -326,7 +405,7 @@
         <label
           :class="[
             'mr-4',
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
+            isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6',
           ]"
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
@@ -444,36 +523,37 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
-import InputEmail from '@/components/Common/Inputs/InputEmail'
-import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
-import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
-import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
-import { mapActions, mapGetters } from 'vuex'
-import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import KEmailPreview from '@/components/KEmailPreview'
-import EmailTemplateDefault from '@/components/EmailTemplates/EmailTemplateDefault'
-import LandingPageTemplateDefault from '@/components/EmailTemplates/LandingPageTemplateDefault'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import IndividualPrintOutTemplateDefault from '@/components/EmailTemplates/IndividualPrintOutTemplateDefault.vue'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import QuishingEmailTemplateDefault from '@/components/EmailTemplates/QuishingEmailTemplateDefault.vue'
-import KSelect from '@/components/Common/Inputs/KSelect.vue'
-import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
+import AppModal from "@/components/AppModal";
+import InputEmail from "@/components/Common/Inputs/InputEmail";
+import labels from "@/model/constants/labels";
+import * as Validations from "@/utils/validations";
+import { createRandomCryptStringNumber, isDifferent } from "@/utils/functions";
+import GrapesNewsletterModal from "@/components/GrapesJs/Newsletter/GrapesNewsletterModal";
+import { mapActions, mapGetters } from "vuex";
+import KFileUpload from "@/components/Common/FileUpload/FileUpload";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview";
+import KEmailPreview from "@/components/KEmailPreview";
+import EmailTemplateDefault from "@/components/EmailTemplates/EmailTemplateDefault";
+import LandingPageTemplateDefault from "@/components/EmailTemplates/LandingPageTemplateDefault";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName";
+import IndividualPrintOutTemplateDefault from "@/components/EmailTemplates/IndividualPrintOutTemplateDefault.vue";
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
+import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import QuishingEmailTemplateDefault from "@/components/EmailTemplates/QuishingEmailTemplateDefault.vue";
+import KSelect from "@/components/Common/Inputs/KSelect.vue";
+import EmailTemplatesAILoader from "@/components/EmailTemplates/EmailTemplatesAILoader.vue";
 import {
   generateAIEmailTemplate,
   generateAILandingPageTemplate,
   getGeneratedAIEmailTemplate,
-  getGeneratedAILandingPageTemplate
-} from '@/api/phishingsimulator'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
-import FeedbackPopup from '@/components/FeedbackPopup.vue'
+  getGeneratedAILandingPageTemplate,
+} from "@/api/phishingsimulator";
+import InputSelectLanguage from "@/components/Common/Inputs/InputSelectLanguage.vue";
+import FeedbackPopup from "@/components/FeedbackPopup.vue";
+
 export default {
-  name: 'EmailTemplate',
+  name: "EmailTemplate",
   components: {
     FeedbackPopup,
     InputSelectLanguage,
@@ -490,44 +570,46 @@ export default {
     KFileUpload,
     AttachmentsPreview,
     InputEntityName,
-    FormGroup
+    FormGroup,
   },
   props: [
-    'name',
-    'fromAddress',
-    'fromName',
-    'subject',
-    'ccAddresses',
-    'template',
-    'attachmentFiles',
-    'activeBlockManagerComponents',
-    'isEdit',
-    'editItemsDisabled',
-    'isPhishingTemplate',
-    'setAttachmentFile',
-    'importedEmailAttachments',
-    'onlyGrapes',
-    'templateType',
-    'extensions',
-    'fileUploadHint',
-    'size',
-    'isAttachmentError',
-    'isNotificationTemplate',
-    'isEnrollmentCategorySelected',
-    'isNotificationEnrollment',
-    'isHorizontalFormGroups',
-    'showNameField',
-    'isAiAssistant',
-    'aiAssistant',
-    'aiAssistantRemainingRight',
-    'aiAssistantTotalRight',
-    'languageTypeResourceId',
-    'isAssistedByAITemplate',
-    'methodTypeId',
-    'prompt',
-    'languageOptions',
-    'selectedMethod',
-    'isPlainText'
+    "name",
+    "fromAddress",
+    "fromName",
+    "subject",
+    "ccAddresses",
+    "template",
+    "attachmentFiles",
+    "activeBlockManagerComponents",
+    "isEdit",
+    "editItemsDisabled",
+    "isPhishingTemplate",
+    "setAttachmentFile",
+    "importedEmailAttachments",
+    "onlyGrapes",
+    "templateType",
+    "extensions",
+    "fileUploadHint",
+    "size",
+    "isAttachmentError",
+    "isNotificationTemplate",
+    "isEnrollmentCategorySelected",
+    "isNotificationEnrollment",
+    "isHorizontalFormGroups",
+    "showNameField",
+    "isAiAssistant",
+    "aiAssistant",
+    "aiAssistantRemainingRight",
+    "aiAssistantTotalRight",
+    "languageTypeResourceId",
+    "selectedTone",
+    "selectedLocale",
+    "isAssistedByAITemplate",
+    "methodTypeId",
+    "prompt",
+    "languageOptions",
+    "selectedMethod",
+    "isPlainText",
   ],
   data() {
     return {
@@ -535,65 +617,65 @@ export default {
       isEmailGenerating: false,
       badgeContents: [
         {
-          title: 'Finance Department Alert',
+          title: "Finance Department Alert",
           content:
-            'Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.'
+            "Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.",
         },
         {
-          title: 'HR Benefits Update',
+          title: "HR Benefits Update",
           content:
-            'Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.'
+            "Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.",
         },
         {
-          title: 'Suspicious Login Alert',
+          title: "Suspicious Login Alert",
           content:
-            'Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.'
+            "Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.",
         },
         {
-          title: 'Payroll Adjustment Notification',
+          title: "Payroll Adjustment Notification",
           content:
-            'Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.'
+            "Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.",
         },
         {
-          title: 'Account Deactivation Notice',
+          title: "Account Deactivation Notice",
           content:
-            'Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.'
-        }
+            "Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.",
+        },
       ],
       landingPageBadgeContents: [
         {
-          title: 'Company Event Registration',
+          title: "Company Event Registration",
           content:
-            'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
+            'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.',
         },
         {
-          title: 'Password Reset Page',
+          title: "Password Reset Page",
           content:
-            'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.'
+            'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.',
         },
         {
-          title: 'Bank Account Login Page',
+          title: "Bank Account Login Page",
           content:
-            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
+            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.',
         },
         {
-          title: 'Subscription Confirmation Page',
+          title: "Subscription Confirmation Page",
           content:
-            'Create a landing page for subscription confirmation. Include a message saying "Thank you for subscribing!", a field for entering an email address to confirm the subscription, and a "Confirm Subscription" button. Add a small note about privacy at the bottom. The design should be clean and modern, with a focus on ease of use.'
+            'Create a landing page for subscription confirmation. Include a message saying "Thank you for subscribing!", a field for entering an email address to confirm the subscription, and a "Confirm Subscription" button. Add a small note about privacy at the bottom. The design should be clean and modern, with a focus on ease of use.',
         },
         {
-          title: 'Phishing Awareness Oops Page',
+          title: "Phishing Awareness Oops Page",
           content:
-            "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational."
-        }
+            "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational.",
+        },
       ],
       selectLanguageRules: {
-        rules: [(v) => Validations.required(v, labels.Required)]
+        rules: [(v) => Validations.required(v, labels.Required)],
       },
       aiTemplateTextRules: [(v) => v.length <= 500],
       timeoutId: null,
       previewTemplate: null,
-      aiTemplateText: '',
+      aiTemplateText: "",
       initialTemplate: null,
       labels,
       showGrapesModal: false,
@@ -604,117 +686,224 @@ export default {
         Validations.maxLength(
           v,
           500,
-          'Description cannot exceed the 500 character limit. Please shorten description',
+          "Description cannot exceed the 500 character limit. Please shorten description",
           500
         ),
       ccEmailRules: {
         email: (v) => {
           if (v.length > 0) {
-            let booReturn = true
+            let booReturn = true;
             for (let i = 0; i < v.length; i++) {
-              const chip = document.getElementsByClassName('v-chip--select')[i]
-              if (!chip) continue
-              if (!Validations.email(v[i], '')) {
-                booReturn = false
-                chip.style.borderColor = '#ff5252'
-                chip.style.color = '#ff5252'
+              const chip = document.getElementsByClassName("v-chip--select")[i];
+              if (!chip) continue;
+              if (!Validations.email(v[i], "")) {
+                booReturn = false;
+                chip.style.borderColor = "#ff5252";
+                chip.style.color = "#ff5252";
                 if (v.length === 1) {
-                  return v[i] + ' email address is not valid'
+                  return v[i] + " email address is not valid";
                 }
               } else {
-                chip.style.borderColor = ''
-                chip.style.color = 'rgba(0, 0, 0, 0.87)'
+                chip.style.borderColor = "";
+                chip.style.color = "rgba(0, 0, 0, 0.87)";
               }
             }
-            return booReturn ? booReturn : 'One of the email addresses is not valid'
+            return booReturn ? booReturn : "One of the email addresses is not valid";
           } else {
-            return true
+            return true;
           }
-        }
+        },
       },
       mergeTags: [
         {
-          text: 'Enrollment Name',
-          value: '{ENROLLMENT_NAME}'
-        }
+          text: "Enrollment Name",
+          value: "{ENROLLMENT_NAME}",
+        },
       ],
       mergeTagRules: [
         (v) => {
-          if (!v) return true
-          const matches = v.match(/{(.*?)}/gi)
-          if (!matches?.length) return true
-          const tags = this.mergeTags.map((tag) => tag.value)
+          if (!v) return true;
+          const matches = v.match(/{(.*?)}/gi);
+          if (!matches?.length) return true;
+          const tags = this.mergeTags.map((tag) => tag.value);
           for (let i = 0; i < matches.length; i++) {
             if (!tags.includes(matches[i].toUpperCase())) {
-              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`;
             }
           }
-          return true
+          return true;
         },
         (v) => {
-          if (!v) return true
+          if (!v) return true;
           const regexp = new RegExp(
-            `(${this.mergeTags.map((mergeTag) => mergeTag.value).join('|')})`,
-            'gi'
-          )
-          const matches = v.match(regexp)
-          if (!matches?.length) return true
-          const mergeTags = this.mergeTags.map((tag) => tag.value)
+            `(${this.mergeTags.map((mergeTag) => mergeTag.value).join("|")})`,
+            "gi"
+          );
+          const matches = v.match(regexp);
+          if (!matches?.length) return true;
+          const mergeTags = this.mergeTags.map((tag) => tag.value);
           const usedMergeTags = mergeTags.filter((tag) =>
             matches.some((match) => match.toUpperCase() === tag)
-          )
+          );
           return (
             matches.every((match) => usedMergeTags.includes(match)) ||
-            'Only use uppercase letters for the merge tag'
-          )
-        }
+            "Only use uppercase letters for the merge tag"
+          );
+        },
       ],
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage(labels.Subject, 512))
+        (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage(labels.Subject, 512)),
       ],
       senderNameRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
+        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40),
       ],
       generatedTemplates: [],
-      activeGeneratedTemplateIndex: -1
-    }
+      activeGeneratedTemplateIndex: -1,
+      toneOptions: [
+        "Semi-formal",
+        "Formal",
+        "Serious",
+        "Confident",
+        "Professional",
+        "Positive",
+        "Empathetic",
+        "Neutral",
+        "Diplomatic",
+        "Urgent",
+        "Persuasive",
+      ],
+      localeOptions: [
+        {
+          text: "United Kingdom",
+          value: "United Kingdom",
+          isVisible: true,
+        },
+        {
+          text: "United States",
+          value: "United States",
+          isVisible: true,
+          children: [
+            {
+              text: "Alabama",
+              value: "Alabama",
+            },
+            {
+              text: "Alaska",
+              value: "Alaska",
+            },
+            {
+              text: "Arizona",
+              value: "Arizona",
+            },
+            {
+              text: "Arkansas",
+              value: "Arkansas",
+            },
+            {
+              text: "California",
+              value: "California",
+            },
+            {
+              text: "Colorado",
+              value: "Colorado",
+            },
+          ],
+        },
+        {
+          text: "Turkey",
+          value: "Turkey",
+          isVisible: true,
+        },
+        {
+          text: "France",
+          value: "France",
+          isVisible: true,
+        },
+        {
+          text: "Arabia",
+          value: "Arabia",
+          isVisible: true,
+        },
+        {
+          text: "China",
+          value: "China",
+          isVisible: true,
+        },
+        {
+          text: "Alabama",
+          value: "Alabama",
+          isVisible: false,
+          disabled: true,
+        },
+        {
+          text: "Alaska",
+          value: "Alaska",
+          isVisible: false,
+          disabled: true,
+        },
+        {
+          text: "Arizona",
+          value: "Arizona",
+          isVisible: false,
+          disabled: true,
+        },
+        {
+          text: "Arkansas",
+          value: "Arkansas",
+          isVisible: false,
+          disabled: true,
+        },
+        {
+          text: "California",
+          value: "California",
+          isVisible: false,
+          disabled: true,
+        },
+        {
+          text: "Colorado",
+          value: "Colorado",
+          isVisible: false,
+          disabled: true,
+        },
+      ],
+    };
   },
   computed: {
     ...mapGetters({
-      emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
-      isFeedbackPopupOpened: 'dashboard/isPopupOpened'
+      emailTemplateLogo: "whitelabel/getEmailTemplateLogoUrl",
+      isFeedbackPopupOpened: "dashboard/isPopupOpened",
     }),
     getGenerateButtonLabel() {
-      const isLanding = this.templateType === 'landing'
+      const isLanding = this.templateType === "landing";
       if (isLanding) {
-        return this.isEmailGenerating ? 'Generating Landing Page...' : 'Generate Landing Page'
+        return this.isEmailGenerating ? "Generating Landing Page..." : "Generate Landing Page";
       }
-      return this.isEmailGenerating ? 'Generating Email Template...' : 'Generate Email Template'
+      return this.isEmailGenerating ? "Generating Email Template..." : "Generate Email Template";
     },
     getGenerateEmailButtonStyle() {
       return this.aiTemplateText.length > 0 &&
         this.aiTemplateText.length <= 500 &&
         !this.isEmailGenerating &&
         this.languageTypeResourceId
-        ? { opacity: 1, pointerEvents: '' }
-        : { opacity: 0.5, pointerEvents: 'none' }
+        ? { opacity: 1, pointerEvents: "" }
+        : { opacity: 0.5, pointerEvents: "none" };
     },
     getAITemplateTextAreaPlaceholder() {
-      return this.templateType === 'landing'
-        ? 'Describe the scenario and key details for the phishing simulation landing page you want to generate.'
-        : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
+      return this.templateType === "landing"
+        ? "Describe the scenario and key details for the phishing simulation landing page you want to generate."
+        : "Describe the scenario and key details for the phishing simulation email you want to generate.";
     },
     getLoaderTitle() {
-      return this.templateType === 'landing'
-        ? 'AI Ally is carefully crafting your Landing Page template'
-        : 'AI Ally is carefully crafting your Email template'
+      return this.templateType === "landing"
+        ? "AI Ally is carefully crafting your Landing Page template"
+        : "AI Ally is carefully crafting your Email template";
     },
     attachmentExtensions() {
-      return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
+      return this.extensions ? this.extensions : ["gif", "jpg", "jpeg", "png", "bmp"];
     },
     attachments() {
       if (
@@ -723,68 +912,71 @@ export default {
         !!this.importedEmailAttachments &&
         this.importedEmailAttachments?.length
       ) {
-        return [...this.attachmentFiles, ...this.importedEmailAttachments]
+        return [...this.attachmentFiles, ...this.importedEmailAttachments];
       }
       if (!!this.attachmentFiles && this.attachmentFiles?.length) {
-        return [...this.attachmentFiles]
+        return [...this.attachmentFiles];
       }
-      return []
+      return [];
     },
     isMergeTagSubject() {
-      return this.isNotificationTemplate && this.isEnrollmentCategorySelected
+      return this.isNotificationTemplate && this.isEnrollmentCategorySelected;
     },
     getSubjectSubtitle() {
-      if (!this.isMergeTagSubject) return undefined
-      return `Define a subject for the notification email. Use {ENROLLMENT_NAME} merge tag as a variable for the notification email subject`
+      if (!this.isMergeTagSubject) return undefined;
+      return `Define a subject for the notification email. Use {ENROLLMENT_NAME} merge tag as a variable for the notification email subject`;
     },
     getSubjectRules() {
       if (this.isMergeTagSubject) {
-        return [...this.subjectRules, ...this.mergeTagRules]
+        return [...this.subjectRules, ...this.mergeTagRules];
       }
-      return this.subjectRules
+      return this.subjectRules;
     },
     feedbackDialog: {
       get() {
-        return this.isFeedbackPopupOpened
+        return this.isFeedbackPopupOpened;
       },
       set(newValue) {
-        this.changeFeedbackPopup(newValue)
-      }
-    }
+        this.changeFeedbackPopup(newValue);
+      },
+    },
   },
   watch: {
     activeBlockManagerComponents() {
-      this.grapeJsKey = `${createRandomCryptStringNumber()}-key`
+      this.grapeJsKey = `${createRandomCryptStringNumber()}-key`;
     },
     template: {
       handler(val) {
         this.previewTemplate =
-          val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
+          val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || "") || "";
       },
-      immediate: true
+      immediate: true,
     },
     prompt(val) {
-      if (val !== this.aiTemplateText) this.aiTemplateText = val || ''
+      if (val !== this.aiTemplateText) this.aiTemplateText = val || "";
     },
     aiTemplateText(val) {
-      this.$emit('update:prompt', val || '')
-    }
+      this.$emit("update:prompt", val || "");
+    },
   },
   mounted() {
-    this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
-    this.setDefaultTemplate()
-    this.$emit('handleInitialTemplate', this.defaultTemplate)
+    this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML;
+    this.setDefaultTemplate();
+    this.$emit("handleInitialTemplate", this.defaultTemplate);
   },
   beforeDestroy() {
-    if (this.timeoutId) clearTimeout(this.timeoutId)
+    if (this.timeoutId) clearTimeout(this.timeoutId);
   },
   methods: {
-    ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    ...mapActions({ changeFeedbackPopup: "dashboard/changeFeedbackPopup" }),
+    handleStateChange(state) {
+      this.$emit("update:selectedLocale", state.value);
+    },
     handleGenerateEmail() {
-      this.isEmailGenerating = true
+      this.isEmailGenerating = true;
       document
-        ?.querySelector('#email-template-content')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+        ?.querySelector("#email-template-content")
+        ?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,
@@ -794,150 +986,150 @@ export default {
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
         methodTypeId: parseInt(this.methodTypeId),
-        isPlainText: !this.isPlainText
-      }
-      this.$emit('update:isAssistedByAITemplate', true)
-      this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
-      if (this.templateType === 'landing') {
+        isPlainText: !this.isPlainText,
+      };
+      this.$emit("update:isAssistedByAITemplate", true);
+      this.$emit("update:aiAssistantRemainingRight", this.aiAssistantRemainingRight - 1);
+      if (this.templateType === "landing") {
         generateAILandingPageTemplate(payload).then((response) => {
           if (response?.data?.data?.isSuccess) {
-            this.callForGetGeneratedAILandingPageTemplate()
+            this.callForGetGeneratedAILandingPageTemplate();
           }
-        })
+        });
       } else {
         generateAIEmailTemplate(payload).then((response) => {
           if (response?.data?.data?.isSuccess) {
-            this.callForGetGeneratedAIEmailTemplate()
+            this.callForGetGeneratedAIEmailTemplate();
           }
-        })
+        });
       }
     },
     callForGetGeneratedAIEmailTemplate() {
       getGeneratedAIEmailTemplate()
         .then((response) => {
-          const { template, subject } = response?.data?.data || {}
+          const { template, subject } = response?.data?.data || {};
           this.generatedTemplates.push({
             text: this.aiTemplateText,
             content: template,
             subject,
             isPlainText: this.isPlainText,
-            languageTypeResourceId: this.languageTypeResourceId
-          })
-          this.$emit('update:subject', subject)
-          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
-          this.$emit('update:template', template)
-          this.isEmailGenerating = false
+            languageTypeResourceId: this.languageTypeResourceId,
+          });
+          this.$emit("update:subject", subject);
+          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1;
+          this.$emit("update:template", template);
+          this.isEmailGenerating = false;
         })
         .catch(() => {
-          this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
-        })
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000);
+        });
     },
     callForGetGeneratedAILandingPageTemplate() {
       getGeneratedAILandingPageTemplate()
         .then((response) => {
-          const template = response?.data?.data || {}
+          const template = response?.data?.data || {};
           this.generatedTemplates.push({
             text: this.aiTemplateText,
             content: template,
-            languageTypeResourceId: this.languageTypeResourceId
-          })
-          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
-          this.$emit('update:template', template)
-          this.isEmailGenerating = false
+            languageTypeResourceId: this.languageTypeResourceId,
+          });
+          this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1;
+          this.$emit("update:template", template);
+          this.isEmailGenerating = false;
         })
         .catch(() => {
-          this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
-        })
+          this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000);
+        });
     },
     setActiveGeneratedTemplate(index) {
-      this.activeGeneratedTemplateIndex = index
-      this.aiTemplateText = this.generatedTemplates[index].text
-      this.$emit('update:isPlainText', this.generatedTemplates[index].isPlainText)
+      this.activeGeneratedTemplateIndex = index;
+      this.aiTemplateText = this.generatedTemplates[index].text;
+      this.$emit("update:isPlainText", this.generatedTemplates[index].isPlainText);
       this.$emit(
-        'update:languageTypeResourceId',
+        "update:languageTypeResourceId",
         this.generatedTemplates[index].languageTypeResourceId
-      )
-      this.$emit('update:template', this.generatedTemplates[index].content)
-      this.$emit('update:subject', this.generatedTemplates[index].subject)
+      );
+      this.$emit("update:template", this.generatedTemplates[index].content);
+      this.$emit("update:subject", this.generatedTemplates[index].subject);
     },
     handleAiAssistantBadgeClick(index) {
       this.aiTemplateText =
-        this.templateType === 'landing'
+        this.templateType === "landing"
           ? this.landingPageBadgeContents[index].content
-          : this.badgeContents[index].content
+          : this.badgeContents[index].content;
     },
     handleRenameItem() {
-      this.$emit('handleRenameAttachment')
+      this.$emit("handleRenameAttachment");
     },
     handleDeleteItem() {
-      this.$emit('handleDeleteAttachment')
+      this.$emit("handleDeleteAttachment");
     },
     setInitialTemplateData() {
       setTimeout(() => {
-        this.initialTemplate = this.$refs?.grapesJsPostIncident?.getGrapesEditorContent?.() || ''
-      }, 1000)
+        this.initialTemplate = this.$refs?.grapesJsPostIncident?.getGrapesEditorContent?.() || "";
+      }, 1000);
     },
     handleFileDelete(index) {
-      this.$emit('handleAttachmentRemove', { item: this.attachments[index], index })
+      this.$emit("handleAttachmentRemove", { item: this.attachments[index], index });
     },
     onFileChanged(file) {
-      this.$emit('setAttachmentFile', file)
+      this.$emit("setAttachmentFile", file);
     },
     changeTabStatus(index) {
-      this.tab = index
+      this.tab = index;
     },
     editHtmlTemplate() {
-      this.toggleShowGrapesModal()
+      this.toggleShowGrapesModal();
     },
     setDefaultTemplate() {
-      this.$emit('update:template', this.defaultTemplate)
+      this.$emit("update:template", this.defaultTemplate);
     },
     toggleShowGrapesModal(isSubmitted = false) {
       if (!this.showGrapesModal) {
-        this.changeGrapesModalStatus()
-        this.setInitialTemplateData()
-        return
+        this.changeGrapesModalStatus();
+        this.setInitialTemplateData();
+        return;
       }
       if (!this.$refs.grapesJsPostIncident) {
-        return this.changeGrapesModalStatus()
+        return this.changeGrapesModalStatus();
       }
-      const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-      const isChanged = isDifferent(currentTemplate, this.initialTemplate)
+      const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent();
+      const isChanged = isDifferent(currentTemplate, this.initialTemplate);
       if (!isChanged || isSubmitted) {
-        this.destroyPostIncidentEditor()
+        this.destroyPostIncidentEditor();
       } else {
-        this.$store.dispatch('common/setIsShowLeavingDialog', {
+        this.$store.dispatch("common/setIsShowLeavingDialog", {
           show: true,
           callback: () => {
-            this.destroyPostIncidentEditor()
-          }
-        })
+            this.destroyPostIncidentEditor();
+          },
+        });
       }
     },
     destroyPostIncidentEditor() {
-      this?.$refs?.grapesJsPostIncident?.destroyEditor()
-      this.changeGrapesModalStatus()
+      this?.$refs?.grapesJsPostIncident?.destroyEditor();
+      this.changeGrapesModalStatus();
     },
     changeGrapesModalStatus() {
-      this.showGrapesModal = !this.showGrapesModal
-      this.$emit('template-edit', this.showGrapesModal)
+      this.showGrapesModal = !this.showGrapesModal;
+      this.$emit("template-edit", this.showGrapesModal);
     },
     saveGrapeJs() {
-      const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      const template = this.$refs.grapesJsPostIncident.getGrapesEditorContent();
       if (
         this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT ||
         this.templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
       ) {
         if (!template.includes(qrCodeString)) {
-          return this.$emit('showErrorDialog')
+          return this.$emit("showErrorDialog");
         }
       }
-      this.$emit('update:template', template)
+      this.$emit("update:template", template);
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
-        this.toggleShowGrapesModal(true)
-      }, 100)
-    }
-  }
-}
+        this.toggleShowGrapesModal(true);
+      }, 100);
+    },
+  },
+};
 </script>

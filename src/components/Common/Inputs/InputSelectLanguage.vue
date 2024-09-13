@@ -15,6 +15,7 @@
     :placeholder="placeholder"
     :hide-details="hideDetails"
     :rules="rules"
+    :label="label"
     @input="handleLanguageChange"
   />
 </template>
@@ -80,7 +81,10 @@ export default {
     },
     rules: {
       type: Array
-    }
+    },
+    label: {
+      type: String
+    },
   },
   methods: {
     handleLanguageChange(newVal) {
