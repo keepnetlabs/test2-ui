@@ -411,6 +411,7 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 0
             }
@@ -421,6 +422,7 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 1
             }
@@ -431,6 +433,7 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 2
             }
@@ -441,6 +444,7 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 3
             }
