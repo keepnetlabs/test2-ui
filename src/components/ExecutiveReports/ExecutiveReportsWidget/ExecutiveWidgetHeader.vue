@@ -14,8 +14,20 @@
         @click="handleEdit"
         >mdi-cog</VIcon
       >
-      <VIcon class="executive-widget-header__right-icon ml-2" color="#757575" @click="handleDelete"
+      <VIcon
+        v-if="!isDashboardWidget"
+        class="executive-widget-header__right-icon ml-2"
+        color="#757575"
+        @click="handleDelete"
         >mdi-close</VIcon
+      >
+      <VIcon
+        v-else
+        class="widget__header-icon ml-1"
+        style="position: absolute; font-size: 16px;"
+        small
+        @click="handleDelete"
+        >mdi-close-circle</VIcon
       >
     </div>
     <div v-else-if="!editMode && lastUpdated" class="executive-widget-header__right-date">
@@ -41,6 +53,10 @@ export default {
     lastUpdated: {
       type: String,
       default: ''
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

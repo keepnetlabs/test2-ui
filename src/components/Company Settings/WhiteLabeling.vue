@@ -94,121 +94,123 @@
           :slots="{ primaryAction: false, secondaryAction: false }"
         />
       </form-group>
-      <form-group :title="labels.MainLogo" :sub-title="labels.MainLogoSubTitle">
-        <k-file-upload
-          key="mainLogo"
-          id="input--whitelabeling-main-logo"
-          :class="getFileUploadClasses(getMainLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
-          ref="refMainLogo"
-          :extensions="['png', 'jpg', 'svg']"
-          @inputFile="onMenuLogoChange"
-          :size="2"
-        />
-        <v-list-item
-          v-if="getMainLogo"
-          class="px-0 add-in-settings__list-item add-in-settings__logo-container"
-        >
-          <v-list-item-content>
-            <div>
-              <div class="add-in-settings__image-container">
-                <img
-                  class="add-in-settings__image"
-                  :src="getImagePreview(getMainLogo)"
-                  alt="logo-preview"
-                />
+      <div :key="fileUploadKey">
+        <form-group :title="labels.MainLogo" :sub-title="labels.MainLogoSubTitle">
+          <k-file-upload
+            key="mainLogo"
+            id="input--whitelabeling-main-logo"
+            :class="getFileUploadClasses(getMainLogo)"
+            hint="Upload png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
+            ref="refMainLogo"
+            :extensions="['png', 'jpg', 'svg']"
+            @inputFile="onMenuLogoChange"
+            :size="2"
+          />
+          <v-list-item
+            v-if="getMainLogo"
+            class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+          >
+            <v-list-item-content>
+              <div>
+                <div class="add-in-settings__image-container">
+                  <img
+                    class="add-in-settings__image"
+                    :src="getImagePreview(getMainLogo)"
+                    alt="logo-preview"
+                  />
+                </div>
               </div>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </form-group>
-      <form-group
-        title="Minimized Menu Logo"
-        sub-title="Appears on the minimized menu as platform logo"
-      >
-        <k-file-upload
-          key="minimizedLogo"
-          id="input--whitelabeling-minimized-logo"
-          :class="getFileUploadClasses(getMinimizedLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 40px * 40px. Max. file size 2MB"
-          ref="refMinimizedLogo"
-          :extensions="['png', 'jpg', 'svg']"
-          @inputFile="onMinimizedLogoChange"
-          :size="2"
-        />
-        <v-list-item
-          v-if="getMinimizedLogo"
-          class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+            </v-list-item-content>
+          </v-list-item>
+        </form-group>
+        <form-group
+          title="Minimized Menu Logo"
+          sub-title="Appears on the minimized menu as platform logo"
         >
-          <v-list-item-content>
-            <div>
-              <div class="add-in-settings__image-container">
-                <img
-                  class="add-in-settings__image"
-                  :src="getImagePreview(getMinimizedLogo)"
-                  alt="logo-preview"
-                />
+          <k-file-upload
+            key="minimizedLogo"
+            id="input--whitelabeling-minimized-logo"
+            :class="getFileUploadClasses(getMinimizedLogo)"
+            hint="Upload png, jpg, svg. Suggested size: 40px * 40px. Max. file size 2MB"
+            ref="refMinimizedLogo"
+            :extensions="['png', 'jpg', 'svg']"
+            @inputFile="onMinimizedLogoChange"
+            :size="2"
+          />
+          <v-list-item
+            v-if="getMinimizedLogo"
+            class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+          >
+            <v-list-item-content>
+              <div>
+                <div class="add-in-settings__image-container">
+                  <img
+                    class="add-in-settings__image"
+                    :src="getImagePreview(getMinimizedLogo)"
+                    alt="logo-preview"
+                  />
+                </div>
               </div>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </form-group>
-      <form-group title="Favicon" sub-title="Favicon for browser tab">
-        <k-file-upload
-          key="favIcon"
-          id="input--whitelabeling-fav-icon"
-          :class="getFileUploadClasses(getFavIcon)"
-          hint="Upload .ico file. Suggested size: 32px * 32px. Max. file size 2MB"
-          ref="refFavIcon"
-          :extensions="['ico']"
-          @inputFile="onFavIconChange"
-          :size="2"
-        />
-        <v-list-item
-          v-if="getFavIcon"
-          class="px-0 add-in-settings__list-item add-in-settings__logo-container"
-        >
-          <v-list-item-content>
-            <div>
-              <div class="add-in-settings__image-container">
-                <img
-                  class="add-in-settings__image"
-                  :src="getImagePreview(getFavIcon)"
-                  alt="logo-preview"
-                />
+            </v-list-item-content>
+          </v-list-item>
+        </form-group>
+        <form-group title="Favicon" sub-title="Favicon for browser tab">
+          <k-file-upload
+            key="favIcon"
+            id="input--whitelabeling-fav-icon"
+            :class="getFileUploadClasses(getFavIcon)"
+            hint="Upload .ico file. Suggested size: 32px * 32px. Max. file size 2MB"
+            ref="refFavIcon"
+            :extensions="['ico']"
+            @inputFile="onFavIconChange"
+            :size="2"
+          />
+          <v-list-item
+            v-if="getFavIcon"
+            class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+          >
+            <v-list-item-content>
+              <div>
+                <div class="add-in-settings__image-container">
+                  <img
+                    class="add-in-settings__image"
+                    :src="getImagePreview(getFavIcon)"
+                    alt="logo-preview"
+                  />
+                </div>
               </div>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </form-group>
-      <form-group title="Notification Template Logo" sub-title="Default logo for email templates">
-        <k-file-upload
-          id="input--whitelabeling-notification-template-logo"
-          key="emailTemplateLogo"
-          :class="getFileUploadClasses(getEmailTemplateLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 320px * 320px. Max. file size 2MB"
-          ref="refNotificationTemplateLogo"
-          :extensions="['png', 'jpg', 'svg']"
-          @inputFile="onNotificationTemplateLogoChange"
-          :size="2"
-        />
-        <v-list-item
-          v-if="getEmailTemplateLogo"
-          class="px-0 add-in-settings__list-item add-in-settings__logo-container"
-        >
-          <v-list-item-content>
-            <div>
-              <div class="add-in-settings__image-container">
-                <img
-                  class="add-in-settings__image"
-                  :src="getImagePreview(getEmailTemplateLogo)"
-                  alt="logo-preview"
-                />
+            </v-list-item-content>
+          </v-list-item>
+        </form-group>
+        <form-group title="Notification Template Logo" sub-title="Default logo for email templates">
+          <k-file-upload
+            id="input--whitelabeling-notification-template-logo"
+            key="emailTemplateLogo"
+            :class="getFileUploadClasses(getEmailTemplateLogo)"
+            hint="Upload png, jpg, svg. Suggested size: 320px * 320px. Max. file size 2MB"
+            ref="refNotificationTemplateLogo"
+            :extensions="['png', 'jpg', 'svg']"
+            @inputFile="onNotificationTemplateLogoChange"
+            :size="2"
+          />
+          <v-list-item
+            v-if="getEmailTemplateLogo"
+            class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+          >
+            <v-list-item-content>
+              <div>
+                <div class="add-in-settings__image-container">
+                  <img
+                    class="add-in-settings__image"
+                    :src="getImagePreview(getEmailTemplateLogo)"
+                    alt="logo-preview"
+                  />
+                </div>
               </div>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </form-group>
+            </v-list-item-content>
+          </v-list-item>
+        </form-group>
+      </div>
       <form-group title="Support Email Address" sub-title="Email address of your support service">
         <input-email
           v-model.trim="formValues.supportEmailAddress"
@@ -339,7 +341,7 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { scrollToComponent } from '@/utils/functions'
+import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
@@ -347,7 +349,29 @@ import { getWhiteLabel, checkDNS } from '@/api/whitelabel'
 import WhiteLabelingDomainDialog from '@/components/Company Settings/WhiteLabelingDomainDialog'
 import { mapGetters } from 'vuex'
 import AlertBox from '@/components//AlertBox'
-
+const formValues = {
+  brandName: '',
+  mainDomainUrl: '',
+  mainDomainProtocol: 'https://',
+  mainLogoUrl: null,
+  mainLogoFile: null,
+  minimizedMenuLogoUrl: null,
+  minimizedMenuLogoFile: null,
+  faviconUrl: null,
+  favIconFile: null,
+  supportEmailAddress: '',
+  footerPrivacyPolicyUrl: '',
+  footerTermsAndConditionsUrl: '',
+  footerEulaUrl: '',
+  footerCookiePolicyUrl: '',
+  releaseNotesUrl: '',
+  pointingUrl: '',
+  isShowReleaseVersionNumber: true,
+  isShowReleaseNotes: true,
+  emailTemplateLogoUrl: null,
+  emailTemplateLogoFile: null,
+  acceptDnsRecordSettings: false
+}
 export default {
   name: 'WhiteLabeling',
   components: {
@@ -384,29 +408,8 @@ export default {
       isResetToDefaultActionButtonDisabled: false,
       resetToDefaultWhiteLabelingDialogStatus: false,
       acceptedDnsRecordSettingsDomain: '',
-      formValues: {
-        brandName: '',
-        mainDomainUrl: '',
-        mainDomainProtocol: 'https://',
-        mainLogoUrl: null,
-        mainLogoFile: null,
-        minimizedMenuLogoUrl: null,
-        minimizedMenuLogoFile: null,
-        faviconUrl: null,
-        favIconFile: null,
-        supportEmailAddress: '',
-        footerPrivacyPolicyUrl: '',
-        footerTermsAndConditionsUrl: '',
-        footerEulaUrl: '',
-        footerCookiePolicyUrl: '',
-        releaseNotesUrl: '',
-        pointingUrl: '',
-        isShowReleaseVersionNumber: true,
-        isShowReleaseNotes: true,
-        emailTemplateLogoUrl: null,
-        emailTemplateLogoFile: null,
-        acceptDnsRecordSettings: false
-      },
+      formValues: JSON.parse(JSON.stringify(formValues)),
+      fileUploadKey: `key-${createRandomCryptStringNumber()}`,
       mainDomainItems: ['https://', 'http://'],
       configureCompanyWhitelabelingResourceId: '',
       labels,
@@ -579,6 +582,8 @@ export default {
           this.toggleWhiteLabelingDialog()
           this.isResetToDefaultActionButtonDisabled = false
           this.callForData()
+          this.formValues = JSON.parse(JSON.stringify(formValues))
+          this.fileUploadKey = `key-${createRandomCryptStringNumber()}`
         })
       }
     },

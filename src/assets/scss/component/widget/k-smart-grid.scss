@@ -12,3 +12,8 @@
         }
     }
 }
+#available-widgets + .vue-grid-layout{
+  .executive-widget-container{
+    border:none !important;
+  }
+}
