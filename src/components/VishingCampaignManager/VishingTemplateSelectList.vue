@@ -465,7 +465,9 @@ export default {
             (language) => language.language === item.language && language.name === item.voice
           )
           if (voiceIndex !== -1) {
-            this.isTextToSpeechCompatible = this.languages[voiceIndex].voiceProviderTypeId === 2
+            this.isTextToSpeechCompatible = [2, 3].includes(
+              this.languages[voiceIndex].voiceProviderTypeId
+            )
             this.voiceResourceId = this.languages[voiceIndex].resourceId
           }
           this.$emit('selectedTemplateChange', { ...item, ...this.template })

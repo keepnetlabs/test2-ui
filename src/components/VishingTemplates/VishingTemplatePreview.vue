@@ -149,8 +149,9 @@ export default {
                 voice: this.languages[voiceIndex].name
               }
               this.campaignVoiceResourceId = this.templateData.vishingLanguageResourceId
-              this.campaignTextToSpeechCompatible =
-                this.languages[voiceIndex].voiceProviderTypeId === 2
+              this.campaignTextToSpeechCompatible = [2, 3].includes(
+                this.languages[voiceIndex].voiceProviderTypeId
+              )
             }
           }
         })

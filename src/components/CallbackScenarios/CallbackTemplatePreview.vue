@@ -110,8 +110,9 @@ export default {
           )
           this.templateData.language = this.languageItems[languageIndex].language
           this.templateData.voice = this.languageItems[languageIndex].name
-          this.isTextToSpeechCompatible =
-            this.languageItems[languageIndex].voiceProviderTypeId === 2
+          this.isTextToSpeechCompatible = [2, 3].includes(
+            this.languageItems[languageIndex].voiceProviderTypeId
+          )
         })
         .finally(() => {
           this.isLoading = false

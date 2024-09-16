@@ -599,7 +599,7 @@ export default {
       )
 
       if (callbackLanguageIndex !== -1)
-        return this.languageItems[callbackLanguageIndex].voiceProviderTypeId === 2
+        return [2, 3].includes(this.languageItems[callbackLanguageIndex].voiceProviderTypeId)
       return false
     },
     getVoiceItems() {

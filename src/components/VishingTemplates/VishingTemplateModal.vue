@@ -572,7 +572,7 @@ export default {
       )
 
       if (vishingLanguageIndex !== -1)
-        return this.languageItems[vishingLanguageIndex].voiceProviderTypeId === 2
+        return [2, 3].includes(this.languageItems[vishingLanguageIndex].voiceProviderTypeId)
       return false
     },
     getVoiceItems() {
