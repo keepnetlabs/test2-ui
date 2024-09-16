@@ -241,7 +241,6 @@ export default {
           }
         })
       })
-      console.log('yLabels', yLabels)
       yLabels.forEach((lIndex, index) => {
         const multiplier = stepSize * index
         data[0].widgetDatas[0].values.forEach((item) => {
@@ -268,7 +267,6 @@ export default {
       })
       companyAvgLinkClickData.splice(4)
       companyAvgDataSubmitData.splice(4)
-      console.log('companyAvgLinkClickData', companyAvgLinkClickData)
       yLabels = yLabels.reverse()
       const companyAvg = new Image()
       companyAvg.src = require('../../../assets/img/company-avg.svg')
