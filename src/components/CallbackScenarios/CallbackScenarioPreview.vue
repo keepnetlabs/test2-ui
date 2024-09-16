@@ -214,7 +214,9 @@ export default {
           this.callbackTemplateParams.steps.splice(0, 1)
           this.callbackTemplateParams.language = this.languages[languageIndex].language
           this.callbackTemplateParams.voice = this.languages[languageIndex].name
-          this.isTextToSpeechCompatible = this.languages[languageIndex].voiceProviderTypeId === 2
+          this.isTextToSpeechCompatible = [2, 3].includes(
+            this.languages[languageIndex].voiceProviderTypeId
+          )
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

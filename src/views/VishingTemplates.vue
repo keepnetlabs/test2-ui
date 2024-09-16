@@ -358,8 +358,9 @@ export default {
         )
         if (vishingLanguageIndex !== -1) {
           this.voiceResourceId = this.languageItems[vishingLanguageIndex].resourceId
-          this.isTextToSpeechCompatible =
-            this.languageItems[vishingLanguageIndex].voiceProviderTypeId === 2 || false
+          this.isTextToSpeechCompatible = [2, 3].includes(
+            this.languageItems[vishingLanguageIndex].voiceProviderTypeId
+          )
           this.selectedTemplateLanguage = val.language
           this.selectedTemplateVoice = val.voice
         }
