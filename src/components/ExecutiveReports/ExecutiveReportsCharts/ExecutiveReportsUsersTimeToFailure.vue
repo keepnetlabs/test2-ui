@@ -265,8 +265,8 @@ export default {
           }
         })
       })
-      companyAvgLinkClickData.splice(4)
-      companyAvgDataSubmitData.splice(4)
+      //companyAvgLinkClickData.splice(4)
+      //companyAvgDataSubmitData.splice(4)
       yLabels = yLabels.reverse()
       const companyAvg = new Image()
       companyAvg.src = require('../../../assets/img/company-avg.svg')
