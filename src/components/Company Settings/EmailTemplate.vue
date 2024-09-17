@@ -296,9 +296,9 @@
     </div>
     <div
       v-if="!onlyGrapes && isNotificationEnrollment"
-      :class="['mx-4', isHorizontalFormGroups ? 'pt-2' : '']"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']"
     >
-      <FormGroup title="CC" style="max-width: unset;">
+      <FormGroup title="CC:" style="max-width: unset;">
         <KSelect
           :value="ccAddresses"
           id="input--threat-sharing-incident-share-email"
