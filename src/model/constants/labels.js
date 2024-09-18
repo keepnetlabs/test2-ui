@@ -598,7 +598,7 @@ export const labels = {
   DurationSub: 'Select the time period you want to keep this campaign active',
   TrackingDuration: 'Tracking Duration',
   TrackingDurationSub:
-    'Define how long you would like to track user activities for each recurrences of this campaign',
+    'Define how long you would like to track user activities for each recurrence of this campaign',
   InvestigationDurationSub: 'Select how many days the investigation will run',
   PhishingScenariosSub: 'Select scenario to use in this campaign',
   PhishingCampaignInfo: 'Phishing Campaign Info',
