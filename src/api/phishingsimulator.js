@@ -548,6 +548,9 @@ export const getAILandingPageTemplateLimit = () => {
 export const getGeneratedAIEmailTemplate = () => {
   return testRequest.get(`/phishing-simulator/email-templates`)
 }
+export const getAIGenerationOptions = () => {
+  return testRequest.get(`/phishing-simulator/email-templates/ai-generation-options`)
+}
 export const getGeneratedAILandingPageTemplate = () => {
   return testRequest.get(`/phishing-simulator/landing-page-template`)
 }

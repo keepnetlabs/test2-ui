@@ -172,8 +172,6 @@
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
                         :language-type-resource-id.sync="formValues.languageTypeResourceId"
-                        :selectedTone.sync="formValues.selectedTone"
-                        :selectedLocale.sync="formValues.selectedLocale"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :method-type-id="getMethodTypeId"
                         :prompt.sync="formValues.prompt"
@@ -306,8 +304,6 @@ export default {
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad',
-        selectedTone: '',
-        selectedLocale: '',
         prompt: ''
       },
       aiAssistantRemainingRights: 0,
