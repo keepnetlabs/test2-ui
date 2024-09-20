@@ -40,6 +40,9 @@
         padding: 24px 24px 16px 24px;
     }
     &__ai-assistant{
+      .v-list-item--disabled {
+        display: none !important;
+      }
       border-radius: 8px !important;
       background: #D0EAFF;
       padding:24px;
@@ -56,6 +59,8 @@
         justify-content: space-between;
       }
       &-textarea{
+        border-top-left-radius: 0px !important;
+        border-top-right-radius: 0px !important;
         .v-input__slot{
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
@@ -67,6 +72,13 @@
           scrollbar-width: none;
           margin-top: 8px !important;
         }
+      }
+      &__selects {
+        display: flex;
+        align-items: center;
+        gap:8px;
+        background-color: #F2F2F2;
+        padding: 8px;
       }
       &-left{
         display: flex;
@@ -106,7 +118,7 @@
           font-weight: 400;
           color:#383B41;
           background: #C4E3FF;
-          padding:4px;
+          padding:8px;
           width:100%;
           line-height: 19px;
           cursor:pointer;
