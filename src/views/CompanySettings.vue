@@ -36,6 +36,16 @@
           ref="refNotificationTemplates"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getGoogleWorkspaceProvisioningPermissions"
+        label="Google User Provisioning"
+        name="google-user-provisioning"
+        id="google-user-provisioning-content"
+      >
+        <GoogleUserProvisioning
+          v-if="tab === 'google-user-provisioning'"
+          ref="refGoogleUserProvisioning"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getRestApiSearchPermissions"
         label="Rest API"
         name="custom-api"
@@ -122,9 +132,11 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
 export default {
   name: 'CompanySettings',
   components: {
+    GoogleUserProvisioning,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -149,6 +161,9 @@ export default {
     ...mapGetters({
       getSMTPSettingsSearchPermissions: 'permissions/getSMTPSettingsSearchPermissions',
       getNotificationTemplatesSearchPermissions:
+        'permissions/getNotificationTemplatesSearchPermissions',
+      // TODO: Change permissions
+      getGoogleWorkspaceProvisioningPermissions:
         'permissions/getNotificationTemplatesSearchPermissions',
       getRestApiSearchPermissions: 'permissions/getRestApiSearchPermissions',
       getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
@@ -177,6 +192,10 @@ export default {
       {
         permission: this.getNotificationTemplatesSearchPermissions,
         name: 'notification-template'
+      },
+      {
+        permission: this.getGoogleWorkspaceProvisioningPermissions,
+        name: 'google-user-provisioning'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
       {
