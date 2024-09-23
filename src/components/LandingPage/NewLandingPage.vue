@@ -204,6 +204,7 @@
                           :ai-assistant-total-right="aiAssistantTotalRights"
                           :language-type-resource-id.sync="formValues.languageTypeResourceId"
                           :is-assisted-by-a-i-template.sync="isAssistedByAI"
+                          :isAIAllyEnabled="isAIAllyEnabled"
                           :active-block-manager-components="activeBlockManagerComponents"
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
@@ -337,6 +338,9 @@ export default {
     },
     landingPageData: {
       type: Object
+    },
+    isAIAllyEnabled: {
+      type: Boolean
     }
   },
   data() {

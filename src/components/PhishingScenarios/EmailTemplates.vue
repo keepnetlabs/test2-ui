@@ -7,6 +7,7 @@
       :email-template-id="emailTemplateId"
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
+      :isAIAllyEnabled="isAIAllyEnabled"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
@@ -173,6 +174,11 @@ export default {
     NewEmailTemplates
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    isAIAllyEnabled: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       isShowRenameAttachmentDialog: false,
