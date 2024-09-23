@@ -28,7 +28,7 @@
       </template>
     </app-modal>
     <div
-      v-if="isAiAssistant"
+      v-if="isAiAssistant && isAIAllyEnabled"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
@@ -600,6 +600,7 @@ export default {
     'isHorizontalFormGroups',
     'showNameField',
     'isAiAssistant',
+    'isAIAllyEnabled',
     'aiAssistant',
     'aiAssistantRemainingRight',
     'aiAssistantTotalRight',
