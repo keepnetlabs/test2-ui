@@ -9,6 +9,9 @@
       >
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
+      <el-tab-pane label="AI Ally Settings" name="ai-ally-settings" id="ai-ally-settings-content">
+        <AiAllySettings v-if="tab === 'ai-ally-settings'"
+      /></el-tab-pane>
       <el-tab-pane
         v-if="getSMTPSettingsSearchPermissions"
         label="SMTP Settings"
@@ -122,9 +125,11 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import AiAllySettings from '@/components/Company Settings/AiAllySettings'
 export default {
   name: 'CompanySettings',
   components: {
+    AiAllySettings,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -166,6 +171,7 @@ export default {
   created() {
     this.tab = [
       { permission: true, name: 'privacy' },
+      { permission: true, name: 'ai-ally-settings' },
       {
         permission: this.getSMTPSettingsSearchPermissions,
         name: 'smtp-settings'
