@@ -2,7 +2,13 @@
   <Fragment>
     <DatatableLoading v-if="isLoading" :loading="isLoading" />
     <div v-else class="d-flex flex-column" style="width: 650px;">
-      <VSwitch v-model="isAIAllySettingsEnabled" hide-details color="#2196f3" class="mb-6">
+      <VSwitch
+        v-model="isAIAllySettingsEnabled"
+        hide-details
+        color="#2196f3"
+        class="mb-6"
+        @change="handleAIAllySettingsChange"
+      >
         <template #label>
           <div class="d-flex flex-column ml-6">
             <span style="font-size: 24px; color: #383b41; line-height: 31px;"
@@ -78,13 +84,15 @@ export default {
     }
   },
   watch: {
-    isAIAllySettingsEnabled(val) {
-      if (val) {
-        this.aiAllySettings.psEmailTemplateGenerationAssistant = true
-        this.aiAllySettings.landingPageTemplateGenerationAssistant = true
-      } else {
-        this.aiAllySettings.psEmailTemplateGenerationAssistant = false
-        this.aiAllySettings.landingPageTemplateGenerationAssistant = false
+    aiAllySettings: {
+      deep: true,
+      handler(val) {
+        if (
+          !val.psEmailTemplateGenerationAssistant &&
+          !val.landingPageTemplateGenerationAssistant
+        ) {
+          this.isAIAllySettingsEnabled = false
+        }
       }
     }
   },
@@ -92,6 +100,15 @@ export default {
     this.getAIAllySettings()
   },
   methods: {
+    handleAIAllySettingsChange(val) {
+      if (val) {
+        this.aiAllySettings.psEmailTemplateGenerationAssistant = true
+        this.aiAllySettings.landingPageTemplateGenerationAssistant = true
+      } else {
+        this.aiAllySettings.psEmailTemplateGenerationAssistant = false
+        this.aiAllySettings.landingPageTemplateGenerationAssistant = false
+      }
+    },
     getAIAllySettings() {
       this.isLoading = true
       getAIAllySettings()
