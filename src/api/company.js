@@ -206,7 +206,7 @@ export function saveCompanyDataPrivacy(payload = {}) {
   })
 }
 export function saveAIAllySettings(payload = {}) {
-  return testRequest.put('/companies/ai', payload, {
+  return testRequest.post('/companies/ai', payload, {
     snackbar: COMMON_SNACKBAR
   })
 }
