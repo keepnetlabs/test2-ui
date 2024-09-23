@@ -125,7 +125,7 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
-import AIAllySettings from '@/components/Company Settings/AIAllySettings'
+import AIAllySettings from '@/components/Company Settings/AIAllySettings.vue'
 export default {
   name: 'CompanySettings',
   components: {
