@@ -240,6 +240,7 @@ export default {
             let position = this._chart.canvas.getBoundingClientRect()
 
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
@@ -311,6 +312,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
