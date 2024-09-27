@@ -116,8 +116,8 @@
                 />
                 <KSelect
                   v-if="templateType !== 'landing'"
-                  v-model="toneResourceId"
-                  class="add-in-settings__default-language-select"
+                  :value="toneResourceId"
+                  class="email-template__ai-assistant-tone-select"
                   style="max-width: 160px;"
                   :items="toneOptions"
                   item-text="name"
@@ -128,11 +128,12 @@
                   label="Tone"
                   placeholder="Set a tone"
                   :disabled="isEmailGenerating"
+                  @input="$emit('update:toneResourceId', $event)"
                 ></KSelect>
                 <KSelect
                   v-if="templateType !== 'landing'"
-                  v-model="localizationResourceId"
-                  class="add-in-settings__default-language-select"
+                  :value="localizationResourceId"
+                  class="email-template__ai-assistant-localization-select"
                   style="max-width: 200px;"
                   :items="localeOptions"
                   item-text="name"
@@ -144,8 +145,14 @@
                   placeholder="Set a locale"
                   :selectable="(option) => option.isVisible"
                   :disabled="isEmailGenerating"
-                  :slots="{ item: true }"
+                  :slots="{ item: true, selection: true }"
+                  :value-comparator="handleValueComparator"
+                  @input="$emit('update:localizationResourceId', $event)"
                 >
+                  <template #selection="data">
+                    <span v-if="isUSAStateSelected">USA, {{ getSelectedStateName }}</span>
+                    <span v-else>{{ data.item.name }}</span>
+                  </template>
                   <template #item="data">
                     <VMenu
                       v-if="!!data.item.states"
@@ -161,6 +168,7 @@
                         <div
                           v-on="on"
                           :class="['mail-configuration-select-sources__item-container']"
+                          @click="$emit('update:localizationResourceId', data.item.resourceId)"
                         >
                           <div class="mail-configuration-select-sources__item">
                             <div style="font-size: 14px;" class="mr-2 mr-auto">
@@ -610,6 +618,8 @@ export default {
     'isAssistedByAITemplate',
     'methodTypeId',
     'prompt',
+    'toneResourceId',
+    'localizationResourceId',
     'languageOptions',
     'selectedMethod',
     'isPlainText'
@@ -766,11 +776,10 @@ export default {
       ],
       generatedTemplates: [],
       activeGeneratedTemplateIndex: -1,
-      toneResourceId: '',
-      localizationResourceId: '',
       toneOptions: [],
       localeOptions: [],
-      usaStateResourceIds: []
+      usaStateResourceIds: [],
+      usaResourceId: ''
       // [
       //   {
       //     text: 'United Kingdom',
@@ -872,6 +881,12 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    getSelectedStateName() {
+      return (
+        this.localeOptions?.find?.((item) => item.resourceId === this.localizationResourceId)
+          ?.name || ''
+      )
+    },
     isUSAStateSelected() {
       return this.usaStateResourceIds.includes(this.localizationResourceId)
     },
@@ -968,6 +983,11 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    handleValueComparator(a, b) {
+      if (a === b) return true
+      if (a === this.usaResourceId && this.usaStateResourceIds.includes(b)) return true
+      return false
+    },
     getAIGenerationOptions() {
       getAIGenerationOptions().then((res) => {
         this.toneOptions = res?.data?.data?.tones || []
@@ -986,12 +1006,13 @@ export default {
             }))
           )
           this.usaStateResourceIds = localeOptions[usaIndex].states.map((state) => state.resourceId)
+          this.usaResourceId = localeOptions[usaIndex].resourceId
         }
         this.localeOptions = localeOptions
       })
     },
     handleStateChange(state) {
-      this.localizationResourceId = state.resourceId
+      this.$emit('update:localizationResourceId', state.resourceId)
     },
     handleGenerateEmail() {
       this.isEmailGenerating = true
@@ -1012,17 +1033,20 @@ export default {
         localizationResourceId: this.localizationResourceId
       }
       this.$emit('update:isAssistedByAITemplate', true)
-      this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
       if (this.templateType === 'landing') {
+        delete payload.toneResourceId
+        delete payload.localizationResourceId
         generateAILandingPageTemplate(payload).then((response) => {
           if (response?.data?.data?.isSuccess) {
             this.callForGetGeneratedAILandingPageTemplate()
+            this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
           }
         })
       } else {
         generateAIEmailTemplate(payload).then((response) => {
           if (response?.data?.data?.isSuccess) {
             this.callForGetGeneratedAIEmailTemplate()
+            this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)
           }
         })
       }
