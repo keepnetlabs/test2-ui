@@ -16,6 +16,8 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
   formData.append('isAssistedByAI', payload.isAssistedByAI)
   formData.append('isPlainText', payload.isPlainText)
   formData.append('prompt', payload.prompt)
+  formData.append('toneResourceId', payload.toneResourceId)
+  formData.append('localizationResourceId', payload.localizationResourceId)
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }

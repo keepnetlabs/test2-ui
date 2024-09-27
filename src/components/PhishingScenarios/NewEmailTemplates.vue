@@ -176,6 +176,8 @@
                         :isAIAllyEnabled="isAIAllyEnabled"
                         :method-type-id="getMethodTypeId"
                         :prompt.sync="formValues.prompt"
+                        :toneResourceId.sync="formValues.toneResourceId"
+                        :localizationResourceId.sync="formValues.localizationResourceId"
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
                         :is-plain-text.sync="isPlainText"
@@ -308,7 +310,9 @@ export default {
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad',
-        prompt: ''
+        prompt: '',
+        toneResourceId: '',
+        localizationResourceId: ''
       },
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
