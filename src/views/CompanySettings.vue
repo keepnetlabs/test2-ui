@@ -9,6 +9,9 @@
       >
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
+      <el-tab-pane label="AI Ally Settings" name="ai-ally-settings" id="ai-ally-settings-content">
+        <AIAllySettings v-if="tab === 'ai-ally-settings'"
+      /></el-tab-pane>
       <el-tab-pane
         v-if="getSMTPSettingsSearchPermissions"
         label="SMTP Settings"
@@ -36,7 +39,6 @@
           ref="refNotificationTemplates"
       /></el-tab-pane>
       <el-tab-pane
-        v-if="getGoogleWorkspaceProvisioningPermissions"
         label="Google User Provisioning"
         name="google-user-provisioning"
         id="google-user-provisioning-content"
@@ -133,10 +135,13 @@ import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
 import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
+import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
+
 export default {
   name: 'CompanySettings',
   components: {
     GoogleUserProvisioning,
+    AIAllySettings,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -162,9 +167,6 @@ export default {
       getSMTPSettingsSearchPermissions: 'permissions/getSMTPSettingsSearchPermissions',
       getNotificationTemplatesSearchPermissions:
         'permissions/getNotificationTemplatesSearchPermissions',
-      // TODO: Change permissions
-      getGoogleWorkspaceProvisioningPermissions:
-        'permissions/getNotificationTemplatesSearchPermissions',
       getRestApiSearchPermissions: 'permissions/getRestApiSearchPermissions',
       getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
@@ -181,6 +183,7 @@ export default {
   created() {
     this.tab = [
       { permission: true, name: 'privacy' },
+      { permission: true, name: 'ai-ally-settings' },
       {
         permission: this.getSMTPSettingsSearchPermissions,
         name: 'smtp-settings'
@@ -194,7 +197,7 @@ export default {
         name: 'notification-template'
       },
       {
-        permission: this.getGoogleWorkspaceProvisioningPermissions,
+        permission: true,
         name: 'google-user-provisioning'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },

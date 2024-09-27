@@ -205,3 +205,11 @@ export function saveCompanyDataPrivacy(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function saveAIAllySettings(payload = {}) {
+  return testRequest.post('/companies/ai', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export function getAIAllySettings() {
+  return testRequest.get('/companies/ai')
+}

@@ -7,6 +7,7 @@
       :email-template-id="emailTemplateId"
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
+      :isAIAllyEnabled="isAIAllyEnabled"
       :landing-page-data="landingPageData"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
@@ -166,6 +167,11 @@ export default {
     NewLandingPage
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    isAIAllyEnabled: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       SCENARIO_DELETE_DIALOG_TYPES,

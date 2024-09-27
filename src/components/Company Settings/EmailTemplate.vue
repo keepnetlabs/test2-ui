@@ -28,7 +28,7 @@
       </template>
     </app-modal>
     <div
-      v-if="isAiAssistant"
+      v-if="isAiAssistant && isAIAllyEnabled"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
@@ -37,9 +37,7 @@
       <div class="email-template__ai-assistant-header">
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
-            <VIcon style="font-size: 32px;" color="#00559B">
-              mdi-creation
-            </VIcon>
+            <VIcon style="font-size: 32px;" color="#00559B"> mdi-creation </VIcon>
           </div>
           <div>
             <div class="email-template__ai-assistant-left-title">AI Ally</div>
@@ -65,9 +63,7 @@
               :ripple="false"
               @click="$emit('update:aiAssistant', true)"
             >
-              <VIcon class="cursor-pointer mr-1" color="#fff">
-                mdi-creation
-              </VIcon>
+              <VIcon class="cursor-pointer mr-1" color="#fff"> mdi-creation </VIcon>
               USE AI ALLY
             </VBtn>
           </div>
@@ -101,7 +97,105 @@
             </div>
           </div>
           <div class="email-template__ai-assistant-content__right">
-            <div>
+            <div class="d-flex flex-column">
+              <div class="email-template__ai-assistant__selects">
+                <InputSelectLanguage
+                  v-bind="selectLanguageRules"
+                  style="max-width: 160px;"
+                  :value="languageTypeResourceId"
+                  class="email-template__ai-assistant-footer-left-select"
+                  required
+                  hide-details
+                  item-text="text"
+                  item-value="value"
+                  label="Language"
+                  :items="languageOptions"
+                  :menu-props="{ offsetY: true }"
+                  :disabled="isEmailGenerating"
+                  @input="$emit('update:languageTypeResourceId', $event)"
+                />
+                <KSelect
+                  v-if="templateType !== 'landing'"
+                  v-model="toneResourceId"
+                  class="add-in-settings__default-language-select"
+                  style="max-width: 160px;"
+                  :items="toneOptions"
+                  item-text="name"
+                  item-value="resourceId"
+                  outlined
+                  hide-details
+                  required
+                  label="Tone"
+                  placeholder="Set a tone"
+                  :disabled="isEmailGenerating"
+                ></KSelect>
+                <KSelect
+                  v-if="templateType !== 'landing'"
+                  v-model="localizationResourceId"
+                  class="add-in-settings__default-language-select"
+                  style="max-width: 200px;"
+                  :items="localeOptions"
+                  item-text="name"
+                  item-value="resourceId"
+                  outlined
+                  hide-details
+                  required
+                  label="Locale"
+                  placeholder="Set a locale"
+                  :selectable="(option) => option.isVisible"
+                  :disabled="isEmailGenerating"
+                  :slots="{ item: true }"
+                >
+                  <template #item="data">
+                    <VMenu
+                      v-if="!!data.item.states"
+                      right
+                      offset-x
+                      nudge-top="50"
+                      min-width="240"
+                      max-width="240"
+                      open-on-hover
+                      close-on-content-click
+                    >
+                      <template #activator="{ on }">
+                        <div
+                          v-on="on"
+                          :class="['mail-configuration-select-sources__item-container']"
+                        >
+                          <div class="mail-configuration-select-sources__item">
+                            <div style="font-size: 14px;" class="mr-2 mr-auto">
+                              {{ data.item.name }}
+                            </div>
+                            <v-icon :color="isUSAStateSelected ? '#1976d2' : '#757575'"
+                              >mdi-menu-right</v-icon
+                            >
+                          </div>
+                        </div>
+                      </template>
+                      <VListItem
+                        v-for="state in data.item.states"
+                        :key="state.resourceId"
+                        :class="{
+                          'training-library-filtering-options-parent-list-item': true,
+                          'v-list-item--active': localizationResourceId === state.resourceId
+                        }"
+                        @click="handleStateChange(state)"
+                      >
+                        <VListItemTitle
+                          class="training-library-filtering-options-parent-list-item-title justify-start"
+                        >
+                          {{ state.name }}
+                        </VListItemTitle>
+                      </VListItem>
+                    </VMenu>
+                    <div v-else :class="['mail-configuration-select-sources__item-container']">
+                      <div style="font-size: 14px;" class="mail-configuration-select-sources__item">
+                        {{ data.item.name }}
+                      </div>
+                    </div>
+                  </template>
+                </KSelect>
+              </div>
               <VTextarea
                 v-model.trim="aiTemplateText"
                 class="email-template__ai-assistant-textarea"
@@ -137,28 +231,14 @@
                   </div>
                   <div class="email-template__ai-assistant-footer-method">
                     <VIcon>mdi-information-outline</VIcon>
-                    Selected template method is <span class="fw-600">{{ selectedMethod }}</span>
+                    Selected template method is
+                    <span class="fw-600">{{ selectedMethod }}</span>
                   </div>
                 </template>
               </VTextarea>
             </div>
             <div class="email-template__ai-assistant-footer">
               <div class="email-template__ai-assistant-footer-left">
-                <VForm ref="refSelectLanguage">
-                  <InputSelectLanguage
-                    v-bind="selectLanguageRules"
-                    :value="languageTypeResourceId"
-                    class="email-template__ai-assistant-footer-left-select"
-                    required
-                    hide-details
-                    item-text="text"
-                    item-value="value"
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                    :disabled="isEmailGenerating"
-                    @input="$emit('update:languageTypeResourceId', $event)"
-                  />
-                </VForm>
                 <VCheckbox
                   v-if="templateType !== 'landing'"
                   :value="isPlainText"
@@ -468,10 +548,12 @@ import {
   generateAIEmailTemplate,
   generateAILandingPageTemplate,
   getGeneratedAIEmailTemplate,
-  getGeneratedAILandingPageTemplate
+  getGeneratedAILandingPageTemplate,
+  getAIGenerationOptions
 } from '@/api/phishingsimulator'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
+
 export default {
   name: 'EmailTemplate',
   components: {
@@ -518,10 +600,13 @@ export default {
     'isHorizontalFormGroups',
     'showNameField',
     'isAiAssistant',
+    'isAIAllyEnabled',
     'aiAssistant',
     'aiAssistantRemainingRight',
     'aiAssistantTotalRight',
     'languageTypeResourceId',
+    'selectedTone',
+    'selectedLocale',
     'isAssistedByAITemplate',
     'methodTypeId',
     'prompt',
@@ -680,7 +765,106 @@ export default {
         (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
       ],
       generatedTemplates: [],
-      activeGeneratedTemplateIndex: -1
+      activeGeneratedTemplateIndex: -1,
+      toneResourceId: '',
+      localizationResourceId: '',
+      toneOptions: [],
+      localeOptions: [],
+      usaStateResourceIds: []
+      // [
+      //   {
+      //     text: 'United Kingdom',
+      //     value: 'United Kingdom',
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: 'United States',
+      //     value: 'United States',
+      //     isVisible: true,
+      //     children: [
+      //       {
+      //         text: 'Alabama',
+      //         value: 'Alabama'
+      //       },
+      //       {
+      //         text: 'Alaska',
+      //         value: 'Alaska'
+      //       },
+      //       {
+      //         text: 'Arizona',
+      //         value: 'Arizona'
+      //       },
+      //       {
+      //         text: 'Arkansas',
+      //         value: 'Arkansas'
+      //       },
+      //       {
+      //         text: 'California',
+      //         value: 'California'
+      //       },
+      //       {
+      //         text: 'Colorado',
+      //         value: 'Colorado'
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     text: 'Turkey',
+      //     value: 'Turkey',
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: 'France',
+      //     value: 'France',
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: 'Arabia',
+      //     value: 'Arabia',
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: 'China',
+      //     value: 'China',
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: 'Alabama',
+      //     value: 'Alabama',
+      //     isVisible: false,
+      //     disabled: true
+      //   },
+      //   {
+      //     text: 'Alaska',
+      //     value: 'Alaska',
+      //     isVisible: false,
+      //     disabled: true
+      //   },
+      //   {
+      //     text: 'Arizona',
+      //     value: 'Arizona',
+      //     isVisible: false,
+      //     disabled: true
+      //   },
+      //   {
+      //     text: 'Arkansas',
+      //     value: 'Arkansas',
+      //     isVisible: false,
+      //     disabled: true
+      //   },
+      //   {
+      //     text: 'California',
+      //     value: 'California',
+      //     isVisible: false,
+      //     disabled: true
+      //   },
+      //   {
+      //     text: 'Colorado',
+      //     value: 'Colorado',
+      //     isVisible: false,
+      //     disabled: true
+      //   }
+      // ]
     }
   },
   computed: {
@@ -688,6 +872,9 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    isUSAStateSelected() {
+      return this.usaStateResourceIds.includes(this.localizationResourceId)
+    },
     getGenerateButtonLabel() {
       const isLanding = this.templateType === 'landing'
       if (isLanding) {
@@ -771,6 +958,7 @@ export default {
     }
   },
   mounted() {
+    this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
@@ -780,6 +968,31 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    getAIGenerationOptions() {
+      getAIGenerationOptions().then((res) => {
+        this.toneOptions = res?.data?.data?.tones || []
+        const localeOptions =
+          res?.data?.data?.localizations?.map?.((locale) => ({
+            ...locale,
+            isVisible: true
+          })) || []
+        const usaIndex = localeOptions.findIndex((item) => item.name === 'United States')
+        if (usaIndex !== -1) {
+          localeOptions.push(
+            ...localeOptions[usaIndex].states.map((state) => ({
+              ...state,
+              isVisible: false,
+              disabled: true
+            }))
+          )
+          this.usaStateResourceIds = localeOptions[usaIndex].states.map((state) => state.resourceId)
+        }
+        this.localeOptions = localeOptions
+      })
+    },
+    handleStateChange(state) {
+      this.localizationResourceId = state.resourceId
+    },
     handleGenerateEmail() {
       this.isEmailGenerating = true
       document
@@ -794,7 +1007,9 @@ export default {
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
         methodTypeId: parseInt(this.methodTypeId),
-        isPlainText: !this.isPlainText
+        isPlainText: !this.isPlainText,
+        toneResourceId: this.toneResourceId,
+        localizationResourceId: this.localizationResourceId
       }
       this.$emit('update:isAssistedByAITemplate', true)
       this.$emit('update:aiAssistantRemainingRight', this.aiAssistantRemainingRight - 1)

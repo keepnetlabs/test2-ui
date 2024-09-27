@@ -177,6 +177,9 @@ const whitelabel = {
     resetState(context = {}) {
       context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
     },
+    setState(context = {}, payload) {
+      context.commit('SET_DATA', payload)
+    },
     toggleShowExceedDialog(context) {
       context.commit('SET_SHOW_EXCEED_DIALOG')
     }

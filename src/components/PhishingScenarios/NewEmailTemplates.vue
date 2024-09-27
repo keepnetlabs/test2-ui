@@ -173,6 +173,7 @@
                         :size="5"
                         :language-type-resource-id.sync="formValues.languageTypeResourceId"
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
+                        :isAIAllyEnabled="isAIAllyEnabled"
                         :method-type-id="getMethodTypeId"
                         :prompt.sync="formValues.prompt"
                         :language-options="languageOptions"
@@ -262,6 +263,9 @@ export default {
     },
     emailTemplateId: {
       type: String
+    },
+    isAIAllyEnabled: {
+      type: Boolean
     }
   },
   data() {

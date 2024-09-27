@@ -502,7 +502,11 @@ export default {
             this.isDistributionEnabled = true
             this.formData.distributionDays = response?.data?.data?.distributionDays || 2
           }
-          if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
+          if (
+            this.selectedRow?.status === 'Auto-Enroll' ||
+            (!!enrollmentAutoEnroll && !enrollmentAutoEnroll?.stopTime)
+          )
+            this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
             : this.formData.enrollmentReminder

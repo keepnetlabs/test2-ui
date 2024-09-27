@@ -194,6 +194,7 @@ export default {
             }
             if (tooltipModel.opacity === 0) {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
               return
             }
             tooltipEl.classList.remove('above', 'below', 'no-transform')
@@ -239,6 +240,7 @@ export default {
             }
             const position = this._chart.canvas.getBoundingClientRect()
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
@@ -256,6 +258,11 @@ export default {
             tooltipContent.style.border = '1px solid #ccc'
             tooltipContent.style.borderRadius = '8px'
             tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+            })
           },
           xPadding: 16,
           yPadding: 16

@@ -592,6 +592,7 @@ export default {
       getWhiteLabel(config)
         .then((response) => {
           const payload = response.data.data
+          this.$store.dispatch('whitelabel/setState', response.data.data)
           if (payload.faviconUrl) {
             const favIcon = document.querySelector('link[rel="icon"]')
             if (favIcon) {
