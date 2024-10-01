@@ -339,7 +339,7 @@
       <StepperFooter
         max-step="5"
         :step.sync="step"
-        :saveButtonText="labels.Launch"
+        :saveButtonText="getSaveText"
         :disabled-statuses="{
           submitButton: isActionButtonDisabled
         }"
@@ -504,6 +504,15 @@ export default {
       timeZones: 'common/getTimezones',
       timezoneFormat: 'auth/getTimezoneFormat'
     }),
+    getSaveText() {
+      if (this.formValues.scheduleType === '1') {
+        return labels.Launch
+      }
+      if (this.formValues.scheduleType === '2') {
+        return labels.Save
+      }
+      return labels.Schedule
+    },
     getTargetGroupItems() {
       const activeItems =
         this.formData?.userCountDetailResponse?.data?.data?.filter?.(
