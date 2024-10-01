@@ -217,10 +217,14 @@ export default {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
     getSaveButtonText() {
+      const scheduleTypeId = this.$refs?.refSendTrainingSettings?.formData?.scheduleTypeId
       if (this.step === 3 && this?.$refs?.refSendTrainingSettings?.formData?.isProxy) {
         return 'SAVE & DOWNLOAD'
       }
-      return 'LAUNCH'
+      if (scheduleTypeId === '1') {
+        return 'LAUNCH'
+      }
+      return 'SCHEDULE'
     },
     getTrainingSummaryFormData() {
       let formData = {}
