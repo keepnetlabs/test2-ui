@@ -281,7 +281,18 @@ export default {
       return `${text} Quishing Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3, 4].includes(this.step) ? labels.Next : this.getSaveText
+    },
+    getSaveText() {
+      const scheduleTypeId = this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData
+        .scheduleTypeId
+      if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        return labels.Save
+      }
+      if (this.scheduleInfoResponse?.isStarting) {
+        return labels.Launch
+      }
+      return labels.Schedule
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
