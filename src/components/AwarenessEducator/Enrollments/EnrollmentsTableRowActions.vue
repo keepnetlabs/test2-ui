@@ -104,7 +104,10 @@ export default {
   },
   computed: {
     isRenderStopAutoEnrollButton() {
-      return [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status)
+      return (
+        [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status) ||
+        this.scope.row.isAutoEnrollmentActive
+      )
     },
     isRenderStopReminderButton() {
       if (
