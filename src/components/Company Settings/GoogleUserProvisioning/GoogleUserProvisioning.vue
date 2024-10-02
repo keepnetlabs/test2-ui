@@ -69,12 +69,12 @@
               class="mt-2 mb-3 pt-0"
               hide-details
             >
-              <VRadio color="#2196f3" label="Sync Groups" :value="SYNC_SOURCE_TYPES.GROUP" />
               <VRadio
                 color="#2196f3"
                 label="Sync Organizational Units (OU)"
                 :value="SYNC_SOURCE_TYPES.ORGANIZATION"
               />
+              <VRadio color="#2196f3" label="Sync Groups" :value="SYNC_SOURCE_TYPES.GROUP" />
             </VRadioGroup>
           </FormGroup>
           <FormGroup
@@ -420,8 +420,8 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 const defaultFormValues = {
   googleOAuthResourceId: '',
   provisioningConfig: {
-    source: SYNC_SOURCE_TYPES.GROUP,
-    selected: [],
+    source: SYNC_SOURCE_TYPES.ORGANIZATION,
+    selected: ['All_wiOrAv9C'],
     sync: {
       method: SYNC_METHOD_TYPES.TARGET_USER,
       details: []
