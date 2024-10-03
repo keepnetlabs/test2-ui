@@ -1,232 +1,267 @@
 <template>
-  <app-modal
-    :status="status"
-    :icon-name="getIcon"
-    :title="getTitle"
-    className="add-user-overlay"
-    :saveDisable="saveDisable"
-    title-id="text--target-users-people-create-user-modal-title"
-    subtitle-id="text--target-users-people-create-user-modal-subtitle"
-    @closeOverlay="status = false"
-  >
-    <template #overlay-body>
-      <target-users-check-license-dialog
-        v-if="showLicenseExceededDialog"
-        :status="showLicenseExceededDialog"
-        :dialogBody="getDialogBody"
-        @close-overlay="toggleShowLicenseExceededDialog"
-      >
-        <template #footer>
-          <app-dialog-footer
-            confirm-button-id="btn-confirm--target-users-check-license-dialog"
-            cancel-button-id="btn-cancel--target-users-check-license-dialog"
-            @handleClose="toggleShowLicenseExceededDialog"
-            @handleConfirm="callForCreateTargetUser"
-          />
-        </template>
-      </target-users-check-license-dialog>
-      <v-form ref="refForm">
-        <app-modal-body-header
-          :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
-          sub-title="Define user properties"
-        />
-        <form-group :title="labels.FirstName" has-hint>
-          <InputEntityName
-            v-model.trim="formValues.firstName"
-            entityName="first name"
-            initialPlaceholder="Enter first name"
-            id="input--target-user-first-name"
-          />
-        </form-group>
-        <form-group :title="labels.LastName" has-hint>
-          <InputEntityName
-            v-model.trim="formValues.lastName"
-            entityName="last name"
-            initialPlaceholder="Enter last name"
-            id="input--target-user-last-name"
-          />
-        </form-group>
-        <form-group has-hint title="Email">
-          <InputEmail v-model.trim="formValues.email" id="input--target-user-email" />
-        </form-group>
-        <form-group title="Phone Number">
-          <InputPhone
-            v-model.trim="formValues.phoneNumber"
-            ref="refPhone"
-            id="input--target-user-phone-number"
-            :required="false"
-          />
-        </form-group>
-        <form-group title="Department">
-          <InputDepartment
-            v-model.trim="formValues.department"
-            id="input--target-user-department"
-          />
-        </form-group>
-        <FormGroup
-          class="mb-6"
-          title="Time Zone"
-          subTitle="By selecting the appropriate time zone, you can send campaigns to the target user in their own time zone."
+  <Fragment>
+    <CreateNewUserGroupModal
+      v-if="isTargetGroupModalVisible"
+      :status="isTargetGroupModalVisible"
+      :is-create-button-disabled="isCreateTargetGroupButtonDisabled"
+      @changeNewUserGroupStatus="handleCloseTargetGroupModal"
+      @handleSave="handleConfirmTargetGroupModal"
+    />
+    <app-modal
+      :status="status"
+      :icon-name="getIcon"
+      :title="getTitle"
+      className="add-user-overlay"
+      :saveDisable="saveDisable"
+      title-id="text--target-users-people-create-user-modal-title"
+      subtitle-id="text--target-users-people-create-user-modal-subtitle"
+      @closeOverlay="status = false"
+    >
+      <template #overlay-body>
+        <target-users-check-license-dialog
+          v-if="showLicenseExceededDialog"
+          :status="showLicenseExceededDialog"
+          :dialogBody="getDialogBody"
+          @close-overlay="toggleShowLicenseExceededDialog"
         >
-          <InputTimezone v-model="formValues.timeZoneId" class="black-placeholder" isBlock />
-        </FormGroup>
-        <FormGroup v-if="!editData" title="Target Group">
-          <k-select
-            v-infinite-scroll="{
-              target: '#input--target-group-groups .k-select__menu',
-              callback: callForTargetGroups
-            }"
-            v-select-search-handler="{
-              callback: searchTargetGroups,
-              isLoadingKey: 'isTargetGroupsLoading'
-            }"
-            type="autocomplete"
-            v-model="formValues.targetGroupResourceIds"
-            id="input--target-group-groups"
-            chips
-            clearable
-            item-text="name"
-            item-value="resourceId"
-            multiple
-            small-chips
-            deletable-chips
-            outlined
-            :no-data-text="noTargetGroupText"
-            placeholder="Select a target group"
-            :items="targetGroupList"
-          ></k-select>
-        </FormGroup>
-        <form-group
-          v-for="(item, index) in customFields"
-          :title="item.name"
-          :has-hint="item.isRequired"
-          :key="index"
-        >
-          <v-text-field
-            v-if="
-              item.fieldDataType === 'String' ||
-              item.fieldDataType === 'Number' ||
-              item.fieldDataType === 'Email'
-            "
-            v-bind="getCustomFieldItemProps(item)"
-            v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
-            v-model.trim="customFieldsModels[item.resourceId]"
-            :id="`input--target-user-custom-field-${item.name}`"
-            outlined
-            dense
-            :placeholder="`Enter ${item.name}`"
-            height="40"
-            :key="item.name"
-          ></v-text-field>
-          <div
-            v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
-            :class="[
-              item.isRequired ? 'mb-2' : 'mb-6',
-              item.isRequired && validatePicker(item) && 'add-user-overlay__picker--error',
-              'add-user-overlay__picker'
-            ]"
+          <template #footer>
+            <app-dialog-footer
+              confirm-button-id="btn-confirm--target-users-check-license-dialog"
+              cancel-button-id="btn-cancel--target-users-check-license-dialog"
+              @handleClose="toggleShowLicenseExceededDialog"
+              @handleConfirm="callForCreateTargetUser"
+            />
+          </template>
+        </target-users-check-license-dialog>
+        <v-form ref="refForm">
+          <app-modal-body-header
+            :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
+            sub-title="Define user properties"
+          />
+          <form-group :title="labels.FirstName" has-hint>
+            <InputEntityName
+              v-model.trim="formValues.firstName"
+              entityName="first name"
+              initialPlaceholder="Enter first name"
+              id="input--target-user-first-name"
+            />
+          </form-group>
+          <form-group :title="labels.LastName" has-hint>
+            <InputEntityName
+              v-model.trim="formValues.lastName"
+              entityName="last name"
+              initialPlaceholder="Enter last name"
+              id="input--target-user-last-name"
+            />
+          </form-group>
+          <form-group has-hint title="Email">
+            <InputEmail v-model.trim="formValues.email" id="input--target-user-email" />
+          </form-group>
+          <form-group title="Phone Number">
+            <InputPhone
+              v-model.trim="formValues.phoneNumber"
+              ref="refPhone"
+              id="input--target-user-phone-number"
+              :required="false"
+            />
+          </form-group>
+          <form-group title="Department">
+            <InputDepartment
+              v-model.trim="formValues.department"
+              id="input--target-user-department"
+            />
+          </form-group>
+          <FormGroup
+            class="mb-6"
+            title="Time Zone"
+            subTitle="By selecting the appropriate time zone, you can send campaigns to the target user in their own time zone."
           >
-            <InputDate
-              v-if="item.fieldDataType === 'DateTime'"
+            <InputTimezone v-model="formValues.timeZoneId" class="black-placeholder" isBlock />
+          </FormGroup>
+          <FormGroup
+            v-if="!editData"
+            title="Target Group"
+            sub-title="Select a target group to add users to"
+          >
+            <k-select
+              v-infinite-scroll="{
+                target: '#input--target-group-groups .k-select__menu',
+                callback: callForTargetGroups
+              }"
+              ref="refTargetGroupSelect"
+              v-select-search-handler="{
+                callback: searchTargetGroups,
+                isLoadingKey: 'isTargetGroupsLoading'
+              }"
+              type="autocomplete"
+              v-model="formValues.targetGroupResourceIds"
+              id="input--target-group-groups"
+              chips
+              clearable
+              item-text="name"
+              item-value="resourceId"
+              multiple
+              small-chips
+              deletable-chips
+              outlined
+              :no-data-text="noTargetGroupText"
+              placeholder="Select a target group"
+              :items="targetGroupList"
+              :slots="{ prependItem: true }"
+            >
+              <template #prependItem>
+                <v-list-item ripple @mousedown.prevent @click="handleCreateGroup">
+                  <v-list-item-action>
+                    <v-icon color="#757575">
+                      mdi-plus
+                    </v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      <span style="font-weight: 600;">Create new group</span>
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </k-select>
+          </FormGroup>
+          <form-group
+            v-for="(item, index) in customFields"
+            :title="item.name"
+            :has-hint="item.isRequired"
+            :key="index"
+          >
+            <v-text-field
+              v-if="
+                item.fieldDataType === 'String' ||
+                item.fieldDataType === 'Number' ||
+                item.fieldDataType === 'Email'
+              "
+              v-bind="getCustomFieldItemProps(item)"
+              v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
               v-model.trim="customFieldsModels[item.resourceId]"
               :id="`input--target-user-custom-field-${item.name}`"
-              popper-class="filter__date-picker"
+              outlined
+              dense
+              :placeholder="`Enter ${item.name}`"
+              height="40"
               :key="item.name"
-              v-bind="getDatePickerProps(item)"
-              :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
-              :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
-              :type="'datetime'"
-            />
-            <InputDate
-              v-if="item.fieldDataType === 'Date'"
-              v-model.trim="customFieldsModels[item.resourceId]"
-              :id="`input--target-user-custom-field-${item.name}`"
-              popper-class="filter__date-picker"
-              :key="item.name"
-              v-bind="getDatePickerProps(item)"
-              :format="getTimeZone(true) || 'yyyy/MM/dd'"
-              :valueFormat="getTimeValueFormatZone(true) || `yyyy/MM/dd`"
-              :type="'date'"
-            />
-            <template v-if="item.isRequired">
-              <div class="v-text-field__details checkbox-error" v-if="validatePicker(item)">
-                <transition appear name="bounce">
-                  <div class="v-messages theme--light error--text" role="alert">
+            ></v-text-field>
+            <div
+              v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
+              :class="[
+                item.isRequired ? 'mb-2' : 'mb-6',
+                item.isRequired && validatePicker(item) && 'add-user-overlay__picker--error',
+                'add-user-overlay__picker'
+              ]"
+            >
+              <InputDate
+                v-if="item.fieldDataType === 'DateTime'"
+                v-model.trim="customFieldsModels[item.resourceId]"
+                :id="`input--target-user-custom-field-${item.name}`"
+                popper-class="filter__date-picker"
+                :key="item.name"
+                v-bind="getDatePickerProps(item)"
+                :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
+                :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
+                :type="'datetime'"
+              />
+              <InputDate
+                v-if="item.fieldDataType === 'Date'"
+                v-model.trim="customFieldsModels[item.resourceId]"
+                :id="`input--target-user-custom-field-${item.name}`"
+                popper-class="filter__date-picker"
+                :key="item.name"
+                v-bind="getDatePickerProps(item)"
+                :format="getTimeZone(true) || 'yyyy/MM/dd'"
+                :valueFormat="getTimeValueFormatZone(true) || `yyyy/MM/dd`"
+                :type="'date'"
+              />
+              <template v-if="item.isRequired">
+                <div class="v-text-field__details checkbox-error" v-if="validatePicker(item)">
+                  <transition appear name="bounce">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message" style="padding-left: 10px;">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+                <div v-else>
+                  <div class="v-messages theme--light" role="alert">
                     <div class="v-messages__wrapper">
-                      <div class="v-messages__message" style="padding-left: 10px;">
-                        Required
+                      <div class="v-messages__message" style="padding-left: 10px; font-size: 9px;">
+                        *Required
                       </div>
                     </div>
                   </div>
-                </transition>
-              </div>
-              <div v-else>
-                <div class="v-messages theme--light" role="alert">
-                  <div class="v-messages__wrapper">
-                    <div class="v-messages__message" style="padding-left: 10px; font-size: 9px;">
-                      *Required
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </template>
-          </div>
+              </template>
+            </div>
 
-          <k-checkbox
-            v-model.trim="customFieldsModels[item.resourceId]"
-            :id="`input--target-user-custom-field-${item.name}`"
-            :label="item.name"
-            color="#2196f3"
-            class="mb-2 mt-n1"
-            v-bind="getCustomFieldItemProps(item)"
-            v-if="item.fieldDataType === 'Boolean'"
-          />
-        </form-group>
-        <form-group title="Priority">
-          <k-select
-            v-model.trim="formValues.priority"
-            id="input--target-user-priority"
-            :items="priorityItems"
-            outlined
-            dense
-          />
-        </form-group>
-        <form-group title="Active">
-          <v-switch
-            v-model="formValues.isActive"
-            id="input--target-user-is-active"
-            color="#2196f3"
-            :label="formValues.isActive ? 'Yes' : 'No'"
-          />
-        </form-group>
-      </v-form>
-    </template>
-    <template v-slot:overlay-footer>
-      <v-btn
-        id="btn-cancel--target-users-add-user-to-people-modal"
-        class="add-user-overlay__footer-btn-cancel"
-        rounded
-        @click="closeOverlay"
-      >
-        {{ labels.Cancel }}
-      </v-btn>
-      <v-btn
-        :id="getSubmitButtonId"
-        class="add-user-overlay__footer-btn-save white--text"
-        color="#2196f3"
-        rounded
-        :disabled="saveDisable"
-        @click="submit"
-      >
-        {{ labels.Save }}
-      </v-btn>
-    </template>
-  </app-modal>
+            <k-checkbox
+              v-model.trim="customFieldsModels[item.resourceId]"
+              :id="`input--target-user-custom-field-${item.name}`"
+              :label="item.name"
+              color="#2196f3"
+              class="mb-2 mt-n1"
+              v-bind="getCustomFieldItemProps(item)"
+              v-if="item.fieldDataType === 'Boolean'"
+            />
+          </form-group>
+          <form-group title="Priority">
+            <k-select
+              v-model.trim="formValues.priority"
+              id="input--target-user-priority"
+              :items="priorityItems"
+              outlined
+              dense
+            />
+          </form-group>
+          <form-group title="Active">
+            <v-switch
+              v-model="formValues.isActive"
+              id="input--target-user-is-active"
+              color="#2196f3"
+              :label="formValues.isActive ? 'Yes' : 'No'"
+            />
+          </form-group>
+        </v-form>
+      </template>
+      <template v-slot:overlay-footer>
+        <v-btn
+          id="btn-cancel--target-users-add-user-to-people-modal"
+          class="add-user-overlay__footer-btn-cancel"
+          rounded
+          @click="closeOverlay"
+        >
+          {{ labels.Cancel }}
+        </v-btn>
+        <v-btn
+          :id="getSubmitButtonId"
+          class="add-user-overlay__footer-btn-save white--text"
+          color="#2196f3"
+          rounded
+          :disabled="saveDisable"
+          @click="submit"
+        >
+          {{ labels.Save }}
+        </v-btn>
+      </template>
+    </app-modal>
+  </Fragment>
 </template>
 
 <script>
 import { mail, maxLength, required } from '@/utils/validations'
-import { createTargetUser, searchTargetGroups, updateTargetUser } from '@/api/targetUsers'
+import {
+  createTargetUser,
+  searchTargetGroups,
+  updateTargetUser,
+  createTargetGroup
+} from '@/api/targetUsers'
 import AppModal from '../AppModal'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
@@ -251,10 +286,13 @@ import {
 import InputPhone from '@/components/Common/Inputs/InputPhone'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import { Fragment } from 'vue-frag'
+import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 
 export default {
   name: 'AddUserModal',
   components: {
+    CreateNewUserGroupModal,
     KCheckbox,
     AppDialogFooter,
     InputEmail,
@@ -267,7 +305,8 @@ export default {
     InputPhone,
     InputDepartment,
     TargetUsersCheckLicenseDialog,
-    InputTimezone
+    InputTimezone,
+    Fragment
   },
   props: {
     status: {
@@ -289,6 +328,8 @@ export default {
   },
   data() {
     return {
+      isTargetGroupModalVisible: false,
+      isCreateTargetGroupButtonDisabled: false,
       targetGroupPayload: getDefaultAxiosPayload({ pageSize: 100 }),
       totalNumberOfPagesOfTargetGroups: 1,
       isTargetGroupsLoading: false,
@@ -365,6 +406,27 @@ export default {
     this.setEditData()
   },
   methods: {
+    handleCreateGroup() {
+      this.isTargetGroupModalVisible = true
+      if (this.$refs?.refTargetGroupSelect?.$refs?.refComponent)
+        this.$refs.refTargetGroupSelect.$refs.refComponent.isMenuActive = false
+    },
+    handleCloseTargetGroupModal() {
+      this.isTargetGroupModalVisible = false
+    },
+    handleConfirmTargetGroupModal(group) {
+      this.isCreateTargetGroupButtonDisabled = true
+      createTargetGroup(group)
+        .then((response) => {
+          this.isTargetGroupModalVisible = false
+          this.targetGroupList.unshift({
+            name: group.name,
+            resourceId: response.data.data.resourceId
+          })
+          this.formValues.targetGroupResourceIds.push(response.data.data.resourceId)
+        })
+        .finally(() => (this.isCreateTargetGroupButtonDisabled = false))
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
