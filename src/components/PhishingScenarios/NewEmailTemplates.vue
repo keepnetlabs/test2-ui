@@ -158,6 +158,7 @@
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
+                        :cc-addresses.sync="formValues.ccAddresses"
                         :from-name.sync="formValues.fromName"
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
@@ -169,6 +170,7 @@
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
+                        :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
                         :language-type-resource-id.sync="formValues.languageTypeResourceId"
@@ -302,6 +304,7 @@ export default {
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
         fromAddress: null,
+        ccAddresses: [],
         fromName: null,
         subject: null,
         template: null,
