@@ -2,7 +2,7 @@
   <Fragment>
     <CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal
       :status="isPagePreviewModalVisible"
-      :nativeLanguages="[]"
+      :languages="languages"
       :trainingLanguageIds="value.trainingLanguageIds"
       :informationMessage="value.informationMessage"
       :redirectMessage="value.redirectMessage"
@@ -232,7 +232,7 @@
           />
         </div>
       </FormGroup>
-      <FormGroup class="ml-3 mt-6 mb-6" style="overflow: visible;">
+      <FormGroup v-if="isPhishing" class="ml-3 mt-6 mb-6" style="overflow: visible;">
         <template #title>
           <div class="d-flex flex-row justify-content-between align-items-center">
             <div class="d-flex flex-column mr-10">
@@ -399,6 +399,7 @@ export default {
   },
   data() {
     return {
+      languages: [],
       isPagePreviewModalVisible: false,
       Validations,
       inputContentLanguageKey: createRandomCryptStringNumber(),
@@ -428,6 +429,9 @@ export default {
     }
   },
   computed: {
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
+    },
     isMultipleLanguagesSelected() {
       const languages =
         this.value?.trainingLanguageIds?.filter?.((language) => language !== 'All') || []
@@ -492,8 +496,14 @@ export default {
   },
   created() {
     this.callForTrainingItems()
+    this.callForAELanguages()
   },
   methods: {
+    callForAELanguages() {
+      AwarenessEducatorService.getLanguages().then((response) => {
+        this.languages = response?.data?.data || []
+      })
+    },
     handlePagePreview() {
       this.isPagePreviewModalVisible = true
     },

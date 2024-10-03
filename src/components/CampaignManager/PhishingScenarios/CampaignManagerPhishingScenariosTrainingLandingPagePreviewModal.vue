@@ -27,14 +27,14 @@
             <VBtn v-if="!isMultiple" class="phished-landing-page__button" color="#2196f3"
               >{{ getStartButtonLabel }}
             </VBtn>
-            <!-- <VBtn
+            <VBtn
               v-else
-              v-for="button in buttons"
+              v-for="button in getButtons"
               :key="button.language"
               class="phished-landing-page__button"
               color="#2196f3"
               >{{ button.text }}
-            </VBtn> -->
+            </VBtn>
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default {
       type: Boolean,
       default: false
     },
-    nativeLanguages: {
+    languages: {
       type: Array
     },
     trainingLanguageIds: {
@@ -81,6 +81,11 @@ export default {
     ...mapGetters({
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps'
     }),
+    getButtons() {
+      return this.languages
+        .filter((language) => this.trainingLanguageIds.includes(language.id))
+        .map((language) => ({ text: language.nativeLanguageName, language: language.name }))
+    },
     getUser() {
       return this?.$store?.state?.auth?.user
     },
