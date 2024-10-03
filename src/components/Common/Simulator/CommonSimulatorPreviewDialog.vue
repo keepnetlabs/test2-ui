@@ -50,6 +50,12 @@
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
+              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <span class="template-preview__text--title">CC Addresses: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
+              </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--subject">Subject: </span>
                 <span class="template-preview__text--subject">{{
@@ -233,6 +239,7 @@ export default {
             template,
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             difficultyResourceId,
             phishingFileName,
@@ -246,6 +253,7 @@ export default {
             resourceId,
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,

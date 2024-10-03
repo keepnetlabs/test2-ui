@@ -37,6 +37,12 @@
                 emailTemplateParams.fromAddress
               }}</span>
             </div>
+            <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+              <span class="template-preview__text--title">CC Addresses: </span>
+              <span class="template-preview__text--body">{{
+                emailTemplateParams.ccAddresses.join(', ')
+              }}</span>
+            </div>
             <div>
               <span class="template-preview__text--subject">Subject: </span>
               <span class="template-preview__text--subject">{{ emailTemplateParams.subject }}</span>
@@ -137,6 +143,9 @@ export default {
     }
   },
   computed: {
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -168,6 +177,7 @@ export default {
           const {
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             difficultyResourceId,
             phishingFileName,
@@ -176,6 +186,7 @@ export default {
           this.emailTemplateParams = {
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,

@@ -29,6 +29,11 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
       payload.availableForRequests[i].resourceId
     )
   }
+  if (!!payload?.ccAddresses) {
+    for (let i = 0; i < payload.ccAddresses.length; i++) {
+      formData.append(`ccAddresses[${[i]}]`, payload.ccAddresses[i])
+    }
+  }
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
