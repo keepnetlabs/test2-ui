@@ -311,7 +311,7 @@
       </transition>
     </div>
     <div
-      :class="['mx-4', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
       v-if="!onlyGrapes && showNameField"
     >
       <FormGroup
@@ -367,7 +367,7 @@
         />
       </FormGroup>
     </div>
-    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']">
+    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
       <FormGroup
         title="From Email Address:"
         style="max-width: unset;"
@@ -383,10 +383,15 @@
       </FormGroup>
     </div>
     <div
-      v-if="!onlyGrapes && isNotificationEnrollment"
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']"
+      v-if="!onlyGrapes && (isNotificationEnrollment || isEmailTemplate)"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']"
     >
-      <FormGroup title="CC:" style="max-width: unset;">
+      <FormGroup
+        title="CC:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
         <KSelect
           :value="ccAddresses"
           id="input--threat-sharing-incident-share-email"
@@ -400,6 +405,7 @@
           small-chips
           outlined
           class="pop-up-card__invite-member"
+          :persistentHint="true"
           hint="Press enter to separate email addresses"
           :rules="[ccEmailRules.email]"
           @input="$emit('update:ccAddresses', $event)"
@@ -408,7 +414,7 @@
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        :class="['d-flex mx-4 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
+        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
         v-if="isPhishingTemplate && !onlyGrapes"
       >
         <label
@@ -605,6 +611,7 @@ export default {
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
     'isNotificationEnrollment',
+    'isEmailTemplate',
     'isHorizontalFormGroups',
     'showNameField',
     'isAiAssistant',
