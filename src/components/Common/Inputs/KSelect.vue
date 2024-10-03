@@ -24,6 +24,9 @@
     <template v-slot:append v-if="slots.append">
       <slot name="append" />
     </template>
+    <template v-slot:prepend-item v-if="slots.prependItem">
+      <slot name="prependItem" />
+    </template>
     <template v-slot:progress v-if="slots.progress">
       <slot name="progress" />
     </template>
