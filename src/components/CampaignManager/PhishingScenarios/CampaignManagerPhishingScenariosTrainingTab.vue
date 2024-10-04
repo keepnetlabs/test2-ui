@@ -4,9 +4,7 @@
       :status="isPagePreviewModalVisible"
       :languages="languages"
       :trainingLanguageIds="value.trainingLanguageIds"
-      :informationMessage="value.informationMessage"
-      :redirectMessage="value.redirectMessage"
-      :startButtonLabel="value.startButtonLabel"
+      :trainingRedirectPage="value.trainingRedirectPage"
       @on-close="handleClosePagePreviewModal"
     />
     <div>
@@ -266,10 +264,11 @@
             >Information Message</label
           >
           <InputDescription
-            v-model.trim="value.informationMessage"
+            v-model.trim="value.trainingRedirectPage.informationMessage"
             id="informationMessage"
             initialPlaceholder="Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin"
             rows="4"
+            :disabled="isInputLanguageDisabled"
             :max-length="256"
             :initialRules="[
               (v) =>
@@ -285,10 +284,11 @@
             >Redirect Message</label
           >
           <InputDescription
-            v-model.trim="value.redirectMessage"
+            v-model.trim="value.trainingRedirectPage.redirectMessage"
             id="redirectMessage"
             initialPlaceholder="Please start the training and complete the training as soon as possible"
             rows="4"
+            :disabled="isInputLanguageDisabled"
             :max-length="256"
             :initialRules="[
               (v) => Validations.maxLength(v, 256, 'Redirect message cannot exceed 256 characters')
@@ -314,11 +314,11 @@
             </VTooltip>
           </div>
           <InputDescription
-            v-model.trim="value.startButtonLabel"
+            v-model.trim="value.trainingRedirectPage.startButtonLabel"
             id="startButtonLabel"
             initialPlaceholder="Start Training"
             rows="1"
-            :disabled="isMultipleLanguagesSelected"
+            :disabled="isMultipleLanguagesSelected || isInputLanguageDisabled"
             :max-length="256"
             :initialRules="[
               (v) =>
