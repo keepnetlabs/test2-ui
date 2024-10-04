@@ -829,6 +829,9 @@ export default {
               occurrenceCount: 1,
               stopTime: '',
               sendReminderEvery: val.isEnrollmentReminderActive || false
+            },
+            {
+              ...val.trainingRedirectPage
             }
           )
         )
