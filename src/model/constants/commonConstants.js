@@ -168,6 +168,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  AUDIT_DESCRIPTION: 'auditDescription',
   TIME_ZONE: 'timeZone',
   RECIPIENT_TYPE: 'recipientType',
   INFOGRAPHIC_NAME: 'trainingName',
