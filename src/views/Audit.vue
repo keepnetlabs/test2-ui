@@ -170,6 +170,17 @@ export default {
             width: 185
           },
           {
+            property: PROPERTY_STORE.AUDIT_DESCRIPTION,
+            align: 'left',
+            editable: false,
+            label: LABEL_STORE.DESCRIPTION,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 185
+          },
+          {
             property: PROPERTY_STORE.IP,
             align: 'left',
             editable: false,
