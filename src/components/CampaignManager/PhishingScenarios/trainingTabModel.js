@@ -14,7 +14,10 @@ export default class TrainingTabModel {
       occurrenceCount: 1,
       stopTime: '',
       sendReminderEvery: false
-    }
+    },
+    informationMessage = '',
+    redirectMessage = '',
+    startButtonLabel = ''
   ) {
     this.trainingId = trainingId
     this.trainingName = trainingName
@@ -24,5 +27,8 @@ export default class TrainingTabModel {
     this.awardCertificate = awardCertificate
     this.certificateConfigSendType = certificateConfigSendType
     this.enrollmentReminder = enrollmentReminder
+    this.informationMessage = informationMessage
+    this.redirectMessage = redirectMessage
+    this.startButtonLabel = startButtonLabel
   }
 }
