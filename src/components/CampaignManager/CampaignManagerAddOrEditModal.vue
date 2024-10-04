@@ -760,9 +760,7 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              informationMessage,
-              redirectMessage,
-              startButtonLabel
+              trainingRedirectPage
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
             const { sendReminderEvery } = enrollmentReminder
@@ -776,9 +774,7 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              informationMessage,
-              redirectMessage,
-              startButtonLabel
+              trainingRedirectPage
             })
           })
           let payload = {
