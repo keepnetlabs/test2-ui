@@ -63,18 +63,14 @@ export default {
     trainingLanguageIds: {
       type: Array
     },
-    informationMessage: {
-      type: String,
-      default:
-        'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin'
-    },
-    redirectMessage: {
-      type: String,
-      default: 'Please start the training and complete the training as soon as possible'
-    },
-    startButtonLabel: {
-      type: String,
-      default: 'Start Training'
+    trainingRedirectPage: {
+      type: Object,
+      default: () => ({
+        informationMessage:
+          'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin',
+        redirectMessage: 'Please start the training and complete the training as soon as possible',
+        startButtonLabel: 'Start Training'
+      })
     }
   },
   computed: {
@@ -102,22 +98,22 @@ export default {
       return languages.length > 1
     },
     getInformationMessage() {
-      if (!this.informationMessage) {
+      if (!this.trainingRedirectPage?.informationMessage) {
         return `Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin`
       }
-      return this.informationMessage
+      return this.trainingRedirectPage.informationMessage
     },
     getRedirectMessage() {
-      if (!this.redirectMessage) {
+      if (!this.trainingRedirectPage?.redirectMessage) {
         return `Please start the training and complete the training as soon as possible`
       }
-      return this.redirectMessage
+      return this.trainingRedirectPage.redirectMessage
     },
     getStartButtonLabel() {
-      if (!this.startButtonLabel) {
+      if (!this.trainingRedirectPage?.startButtonLabel) {
         return `Start Training`
       }
-      return this.startButtonLabel
+      return this.trainingRedirectPage.startButtonLabel
     }
   },
   methods: {
