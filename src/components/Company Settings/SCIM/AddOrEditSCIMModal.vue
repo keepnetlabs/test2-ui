@@ -204,7 +204,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [
                 {
                   Value: 'false',
