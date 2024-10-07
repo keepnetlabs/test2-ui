@@ -583,8 +583,11 @@ export default {
           val?.provisioningConfig?.sync?.method === SYNC_METHOD_TYPES.TARGET_GROUP &&
           !!val?.provisioningConfig?.sync?.details?.length
         ) {
-          this.targetGroupPayload.selectTargetUserResourceIds =
-            val.provisioningConfig.sync.details[0]
+          this.targetGroupPayload.selectTargetUserResourceIds = Array.isArray(
+            val.provisioningConfig.sync.details
+          )
+            ? val.provisioningConfig.sync.details[0]
+            : val.provisioningConfig.sync.details
           this.$nextTick(() => {
             this.$refs.inputTargetGroup.callForTargetGroups()
           })
