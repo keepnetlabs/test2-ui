@@ -121,7 +121,18 @@ export default {
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
-          COMMON_SIMULATOR_COLUMNS.CREATED_BY
+          COMMON_SIMULATOR_COLUMNS.CREATED_BY,
+          {
+            property: 'isInvisibleCaptchaEnabled ',
+            align: 'left',
+            editable: false,
+            label: 'Invisible CAPTCHA',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'text',
+            width: 175
+          }
         ],
         rowActions: [
           {
@@ -207,6 +218,19 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (col) => col.FieldName === 'isInvisibleCaptchaEnabled '
+      )
+      if (filterItemIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     callForData() {
       this.setLoading(true)
       QuishingService.searchLandingPageList(this.axiosPayload)

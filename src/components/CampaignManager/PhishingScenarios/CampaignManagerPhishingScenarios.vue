@@ -412,6 +412,12 @@
                             landingPageParams.urlTemplate
                           }}</span>
                         </div>
+                        <div>
+                          <span class="template-preview__text--title">Invisible CAPTCHA: </span>
+                          <span class="template-preview__text--body">{{
+                            landingPageParams.isInvisibleCaptchaEnabled
+                          }}</span>
+                        </div>
                       </div>
                       <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
@@ -1085,7 +1091,8 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            isInvisibleCaptchaEnabled = false
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -1095,7 +1102,8 @@ export default {
             method: quishingMethods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
             mfaSmsSenderNumber,
-            mfaTextTemplate
+            mfaTextTemplate,
+            isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
           }
           this.landingPageTemplates = landingPages || []
           this.tab = 'email'

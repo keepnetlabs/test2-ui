@@ -151,6 +151,26 @@
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
                     />
+                    <VCheckbox
+                      v-model="formValues.isInvisibleCaptchaEnabled"
+                      color="#2196f3"
+                      hide-details
+                      class="mb-10"
+                    >
+                      <template #label>
+                        Enable invisible CAPTCHA to block bots without disrupting users.
+                        <VTooltip bottom max-width="260">
+                          <template #activator="{ on }">
+                            <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
+                          </template>
+                          <span
+                            >Once enabled, Keepnet automatically detects and blocks bot activity,
+                            ensuring genuine traffic to your landing page.</span
+                          >
+                        </VTooltip>
+                      </template>
+                    </VCheckbox>
+                    <FormGroup title="Landing Page Template"></FormGroup>
                     <el-tabs
                       v-model="tab"
                       class="landing-page-tab-content"
@@ -358,7 +378,8 @@ export default {
           domainRecordId: '',
           pathTypeId: '',
           extensionTypeId: '',
-          parameterTypeId: ''
+          parameterTypeId: '',
+          isInvisibleCaptchaEnabled: false
         },
         name: null,
         description: null,
