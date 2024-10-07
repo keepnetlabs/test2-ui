@@ -183,7 +183,12 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent, getErrorMessage } from '@/utils/functions'
+import {
+  getTimeZoneForMoment,
+  isDifferent,
+  getErrorMessage,
+  scrollToComponent
+} from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
   createCampaignManager,
@@ -619,6 +624,13 @@ export default {
           this.isSecondNextClicked = true
           const { refCampaignManagerPhishingScenarios } = this.$refs
           if (!this.getIsPhishingScenariosValid) return
+          const el = this.$refs.refCampaignManagerPhishingScenarios.$el.querySelector(
+            '.error--text'
+          )
+          if (el) {
+            scrollToComponent(el)
+            return
+          }
           //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
