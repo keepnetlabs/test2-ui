@@ -574,25 +574,6 @@ export default {
             })
         }
       }
-    },
-    formValues: {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        if (
-          val?.provisioningConfig?.sync?.method === SYNC_METHOD_TYPES.TARGET_GROUP &&
-          !!val?.provisioningConfig?.sync?.details?.length
-        ) {
-          this.targetGroupPayload.selectTargetUserResourceIds = Array.isArray(
-            val.provisioningConfig.sync.details
-          )
-            ? val.provisioningConfig.sync.details[0]
-            : val.provisioningConfig.sync.details
-          this.$nextTick(() => {
-            this.$refs.inputTargetGroup.callForTargetGroups()
-          })
-        }
-      }
     }
   },
   methods: {
@@ -610,6 +591,10 @@ export default {
           this.formValues = { ...this.formValues, ...res.data.data }
           if (this.formValues.provisioningConfig.sync.method === SYNC_METHOD_TYPES.TARGET_GROUP) {
             this.formValues.provisioningConfig.sync.details = this.formValues.provisioningConfig.sync.details[0]
+            this.targetGroupPayload.selectTargetUserResourceIds = this.formValues.provisioningConfig.sync.details
+            this.$nextTick(() => {
+              this.$refs.inputTargetGroup.callForTargetGroups()
+            })
           }
         })
         .then(this.callForGroups)
