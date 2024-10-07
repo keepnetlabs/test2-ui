@@ -304,25 +304,13 @@
               sub-title="All users from your Google Workspace will be added to this group"
               class="mb-6"
             >
-              <v-autocomplete
-                v-model="formValues.provisioningConfig.sync.details"
-                type="select"
+              <InputTargetGroup
+                v-model.trim="formValues.provisioningConfig.sync.details"
+                ref="inputTargetGroup"
+                clearable
                 placeholder="Select a target group"
-                auto-select-first
-                dense
-                autocomplete="off"
-                outlined
-                class="pop-up-card__invite-member"
-                persistent-hint
-                position="bottom"
-                item-text="name"
-                item-value="resourceId"
-                :menu-props="{
-                  contentClass: 'scheduled-reports-send-to-target-group-menu',
-                  auto: true
-                }"
-                :items="targetGroupOptions"
-                :rules="[(v) => !!v.length || labels.Required]"
+                :manipulate-items="handleManipulateItems"
+                :payload="targetGroupPayload"
               />
             </FormGroup>
             <template
@@ -408,7 +396,6 @@ import {
   manuallySyncGoogleUserProvisioning,
   stopSyncGoogleUserProvisioning
 } from '@/api/googleUserProvisioning'
-import { getTargetGroups } from '@/api/targetUsers'
 import { SYNC_METHOD_TYPES, SYNC_SOURCE_TYPES } from './utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { Fragment } from 'vue-frag'
@@ -416,7 +403,8 @@ import UnlinkIntegrationModal from './UnlinkIntegrationModal.vue'
 import StopSyncronizationModal from './StopSyncronizationModal.vue'
 import labels from '@/model/constants/labels'
 import KSelect from '@/components/Common/Inputs/KSelect'
-
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 const defaultFormValues = {
   googleOAuthResourceId: '',
   provisioningConfig: {
@@ -435,6 +423,7 @@ const defaultFormValues = {
 export default {
   name: 'GoogleUserProvisioning',
   components: {
+    InputTargetGroup,
     CompanySettingsHeader,
     FormGroup,
     AlertBox,
@@ -459,7 +448,36 @@ export default {
       organizationOptions: [],
       targetGroupOptions: [],
       formValues: { ...defaultFormValues },
-      interval: null
+      interval: null,
+      targetGroupPayload: getDefaultAxiosPayload({
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: 'false',
+                  FieldName: 'isscimgroup',
+                  Operator: 'Include'
+                },
+                {
+                  Value: 'false',
+                  FieldName: 'isgooglegroup',
+                  Operator: 'Include'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        },
+        selectTargetUserResourceIds: ''
+      })
     }
   },
   computed: {
@@ -528,7 +546,6 @@ export default {
     if (!this.$route?.query?.code) {
       this.callForData()
     }
-    this.callForTargetGroups()
   },
   mounted() {
     this.interval = setInterval(this.callForDataWithoutLoading, 15000)
@@ -557,16 +574,30 @@ export default {
             })
         }
       }
+    },
+    formValues: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (
+          val?.provisioningConfig?.sync?.method === SYNC_METHOD_TYPES.TARGET_GROUP &&
+          !!val?.provisioningConfig?.sync?.details?.length
+        ) {
+          this.targetGroupPayload.selectTargetUserResourceIds =
+            val.provisioningConfig.sync.details[0]
+          this.$nextTick(() => {
+            this.$refs.inputTargetGroup.callForTargetGroups()
+          })
+        }
+      }
     }
   },
   methods: {
+    handleManipulateItems(items = []) {
+      return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))
+    },
     resetForm() {
       this.formValues = { ...defaultFormValues }
-    },
-    callForTargetGroups() {
-      getTargetGroups().then((response) => {
-        this.targetGroupOptions = response?.data?.data || []
-      })
     },
     callForData() {
       this.isLoading = true

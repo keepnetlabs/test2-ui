@@ -210,6 +210,11 @@ export default {
                   Value: 'false',
                   FieldName: 'isscimgroup',
                   Operator: 'Include'
+                },
+                {
+                  Value: 'false',
+                  FieldName: 'isgooglegroup',
+                  Operator: 'Include'
                 }
               ],
               FilterGroups: []
