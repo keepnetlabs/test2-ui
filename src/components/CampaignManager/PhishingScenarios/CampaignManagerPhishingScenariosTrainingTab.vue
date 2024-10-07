@@ -269,10 +269,10 @@
             initialPlaceholder="Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin"
             rows="4"
             :disabled="isInputLanguageDisabled"
-            :max-length="256"
+            :max-length="300"
             :initialRules="[
               (v) =>
-                Validations.maxLength(v, 256, 'Information message cannot exceed 256 characters')
+                Validations.maxLength(v, 300, 'Information message cannot exceed 300 characters')
             ]"
           />
         </div>
@@ -289,9 +289,9 @@
             initialPlaceholder="Please start the training and complete the training as soon as possible"
             rows="4"
             :disabled="isInputLanguageDisabled"
-            :max-length="256"
+            :max-length="300"
             :initialRules="[
-              (v) => Validations.maxLength(v, 256, 'Redirect message cannot exceed 256 characters')
+              (v) => Validations.maxLength(v, 300, 'Redirect message cannot exceed 300 characters')
             ]"
           />
         </div>
@@ -319,10 +319,9 @@
             initialPlaceholder="Start Training"
             rows="1"
             :disabled="isMultipleLanguagesSelected || isInputLanguageDisabled"
-            :max-length="256"
+            :max-length="40"
             :initialRules="[
-              (v) =>
-                Validations.maxLength(v, 256, 'Start button label cannot exceed 256 characters')
+              (v) => Validations.maxLength(v, 40, 'Start button label cannot exceed 40 characters')
             ]"
           />
         </div>
@@ -426,6 +425,14 @@ export default {
   watch: {
     value(val) {
       this.inputContentLanguageKey = createRandomCryptStringNumber()
+    },
+    isMultipleLanguagesSelected(val) {
+      if (val) {
+        this.$set(this.value, 'trainingRedirectPage', {
+          ...this.value.trainingRedirectPage,
+          startButtonLabel: ''
+        })
+      }
     }
   },
   computed: {
