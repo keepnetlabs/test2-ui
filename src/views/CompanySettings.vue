@@ -39,6 +39,15 @@
           ref="refNotificationTemplates"
       /></el-tab-pane>
       <el-tab-pane
+        label="Google User Provisioning"
+        name="google-user-provisioning"
+        id="google-user-provisioning-content"
+      >
+        <GoogleUserProvisioning
+          v-if="tab === 'google-user-provisioning'"
+          ref="refGoogleUserProvisioning"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getRestApiSearchPermissions"
         label="Rest API"
         name="custom-api"
@@ -125,10 +134,13 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
 import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
+
 export default {
   name: 'CompanySettings',
   components: {
+    GoogleUserProvisioning,
     AIAllySettings,
     DirectEmailCreation,
     LDAP,
@@ -183,6 +195,10 @@ export default {
       {
         permission: this.getNotificationTemplatesSearchPermissions,
         name: 'notification-template'
+      },
+      {
+        permission: true,
+        name: 'google-user-provisioning'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
       {
