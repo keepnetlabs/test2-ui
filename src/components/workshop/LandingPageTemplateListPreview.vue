@@ -297,6 +297,27 @@
                               :path-types="getPathTypes"
                               @link-change="handleLinkChange"
                             />
+                            <VCheckbox
+                              v-model="editData.isInvisibleCaptchaEnabled"
+                              color="#2196f3"
+                              hide-details
+                              class="mb-10"
+                            >
+                              <template #label>
+                                Enable invisible CAPTCHA to block bots without disrupting users.
+                                <VTooltip bottom max-width="260">
+                                  <template #activator="{ on }">
+                                    <v-icon v-on="on" class="ml-2" color="#757575"
+                                      >mdi-information</v-icon
+                                    >
+                                  </template>
+                                  <span
+                                    >Once enabled, Keepnet automatically detects and blocks bot
+                                    activity, ensuring genuine traffic to your landing page.</span
+                                  >
+                                </VTooltip>
+                              </template>
+                            </VCheckbox>
                           </div>
                           <ElTabs
                             v-model="selectedEditLandingPageTab"
@@ -418,6 +439,12 @@
                               URL:
                             </span>
                             <span class="template-preview__text--body">{{ templateURL }}</span>
+                          </div>
+                          <div>
+                            <span class="template-preview__text--title">Invisible CAPTCHA: </span>
+                            <span class="template-preview__text--body">{{
+                              isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
+                            }}</span>
                           </div>
                         </div>
                       </div>
@@ -600,6 +627,27 @@
                             :path-types="getPathTypes"
                             @link-change="handleLinkChange"
                           />
+                          <VCheckbox
+                            v-model="editData.isInvisibleCaptchaEnabled"
+                            color="#2196f3"
+                            hide-details
+                            class="mb-10"
+                          >
+                            <template #label>
+                              Enable invisible CAPTCHA to block bots without disrupting users.
+                              <VTooltip bottom max-width="260">
+                                <template #activator="{ on }">
+                                  <v-icon v-on="on" class="ml-2" color="#757575"
+                                    >mdi-information</v-icon
+                                  >
+                                </template>
+                                <span
+                                  >Once enabled, Keepnet automatically detects and blocks bot
+                                  activity, ensuring genuine traffic to your landing page.</span
+                                >
+                              </VTooltip>
+                            </template>
+                          </VCheckbox>
                         </div>
                         <ElTabs
                           v-model="selectedEditLandingPageTab"
@@ -718,6 +766,12 @@
                           URL:
                         </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
+                      </div>
+                      <div>
+                        <span class="template-preview__text--title">Invisible CAPTCHA: </span>
+                        <span class="template-preview__text--body">{{
+                          isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
+                        }}</span>
                       </div>
                     </div>
                     <ElTabs
@@ -858,6 +912,7 @@ export default {
       isTemplateDetails: null,
       loadingTemplates: false,
       templateURL: null,
+      isInvisibleCaptchaEnabled: false,
       selectedPreviousIndex: 0,
       mfaMessageRules: [
         (v) => Validations.required(v),
@@ -886,7 +941,8 @@ export default {
           parameterTypeId: ''
         },
         name: null,
-        landingPages: [{ name: 'landing-page', content: '', order: 1 }]
+        landingPages: [{ name: 'landing-page', content: '', order: 1 }],
+        isInvisibleCaptchaEnabled: false
       },
       landingPageTemplateData: {},
       newUrlTemplate: '',
@@ -1045,7 +1101,8 @@ export default {
       this.editData = {
         name: this.templateName,
         phishingLink: phishingLink,
-        landingPages: this.landingPageTemplates
+        landingPages: this.landingPageTemplates,
+        isInvisibleCaptchaEnabled: this.landingPageTemplateData?.isInvisibleCaptchaEnabled || false
       }
       this?.$refs?.refInputPhishingLink?.checkSchemaTypes(
         this.initialEditData.phishingLink.domainRecordId
@@ -1127,6 +1184,7 @@ export default {
         this.landingPageTemplateData = { ...this.listData[templateIndex] }
         this.templateURL = newTemplate.urlTemplate || ''
         this.templateName = newTemplate.name
+        this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
         this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
         let templates = newTemplate.landingPages || []
         this.landingPageTemplates = templates
@@ -1136,6 +1194,7 @@ export default {
     },
     insertTemplate(newTemplate) {
       this.templateURL = newTemplate.urlTemplate || ''
+      this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
       this.templateName = newTemplate.name
       this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
       let templates = newTemplate.landingPages || []
@@ -1319,6 +1378,7 @@ export default {
         .then((response) => {
           this.landingPageTemplateData = { ...item, ...response?.data?.data } || {}
           this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.isInvisibleCaptchaEnabled = response?.data?.data?.isInvisibleCaptchaEnabled || false
           this.newUrlTemplate = this.templateURL
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
