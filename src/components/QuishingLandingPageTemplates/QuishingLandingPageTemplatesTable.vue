@@ -32,6 +32,11 @@
     @searchChangedEvent="handleSearchChange"
     @handleMultipleDelete="handleMultipleDelete"
   >
+    <template #datatable-custom-column="{ scope }">
+      <span v-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+        {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
+      </span>
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :id="tableOptions.rowActions[0].id"
@@ -123,14 +128,14 @@ export default {
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,
           {
-            property: 'isInvisibleCaptchaEnabled ',
+            property: 'isInvisibleCaptchaEnabled',
             align: 'left',
             editable: false,
             label: 'Invisible CAPTCHA',
             sortable: false,
             hideSort: true,
             show: true,
-            type: 'text',
+            type: 'slot',
             width: 175
           }
         ],
@@ -223,7 +228,7 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
-        (col) => col.FieldName === 'isInvisibleCaptchaEnabled '
+        (col) => col.FieldName === 'isInvisibleCaptchaEnabled'
       )
       if (filterItemIndex !== -1) {
         this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
