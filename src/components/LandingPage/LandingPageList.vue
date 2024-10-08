@@ -80,6 +80,9 @@
         <span v-else-if="scope.column.property === 'isAssistedByAI'">
           {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
         </span>
+        <span v-else-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+          {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
+        </span>
       </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -272,6 +275,17 @@ export default {
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },
           {
+            property: 'isInvisibleCaptchaEnabled',
+            align: 'left',
+            editable: false,
+            label: 'Invisible CAPTCHA',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'slot',
+            width: 175
+          },
+          {
             property: PROPERTY_STORE.TAGS,
             align: 'left',
             editable: false,
@@ -374,6 +388,19 @@ export default {
   methods: {
     deleteLandingPage,
     bulkDeleteLandingPages,
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (col) => col.FieldName === 'isInvisibleCaptchaEnabled'
+      )
+      if (filterItemIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     callForData() {
       this.loading = true
       if (this.getLandingPageTemplatesSearchPermissions) {
