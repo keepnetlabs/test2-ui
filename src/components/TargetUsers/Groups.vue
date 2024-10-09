@@ -101,8 +101,8 @@
             <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
           </template>
           <span>
-            Repeat Offenders is automated target group includes users phished multiple times in the
-            last 3 months across all campaigns.
+            The Repeat Offenders group is an automated target group that includes users who were
+            phished multiple times in the last 3 months across all campaigns.
           </span>
         </VTooltip>
       </template>
@@ -114,7 +114,7 @@
           :disabled="scope.row.name === 'Repeated Offenders'"
           :tooltipMessage="
             scope.row.name === 'Repeated Offenders'
-              ? 'Repeat Offenders group is can not be edited.'
+              ? 'The Repeat Offenders group cannot be edited.'
               : ''
           "
           @on-click="handleEditBtnClick"
@@ -133,7 +133,7 @@
             :disabled="scope.row.name === 'Repeated Offenders'"
             :tooltipMessage="
               scope.row.name === 'Repeated Offenders'
-                ? 'Repeat Offenders group is can not be deleted.'
+                ? 'The Repeat Offenders group cannot be deleted.'
                 : ''
             "
             @on-delete="handleDelete"

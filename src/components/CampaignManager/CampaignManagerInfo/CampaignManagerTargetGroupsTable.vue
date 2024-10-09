@@ -31,8 +31,8 @@
           <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
         </template>
         <span>
-          Repeat Offenders is automated target group includes users phished multiple times in the
-          last 3 months across all campaigns.
+          The Repeat Offenders group is an automated target group that includes users who were
+          phished multiple times in the last 3 months across all campaigns.
         </span>
       </VTooltip>
     </template>
