@@ -58,6 +58,9 @@ export default {
       if (this?.scope?.row?.sandBoxType === 1 || this?.scope?.row?.sandBoxType === 2) {
         return 'Sandbox Activity Rules: A1'
       }
+      if (this?.scope?.row?.sandBoxType >= 16) {
+        return 'Sandbox Activity Rules: A4'
+      }
       if (this?.scope?.row?.sandBoxType >= 8) {
         return 'Sandbox Activity Rules: A3'
       }
