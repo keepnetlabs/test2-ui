@@ -65,6 +65,12 @@
                   <span>This template was generated with AI</span>
                 </VTooltip>
               </div>
+              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <span class="template-preview__text--title">CC: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
+              </div>
               <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--subject">
                 <span>Subject: </span>
                 <span>{{ emailTemplateParams.subject }}</span>
@@ -299,6 +305,7 @@ export default {
       this.emailTemplateParams = {
         resourceId: phishingScenarioPreviewDto?.[templateKey]?.resourceId || '',
         name: phishingScenarioPreviewDto?.[templateKey]?.name || '',
+        ccAddresses: phishingScenarioPreviewDto?.[templateKey]?.ccAddresses || [],
         fromName: phishingScenarioPreviewDto?.[templateKey]?.fromName || '',
         fromAddress: phishingScenarioPreviewDto?.[templateKey]?.fromAddress || '',
         subject: phishingScenarioPreviewDto?.[templateKey]?.subject || '',
