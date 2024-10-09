@@ -34,6 +34,13 @@ export default {
     },
     id: {
       type: String
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    tooltipMessage: {
+      type: String
     }
   },
   computed: {
@@ -41,6 +48,9 @@ export default {
       getTargetUsersEditPermissions: 'permissions/getTargetUsersEditPermissions'
     }),
     getTooltipMessage() {
+      if (this.tooltipMessage) {
+        return this.tooltipMessage
+      }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
       if (!row.isEditable)
@@ -50,6 +60,9 @@ export default {
       else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
     },
     getDisabledStatusOfAction() {
+      if (typeof this.disabled !== 'undefined' || typeof this.disabled !== 'null') {
+        return this.disabled
+      }
       const { row } = this.scope
       return !row.isEditable || !this.getTargetUsersEditPermissions
     }

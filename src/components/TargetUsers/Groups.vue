@@ -55,6 +55,7 @@
       :axios-payload.sync="tableCredientials"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :getRowIsSelectable="handleRowIsSelectable"
       @downloadEvent="exportTargetGroupsList"
       @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
@@ -95,12 +96,27 @@
         <span @click="handleGroupNameClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] }}
         </span>
+        <VTooltip v-if="scope.row.name === 'Repeated Offenders'" bottom max-width="270">
+          <template #activator="{ on }">
+            <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
+          </template>
+          <span>
+            Repeat Offenders is automated target group includes users phished multiple times in the
+            last 3 months across all campaigns.
+          </span>
+        </VTooltip>
       </template>
       <template #datatable-row-actions="{ scope }">
         <TargetUserRowActionsEditButton
           :id="tableOptions.rowActions[0].id"
           type="groups"
           :scope="scope"
+          :disabled="scope.row.name === 'Repeated Offenders'"
+          :tooltipMessage="
+            scope.row.name === 'Repeated Offenders'
+              ? 'Repeat Offenders group is can not be edited.'
+              : ''
+          "
           @on-click="handleEditBtnClick"
         />
         <RowActionsMenu>
@@ -114,6 +130,12 @@
           <TargetGroupRowActionsDeleteButton
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
+            :disabled="scope.row.name === 'Repeated Offenders'"
+            :tooltipMessage="
+              scope.row.name === 'Repeated Offenders'
+                ? 'Repeat Offenders group is can not be deleted.'
+                : ''
+            "
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -353,6 +375,12 @@ export default {
     }
   },
   methods: {
+    handleRowIsSelectable(row) {
+      if (row?.name === 'Repeated Offenders') {
+        return false
+      }
+      return true
+    },
     handleEditBtnClick(row) {
       this.$refs.refGroupsTable.handleEdit(row)
     },
