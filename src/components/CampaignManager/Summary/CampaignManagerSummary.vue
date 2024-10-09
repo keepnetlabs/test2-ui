@@ -389,7 +389,10 @@ export default {
       return this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
     },
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     isRenderTrainingCard() {
@@ -554,6 +557,7 @@ export default {
         })
         return {
           name: formData.name,
+          'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
           'Tracking Duration': formData.duration,
@@ -568,6 +572,7 @@ export default {
       })
       return {
         name: formData.name,
+        'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
         'Tracking Duration': formData.duration,
