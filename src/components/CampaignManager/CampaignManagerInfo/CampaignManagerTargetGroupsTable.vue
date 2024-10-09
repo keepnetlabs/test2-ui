@@ -22,6 +22,20 @@
     @row-click="handleRowClick"
     @handleSelectionChange="$emit('handle-selection-change', $event)"
   >
+    <template #datatable-custom-column="{ scope, col }">
+      <span v-if="col.property === 'name'">
+        {{ scope.row[col.property] }}
+      </span>
+      <VTooltip v-if="scope.row.name === 'Repeated Offenders'" bottom max-width="270" z-index="100">
+        <template #activator="{ on }">
+          <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
+        </template>
+        <span>
+          Repeat Offenders is automated target group includes users phished multiple times in the
+          last 3 months across all campaigns.
+        </span>
+      </VTooltip>
+    </template>
   </DataTable>
 </template>
 
@@ -84,7 +98,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
+        type: 'slot',
         width: 340,
         isEditable: true,
         filterableType: 'text'
