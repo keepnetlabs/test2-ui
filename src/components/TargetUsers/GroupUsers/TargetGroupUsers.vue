@@ -51,6 +51,7 @@
       class="pb-0"
       :resource-id="resourceId"
       :isServerSide="false"
+      :groupName="getGroupName"
       @handleAddAction="toggleAddUserModal"
       @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
       @handleAddToAnExistingGroup="handleAddToAnExistingGroup"

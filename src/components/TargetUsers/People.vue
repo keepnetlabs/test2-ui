@@ -95,6 +95,41 @@
         >
       </template>
     </AlertBox>
+    <AlertBox
+      v-if="canRenderRepeatedOffendersAlertBox"
+      class="mt-2"
+      style="background-color: #fafafa; border: 1px solid #e0e0e0;"
+      icon-color="#000000"
+      icon-name="mdi-account-voice"
+      :slots="{ primaryAction: true, secondaryAction: false }"
+    >
+      <template #text>
+        <div class="d-flex flex-column">
+          <span style="color: #383b41; font-weight: 600; font-size: 18px;" class="ml-3 mb-1"
+            >{{ repeatedOffendersCount }} users repeatedly failed campaigns in last three
+            months</span
+          >
+          <span style="color: #757575; font-size: 14px; margin-left: -24px;"
+            >Identify users who repeatedly failed campaigns in the last three months for extra
+            training.</span
+          >
+        </div>
+      </template>
+      <template #primaryAction>
+        <VBtn
+          class="fw-600 no-box-shadow"
+          color="#2196f3"
+          rounded
+          outlined
+          @click="handleSeeRepeatOffenders"
+        >
+          See repeat offenders
+          <v-icon right dark>
+            mdi-account-multiple
+          </v-icon>
+        </VBtn>
+      </template>
+    </AlertBox>
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -286,7 +321,8 @@ import {
   deleteTargetUser,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
-  getTargetUsers
+  getTargetUsers,
+  searchTargetGroups
 } from '@/api/targetUsers'
 import {
   COMMON_CONSTANTS,
@@ -367,6 +403,9 @@ export default {
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
+      targetGroupsPayload: getDefaultAxiosPayload(),
+      repeatedOffendersCount: 0,
+      repeatedOffendersGroup: null,
       isWantToImportFile: false,
       isShowingTargetUserViewTargetGroups: false,
       tableData: [],
@@ -603,11 +642,15 @@ export default {
     },
     canRenderAlertbox() {
       return !this.isUnverifiedDomainsLoading && this.unverifiedDomains?.length > 0
+    },
+    canRenderRepeatedOffendersAlertBox() {
+      return this.repeatedOffendersCount > 0
     }
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
     this.callForGetTimeZones()
+    this.callForTargetGroups()
     if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   watch: {
@@ -620,6 +663,28 @@ export default {
     }
   },
   methods: {
+    handleSeeRepeatOffenders() {
+      if (this.repeatedOffendersGroup)
+        this.$router.push({
+          name: 'Target Group Users',
+          params: {
+            id: this.repeatedOffendersGroup.resourceId,
+            label: this.repeatedOffendersGroup.name,
+            isGroupEditable: this.repeatedOffendersGroup.isEditable
+          }
+        })
+    },
+    callForTargetGroups() {
+      searchTargetGroups(this.targetGroupsPayload).then((res) => {
+        const repeatedOffendersIndex = res?.data?.data?.results?.findIndex?.(
+          (group) => group.name === 'Repeated Offenders'
+        )
+        if (repeatedOffendersIndex !== -1) {
+          this.repeatedOffendersCount = res.data.data.results[repeatedOffendersIndex].userCount
+          this.repeatedOffendersGroup = { ...res.data.data.results[repeatedOffendersIndex] }
+        }
+      })
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&

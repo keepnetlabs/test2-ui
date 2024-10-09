@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip content-class="max-w-300" bottom>
+  <v-tooltip max-width="200" bottom>
     <template #activator="{ on }">
       <v-btn
         v-on="on"

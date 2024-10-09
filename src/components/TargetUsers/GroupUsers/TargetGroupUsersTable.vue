@@ -136,6 +136,9 @@ export default {
         icon: 'mdi-plus'
       })
     },
+    groupName: {
+      type: String
+    },
     excludeGroupUsers: {
       type: Boolean,
       default: false
@@ -332,6 +335,31 @@ export default {
     })
   },
   watch: {
+    groupName: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val === 'Repeated Offenders') {
+          this.tableOptions.iEmpty = {
+            message: 'No repeat offenders found in the last 3 months'
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded,
+            btn: 'Add Users',
+            icon: 'mdi-plus'
+          }
+          this.tableOptions.addButton = {
+            show: this.hasAddButton,
+            action: 'addAction',
+            tooltip: 'Add Users'
+          }
+        }
+      }
+    },
     customFields() {
       this.addCustomFieldColumns()
     },
