@@ -26,6 +26,21 @@
               >
                 Target Groups
               </div>
+              <div
+                v-else-if="key === 'Smart Grouping'"
+                class="campaign-manager-summary-card__body-item-key"
+              >
+                Smart Grouping
+                <v-tooltip bottom max-width="200">
+                  <template #activator="{ on }">
+                    <v-icon v-on="on" small class="ml-2" color="#757575">mdi-alert-circle</v-icon>
+                  </template>
+                  <span
+                    >Users who failed the campaign are automatically added to the this target
+                    group.</span
+                  >
+                </v-tooltip>
+              </div>
               <div v-else class="campaign-manager-summary-card__body-item-key">
                 {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
               </div>
@@ -51,6 +66,20 @@
                     </template>
                     <span>{{ getTooltipText }}</span>
                   </v-tooltip>
+                </div>
+              </div>
+              <div v-else-if="key === 'Smart Grouping'">
+                <div
+                  v-if="!!getSmartGroupingName"
+                  class="campaign-manager-summary-card__body-item-value d-flex align-center"
+                  style="cursor: pointer;"
+                  @click="handleRedirectToSmartGroup"
+                >
+                  <span style="color: #2196f3; font-weight: 600;">{{ getSmartGroupingName }}</span>
+                  <v-icon center size="20" color="#2196F3" class="ml-2">mdi-open-in-new</v-icon>
+                </div>
+                <div v-else class="campaign-manager-summary-card__body-item-value">
+                  <span>Disabled</span>
                 </div>
               </div>
               <div v-else class="campaign-manager-summary-card__body-item-value">
@@ -119,9 +148,22 @@ export default {
     },
     getTargetGroups() {
       return this.helperData?.targetGroups || []
+    },
+    getSmartGroupingName() {
+      return this.helperData?.smartGroupInfo?.name || ''
     }
   },
   methods: {
+    handleRedirectToSmartGroup() {
+      if (!!this.helperData?.smartGroupInfo?.resourceId)
+        this.$router.push({
+          name: 'Target Group Users',
+          params: {
+            id: this.helperData?.smartGroupInfo?.resourceId,
+            label: this.helperData?.smartGroupInfo?.name
+          }
+        })
+    },
     handleViewTargetGroupsClick() {
       this.isTargetGroupsModalVisible = true
     },

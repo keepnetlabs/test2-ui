@@ -238,6 +238,7 @@ export default {
         totalTargetUserCount: 0,
         categoryDistributionType: 'Manually'
       }
+      const { smartGroupInfo } = this.campaignSummary
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)
@@ -245,6 +246,7 @@ export default {
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Groups': this?.targetGroups || [],
+        'Smart Grouping': smartGroupInfo,
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : '',
@@ -252,11 +254,13 @@ export default {
       }
     },
     getCampaignSummaryHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary || {}
+      const { targetUsers = {}, campaignInfo = {}, smartGroupInfo = {} } =
+        this.campaignSummary || {}
       const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
+        smartGroupInfo,
         targetGroups: this?.targetGroups || [],
         randomlyUsersCount,
         sendOnlyActiveUsers,

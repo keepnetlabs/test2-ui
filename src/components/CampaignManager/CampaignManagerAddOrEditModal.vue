@@ -68,7 +68,11 @@
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
               :is-action-button-disabled.sync="isActionButtonDisabled"
+              :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
+              :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
+              isPhishing
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
+              @smartGroupSelected="handleSmartGroupSelected"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -247,6 +251,9 @@ export default {
   emits: EMITS,
   data() {
     return {
+      smartGroup: null,
+      initialClickedUserGroupResourceId: null,
+      clickedUserGroupResourceId: null,
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -395,6 +402,7 @@ export default {
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
         formData.scenarioDistribution = this.scenarioDistribution
+        formData.smartGroup = this.smartGroup
         if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
           formData.trainingForCategory = this.trainingForCategory
           formData.categoryFilter = this.categoryFilter
@@ -523,6 +531,9 @@ export default {
     this.initialFormValues = this.getFormValues()
   },
   methods: {
+    handleSmartGroupSelected(group) {
+      this.smartGroup = group
+    },
     handleTotalPhishingScenariosCountChange(val) {
       this.totalPhishingScenariosCount = val
     },
@@ -582,6 +593,11 @@ export default {
           this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
             this.selectedTargetGroups
           )
+        }
+        if (response?.data?.data?.clickedUserGroupResourceId) {
+          this.clickedUserGroupResourceId = response?.data?.data?.clickedUserGroupResourceId || null
+          this.initialClickedUserGroupResourceId =
+            response?.data?.data?.clickedUserGroupResourceId || null
         }
       })
     },
@@ -825,7 +841,8 @@ export default {
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
-            categoryDistributionType: this.scenarioDistribution
+            categoryDistributionType: this.scenarioDistribution,
+            clickedUserGroupResourceId: this.clickedUserGroupResourceId
           }
           if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
             payload = {
