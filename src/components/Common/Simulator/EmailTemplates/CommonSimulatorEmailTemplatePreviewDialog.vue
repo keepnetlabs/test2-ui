@@ -38,7 +38,7 @@
               }}</span>
             </div>
             <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-              <span class="template-preview__text--title">CC Addresses: </span>
+              <span class="template-preview__text--title">CC: </span>
               <span class="template-preview__text--body">{{
                 emailTemplateParams.ccAddresses.join(', ')
               }}</span>
