@@ -371,7 +371,7 @@
                         <span class="template-preview__text--body">{{ templateFromEmail }}</span>
                       </div>
                       <div v-if="isPhishing">
-                        <span class="template-preview__text--title">CC Addresses: </span>
+                        <span class="template-preview__text--title">CC: </span>
                         <span class="template-preview__text--body">{{
                           templateCCAddresses.join(', ')
                         }}</span>

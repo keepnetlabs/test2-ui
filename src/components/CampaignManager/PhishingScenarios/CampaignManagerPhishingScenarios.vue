@@ -350,6 +350,12 @@
                             emailTemplateParams.fromAddress
                           }}</span>
                         </div>
+                        <div v-if="emailTemplateParams.ccAddresses.length > 0">
+                          <span class="template-preview__text--title">CC: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.ccAddresses.join(',')
+                          }}</span>
+                        </div>
                         <div
                           v-if="!!getPhishingFile"
                           class="attachment-wrapper mt-2"
@@ -1060,7 +1066,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            ccAddresses
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -1068,6 +1075,7 @@ export default {
             fromName,
             fromAddress,
             name,
+            ccAddresses,
             subject,
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
