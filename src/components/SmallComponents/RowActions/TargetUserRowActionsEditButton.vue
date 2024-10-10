@@ -60,11 +60,8 @@ export default {
       else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
     },
     getDisabledStatusOfAction() {
-      if (typeof this.disabled !== 'undefined' || typeof this.disabled !== 'null') {
-        return this.disabled
-      }
       const { row } = this.scope
-      return !row.isEditable || !this.getTargetUsersEditPermissions
+      return !row.isEditable || !this.getTargetUsersEditPermissions || this.disabled
     }
   }
 }
