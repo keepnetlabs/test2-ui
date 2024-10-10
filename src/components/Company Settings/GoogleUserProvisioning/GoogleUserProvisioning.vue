@@ -370,7 +370,7 @@
             </template>
             <div class="ml-6">
               <v-icon color="#757575" class="mr-2">mdi-alert-circle</v-icon>
-              <span style="font-size: 14px; font-weight: 600;"
+              <span style="font-size: 14px; font-weight: 600; color: #757575;"
                 >Synchronization occurs every 24 hours.</span
               >
             </div>
@@ -547,9 +547,6 @@ export default {
       this.callForData()
     }
   },
-  mounted() {
-    this.interval = setInterval(this.callForDataWithoutLoading, 15000)
-  },
   beforeDestroy() {
     clearInterval(this.interval)
   },
@@ -572,6 +569,16 @@ export default {
               this.isSomethingWentWrong = true
               this.isLoading = false
             })
+        }
+      }
+    },
+    'formValues.isSyncing': {
+      handler(val) {
+        if (val) {
+          this.interval = setInterval(this.callForDataWithoutLoading, 10000)
+        }
+        if (!val) {
+          clearInterval(this.interval)
         }
       }
     }
@@ -646,7 +653,9 @@ export default {
           this.formValues.provisioningConfig.sync.details = []
         }
         syncGoogleUserProvisioning(this.formValues)
-          .then(this.callForData)
+          .then(() => {
+            this.callForData()
+          })
           .finally(() => {
             this.isButtonsDisabled = false
           })
