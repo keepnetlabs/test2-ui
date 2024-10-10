@@ -52,11 +52,8 @@ export default {
       return !this.getDisabledStatusOfAction ? 'Delete' : 'No Permission'
     },
     getDisabledStatusOfAction() {
-      if (typeof this.disabled !== 'undefined' || typeof this.disabled !== 'null') {
-        return this.disabled
-      }
       const { row } = this.scope
-      return !row.isEditable || !this.getTargetGroupsDeletePermissions
+      return !row.isEditable || !this.getTargetGroupsDeletePermissions || this.disabled
     }
   }
 }
