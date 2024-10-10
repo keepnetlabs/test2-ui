@@ -171,25 +171,31 @@
                       <v-list-item class="mt-6">
                         <v-list-item-content class="mb-2">
                           <label class="bottom-margin">Select Group</label>
-                          <v-autocomplete
+                          <KSelect
                             v-model="formData.groups"
                             ref="refTargetGroupSelect"
-                            :items="groups"
+                            type="autocomplete"
+                            id="input--target-user-groups-ldap"
+                            custom-menu-class="target-user-ldap__target-groups"
+                            outlined
+                            clearable
+                            multiple
                             item-text="name"
                             item-value="resourceId"
-                            outlined
+                            autocomplete="disabled"
                             placeholder="- All Users -"
-                            multiple
-                            persistent-hint
-                            hide-details
+                            no-data-text="No user group available"
+                            position="bottom"
+                            :items="groups"
                             :menu-props="{
                               offsetY: true,
                               maxWidth: '554px'
                             }"
                             :rules="[(v) => !!v || 'Required']"
                             :disabled="stepLock"
+                            :slots="{ selection: true, prependItem: true }"
                           >
-                            <template #prepend-item>
+                            <template #prependItem>
                               <v-list-item ripple @mousedown.prevent @click="handleCreateGroup">
                                 <v-list-item-action>
                                   <v-icon color="#757575">
@@ -219,7 +225,7 @@
                                 >
                               </v-chip>
                             </template>
-                          </v-autocomplete>
+                          </KSelect>
                         </v-list-item-content>
                       </v-list-item>
                       <v-list-item class="mt-6">
@@ -520,6 +526,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { mapGetters } from 'vuex'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import { Fragment } from 'vue-frag'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'TargetUserImportFromAFile',
   components: {
@@ -535,7 +542,8 @@ export default {
     DataTable,
     AppDialog,
     DatatableLoading,
-    TargetUsersCheckLicenseDialog
+    TargetUsersCheckLicenseDialog,
+    KSelect
   },
   props: {
     status: {
