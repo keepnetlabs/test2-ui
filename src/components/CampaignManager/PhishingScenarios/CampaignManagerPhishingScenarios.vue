@@ -69,7 +69,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Type ({{ method.length }})</span>
+                      <span v-if="data.index === 0">Type ({{ method.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -87,7 +87,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Language (1)</span>
+                      <span v-if="data.index === 0">Language (1)</span>
                     </template>
                   </KSelect>
                 </div>
@@ -113,7 +113,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Difficulty ({{ difficulty.length }})</span>
+                      <span v-if="data.index === 0">Difficulty ({{ difficulty.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -140,7 +140,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Category ({{ category.length }})</span>
+                      <span v-if="data.index === 0">Category ({{ category.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -871,7 +871,11 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
         }
@@ -889,7 +893,11 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
         }
@@ -915,7 +923,11 @@ export default {
           Operator: 'Contains'
         }
         if (index > -1) {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          if (!val) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
         }
@@ -936,7 +948,11 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
         }
