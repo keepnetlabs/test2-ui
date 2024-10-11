@@ -26,7 +26,7 @@
           &bull; A3: Sandbox activity that happened in the same second that matched other rules.
         </p>
         <p class="mb-0 ml-8">
-          &bull; A4:Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
+          &bull; A4: Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
           user was still redirected to the phishing page.
         </p>
       </div>
