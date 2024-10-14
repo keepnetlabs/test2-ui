@@ -37,7 +37,7 @@
       :slots="{ primaryAction: false, secondaryAction: false }"
     />
     <AlertBox
-      v-if="selectablePhoneNumberCount === 0"
+      v-if="canRenderNoAvailableNumbersAlertBox"
       class="mb-4"
       icon-color="#B6791D"
       icon-name="mdi-alert"
@@ -290,6 +290,9 @@ export default {
     }),
     canRenderAlertBox() {
       return !this.isLoading
+    },
+    canRenderNoAvailableNumbersAlertBox() {
+      return !this.isLoading && this.selectablePhoneNumberCount === 0
     },
     getAlertBoxText() {
       return `You can add a maximum of ${this.licenseNumberLimit} phone number${
