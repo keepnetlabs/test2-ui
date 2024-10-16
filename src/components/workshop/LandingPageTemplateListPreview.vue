@@ -312,8 +312,9 @@
                                     >
                                   </template>
                                   <span
-                                    >Once enabled, Keepnet automatically detects and blocks bot
-                                    activity, ensuring genuine traffic to your landing page.</span
+                                    >Once enabled, bot activity is automatically detected and
+                                    blocked to prevent false clicks and ensure genuine traffic to
+                                    the landing page.</span
                                   >
                                 </VTooltip>
                               </template>
@@ -642,8 +643,9 @@
                                   >
                                 </template>
                                 <span
-                                  >Once enabled, Keepnet automatically detects and blocks bot
-                                  activity, ensuring genuine traffic to your landing page.</span
+                                  >Once enabled, bot activity is automatically detected and blocked
+                                  to prevent false clicks and ensure genuine traffic to the landing
+                                  page.</span
                                 >
                               </VTooltip>
                             </template>
