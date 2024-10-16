@@ -158,14 +158,14 @@
                       class="mb-10"
                     >
                       <template #label>
-                        Enable invisible CAPTCHA to block bots without disrupting users.
+                        Automatically stop bots to prevent false clicks.
                         <VTooltip bottom max-width="260">
                           <template #activator="{ on }">
                             <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
                           </template>
                           <span
-                            >Once enabled, bot activity is automatically detected and blocked to
-                            prevent false clicks and ensure genuine traffic to the landing
+                            >Once enabled, bot activity is automatically detected and stopped to
+                            prevent false clicks, ensuring genuine traffic to the landing
                             page.</span
                           >
                         </VTooltip>
