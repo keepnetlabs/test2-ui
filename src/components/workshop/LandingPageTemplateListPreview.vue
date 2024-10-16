@@ -304,7 +304,7 @@
                               class="mb-10"
                             >
                               <template #label>
-                                Enable invisible CAPTCHA to block bots without disrupting users.
+                                Automatically stop bots to prevent false clicks.
                                 <VTooltip bottom max-width="260">
                                   <template #activator="{ on }">
                                     <v-icon v-on="on" class="ml-2" color="#757575"
@@ -313,8 +313,8 @@
                                   </template>
                                   <span
                                     >Once enabled, bot activity is automatically detected and
-                                    blocked to prevent false clicks and ensure genuine traffic to
-                                    the landing page.</span
+                                    stopped to prevent false clicks, ensuring genuine traffic to the
+                                    landing page.</span
                                   >
                                 </VTooltip>
                               </template>
@@ -635,7 +635,7 @@
                             class="mb-10"
                           >
                             <template #label>
-                              Enable invisible CAPTCHA to block bots without disrupting users.
+                              Automatically stop bots to prevent false clicks.
                               <VTooltip bottom max-width="260">
                                 <template #activator="{ on }">
                                   <v-icon v-on="on" class="ml-2" color="#757575"
@@ -643,8 +643,8 @@
                                   >
                                 </template>
                                 <span
-                                  >Once enabled, bot activity is automatically detected and blocked
-                                  to prevent false clicks and ensure genuine traffic to the landing
+                                  >Once enabled, bot activity is automatically detected and stopped
+                                  to prevent false clicks, ensuring genuine traffic to the landing
                                   page.</span
                                 >
                               </VTooltip>
@@ -724,7 +724,9 @@
                                     <v-icon class="mr-2" size="18" color="#2196f3"
                                       >mdi-plus-circle-outline</v-icon
                                     >
-                                    <span class="landing-page-tab__label"> Add page </span>
+                                    <span class="landing-page-tab__label">
+                                      Add page
+                                    </span>
                                   </v-btn>
                                 </template>
                                 <v-list>
