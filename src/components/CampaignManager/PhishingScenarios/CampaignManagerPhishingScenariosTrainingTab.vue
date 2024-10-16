@@ -21,8 +21,18 @@
         title="Select Training"
         :sub-title="getSubtitle"
       >
-        <KSelect
+        <VAutocomplete
           :value="value.trainingId"
+          v-infinite-scroll="{
+            target: '.input--company-group-add-members',
+            callback: callForTrainingItems,
+            isOriginalVuetifyComponent: true
+          }"
+          v-select-search-handler="{
+            callback: callForTrainingItemsSearch,
+            isLoadingKey: 'isTrainingLoading',
+            isOriginalVuetifyComponent: true
+          }"
           type="autocomplete"
           id="input--campaign-manager-training-tab"
           outlined
@@ -31,6 +41,7 @@
           return-object
           clearable
           placeholder="Select training"
+          :menu-props="{ contentClass: 'input--company-group-add-members' }"
           :items="trainingItems"
           :disabled="!isInputsEditable"
           :no-data-text="isTrainingLoading ? 'Loading...' : 'No training available'"
@@ -350,6 +361,9 @@ import InputDescription from '@/components/Common/Inputs/InputDescription'
 import * as Validations from '@/utils/validations'
 import { Fragment } from 'vue-frag'
 import CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal from './CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal.vue'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
+import { getSelectSearchPayload } from '@/utils/functions'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: {
@@ -361,6 +375,10 @@ export default {
     InputDescription,
     Fragment,
     CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal
+  },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
   },
   props: {
     value: {
@@ -419,7 +437,29 @@ export default {
         disabledDate: this.disabledEndDates
       },
       periodTypeItems,
-      endTypeItems
+      endTypeItems,
+      totalNumberOfPagesOfTrainings: 1,
+      trainingPayload: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'TrainingName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   watch: {
@@ -431,6 +471,11 @@ export default {
         this.$set(this.value, 'trainingRedirectPage', {
           ...this.value.trainingRedirectPage,
           startButtonLabel: ''
+        })
+      } else {
+        this.$set(this.value, 'trainingRedirectPage', {
+          ...this.value.trainingRedirectPage,
+          startButtonLabel: 'Start Training'
         })
       }
     }
@@ -517,22 +562,41 @@ export default {
     handleClosePagePreviewModal() {
       this.isPagePreviewModalVisible = false
     },
-    callForTrainingItems() {
+    callForTrainingItems(addPage) {
+      if (addPage) {
+        this.trainingPayload.pageNumber += 1
+        if (this.trainingPayload.pageNumber > this.totalNumberOfPagesOfTrainings) return
+      }
       this.isTrainingLoading = true
-      AwarenessEducatorService.getTrainingItems(getDefaultAxiosPayload({ pageSize: 100000 }))
+      AwarenessEducatorService.getTrainingItems(this.trainingPayload)
         .then((response) => {
-          const {
-            data: { data = {} }
-          } = response
-          const { results = [] } = data
-          this.trainingItems = results.map((result) => ({
-            text: result.trainingName,
-            value: result.trainingId
-          }))
+          this.totalNumberOfPagesOfTrainings = response.data.data.totalNumberOfPages
+          this.setTrainings(response)
         })
         .finally(() => {
           this.isTrainingLoading = false
         })
+    },
+    callForTrainingItemsSearch(search = '') {
+      if (search) {
+        AwarenessEducatorService.getTrainingItems(
+          getSelectSearchPayload(this.trainingPayload, search, 'trainingName')
+        )
+          .then(this.setTrainings)
+          .finally(() => {
+            this.isTrainingLoading = false
+          })
+      } else {
+        this.callForTrainingItems()
+      }
+    },
+    setTrainings(response) {
+      const newTrainings =
+        response?.data?.data?.results?.map?.((result) => ({
+          text: result.trainingName,
+          value: result.trainingId
+        })) || []
+      this.trainingItems = [...this.trainingItems, ...newTrainings]
     },
     handlePreview() {
       this.$emit('on-preview', this.value)
