@@ -108,7 +108,17 @@ export default {
             width: 140,
             filterableType: 'text'
           },
-
+          {
+            property: PROPERTY_STORE.AUDIT_DESCRIPTION,
+            align: 'left',
+            editable: false,
+            label: LABEL_STORE.DESCRIPTION,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 300
+          },
           {
             property: PROPERTY_STORE.ENTITYID,
             align: 'left',
@@ -163,17 +173,6 @@ export default {
             align: 'left',
             editable: false,
             label: LABEL_STORE.NEWVALUE,
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 185
-          },
-          {
-            property: PROPERTY_STORE.AUDIT_DESCRIPTION,
-            align: 'left',
-            editable: false,
-            label: LABEL_STORE.DESCRIPTION,
             fixed: false,
             sortable: true,
             show: true,
