@@ -75,6 +75,17 @@ export default {
       isEdit: false
     }
   },
+  watch: {
+    '$route.query': {
+      deep: true,
+      handler(val) {
+        if (!!val?.showModal) {
+          this.toggleAddOrEditModal()
+          this.$router.replace('/company/company-settings')
+        }
+      }
+    }
+  },
   methods: {
     toggleAddOrEditModal(row) {
       if (row) {

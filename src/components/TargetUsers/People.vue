@@ -272,6 +272,20 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
+                    <v-list-item @click="handleRedirectToSCIMSync">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-scim-sync"
+                          >SCIM Sync</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item @click="handleRedirectToGoogleSync">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-google-sync"
+                          >Google Sync</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-list-item-group>
                 </v-list>
               </div>
@@ -612,6 +626,11 @@ export default {
           id: 'btn-add-users-import-from-ldap--target-users-people',
           disabled:
             this.isLDAPDisabled || !this.$store.getters['permissions/getLDAPCreateConfigPermission']
+        },
+        { text: 'SCIM Sync', id: 'btn-scim-sync--target-users-people' },
+        {
+          text: 'Google Sync',
+          id: 'btn-google-sync--target-users-people'
         }
       ],
       serverSideProps: new ServerSideProps()
@@ -663,6 +682,12 @@ export default {
     }
   },
   methods: {
+    handleRedirectToSCIMSync() {
+      this.$router.push('/company/company-settings?tab=scim-settings&showModal=true')
+    },
+    handleRedirectToGoogleSync() {
+      this.$router.push('/company/company-settings?tab=google-user-provisioning')
+    },
     handleSeeRepeatOffenders() {
       if (this.repeatedOffendersGroup)
         this.$router.push({
@@ -840,6 +865,12 @@ export default {
       }
       if (item === this.addUsersItems[2].text) {
         this.toggleImportLDAPModal()
+      }
+      if (item === this.addUsersItems[3].text) {
+        this.handleRedirectToSCIMSync()
+      }
+      if (item === this.addUsersItems[4].text) {
+        this.handleRedirectToGoogleSync()
       }
     },
     handleClickEmptyBtnClicked() {
