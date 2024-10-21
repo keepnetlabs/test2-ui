@@ -132,7 +132,11 @@ export default {
         )
         if (domElement) {
           const selectedElement = domElement.querySelector('.widget-body__content')
-          selectedElement.scrollIntoView({ behavior: 'smooth' })
+          selectedElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          })
           if (selectedElement.classList.contains('executive-widget-container--active'))
             selectedElement.classList.remove('executive-widget-container--active')
           setTimeout(() => selectedElement.classList.add('executive-widget-container--active'), 100)
@@ -140,9 +144,14 @@ export default {
       }
     },
     handleDeleteWidget(deletedWidget) {
+      console.log('deletedWidget', deletedWidget)
+      console.log('this.cards', this.cards)
       let selectedCard
       this.cards.forEach((card) => {
-        const foundedCard = card.widgets.find((widget) => widget.widgetType === deletedWidget.key)
+        const foundedCard = card.widgets.find(
+          (widget) =>
+            widget.widgetType === deletedWidget.key && widget.chartType === deletedWidget.chartType
+        )
         if (foundedCard) selectedCard = foundedCard
       })
       this.$set(selectedCard, 'isAdded', false)
