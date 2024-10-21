@@ -19,7 +19,10 @@
       >
         <div>
           <img
-            class="executive-report-search-card__content-chart-image"
+            :class="[
+              'executive-report-search-card__content-chart-image',
+              chart.isAdded ? 'executive-report-search-card__content-chart-image--active' : ''
+            ]"
             :src="chart.imageUrl"
             :alt="chart.name"
           />

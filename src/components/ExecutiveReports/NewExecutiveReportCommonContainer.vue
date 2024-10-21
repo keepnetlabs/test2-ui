@@ -29,8 +29,10 @@
         :is-edit="isEdit"
         :is-duplicate="isDuplicate"
         :default-company-logo="defaultCompanyLogo"
+        @on-layout-get="handleLayoutGet"
         @on-edit="renderLeftTab = true"
         @on-edit-cancel="renderLeftTab = false"
+        @on-delete="handleDeleteWidget"
       />
     </div>
   </div>
@@ -100,6 +102,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          console.log(data.metrics)
           this.cards = data.metrics
         })
         .finally(this.setLoading)
@@ -121,7 +124,37 @@ export default {
     },
     handleSearch(value) {},
     handleSearchAdd(chart) {
-      this.$refs.refCharts.addWidget(chart)
+      const isAdded = this.$refs.refCharts.addWidget(chart)
+      if (isAdded) this.$set(chart, 'isAdded', true)
+      else {
+        const domElement = document.querySelector(
+          `[parentkey="${chart.description}"][charttype="${chart.chartType}"]`
+        )
+        if (domElement) {
+          const selectedElement = domElement.querySelector('.widget-body__content')
+          selectedElement.scrollIntoView({ behavior: 'smooth' })
+          if (selectedElement.classList.contains('executive-widget-container--active'))
+            selectedElement.classList.remove('executive-widget-container--active')
+          setTimeout(() => selectedElement.classList.add('executive-widget-container--active'), 100)
+        }
+      }
+    },
+    handleDeleteWidget(deletedWidget) {
+      let selectedCard
+      this.cards.forEach((card) => {
+        const foundedCard = card.widgets.find((widget) => widget.widgetType === deletedWidget.key)
+        if (foundedCard) selectedCard = foundedCard
+      })
+      this.$set(selectedCard, 'isAdded', false)
+    },
+    handleLayoutGet(layout) {
+      this.cards.forEach((card) => {
+        const foundedCards = card.widgets.filter((widget) => {
+          return layout.find((item) => item.resourceId === widget.resourceId)
+        })
+        if (foundedCards.length)
+          foundedCards.forEach((foundedCard) => this.$set(foundedCard, 'isAdded', true))
+      })
     }
   }
 }

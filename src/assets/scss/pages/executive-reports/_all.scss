@@ -212,6 +212,10 @@
         @media (max-width: 1279px){
           height: auto;
         }
+        &--active{
+          opacity: 0.5;
+          mix-blend-mode: luminosity;
+        }
       }
       &-title{
         font-size: 12px;
@@ -359,6 +363,21 @@
   padding: 16px;
   height: 100%;
   box-shadow: unset !important;
+  animation: glowEffect 1s;
+  &--active{
+    animation: glowEffect 1s;
+  }
+}
+@keyframes glowEffect {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(255, 255, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 0, 0);
+  }
 }
 .executive-widget-header{
   display: flex;
