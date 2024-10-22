@@ -2,7 +2,6 @@ import Vue from 'vue'
 const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
 const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
 import * as Sentry from '@sentry/vue'
-import { BrowserTracing } from '@sentry/tracing'
 const CONSTANTS = {
   ERROR: 'error',
   GRAPESJS_INTERNAL: [
@@ -98,8 +97,10 @@ export default (router) => {
     Vue,
     dsn: sentryDSN,
     integrations: [
-      new BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+      Sentry.browserTracingIntegration({ router }),
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: false
       })
     ],
     ignoreErrors: [
@@ -109,9 +110,11 @@ export default (router) => {
       'Userflow.js error reply (undefined): undefined'
     ],
     trackComponents: true,
-    tracesSampleRate: 1.0
+    tracesSampleRate: 1.0,
+    replaysSessionSampleRate: 1.0,
+    replaysOnErrorSampleRate: 1.0
   })
-  Sentry.addGlobalEventProcessor(function (event) {
+  Sentry.addEventProcessor(function (event) {
     if (event?.level === CONSTANTS.ERROR && event?.exception?.values?.[0]) {
       const message = event.exception.values[0].value
       if (CONSTANTS.GRAPESJS_INTERNAL.some((m) => message.includes(m))) return null
