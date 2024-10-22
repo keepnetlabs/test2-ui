@@ -21,7 +21,7 @@
           <img
             :class="[
               'executive-report-search-card__content-chart-image',
-              chart.isAdded ? 'opacity-50' : ''
+              chart.isAdded ? 'opacity-40' : ''
             ]"
             :src="chart.imageUrl"
             :alt="chart.name"
@@ -36,7 +36,7 @@
         <div
           :class="[
             'executive-report-search-card__content-chart-title',
-            chart.isAdded ? 'opacity-50' : ''
+            chart.isAdded ? 'opacity-40' : ''
           ]"
         >
           {{ chart.name }}
