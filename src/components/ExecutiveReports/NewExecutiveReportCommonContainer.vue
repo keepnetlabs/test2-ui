@@ -102,7 +102,6 @@ export default {
           const {
             data: { data }
           } = response || {}
-          console.log(data.metrics)
           this.cards = data.metrics
         })
         .finally(this.setLoading)
@@ -144,8 +143,6 @@ export default {
       }
     },
     handleDeleteWidget(deletedWidget) {
-      console.log('deletedWidget', deletedWidget)
-      console.log('this.cards', this.cards)
       let selectedCard
       this.cards.forEach((card) => {
         const foundedCard = card.widgets.find(
