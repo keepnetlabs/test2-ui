@@ -119,7 +119,7 @@
                         <v-form
                           v-model.trim="validEmail"
                           autocomplete="off"
-                          data-recording-ignore="mask"
+                          data-sentry-mask
                           :ref="showPasswordField ? 'password' : 'email'"
                           @submit="(event) => event.preventDefault()"
                         >
@@ -128,7 +128,7 @@
                             v-model.trim="email"
                             :class="{ 'input-error': isErrorActive }"
                             id="input--login-email"
-                            data-recording-ignore="mask"
+                            data-sentry-mask
                             name="email"
                             ref="email"
                             class="username-field"
@@ -151,7 +151,7 @@
                             id="input--login-password"
                             class="username-field input-group--focused"
                             :class="{ 'input-error': isErrorActive }"
-                            data-recording-ignore="mask"
+                            data-sentry-mask
                             name="password"
                             label="Password"
                             outlined
@@ -372,7 +372,7 @@
                             >
                             <v-text-field
                               v-model.trim="newPassword"
-                              data-recording-ignore="mask"
+                              data-sentry-mask
                               id="input--login-new-password"
                               :class="[
                                 'reset-pass-textfield mb-6',
@@ -405,7 +405,7 @@
                             >
                             <v-text-field
                               v-model.trim="reNewPassword"
-                              data-recording-ignore="mask"
+                              data-sentry-mask
                               id="input--login-confirm-password"
                               :class="['reset-pass-textfield', { 'input-error': isErrorActive }]"
                               placeholder="Enter new password again"

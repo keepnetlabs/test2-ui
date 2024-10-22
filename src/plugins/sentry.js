@@ -93,6 +93,14 @@ const CONSTANTS = {
 }
 export default (router) => {
   if (!sentryStatus) return
+  const userData = JSON.parse(localStorage.getItem('userData')) || {
+    userName: 'Guest',
+    email: 'Guest Email'
+  }
+  Sentry.setUser({
+    username: userData.fullName || 'Guest',
+    email: userData.email
+  })
   Sentry.init({
     Vue,
     dsn: sentryDSN,
