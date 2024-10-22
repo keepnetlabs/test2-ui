@@ -157,9 +157,7 @@ export default {
         COLUMNS.ACTIVITY_TYPE
       ]
     }
-    const sandboxText = this.isShowSandboxFromParent
-      ? 'HIDE SANDBOX ACTIVITY'
-      : 'SHOW SANDBOX ACTIVITY'
+    const sandboxText = this.isShowSandboxFromParent ? 'HIDE BOT ACTIVITY' : 'SHOW BOT ACTIVITY'
     return {
       isQuishingTypePrintout,
       COLUMNS,
@@ -271,7 +269,7 @@ export default {
     },
     getRowActionText(row) {
       if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Mark as sandbox activity'
+        return 'Mark as bot activity'
       return this.tableOptions.rowActions[0].name
     },
     handleClose() {

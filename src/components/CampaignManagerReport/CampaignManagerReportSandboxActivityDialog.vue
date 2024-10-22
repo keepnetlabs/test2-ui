@@ -3,14 +3,14 @@
     title-id="text--campaign-manager-item-delete-popup-title"
     subtitle-id="text--campaign-manager-item-delete-popup-subtitle"
     icon="mdi-account-cancel"
-    title="Mark User as Sandbox Activity"
+    title="Mark User as Bot Activity"
     :status="status"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
       <div>
         <div>
-          Do you want to mark this user as a 'Sandbox Activity' by taking back the system decision?
+          Do you want to mark this user as a 'Bot Activity' by taking back the system decision?
         </div>
         <div>This action can be undone.</div>
       </div>
