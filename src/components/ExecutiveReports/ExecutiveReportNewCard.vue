@@ -325,6 +325,7 @@ import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveRepor
 import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
 import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
 import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -933,6 +934,7 @@ export default {
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
+        this.$emit('on-layout-get', this.layout)
         this.dateRange = data.dateRange
         if (this.isScheduledReport) {
           setTimeout(() => {
@@ -1242,6 +1244,7 @@ export default {
       return newBreakpoint === 'xxs' ? 2 : 12
     },
     addWidget(widget) {
+      if (this.layout.find((item) => item.resourceId === widget.resourceId)) return false
       let newItem
       const widgetObj = {
         ...this.allWidgets[widget.widgetType],
@@ -1265,6 +1268,7 @@ export default {
       newItem['y'] = 0
       this.newItemY += newItem.h
       this.layout.unshift(widgetObj)
+      return true
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
