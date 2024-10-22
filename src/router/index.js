@@ -71,6 +71,7 @@ import EditExecutiveReport from '@/views/EditExecutiveReport.vue'
 import DuplicateExecutiveReport from '@/views/DuplicateExecutiveReport.vue'
 import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
 import ScheduledReports from '@/views/ScheduledReports.vue'
+import GamificationReport from '@/views/GamificationReport'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -757,6 +758,16 @@ const router = new Router({
           path: '/reports/scheduled-reports',
           name: 'Scheduled Reports',
           component: ScheduledReports,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Reports',
+            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+          }
+        },
+        {
+          path: '/reports/gamification-report',
+          name: 'Gamification Report',
+          component: GamificationReport,
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',

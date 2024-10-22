@@ -1,0 +1,66 @@
+#gamification-report {
+  .gamification-report {
+    &__top-performers {
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    &__top-performers-header {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 24px;
+      color: #2196f3;
+      padding: 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    &__top-performers-content {
+      padding: 16px;
+      padding-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    &__top-performer-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 16px;
+      padding-top: 24px;
+
+      &-ribbon {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        translate: -50%;
+      }
+
+      &-name {
+        color: #383b41;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 24px;
+        margin-bottom: 4px;
+      }
+
+      &-email,
+      &-department {
+        color: #383b41b8;
+        font-size: 14px;
+        line-height: 19px;
+        margin-bottom: 4px;
+      }
+
+      &-score {
+        text-align: center;
+        border-radius: 100px;
+        border: 1px solid #e0e0e0;
+        width: 100px;
+        color: #757575;
+        font-size: 14px;
+      }
+    }
+  }
+}
