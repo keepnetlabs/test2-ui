@@ -99,7 +99,7 @@ export default (router) => {
   }
   Sentry.setUser({
     username: userData.fullName || 'Guest',
-    email: userData.email
+    email: userData.email || 'Guest Email'
   })
   Sentry.init({
     Vue,
