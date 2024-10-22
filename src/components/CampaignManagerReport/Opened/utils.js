@@ -51,7 +51,7 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Human Activity', value: '0' },
-      { text: 'Sandbox Activity', value: '1' }
+      { text: 'Bot Activity', value: '1' }
     ]
   },
   PHISHING_SCENARIO_NAME: {
@@ -576,5 +576,5 @@ export const UNUSUAL_TYPES = {
 }
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
-  SYSTEM: 'Sandbox Activity'
+  BOT: 'Bot Activity'
 }

@@ -3,14 +3,14 @@
     <AlertBox
       class="alert-box--campaign-report"
       icon-name="mdi-information"
-      text="During the tracking duration of the campaign, data of the target users may vary depending on the sandbox activity rules."
+      text="During the tracking duration of the campaign, data of the target users may vary depending on the bot activity rules."
       :slots="{ primaryAction: false, secondaryAction: false }"
     />
     <div class="alert-box d-block bg-aqua-light my-4">
       <div class="alert-box__default-content justify-space-between w-100 d-flex">
         <div class="d-flex">
           <v-icon color="#2196f3">mdi-information</v-icon>
-          <p style="margin-top: 2px;">Sandbox Activity Rules:</p>
+          <p style="margin-top: 2px;">Bot Activity Rules:</p>
         </div>
         <v-icon class="cursor-pointer" color="#2196F3" @click="toggleAccordionDetail">{{
           isShowAccordion ? 'mdi-chevron-up' : 'mdi-chevron-down'
@@ -23,7 +23,7 @@
           minutes
         </p>
         <p class="mb-0 ml-8">
-          &bull; A3: Sandbox activity that happened in the same second that matched other rules.
+          &bull; A3: Bot activity that happened in the same second that matched other rules.
         </p>
         <p class="mb-0 ml-8">
           &bull; A4: Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
