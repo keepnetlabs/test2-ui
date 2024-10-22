@@ -188,7 +188,7 @@ export default {
           : {
               show: true,
               icon: null,
-              label: 'HIDE SANDBOX ACTIVITY',
+              label: 'HIDE BOT ACTIVITY',
               action: 'on-activity',
               hideTooltip: true,
               type: 'outlined',

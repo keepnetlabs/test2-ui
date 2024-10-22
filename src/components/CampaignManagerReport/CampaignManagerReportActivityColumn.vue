@@ -26,13 +26,13 @@ export default {
     },
     tooltipText: {
       type: String,
-      default: 'Sandbox activities are displayed in the details list'
+      default: 'Bot activities are displayed in the details list'
     }
   },
   computed: {
     isRenderTooltip() {
       return (
-        this.scope?.row?.activityType === ACTIVITY_TYPES.SYSTEM ||
+        this.scope?.row?.activityType === ACTIVITY_TYPES.BOT ||
         this.isChangedActivityAndActivityHuman
       )
     },
@@ -45,26 +45,26 @@ export default {
   methods: {
     getActivityTooltipText() {
       if (
-        this?.scope?.row?.activityType === ACTIVITY_TYPES.SYSTEM &&
+        this?.scope?.row?.activityType === ACTIVITY_TYPES.BOT &&
         this?.scope?.row?.sandBoxType === undefined
       ) {
-        return 'Sandbox activities are displayed in the details list'
+        return 'Bot activities are displayed in the details list'
       }
       if (
         this?.scope?.row?.activityType === ACTIVITY_TYPES.HUMAN &&
         this?.scope?.row?.isChangedActivity
       )
-        return 'Sandbox activity has been changed to human activity'
+        return 'Bot activity has been changed to human activity'
       if (this?.scope?.row?.sandBoxType === 1 || this?.scope?.row?.sandBoxType === 2) {
-        return 'Sandbox Activity Rules: A1'
+        return 'Bot Activity Rules: A1'
       }
       if (this?.scope?.row?.sandBoxType >= 16) {
-        return 'Sandbox Activity Rules: A4'
+        return 'Bot Activity Rules: A4'
       }
       if (this?.scope?.row?.sandBoxType >= 8) {
-        return 'Sandbox Activity Rules: A3'
+        return 'Bot Activity Rules: A3'
       }
-      return 'Sandbox Activity Rules: A2'
+      return 'Bot Activity Rules: A2'
     }
   }
 }

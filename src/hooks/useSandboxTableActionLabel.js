@@ -5,7 +5,7 @@ export default {
   data() {
     return {
       isShowSandbox: true,
-      tableActionLabel: 'HIDE SANDBOX ACTIVITY'
+      tableActionLabel: 'HIDE BOT ACTIVITY'
     }
   },
   watch: {
@@ -22,7 +22,7 @@ export default {
           this.isShowSandbox
             ? [
                 { text: 'Human Activity', value: '0' },
-                { text: 'Sandbox Activity', value: '1' }
+                { text: 'Bot Activity', value: '1' }
               ]
             : [{ text: 'Human Activity', value: '0' }]
         )
@@ -82,7 +82,7 @@ export default {
       this.setTableActionLabel()
     },
     setTableActionLabel() {
-      this.tableActionLabel = this.isShowSandbox ? `HIDE SANDBOX ACTIVITY` : `SHOW SANDBOX ACTIVITY`
+      this.tableActionLabel = this.isShowSandbox ? `HIDE BOT ACTIVITY` : `SHOW BOT ACTIVITY`
     }
   }
 }
