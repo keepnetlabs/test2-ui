@@ -633,6 +633,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
 import moment from 'moment'
+import countryDefaultValues from '@/utils/countryDefaultValues'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -706,7 +707,8 @@ export default {
         LicenseModuleResourceIdArray: [],
         statusId: '1',
         DateFormat: 'dd/MM/yyyy',
-        TimeFormat: '24h'
+        TimeFormat: '24h',
+        timeZoneId: ''
       },
       dateFormatList: [
         {
@@ -754,6 +756,17 @@ export default {
     }
   },
   computed: {
+    getSelectedCountry() {
+      if (this.formData.CountryResourceId) {
+        const selectedCountryIndex = this.countries.findIndex(
+          (country) => country.resourceId === this.formData.CountryResourceId
+        )
+        if (selectedCountryIndex !== -1) {
+          return this.countries[selectedCountryIndex].name
+        }
+      }
+      return null
+    },
     getDateFormat() {
       if (this.dateFormat) {
         return this.dateFormat.replaceAll('/', '.').replaceAll('Y', 'y').replaceAll('D', 'd')
@@ -822,6 +835,17 @@ export default {
     }
   },
   watch: {
+    getSelectedCountry(val) {
+      if (this.edit || !val) return
+      const countryDefaultValuesIndex = countryDefaultValues.findIndex(
+        (country) => country.name === val
+      )
+      if (countryDefaultValuesIndex !== -1) {
+        this.formData.DateFormat = countryDefaultValues[countryDefaultValuesIndex].dateFormat
+        this.formData.TimeFormat = countryDefaultValues[countryDefaultValuesIndex].timeFormat
+        this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
+      }
+    },
     isCallbackSelected(val) {
       if (!val) {
         this.formData.CallBackNumberBookingCount = null
