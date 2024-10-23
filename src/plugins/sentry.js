@@ -95,10 +95,11 @@ export default (router) => {
   if (!sentryStatus) return
   const userData = JSON.parse(localStorage.getItem('userData')) || {
     fullName: 'Guest',
-    email: 'Guest Email'
+    email: 'Guest Email',
+    name: 'Company'
   }
   Sentry.setUser({
-    username: userData.fullName || 'Guest',
+    username: userData.name || 'Company',
     email: userData.email || 'Guest Email'
   })
   Sentry.init({
