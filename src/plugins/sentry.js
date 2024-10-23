@@ -42,8 +42,6 @@ const CONSTANTS = {
   RECORDER_ERROR: 'Could not start new session on document.visible event',
   RESIZE_OBSERVER: 'ResizeObserver',
   AXIOS_ERROR: [
-    'Request failed with status code 401',
-    'Request failed with status code 403',
     'timeout of 100000ms exceeded',
     'Request aborted',
     'Request failed with status code 524',
@@ -95,11 +93,10 @@ export default (router) => {
   if (!sentryStatus) return
   const userData = JSON.parse(localStorage.getItem('userData')) || {
     fullName: 'Guest',
-    email: 'Guest Email',
-    name: 'Company'
+    email: 'Guest Email'
   }
   Sentry.setUser({
-    username: userData.name || 'Company',
+    username: userData.fullName || 'Guest',
     email: userData.email || 'Guest Email'
   })
   Sentry.init({
@@ -115,7 +112,6 @@ export default (router) => {
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
       'ResizeObserver loop completed with undelivered notifications.',
-      'Request failed with status code 403',
       'Userflow.js error reply (undefined): undefined'
     ],
     trackComponents: true,
@@ -150,3 +146,161 @@ export default (router) => {
     return event
   })
 }
+;(function () {
+  const chatScript = document.createElement('script')
+  chatScript.src = 'https://cdn.botframework.com/botframework-webchat/latest/webchat.js'
+  chatScript.async = true
+  document.head.appendChild(chatScript)
+  chatScript.onload = async () => {
+    const userData = JSON.parse(localStorage.getItem('userData')) || {
+      fullName: 'Guest',
+      email: 'Guest Email',
+      userCompany: { name: 'Guest Company' },
+      role: { name: 'Guest Role' }
+    }
+
+    const chatPopup = document.createElement('div')
+    chatPopup.className = 'chat-popup'
+    chatPopup.style.position = 'fixed'
+    chatPopup.style.bottom = '20px'
+    chatPopup.style.right = '20px'
+    chatPopup.style.width = '60px'
+    chatPopup.style.height = '60px'
+    chatPopup.style.borderRadius = '30px'
+    chatPopup.style.overflow = 'hidden'
+    chatPopup.style.zIndex = '9999'
+    chatPopup.style.cursor = 'pointer'
+
+    chatPopup.innerHTML = `
+    <img src="https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/b1f13b22-812d-4463-3e79-b47d4c36c800/public" alt="Chat Icon" style="width:100%; height:100%;">
+  `
+    const chatContent = document.createElement('div')
+    chatContent.style.display = 'none'
+    chatContent.style.width = '100%'
+    chatContent.style.height = '100%'
+    const header = document.createElement('div')
+    header.style.display = 'flex'
+    header.style.justifyContent = 'flex-end'
+    header.style.backgroundColor = '#f1f1f1'
+    header.style.padding = '10px'
+    const closeButton = document.createElement('button')
+    closeButton.innerHTML = '×'
+    closeButton.style.color = 'white'
+    closeButton.style.border = 'none'
+    closeButton.style.fontSize = '24px'
+    closeButton.style.cursor = 'pointer'
+    closeButton.style.position = 'absolute'
+    closeButton.style.top = '8px'
+    closeButton.style.right = '16px'
+    const styleOptions = {
+      botAvatarBackgroundColor: '#FFFFFF',
+      botAvatarImage:
+        'https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/b1f13b22-812d-4463-3e79-b47d4c36c800/public',
+      botAvatarInitials: 'BT',
+      userAvatarInitials: userData.fullName.slice(0, 2).toUpperCase()
+    }
+    const tokenEndpointURL = new URL(
+      'https://defaulta2b0241af5744c91af626f694403c1.64.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr744_customerService/directline/token?api-version=2022-03-01-preview'
+    )
+    const locale = document.documentElement.lang || 'en'
+    const apiVersion = tokenEndpointURL.searchParams.get('api-version')
+    const [directLineURL, token] = await Promise.all([
+      fetch(
+        new URL(
+          `/powervirtualagents/regionalchannelsettings?api-version=${apiVersion}`,
+          tokenEndpointURL
+        )
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to retrieve regional channel settings.')
+          }
+
+          return response.json()
+        })
+        .then(({ channelUrlsById: { directline } }) => directline),
+      fetch(tokenEndpointURL)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to retrieve Direct Line token.')
+          }
+
+          return response.json()
+        })
+        .then(({ token }) => token)
+    ])
+
+    const directLine = window.WebChat.createDirectLine({
+      domain: new URL('v3/directline', directLineURL),
+      token
+    })
+
+    const subscription = directLine.connectionStatus$.subscribe({
+      next(value) {
+        if (value === 2) {
+          directLine
+            .postActivity({
+              localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              locale,
+              name: 'startConversation',
+              type: 'event'
+            })
+            .subscribe()
+          subscription.unsubscribe()
+        }
+      }
+    })
+    const store = window.WebChat.createStore({}, ({ dispatch }) => (next) => (action) => {
+      if (action.type === 'DIRECT_LINE/CONNECT_FULFILLED') {
+        dispatch({
+          type: 'WEB_CHAT/SEND_EVENT',
+          payload: {
+            name: 'pvaSetContext',
+            value: {
+              userName: userData.fullName,
+              userEmail: userData.email,
+              userCompany: userData.userCompany.name,
+              userRole: userData.role.name
+            }
+          }
+        })
+      }
+      return next(action)
+    })
+    window.WebChat.renderWebChat({ directLine, locale, store, styleOptions }, chatContent)
+    chatContent.appendChild(closeButton)
+    chatPopup.appendChild(chatContent)
+    document.body.appendChild(chatPopup)
+    function toggleChat() {
+      if (chatPopup.style.width === '60px') {
+        chatPopup.style.width = '400px'
+        chatPopup.style.height = window.innerHeight > 800 ? '600px' : '400px'
+        chatPopup.style.borderRadius = '10px'
+        chatContent.style.display = 'block'
+        chatPopup.innerHTML = ''
+        chatPopup.appendChild(chatContent)
+      } else {
+        chatPopup.style.width = '60px'
+        chatPopup.style.height = '60px'
+        chatPopup.style.borderRadius = '30px'
+        chatContent.style.display = 'none'
+        chatPopup.innerHTML = `
+        <img src="https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/b1f13b22-812d-4463-3e79-b47d4c36c800/public" alt="Chat Icon" style="width:100%; height:100%;">
+      `
+      }
+    }
+
+    chatPopup.addEventListener('click', function () {
+      chatPopup.style.backgroundColor = '#fff'
+      chatPopup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'
+      chatPopup.style.width !== '400px' && toggleChat()
+    })
+
+    closeButton.addEventListener('click', function (e) {
+      chatPopup.style.backgroundColor = 'transparent'
+      chatPopup.style.boxShadow = 'none'
+      e.stopPropagation()
+      toggleChat()
+    })
+  }
+})()
