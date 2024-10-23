@@ -288,7 +288,8 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import { Fragment } from 'vue-frag'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
-
+import countryDefaultValues from '@/utils/countryDefaultValues'
+import { mapGetters } from 'vuex'
 export default {
   name: 'AddUserModal',
   components: {
@@ -367,6 +368,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCountryName: 'whitelabel/getCountryName'
+    }),
     getDialogBody() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
@@ -389,6 +393,22 @@ export default {
     getTimeZoneList() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+    }
+  },
+  watch: {
+    getCountryName: {
+      immediate: true,
+      handler(val) {
+        if (!!this.editData || !val) return
+        const countryDefaultValuesIndex = countryDefaultValues.findIndex(
+          (country) => country.name === val
+        )
+        if (countryDefaultValuesIndex !== -1) {
+          this.formValues.phoneNumber =
+            countryDefaultValues[countryDefaultValuesIndex].phoneNumberCode
+          this.formValues.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
+        }
+      }
     }
   },
   created() {

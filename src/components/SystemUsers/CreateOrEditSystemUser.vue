@@ -61,7 +61,8 @@ import jwt_decode from 'jwt-decode'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import CookieKeys from '@/model/constants/cookieKeys'
-
+import countryDefaultValues from '@/utils/countryDefaultValues'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -103,11 +104,30 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCountryName: 'whitelabel/getCountryName'
+    }),
     getTitle() {
       return this.selectedRow ? 'Edit System User' : 'New System User'
     },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
+    }
+  },
+  watch: {
+    getCountryName: {
+      immediate: true,
+      handler(val) {
+        if (!!this.selectedRow || !val) return
+        const countryDefaultValuesIndex = countryDefaultValues.findIndex(
+          (country) => country.name === val
+        )
+        if (countryDefaultValuesIndex !== -1) {
+          this.formValues.phoneNumber =
+            countryDefaultValues[countryDefaultValuesIndex].phoneNumberCode
+          this.formValues.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
+        }
+      }
     }
   },
   async created() {
