@@ -105,6 +105,9 @@ export default (router) => {
     dsn: sentryDSN,
     integrations: [
       Sentry.browserTracingIntegration({ router }),
+      Sentry.captureConsoleIntegration({
+        levels: ['error']
+      }),
       Sentry.replayIntegration({
         maskAllText: false,
         blockAllMedia: false
