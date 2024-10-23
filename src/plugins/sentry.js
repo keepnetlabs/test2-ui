@@ -42,8 +42,6 @@ const CONSTANTS = {
   RECORDER_ERROR: 'Could not start new session on document.visible event',
   RESIZE_OBSERVER: 'ResizeObserver',
   AXIOS_ERROR: [
-    'Request failed with status code 401',
-    'Request failed with status code 403',
     'timeout of 100000ms exceeded',
     'Request aborted',
     'Request failed with status code 524',
@@ -107,6 +105,9 @@ export default (router) => {
     dsn: sentryDSN,
     integrations: [
       Sentry.browserTracingIntegration({ router }),
+      Sentry.captureConsoleIntegration({
+        levels: ['error']
+      }),
       Sentry.replayIntegration({
         maskAllText: false,
         blockAllMedia: false
@@ -115,7 +116,6 @@ export default (router) => {
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
       'ResizeObserver loop completed with undelivered notifications.',
-      'Request failed with status code 403',
       'Userflow.js error reply (undefined): undefined'
     ],
     trackComponents: true,
