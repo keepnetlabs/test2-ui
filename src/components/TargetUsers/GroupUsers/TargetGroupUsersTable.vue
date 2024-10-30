@@ -339,7 +339,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        if (val === 'Repeated Offenders') {
+        if (val === 'Repeat Offenders') {
           this.tableOptions.iEmpty = {
             message: 'No repeat offenders found in the last 3 months'
           }

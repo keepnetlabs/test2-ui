@@ -96,7 +96,7 @@
         <span @click="handleGroupNameClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] }}
         </span>
-        <VTooltip v-if="scope.row.name === 'Repeated Offenders'" bottom max-width="270">
+        <VTooltip v-if="scope.row.name === 'Repeat Offenders'" bottom max-width="270">
           <template #activator="{ on }">
             <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
           </template>
@@ -111,9 +111,9 @@
           :id="tableOptions.rowActions[0].id"
           type="groups"
           :scope="scope"
-          :disabled="scope.row.name === 'Repeated Offenders'"
+          :disabled="scope.row.name === 'Repeat Offenders'"
           :tooltipMessage="
-            scope.row.name === 'Repeated Offenders'
+            scope.row.name === 'Repeat Offenders'
               ? 'The Repeat Offenders group cannot be edited.'
               : ''
           "
@@ -130,9 +130,9 @@
           <TargetGroupRowActionsDeleteButton
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
-            :disabled="scope.row.name === 'Repeated Offenders'"
+            :disabled="scope.row.name === 'Repeat Offenders'"
             :tooltipMessage="
-              scope.row.name === 'Repeated Offenders'
+              scope.row.name === 'Repeat Offenders'
                 ? 'The Repeat Offenders group cannot be deleted.'
                 : ''
             "
@@ -376,7 +376,7 @@ export default {
   },
   methods: {
     handleRowIsSelectable(row) {
-      if (row?.name === 'Repeated Offenders') {
+      if (row?.name === 'Repeat Offenders') {
         return false
       }
       return true
