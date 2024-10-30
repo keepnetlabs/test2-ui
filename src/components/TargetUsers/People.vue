@@ -702,7 +702,7 @@ export default {
     callForTargetGroups() {
       searchTargetGroups(this.targetGroupsPayload).then((res) => {
         const repeatedOffendersIndex = res?.data?.data?.results?.findIndex?.(
-          (group) => group.name === 'Repeated Offenders'
+          (group) => group.name === 'Repeat Offenders'
         )
         if (repeatedOffendersIndex !== -1) {
           this.repeatedOffendersCount = res.data.data.results[repeatedOffendersIndex].userCount

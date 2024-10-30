@@ -26,7 +26,7 @@
       <span v-if="col.property === 'name'">
         {{ scope.row[col.property] }}
       </span>
-      <VTooltip v-if="scope.row.name === 'Repeated Offenders'" bottom max-width="270" z-index="100">
+      <VTooltip v-if="scope.row.name === 'Repeat Offenders'" bottom max-width="270" z-index="100">
         <template #activator="{ on }">
           <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
         </template>
