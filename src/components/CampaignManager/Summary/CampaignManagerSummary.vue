@@ -20,7 +20,19 @@
         icon="mdi-alert-circle"
         :title="labels.CampaignInfo"
         :items="getCampaignInfoItems"
-      />
+      >
+        <template #ScenarioDistribution="{ props: { key, val } }">
+          <div class="campaign-manager-summary-card__body-item-key">
+            {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+          </div>
+          <div class="campaign-manager-summary-card__body-item-value">
+            <VIcon v-if="val === SCENARIO_DISTRIBUTION_TEXTS[3]" color="#2196F3" class="mr-2" small
+              >mdi-creation</VIcon
+            >
+            {{ val }}
+          </div>
+        </template>
+      </CampaignManagerSummaryCard>
       <CampaignManagerSummaryCard
         icon="mdi-cog"
         :title="labels.Settings"
@@ -347,6 +359,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_DISTRIBUTION_TEXTS,
       SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
       trainingLanguages: [],

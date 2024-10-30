@@ -41,13 +41,15 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
 }
 export const scenarioDistributionFilterItems = [
   'Manually',
+  'AI Ally selects scenario for each user',
   'Random scenarios for each user',
   'Same random scenario for all users'
 ]
 export const scenarioDistributionItems = [
   { text: 'Select scenarios manually', value: 0 },
   { text: 'Select random scenarios for each user', value: 1 },
-  { text: 'Select same random scenario for all users', value: 2 }
+  { text: 'Select same random scenario for all users', value: 2 },
+  { text: 'AI Ally selects scenario for each user', value: 3 }
 ]
 export const COLUMNS = {
   SCENARIO_DISTRIBUTION: {
@@ -57,7 +59,7 @@ export const COLUMNS = {
     label: `Scenario Distribution`,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 240,
     filterableType: 'select',
     filterableItems: scenarioDistributionFilterItems,
@@ -400,5 +402,6 @@ export const SCENARIO_DISTRIBUTION = {
 export const SCENARIO_DISTRIBUTION_TEXTS = [
   'Manually',
   'Random scenarios for each user',
-  'Same random scenario for all users'
+  'Same random scenario for all users',
+  'AI Ally selects scenario for each user'
 ]

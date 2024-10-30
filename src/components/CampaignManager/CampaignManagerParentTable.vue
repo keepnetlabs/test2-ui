@@ -79,6 +79,17 @@
         </v-tooltip>
         <span v-else> {{ scope.row[col.property] }}</span>
       </template>
+      <template v-if="scope.column.property === 'categoryDistributionType'">
+        <div class="campaign-manager-parent-categoryDistributionType-column">
+          <VIcon
+            v-if="scope.row[col.property] === SCENARIO_DISTRIBUTION_TEXTS[3]"
+            color="#2196F3"
+            small
+            >mdi-creation</VIcon
+          >
+          <span>{{ scope.row[col.property] }}</span>
+        </div>
+      </template>
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions

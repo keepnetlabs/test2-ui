@@ -144,24 +144,90 @@
                     </template>
                   </KSelect>
                 </div>
-                <div>
-                  <KSelect
-                    v-model="scenarioDistribution"
-                    :items="scenarioDistributionItems"
-                    placeholder="Select scenarios manually"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    persistent-hint
-                    class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                      max-width: unset;
-                      width: 300px;
-                    "
-                    :disabled="!category.length"
-                  />
+                <div style="position: relative;">
+                  <VSnackbar
+                    :value="isAIAllyHighlightVisible"
+                    :timeout="-1"
+                    absolute
+                    multi-line
+                    top
+                    color="#2195f3"
+                    class="emailTemplatePreview__ai-ally-highlight"
+                    content-class="emailTemplatePreview__ai-ally-highlight-content"
+                  >
+                    <VIcon color="#FFFFFF" class="mr-2" :size="24">mdi-creation</VIcon>
+                    <div class="emailTemplatePreview__ai-ally-highlight-content-center">
+                      <span style="font-weight: 600;">NEW!</span>
+                      <span
+                        >AI Ally selects scenarios based on user features like team and location.
+                        Select a category to enable this feature.
+                      </span>
+                    </div>
+                    <v-btn color="#FFFFFF" icon @click="isAIAllyHighlightVisible = false">
+                      <VIcon color="#FFFFFF" :size="24">mdi-close</VIcon>
+                    </v-btn>
+                    <div class="triangle">
+                      <div class="over-triangle"></div>
+                    </div>
+                  </VSnackbar>
+                  <VTooltip bottom :disabled="!!category.length" nudge-top="26">
+                    <template #activator="{ on }">
+                      <div v-on="on">
+                        <KSelect
+                          v-model="scenarioDistribution"
+                          :items="scenarioDistributionItems"
+                          placeholder="Select scenarios manually"
+                          item-text="text"
+                          item-value="value"
+                          outlined
+                          persistent-hint
+                          class="filter-field-scenarios"
+                          style="
+                            padding-right: 4px !important;
+                            padding-left: 4px !important;
+                            max-width: unset;
+                            width: 350px;
+                          "
+                          :disabled="!category.length"
+                          :slots="{ item: true, selection: true }"
+                        >
+                          <template #selection="{ item }">
+                            <div class="d-flex align-center">
+                              <VIcon v-if="item.value === 3" color="#2196F3" class="mr-2" small
+                                >mdi-creation</VIcon
+                              >
+                              {{ item.text }}
+                            </div>
+                          </template>
+                          <template #item="{ item, on, attrs }">
+                            <VListItem
+                              v-on="on"
+                              :class="{
+                                'v-list-item--active': scenarioDistribution === item.value
+                              }"
+                            >
+                              <VListItemTitle>
+                                <VIcon v-if="item.value === 3" color="#2196F3" class="mr-2" small
+                                  >mdi-creation</VIcon
+                                >
+                                <span
+                                  :class="[
+                                    item.value !== 3 && scenarioDistribution === item.value
+                                      ? 'ml-5'
+                                      : item.value !== 3
+                                      ? 'ml-6'
+                                      : ''
+                                  ]"
+                                  >{{ item.text }}</span
+                                >
+                              </VListItemTitle>
+                            </VListItem>
+                          </template>
+                        </KSelect>
+                      </div>
+                    </template>
+                    <span>Select category first.</span>
+                  </VTooltip>
                 </div>
               </div>
             </div>
@@ -573,6 +639,7 @@ export default {
   },
   data() {
     return {
+      isAIAllyHighlightVisible: true,
       SCENARIO_DISTRIBUTION,
       scenarioDistributionItems,
       tab: 'email',
