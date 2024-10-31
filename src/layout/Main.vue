@@ -810,7 +810,10 @@
                 />
               </v-list-item-content>
             </v-list-item>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="getGamificationReportSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
                   to="/reports/gamification-report"
@@ -1189,7 +1192,8 @@ export default {
       getCallbackCampaignManagerLeftMenuPermissions:
         'permissions/getCallbackCampaignManagerLeftMenuPermissions',
       getCallbackScenarioLeftMenuPermissions: 'permissions/getCallbackScenarioLeftMenuPermissions',
-      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions'
+      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions',
+      getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'

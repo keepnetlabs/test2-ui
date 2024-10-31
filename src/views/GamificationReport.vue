@@ -43,10 +43,12 @@
         </div>
         <div class="gamification-report__top-performers-content">
           <LeaderboardTopPerformerCard
+            v-if="!!performers.length"
             v-for="(performer, index) in performers"
             :performer="performer"
             :key="index"
           />
+          <div v-else></div>
         </div>
       </div>
       <DataTable
@@ -98,6 +100,7 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import LeaderboardTopPerformerCard from '@/components/GamificationReport/LeaderboardTopPerformerCard'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import { mapGetters } from 'vuex'
 export default {
   name: 'GamificationReport',
   components: {
@@ -304,7 +307,7 @@ export default {
           }
         ],
         iEmpty: {
-          message: 'No leaderboard data'
+          message: 'The target users will be displayed here based on their total points.'
         },
         addButton: {
           show: false
@@ -316,6 +319,9 @@ export default {
     this.callForData()
   },
   computed: {
+    ...mapGetters({
+      getGamificationReportSearchPermissions: 'auth/getGamificationReportSearchPermissions'
+    }),
     getDateRangeText() {
       if (this.dateRange) return this.dateRange
       if (this.selectedDateRange?.length < 2) return
@@ -327,6 +333,7 @@ export default {
   },
   methods: {
     callForData() {
+      if (!this.getGamificationReportSearchPermissions) return
       // TODO: Add search endpoint
     },
     disabledDates(date) {

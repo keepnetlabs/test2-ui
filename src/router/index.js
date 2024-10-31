@@ -771,7 +771,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Reports',
-            permissionStoreKey: 'permissions/getReportsLeftMenuPermissions'
+            permissionStoreKey: 'permissions/getGamificationReportSearchPermissions'
           }
         },
         {

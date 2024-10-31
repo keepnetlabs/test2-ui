@@ -2732,5 +2732,12 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  GAMIFICATION_REPORT_PERMISSIONS: {
+    SEARCH: {
+      url: `gamification-report/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }
