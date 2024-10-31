@@ -158,9 +158,9 @@
                     <VIcon color="#FFFFFF" class="mr-2" :size="24">mdi-creation</VIcon>
                     <div class="emailTemplatePreview__ai-ally-highlight-content-center">
                       <span style="font-weight: 600;">NEW!</span>
-                      <span
-                        >AI Ally selects scenarios based on user features like team and location.
-                        Select a category to enable this feature.
+                      <span>
+                        AI Ally customizes scenarios based on user details, including location,
+                        department, and phone number. Select a category to enable this feature.
                       </span>
                     </div>
                     <v-btn color="#FFFFFF" icon @click="isAIAllyHighlightVisible = false">
