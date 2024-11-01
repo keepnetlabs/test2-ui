@@ -2,7 +2,7 @@
   <div class="company-settings__header mt-6">
     <v-list-item>
       <v-list-item-content>
-        <template v-if="slots.title">
+        <template v-if="slots && slots.title">
           <slot name="title"> </slot>
         </template>
         <v-list-item-title v-else class="company-settings__title">

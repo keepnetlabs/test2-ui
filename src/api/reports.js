@@ -116,6 +116,19 @@ export const setSchedulingReportStatus = (resourceId, status) => {
 export const getSchedulingReportTargetGroups = () => {
   return testRequest.get('/report-scheduling/target-groups')
 }
+
+export const getLeaderboardData = (payload) => {
+  return testRequest.post('/leaderboard/get-all', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export const getTopPerformersData = (payload) => {
+  return testRequest.post('/leaderboard/get-top-performers', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -124,5 +137,7 @@ export default {
   createReportScheduling,
   updateReportScheduling,
   setSchedulingReportStatus,
-  getSchedulingReportTargetGroups
+  getSchedulingReportTargetGroups,
+  getLeaderboardData,
+  getTopPerformersData
 }

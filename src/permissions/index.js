@@ -2735,7 +2735,12 @@ export default {
   },
   GAMIFICATION_REPORT_PERMISSIONS: {
     SEARCH: {
-      url: `gamification-report/search`,
+      url: `leaderboard/get-all`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TOP_PERFORMERS: {
+      url: `leaderboard/get-top-performers`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

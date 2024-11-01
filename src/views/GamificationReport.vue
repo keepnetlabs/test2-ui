@@ -21,7 +21,6 @@
                 :picker-options="pickerOptions"
                 :prefix-icon="'el-icon-date'"
                 :clearable="false"
-                @input="dateRange = ''"
               />
               <VBtn
                 class="training-library-card__footer-btn ml-6"
@@ -37,18 +36,28 @@
           </div>
         </template>
       </CompanySettingsHeader>
-      <div class="gamification-report__top-performers mb-6">
+      <DatatableLoading v-if="isTopPerformersLoading" :loading="isTopPerformersLoading" />
+      <div v-else class="gamification-report__top-performers mb-6">
         <div class="gamification-report__top-performers-header">
           Top Performers for Selected Period
         </div>
-        <div class="gamification-report__top-performers-content">
+        <div v-if="!!topPerformers.length" class="gamification-report__top-performers-content">
           <LeaderboardTopPerformerCard
-            v-if="!!performers.length"
-            v-for="(performer, index) in performers"
+            v-for="(performer, index) in topPerformers"
             :performer="performer"
             :key="index"
           />
-          <div v-else></div>
+        </div>
+        <div v-else class="gamification-report__top-performers-content-empty">
+          <figure>
+            <img
+              src="@/assets/img/top-performers-empty-icon.svg"
+              alt="Top performers will be seen here."
+            />
+          </figure>
+          <span class="gamification-report__top-performers-content-empty-text"
+            >Top performers will be seen here.</span
+          >
         </div>
       </div>
       <DataTable
@@ -85,6 +94,7 @@
 </template>
 
 <script>
+import { getLeaderboardData, getTopPerformersData } from '@/api/reports'
 import KContainer from '@/components/KContainer/KContainer'
 import { Fragment } from 'vue-frag'
 import DataTable from '@/components/DataTable'
@@ -100,7 +110,9 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import LeaderboardTopPerformerCard from '@/components/GamificationReport/LeaderboardTopPerformerCard'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
+import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { mapGetters } from 'vuex'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'GamificationReport',
   components: {
@@ -109,7 +121,8 @@ export default {
     DataTable,
     CompanySettingsHeader,
     LeaderboardTopPerformerCard,
-    InputDate
+    InputDate,
+    DatatableLoading
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
@@ -117,10 +130,10 @@ export default {
       CONSTANTS: {
         id: 'leaderboard-data-table'
       },
-      dateRange: '',
+      isTopPerformersLoading: true,
       parsedFormat: getTimeZone(false),
       selectedDateRange: [
-        this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+        this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
         this.$moment(Date.now()).format(getTimeZoneForMoment())
       ],
       pickerOptions: {
@@ -130,7 +143,7 @@ export default {
           if (maxDate && minDate) {
             this.date = refPicker.formatToValue([minDate, maxDate])
           }
-          // this.formData.datePeriod = 5
+          this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.Custom
         },
         shortcuts: [
           {
@@ -141,6 +154,7 @@ export default {
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
               start.setDate(1)
               picker.$emit('pick', [start, end])
+              this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.LastMonth
               // this.formData.datePeriod = 0
             }
           },
@@ -153,6 +167,7 @@ export default {
               start.setMonth(start.getMonth() + 1)
               start.setDate(1)
               picker.$emit('pick', [start, end])
+              this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.Last3Months
               // this.formData.datePeriod = 1
             }
           },
@@ -165,6 +180,7 @@ export default {
               start.setMonth(start.getMonth() + 1)
               start.setDate(1)
               picker.$emit('pick', [start, end])
+              this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.Last6Months
               // this.formData.datePeriod = 2
             }
           },
@@ -177,6 +193,7 @@ export default {
               start.setMonth(start.getMonth() + 1)
               start.setDate(1)
               picker.$emit('pick', [start, end])
+              this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.LastYear
               // this.formData.datePeriod = 3
             }
           },
@@ -188,37 +205,22 @@ export default {
               const firstDayOfYear = new Date(year, 0, 1)
               const lastDayOfYear = new Date(year, today.getMonth(), today.getDate())
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
+              this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.ThisYear
               // this.formData.datePeriod = 4
             }
           }
         ],
         disabledDate: this.disabledDates
       },
-      performers: [
-        {
-          type: 'gold',
-          name: 'Trevon Duffy',
-          email: 'trevon@example.com',
-          department: 'Management',
-          score: '12500'
-        },
-        {
-          type: 'silver',
-          name: 'Trevon Duffy',
-          email: 'trevon@example.com',
-          department: 'Management',
-          score: '12500'
-        },
-        {
-          type: 'bronze',
-          name: 'Trevon Duffy',
-          email: 'trevon@example.com',
-          department: 'Management',
-          score: '12500'
-        }
-      ],
-      axiosPayload: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({
+        orderBy: 'rank',
+        ascending: true,
+        datePeriod: DATE_PERIOD_ENUMS.LastMonth,
+        startDate: null,
+        endDate: null
+      }),
       tableData: [],
+      topPerformers: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LEADERBOARD,
@@ -286,7 +288,7 @@ export default {
           },
           {
             property: 'performance',
-            align: 'center',
+            align: 'right',
             editable: false,
             label: 'Performance',
             sortable: true,
@@ -295,8 +297,8 @@ export default {
             filterableType: 'text'
           },
           {
-            property: 'totalPoints',
-            align: 'center',
+            property: 'points',
+            align: 'right',
             fixed: 'right',
             editable: false,
             label: 'Total Points',
@@ -317,13 +319,15 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForTopPerformers()
   },
   computed: {
     ...mapGetters({
-      getGamificationReportSearchPermissions: 'auth/getGamificationReportSearchPermissions'
+      getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions',
+      getGamificationReportTopPerformersPermissions:
+        'permissions/getGamificationReportTopPerformersPermissions'
     }),
     getDateRangeText() {
-      if (this.dateRange) return this.dateRange
       if (this.selectedDateRange?.length < 2) return
       const firstDateLeft = this.selectedDateRange?.[0]?.split?.(' ')?.[0] || ''
       const lastDateLeft = this.selectedDateRange?.[1]?.split?.(' ')?.[0] || ''
@@ -331,10 +335,72 @@ export default {
       return `${firstDateLeft} - ${lastDateLeft}`
     }
   },
+  watch: {
+    selectedDateRange: {
+      deep: true,
+      handler(val) {
+        if (val?.length < 2) return
+        this.axiosPayload.startDate = val[0]
+        this.axiosPayload.endDate = val[1]
+        this.callForData()
+        this.callForTopPerformers()
+      }
+    }
+  },
   methods: {
     callForData() {
       if (!this.getGamificationReportSearchPermissions) return
-      // TODO: Add search endpoint
+      this.setLoading(true)
+      const arrangedPayload = {
+        datePeriod: this.axiosPayload.datePeriod,
+        startDate: this.axiosPayload.startDate,
+        endDate: this.axiosPayload.endDate,
+        filter: this.axiosPayload.filter,
+        pagination: {
+          pageNumber: this.axiosPayload.pageNumber,
+          pageSize: this.axiosPayload.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending
+        }
+      }
+      getLeaderboardData(arrangedPayload)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData =
+            results?.map?.((row) => ({ ...row, performance: `${row.performance}%` })) || []
+        })
+        .finally(this.setLoading)
+    },
+    callForTopPerformers() {
+      if (!this.getGamificationReportTopPerformersPermissions) return
+      this.isTopPerformersLoading = true
+      const { datePeriod, startDate, endDate } = this.axiosPayload
+      const payload = {
+        datePeriod,
+        startDate,
+        endDate
+      }
+      getTopPerformersData(payload)
+        .then((response) => {
+          this.topPerformers = response?.data?.data?.results || []
+        })
+        .finally(() => {
+          this.isTopPerformersLoading = false
+        })
+    },
+    handleDateRangeChange(dateRange) {
+      if (dateRange?.length < 2) return
+      this.axiosPayload.startDate = dateRange[0]
+      this.axiosPayload.endDate = dateRange[1]
+      this.callForData()
+      this.callForTopPerformers()
     },
     disabledDates(date) {
       const lastYear = new Date()

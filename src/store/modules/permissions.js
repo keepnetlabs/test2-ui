@@ -1567,6 +1567,9 @@ const store = {
     },
     getGamificationReportSearchPermissions(state) {
       return state?.gamificationReportPermissions?.SEARCH?.hasPermission
+    },
+    getGamificationReportTopPerformersPermissions(state) {
+      return state?.gamificationReportPermissions?.TOP_PERFORMERS?.hasPermission
     }
   },
   mutations: {

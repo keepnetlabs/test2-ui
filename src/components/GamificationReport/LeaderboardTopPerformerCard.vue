@@ -6,12 +6,14 @@
     <figure>
       <img :src="getMedalImgSrc" alt="gold medal" />
     </figure>
-    <span class="gamification-report__top-performer-card-name">{{ performer.name }}</span>
+    <span class="gamification-report__top-performer-card-name"
+      >{{ performer.firstName }} {{ performer.lastName }}</span
+    >
     <span class="gamification-report__top-performer-card-email">{{ performer.email }}</span>
     <span class="gamification-report__top-performer-card-department">{{
       performer.department
     }}</span>
-    <span class="gamification-report__top-performer-card-score">{{ performer.score }} PTS</span>
+    <span class="gamification-report__top-performer-card-score">{{ performer.points }} PTS</span>
   </div>
 </template>
 
@@ -36,19 +38,19 @@ export default {
   },
   computed: {
     getMedalImgSrc() {
-      if (this.performer.type === 'gold') {
+      if (this.performer.rank === 1) {
         return this.goldMedalImg
       }
-      if (this.performer.type === 'silver') {
+      if (this.performer.rank === 2) {
         return this.silverMedalImg
       }
       return this.bronzeMedalImg
     },
     getRibbonImgSrc() {
-      if (this.performer.type === 'gold') {
+      if (this.performer.rank === 1) {
         return this.goldRibbonImg
       }
-      if (this.performer.type === 'silver') {
+      if (this.performer.rank === 2) {
         return this.silverRibbonImg
       }
       return this.bronzeRibbonImg
