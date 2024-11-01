@@ -810,6 +810,19 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              v-if="getGamificationReportSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/gamification-report"
+                  id="btn--link-navigator-menu-gamification-report"
+                  route-name="Gamification Report"
+                  :active-class-comparator="() => routerName === 'Gamification Report'"
+                />
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
           <v-list-group
             v-if="getCompanyLeftMenuPermissions"
@@ -1179,7 +1192,8 @@ export default {
       getCallbackCampaignManagerLeftMenuPermissions:
         'permissions/getCallbackCampaignManagerLeftMenuPermissions',
       getCallbackScenarioLeftMenuPermissions: 'permissions/getCallbackScenarioLeftMenuPermissions',
-      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions'
+      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions',
+      getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
@@ -1199,7 +1213,17 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
+        routerName === 'Advanced Reports' ||
+        routerName === 'Advanced Report' ||
+        routerName === 'Executive Reports' ||
+        routerName === 'Executive Report' ||
+        routerName === 'New Executive Report' ||
+        routerName === 'Preview Executive Report' ||
+        routerName === 'Edit Executive Report' ||
+        routerName === 'Duplicate Executive Report' ||
+        routerName === 'Scheduled Reports' ||
+        routerName === 'Scheduled Report' ||
+        routerName === 'Gamification Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]

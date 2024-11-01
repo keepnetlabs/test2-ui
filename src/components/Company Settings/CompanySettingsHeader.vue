@@ -2,7 +2,10 @@
   <div class="company-settings__header mt-6">
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="company-settings__title">
+        <template v-if="slots && slots.title">
+          <slot name="title"> </slot>
+        </template>
+        <v-list-item-title v-else class="company-settings__title">
           {{ title }}
         </v-list-item-title>
         <v-list-item-subtitle class="company-settings__subtitle">
@@ -22,6 +25,10 @@ export default {
     },
     subTitle: {
       type: String
+    },
+    slots: {
+      type: Object,
+      default: () => ({ title: false })
     }
   }
 }
