@@ -2732,5 +2732,17 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
+  },
+  GAMIFICATION_REPORT_PERMISSIONS: {
+    SEARCH: {
+      url: `leaderboard/get-all`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TOP_PERFORMERS: {
+      url: `leaderboard/get-top-performers`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
   }
 }

@@ -94,7 +94,8 @@ const {
   CALLBACK_CAMPAIGN_MANAGER_PARENT,
   CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
   CALLBACK_REPORT_PERMISSIONS,
-  CALLBACK_SETTINGS_PERMISSIONS
+  CALLBACK_SETTINGS_PERMISSIONS,
+  GAMIFICATION_REPORT_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -192,7 +193,8 @@ const defaultState = {
   callbackCampaignManagerParentPermissions: CALLBACK_CAMPAIGN_MANAGER_PARENT,
   callbackCampaignJobPermissions: CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
   callbackReportPermissions: CALLBACK_REPORT_PERMISSIONS,
-  callbackSettingsPermissions: CALLBACK_SETTINGS_PERMISSIONS
+  callbackSettingsPermissions: CALLBACK_SETTINGS_PERMISSIONS,
+  gamificationReportPermissions: GAMIFICATION_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -1562,6 +1564,12 @@ const store = {
     },
     getCallbackSettingsExchangePermissions(state) {
       return state?.callbackSettingsPermissions?.EXCHANGE?.hasPermission
+    },
+    getGamificationReportSearchPermissions(state) {
+      return state?.gamificationReportPermissions?.SEARCH?.hasPermission
+    },
+    getGamificationReportTopPerformersPermissions(state) {
+      return state?.gamificationReportPermissions?.TOP_PERFORMERS?.hasPermission
     }
   },
   mutations: {
@@ -1663,7 +1671,8 @@ const store = {
         'callbackCampaignManagerParentPermissions',
         'callbackCampaignJobPermissions',
         'callbackReportPermissions',
-        'callbackSettingsPermissions'
+        'callbackSettingsPermissions',
+        'gamificationReportPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

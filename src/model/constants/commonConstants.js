@@ -348,6 +348,7 @@ export const PROPERTY_STORE = {
 }
 
 export const TABLE_SETTINGS_KEYS = {
+  LEADERBOARD: 'LeaderboardTableSettings',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
@@ -529,6 +530,7 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  LEADERBOARD: 'LeaderboardTable',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTable',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTable',

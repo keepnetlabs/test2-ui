@@ -30,6 +30,10 @@ export default {
     type: {
       default: 'date'
     },
+    clearable: {
+      type: Boolean,
+      default: true
+    },
     defaultTime: {}
   },
   created() {
