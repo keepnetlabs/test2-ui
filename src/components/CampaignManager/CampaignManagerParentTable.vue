@@ -106,6 +106,38 @@
         @on-launch="handleLaunch"
       />
     </template>
+    <template #addUsers>
+      <VTooltip bottom opacity="1">
+        <template v-slot:activator="{ on: tooltip }">
+          <VBtn
+            v-on="{ ...tooltip }"
+            id="btn-add--campaign-manager"
+            class="button-new"
+            style="margin-right: 10px;"
+            rounded
+            color="#2196f3"
+            @click="toggleAddCampaignManagerModal"
+          >
+            <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+            <span class="button-new__text">NEW</span>
+          </VBtn>
+        </template>
+        <span class="tooltip-span">{{ 'Add a Campaign' }}</span>
+      </VTooltip>
+      <VTooltip bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            class="executive-reports-card__right-btn"
+            color="#2196f3"
+            small
+            @click="toggleShowScenarioStatistics"
+            >mdi-chart-bar</VIcon
+          >
+        </template>
+        <span>Show Scenario Statistics</span>
+      </VTooltip>
+    </template>
   </DataTable>
 </template>
 
@@ -387,6 +419,9 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
+    },
+    toggleShowScenarioStatistics() {
+      this.$emit('on-show-scenario-statistics')
     }
   }
 }
