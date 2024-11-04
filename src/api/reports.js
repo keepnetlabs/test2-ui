@@ -129,6 +129,12 @@ export const getTopPerformersData = (payload) => {
   })
 }
 
+export const exportLeaderboardData = (payload) => {
+  return testRequest.post('/leaderboard/get-all/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -139,5 +145,6 @@ export default {
   setSchedulingReportStatus,
   getSchedulingReportTargetGroups,
   getLeaderboardData,
-  getTopPerformersData
+  getTopPerformersData,
+  exportLeaderboardData
 }
