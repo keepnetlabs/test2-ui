@@ -118,15 +118,11 @@ export const getSchedulingReportTargetGroups = () => {
 }
 
 export const getLeaderboardData = (payload) => {
-  return testRequest.post('/leaderboard/get-all', payload, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post('/leaderboard/get-all', payload)
 }
 
 export const getTopPerformersData = (payload) => {
-  return testRequest.post('/leaderboard/get-top-performers', payload, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post('/leaderboard/get-top-performers', payload)
 }
 
 export const exportLeaderboardData = (payload) => {
