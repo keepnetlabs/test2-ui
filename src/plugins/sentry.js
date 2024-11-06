@@ -124,6 +124,12 @@ export default (router) => {
     replaysOnErrorSampleRate: 1.0
   })
   Sentry.addEventProcessor(function (event) {
+    if (event.type === 'replay_event') {
+      if (window.location.pathname.includes('/training/scorm')) {
+        return null
+      }
+      return event
+    }
     if (event?.level === CONSTANTS.ERROR && event?.exception?.values?.[0]) {
       const message = event.exception.values[0].value
       if (CONSTANTS.GRAPESJS_INTERNAL.some((m) => message.includes(m))) return null

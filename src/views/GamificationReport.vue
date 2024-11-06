@@ -39,9 +39,12 @@
       <DatatableLoading v-if="isTopPerformersLoading" :loading="isTopPerformersLoading" />
       <div v-else class="gamification-report__top-performers mb-6">
         <div class="gamification-report__top-performers-header">
-          Top Performers for Selected Period
+          Top Performers
         </div>
-        <div v-if="!!topPerformers.length" class="gamification-report__top-performers-content">
+        <div
+          v-if="topPerformers && !!topPerformers.length"
+          class="gamification-report__top-performers-content"
+        >
           <LeaderboardTopPerformerCard
             v-for="(performer, index) in topPerformers"
             :performer="performer"
@@ -66,7 +69,7 @@
         filterable
         options
         is-server-side
-        row-key="resourceId"
+        row-key="targetUserResourceId"
         :loading="isLoading"
         :table="tableData"
         :columns="tableOptions.columns"
@@ -94,7 +97,7 @@
 </template>
 
 <script>
-import { getLeaderboardData, getTopPerformersData } from '@/api/reports'
+import { getLeaderboardData, getTopPerformersData, exportLeaderboardData } from '@/api/reports'
 import KContainer from '@/components/KContainer/KContainer'
 import { Fragment } from 'vue-frag'
 import DataTable from '@/components/DataTable'
@@ -223,6 +226,7 @@ export default {
       topPerformers: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
+        serverSideEvents: { pagination: true, search: true, sort: true },
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.LEADERBOARD,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.LEADERBOARD,
         selectEvent: {
@@ -413,24 +417,26 @@ export default {
     exportLeaderboard(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: this.axiosPayload.orderBy,
-          ascending: this.axiosPayload.ascending,
-          reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.axiosPayload.filter
+          reportAllPages: downloadTypes.reportAllPages,
+          datePeriod: this.axiosPayload.datePeriod,
+          filter: this.axiosPayload.filter,
+          pagination: {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending
+          }
         }
-        // TODO: Add export endpoint
-        // AwarenessEducatorService.exportCertificates(payload).then((response) => {
-        //   const { data } = response
-        //   const link = document.createElement('a')
-        //   link.href = window.URL.createObjectURL(data)
-        //   link.download = `Leaderboard.${
-        //     item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-        //   }`
-        //   link.click()
-        // })
+        exportLeaderboardData(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Leaderboard.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     }
   }

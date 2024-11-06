@@ -217,7 +217,7 @@ export default {
               this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
             })
         } else {
-          searchTargetGroups(this.axiosPayload)
+          searchTargetGroups(this.axiosPayload, true)
             .then((response) => {
               this.setDefaultResponseParams(response)
             })
