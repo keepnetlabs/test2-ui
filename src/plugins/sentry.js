@@ -110,7 +110,13 @@ export default (router) => {
       }),
       Sentry.replayIntegration({
         maskAllText: false,
-        blockAllMedia: false
+        blockAllMedia: false,
+        beforeAddRecordingEvent(event) {
+          if (window.location.pathname.includes('/training/scorm')) {
+            return null
+          }
+          return event
+        }
       })
     ],
     ignoreErrors: [
