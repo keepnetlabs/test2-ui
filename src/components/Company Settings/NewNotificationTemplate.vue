@@ -204,6 +204,20 @@ export default {
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment')?.value
     },
+    getLearningPathEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Learning Path Enrollment')
+        ?.value
+    },
+    getTrainingEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Training Enrollment')?.value
+    },
+    getPosterEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Poster Enrollment')?.value
+    },
+    getInfographicEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Infographic Enrollment')
+        ?.value
+    },
     getEnrollmentReminderTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment Reminder')?.value
     },
@@ -217,7 +231,11 @@ export default {
       return [
         this.getEnrollmentTemplateResourceId,
         this.getEnrollmentReminderTemplateResourceId,
-        this.getEnrollmentAfterFailedInASimulationTemplateResourceId
+        this.getEnrollmentAfterFailedInASimulationTemplateResourceId,
+        this.getTrainingEnrollmentTemplateResourceId,
+        this.getLearningPathEnrollmentTemplateResourceId,
+        this.getPosterEnrollmentTemplateResourceId,
+        this.getInfographicEnrollmentTemplateResourceId
       ].includes(this.formValues.emailTemplateCategoryResourceId)
     },
     getModalId() {
