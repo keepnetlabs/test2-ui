@@ -39,7 +39,7 @@
       <DatatableLoading v-if="isTopPerformersLoading" :loading="isTopPerformersLoading" />
       <div v-else class="gamification-report__top-performers mb-6">
         <div class="gamification-report__top-performers-header">
-          Top Performers for Selected Period
+          Top Performers
         </div>
         <div
           v-if="topPerformers && !!topPerformers.length"
