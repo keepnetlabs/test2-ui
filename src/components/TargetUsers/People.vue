@@ -700,7 +700,7 @@ export default {
         })
     },
     callForTargetGroups() {
-      searchTargetGroups(this.targetGroupsPayload).then((res) => {
+      searchTargetGroups(this.targetGroupsPayload, true).then((res) => {
         const repeatedOffendersIndex = res?.data?.data?.results?.findIndex?.(
           (group) => group.name === 'Repeat Offenders'
         )

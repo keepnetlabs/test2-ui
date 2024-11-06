@@ -485,7 +485,7 @@ export default {
         this.targetGroupsAxiosPayload.pageNumber += 1
         if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
       }
-      searchTargetGroups(this.targetGroupsAxiosPayload)
+      searchTargetGroups(this.targetGroupsAxiosPayload, true)
         .then((response) => {
           this.setTargetGroups(response)
           this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
@@ -498,7 +498,7 @@ export default {
     },
     callForSearchTargetGroups(search = '') {
       if (search) {
-        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
+        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search), true)
           .then(this.setTargetGroups)
           .finally(() => {
             this.isUserGroupsLoading = false
