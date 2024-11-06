@@ -5,7 +5,7 @@
     temporary
     fixed
     overlay-color="rgba(0, 0, 0, 0.17)"
-    overlay-opacity="0.17"
+    overlay-opacity="1"
     right
     width="calc(100% - 72px)"
     height="100%"

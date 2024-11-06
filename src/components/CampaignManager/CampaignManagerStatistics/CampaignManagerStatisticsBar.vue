@@ -182,11 +182,11 @@ export default {
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-top-riskiest')
+            let tooltipEl = document.getElementById('chartjs-tooltip-statistics-bar')
 
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-top-riskiest'
+              tooltipEl.id = 'chartjs-tooltip-statistics-bar'
               tooltipEl.innerHTML = '<div class="tooltip-content"></div>'
               document.body.appendChild(tooltipEl)
             }
@@ -208,6 +208,7 @@ export default {
             tooltipEl.style.opacity = 1
             tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
+            tooltipEl.style.zIndex = '100'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX / 2 + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
@@ -308,7 +309,7 @@ export default {
             backgroundColor: function (context) {
               const index = context.dataIndex
               const value = context.dataset.data[index].x
-              return value > 60 ? '#B83A3A' : '#F56C6C'
+              return value > 60 ? '#1173C1' : 'rgba(17, 115, 193, 0.55)'
             },
             borderWidth: 1
           }
