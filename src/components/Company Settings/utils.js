@@ -78,6 +78,7 @@ import createDate2 from '@/components/GrapesJs/Newsletter/mergedTexts/createDate
 import status2 from '@/components/GrapesJs/Newsletter/mergedTexts/status2'
 import manuelCheckUrl from '@/components/GrapesJs/Newsletter/mergedTexts/manuelCheckUrl'
 import fileName from '@/components/GrapesJs/Newsletter/mergedTexts/fileName'
+import enrollmentName from '@/components/GrapesJs/Newsletter/mergedTexts/enrollmentName'
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{FIRSTNAME}': firstName,
@@ -158,5 +159,6 @@ export const MERGED_TEXTS_MAP = {
   '{Create_Date}': createDate2,
   '{Status}': status2,
   '{Manuel_Check_Url}': manuelCheckUrl,
-  '{File_Name}': fileName
+  '{File_Name}': fileName,
+  '{ENROLLMENT_NAME}': enrollmentName
 }
