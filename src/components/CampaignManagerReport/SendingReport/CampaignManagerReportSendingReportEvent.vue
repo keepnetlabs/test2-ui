@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      showDetail: false
+      showDetail: !!this.item.reason
     }
   },
   computed: {
