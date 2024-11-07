@@ -40,7 +40,7 @@ import labels from '@/model/constants/labels'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
-  name: 'CampaignManagerStatisticsBar',
+  name: 'CampaignManagerStatisticsLanguage',
   components: {
     ExecutiveWidgetBody,
     HorizontalBarChart,
@@ -127,7 +127,7 @@ export default {
               offset: true,
               scaleLabel: {
                 display: true,
-                labelString: 'Regions',
+                labelString: 'Languages',
                 fontColor: '#383B41'
               },
               gridLines: {

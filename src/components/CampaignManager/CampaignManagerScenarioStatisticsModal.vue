@@ -11,7 +11,7 @@
     height="100%"
     @input="$emit('input', $event)"
   >
-    <div>
+    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
       <div class="campaign-manager-scenario-statistics-modal__header">
         <div>
           <VListItem class="">
@@ -69,8 +69,11 @@
 </template>
 <script>
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
-import CampaignManagerStatisticsBar from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsBar.vue'
+import CampaignManagerStatisticsRegion from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsRegion'
 import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/functions'
+import CampaignManagerStatisticsLanguage from './CampaignManagerStatistics/CampaignManagerStatisticsLanguage.vue'
+import CampaignManagerStatisticsEmotionalTrigger from './CampaignManagerStatistics/CampaignManagerStatisticsEmotionalTrigger.vue'
+import CampaignManagerStatisticsBrand from './CampaignManagerStatistics/CampaignManagerStatisticsBrand.vue'
 
 export default {
   name: 'CampaignManagerScenarioStatisticsModal',
@@ -98,7 +101,76 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Region',
           subtitle: 'Number of phishing templates by region',
-          key: 'RepeatOffendersUsersThresholdWidget',
+          key: 'StatisticsRegionWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Language',
+          subtitle: 'Number of phishing templates by language',
+          key: 'StatisticsLanguageWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 0,
+          y: 6,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Emotional Trigger',
+          subtitle: 'Number of phishing templates by emotional trigger',
+          key: 'StatisticsEmotionalTriggerWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
+          y: 6,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Brand',
+          subtitle: 'Number of phishing templates by brand',
+          key: 'StatisticsBrandWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -125,6 +197,7 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
+      return 12
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
       if (bdCol > 2) return
@@ -161,8 +234,16 @@ export default {
     },
     getComponent(componentString) {
       switch (componentString) {
+        case 'StatisticsRegionWidget':
+          return CampaignManagerStatisticsRegion
+        case 'StatisticsLanguageWidget':
+          return CampaignManagerStatisticsLanguage
+        case 'StatisticsEmotionalTriggerWidget':
+          return CampaignManagerStatisticsEmotionalTrigger
+        case 'StatisticsBrandWidget':
+          return CampaignManagerStatisticsBrand
         default:
-          return CampaignManagerStatisticsBar
+          return CampaignManagerStatisticsRegion
       }
     },
     getBdCol(newBreakpoint = '') {
