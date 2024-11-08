@@ -1,5 +1,11 @@
 <template>
   <Fragment>
+    <GamificationReportUserDetailsDrawer
+      v-if="isUserDetailsDrawerOpen"
+      :status="isUserDetailsDrawerOpen"
+      :selectedRow="selectedRow"
+      @on-close="handleCloseDrawer"
+    />
     <KContainer id="gamification-report">
       <CompanySettingsHeader title="Leaderboard" :slots="{ title: true }">
         <template #title>
@@ -91,6 +97,7 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
         @downloadEvent="exportLeaderboard"
+        @on-details="handleDetails"
       />
     </KContainer>
   </Fragment>
@@ -116,6 +123,8 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { mapGetters } from 'vuex'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
+import labels from '@/model/constants/labels'
 export default {
   name: 'GamificationReport',
   components: {
@@ -125,11 +134,15 @@ export default {
     CompanySettingsHeader,
     LeaderboardTopPerformerCard,
     InputDate,
-    DatatableLoading
+    DatatableLoading,
+    GamificationReportUserDetailsDrawer
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      labels,
+      isUserDetailsDrawerOpen: false,
+      selectedRow: null,
       CONSTANTS: {
         id: 'leaderboard-data-table'
       },
@@ -235,6 +248,15 @@ export default {
           delete: false,
           download: false
         },
+        rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-sending-report',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
+        ],
         columns: [
           {
             property: 'rank',
@@ -438,6 +460,14 @@ export default {
           link.click()
         })
       })
+    },
+    handleDetails(row) {
+      this.selectedRow = row
+      this.isUserDetailsDrawerOpen = true
+    },
+    handleCloseDrawer() {
+      this.selectedRow = null
+      this.isUserDetailsDrawerOpen = false
     }
   }
 }
