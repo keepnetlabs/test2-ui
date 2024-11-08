@@ -82,14 +82,14 @@ export default {
           // isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
           isVisible: true
         },
-        {
-          name: labels.ClickedTrainingLink,
-          id: 'training-report-clicked-content',
-          label: labels.ClickedTrainingLink,
-          component: TrainingReportClickedTrainingLink,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
-          isVisible: true
-        },
+        // {
+        //   name: labels.ClickedTrainingLink,
+        //   id: 'training-report-clicked-content',
+        //   label: labels.ClickedTrainingLink,
+        //   component: TrainingReportClickedTrainingLink,
+        //   // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+        //   isVisible: true
+        // },
         {
           name: labels.Progress,
           id: 'training-report-progress-content',
