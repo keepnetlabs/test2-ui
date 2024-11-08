@@ -38,12 +38,7 @@
                     class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
-                    style="
-                      max-width: 328px;
-                      min-width: 328px;
-                      width: 100%;
-                      padding-right: 4px !important;
-                    "
+                    style="max-width: 175px; padding-right: 4px !important;"
                   />
                 </div>
                 <div>
