@@ -32,7 +32,7 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import TrainingReportClickedTrainingLink from '@/components/ScormProxyReport/ClickedTrainingLink/TrainingReportClickedTrainingLink'
+// import TrainingReportClickedTrainingLink from '@/components/ScormProxyReport/ClickedTrainingLink/TrainingReportClickedTrainingLink'
 import TrainingReportExamResults from '@/components/ScormProxyReport/ExamResults/TrainingReportExamResults'
 import TrainingReportNoResponse from '@/components/ScormProxyReport/NoResponse/TrainingReportNoResponse'
 import TrainingReportOpenedTrainingEmail from '@/components/ScormProxyReport/OpenedTrainingEmail/TrainingReportOpenedTrainingEmail'
@@ -77,14 +77,14 @@ export default {
           // isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
           isVisible: true
         },
-        {
-          name: labels.ClickedTrainingLink,
-          id: 'training-report-clicked-content',
-          label: labels.ClickedTrainingLink,
-          component: TrainingReportClickedTrainingLink,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
-          isVisible: true
-        },
+        // {
+        //   name: labels.ClickedTrainingLink,
+        //   id: 'training-report-clicked-content',
+        //   label: labels.ClickedTrainingLink,
+        //   component: TrainingReportClickedTrainingLink,
+        //   // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+        //   isVisible: true
+        // },
         {
           name: labels.Progress,
           id: 'training-report-progress-content',
