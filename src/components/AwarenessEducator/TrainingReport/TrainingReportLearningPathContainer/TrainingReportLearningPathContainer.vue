@@ -38,7 +38,7 @@
 
 <script>
 import labels from '@/model/constants/labels'
-import TrainingReportClickedTrainingLink from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLink'
+// import TrainingReportClickedTrainingLink from '@/components/AwarenessEducator/TrainingReport/ClickedTrainingLink/TrainingReportClickedTrainingLink'
 import TrainingReportExamResults from '@/components/AwarenessEducator/TrainingReport/ExamResults/TrainingReportExamResults'
 import TrainingReportNoResponse from '@/components/AwarenessEducator/TrainingReport/NoResponse/TrainingReportNoResponse'
 import TrainingReportOpenedTrainingEmail from '@/components/AwarenessEducator/TrainingReport/OpenedTrainingEmail/TrainingReportOpenedTrainingEmail'
@@ -103,13 +103,13 @@ export default {
           component: TrainingReportOpenedTrainingEmail,
           isVisible: true
         },
-        {
-          name: labels.ClickedTrainingLink,
-          id: 'training-report-clicked-content',
-          label: labels.ClickedTrainingLink,
-          component: TrainingReportClickedTrainingLink,
-          isVisible: true
-        },
+        // {
+        //   name: labels.ClickedTrainingLink,
+        //   id: 'training-report-clicked-content',
+        //   label: labels.ClickedTrainingLink,
+        //   component: TrainingReportClickedTrainingLink,
+        //   isVisible: true
+        // },
         {
           name: labels.Progress,
           id: 'training-report-progress-content',
