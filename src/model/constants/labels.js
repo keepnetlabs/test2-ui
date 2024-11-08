@@ -18,6 +18,8 @@ export const labels = {
   ScheduleName: 'Schedule Name',
   Inactive: 'Inactive',
   Undetected: 'Undetected',
+  DataSubmitted: 'Data Submitted',
+  MFA: 'MFA',
   Malicious: 'Malicious',
   Simulation: 'Simulation',
   Incomplete: 'Incomplete',

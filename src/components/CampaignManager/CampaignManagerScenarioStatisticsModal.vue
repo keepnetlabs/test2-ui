@@ -74,6 +74,8 @@ import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/fun
 import CampaignManagerStatisticsLanguage from './CampaignManagerStatistics/CampaignManagerStatisticsLanguage.vue'
 import CampaignManagerStatisticsEmotionalTrigger from './CampaignManagerStatistics/CampaignManagerStatisticsEmotionalTrigger.vue'
 import CampaignManagerStatisticsBrand from './CampaignManagerStatistics/CampaignManagerStatisticsBrand.vue'
+import CampaignManagerStatisticsAttackType from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsAttackType.vue'
+import CampaignManagerStatisticsIndustry from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsIndustry.vue'
 
 export default {
   name: 'CampaignManagerScenarioStatisticsModal',
@@ -86,6 +88,7 @@ export default {
   },
   data() {
     return {
+      activeBreakpoint: 'lg',
       layout: [
         {
           x: 0,
@@ -178,6 +181,50 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 0,
+          y: 12,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Attack Type',
+          key: 'StatisticsAttackTypeWidget',
+          isAllowed: true,
+          parentKey: 'Number of phishing templates by attack type',
+          chartType: 'pie',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'fSy5K85rhGCD'
+        },
+        {
+          x: 6,
+          y: 12,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Industry',
+          key: 'StatisticsIndustryWidget',
+          isAllowed: true,
+          parentKey: 'Number of phishing templates by industry',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
         }
       ],
       colNum: 12
@@ -188,6 +235,9 @@ export default {
     document.querySelector('.user-wrapper').style.background = 'transparent'
     document.querySelector('.user-name-dropdown').style.background = 'transparent'
     document.querySelector('html').style.overflowY = 'hidden'
+    setTimeout(() => {
+      this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+    }, 100)
   },
   beforeDestroy() {
     document.querySelector('.page-nav__fixed-content').style.background = ''
@@ -197,9 +247,10 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
-      return 12
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
+      console.log('bdCol', bdCol)
+      console.log('this.activeBreakpoint', this.activeBreakpoint)
       if (bdCol > 2) return
       let x = 0,
         xValue = 0,
@@ -242,13 +293,16 @@ export default {
           return CampaignManagerStatisticsEmotionalTrigger
         case 'StatisticsBrandWidget':
           return CampaignManagerStatisticsBrand
+        case 'StatisticsAttackTypeWidget':
+          return CampaignManagerStatisticsAttackType
+        case 'StatisticsIndustryWidget':
+          return CampaignManagerStatisticsIndustry
         default:
           return CampaignManagerStatisticsRegion
       }
     },
     getBdCol(newBreakpoint = '') {
-      if (newBreakpoint === 'xs') return 12
-      return newBreakpoint === 'xxs' ? 2 : 12
+      return 12
     }
   }
 }

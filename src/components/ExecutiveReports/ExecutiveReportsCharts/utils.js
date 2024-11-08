@@ -374,6 +374,38 @@ export const CHART_COLORS = {
     borderWidth: 2,
     lineTension: 0
   },
+  [labels.ClickOnly]: {
+    backgroundColor: '#43A047',
+    borderColor: '#43A047',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.DataSubmitted]: {
+    backgroundColor: '#FBF280',
+    borderColor: '#FBF280',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.MFA]: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.Attachment]: {
+    backgroundColor: '#B3D4FC',
+    borderColor: '#B3D4FC',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
   'Data Submission Campaigns': {
     backgroundColor: 'blue',
     borderColor: 'blue',
