@@ -74,69 +74,220 @@
           <span class="gamification-report__user-details-drawer-body-header">
             User Activity Timeline
           </span>
-          <div class="gamification-report__user-details-drawer-filters">
-            <div class="gamification-report__user-details-drawer-filters-left">
-              <VTextField
-                :value="search"
-                style="max-width: 300px;"
-                id="input--search-training-library"
-                class="training-library-list-view-first-card-header__search"
-                ref="searchInput"
-                outlined
-                prepend-inner-icon="mdi-magnify"
-                hide-details
-                placeholder="Search"
-                @input="handleSearch"
-              />
-              <VCheckbox
-                v-model="isOnlyShowFailedEvents"
-                color="#2196F3"
-                label="Show only failed events"
-                hide-details
-                style="padding: 0px;"
-              />
-            </div>
-            <div class="gamification-report__user-details-drawer-filters-right">
-              <VTooltip bottom opacity="1">
-                <template #activator="{ on }">
-                  <VBtn
-                    v-on="on"
-                    :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
-                    icon
-                    style="order: 4;"
-                  >
-                    <VIcon @click="handleRefresh">mdi-refresh</VIcon>
-                  </VBtn>
-                </template>
-                <span class="tooltip-span">{{ 'Refresh' }}</span>
-              </VTooltip>
-              <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
-                <template #activator="{ on: menu, attrs }">
-                  <VTooltip bottom opacity="1">
-                    <template #activator="{ on: tooltip }">
-                      <VBtn
-                        v-bind="attrs"
-                        v-on="{ ...tooltip, ...menu }"
-                        :id="`btn-download--table-${Math.random().toString().substring(2)}`"
-                        class="btn-hover mr-1"
-                        icon
-                        style="order: 5;"
-                      >
-                        <v-icon>mdi-download</v-icon>
-                      </VBtn>
-                    </template>
-                    <span class="tooltip-span">Download Options</span>
-                  </VTooltip>
-                </template>
-                <VListItem
-                  v-for="(item, index) in downloadButtonOptions"
-                  :id="`item--download-option-${index}`"
-                  :key="index"
-                  @click="handleDownloadButtonClick(item)"
+          <div class="gamification-report__user-details-drawer-filters-container">
+            <div class="gamification-report__user-details-drawer-filters">
+              <div class="gamification-report__user-details-drawer-filters-left">
+                <VTextField
+                  :value="search"
+                  style="max-width: 300px;"
+                  id="input--search-training-library"
+                  class="training-library-list-view-first-card-header__search"
+                  ref="searchInput"
+                  outlined
+                  prepend-inner-icon="mdi-magnify"
+                  hide-details
+                  placeholder="Search"
+                  @input="handleSearch"
+                />
+                <VMenu
+                  :value="menu"
+                  ref="refMenu"
+                  bottom
+                  offset-y
+                  nudge-bottom="12"
+                  :close-on-content-click="false"
+                  :close-on-click="isCloseOnClick"
+                  content-class="filter-options__menu-content"
+                  class="filter-options__menu training-library-filtering-options"
+                  @input="handleMenuVisibilityChange"
                 >
-                  <VListItemTitle>{{ item }}</VListItemTitle>
-                </VListItem>
-              </VMenu>
+                  <template #activator="{ on }">
+                    <div v-on="on">
+                      <VTextField
+                        ref="refFiltersInput"
+                        class="pointer-none"
+                        id="input--training-library-filters"
+                        outlined
+                        hide-details
+                        autocomplete="off"
+                        placeholder="Filters"
+                        prepend-inner-icon="mdi-filter-variant"
+                        append-icon="mdi-menu-down"
+                      />
+                    </div>
+                  </template>
+                  <div class="training-library-filters-container">
+                    <div class="training-library-filters-container__left">
+                      <div v-for="filter in filters" v-if="filter.show" :key="filter.key">
+                        <VListItem
+                          :class="[
+                            'training-library-filtering-options-parent-list-item cursor-pointer',
+                            filter && activeFilter.key === filter.key
+                              ? 'training-library-filter-active'
+                              : ''
+                          ]"
+                          @click="handleSetActiveFilter(filter)"
+                        >
+                          <VListItemTitle
+                            class="training-library-filtering-options-parent-list-item-title"
+                          >
+                            <div
+                              class="training-library-filtering-options-parent-list-item-title__left-side"
+                            >
+                              <VIcon
+                                :color="
+                                  filter && activeFilter.key === filter.key ? '#2196F3' : '#757575'
+                                "
+                                >{{ filter.icon }}</VIcon
+                              >
+                              <span
+                                :style="
+                                  filter && activeFilter.key === filter.key ? 'color: #2196F3' : ''
+                                "
+                                >{{ filter.text }}</span
+                              >
+                            </div>
+                            <div
+                              class="training-library-filtering-options-parent-list-item-title__right-side"
+                            >
+                              <div
+                                v-if="filter.isFilterActive"
+                                class="training-library-filter-number"
+                              >
+                                {{
+                                  filter.filterType === 'search' ||
+                                  filter.filterType === 'longTextSearch'
+                                    ? filter.activeValue.length
+                                    : 1
+                                }}
+                              </div>
+                              <VIcon
+                                :color="
+                                  filter && activeFilter.key === filter.key ? '#2196F3' : '#757575'
+                                "
+                                >mdi-menu-right</VIcon
+                              >
+                            </div>
+                          </VListItemTitle>
+                        </VListItem>
+                      </div>
+                    </div>
+                    <div class="training-library-filters-container__right">
+                      <div class="training-library-filters-container__right-container">
+                        <TrainingLibrarySearchFilter
+                          v-if="activeFilter.filterType === 'search'"
+                          :total-filter-length="getTotalFilterLength"
+                          :items="activeFilter.items"
+                          :filter="activeFilter"
+                        />
+                        <TrainingLibraryDateFilter
+                          v-else-if="activeFilter.filterType === 'date'"
+                          ref="refDateFilter"
+                          :filter="activeFilter"
+                          @on-date-picker-change="handleDatePickerChange"
+                        />
+                        <TrainingLibraryLongTextSearchFilter
+                          v-else-if="activeFilter.filterType === 'longTextSearch'"
+                          :filter="activeFilter"
+                          :total-filter-length="getTotalFilterLength"
+                          :items="activeFilter.items"
+                        />
+                        <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
+                      </div>
+                      <div class="training-library-filters-container__right-footer">
+                        <v-btn
+                          text
+                          class="filter__footer-button"
+                          color="#00BCD4"
+                          @click="handleClearFilter(activeFilter)"
+                        >
+                          Clear
+                        </v-btn>
+                        <v-btn
+                          text
+                          class="filter__footer-button"
+                          color="#2196F3"
+                          :disabled="isFilterButtonDisabled"
+                          @click="handleFilter(activeFilter)"
+                        >
+                          Filter
+                        </v-btn>
+                      </div>
+                    </div>
+                  </div>
+                </VMenu>
+                <VCheckbox
+                  v-model="isOnlyShowFailedEvents"
+                  color="#2196F3"
+                  label="Show only failed events"
+                  hide-details
+                  style="padding: 0px;"
+                />
+              </div>
+              <div class="gamification-report__user-details-drawer-filters-right">
+                <VTooltip bottom opacity="1">
+                  <template #activator="{ on }">
+                    <VBtn
+                      v-on="on"
+                      :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
+                      icon
+                      style="order: 4;"
+                    >
+                      <VIcon @click="handleRefresh">mdi-refresh</VIcon>
+                    </VBtn>
+                  </template>
+                  <span class="tooltip-span">{{ 'Refresh' }}</span>
+                </VTooltip>
+                <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
+                  <template #activator="{ on: menu, attrs }">
+                    <VTooltip bottom opacity="1">
+                      <template #activator="{ on: tooltip }">
+                        <VBtn
+                          v-bind="attrs"
+                          v-on="{ ...tooltip, ...menu }"
+                          :id="`btn-download--table-${Math.random().toString().substring(2)}`"
+                          class="btn-hover mr-1"
+                          icon
+                          style="order: 5;"
+                        >
+                          <v-icon>mdi-download</v-icon>
+                        </VBtn>
+                      </template>
+                      <span class="tooltip-span">Download Options</span>
+                    </VTooltip>
+                  </template>
+                  <VListItem
+                    v-for="(item, index) in downloadButtonOptions"
+                    :id="`item--download-option-${index}`"
+                    :key="index"
+                    @click="handleDownloadButtonClick(item)"
+                  >
+                    <VListItemTitle>{{ item }}</VListItemTitle>
+                  </VListItem>
+                </VMenu>
+              </div>
+            </div>
+            <div v-if="isRenderFilters" class="training-library-filters-badges">
+              <div class="training-library-filters-badges__left-side">
+                <div class="training-library-filters-badges__container">
+                  <TrainingLibraryFilterBadge
+                    v-for="(filter, filterIndex) in filters"
+                    :key="filterIndex"
+                    :filter="filter"
+                  />
+                </div>
+              </div>
+              <div>
+                <VBtn
+                  class="training-library-filters-badges__clear"
+                  color="#2196F3"
+                  text
+                  :ripple="false"
+                  @click="clearAllFilters"
+                >
+                  Clear All
+                </VBtn>
+              </div>
             </div>
           </div>
           <div class="gamification-report__user-details-drawer-timeline">
@@ -216,14 +367,33 @@
 </template>
 <script>
 import { Fragment } from 'vue-frag'
-import { PRODUCTS, ACTIVITY_TYPE_COLOR_MAP, ACTIVITY_TYPES_FAIL_MAP } from './utils'
+import {
+  PRODUCTS,
+  ACTIVITY_TYPE_COLOR_MAP,
+  ACTIVITY_TYPES_FAIL_MAP,
+  userActivityDetailsFilters
+} from './utils'
 import useDebounce from '@/hooks/useDebounce'
 import DownloadModal from '@/components/DataTableComponents/DownloadModal'
 import { mapGetters } from 'vuex'
-import { VNavigationDrawer } from 'vuetify/lib'
+import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
+import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
+import TrainingLibraryDateFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryDateFilter.vue'
+import TrainingLibraryLongTextSearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryLongTextSearchFilter.vue'
+import TrainingLibraryFilterBadge from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilterBadge.vue'
 export default {
   name: 'GamificationReportUserDetailsDrawer',
-  components: { Fragment, DownloadModal },
+  components: {
+    Fragment,
+    DownloadModal,
+    TrainingLibrarySearchFilter,
+    TrainingLibrarySelectFilter,
+    TrainingLibraryDateFilter,
+    TrainingLibraryLongTextSearchFilter,
+    TrainingLibraryFilterBadge
+  },
   mixins: [useDebounce],
   props: {
     status: {
@@ -237,6 +407,12 @@ export default {
   },
   data() {
     return {
+      menu: false,
+      isCloseOnClick: true,
+      axiosPayload: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps(),
+      activeFilter: {},
+      filters: JSON.parse(JSON.stringify(userActivityDetailsFilters)),
       isOnlyShowFailedEvents: false,
       downloadModalTitle: '',
       isShowDownloadModal: false,
@@ -336,12 +512,29 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isRenderFilters() {
+      return this.filters.some((filter) => filter.isFilterActive)
+    },
+    getTotalFilterLength() {
+      return this.filters.filter((item) => item.show).length
+    },
+    isFilterButtonDisabled() {
+      if (
+        this.activeFilter.filterType === 'search' ||
+        this.activeFilter.filterType === 'longTextSearch'
+      ) {
+        return this.activeFilter.value.length === 0
+      } else {
+        return !this.activeFilter.value
+      }
+    },
     timezones() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     }
   },
   created() {
+    if (this.filters) this.handleSetActiveFilter(this.filters[0])
     this.callForData()
     this.callForGetTimeZones()
   },
@@ -353,6 +546,143 @@ export default {
       this.debounce(() => {
         // TODO: Call for search
       })
+    },
+    handleSetActiveFilter(filter) {
+      if (filter && this.activeFilter.key === filter.key) return
+      this.checkFilter(filter)
+      this.activeFilter = filter
+    },
+    checkFilter(filter) {
+      if (filter.isFilterActive) {
+        filter.value = filter.activeValue
+        filter.operator = filter.activeOperator
+      } else {
+        let filterValue
+        if (filter.filterType === 'search' || filter.filterType === 'longTextSearch')
+          filterValue = []
+        else filterValue = ''
+        filter.value = filterValue
+      }
+    },
+    handleClearFilter(filter) {
+      filter.isFilterActive = false
+      let filterValue, filterOperator
+      if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
+        filterValue = []
+        filterOperator = 'Include'
+      } else if (filter.filterType === 'select') {
+        filterValue = ''
+        filterOperator = 'Contains'
+      } else {
+        filterValue = ''
+        filterOperator = '='
+      }
+      filter.value = filterValue
+      filter.activeValue = filterValue
+      filter.operator = filterOperator
+      filter.activeOperator = filterOperator
+      this.removeFilterFromPayload(filter)
+    },
+    handleFilter(filter) {
+      filter.isFilterActive = true
+      filter.activeValue = filter.value
+      filter.activeOperator = filter.operator
+      this.setFilterToPayload(filter)
+    },
+    setFilterToPayload(payload) {
+      const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      let value
+      if (typeof payload.activeValue === 'string') {
+        value = payload.activeValue.trim()
+      } else if (Array.isArray(payload.activeValue)) {
+        if (payload.activeOperator === 'between') {
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[0],
+            Operator: '>='
+          })
+          filterItems.push({
+            FieldName: payload.key,
+            Value: payload.activeValue[1],
+            Operator: '<='
+          })
+          return
+        }
+        value = payload.activeValue.join(',')
+      }
+      if (fIndex !== -1) {
+        filterItems[fIndex].Value = value
+      } else {
+        filterItems.push({
+          FieldName: payload.key,
+          Value: value,
+          Operator: payload.activeOperator
+        })
+      }
+    },
+    removeFilterFromPayload(payload) {
+      const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      if (payload.filterType === 'date' && payload.activeOperator === 'between') {
+        const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+        if (fIndex !== -1) filterItems.splice(fIndex, 2)
+        return
+      }
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      if (fIndex === -1) return
+      if (payload.filterType === 'search' || payload.filterType === 'longTextSearch') {
+        if (!payload.activeValue.length) filterItems.splice(fIndex, 1)
+        else filterItems[fIndex].Value = payload.activeValue.join(',')
+      } else filterItems.splice(fIndex, 1)
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.callForData()
+    },
+    clearAllFilters() {
+      this.axiosPayload = getDefaultAxiosPayload()
+      const oldPageSize = this.serverSideProps.pageSize
+      this.serverSideProps = new ServerSideProps()
+      this.axiosPayload.pageSize = oldPageSize
+      this.serverSideProps.pageSize = oldPageSize
+      this.search = ''
+      this.filters.forEach((f) => {
+        if (f.filterType === 'search' || f.filterType === 'longTextSearch') {
+          f.value = []
+          f.activeValue = []
+          f.operator = 'Include'
+          f.activeOperator = 'Include'
+          f.show = userActivityDetailsFilters?.find((tF) => tF.key === f.key)?.show || false
+        } else if (f.filterType === 'select') {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = 'Contains'
+          f.activeOperator = 'Contains'
+          f.show = userActivityDetailsFilters?.find((tF) => tF.key === f.key)?.show || false
+        } else {
+          f.value = ''
+          f.activeValue = ''
+          f.operator = '='
+          f.activeOperator = '='
+          f.show = userActivityDetailsFilters?.find((tF) => tF.key === f.key)?.show || false
+        }
+        f.isFilterActive = false
+      })
+      this.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
+    },
+    handleMenuVisibilityChange(val) {
+      if (this.activeFilter.filterType === 'date') {
+        const { refPicker, refPicker2 } = this.$refs.refDateFilter.$refs
+        const { refMenu } = this.$refs
+        if ((refPicker && refPicker.pickerVisible) || (refPicker2 && refPicker2.pickerVisible)) {
+          this.isCloseOnClick = false
+          this.menu = true
+          refMenu.isActive = true
+          return
+        }
+      }
+      this.isCloseOnClick = true
+      this.menu = val
+      if (!this.menu) this.checkFilter(this.activeFilter)
     },
     handleRefresh() {
       this.callForData()

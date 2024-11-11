@@ -131,6 +131,10 @@ export const exportLeaderboardData = (payload) => {
   })
 }
 
+export const getLeaderboardFormDetails = () => {
+  return testRequest.get('/leaderboard/form-details')
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -142,5 +146,6 @@ export default {
   getSchedulingReportTargetGroups,
   getLeaderboardData,
   getTopPerformersData,
-  exportLeaderboardData
+  exportLeaderboardData,
+  getLeaderboardFormDetails
 }

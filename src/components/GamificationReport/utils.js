@@ -87,3 +87,138 @@ export const categories = [
   'Wi-fi Security',
   'General'
 ]
+
+export const activityTypesFilterOptions = [
+  {
+    text: 'Clicked Link',
+    value: '0'
+  },
+  {
+    text: 'Submitted Data',
+    value: '1'
+  },
+  {
+    text: 'Submitted MFA Code',
+    value: '2'
+  },
+  {
+    text: 'Opened Attachment',
+    value: '3'
+  },
+  {
+    text: 'Reported',
+    value: '4'
+  }
+]
+
+export const productsFilterOptions = [
+  {
+    text: 'Phishing Simulator',
+    value: '0'
+  },
+  {
+    text: 'Callback Simulator',
+    value: '1'
+  },
+  {
+    text: 'Vishing Simulator',
+    value: '2'
+  },
+  {
+    text: 'Smishing Simulator',
+    value: '3'
+  },
+  {
+    text: 'Quishing Simulator',
+    value: '4'
+  }
+]
+
+export const difficultiesFilterOptions = [
+  {
+    text: 'Easy',
+    value: '0'
+  },
+  {
+    text: 'Medium',
+    value: '1'
+  },
+  {
+    text: 'Hard',
+    value: '2'
+  }
+]
+
+export const categoriesFilterOptions = [
+  {
+    text: 'Remote Working Security',
+    value: '0'
+  },
+  {
+    text: 'Travel Security',
+    value: '1'
+  },
+  {
+    text: 'Mobile Device Security',
+    value: '2'
+  },
+  {
+    text: 'Email Security',
+    value: '3'
+  }
+]
+
+export const userActivityDetailsFilters = [
+  {
+    text: 'Activity Type',
+    icon: 'mdi-format-list-bulleted-type',
+    key: 'activityType',
+    show: true,
+    filterType: 'search',
+    items: activityTypesFilterOptions,
+    value: [],
+    activeValue: [],
+    operator: 'Include',
+    activeOperator: 'Include',
+    isFilterActive: false
+  },
+  {
+    text: 'Product',
+    icon: 'mdi-filter-variant',
+    key: 'product',
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: productsFilterOptions,
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  },
+  {
+    text: 'Difficulty',
+    icon: 'mdi-poll',
+    key: 'difficulty',
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: difficultiesFilterOptions,
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  },
+  {
+    text: 'Category',
+    icon: 'mdi-shape',
+    key: 'category',
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: categoriesFilterOptions,
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  }
+]

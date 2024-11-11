@@ -104,7 +104,12 @@
 </template>
 
 <script>
-import { getLeaderboardData, getTopPerformersData, exportLeaderboardData } from '@/api/reports'
+import {
+  getLeaderboardData,
+  getTopPerformersData,
+  exportLeaderboardData,
+  getLeaderboardFormDetails
+} from '@/api/reports'
 import KContainer from '@/components/KContainer/KContainer'
 import { Fragment } from 'vue-frag'
 import DataTable from '@/components/DataTable'
@@ -346,6 +351,7 @@ export default {
   created() {
     this.callForData()
     this.callForTopPerformers()
+    this.callForFormDetails()
   },
   computed: {
     ...mapGetters({
@@ -374,6 +380,11 @@ export default {
     }
   },
   methods: {
+    callForFormDetails() {
+      getLeaderboardFormDetails().then((res) => {
+        console.log(res)
+      })
+    },
     callForData() {
       if (!this.getGamificationReportSearchPermissions) return
       this.setLoading(true)
