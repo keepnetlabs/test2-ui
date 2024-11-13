@@ -143,6 +143,12 @@ export const getUserTimeline = (payload) => {
   return testRequest.post('/leaderboard/get-user-timeline', payload)
 }
 
+export const exportUserActivityDetails = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -157,5 +163,6 @@ export default {
   exportLeaderboardData,
   getLeaderboardFormDetails,
   getUserPerformanceRates,
-  getUserTimeline
+  getUserTimeline,
+  exportUserActivityDetails
 }
