@@ -14,6 +14,25 @@
         :error-message="createErrorMessage"
         @on-close="createErrorMessage = ''"
       />
+      <!--
+    <VNavigationDrawer
+      class="k-navigation-drawer"
+      temporary
+      v-model="isOpenPhishingDrawer"
+      fixed
+      right
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <CommonSimulatorNewScenario
+        v-if="isOpenPhishingDrawer"
+        ref="newScenarioModal"
+        :status="isOpenPhishingDrawer"
+        :scenarioDetailsLookup="scenarioDetailsLookup"
+        @changeNewScenarioModalStatus="isOpenPhishingDrawer = false"
+      />
+    </VNavigationDrawer>
+       <!-->
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -212,6 +231,7 @@ import { SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignMana
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -231,6 +251,7 @@ export default {
     DefaultErrorDialog,
     AppModal
   },
+  mixins: [useScenarioDetailsLookup],
   props: {
     status: {
       type: Boolean
@@ -251,6 +272,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      isOpenPhishingDrawer: false,
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
       clickedUserGroupResourceId: null,
@@ -529,6 +551,10 @@ export default {
   },
   mounted() {
     this.initialFormValues = this.getFormValues()
+    this.callForScenarioDetails()
+    setTimeout(() => {
+      this.isOpenPhishingDrawer = true
+    }, 2000)
   },
   methods: {
     handleSmartGroupSelected(group) {

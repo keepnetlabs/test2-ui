@@ -8,6 +8,26 @@
     :showFooter="!isTemplateEditing"
   >
     <template #overlay-body>
+      <!--
+      <VNavigationDrawer
+        class="k-navigation-drawer"
+        v-model="isOpenLandingPageDrawer"
+        temporary
+        fixed
+        right
+        width="calc(100% - 96px)"
+        height="100%"
+      >
+        <NewLandingPage
+          v-if="isOpenLandingPageDrawer"
+          ref="newLandingPage"
+          :status="isOpenLandingPageDrawer"
+          :isAIAllyEnabled="true"
+          :landing-page-data="landingPageData"
+          @changeNewEmailTemplateModalStatus="isOpenLandingPageDrawer = false"
+        />
+      </VNavigationDrawer>
+      <!-->
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -596,7 +616,11 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
-import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import {
+  getLandingPageFormDetails,
+  getLandingPageList,
+  getLandingPageTemplatePreviewContent
+} from '@/api/landingPage'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -676,6 +700,8 @@ export default {
   },
   data() {
     return {
+      landingPageData: null,
+      isOpenLandingPageDrawer: false,
       isTemplateEditing: false,
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
@@ -987,6 +1013,18 @@ export default {
     }
   },
   created() {
+    getLandingPageFormDetails().then((response) => {
+      this.landingPageData = response.data.data
+    })
+    setTimeout(() => {
+      /*
+      document.querySelectorAll('.v-overlay__content').forEach((el, index) => {
+        el.style.overflow = 'hidden'
+      })
+
+       */
+      this.isOpenLandingPageDrawer = true
+    }, 2000)
     if (this.isDuplicate) this.setFooterDuplicateIds()
     this.callForLanguages()
     if (this.isEdit) {

@@ -1,5 +1,13 @@
 <template>
   <Fragment>
+    <GamificationReportUserDetailsDrawer
+      v-if="isUserDetailsDrawerOpen"
+      :status="isUserDetailsDrawerOpen"
+      :selectedRow="selectedRow"
+      :formDetails="formDetails"
+      :datePayload="getDatePayload"
+      @on-close="handleCloseDrawer"
+    />
     <KContainer id="gamification-report">
       <CompanySettingsHeader title="Leaderboard" :slots="{ title: true }">
         <template #title>
@@ -91,13 +99,19 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="callForData"
         @downloadEvent="exportLeaderboard"
+        @on-details="handleDetails"
       />
     </KContainer>
   </Fragment>
 </template>
 
 <script>
-import { getLeaderboardData, getTopPerformersData, exportLeaderboardData } from '@/api/reports'
+import {
+  getLeaderboardData,
+  getTopPerformersData,
+  exportLeaderboardData,
+  getLeaderboardFormDetails
+} from '@/api/reports'
 import KContainer from '@/components/KContainer/KContainer'
 import { Fragment } from 'vue-frag'
 import DataTable from '@/components/DataTable'
@@ -116,6 +130,8 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { mapGetters } from 'vuex'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
+import labels from '@/model/constants/labels'
 export default {
   name: 'GamificationReport',
   components: {
@@ -125,11 +141,16 @@ export default {
     CompanySettingsHeader,
     LeaderboardTopPerformerCard,
     InputDate,
-    DatatableLoading
+    DatatableLoading,
+    GamificationReportUserDetailsDrawer
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      formDetails: null,
+      labels,
+      isUserDetailsDrawerOpen: false,
+      selectedRow: null,
       CONSTANTS: {
         id: 'leaderboard-data-table'
       },
@@ -235,6 +256,15 @@ export default {
           delete: false,
           download: false
         },
+        rowActions: [
+          {
+            name: labels.Details,
+            id: 'btn-interactions--row-actions-training-report-sending-report',
+            icon: '$custom-details',
+            action: 'on-details'
+            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
+          }
+        ],
         columns: [
           {
             property: 'rank',
@@ -324,6 +354,7 @@ export default {
   created() {
     this.callForData()
     this.callForTopPerformers()
+    this.callForFormDetails()
   },
   computed: {
     ...mapGetters({
@@ -331,6 +362,13 @@ export default {
       getGamificationReportTopPerformersPermissions:
         'permissions/getGamificationReportTopPerformersPermissions'
     }),
+    getDatePayload() {
+      return {
+        datePeriod: this.axiosPayload.datePeriod,
+        startDate: this.axiosPayload.startDate,
+        endDate: this.axiosPayload.endDate
+      }
+    },
     getDateRangeText() {
       if (this.selectedDateRange?.length < 2) return
       const firstDateLeft = this.selectedDateRange?.[0]?.split?.(' ')?.[0] || ''
@@ -352,6 +390,11 @@ export default {
     }
   },
   methods: {
+    callForFormDetails() {
+      getLeaderboardFormDetails().then((res) => {
+        this.formDetails = res?.data?.data || []
+      })
+    },
     callForData() {
       if (!this.getGamificationReportSearchPermissions) return
       this.setLoading(true)
@@ -438,6 +481,14 @@ export default {
           link.click()
         })
       })
+    },
+    handleDetails(row) {
+      this.selectedRow = row
+      this.isUserDetailsDrawerOpen = true
+    },
+    handleCloseDrawer() {
+      this.selectedRow = null
+      this.isUserDetailsDrawerOpen = false
     }
   }
 }

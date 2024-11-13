@@ -131,6 +131,18 @@ export const exportLeaderboardData = (payload) => {
   })
 }
 
+export const getLeaderboardFormDetails = () => {
+  return testRequest.get('/leaderboard/form-details')
+}
+
+export const getUserPerformanceRates = (payload) => {
+  return testRequest.post('/leaderboard/user-performance', payload)
+}
+
+export const getUserTimeline = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline', payload)
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -142,5 +154,8 @@ export default {
   getSchedulingReportTargetGroups,
   getLeaderboardData,
   getTopPerformersData,
-  exportLeaderboardData
+  exportLeaderboardData,
+  getLeaderboardFormDetails,
+  getUserPerformanceRates,
+  getUserTimeline
 }
