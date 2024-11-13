@@ -4,6 +4,8 @@
       v-if="isUserDetailsDrawerOpen"
       :status="isUserDetailsDrawerOpen"
       :selectedRow="selectedRow"
+      :formDetails="formDetails"
+      :datePayload="getDatePayload"
       @on-close="handleCloseDrawer"
     />
     <KContainer id="gamification-report">
@@ -145,6 +147,7 @@ export default {
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
+      formDetails: null,
       labels,
       isUserDetailsDrawerOpen: false,
       selectedRow: null,
@@ -359,6 +362,13 @@ export default {
       getGamificationReportTopPerformersPermissions:
         'permissions/getGamificationReportTopPerformersPermissions'
     }),
+    getDatePayload() {
+      return {
+        datePeriod: this.axiosPayload.datePeriod,
+        startDate: this.axiosPayload.startDate,
+        endDate: this.axiosPayload.endDate
+      }
+    },
     getDateRangeText() {
       if (this.selectedDateRange?.length < 2) return
       const firstDateLeft = this.selectedDateRange?.[0]?.split?.(' ')?.[0] || ''
@@ -382,7 +392,7 @@ export default {
   methods: {
     callForFormDetails() {
       getLeaderboardFormDetails().then((res) => {
-        console.log(res)
+        this.formDetails = res?.data?.data || []
       })
     },
     callForData() {

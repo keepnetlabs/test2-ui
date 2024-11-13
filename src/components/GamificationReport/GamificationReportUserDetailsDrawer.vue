@@ -43,31 +43,37 @@
             class="gamification-report__user-details-drawer-card-content"
             :style="{ gridTemplateColumns: `repeat(${productScores.length + 1}, 1fr)` }"
           >
-            <div class="gamification-report__user-details-drawer-card__overall-score">
-              <span class="gamification-report__user-details-drawer-card__overall-score-text"
-                >Overall score</span
+            <ThreeListItemLoading
+              v-if="isPerformanceRatesLoading"
+              :loading="isPerformanceRatesLoading"
+            />
+            <template v-else>
+              <div class="gamification-report__user-details-drawer-card__overall-score">
+                <span class="gamification-report__user-details-drawer-card__overall-score-text"
+                  >Overall score</span
+                >
+                <span
+                  class="gamification-report__user-details-drawer-card__overall-score-percentage"
+                  >{{ overallScore.percentage }}</span
+                >
+                <span class="gamification-report__user-details-drawer-card__overall-score-points"
+                  >{{ overallScore.points }} pts</span
+                >
+              </div>
+              <div
+                v-for="(item, index) in productScores"
+                :key="index"
+                class="gamification-report__user-details-drawer-card__product"
               >
-              <span
-                class="gamification-report__user-details-drawer-card__overall-score-percentage"
-                >{{ overallScore.percentage }}</span
-              >
-              <span class="gamification-report__user-details-drawer-card__overall-score-points"
-                >{{ overallScore.points }} pts</span
-              >
-            </div>
-            <div
-              v-for="(item, index) in productScores"
-              :key="index"
-              class="gamification-report__user-details-drawer-card__product"
-            >
-              <img :src="getCardProductIcon(item.product)" :alt="item.product" />
-              <span class="gamification-report__user-details-drawer-card__product-text">{{
-                item.product
-              }}</span>
-              <span class="gamification-report__user-details-drawer-card__product-percentage">{{
-                item.percentage
-              }}</span>
-            </div>
+                <img :src="getCardProductIcon(item.product)" :alt="item.product" />
+                <span class="gamification-report__user-details-drawer-card__product-text">{{
+                  item.product
+                }}</span>
+                <span class="gamification-report__user-details-drawer-card__product-percentage">{{
+                  item.percentage
+                }}</span>
+              </div>
+            </template>
           </div>
         </div>
         <div class="gamification-report__user-details-drawer-body">
@@ -77,7 +83,7 @@
           <div class="gamification-report__user-details-drawer-filters-container">
             <div class="gamification-report__user-details-drawer-filters">
               <div class="gamification-report__user-details-drawer-filters-left">
-                <VTextField
+                <!-- <VTextField
                   :value="search"
                   style="max-width: 300px;"
                   id="input--search-training-library"
@@ -88,7 +94,7 @@
                   hide-details
                   placeholder="Search"
                   @input="handleSearch"
-                />
+                /> -->
                 <VMenu
                   :value="menu"
                   ref="refMenu"
@@ -175,24 +181,10 @@
                     <div class="training-library-filters-container__right">
                       <div class="training-library-filters-container__right-container">
                         <TrainingLibrarySearchFilter
-                          v-if="activeFilter.filterType === 'search'"
                           :total-filter-length="getTotalFilterLength"
                           :items="activeFilter.items"
                           :filter="activeFilter"
                         />
-                        <TrainingLibraryDateFilter
-                          v-else-if="activeFilter.filterType === 'date'"
-                          ref="refDateFilter"
-                          :filter="activeFilter"
-                          @on-date-picker-change="handleDatePickerChange"
-                        />
-                        <TrainingLibraryLongTextSearchFilter
-                          v-else-if="activeFilter.filterType === 'longTextSearch'"
-                          :filter="activeFilter"
-                          :total-filter-length="getTotalFilterLength"
-                          :items="activeFilter.items"
-                        />
-                        <TrainingLibrarySelectFilter v-else :filter="activeFilter" />
                       </div>
                       <div class="training-library-filters-container__right-footer">
                         <v-btn
@@ -238,7 +230,7 @@
                   </template>
                   <span class="tooltip-span">{{ 'Refresh' }}</span>
                 </VTooltip>
-                <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
+                <!-- <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
                   <template #activator="{ on: menu, attrs }">
                     <VTooltip bottom opacity="1">
                       <template #activator="{ on: tooltip }">
@@ -264,16 +256,20 @@
                   >
                     <VListItemTitle>{{ item }}</VListItemTitle>
                   </VListItem>
-                </VMenu>
+                </VMenu> -->
               </div>
             </div>
             <div v-if="isRenderFilters" class="training-library-filters-badges">
               <div class="training-library-filters-badges__left-side">
                 <div class="training-library-filters-badges__container">
-                  <TrainingLibraryFilterBadge
+                  <GamificationReportUserDetailsDrawerFilterBadge
                     v-for="(filter, filterIndex) in filters"
                     :key="filterIndex"
                     :filter="filter"
+                    :activityTypeFilterItems="activityTypeFilterItems"
+                    :productFilterItems="productFilterItems"
+                    :difficulityFilterItems="difficulityFilterItems"
+                    @remove="handleRemoveFilter($event, filterIndex)"
                   />
                 </div>
               </div>
@@ -290,13 +286,14 @@
               </div>
             </div>
           </div>
-          <div class="gamification-report__user-details-drawer-timeline">
+          <DatatableLoading v-if="isTimelineLoading" :loading="isTimelineLoading" />
+          <div v-else class="gamification-report__user-details-drawer-timeline">
             <VTimeline v-if="!!timeline.length" dense clipped>
               <VTimelineItem v-for="(item, index) in timeline" :key="index" medium>
                 <template #icon>
                   <img
                     :src="getProductIconPath(item)"
-                    :alt="`${item.product} - ${item.activityType}`"
+                    :alt="`${item.productType} - ${item.ActionType}`"
                   />
                 </template>
                 <div
@@ -308,34 +305,35 @@
                   <div class="d-flex justify-space-between align-items-center">
                     <span
                       class="gamification-report__timeline-item-activity-type"
-                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.activityType] }"
-                      >{{ item.activityType }}</span
+                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                      >{{ item.ActionType }}</span
                     >
                     <span class="gamification-report__timeline-item-date">{{
-                      getDateText(item)
+                      item.actionTime
                     }}</span>
                   </div>
                   <span class="gamification-report__timeline-item-middle-text">
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.points
-                    }}</span>
-                    with
+                    <span class="gamification-report__timeline-item-bold-text"
+                      >{{ item.points }} points</span
+                    >
+                    <!-- with
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.campaignPerformanceRate || item.trainingPerformanceRate
                     }}</span>
-                    total score on
+                    total score  -->
+                    on
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.campaignName || item.trainingName
+                      item.name
                     }}</span>
                     with
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.difficulty || item.category
+                      item.difficultyType || item.category
                     }}</span>
-                    {{ item.product === 'Awareness Educator' ? 'category' : 'difficulity' }}.
+                    {{ item.productType === 'Awareness Educator' ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text"
-                      >{{ item.product }}{{ !!getScenarioMethodText(item) ? ' - ' : ''
+                      >{{ item.productType }}{{ !!getScenarioMethodText(item) ? ' - ' : ''
                       }}{{ getScenarioMethodText(item) }}</span
                     >
                   </div>
@@ -347,7 +345,7 @@
                 >The user does not have any activity</span
               >
             </div>
-            <VHover v-slot="{ hover }">
+            <VHover v-if="isLoadMoreVisible" v-slot="{ hover }">
               <VBtn
                 block
                 outlined
@@ -355,6 +353,7 @@
                 style="border: none;"
                 class="mt-2"
                 :style="{ 'background-color': hover ? '#F2F2F2' : '#FFFFFF' }"
+                @click="handleLoadMore"
               >
                 <span style="color: #2196f3; font-weight: 600;">LOAD MORE</span>
               </VBtn>
@@ -379,20 +378,19 @@ import { mapGetters } from 'vuex'
 import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
-import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
-import TrainingLibraryDateFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryDateFilter.vue'
-import TrainingLibraryLongTextSearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryLongTextSearchFilter.vue'
-import TrainingLibraryFilterBadge from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryFilterBadge.vue'
+import GamificationReportUserDetailsDrawerFilterBadge from './GamificationReportUserDetailsDrawerFilterBadge.vue'
+import { getUserPerformanceRates, getUserTimeline } from '@/api/reports'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import ThreeListItemLoading from '@/components/SkeletonLoading/ThreeListItemLoading'
 export default {
   name: 'GamificationReportUserDetailsDrawer',
   components: {
     Fragment,
     DownloadModal,
     TrainingLibrarySearchFilter,
-    TrainingLibrarySelectFilter,
-    TrainingLibraryDateFilter,
-    TrainingLibraryLongTextSearchFilter,
-    TrainingLibraryFilterBadge
+    GamificationReportUserDetailsDrawerFilterBadge,
+    DatatableLoading,
+    ThreeListItemLoading
   },
   mixins: [useDebounce],
   props: {
@@ -403,10 +401,20 @@ export default {
     selectedRow: {
       type: Object,
       required: true
+    },
+    datePayload: {
+      type: Object,
+      required: true
+    },
+    formDetails: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
+      isTimelineLoading: false,
+      isPerformanceRatesLoading: false,
       menu: false,
       isCloseOnClick: true,
       axiosPayload: getDefaultAxiosPayload(),
@@ -420,92 +428,12 @@ export default {
       isDownloadMenuOpen: false,
       search: '',
       ACTIVITY_TYPE_COLOR_MAP,
-      overallScore: {
-        percentage: '82%',
-        points: 2302
-      },
-      productScores: [
-        {
-          product: 'Phishing Simulation',
-          percentage: '80%'
-        },
-        {
-          product: 'Callback Simulation',
-          percentage: '80%'
-        },
-        {
-          product: 'Vishing Simulation',
-          percentage: '80%'
-        },
-        {
-          product: 'Awareness Educator',
-          percentage: '80%'
-        },
-        {
-          product: 'Smishing Simulation',
-          percentage: '80%'
-        },
-        {
-          product: 'Quishing Simulation',
-          percentage: '80%'
-        }
-      ],
-      timeline: [
-        {
-          activityType: 'Clicked Link',
-          product: 'Phishing Simulator',
-          scenarioMethod: 'Click Only',
-          points: -100,
-          campaignPerformanceRate: '50%',
-          campaignName: 'New Campaign',
-          difficulty: 'Hard',
-          date: new Date(),
-          timezoneId: 'Dateline Standard Time'
-        },
-        {
-          activityType: 'Answered',
-          product: 'Vishing Simulator',
-          points: -100,
-          campaignPerformanceRate: '50%',
-          campaignName: 'New Campaign',
-          difficulty: 'Hard',
-          date: new Date(),
-          timezoneId: 'Dateline Standard Time'
-        },
-        {
-          activityType: 'Training Completed',
-          product: 'Awareness Educator',
-          materialType: 'Training',
-          points: 100,
-          trainingPerformanceRate: '50%',
-          trainingName: 'New Campaign',
-          category: 'Remote Working Security',
-          date: new Date(),
-          timezoneId: 'Dateline Standard Time'
-        },
-        {
-          activityType: 'Training Not Completed',
-          product: 'Awareness Educator',
-          materialType: 'Training',
-          points: -100,
-          trainingPerformanceRate: '50%',
-          trainingName: 'New Campaign',
-          category: 'Remote Working Security',
-          date: new Date(),
-          timezoneId: 'Dateline Standard Time'
-        },
-        {
-          activityType: 'Exam Failed',
-          product: 'Awareness Educator',
-          materialType: 'Training',
-          points: -50,
-          trainingPerformanceRate: '50%',
-          trainingName: 'New Campaign',
-          category: 'Remote Working Security',
-          date: new Date(),
-          timezoneId: 'Dateline Standard Time'
-        }
-      ]
+      overallScore: {},
+      productScores: [],
+      timeline: [],
+      activityTypeFilterItems: [],
+      productFilterItems: [],
+      difficulityFilterItems: []
     }
   },
   computed: {
@@ -531,16 +459,114 @@ export default {
     timezones() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+    },
+    isLoadMoreVisible() {
+      return this.serverSideProps.pageNumber <= this.serverSideProps.totalNumberOfPages
+    }
+  },
+  watch: {
+    formDetails: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        const activityTypeFilterItems = val?.gamificationActionTypes || []
+        const productFilterItems = val?.gamificationUserPerformanceTypes || []
+        const difficulityFilterItems = val?.gamificationDifficultyTypes || []
+        const activityTypeFilterIndex = this.filters.findIndex(
+          (item) => item.key === 'activityType'
+        )
+        if (activityTypeFilterIndex !== -1) {
+          this.filters[activityTypeFilterIndex].items = activityTypeFilterItems
+          this.activityTypeFilterItems = activityTypeFilterItems
+        }
+        const productFilterIndex = this.filters.findIndex((item) => item.key === 'product')
+        if (productFilterIndex !== -1) {
+          this.filters[productFilterIndex].items = productFilterItems
+          this.productFilterItems = productFilterItems
+        }
+        const difficulityFilterIndex = this.filters.findIndex((item) => item.key === 'difficulty')
+        if (difficulityFilterIndex !== -1) {
+          this.filters[difficulityFilterIndex].items = difficulityFilterItems
+          this.difficulityFilterItems = difficulityFilterItems
+        }
+      }
+    },
+    isOnlyShowFailedEvents() {
+      this.serverSideProps.pageNumber = 1
+      this.callForTimeline()
     }
   },
   created() {
     if (this.filters) this.handleSetActiveFilter(this.filters[0])
-    this.callForData()
+    this.callForTimeline()
+    this.callForPerformanceRates()
     this.callForGetTimeZones()
   },
   methods: {
-    callForData() {
-      // TODO: Call for activity
+    callForTimeline(isAppend = false) {
+      const actionTypes =
+        this.filters.find((filter) => filter.key === 'activityType')?.activeValue || []
+      const difficultyTypes =
+        this.filters.find((filter) => filter.key === 'difficulty')?.activeValue || []
+      const productTypes =
+        this.filters.find((filter) => filter.key === 'product')?.activeValue || []
+      const payload = {
+        targetUserResourceId: this.selectedRow.targetUserResourceId,
+        actionTypes,
+        difficultyTypes,
+        products: productTypes,
+        datePeriod: this.datePayload.datePeriod,
+        startDate: this.datePayload.startDate,
+        endDate: this.datePayload.endDate,
+        pagination: {
+          pageNumber: this.serverSideProps.pageNumber,
+          pageSize: this.serverSideProps.pageSize,
+          orderBy: 'actionTime',
+          ascending: true
+        },
+        showOnlyFailedEvents: this.isOnlyShowFailedEvents
+      }
+      if (!isAppend) {
+        this.isTimelineLoading = true
+      }
+      getUserTimeline(payload)
+        .then((res) => {
+          this.serverSideProps.totalNumberOfRecords = res?.data?.data?.totalNumberOfRecords || 0
+          this.serverSideProps.totalNumberOfPages = res?.data?.data?.totalNumberOfPages || 0
+          this.serverSideProps.pageNumber = res?.data?.data?.pageNumber || 1
+          if (isAppend) {
+            const newTimeline = res?.data?.data?.results || []
+            this.timeline = [...this.timeline, ...newTimeline]
+          } else {
+            this.timeline = res?.data?.data?.results || []
+          }
+        })
+        .finally(() => {
+          this.isTimelineLoading = false
+        })
+    },
+    callForPerformanceRates() {
+      const payload = {
+        targetUserResourceId: this.selectedRow.targetUserResourceId,
+        ...this.datePayload
+      }
+      this.isPerformanceRatesLoading = true
+      getUserPerformanceRates(payload)
+        .then((res) => {
+          const newProductScores = res?.data?.data?.map?.((product) => ({
+            percentage: `${product.performance}%`,
+            product: product.phishingType
+          }))
+          this.productScores = newProductScores
+          this.overallScore = {
+            points: this.selectedRow.points,
+            percentage: this.selectedRow.performance
+          }
+        })
+        .finally(() => {
+          this.isPerformanceRatesLoading = false
+        })
     },
     handleSearch(event) {
       this.debounce(() => {
@@ -582,12 +608,14 @@ export default {
       filter.operator = filterOperator
       filter.activeOperator = filterOperator
       this.removeFilterFromPayload(filter)
+      this.callForTimeline()
     },
     handleFilter(filter) {
       filter.isFilterActive = true
       filter.activeValue = filter.value
       filter.activeOperator = filter.operator
       this.setFilterToPayload(filter)
+      this.callForTimeline()
     },
     setFilterToPayload(payload) {
       const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
@@ -622,6 +650,7 @@ export default {
       }
     },
     removeFilterFromPayload(payload) {
+      console.log(payload)
       const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
       if (payload.filterType === 'date' && payload.activeOperator === 'between') {
         const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
@@ -636,7 +665,6 @@ export default {
       } else filterItems.splice(fIndex, 1)
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.callForData()
     },
     clearAllFilters() {
       this.axiosPayload = getDefaultAxiosPayload()
@@ -668,6 +696,14 @@ export default {
         f.isFilterActive = false
       })
       this.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
+      this.callForTimeline()
+    },
+    handleRemoveFilter({ filter, index }, filterIndex) {
+      this.filters[filterIndex].activeValue.splice(index, 1)
+      this.filters[filterIndex].value = this.filters[filterIndex].activeValue
+      this.filters[filterIndex].isFilterActive = !!this.filters[filterIndex].activeValue.length
+      this.removeFilterFromPayload(filter)
+      this.callForTimeline()
     },
     handleMenuVisibilityChange(val) {
       if (this.activeFilter.filterType === 'date') {
@@ -685,7 +721,8 @@ export default {
       if (!this.menu) this.checkFilter(this.activeFilter)
     },
     handleRefresh() {
-      this.callForData()
+      this.serverSideProps.pageNumber = 1
+      this.callForTimeline()
     },
     handleDownloadButtonClick(item = '') {
       this.isShowDownloadModal = true
@@ -694,6 +731,10 @@ export default {
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
+    },
+    handleLoadMore() {
+      this.serverSideProps.pageNumber += 1
+      this.callForTimeline(true)
     },
     exportUserDetails(downloadTypes) {
       const downloadSettings = {
@@ -730,50 +771,50 @@ export default {
       })
     },
     getCardProductIcon(product) {
-      if (product === 'Phishing Simulation')
+      if (product === 'Phishing Simulator')
         return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
-      if (product === 'Callback Simulation')
+      if (product === 'Callback Simulator')
         return require('@/assets/img/gamification-report-user-details-callback-icon.svg')
-      if (product === 'Vishing Simulation')
+      if (product === 'Vishing Simulator')
         return require('@/assets/img/gamification-report-user-details-vishing-icon.svg')
       if (product === 'Awareness Educator')
         return require('@/assets/img/gamification-report-user-details-awareness-icon.svg')
-      if (product === 'Smishing Simulation')
+      if (product === 'Smishing Simulator')
         return require('@/assets/img/gamification-report-user-details-smishing-icon.svg')
-      if (product === 'Quishing Simulation')
+      if (product === 'Quishing Simulator')
         return require('@/assets/img/gamification-report-user-details-quishing-icon.svg')
       return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
     },
     getProductIconPath(item) {
-      if (item.product === 'Phishing Simulator') {
-        if (ACTIVITY_TYPES_FAIL_MAP[item.activityType]) {
+      if (item.productType === 'Phishing Simulator') {
+        if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-phishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-phishing-success-icon.svg')
       }
-      if (item.product === 'Callback Simulator') {
-        if (ACTIVITY_TYPES_FAIL_MAP[item.activityType]) {
+      if (item.productType === 'Callback Simulator') {
+        if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-callback-fail-icon.svg')
         }
         return require('@/assets/img/timeline-callback-success-icon.svg')
       }
-      if (item.product === 'Vishing Simulator') {
-        if (ACTIVITY_TYPES_FAIL_MAP[item.activityType]) {
+      if (item.productType === 'Vishing Simulator') {
+        if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-vishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-vishing-answered-icon.svg')
       }
-      if (item.product === 'Smishing Simulator') {
+      if (item.productType === 'Smishing Simulator') {
         return require('@/assets/img/timeline-smishing-fail-icon.svg')
       }
-      if (item.product === 'Quishing Simulator') {
-        if (ACTIVITY_TYPES_FAIL_MAP[item.activityType]) {
+      if (item.productType === 'Quishing Simulator') {
+        if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-quishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-quishing-success-icon.svg')
       }
-      if (item.product === 'Awareness Educator') {
-        if (ACTIVITY_TYPES_FAIL_MAP[item.activityType]) {
+      if (item.productType === 'Awareness Educator') {
+        if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-fail-icon.svg')
         }
         return require('@/assets/img/timeline-awareness-success-icon.svg')
@@ -808,7 +849,9 @@ export default {
         timeFormat = 'HH'
       }
       const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
-      return `${this.$moment(item.date).format(`MMM D ${timeZoneRightText}`)} ${timzoneLeftText}`
+      return `${this.$moment(item.actionTime).format(
+        `MMM D ${timeZoneRightText}`
+      )} ${timzoneLeftText}`
     }
   }
 }

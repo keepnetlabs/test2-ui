@@ -175,7 +175,7 @@ export const userActivityDetailsFilters = [
     key: 'activityType',
     show: true,
     filterType: 'search',
-    items: activityTypesFilterOptions,
+    items: [],
     value: [],
     activeValue: [],
     operator: 'Include',
@@ -190,7 +190,7 @@ export const userActivityDetailsFilters = [
     filterType: 'search',
     operator: 'Include',
     activeOperator: 'Include',
-    items: productsFilterOptions,
+    items: [],
     value: [],
     activeValue: [],
     isFilterActive: false
@@ -203,22 +203,22 @@ export const userActivityDetailsFilters = [
     filterType: 'search',
     operator: 'Include',
     activeOperator: 'Include',
-    items: difficultiesFilterOptions,
-    value: [],
-    activeValue: [],
-    isFilterActive: false
-  },
-  {
-    text: 'Category',
-    icon: 'mdi-shape',
-    key: 'category',
-    show: true,
-    filterType: 'search',
-    operator: 'Include',
-    activeOperator: 'Include',
-    items: categoriesFilterOptions,
+    items: [],
     value: [],
     activeValue: [],
     isFilterActive: false
   }
+  // {
+  //   text: 'Category',
+  //   icon: 'mdi-shape',
+  //   key: 'category',
+  //   show: true,
+  //   filterType: 'search',
+  //   operator: 'Include',
+  //   activeOperator: 'Include',
+  //   items: categoriesFilterOptions,
+  //   value: [],
+  //   activeValue: [],
+  //   isFilterActive: false
+  // }
 ]
