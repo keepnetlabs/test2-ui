@@ -1,5 +1,9 @@
 <template>
   <KContainer tabless class="campaign-manager">
+    <CampaignManagerScenarioStatisticsModal
+      v-if="isShowScenarioStatistics"
+      v-model="isShowScenarioStatistics"
+    />
     <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
@@ -75,6 +79,7 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
+      @on-show-scenario-statistics="isShowScenarioStatistics = true"
     />
     <CampaignManagerItemTable
       v-if="selectedParentItem"
@@ -127,9 +132,11 @@ import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignMana
 import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
 import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
 export default {
   name: 'CampaignManager',
   components: {
+    CampaignManagerScenarioStatisticsModal,
     CommonCampaignManagerCancelCampaignDialog,
     CommonCampaignManagerLaunchCampaignDialog,
     CommonCampaignManagerPreviewDialog,
@@ -170,7 +177,8 @@ export default {
       multipleSystemUserPayload: {},
       startStopCampaignPayload: {},
       isStartDialogActionButtonDisabled: false,
-      isStopDialogActionButtonDisabled: false
+      isStopDialogActionButtonDisabled: false,
+      isShowScenarioStatistics: false
     }
   },
   computed: {
