@@ -77,9 +77,9 @@
           </div>
         </div>
         <div class="gamification-report__user-details-drawer-body">
-          <span class="gamification-report__user-details-drawer-body-header">
+          <h2 class="gamification-report__user-details-drawer-body-header">
             User Activity Timeline
-          </span>
+          </h2>
           <div class="gamification-report__user-details-drawer-filters-container">
             <div class="gamification-report__user-details-drawer-filters">
               <div class="gamification-report__user-details-drawer-filters-left">
@@ -345,7 +345,13 @@
                 >The user does not have any activity</span
               >
             </div>
-            <VHover v-if="isLoadMoreVisible" v-slot="{ hover }">
+          </div>
+          <div class="gamification-report__user-details-drawer-load-more-button-container">
+            <VHover
+              v-if="isLoadMoreVisible"
+              v-slot="{ hover }"
+              class="gamification-report__user-details-drawer-load-more-button"
+            >
               <VBtn
                 block
                 outlined
