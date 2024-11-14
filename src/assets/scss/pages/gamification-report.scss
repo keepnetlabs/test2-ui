@@ -75,13 +75,17 @@
       text-align: center;
       border-radius: 100px;
       border: 1px solid #e0e0e0;
-      width: 100px;
+      width: 180px;
       color: #757575;
       font-size: 14px;
+      font-weight: 600;
     }
   }
 
   &__user-details-drawer-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     border-top-left-radius: 8px;
     background-image: url("../../assets/img/gamification-report-user-details-header-background.svg");
     background-size: cover;
@@ -111,6 +115,10 @@
 
   &__user-details-drawer-card {
     padding: 32px 48px;
+    position: sticky;
+    top: 240px;
+    z-index: 10;
+    background-color: #FFFFFF;
 
     &-content {
       background-image: url("../../assets/img/gamification-report-user-details-medal.svg");
@@ -188,6 +196,11 @@
     padding: 0px 48px;
 
     &-header {
+    position: sticky;
+    top: 332px;
+    z-index: 10;
+    padding-bottom: 8px;
+    background-color: #FFFFFF;
       font-weight: 600;
       font-weight: 20px;
       font-size: 20px;
@@ -195,12 +208,14 @@
   }
 
   &__user-details-drawer-filters-container {
+    position: sticky;
+    top: 370px;
+    z-index: 10;
     background-color: #fafafa;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 16px 24px;
     min-height: 72px;
-    margin: 8px 0px;
     display: flex;
     flex-direction: column;
   }
@@ -221,6 +236,10 @@
       align-items: center;
       gap: 16px;
     }
+  }
+
+  &__user-details-drawer-timeline {
+    margin-top: 8px;
   }
 
   &__timeline-item {
@@ -277,6 +296,19 @@
       font-size: 24px;
       line-height: 31px;
     }
+  }
+
+  &__user-details-drawer-load-more-button-container {
+    position: fixed;
+    bottom: 0;
+    padding: 24px 0;
+    left: 48px;
+    right: 48px;
+    background-color: #ffffff;
+    z-index: 10;
+  }
+
+  &__user-details-drawer-load-more-button {
   }
 }
 

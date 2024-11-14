@@ -77,9 +77,9 @@
           </div>
         </div>
         <div class="gamification-report__user-details-drawer-body">
-          <span class="gamification-report__user-details-drawer-body-header">
+          <h2 class="gamification-report__user-details-drawer-body-header">
             User Activity Timeline
-          </span>
+          </h2>
           <div class="gamification-report__user-details-drawer-filters-container">
             <div class="gamification-report__user-details-drawer-filters">
               <div class="gamification-report__user-details-drawer-filters-left">
@@ -230,7 +230,7 @@
                   </template>
                   <span class="tooltip-span">{{ 'Refresh' }}</span>
                 </VTooltip>
-                <!-- <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
+                <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
                   <template #activator="{ on: menu, attrs }">
                     <VTooltip bottom opacity="1">
                       <template #activator="{ on: tooltip }">
@@ -256,7 +256,7 @@
                   >
                     <VListItemTitle>{{ item }}</VListItemTitle>
                   </VListItem>
-                </VMenu> -->
+                </VMenu>
               </div>
             </div>
             <div v-if="isRenderFilters" class="training-library-filters-badges">
@@ -345,7 +345,13 @@
                 >The user does not have any activity</span
               >
             </div>
-            <VHover v-if="isLoadMoreVisible" v-slot="{ hover }">
+          </div>
+          <div class="gamification-report__user-details-drawer-load-more-button-container">
+            <VHover
+              v-if="isLoadMoreVisible"
+              v-slot="{ hover }"
+              class="gamification-report__user-details-drawer-load-more-button"
+            >
               <VBtn
                 block
                 outlined
@@ -379,7 +385,7 @@ import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/f
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySearchFilter.vue'
 import GamificationReportUserDetailsDrawerFilterBadge from './GamificationReportUserDetailsDrawerFilterBadge.vue'
-import { getUserPerformanceRates, getUserTimeline } from '@/api/reports'
+import { getUserPerformanceRates, getUserTimeline, exportUserActivityDetails } from '@/api/reports'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import ThreeListItemLoading from '@/components/SkeletonLoading/ThreeListItemLoading'
 export default {
@@ -461,7 +467,7 @@ export default {
       return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
     },
     isLoadMoreVisible() {
-      return this.serverSideProps.pageNumber <= this.serverSideProps.totalNumberOfPages
+      return this.serverSideProps.pageNumber < this.serverSideProps.totalNumberOfPages
     }
   },
   watch: {
@@ -521,7 +527,7 @@ export default {
         endDate: this.datePayload.endDate,
         pagination: {
           pageNumber: this.serverSideProps.pageNumber,
-          pageSize: this.serverSideProps.pageSize,
+          pageSize: 5,
           orderBy: 'actionTime',
           ascending: true
         },
@@ -739,18 +745,26 @@ export default {
     exportUserDetails(downloadTypes) {
       const downloadSettings = {
         exportTypes: downloadTypes,
-        pageNumber: this.serverSideEvents.pagination
-          ? this.serverSideProps.pageNumber
-          : this.currentPage,
-        pageSize: this.serverSideEvents.pagination ? this.serverSideProps.pageSize : this.rowCount,
+        pageNumber: this.serverSideProps.pageNumber,
+        pageSize: this.serverSideProps.pageSize,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       }
       downloadSettings.exportTypes.forEach((item) => {
+        const actionTypes =
+          this.filters.find((filter) => filter.key === 'activityType')?.activeValue || []
+        const difficultyTypes =
+          this.filters.find((filter) => filter.key === 'difficulty')?.activeValue || []
+        const productTypes =
+          this.filters.find((filter) => filter.key === 'product')?.activeValue || []
         let payload = {
           exportType: item === 'XLS' ? 'Excel' : item,
           reportAllPages: downloadSettings.reportAllPages,
+          targetUserResourceId: this.selectedRow.targetUserResourceId,
+          actionTypes,
+          difficultyTypes,
+          products: productTypes,
           datePeriod: this.axiosPayload.datePeriod,
-          filter: this.axiosPayload.filter,
+          showOnlyFailedEvents: this.isOnlyShowFailedEvents,
           pagination: {
             pageNumber: downloadSettings.pageNumber,
             pageSize: downloadSettings.pageSize,
@@ -758,16 +772,15 @@ export default {
             ascending: this.axiosPayload.ascending
           }
         }
-        // TODO: Add export endpoint
-        // exportLeaderboardData(payload).then((response) => {
-        //   const { data } = response
-        //   const link = document.createElement('a')
-        //   link.href = window.URL.createObjectURL(data)
-        //   link.download = `Leaderboard-User-Details.${
-        //     item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-        //   }`
-        //   link.click()
-        // })
+        exportUserActivityDetails(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Leaderboard-User-Details.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     getCardProductIcon(product) {
