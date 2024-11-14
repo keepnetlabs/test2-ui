@@ -211,7 +211,7 @@
                 <VCheckbox
                   v-model="isOnlyShowFailedEvents"
                   color="#2196F3"
-                  label="Show only failed events"
+                  label="Show only failed activities"
                   hide-details
                   style="padding: 0px;"
                 />
@@ -287,7 +287,11 @@
             </div>
           </div>
           <DatatableLoading v-if="isTimelineLoading" :loading="isTimelineLoading" />
-          <div v-else class="gamification-report__user-details-drawer-timeline">
+          <div
+            v-else
+            class="gamification-report__user-details-drawer-timeline"
+            :style="{ paddingBottom: isLoadMoreVisible ? '92px' : '0px' }"
+          >
             <VTimeline v-if="!!timeline.length" dense clipped>
               <VTimelineItem v-for="(item, index) in timeline" :key="index" medium>
                 <template #icon>
@@ -346,9 +350,11 @@
               >
             </div>
           </div>
-          <div class="gamification-report__user-details-drawer-load-more-button-container">
+          <div
+            v-if="isLoadMoreVisible"
+            class="gamification-report__user-details-drawer-load-more-button-container"
+          >
             <VHover
-              v-if="isLoadMoreVisible"
               v-slot="{ hover }"
               class="gamification-report__user-details-drawer-load-more-button"
             >
@@ -477,7 +483,7 @@ export default {
       handler(val) {
         if (!val) return
         const activityTypeFilterItems = val?.gamificationActionTypes || []
-        const productFilterItems = val?.gamificationUserPerformanceTypes || []
+        const productFilterItems = val?.gamificationProductTypes || []
         const difficulityFilterItems = val?.gamificationDifficultyTypes || []
         const activityTypeFilterIndex = this.filters.findIndex(
           (item) => item.key === 'activityType'

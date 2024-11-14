@@ -57,6 +57,7 @@
             v-for="(performer, index) in topPerformers"
             :performer="performer"
             :key="index"
+            @click="handleDetails(performer)"
           />
         </div>
         <div v-else class="gamification-report__top-performers-content-empty">
