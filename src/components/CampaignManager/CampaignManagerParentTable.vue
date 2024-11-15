@@ -124,7 +124,7 @@
         </template>
         <span class="tooltip-span">{{ 'Add a Campaign' }}</span>
       </VTooltip>
-      <!-- <VTooltip bottom>
+      <VTooltip bottom>
         <template #activator="{ on }">
           <VIcon
             v-on="on"
@@ -136,7 +136,7 @@
           >
         </template>
         <span>Show Scenario Statistics</span>
-      </VTooltip> -->
+      </VTooltip>
     </template>
   </DataTable>
 </template>

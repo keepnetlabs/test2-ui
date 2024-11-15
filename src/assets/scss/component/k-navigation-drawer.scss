@@ -10,11 +10,12 @@
 }
 @keyframes drawerRight {
   from {
-    left: 100%;
-    width: 0;
+    right: 0;
+    left:100%
   }
   to {
-    left: auto;
-    width: calc(100% - 72px);
+    left: 72px;
+    right:auto;
   }
 }
+
