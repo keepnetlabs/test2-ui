@@ -13,7 +13,9 @@
     <span class="gamification-report__top-performer-card-department">{{
       performer.department
     }}</span>
-    <span class="gamification-report__top-performer-card-score">{{ performer.points }} PTS</span>
+    <span class="gamification-report__top-performer-card-score"
+      >{{ performer.performance }}% PERFORMANCE</span
+    >
   </div>
 </template>
 
