@@ -35,15 +35,10 @@
                     v-model.trim="search"
                     placeholder="Search"
                     outlined
-                    class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
+                    class="filter-field filter-field-scenarios search-wrapper__search-filter campaign-manager-phishing-scenarios__search pr-2"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
-                    style="
-                      max-width: 328px;
-                      min-width: 328px;
-                      width: 100%;
-                      padding-right: 4px !important;
-                    "
+                    style="padding-right: 4px !important;"
                   />
                 </div>
                 <div>
@@ -181,18 +176,16 @@
                           item-value="value"
                           outlined
                           persistent-hint
-                          class="filter-field-scenarios"
-                          style="
-                            padding-right: 4px !important;
-                            padding-left: 4px !important;
-                            max-width: unset;
-                            width: 350px;
-                          "
+                          class="filter-field-scenarios campaign-manager-phishing-scenarios__distribution-type"
+                          customMenuClass="campaign-manager-phishing-scenarios__filter-menu"
+                          style="padding-right: 4px !important; padding-left: 4px !important;"
                           :disabled="!category.length"
                           :slots="{ item: true, selection: true }"
                         >
                           <template #selection="{ item }">
-                            <div class="d-flex align-center">
+                            <div
+                              class="d-flex align-center campaign-manager-phishing-scenarios__distribution-type-selection"
+                            >
                               <VIcon v-if="item.value === 3" color="#2196F3" class="mr-2" small
                                 >mdi-creation</VIcon
                               >

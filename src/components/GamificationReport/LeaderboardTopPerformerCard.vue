@@ -1,5 +1,5 @@
 <template>
-  <div class="gamification-report__top-performer-card">
+  <div class="gamification-report__top-performer-card" @click="$emit('click')">
     <figure class="gamification-report__top-performer-card-ribbon">
       <img :src="getRibbonImgSrc" alt="gold ribbon" />
     </figure>
@@ -13,7 +13,9 @@
     <span class="gamification-report__top-performer-card-department">{{
       performer.department
     }}</span>
-    <span class="gamification-report__top-performer-card-score">{{ performer.points }} PTS</span>
+    <span class="gamification-report__top-performer-card-score"
+      >{{ performer.performance }}% PERFORMANCE</span
+    >
   </div>
 </template>
 

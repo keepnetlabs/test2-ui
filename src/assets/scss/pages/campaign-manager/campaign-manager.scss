@@ -53,6 +53,46 @@
 }
 
 .campaign-manager-phishing-scenarios {
+  &__search {
+    max-width: unset !important;
+    width: 175px;
+
+    @media screen and (min-width: 1439px) {
+      width: 200px;
+    }
+
+    @media screen and (min-width: 1594px) {
+      width: 300px;
+    }
+  }
+  &__distribution-type {
+    min-width: 250px;
+
+    @media screen and (min-width: 1439px) {
+      min-width: 300px;
+    }
+
+    @media screen and (min-width: 1594px) {
+      width: 100%;
+      max-width: unset !important;
+    }
+
+    &-selection {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 175px;
+
+      @media screen and (min-width: 1439px) {
+        width: 220px;
+      }
+
+      @media screen and (min-width: 1594px) {
+        overflow: visible;
+        text-overflow: unset;
+      }
+    }
+  }
   &__filter-menu {
     max-width: unset;
   }

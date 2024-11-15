@@ -131,6 +131,24 @@ export const exportLeaderboardData = (payload) => {
   })
 }
 
+export const getLeaderboardFormDetails = () => {
+  return testRequest.get('/leaderboard/form-details')
+}
+
+export const getUserPerformanceRates = (payload) => {
+  return testRequest.post('/leaderboard/user-performance', payload)
+}
+
+export const getUserTimeline = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline', payload)
+}
+
+export const exportUserActivityDetails = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -142,5 +160,9 @@ export default {
   getSchedulingReportTargetGroups,
   getLeaderboardData,
   getTopPerformersData,
-  exportLeaderboardData
+  exportLeaderboardData,
+  getLeaderboardFormDetails,
+  getUserPerformanceRates,
+  getUserTimeline,
+  exportUserActivityDetails
 }
