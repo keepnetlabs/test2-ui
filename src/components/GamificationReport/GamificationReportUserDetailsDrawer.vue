@@ -329,11 +329,11 @@
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
-                    with
+                    {{ item.productType === 'Awareness Educator' ? '' : 'with' }}
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.difficultyType || item.category
+                      item.productType === 'Awareness Educator' ? '' : item.difficultyType
                     }}</span>
-                    {{ item.productType === 'Awareness Educator' ? 'category' : 'difficulity' }}.
+                    {{ item.productType === 'Awareness Educator' ? '' : 'difficulity' }}
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text"
