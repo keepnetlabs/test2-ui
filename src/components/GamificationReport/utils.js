@@ -197,7 +197,7 @@ export const userActivityDetailsFilters = [
   },
   {
     text: 'Difficulty',
-    icon: 'mdi-poll',
+    icon: 'mdi-signal-cellular-3',
     key: 'difficulty',
     show: true,
     filterType: 'search',
