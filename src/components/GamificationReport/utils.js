@@ -40,138 +40,6 @@ export const ACTIVITY_TYPES_FAIL_MAP = {
   'Downloaded Infographic': false
 }
 
-export const ACTIVITY_TYPES = {
-  'Clicked Link': 'Clicked Link',
-  'Submitted Data': 'Submitted Data',
-  'Submitted MFA Code': 'Submitted MFA Code',
-  'Opened Attachment': 'Opened Attachment',
-  Reported: 'Reported',
-  'Called Back': 'Called Back',
-  'Entered Digits': 'Entered Digits',
-  Answered: 'Answered',
-  Vished: 'Vished (Dialed Number)',
-  'Scanned QR Link': 'Scanned QR Link',
-  'Training Completed': 'Training Completed',
-  'Training Not Completed': 'Training Not Completed',
-  'Exam Passed': 'Exam Passed',
-  'Exam Failed': 'Exam Failed',
-  'Downloaded Poster': 'Downloaded Poster',
-  'Downloaded Infographic': 'Downloaded Infographic'
-}
-
-export const PRODUCTS = {
-  'Phishing Simulator': 'Phishing Simulator',
-  'Callback Simulator': 'Callback Simulator',
-  'Vishing Simulator': 'Vishing Simulator',
-  'Smishing Simulator': 'Smishing Simulator',
-  'Quishing Simulator': 'Quishing Simulator',
-  'Awareness Educator': 'Awareness Educator'
-}
-
-export const DIFFICULTIES = {
-  Easy: 'Easy',
-  Medium: 'Medium',
-  Hard: 'Hard'
-}
-
-export const categories = [
-  'Remote Working Security',
-  'Travel Security',
-  'Mobile Device Security',
-  'Email Security',
-  'Social Media Security',
-  'Safe Online Shopping',
-  'Malware',
-  'Physical Security',
-  'Cyber Spying',
-  'Password Security',
-  'GDPR',
-  'Social Engineering',
-  'Removable Media',
-  'Wi-fi Security',
-  'General'
-]
-
-export const activityTypesFilterOptions = [
-  {
-    text: 'Clicked Link',
-    value: '0'
-  },
-  {
-    text: 'Submitted Data',
-    value: '1'
-  },
-  {
-    text: 'Submitted MFA Code',
-    value: '2'
-  },
-  {
-    text: 'Opened Attachment',
-    value: '3'
-  },
-  {
-    text: 'Reported',
-    value: '4'
-  }
-]
-
-export const productsFilterOptions = [
-  {
-    text: 'Phishing Simulator',
-    value: '0'
-  },
-  {
-    text: 'Callback Simulator',
-    value: '1'
-  },
-  {
-    text: 'Vishing Simulator',
-    value: '2'
-  },
-  {
-    text: 'Smishing Simulator',
-    value: '3'
-  },
-  {
-    text: 'Quishing Simulator',
-    value: '4'
-  }
-]
-
-export const difficultiesFilterOptions = [
-  {
-    text: 'Easy',
-    value: '0'
-  },
-  {
-    text: 'Medium',
-    value: '1'
-  },
-  {
-    text: 'Hard',
-    value: '2'
-  }
-]
-
-export const categoriesFilterOptions = [
-  {
-    text: 'Remote Working Security',
-    value: '0'
-  },
-  {
-    text: 'Travel Security',
-    value: '1'
-  },
-  {
-    text: 'Mobile Device Security',
-    value: '2'
-  },
-  {
-    text: 'Email Security',
-    value: '3'
-  }
-]
-
 export const userActivityDetailsFilters = [
   {
     text: 'Activity Type',
@@ -220,7 +88,7 @@ export const userActivityDetailsFilters = [
   //   filterType: 'search',
   //   operator: 'Include',
   //   activeOperator: 'Include',
-  //   items: categoriesFilterOptions,
+  //   items: [],
   //   value: [],
   //   activeValue: [],
   //   isFilterActive: false
