@@ -230,33 +230,21 @@
                   </template>
                   <span class="tooltip-span">{{ 'Refresh' }}</span>
                 </VTooltip>
-                <VMenu v-model="isDownloadMenuOpen" bottom left offset-y>
-                  <template #activator="{ on: menu, attrs }">
-                    <VTooltip bottom opacity="1">
-                      <template #activator="{ on: tooltip }">
-                        <VBtn
-                          v-bind="attrs"
-                          v-on="{ ...tooltip, ...menu }"
-                          :id="`btn-download--table-${Math.random().toString().substring(2)}`"
-                          class="btn-hover mr-1"
-                          icon
-                          style="order: 5;"
-                        >
-                          <v-icon>mdi-download</v-icon>
-                        </VBtn>
-                      </template>
-                      <span class="tooltip-span">Download Options</span>
-                    </VTooltip>
+                <VTooltip bottom opacity="1">
+                  <template #activator="{ on }">
+                    <VBtn
+                      v-on="on"
+                      :id="`btn-download--table-${Math.random().toString().substring(2)}`"
+                      class="btn-hover mr-1"
+                      icon
+                      style="order: 5;"
+                      @click="handleDownloadButtonClick('Download All')"
+                    >
+                      <v-icon>mdi-download</v-icon>
+                    </VBtn>
                   </template>
-                  <VListItem
-                    v-for="(item, index) in downloadButtonOptions"
-                    :id="`item--download-option-${index}`"
-                    :key="index"
-                    @click="handleDownloadButtonClick(item)"
-                  >
-                    <VListItemTitle>{{ item }}</VListItemTitle>
-                  </VListItem>
-                </VMenu>
+                  <span class="tooltip-span">Download Options</span>
+                </VTooltip>
               </div>
             </div>
             <div v-if="isRenderFilters" class="training-library-filters-badges">
