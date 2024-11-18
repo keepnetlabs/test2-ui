@@ -313,33 +313,37 @@
                       >{{ item.ActionType }}</span
                     >
                     <span class="gamification-report__timeline-item-date">{{
-                      item.actionTime
+                      item.ActionTime
                     }}</span>
                   </div>
                   <span class="gamification-report__timeline-item-middle-text">
                     <span class="gamification-report__timeline-item-bold-text"
                       >{{ item.points }} points</span
                     >
-                    <!-- with
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.campaignPerformanceRate || item.trainingPerformanceRate
-                    }}</span>
-                    total score  -->
-                    on
+                    with
+                    <span class="gamification-report__timeline-item-bold-text"
+                      >{{ item.campaignPerformance }}%</span
+                    >
+                    total score on
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
-                    {{ item.productType === 'Awareness Educator' ? '' : 'with' }}
+                    with
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType === 'Awareness Educator' ? '' : item.difficultyType
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? item.categoryDescription
+                        : item.difficultyType
                     }}</span>
-                    {{ item.productType === 'Awareness Educator' ? '' : 'difficulity' }}
+                    {{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? 'category'
+                        : 'difficulity'
+                    }}
                   </span>
                   <div>
-                    <span class="gamification-report__timeline-item-bottom-text"
-                      >{{ item.productType }}{{ !!getScenarioMethodText(item) ? ' - ' : ''
-                      }}{{ getScenarioMethodText(item) }}</span
-                    >
+                    <span class="gamification-report__timeline-item-bottom-text">{{
+                      item.productType
+                    }}</span>
                   </div>
                 </div>
               </VTimelineItem>
@@ -379,7 +383,6 @@
 <script>
 import { Fragment } from 'vue-frag'
 import {
-  PRODUCTS,
   ACTIVITY_TYPE_COLOR_MAP,
   ACTIVITY_TYPES_FAIL_MAP,
   userActivityDetailsFilters
@@ -484,7 +487,7 @@ export default {
         if (!val) return
         const activityTypeFilterItems = val?.gamificationActionTypes || []
         const productFilterItems = val?.gamificationProductTypes || []
-        const difficulityFilterItems = val?.gamificationDifficultyTypes || []
+        const difficulityFilterItems = val?.gamificationScenarioDifficultyTypes || []
         const activityTypeFilterIndex = this.filters.findIndex(
           (item) => item.key === 'activityType'
         )
@@ -534,7 +537,7 @@ export default {
         pagination: {
           pageNumber: this.serverSideProps.pageNumber,
           pageSize: 5,
-          orderBy: 'actionTime',
+          orderBy: 'ActionTime',
           ascending: true
         },
         showOnlyFailedEvents: this.isOnlyShowFailedEvents
@@ -804,34 +807,35 @@ export default {
       return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
     },
     getProductIconPath(item) {
-      if (item.productType === 'Phishing Simulator') {
+      const productType = item.productType.split(' - ')[0]
+      if (productType === 'Phishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-phishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-phishing-success-icon.svg')
       }
-      if (item.productType === 'Callback Simulator') {
+      if (productType === 'Callback Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-callback-fail-icon.svg')
         }
         return require('@/assets/img/timeline-callback-success-icon.svg')
       }
-      if (item.productType === 'Vishing Simulator') {
+      if (productType === 'Vishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-vishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-vishing-answered-icon.svg')
       }
-      if (item.productType === 'Smishing Simulator') {
+      if (productType === 'Smishing Simulator'.toUpperCase()) {
         return require('@/assets/img/timeline-smishing-fail-icon.svg')
       }
-      if (item.productType === 'Quishing Simulator') {
+      if (productType === 'Quishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-quishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-quishing-success-icon.svg')
       }
-      if (item.productType === 'Awareness Educator') {
+      if (productType === 'Awareness Educator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-fail-icon.svg')
         }
@@ -856,20 +860,10 @@ export default {
         this.$store.dispatch('common/getTimezone')
       }
     },
-    getDateText(item) {
+    getTimezoneText(item) {
       const timezoneText = this.timezones?.find?.((tz) => tz.value === item.timezoneId)?.text || ''
       const timzoneLeftText = timezoneText.split(' ')[0]
-      let timeFormat = localStorage.getItem('selectedTimeFormat') || '24h'
-      let is12H = timeFormat === '12h'
-      if (is12H) {
-        timeFormat = 'hh'
-      } else {
-        timeFormat = 'HH'
-      }
-      const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
-      return `${this.$moment(item.actionTime).format(
-        `MMM D ${timeZoneRightText}`
-      )} ${timzoneLeftText}`
+      return timzoneLeftText
     }
   }
 }
