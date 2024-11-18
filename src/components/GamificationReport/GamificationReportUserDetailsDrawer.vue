@@ -312,9 +312,10 @@
                       :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
                       >{{ item.ActionType }}</span
                     >
-                    <span class="gamification-report__timeline-item-date">{{
-                      item.actionTime
-                    }}</span>
+                    <span class="gamification-report__timeline-item-date"
+                      >{{ item.ActionTime }}
+                      {{ item.timezoneId ? `${getTimezoneText(item)}` : '' }}</span
+                    >
                   </div>
                   <span class="gamification-report__timeline-item-middle-text">
                     <span class="gamification-report__timeline-item-bold-text"
@@ -534,7 +535,7 @@ export default {
         pagination: {
           pageNumber: this.serverSideProps.pageNumber,
           pageSize: 5,
-          orderBy: 'actionTime',
+          orderBy: 'ActionTime',
           ascending: true
         },
         showOnlyFailedEvents: this.isOnlyShowFailedEvents
@@ -857,20 +858,10 @@ export default {
         this.$store.dispatch('common/getTimezone')
       }
     },
-    getDateText(item) {
+    getTimezoneText(item) {
       const timezoneText = this.timezones?.find?.((tz) => tz.value === item.timezoneId)?.text || ''
       const timzoneLeftText = timezoneText.split(' ')[0]
-      let timeFormat = localStorage.getItem('selectedTimeFormat') || '24h'
-      let is12H = timeFormat === '12h'
-      if (is12H) {
-        timeFormat = 'hh'
-      } else {
-        timeFormat = 'HH'
-      }
-      const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
-      return `${this.$moment(item.actionTime).format(
-        `MMM D ${timeZoneRightText}`
-      )} ${timzoneLeftText}`
+      return timzoneLeftText
     }
   }
 }
