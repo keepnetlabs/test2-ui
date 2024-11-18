@@ -150,6 +150,7 @@
           >between batches</label
         >
       </div>
+      <!--
       <div
         v-if="type === DISTRIBUTION_TYPES.PHISHING && isRenderDistributionStartScheduled"
         class="campaign-manager-advanced-settings__distribution-info"
@@ -158,6 +159,7 @@
         <a href="https://doc.keepnetlabs.com" target="_blank">doc.keepnetlabs.com</a> to get more
         information about Distribution.
       </div>
+      -->
     </FormGroup>
   </div>
 </template>
