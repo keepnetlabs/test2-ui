@@ -2,7 +2,8 @@
   <KContainer tabless class="campaign-manager">
     <CampaignManagerScenarioStatisticsModal
       v-if="isShowScenarioStatistics"
-      v-model="isShowScenarioStatistics"
+      :navigation-drawer-value="isShowScenarioStatistics"
+      @navigation-drawer-change="handleStatisticsModalStatusChange"
     />
     <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
@@ -219,6 +220,17 @@ export default {
     }
   },
   methods: {
+    handleStatisticsModalStatusChange(status) {
+      console.log('status', status)
+      if (status) {
+        this.isShowScenarioStatistics = status
+        return
+      }
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      setTimeout(() => {
+        this.isShowScenarioStatistics = status
+      }, 250)
+    },
     toggleShowLaunchDialog() {
       if (this.isShowLaunchDialog) this.launchResourceId = ''
       this.isShowLaunchDialog = !this.isShowLaunchDialog

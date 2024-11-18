@@ -1,6 +1,6 @@
 <template>
   <VNavigationDrawer
-    :value="value"
+    :value="navigationDrawerValue"
     class="k-navigation-drawer"
     temporary
     fixed
@@ -9,7 +9,7 @@
     right
     width="calc(100% - 72px)"
     height="100%"
-    @input="$emit('input', $event)"
+    @input="$emit('navigation-drawer-change', $event)"
   >
     <div class="campaign-manager-scenario-statistics-modal__header--sticky">
       <div class="campaign-manager-scenario-statistics-modal__header">
@@ -29,7 +29,10 @@
           </VListItem>
         </div>
         <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="$emit('input', false)"
+          <VIcon
+            class="cursor-pointer"
+            color="#757575"
+            @click="$emit('navigation-drawer-change', false)"
             >mdi-close</VIcon
           >
         </div>
@@ -81,7 +84,7 @@ export default {
   name: 'CampaignManagerScenarioStatisticsModal',
   components: { KSmartGrid },
   props: {
-    value: {
+    navigationDrawerValue: {
       type: Boolean,
       default: false
     }
@@ -240,17 +243,17 @@ export default {
     }, 100)
   },
   beforeDestroy() {
-    document.querySelector('.page-nav__fixed-content').style.background = ''
-    document.querySelector('.user-wrapper').style.background = ''
-    document.querySelector('.user-name-dropdown').style.background = ''
-    document.querySelector('html').style.overflowY = 'auto'
+    setTimeout(() => {
+      document.querySelector('.page-nav__fixed-content').style.background = ''
+      document.querySelector('.user-wrapper').style.background = ''
+      document.querySelector('.user-name-dropdown').style.background = ''
+      document.querySelector('html').style.overflowY = 'auto'
+    }, 250)
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
-      console.log('bdCol', bdCol)
-      console.log('this.activeBreakpoint', this.activeBreakpoint)
       if (bdCol > 2) return
       let x = 0,
         xValue = 0,

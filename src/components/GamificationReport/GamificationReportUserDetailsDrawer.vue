@@ -662,7 +662,6 @@ export default {
       }
     },
     removeFilterFromPayload(payload) {
-      console.log(payload)
       const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
       if (payload.filterType === 'date' && payload.activeOperator === 'between') {
         const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
