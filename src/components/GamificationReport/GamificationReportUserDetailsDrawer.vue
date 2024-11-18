@@ -312,35 +312,38 @@
                       :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
                       >{{ item.ActionType }}</span
                     >
-                    <span class="gamification-report__timeline-item-date"
-                      >{{ item.ActionTime }}
-                      {{ item.timezoneId ? `${getTimezoneText(item)}` : '' }}</span
-                    >
+                    <span class="gamification-report__timeline-item-date">{{
+                      item.ActionTime
+                    }}</span>
                   </div>
                   <span class="gamification-report__timeline-item-middle-text">
                     <span class="gamification-report__timeline-item-bold-text"
                       >{{ item.points }} points</span
                     >
-                    <!-- with
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.campaignPerformanceRate || item.trainingPerformanceRate
-                    }}</span>
-                    total score  -->
-                    on
+                    with
+                    <span class="gamification-report__timeline-item-bold-text"
+                      >{{ item.campaignPerformance }}%</span
+                    >
+                    total score on
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
-                    {{ item.productType === 'Awareness Educator' ? '' : 'with' }}
+                    with
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType === 'Awareness Educator' ? '' : item.difficultyType
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? item.categoryDescription
+                        : item.difficultyType
                     }}</span>
-                    {{ item.productType === 'Awareness Educator' ? '' : 'difficulity' }}
+                    {{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? 'category'
+                        : 'difficulity'
+                    }}
                   </span>
                   <div>
-                    <span class="gamification-report__timeline-item-bottom-text"
-                      >{{ item.productType }}{{ !!getScenarioMethodText(item) ? ' - ' : ''
-                      }}{{ getScenarioMethodText(item) }}</span
-                    >
+                    <span class="gamification-report__timeline-item-bottom-text">{{
+                      item.productType
+                    }}</span>
                   </div>
                 </div>
               </VTimelineItem>
@@ -380,7 +383,6 @@
 <script>
 import { Fragment } from 'vue-frag'
 import {
-  PRODUCTS,
   ACTIVITY_TYPE_COLOR_MAP,
   ACTIVITY_TYPES_FAIL_MAP,
   userActivityDetailsFilters
@@ -485,7 +487,7 @@ export default {
         if (!val) return
         const activityTypeFilterItems = val?.gamificationActionTypes || []
         const productFilterItems = val?.gamificationProductTypes || []
-        const difficulityFilterItems = val?.gamificationDifficultyTypes || []
+        const difficulityFilterItems = val?.gamificationScenarioDifficultyTypes || []
         const activityTypeFilterIndex = this.filters.findIndex(
           (item) => item.key === 'activityType'
         )
@@ -663,7 +665,6 @@ export default {
       }
     },
     removeFilterFromPayload(payload) {
-      console.log(payload)
       const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
       if (payload.filterType === 'date' && payload.activeOperator === 'between') {
         const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
@@ -806,34 +807,35 @@ export default {
       return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
     },
     getProductIconPath(item) {
-      if (item.productType === 'Phishing Simulator') {
+      const productType = item.productType.split(' - ')[0]
+      if (productType === 'Phishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-phishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-phishing-success-icon.svg')
       }
-      if (item.productType === 'Callback Simulator') {
+      if (productType === 'Callback Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-callback-fail-icon.svg')
         }
         return require('@/assets/img/timeline-callback-success-icon.svg')
       }
-      if (item.productType === 'Vishing Simulator') {
+      if (productType === 'Vishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-vishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-vishing-answered-icon.svg')
       }
-      if (item.productType === 'Smishing Simulator') {
+      if (productType === 'Smishing Simulator'.toUpperCase()) {
         return require('@/assets/img/timeline-smishing-fail-icon.svg')
       }
-      if (item.productType === 'Quishing Simulator') {
+      if (productType === 'Quishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-quishing-fail-icon.svg')
         }
         return require('@/assets/img/timeline-quishing-success-icon.svg')
       }
-      if (item.productType === 'Awareness Educator') {
+      if (productType === 'Awareness Educator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-fail-icon.svg')
         }
