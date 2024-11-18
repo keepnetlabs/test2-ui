@@ -1,9 +1,11 @@
 <template>
   <VNavigationDrawer
+    v-click-outside="handleDrawerClickOutside"
     :value="navigationDrawerValue"
     class="k-navigation-drawer"
     temporary
     fixed
+    stateless
     overlay-color="rgba(0, 0, 0, 0.17)"
     overlay-opacity="1"
     right
@@ -251,6 +253,9 @@ export default {
     }, 250)
   },
   methods: {
+    handleDrawerClickOutside() {
+      this.$emit('navigation-drawer-change', false)
+    },
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
