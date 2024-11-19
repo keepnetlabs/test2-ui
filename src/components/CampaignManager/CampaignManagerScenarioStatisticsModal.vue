@@ -25,7 +25,7 @@
                 Scenario Statistics
               </VListItemTitle>
               <VListItemSubtitle
-                >Statistics for phishing scenarios available on the platform
+                >Overview of phishing scenarios available on the platform
               </VListItemSubtitle>
             </VListItemContent>
           </VListItem>
@@ -130,11 +130,10 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Language',
-          subtitle: 'Number of phishing templates by language',
-          key: 'StatisticsLanguageWidget',
+          title: 'Industry',
+          key: 'StatisticsIndustryWidget',
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
+          parentKey: 'Number of phishing templates by industry',
           chartType: 'stackedBar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
@@ -143,29 +142,6 @@ export default {
         },
         {
           x: 0,
-          y: 6,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 12,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Emotional Trigger',
-          subtitle: 'Number of phishing templates by emotional trigger',
-          key: 'StatisticsEmotionalTriggerWidget',
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          resourceId: 'cwyB7gFFBGpl'
-        },
-        {
-          x: 6,
           y: 6,
           w: 6,
           minW: 6,
@@ -188,7 +164,53 @@ export default {
           resourceId: 'cwyB7gFFBGpl'
         },
         {
+          x: 6,
+          y: 6,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Emotional Trigger',
+          subtitle: 'Number of phishing templates by emotional trigger',
+          key: 'StatisticsEmotionalTriggerWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
           x: 0,
+          y: 12,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Language',
+          subtitle: 'Number of phishing templates by language',
+          key: 'StatisticsLanguageWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
           y: 12,
           w: 6,
           minW: 6,
@@ -208,28 +230,6 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           resourceId: 'fSy5K85rhGCD'
-        },
-        {
-          x: 6,
-          y: 12,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 12,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Industry',
-          key: 'StatisticsIndustryWidget',
-          isAllowed: true,
-          parentKey: 'Number of phishing templates by industry',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          resourceId: 'cwyB7gFFBGpl'
         }
       ],
       colNum: 12

@@ -176,3 +176,49 @@
     margin:24px 48px 32px 48px;
   }
 }
+.campaign-manager-scenario-statistics-widget{
+  border: 1px solid #E0E0E0;
+  &.k-widget-container{
+    padding-top:16px !important;
+    box-shadow: none;
+  }
+  .k-widget-list{
+    tr{
+      height:42px;
+      &:last-child{
+        border-bottom: none;
+      }
+    }
+    td,th{
+      padding-left:0;
+    }
+  }
+  .k-widget-header{
+    padding-bottom: 8px;
+  }
+  .k-widget-list__header{
+    color:#757575 !important;
+  }
+  .k-widget-body{
+    margin-top:12px;
+  }
+  &__column{
+    color:#383B41;
+    font-size:14px;
+    font-weight: 400;
+  }
+  &__bar{
+    background-color: #B3D4FC;
+    margin-right: 8px;
+    display:inline-block;
+    margin-left:32px;
+    height: 24px;
+    margin-bottom: -6px;
+  }
+  &__percentage{
+    color:#757575;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+}

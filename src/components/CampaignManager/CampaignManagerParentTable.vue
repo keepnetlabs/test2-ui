@@ -126,14 +126,9 @@
       </VTooltip>
       <VTooltip bottom>
         <template #activator="{ on }">
-          <VIcon
-            v-on="on"
-            class="executive-reports-card__right-btn"
-            color="#2196f3"
-            small
-            @click="toggleShowScenarioStatistics"
-            >mdi-chart-bar</VIcon
-          >
+          <v-btn v-on="on" icon @click="toggleShowScenarioStatistics">
+            <VIcon color="#757575">mdi-chart-bar</VIcon>
+          </v-btn>
         </template>
         <span>Show Scenario Statistics</span>
       </VTooltip>
