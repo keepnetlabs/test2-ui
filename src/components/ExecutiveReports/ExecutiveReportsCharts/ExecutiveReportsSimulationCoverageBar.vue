@@ -132,11 +132,22 @@ export default {
       let biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
       const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
-      const remainder = Math.floor(biggestValue / 50)
-      if (!remainder) {
-        biggestValue = 100
+      biggestValue = 40
+      if (biggestValue <= 20) {
+        biggestValue = 20
+      } else if (biggestValue > 20 && biggestValue <= 40) {
+        biggestValue = 40
+      } else if (biggestValue > 40 && biggestValue <= 60) {
+        biggestValue = 60
+      } else if (biggestValue > 60 && biggestValue <= 80) {
+        biggestValue = 80
       } else {
-        biggestValue = remainder * 50 + 50
+        const remainder = Math.floor(biggestValue / 50)
+        if (!remainder) {
+          biggestValue = 100
+        } else {
+          biggestValue = remainder * 50 + 50
+        }
       }
       this.chartData = {
         labels: ['Simulated users', 'Non-simulated users'],
