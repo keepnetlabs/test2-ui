@@ -620,7 +620,7 @@ export default {
             row?.customFieldValues?.forEach?.((field) => {
               customFields[`${field.name}`] = field?.value
             })
-            return { ...row, ...customFields, examStatus: row.examStatusName }
+            return { ...row, ...customFields, examStatus: row.examStatus || row.examStatusName }
           })
         })
         .finally(this.setLoading)
