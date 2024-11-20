@@ -206,6 +206,8 @@
     color:#383B41;
     font-size:14px;
     font-weight: 400;
+    display:inline-block;
+    width:35px;
   }
   &__bar{
     background-color: #B3D4FC;
@@ -214,6 +216,7 @@
     margin-left:32px;
     height: 24px;
     margin-bottom: -6px;
+    max-width: calc(100% - 118px);
   }
   &__percentage{
     color:#757575;

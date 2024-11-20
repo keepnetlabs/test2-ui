@@ -63,8 +63,10 @@
           <component
             :id="item.key"
             :is="getComponent(item.key, item.name, item)"
+            :is-loading="isLoading"
             :resizable="false"
             :edit-mode="false"
+            :data="getComponentData(item.key)"
             :card="item"
           />
         </smart-widget>
@@ -81,6 +83,7 @@ import CampaignManagerStatisticsEmotionalTrigger from './CampaignManagerStatisti
 import CampaignManagerStatisticsBrand from './CampaignManagerStatistics/CampaignManagerStatisticsBrand.vue'
 import CampaignManagerStatisticsAttackType from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsAttackType.vue'
 import CampaignManagerStatisticsIndustry from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsIndustry.vue'
+import { getCampaignScenarioStatistics } from '@/api/phishingsimulator'
 
 export default {
   name: 'CampaignManagerScenarioStatisticsModal',
@@ -93,6 +96,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       activeBreakpoint: 'lg',
       layout: [
         {
@@ -232,10 +236,17 @@ export default {
           resourceId: 'fSy5K85rhGCD'
         }
       ],
+      data: {
+        brand: [],
+        industry: [],
+        region: [],
+        reaction: []
+      },
       colNum: 12
     }
   },
   created() {
+    this.callForData()
     document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
     document.querySelector('.user-wrapper').style.background = 'transparent'
     document.querySelector('.user-name-dropdown').style.background = 'transparent'
@@ -253,6 +264,21 @@ export default {
     }, 250)
   },
   methods: {
+    callForData() {
+      this.isLoading = true
+      getCampaignScenarioStatistics()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || { data: {} }
+          const { brand, industry, region, reaction } = data
+          this.data = { brand, industry, region, reaction }
+          console.log('this.data', this.data)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     handleDrawerClickOutside() {
       this.$emit('navigation-drawer-change', false)
     },
@@ -309,7 +335,25 @@ export default {
           return CampaignManagerStatisticsRegion
       }
     },
-    getBdCol(newBreakpoint = '') {
+    getComponentData(componentString) {
+      switch (componentString) {
+        case 'StatisticsRegionWidget':
+          return this.data.region
+        case 'StatisticsLanguageWidget':
+          return this.data.language
+        case 'StatisticsEmotionalTriggerWidget':
+          return this.data.reaction
+        case 'StatisticsBrandWidget':
+          return this.data.brand
+        case 'StatisticsAttackTypeWidget':
+          return this.data.reaction
+        case 'StatisticsIndustryWidget':
+          return this.data.industry
+        default:
+          return this.data.industry
+      }
+    },
+    getBdCol() {
       return 12
     }
   }

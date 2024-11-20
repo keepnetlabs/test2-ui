@@ -12,21 +12,23 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template #title="{ value }">
+            <template #name="{ value }">
               <span v-if="value" class="campaign-manager-scenario-statistics-widget__column">
                 {{ value }}
               </span>
             </template>
-            <template #communityName="{ value }">
+            <template #count="{ value,row }">
               <span>
                 <span class="campaign-manager-scenario-statistics-widget__column">
-                  {{ '150' }}
+                  {{ value }}
                 </span>
                 <span
                   class="campaign-manager-scenario-statistics-widget__bar"
-                  style="width: 45%;"
+                  :style="{ width: row.percentage + '%' }"
                 ></span>
-                <span class="campaign-manager-scenario-statistics-widget__percentage">45%</span>
+                <span class="campaign-manager-scenario-statistics-widget__percentage">{{
+                  row.percentage + '%'
+                }}</span>
               </span>
             </template>
           </widget-list>
@@ -42,7 +44,6 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
-import { getIncidentList } from '@/api/threatSharing'
 import labels from '@/model/constants/labels'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
@@ -61,15 +62,18 @@ export default {
     data: {
       type: Array,
       default: () => []
+    },
+    isLoading: {
+      type: Boolean,
+      default: true
     }
   },
 
   data() {
     return {
-      isLoading: !this.data.length,
       columns: [
         {
-          property: PROPERTY_STORE.TITLE,
+          property: PROPERTY_STORE.NAME,
           label: LABEL_STORE.NAME,
           thStyle: {
             width: '30%'
@@ -79,7 +83,7 @@ export default {
           }
         },
         {
-          property: PROPERTY_STORE.COMMUNITYNAME,
+          property: PROPERTY_STORE.COUNT,
           label: labels.NumberOfTemplates
         }
       ],
@@ -100,7 +104,6 @@ export default {
   watch: {
     data(data) {
       this.tableData = data
-      this.isLoading = false
     }
   }
 }
