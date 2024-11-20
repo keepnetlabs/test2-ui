@@ -339,6 +339,7 @@
         :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
       >
         <InputEntityName
+          ref="refInputEntityName"
           id="input--notification-template-subject"
           initialPlaceholder="Enter email subject"
           entityName="email subject"
@@ -610,6 +611,7 @@ export default {
     'isAttachmentError',
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
+    'isLearningPathEnrollmentReminderSelected',
     'isNotificationEnrollment',
     'isEmailTemplate',
     'isHorizontalFormGroups',
@@ -740,6 +742,16 @@ export default {
           value: '{ENROLLMENT_NAME}'
         }
       ],
+      learningPathEnrollmentReminderMergeTags: [
+        {
+          text: 'Enrollment Name',
+          value: '{ENROLLMENT_NAME}'
+        },
+        {
+          text: 'Learning Path Step',
+          value: '{LEARNING_PATH_STEP}'
+        }
+      ],
       mergeTagRules: [
         (v) => {
           if (!v) return true
@@ -762,6 +774,39 @@ export default {
           const matches = v.match(regexp)
           if (!matches?.length) return true
           const mergeTags = this.mergeTags.map((tag) => tag.value)
+          const usedMergeTags = mergeTags.filter((tag) =>
+            matches.some((match) => match.toUpperCase() === tag)
+          )
+          return (
+            matches.every((match) => usedMergeTags.includes(match)) ||
+            'Only use uppercase letters for the merge tag'
+          )
+        }
+      ],
+      learningPathMergeTagRules: [
+        (v) => {
+          if (!v) return true
+          const matches = v.match(/{(.*?)}/gi)
+          if (!matches?.length) return true
+          const tags = this.learningPathEnrollmentReminderMergeTags.map((tag) => tag.value)
+          for (let i = 0; i < matches.length; i++) {
+            if (!tags.includes(matches[i].toUpperCase())) {
+              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+            }
+          }
+          return true
+        },
+        (v) => {
+          if (!v) return true
+          const regexp = new RegExp(
+            `(${this.learningPathEnrollmentReminderMergeTags
+              .map((mergeTag) => mergeTag.value)
+              .join('|')})`,
+            'gi'
+          )
+          const matches = v.match(regexp)
+          if (!matches?.length) return true
+          const mergeTags = this.learningPathEnrollmentReminderMergeTags.map((tag) => tag.value)
           const usedMergeTags = mergeTags.filter((tag) =>
             matches.some((match) => match.toUpperCase() === tag)
           )
@@ -940,14 +985,23 @@ export default {
       return []
     },
     isMergeTagSubject() {
-      return this.isNotificationTemplate && this.isEnrollmentCategorySelected
+      return (
+        this.isNotificationTemplate &&
+        (this.isEnrollmentCategorySelected || this.isLearningPathEnrollmentReminderSelected)
+      )
     },
     getSubjectSubtitle() {
       if (!this.isMergeTagSubject) return undefined
+      if (this.isMergeTagSubject && this.isLearningPathEnrollmentReminderSelected) {
+        return `Define a subject for the notification email using the {ENROLLMENT_NAME} and {LEARNING_PATH_STEP} merge tags as variables.`
+      }
       return `Define a subject for the notification email. Use {ENROLLMENT_NAME} merge tag as a variable for the notification email subject`
     },
     getSubjectRules() {
       if (this.isMergeTagSubject) {
+        if (this.isLearningPathEnrollmentReminderSelected) {
+          return [...this.subjectRules, ...this.learningPathMergeTagRules]
+        }
         return [...this.subjectRules, ...this.mergeTagRules]
       }
       return this.subjectRules
@@ -964,6 +1018,12 @@ export default {
   watch: {
     activeBlockManagerComponents() {
       this.grapeJsKey = `${createRandomCryptStringNumber()}-key`
+    },
+    isLearningPathEnrollmentReminderSelected(val) {
+      this.$nextTick(() => {
+        if (this.$refs?.refInputEntityName?.$refs?.refInput)
+          this.$refs.refInputEntityName.$refs.refInput.validate()
+      })
     },
     template: {
       handler(val) {
