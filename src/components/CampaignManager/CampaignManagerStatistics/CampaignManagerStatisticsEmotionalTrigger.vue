@@ -57,12 +57,15 @@ export default {
   props: {
     editMode: {
       type: Boolean
+    },
+    data: {
+      type: Array,
+      default: () => []
     }
   },
-
   data() {
     return {
-      isLoading: true,
+      isLoading: !this.data.length,
       columns: [
         {
           property: PROPERTY_STORE.TITLE,
@@ -81,12 +84,9 @@ export default {
       ],
       tableData: [],
       empty: {
-        message: labels.EmptyRecentlyPostedThreats
+        message: labels.EmptyData
       }
     }
-  },
-  created() {
-    this.callForRecentlyPostedThreats()
   },
   computed: {
     getTitle() {
@@ -96,89 +96,10 @@ export default {
       return 'Number of phishing templates by emotional trigger'
     }
   },
-  methods: {
-    callForRecentlyPostedThreats() {
-      const payload = {
-        postedCompanyResourceId: '',
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'PostedTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'Title',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'Description',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'DiscoveryAndDetection',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'Scope',
-                  Operator: 'Contains'
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      getIncidentList(payload)
-        .then((response) => {
-          const {
-            data: {
-              data: { results = [] }
-            }
-          } = response
-          this.tableData = [...results, ...results.slice(0, 1)]
-          this.isLoading = false
-        })
-        .catch(() => {
-          this.isLoading = false
-        })
-    },
-    handleTitleSelection(row) {
-      localStorage.setItem('communityName', row.communityName)
-      localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
-      this.$router.push({
-        path: `/threat-sharing/community/${row.communityResourceId}`,
-        query: {
-          postId: row.communityPostResourceId,
-          communityName: localStorage.getItem('communityName'),
-          communityId: localStorage.getItem('communityResourceIdForRedirect')
-        }
-      })
-    },
-    handleCommunitySelection(row) {
-      localStorage.setItem('communityName', row.communityName)
-      localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
-      this.$router.push({
-        path: `/threat-sharing/community/${row.communityResourceId}`
-      })
+  watch: {
+    data(data) {
+      this.tableData = data
+      this.isLoading = false
     }
   }
 }
