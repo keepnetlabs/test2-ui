@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     v-bind="requiredProps"
+    ref="refInput"
     outlined
     dense
     :value="value"
