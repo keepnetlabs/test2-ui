@@ -373,7 +373,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
+          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatus })) || []
         })
         .finally(this.setLoading)
     },
