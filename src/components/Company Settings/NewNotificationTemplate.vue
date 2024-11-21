@@ -81,6 +81,7 @@
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
             :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
+            :isLearningPathEnrollmentReminderSelected="isLearningPathEnrollmentReminderSelected"
             :isNotificationTemplate="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
             :cc-addresses.sync="formValues.ccAddresses"
@@ -208,6 +209,11 @@ export default {
       return this.categoryItems?.find((template) => template.text === 'Learning Path Enrollment')
         ?.value
     },
+    getLearningPathEnrollmentReminderTemplateResourceId() {
+      return this.categoryItems?.find(
+        (template) => template.text === 'Learning Path Enrollment Reminder'
+      )?.value
+    },
     getTrainingEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Training Enrollment')?.value
     },
@@ -237,6 +243,12 @@ export default {
         this.getPosterEnrollmentTemplateResourceId,
         this.getInfographicEnrollmentTemplateResourceId
       ].includes(this.formValues.emailTemplateCategoryResourceId)
+    },
+    isLearningPathEnrollmentReminderSelected() {
+      return (
+        this.formValues?.emailTemplateCategoryResourceId ===
+        this.getLearningPathEnrollmentReminderTemplateResourceId
+      )
     },
     getModalId() {
       return this.selectedItem ? this.getSelectedItemTitleId : 'new-notification-template-modal'
