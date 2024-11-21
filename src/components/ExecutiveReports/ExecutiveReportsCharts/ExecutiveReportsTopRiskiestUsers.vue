@@ -340,9 +340,7 @@ export default {
         return
       }
       const names = data[0].widgetDatas.map((obj) => {
-        const arr = [obj.dataObject.fullName, obj.dataObject.email]
-        if (obj.dataObject.department) arr.push(obj.dataObject.department)
-        return arr
+        return [obj.dataObject.fullName, obj.dataObject.email]
       })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
