@@ -634,6 +634,7 @@ import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
 import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
+import countryLanguageMap from '@/utils/countryLanguageMap'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -844,6 +845,14 @@ export default {
         this.formData.DateFormat = countryDefaultValues[countryDefaultValuesIndex].dateFormat
         this.formData.TimeFormat = countryDefaultValues[countryDefaultValuesIndex].timeFormat
         this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
+        const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
+        if (nativeLanguageIndex !== -1) {
+          const nativeLanguageResourceId =
+            this.languageItems.find(
+              (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
+            ) || ''
+          this.formData.PreferredLanguageTypeResourceId = nativeLanguageResourceId
+        }
       }
     },
     isCallbackSelected(val) {
