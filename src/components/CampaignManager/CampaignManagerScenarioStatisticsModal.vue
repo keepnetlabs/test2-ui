@@ -240,7 +240,8 @@ export default {
         brand: [],
         industry: [],
         region: [],
-        reaction: []
+        reaction: [],
+        language: []
       },
       colNum: 12
     }
@@ -271,13 +272,31 @@ export default {
           const {
             data: { data }
           } = response || { data: {} }
-          const { brand, industry, region, reaction } = data
-          this.data = { brand, industry, region, reaction }
+          const { brand, industry, region, reaction, language } = data
+          this.data = {
+            brand: this.transformStatisticData(brand),
+            industry: this.transformStatisticData(industry),
+            region: this.transformStatisticData(region),
+            reaction: this.transformStatisticData(reaction),
+            language: this.transformStatisticData(language)
+          }
           console.log('this.data', this.data)
         })
         .finally(() => {
           this.isLoading = false
         })
+    },
+    transformStatisticData(data) {
+      data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
+      const otherData = data.slice(5, data.length)
+      const totalOtherData = otherData.reduce(
+        (a, b) => {
+          return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
+        },
+        { count: 0, name: 'Other', percentage: 0 }
+      )
+      totalOtherData.percentage = totalOtherData.percentage.toFixed(2)
+      return [...data.slice(0, 5), totalOtherData]
     },
     handleDrawerClickOutside() {
       this.$emit('navigation-drawer-change', false)
