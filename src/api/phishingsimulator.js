@@ -535,6 +535,10 @@ export const updateSandboxActivity = (resourceId, payload) => {
   )
 }
 
+export const getCampaignScenarioStatistics = () => {
+  return testRequest.get('/phishing-simulator/phishing-scenario/scenario-statistics')
+}
+
 export const searchScenarioInfo = (payload) => {
   return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
 }

@@ -4,17 +4,19 @@
   background: #fff;
   box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1);
   animation: drawerRight 0.25s ease-in-out;
+  transition: right 0.25s ease-in-out !important;
   & + .k-stepper + .k-overlay__footer {
     z-index: 3;
   }
 }
 @keyframes drawerRight {
   from {
-    left: 100%;
-    width: 0;
+    right: 0;
+    left:100%
   }
   to {
-    left: auto;
-    width: calc(100% - 72px);
+    left: 72px;
+    right:auto;
   }
 }
+

@@ -9,7 +9,10 @@
       @click="$emit('deleteWidget')"
       >mdi-close-circle</v-icon
     >
-    <div class="k-widget-header__title">{{ title }}</div>
+    <div>
+      <div class="k-widget-header__title">{{ title }}</div>
+      <div v-if="subtitle" class="k-widget-header__subtitle">{{ subtitle }}</div>
+    </div>
     <router-link class="k-widget-header__link" v-if="link" :id="buttonId" :to="link['href']"
       ><span>{{ link['text'] }}</span> <v-icon color="#2196f3" small>mdi-arrow-right</v-icon>
     </router-link>
@@ -36,6 +39,9 @@ export default {
     },
     editMode: {
       type: Boolean
+    },
+    subtitle: {
+      type: String
     }
   }
 }

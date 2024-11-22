@@ -305,7 +305,7 @@ export default {
         datasets: [
           {
             data: dataSetsData,
-            barThickness: 24,
+            barThickness: 20,
             backgroundColor: function (context) {
               const index = context.dataIndex
               const value = context.dataset.data[index].x

@@ -1,17 +1,19 @@
 <template>
   <VNavigationDrawer
-    :value="value"
+    v-click-outside="handleDrawerClickOutside"
+    :value="navigationDrawerValue"
     class="k-navigation-drawer"
     temporary
     fixed
+    stateless
     overlay-color="rgba(0, 0, 0, 0.17)"
     overlay-opacity="1"
     right
     width="calc(100% - 72px)"
     height="100%"
-    @input="$emit('input', $event)"
+    @input="$emit('navigation-drawer-change', $event)"
   >
-    <div>
+    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
       <div class="campaign-manager-scenario-statistics-modal__header">
         <div>
           <VListItem class="">
@@ -23,13 +25,16 @@
                 Scenario Statistics
               </VListItemTitle>
               <VListItemSubtitle
-                >Statistics for phishing scenarios available on the platform
+                >Overview of phishing scenarios available on the platform
               </VListItemSubtitle>
             </VListItemContent>
           </VListItem>
         </div>
         <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="$emit('input', false)"
+          <VIcon
+            class="cursor-pointer"
+            color="#757575"
+            @click="$emit('navigation-drawer-change', false)"
             >mdi-close</VIcon
           >
         </div>
@@ -58,8 +63,10 @@
           <component
             :id="item.key"
             :is="getComponent(item.key, item.name, item)"
+            :is-loading="isLoading"
             :resizable="false"
             :edit-mode="false"
+            :data="getComponentData(item.key)"
             :card="item"
           />
         </smart-widget>
@@ -69,20 +76,28 @@
 </template>
 <script>
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid.vue'
-import CampaignManagerStatisticsBar from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsBar.vue'
+import CampaignManagerStatisticsRegion from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsRegion'
 import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/functions'
+import CampaignManagerStatisticsLanguage from './CampaignManagerStatistics/CampaignManagerStatisticsLanguage.vue'
+import CampaignManagerStatisticsEmotionalTrigger from './CampaignManagerStatistics/CampaignManagerStatisticsEmotionalTrigger.vue'
+import CampaignManagerStatisticsBrand from './CampaignManagerStatistics/CampaignManagerStatisticsBrand.vue'
+import CampaignManagerStatisticsAttackType from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsAttackType.vue'
+import CampaignManagerStatisticsIndustry from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsIndustry.vue'
+import { getCampaignScenarioStatistics } from '@/api/phishingsimulator'
 
 export default {
   name: 'CampaignManagerScenarioStatisticsModal',
   components: { KSmartGrid },
   props: {
-    value: {
+    navigationDrawerValue: {
       type: Boolean,
       default: false
     }
   },
   data() {
     return {
+      isLoading: true,
+      activeBreakpoint: 'lg',
       layout: [
         {
           x: 0,
@@ -98,7 +113,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Region',
           subtitle: 'Number of phishing templates by region',
-          key: 'RepeatOffendersUsersThresholdWidget',
+          key: 'StatisticsRegionWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -106,24 +121,188 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Industry',
+          key: 'StatisticsIndustryWidget',
+          isAllowed: true,
+          parentKey: 'Number of phishing templates by industry',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 0,
+          y: 6,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Brand',
+          subtitle: 'Number of phishing templates by brand',
+          key: 'StatisticsBrandWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
+          y: 6,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Emotional Trigger',
+          subtitle: 'Number of phishing templates by emotional trigger',
+          key: 'StatisticsEmotionalTriggerWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 0,
+          y: 12,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Language',
+          subtitle: 'Number of phishing templates by language',
+          key: 'StatisticsLanguageWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'cwyB7gFFBGpl'
+        },
+        {
+          x: 6,
+          y: 12,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Attack Type',
+          key: 'StatisticsAttackTypeWidget',
+          isAllowed: true,
+          parentKey: 'Number of phishing templates by attack type',
+          chartType: 'pie',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          resourceId: 'fSy5K85rhGCD'
         }
       ],
+      data: {
+        brand: [],
+        industry: [],
+        attackType: [],
+        region: [],
+        emotion: [],
+        language: []
+      },
       colNum: 12
     }
   },
   created() {
+    this.callForData()
     document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
     document.querySelector('.user-wrapper').style.background = 'transparent'
     document.querySelector('.user-name-dropdown').style.background = 'transparent'
     document.querySelector('html').style.overflowY = 'hidden'
+    setTimeout(() => {
+      this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+    }, 100)
   },
   beforeDestroy() {
-    document.querySelector('.page-nav__fixed-content').style.background = ''
-    document.querySelector('.user-wrapper').style.background = ''
-    document.querySelector('.user-name-dropdown').style.background = ''
-    document.querySelector('html').style.overflowY = 'auto'
+    setTimeout(() => {
+      document.querySelector('.page-nav__fixed-content').style.background = ''
+      document.querySelector('.user-wrapper').style.background = ''
+      document.querySelector('.user-name-dropdown').style.background = ''
+      document.querySelector('html').style.overflowY = 'auto'
+    }, 250)
   },
   methods: {
+    callForData() {
+      this.isLoading = true
+      getCampaignScenarioStatistics()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || { data: {} }
+          const { brand, industry, region, emotion, language, attackType } = data
+          this.data = {
+            brand: this.transformStatisticData(brand),
+            industry: this.transformStatisticData(industry),
+            region: this.transformStatisticData(region),
+            emotion: this.transformStatisticData(emotion),
+            language: this.transformStatisticData(language),
+            attackType: this.transformStatisticData(attackType)
+          }
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    transformStatisticData(data) {
+      data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
+      const otherData = data.slice(5, data.length)
+      const totalOtherData = otherData.reduce(
+        (a, b) => {
+          return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
+        },
+        { count: 0, name: 'Other', percentage: 0 }
+      )
+      totalOtherData.percentage = totalOtherData.percentage.toFixed(2)
+      if (!totalOtherData.count) return [...data.slice(0, 5)]
+      return [...data.slice(0, 5), totalOtherData]
+    },
+    handleDrawerClickOutside() {
+      this.$emit('navigation-drawer-change', false)
+    },
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint
       const bdCol = this.getBdCol(newBreakpoint)
@@ -161,13 +340,42 @@ export default {
     },
     getComponent(componentString) {
       switch (componentString) {
+        case 'StatisticsRegionWidget':
+          return CampaignManagerStatisticsRegion
+        case 'StatisticsLanguageWidget':
+          return CampaignManagerStatisticsLanguage
+        case 'StatisticsEmotionalTriggerWidget':
+          return CampaignManagerStatisticsEmotionalTrigger
+        case 'StatisticsBrandWidget':
+          return CampaignManagerStatisticsBrand
+        case 'StatisticsAttackTypeWidget':
+          return CampaignManagerStatisticsAttackType
+        case 'StatisticsIndustryWidget':
+          return CampaignManagerStatisticsIndustry
         default:
-          return CampaignManagerStatisticsBar
+          return CampaignManagerStatisticsRegion
       }
     },
-    getBdCol(newBreakpoint = '') {
-      if (newBreakpoint === 'xs') return 12
-      return newBreakpoint === 'xxs' ? 2 : 12
+    getComponentData(componentString) {
+      switch (componentString) {
+        case 'StatisticsRegionWidget':
+          return this.data.region
+        case 'StatisticsLanguageWidget':
+          return this.data.language
+        case 'StatisticsEmotionalTriggerWidget':
+          return this.data.emotion
+        case 'StatisticsBrandWidget':
+          return this.data.brand
+        case 'StatisticsAttackTypeWidget':
+          return this.data.attackType
+        case 'StatisticsIndustryWidget':
+          return this.data.industry
+        default:
+          return this.data.industry
+      }
+    },
+    getBdCol() {
+      return 12
     }
   }
 }
