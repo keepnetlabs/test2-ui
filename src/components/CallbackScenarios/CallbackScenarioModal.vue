@@ -353,6 +353,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import CallbackTemplateSelectList from '@/components/CallbackScenarios/CallbackTemplateSelectList'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CallbackScenarioModal',
@@ -488,6 +489,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getEmailTemplateApiFuncs() {
       return {
         list: CallbackService.searchEmailTemplates,
@@ -566,6 +570,11 @@ export default {
     } else {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isInitial = false
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {
