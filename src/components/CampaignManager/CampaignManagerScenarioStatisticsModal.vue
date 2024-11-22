@@ -239,8 +239,9 @@ export default {
       data: {
         brand: [],
         industry: [],
+        attackType: [],
         region: [],
-        reaction: [],
+        emotion: [],
         language: []
       },
       colNum: 12
@@ -272,13 +273,14 @@ export default {
           const {
             data: { data }
           } = response || { data: {} }
-          const { brand, industry, region, reaction, language } = data
+          const { brand, industry, region, emotion, language, attackType } = data
           this.data = {
             brand: this.transformStatisticData(brand),
             industry: this.transformStatisticData(industry),
             region: this.transformStatisticData(region),
-            reaction: this.transformStatisticData(reaction),
-            language: this.transformStatisticData(language)
+            emotion: this.transformStatisticData(emotion),
+            language: this.transformStatisticData(language),
+            attackType: this.transformStatisticData(attackType)
           }
           console.log('this.data', this.data)
         })
@@ -296,6 +298,7 @@ export default {
         { count: 0, name: 'Other', percentage: 0 }
       )
       totalOtherData.percentage = totalOtherData.percentage.toFixed(2)
+      if (!totalOtherData.count) return [...data.slice(0, 5)]
       return [...data.slice(0, 5), totalOtherData]
     },
     handleDrawerClickOutside() {
@@ -361,11 +364,11 @@ export default {
         case 'StatisticsLanguageWidget':
           return this.data.language
         case 'StatisticsEmotionalTriggerWidget':
-          return this.data.reaction
+          return this.data.emotion
         case 'StatisticsBrandWidget':
           return this.data.brand
         case 'StatisticsAttackTypeWidget':
-          return this.data.reaction
+          return this.data.attackType
         case 'StatisticsIndustryWidget':
           return this.data.industry
         default:
