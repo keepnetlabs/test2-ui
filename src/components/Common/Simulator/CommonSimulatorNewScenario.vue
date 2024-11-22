@@ -651,6 +651,7 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
@@ -760,6 +761,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getURLText() {
       return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
     },
@@ -1032,6 +1036,11 @@ export default {
     } else {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isInitial = false
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {

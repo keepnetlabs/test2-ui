@@ -586,7 +586,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    ...mapGetters({
+      emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getUrlSchemaTypes() {
       return this.landingPageData?.urlSchemaTypes || []
     },
@@ -665,6 +668,11 @@ export default {
         )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   }
 }
