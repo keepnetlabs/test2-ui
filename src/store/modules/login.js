@@ -2,12 +2,13 @@ import { resetPassword, twoStepLogin } from '@/api/auth'
 import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
-
+import { getCompanyByID } from '@/api/company'
 const login = {
   namespaced: true,
   state: {
     pageNumber: 1,
     wrongLoginAttempt: 0,
+    company: null,
     loginWhiteLabel: {
       brandName: '',
       favIconUrl: '',
@@ -16,7 +17,8 @@ const login = {
   },
   getters: {
     getPageNumber: (state) => state.pageNumber,
-    loginWhiteLabel: (state) => state.loginWhiteLabel
+    loginWhiteLabel: (state) => state.loginWhiteLabel,
+    getCurrentCompany: (state) => state.company
   },
   mutations: {
     SET_PAGE_NUMBER(state, payload) {
@@ -37,6 +39,9 @@ const login = {
           state.loginWhiteLabel[key] = payload[key]
         }
       }
+    },
+    SET_COMPANY(state, payload) {
+      state.company = payload
     }
   },
   actions: {
@@ -94,6 +99,11 @@ const login = {
           } = response
           commit('SET_LOGIN_WHITELABEL', data)
         }
+      })
+    },
+    getCurrentCompany({ commit }) {
+      getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
+        commit('SET_COMPANY', response.data.data)
       })
     }
   }

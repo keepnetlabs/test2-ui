@@ -210,7 +210,7 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'NewSmishingTemplate',
   components: {
@@ -399,6 +399,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Text Message Template'
@@ -436,6 +439,11 @@ export default {
         )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {
