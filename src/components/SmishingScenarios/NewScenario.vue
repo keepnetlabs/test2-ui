@@ -546,6 +546,7 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import TextMessageTemplateSelectList from '@/components/SmishingScenarios/TextMessageTemplateSelectList'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'NewScenario',
@@ -823,6 +824,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getScenarioInfoItems() {
       return {
         Name: this.formValues.name,
@@ -971,6 +975,11 @@ export default {
           this.isInitial = false
         })
     } else this.isInitial = false
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
+    }
   }
 }
 </script>
