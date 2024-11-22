@@ -250,8 +250,8 @@ export default {
             type: 'line',
             yAxisID: 'A',
             data: phishingRiskScoreData,
-            backgroundColor: '#B6791D',
-            borderColor: '#B6791D',
+            backgroundColor: '#383B41',
+            borderColor: '#383B41',
             fill: false,
             pointRadius: 3,
             pointHoverRadius: 3,
@@ -263,8 +263,8 @@ export default {
             type: 'bar',
             yAxisID: 'B',
             data: phishingSimulationMetricsData,
-            backgroundColor: '#B83A3A',
-            borderColor: '#B83A3A',
+            backgroundColor: '#F56C6C',
+            borderColor: '#F56C6C',
             pointRadius: 3,
             borderWidth: 2,
             lineTension: 0,
@@ -289,7 +289,7 @@ export default {
                 display: true,
                 labelString: 'Phishing Risk Score',
                 fontFamily: 'Open-sans,sans-serif',
-                fontColor: '#B6791D'
+                fontColor: '#383B41'
               },
               offset: false,
               gridLines: {
@@ -306,7 +306,7 @@ export default {
                 labelOffset: 0,
                 beginAtZero: true,
                 padding: 12,
-                fontColor: '#B6791D',
+                fontColor: '#383B41',
                 fontFamily: 'Open-sans,sans-serif',
                 lineHeight: 1.58,
                 callback: function (value) {
@@ -527,10 +527,13 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            align: 'end',
+            align({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (dataIndex > 0 && data[dataIndex].y < data[dataIndex - 1].y) return 'right'
+              return 'end'
+            },
             anchor: 'end',
-            offset: -2,
-            color: '#B6791D',
+            color: '#383B41',
             formatter: function (value, context) {
               if (context.dataset.label.includes('Phishing Risk Score') && value.y > 0) {
                 return value.y + '%'
@@ -538,24 +541,15 @@ export default {
               return ''
             },
             font: {
-              size: 12,
+              size: 9,
               color: '#383B41',
-              weight: 'normal'
+              weight: '600'
             },
             backgroundColor: function (context) {
-              /*
-              if (
-                context.dataset.label === 'Company Phishing Risk Score' &&
-                context.dataIndex === 1
-              ) {
-                return 'rgba(231,76,60,0.8)'
-              }
-              return 'rgba(0,0,0,0)'
-
-               */
+              return 'transparent'
             },
             borderRadius: 4,
-            padding: 6
+            padding: 0
           }
         }
       }

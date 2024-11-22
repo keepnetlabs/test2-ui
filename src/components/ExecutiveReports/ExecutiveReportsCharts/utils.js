@@ -167,32 +167,32 @@ export const CHART_COLORS = {
     lineTension: 0
   },
   'Simulated Users Coverage': {
-    backgroundColor: '#00BCD4',
-    borderColor: '#00BCD4',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   'In Progress': {
-    backgroundColor: '#F56C6C',
-    borderColor: '#F56C6C',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   Incomplete: {
-    backgroundColor: '#E6A23C',
-    borderColor: '#E6A23C',
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   'Non-simulated Users': {
-    backgroundColor: '#FBF280',
-    borderColor: '#FBF280',
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,

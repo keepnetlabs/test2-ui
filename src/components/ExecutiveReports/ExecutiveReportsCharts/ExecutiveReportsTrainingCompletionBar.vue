@@ -140,7 +140,7 @@ export default {
             barThickness: 32,
             label: 'Percentage of Users',
             data: [completed, inProgress, incomplete],
-            backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
+            backgroundColor: ['#43A047', '#2196F3', '#B83A3A'],
             borderWidth: 1,
             order: 2
           }
