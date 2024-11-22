@@ -529,7 +529,6 @@ export default {
             display: true,
             align({ dataIndex, dataset }) {
               const { data } = dataset
-              console.log('data', data)
               if (dataIndex > 0 && data[dataIndex].y < data[dataIndex - 1].y) return 'right'
               return 'end'
             },
