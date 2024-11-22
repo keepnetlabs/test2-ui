@@ -221,7 +221,6 @@ export default {
   },
   methods: {
     handleStatisticsModalStatusChange(status) {
-      console.log('status', status)
       if (status) {
         this.isShowScenarioStatistics = status
         return

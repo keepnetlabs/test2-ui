@@ -282,7 +282,6 @@ export default {
             language: this.transformStatisticData(language),
             attackType: this.transformStatisticData(attackType)
           }
-          console.log('this.data', this.data)
         })
         .finally(() => {
           this.isLoading = false
