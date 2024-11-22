@@ -132,7 +132,6 @@ export default {
       let biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
       const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
-      biggestValue = 40
       if (biggestValue <= 20) {
         biggestValue = 20
       } else if (biggestValue > 20 && biggestValue <= 40) {
@@ -156,7 +155,7 @@ export default {
             barThickness: 32,
             label: 'Percentage',
             data: [simulatedUsers, nonSimulatedUsers],
-            backgroundColor: ['#00BCD4', '#FBF280'],
+            backgroundColor: ['#2196F3', '#F56C6C'],
             borderColor: 'transparent',
             borderWidth: 1,
             order: 2
