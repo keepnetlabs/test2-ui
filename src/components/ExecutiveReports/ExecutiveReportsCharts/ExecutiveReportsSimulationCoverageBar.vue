@@ -128,10 +128,18 @@ export default {
       }
       const { values } = data[0].widgetDatas[0]
       const nonSimulatedUsers = values.find((data) => data.name === 'CountNonSimulated')?.value
-      const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
+      let simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
       let biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
       const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
+      const realSimulatedUsers = simulatedUsers
+      if (simulated === 1) {
+        const divideValue = nonSimulatedUsers / simulatedUsers
+        if (divideValue > 2000) simulatedUsers *= 20
+        else if (divideValue > 1000) simulatedUsers *= 10
+        else if (divideValue > 500) simulatedUsers *= 5
+        else if (divideValue > 200) simulatedUsers *= 2
+      }
       if (biggestValue <= 20) {
         biggestValue = 20
       } else if (biggestValue > 20 && biggestValue <= 40) {
@@ -277,10 +285,10 @@ export default {
                 let datasetLabel = 'Number of Users'
                 let dataValue =
                   tooltipModel.dataPoints[0].label === 'Simulated users'
-                    ? simulatedUsers
+                    ? realSimulatedUsers
                     : nonSimulatedUsers
                 let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Simulated users' ? '#00BCD4' : '#FBF280'
+                  tooltipModel.dataPoints[0].label === 'Simulated users' ? '#2196F3' : '#F56C6C'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
