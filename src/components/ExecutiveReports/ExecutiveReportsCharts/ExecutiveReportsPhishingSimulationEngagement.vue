@@ -148,8 +148,18 @@ export default {
       valueEnums.sort((a, b) => (b > a ? 1 : -1))
       for (let itemType of valueEnums) {
         const typedItems = datasets.filter((item) => item.result === itemType)
-        const chartColorType = itemType === 'Clicked (%)' ? 'Clicked Email Trends' : itemType
-        const index = itemType === 'Clicked (%)' ? 1 : itemType === 'Not Clicked (%)' ? 0 : 2
+        const chartColorType =
+          itemType === 'Users Who Clicked And Reported (%)'
+            ? 'Clicked Email Trends'
+            : itemType === 'Users Who Did Not Click And Reported (%)'
+            ? 'Not Clicked (%)'
+            : 'Not Reported (%)'
+        const index =
+          itemType === 'Users Who Did Not Click And Reported (%)'
+            ? 0
+            : itemType === 'Users Who Did Not Reported (%)'
+            ? 2
+            : 1
         newDatasets[index] = {
           type: 'bar',
           barThickness: 32,
@@ -263,11 +273,11 @@ export default {
                 const average =
                   item.data.reduce((total, current) => total + current.y, 0) / item.data.length
                 const label =
-                  item.label === 'Clicked (%)'
-                    ? 'Clicked'
-                    : item.label === 'Not Clicked (%)'
-                    ? 'Not Clicked'
-                    : 'Not Reported'
+                  item.label === 'Users Who Clicked And Reported (%)'
+                    ? 'Users Who Clicked And Reported'
+                    : item.label === 'Users Who Did Not Click And Reported (%)'
+                    ? 'Users Who Did Not Click And Reported'
+                    : 'Users Who Did Not Reported'
                 return {
                   text: `${label} (${
                     average.toString().includes('.') ? average.toFixed(2) : average
@@ -365,11 +375,11 @@ export default {
               let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel =
-                  dataset.label === 'Clicked (%)'
-                    ? 'Clicked Rate'
-                    : dataset.label === 'Not Clicked (%)'
-                    ? 'Not clicked Rate'
-                    : 'Not Reported Rate'
+                  dataset.label === 'Users Who Clicked And Reported (%)'
+                    ? 'Users Who Clicked And Reported'
+                    : dataset.label === 'Users Who Did Not Click And Reported (%)'
+                    ? 'Users Who Did Not Click And Reported'
+                    : 'Users Who Did Not Reported'
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'
                 let tr = document.createElement('tr')
@@ -418,16 +428,15 @@ export default {
               let dataIndex = tooltipModel.dataPoints[0].index
               if (dataIndex > 0) {
                 const datasets = this._chart.data.datasets
-                const beforeClickedData = datasets[0].data[dataIndex - 1]?.y
-                const beforeNotClickedData = datasets[1].data[dataIndex - 1]?.y
-                const currentClickedData = datasets[0].data[dataIndex]?.y
-                const currentNotClickedData = datasets[1].data[dataIndex]?.y
-                comparatorValue = currentClickedData - beforeClickedData
-                if (currentClickedData > beforeClickedData) {
-                  isIncreased = true
-                } else if (currentNotClickedData > beforeNotClickedData) {
-                  isIncreased = false
-                }
+                const beforeClickedData = datasets[1].data[dataIndex - 1]?.y
+                const beforeNotClickedData = datasets[0].data[dataIndex - 1]?.y
+                const currentClickedData = datasets[1].data[dataIndex]?.y
+                const currentNotClickedData = datasets[0].data[dataIndex]?.y
+                comparatorValue =
+                  currentClickedData -
+                  beforeClickedData +
+                  (currentNotClickedData - beforeNotClickedData)
+                isIncreased = comparatorValue > 0
               }
               if (comparatorValue < 0) comparatorValue = -comparatorValue
               tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
