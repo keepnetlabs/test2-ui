@@ -156,10 +156,10 @@ export default {
             : 'Not Reported (%)'
         const index =
           itemType === 'Users Who Did Not Click And Reported (%)'
-            ? 1
-            : itemType === 'Users Who Did Not Reported (%)'
             ? 0
-            : 2
+            : itemType === 'Users Who Did Not Reported (%)'
+            ? 2
+            : 1
         newDatasets[index] = {
           type: 'bar',
           barThickness: 32,
@@ -408,8 +408,8 @@ export default {
               })
               const index = tooltipModel.dataPoints[0].index
               const totalPhishingReportRate =
-                this._chart.data.datasets[1].data[index].y +
-                this._chart.data.datasets[2].data[index].y
+                this._chart.data.datasets[0].data[index].y +
+                this._chart.data.datasets[1].data[index].y
               let lastTr = document.createElement('tr')
               lastTr.innerHTML = `
                 <td>
@@ -429,15 +429,14 @@ export default {
               if (dataIndex > 0) {
                 const datasets = this._chart.data.datasets
                 const beforeClickedData = datasets[1].data[dataIndex - 1]?.y
-                const beforeNotClickedData = datasets[2].data[dataIndex - 1]?.y
+                const beforeNotClickedData = datasets[0].data[dataIndex - 1]?.y
                 const currentClickedData = datasets[1].data[dataIndex]?.y
-                const currentNotClickedData = datasets[1].data[dataIndex]?.y
-                comparatorValue = currentClickedData - beforeClickedData
-                if (currentClickedData > beforeClickedData) {
-                  isIncreased = true
-                } else if (currentNotClickedData > beforeNotClickedData) {
-                  isIncreased = false
-                }
+                const currentNotClickedData = datasets[0].data[dataIndex]?.y
+                comparatorValue =
+                  currentClickedData -
+                  beforeClickedData +
+                  (currentNotClickedData - beforeNotClickedData)
+                isIncreased = comparatorValue > 0
               }
               if (comparatorValue < 0) comparatorValue = -comparatorValue
               tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
