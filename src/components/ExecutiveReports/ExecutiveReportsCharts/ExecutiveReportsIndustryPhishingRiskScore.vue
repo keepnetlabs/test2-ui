@@ -527,12 +527,24 @@ export default {
         plugins: {
           datalabels: {
             display: true,
+            offset: 4,
             align({ dataIndex, dataset }) {
               const { data } = dataset
-              if (dataIndex > 0 && data[dataIndex].y < data[dataIndex - 1].y) return 'right'
+              if (dataIndex === dataset.data.length - 1) return 'top'
+              if (dataIndex > 0) {
+                if (data[dataIndex].y < data[dataIndex - 1].y) {
+                  if (data[dataIndex - 1].y / data[dataIndex].y >= 2) {
+                    if (data[dataIndex + 1] && data[dataIndex + 1].y > data[dataIndex].y)
+                      return 'bottom'
+                  } else if (data[dataIndex + 1] && data[dataIndex + 1].y <= data[dataIndex].y) {
+                    return 'top'
+                  }
+                  return 'bottom'
+                }
+              }
               return 'end'
             },
-            anchor: 'end',
+            anchor: 'bottom',
             color: '#383B41',
             formatter: function (value, context) {
               if (context.dataset.label.includes('Phishing Risk Score') && value.y > 0) {
