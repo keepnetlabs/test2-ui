@@ -229,7 +229,7 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#383B41',
+            color: '#fff',
             font: { family: 'Open Sans, sans-serif' },
             display: true,
             clamp: true,
