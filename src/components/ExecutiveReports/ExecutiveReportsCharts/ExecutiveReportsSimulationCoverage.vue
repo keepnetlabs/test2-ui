@@ -198,11 +198,12 @@ export default {
         legend: {
           display: true,
           position: 'top',
+          align: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 'start' : 'center',
           labels: {
             usePointStyle: true,
             fontColor: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: 32,
+            padding: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 24 : 32,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
