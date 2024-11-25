@@ -135,34 +135,6 @@ stages:
       githubConnectionUrl: $(prodGitHubConnectionURL)
       githubBranchName: production
 
-## DEPLOY GITHUB PROD EU
-- stage: GH_Repo_PROD_EU
-  variables:
-  - group: EU-Prod-UI-Config
-  dependsOn: CI_Prod
-  condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release')) 
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Prod_Repo
-      environment: EU_PROD_UI
-      githubConnectionUrl: $(prodGitHubConnectionURL)
-      githubBranchName: prod
-
-## DEPLOY GITHUB PROD US
-- stage: GH_Repo_PROD_US
-  variables:
-  - group: US-Prod-UI-Config
-  dependsOn: CI_Prod
-  condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release')) 
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Prod_Repo
-      environment: US_PROD_UI
-      githubConnectionUrl: $(prodGitHubConnectionURL)
-      githubBranchName: prod
-
 - stage: ONPREM_BUCKET
   variables:
   - group: OnPrem-UI-Config
