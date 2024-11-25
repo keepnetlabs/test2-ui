@@ -1,5 +1,14 @@
 <template>
   <div class="people">
+    <GamificationReportUserDetailsDrawer
+      v-if="isUserDetailsDrawerOpen"
+      :status="isUserDetailsDrawerOpen"
+      :selectedRow="selectedRow"
+      :formDetails="formDetails"
+      :datePayload="getDatePayload"
+      isTargetUser
+      @on-close="handleCloseDrawer"
+    />
     <default-error-dialog
       v-if="!!bulkDeleteErrorMessage"
       :status="!!bulkDeleteErrorMessage"
@@ -97,7 +106,7 @@
     </AlertBox>
     <AlertBox
       v-if="canRenderRepeatedOffendersAlertBox"
-      class="mt-2"
+      class="my-2 mb-6"
       style="background-color: #fafafa; border: 1px solid #e0e0e0;"
       icon-color="#000000"
       icon-name="mdi-account-voice"
@@ -166,6 +175,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @viewUserGroups="handleViewUserGroups"
+      @userTimeline="handleUserTimeline"
     >
       <template #selection-all-slot>
         <v-tooltip bottom opacity="1">
@@ -294,29 +304,37 @@
         </div>
       </template>
       <template #datatable-row-actions="{ scope }">
-        <TargetUserRowActionsEditButton
-          :scope="scope"
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
           :id="tableOptions.rowActions[0].id"
-          @on-click="handleEditTargetUsers"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleUserTimeline(scope.row)"
         />
         <RowActionsMenu>
-          <DefaultMenuRowAction
+          <TargetUserMenuActionsEditButton
             :scope="scope"
-            :id="tableOptions.rowActions[2].id"
-            :text="tableOptions.rowActions[2].name"
-            :icon="tableOptions.rowActions[2].icon"
-            @on-click="handleAddUserToGroup(scope.row)"
+            :id="tableOptions.rowActions[1].id"
+            @on-click="handleEditTargetUsers"
           />
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
             :text="tableOptions.rowActions[3].name"
             :icon="tableOptions.rowActions[3].icon"
+            @on-click="handleAddUserToGroup(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :text="tableOptions.rowActions[4].name"
+            :icon="tableOptions.rowActions[4].icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton
             :scope="scope"
-            :id="tableOptions.rowActions[1].id"
+            :id="tableOptions.rowActions[2].id"
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -326,6 +344,7 @@
 </template>
 
 <script>
+import { getLeaderboardFormDetails } from '@/api/reports'
 import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUserModal from './AddUserModal'
@@ -356,7 +375,7 @@ import {
   columnFilterCleared,
   createCustomFieldColumns
 } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
+import TargetUserMenuActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserMenuActionsEditButton'
 import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
@@ -373,16 +392,20 @@ import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/Target
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 import AlertBox from '@/components//AlertBox'
 import UnverifiedDomainsModal from '@/components/TargetUsers/UnverifiedDomainsModal'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
 
 export default {
   name: 'People',
   components: {
+    GamificationReportUserDetailsDrawer,
     TargetUserLDAPImportModal,
     RowActionsMenu,
+    DefaultButtonRowAction,
     DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetUserRowActionsDeleteButton,
-    TargetUserRowActionsEditButton,
+    TargetUserMenuActionsEditButton,
     TargetUsersViewTargetUserGroups,
     CustomFieldsModal,
     DeleteUserModal,
@@ -402,6 +425,8 @@ export default {
   emits: ['call-for-company-licenses'],
   data() {
     return {
+      formDetails: null,
+      isUserDetailsDrawerOpen: false,
       isUnverifiedDomainsLoading: true,
       unverifiedDomains: [],
       isUnverifiedDomainsModalVisible: false,
@@ -587,6 +612,13 @@ export default {
         },
         rowActions: [
           {
+            name: 'User Activity Timeline',
+            icon: 'mdi-account-clock',
+            action: 'userTimeline',
+            id: 'btn-user-timeline--target-users-people-row-actions',
+            isNotShow: true
+          },
+          {
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'editTargetUsers',
@@ -643,6 +675,13 @@ export default {
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
       getTimezones: 'common/getTimezones'
     }),
+    getDatePayload() {
+      return {
+        datePeriod: 4,
+        startDate: null,
+        endDate: null
+      }
+    },
     getSelectedRow() {
       if (this.selectedUserToAddToGroup.constructor.name === 'Array') {
         return this.selectedUserToAddToGroup
@@ -667,6 +706,7 @@ export default {
     }
   },
   created() {
+    this.callForFormDetails()
     this.callForGetTargetUserCustomFieldsByCompanyId()
     this.callForGetTimeZones()
     this.callForTargetGroups()
@@ -682,6 +722,19 @@ export default {
     }
   },
   methods: {
+    callForFormDetails() {
+      getLeaderboardFormDetails().then((res) => {
+        this.formDetails = res?.data?.data || []
+      })
+    },
+    handleUserTimeline(row) {
+      this.selectedRow = row
+      this.isUserDetailsDrawerOpen = true
+    },
+    handleCloseDrawer() {
+      this.selectedRow = null
+      this.isUserDetailsDrawerOpen = false
+    },
     handleRedirectToSCIMSync() {
       this.$router.push('/company/company-settings?tab=scim-settings&showModal=true')
     },
