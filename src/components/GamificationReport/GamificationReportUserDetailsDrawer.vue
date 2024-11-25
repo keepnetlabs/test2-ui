@@ -54,7 +54,7 @@
                 >
                 <span
                   class="gamification-report__user-details-drawer-card__overall-score-percentage"
-                  >{{ overallScore.percentage }}</span
+                  >{{ overallScore.percentage }}%</span
                 >
                 <span class="gamification-report__user-details-drawer-card__overall-score-points"
                   >{{ overallScore.points }} pts</span
@@ -289,6 +289,122 @@
                   />
                 </template>
                 <div
+                  v-if="item.productType === 'Incident Responder'.toUpperCase()"
+                  :class="[
+                    'gamification-report__timeline-item',
+                    index === 0 ? 'gamification-report__timeline-item--first' : ''
+                  ]"
+                >
+                  <div class="d-flex justify-space-between align-items-center">
+                    <span
+                      class="gamification-report__timeline-item-activity-type"
+                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                      >{{ item.ActionType }}</span
+                    >
+                    <span class="gamification-report__timeline-item-date">{{
+                      item.ActionTime
+                    }}</span>
+                  </div>
+                  <span class="gamification-report__timeline-item-middle-text">
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.name
+                    }}</span>
+                    resulted in a
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.result
+                    }}</span>
+                    after analysis.
+                  </span>
+                  <div>
+                    <span class="gamification-report__timeline-item-bottom-text">{{
+                      item.productType
+                    }}</span>
+                  </div>
+                </div>
+                <div
+                  v-else-if="ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]"
+                  :class="[
+                    'gamification-report__timeline-item',
+                    index === 0 ? 'gamification-report__timeline-item--first' : ''
+                  ]"
+                >
+                  <div class="d-flex justify-space-between align-items-center">
+                    <span
+                      class="gamification-report__timeline-item-activity-type"
+                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                      >{{ item.ActionType }}</span
+                    >
+                    <span class="gamification-report__timeline-item-date">{{
+                      item.ActionTime
+                    }}</span>
+                  </div>
+                  <span class="gamification-report__timeline-item-middle-text">
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.name
+                    }}</span>
+                    at
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? item.categoryDescription
+                        : item.difficultyType
+                    }}</span>
+                    {{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? 'category'
+                        : 'difficulity'
+                    }}.
+                  </span>
+                  <div>
+                    <span class="gamification-report__timeline-item-bottom-text">{{
+                      item.productType
+                    }}</span>
+                  </div>
+                </div>
+                <div
+                  v-else-if="
+                    ['smishing', 'vishing', 'quishing'].includes(
+                      item.productType.split(' - ')[0].toLowerCase()
+                    ) && ACTIVITY_TYPES_FAIL_MAP[item.ActionType]
+                  "
+                  :class="[
+                    'gamification-report__timeline-item',
+                    index === 0 ? 'gamification-report__timeline-item--first' : ''
+                  ]"
+                >
+                  <div class="d-flex justify-space-between align-items-center">
+                    <span
+                      class="gamification-report__timeline-item-activity-type"
+                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                      >{{ item.ActionType }}</span
+                    >
+                    <span class="gamification-report__timeline-item-date">{{
+                      item.ActionTime
+                    }}</span>
+                  </div>
+                  <span class="gamification-report__timeline-item-middle-text">
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.name
+                    }}</span>
+                    at
+                    <span class="gamification-report__timeline-item-bold-text">{{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? item.categoryDescription
+                        : item.difficultyType
+                    }}</span>
+                    {{
+                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
+                        ? 'category'
+                        : 'difficulity'
+                    }}.
+                  </span>
+                  <div>
+                    <span class="gamification-report__timeline-item-bottom-text">{{
+                      item.productType
+                    }}</span>
+                  </div>
+                </div>
+                <div
+                  v-else
                   :class="[
                     'gamification-report__timeline-item',
                     index === 0 ? 'gamification-report__timeline-item--first' : ''
@@ -316,7 +432,7 @@
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
-                    with
+                    at
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
                         ? item.categoryDescription
@@ -326,7 +442,7 @@
                       item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
                         ? 'category'
                         : 'difficulity'
-                    }}
+                    }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -373,6 +489,7 @@ import { Fragment } from 'vue-frag'
 import {
   ACTIVITY_TYPE_COLOR_MAP,
   ACTIVITY_TYPES_FAIL_MAP,
+  ACTIVITY_TYPES_NEUTRAL_MAP,
   userActivityDetailsFilters
 } from './utils'
 import useDebounce from '@/hooks/useDebounce'
@@ -397,6 +514,10 @@ export default {
   },
   mixins: [useDebounce],
   props: {
+    isTargetUser: {
+      type: Boolean,
+      default: false
+    },
     status: {
       type: Boolean,
       default: false
@@ -430,6 +551,7 @@ export default {
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       isDownloadMenuOpen: false,
       search: '',
+      ACTIVITY_TYPES_NEUTRAL_MAP,
       ACTIVITY_TYPE_COLOR_MAP,
       overallScore: {},
       productScores: [],
@@ -515,7 +637,7 @@ export default {
       const productTypes =
         this.filters.find((filter) => filter.key === 'product')?.activeValue || []
       const payload = {
-        targetUserResourceId: this.selectedRow.targetUserResourceId,
+        targetUserResourceId: this.selectedRow.targetUserResourceId || this.selectedRow.resourceId,
         actionTypes,
         difficultyTypes,
         products: productTypes,
@@ -551,7 +673,7 @@ export default {
     },
     callForPerformanceRates() {
       const payload = {
-        targetUserResourceId: this.selectedRow.targetUserResourceId,
+        targetUserResourceId: this.selectedRow.targetUserResourceId || this.selectedRow.resourceId,
         ...this.datePayload
       }
       this.isPerformanceRatesLoading = true
@@ -559,12 +681,14 @@ export default {
         .then((res) => {
           const newProductScores = res?.data?.data?.map?.((product) => ({
             percentage: `${product.performance}%`,
-            product: product.phishingType
+            product: product.phishingType,
+            totalPerformance: product.totalPerformance,
+            totalPoints: product.totalPoints
           }))
           this.productScores = newProductScores
           this.overallScore = {
-            points: this.selectedRow.points,
-            percentage: this.selectedRow.performance
+            points: newProductScores[0].totalPoints,
+            percentage: newProductScores[0].totalPerformance
           }
         })
         .finally(() => {
@@ -755,7 +879,8 @@ export default {
         let payload = {
           exportType: item === 'XLS' ? 'Excel' : item,
           reportAllPages: downloadSettings.reportAllPages,
-          targetUserResourceId: this.selectedRow.targetUserResourceId,
+          targetUserResourceId:
+            this.selectedRow.targetUserResourceId || this.selectedRow.resourceId,
           actionTypes,
           difficultyTypes,
           products: productTypes,
@@ -772,9 +897,15 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Leaderboard-User-Details.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
+          if (this.isTargetUser) {
+            link.download = `Target-User-Timeline.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+          } else {
+            link.download = `Leaderboard-User-Timeline.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+          }
           link.click()
         })
       })
@@ -800,11 +931,17 @@ export default {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-phishing-fail-icon.svg')
         }
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-phishing-neutral-icon.svg')
+        }
         return require('@/assets/img/timeline-phishing-success-icon.svg')
       }
       if (productType === 'Callback Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-callback-fail-icon.svg')
+        }
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-callback-neutral-icon.svg')
         }
         return require('@/assets/img/timeline-callback-success-icon.svg')
       }
@@ -812,14 +949,23 @@ export default {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-vishing-fail-icon.svg')
         }
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-vishing-neutral-icon.svg')
+        }
         return require('@/assets/img/timeline-vishing-answered-icon.svg')
       }
       if (productType === 'Smishing Simulator'.toUpperCase()) {
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-smishing-neutral-icon.svg')
+        }
         return require('@/assets/img/timeline-smishing-fail-icon.svg')
       }
       if (productType === 'Quishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-quishing-fail-icon.svg')
+        }
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-quishing-neutral-icon.svg')
         }
         return require('@/assets/img/timeline-quishing-success-icon.svg')
       }
@@ -827,7 +973,13 @@ export default {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-fail-icon.svg')
         }
+        if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
+          return require('@/assets/img/timeline-awareness-neutral-icon.svg')
+        }
         return require('@/assets/img/timeline-awareness-success-icon.svg')
+      }
+      if (productType === 'Incident Responder'.toUpperCase()) {
+        return require('@/assets/img/timeline-ir-success-icon.svg')
       }
       return require('@/assets/img/timeline-phishing-success-icon.svg')
     },

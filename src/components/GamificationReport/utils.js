@@ -1,5 +1,6 @@
 export const ACTIVITY_TYPE_COLOR_MAP = {
   Reported: '#43A047',
+  'Reported Email': '#43A047',
   'Clicked Link': '#F56C6C',
   'Submitted Data': '#F56C6C',
   'Submitted MFA Code': '#F56C6C',
@@ -16,11 +17,15 @@ export const ACTIVITY_TYPE_COLOR_MAP = {
   'Exam Passed': '#43A047',
   'Exam Failed': '#F56C6C',
   'Downloaded Poster': '#43A047',
-  'Downloaded Infographic': '#43A047'
+  'Downloaded Infographic': '#43A047',
+  'Email Sent': '#1173C1',
+  Called: '#1173C1',
+  'SMS Sent': '#1173C1'
 }
 
 export const ACTIVITY_TYPES_FAIL_MAP = {
   Reported: false,
+  'Reported Email': false,
   'Clicked Link': true,
   'Submitted Data': true,
   'Submitted MFA Code': true,
@@ -37,7 +42,35 @@ export const ACTIVITY_TYPES_FAIL_MAP = {
   'Exam Passed': false,
   'Exam Failed': true,
   'Downloaded Poster': false,
-  'Downloaded Infographic': false
+  'Downloaded Infographic': false,
+  'Email Sent': false,
+  Called: false,
+  'SMS Sent': false
+}
+
+export const ACTIVITY_TYPES_NEUTRAL_MAP = {
+  Reported: false,
+  'Reported Email': false,
+  'Clicked Link': false,
+  'Submitted Data': false,
+  'Submitted MFA Code': false,
+  'Opened Attachment': false,
+  'Called Back': false,
+  'Entered Digits': false,
+  'Scanned QR Link': false,
+  'Vished (Dialed Number)': false,
+  Answered: false,
+  'Training Completed': false,
+  'Clicked Training Link': false,
+  'Clicked Training': false,
+  'Training Not Completed': false,
+  'Exam Passed': false,
+  'Exam Failed': false,
+  'Downloaded Poster': false,
+  'Downloaded Infographic': false,
+  'Email Sent': true,
+  Called: true,
+  'SMS Sent': true
 }
 
 export const userActivityDetailsFilters = [
