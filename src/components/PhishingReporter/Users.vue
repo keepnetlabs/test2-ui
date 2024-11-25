@@ -88,6 +88,12 @@
           <span v-else>{{ scope.row[col.property] }}</span>
         </template>
       </template>
+      <template #empty-table-inline>
+        <h2 class="empty-inline max-w-750 text-center">
+          The users are only visible on this page when using the MSI Add-in; it does not work with
+          other add-ins
+        </h2>
+      </template>
     </data-table>
   </div>
 </template>
@@ -241,7 +247,8 @@ export default {
           }
         ],
         empty: {
-          message: labels.EmptyPhishingReporter,
+          message:
+            'The users are only visible on this page when using the MSI Add-in; it does not work with other add-ins',
           id: 'btn-empty--phishing-reporter-users'
         },
         rowActions: [
