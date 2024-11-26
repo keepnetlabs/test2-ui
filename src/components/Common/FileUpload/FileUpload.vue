@@ -16,13 +16,17 @@
         :extensions="_extensions"
         :accept="accept"
         :multiple="false"
-        @input-file="inputFile"
-        @input-filter="inputFilter"
         :drop="true"
         :size="size"
+        @input-file="inputFile"
+        @input-filter="inputFilter"
       >
-        Select or drop file
-        <v-icon>mdi-folder-outline</v-icon>
+        <div class="cursor-pointer d-flex w-100 text-left align-center">
+          <label class="k-file-uploads__select-or-drop-file-label cursor-pointer">
+            Select or drop file
+          </label>
+          <v-icon class="cursor-pointer">mdi-folder-outline</v-icon>
+        </div>
       </file-upload>
       <template v-if="isPreviewVisible">
         <div
