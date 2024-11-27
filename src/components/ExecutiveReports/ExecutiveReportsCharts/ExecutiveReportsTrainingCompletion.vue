@@ -185,7 +185,7 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return data.datasets[0].data.map((d, index) => {
+              return [completed, inProgress, incomplete].map((d, index) => {
                 const label = data.labels[index]
                 const splittedLabel = label.split(' ')
                 const textParts =
@@ -244,7 +244,7 @@ export default {
         labels: this.valueEnums,
         datasets: [
           {
-            data: [completed, inProgress, incomplete],
+            data: [completed, inProgress, incomplete].filter((val) => val > 0),
             backgroundColor
           }
         ]
