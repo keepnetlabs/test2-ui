@@ -81,7 +81,7 @@
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
             :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
-            :isLearningPathEnrollmentReminderSelected="isLearningPathEnrollmentReminderSelected"
+            :isLearningPathEnrollmentSelected="isLearningPathEnrollmentSelected"
             :isNotificationTemplate="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
             :cc-addresses.sync="formValues.ccAddresses"
@@ -209,11 +209,6 @@ export default {
       return this.categoryItems?.find((template) => template.text === 'Learning Path Enrollment')
         ?.value
     },
-    getLearningPathEnrollmentReminderTemplateResourceId() {
-      return this.categoryItems?.find(
-        (template) => template.text === 'Learning Path Enrollment Reminder'
-      )?.value
-    },
     getTrainingEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Training Enrollment')?.value
     },
@@ -244,10 +239,10 @@ export default {
         this.getInfographicEnrollmentTemplateResourceId
       ].includes(this.formValues.emailTemplateCategoryResourceId)
     },
-    isLearningPathEnrollmentReminderSelected() {
+    isLearningPathEnrollmentSelected() {
       return (
         this.formValues?.emailTemplateCategoryResourceId ===
-        this.getLearningPathEnrollmentReminderTemplateResourceId
+        this.getLearningPathEnrollmentTemplateResourceId
       )
     },
     getModalId() {

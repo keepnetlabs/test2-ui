@@ -850,7 +850,7 @@ export default {
           const nativeLanguageResourceId =
             this.languageItems.find(
               (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
-            ) || ''
+            )?.resourceId || ''
           this.formData.PreferredLanguageTypeResourceId = nativeLanguageResourceId
         }
       }

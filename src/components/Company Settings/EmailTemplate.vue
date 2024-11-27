@@ -611,7 +611,7 @@ export default {
     'isAttachmentError',
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
-    'isLearningPathEnrollmentReminderSelected',
+    'isLearningPathEnrollmentSelected',
     'isNotificationEnrollment',
     'isEmailTemplate',
     'isHorizontalFormGroups',
@@ -987,19 +987,19 @@ export default {
     isMergeTagSubject() {
       return (
         this.isNotificationTemplate &&
-        (this.isEnrollmentCategorySelected || this.isLearningPathEnrollmentReminderSelected)
+        (this.isEnrollmentCategorySelected || this.isLearningPathEnrollmentSelected)
       )
     },
     getSubjectSubtitle() {
       if (!this.isMergeTagSubject) return undefined
-      if (this.isMergeTagSubject && this.isLearningPathEnrollmentReminderSelected) {
+      if (this.isMergeTagSubject && this.isLearningPathEnrollmentSelected) {
         return `Define a subject for the notification email using the {ENROLLMENT_NAME} and {LEARNING_PATH_STEP} merge tags as variables.`
       }
       return `Define a subject for the notification email. Use {ENROLLMENT_NAME} merge tag as a variable for the notification email subject`
     },
     getSubjectRules() {
       if (this.isMergeTagSubject) {
-        if (this.isLearningPathEnrollmentReminderSelected) {
+        if (this.isLearningPathEnrollmentSelected) {
           return [...this.subjectRules, ...this.learningPathMergeTagRules]
         }
         return [...this.subjectRules, ...this.mergeTagRules]
@@ -1019,7 +1019,7 @@ export default {
     activeBlockManagerComponents() {
       this.grapeJsKey = `${createRandomCryptStringNumber()}-key`
     },
-    isLearningPathEnrollmentReminderSelected(val) {
+    isLearningPathEnrollmentSelected(val) {
       this.$nextTick(() => {
         if (this.$refs?.refInputEntityName?.$refs?.refInput)
           this.$refs.refInputEntityName.$refs.refInput.validate()
