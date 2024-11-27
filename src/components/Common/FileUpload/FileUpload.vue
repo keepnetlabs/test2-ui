@@ -22,7 +22,7 @@
         @input-filter="inputFilter"
       >
         <div class="cursor-pointer d-flex w-100 text-left align-center">
-          <label class="k-file-uploads__select-or-drop-file-label cursor-pointer">
+          <label :for="inputId" class="k-file-uploads__select-or-drop-file-label cursor-pointer">
             Select or drop file
           </label>
           <v-icon class="cursor-pointer">mdi-folder-outline</v-icon>
