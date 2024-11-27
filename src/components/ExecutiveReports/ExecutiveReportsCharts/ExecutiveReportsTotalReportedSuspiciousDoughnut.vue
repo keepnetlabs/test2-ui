@@ -55,10 +55,6 @@ export default {
     DoughnutChart
   },
   props: {
-    rawData: {
-      type: Array,
-      default: () => [60, 25, 15]
-    },
     valueEnums: {
       type: Array,
       default: () => [labels.Undetected, labels.Malicious, labels.Phishing, labels.Simulation]
@@ -278,7 +274,12 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return data.datasets[0].data.map((d, index) => {
+              return [
+                undetectedPercentage,
+                maliciousPercentage,
+                phishingPercentage,
+                simulationPercentage
+              ].map((d, index) => {
                 const label = data.labels[index]
                 const splittedLabel = label.split(' ')
                 const textParts =
@@ -329,7 +330,6 @@ export default {
             borderWidth: 0
           }
         },
-        backgroundColor,
         labels: this.valueEnums,
         showTooltipLine: true
       }
@@ -342,7 +342,7 @@ export default {
               maliciousPercentage,
               phishingPercentage,
               simulationPercentage
-            ],
+            ].filter((v) => v > 0),
             backgroundColor
           }
         ]
