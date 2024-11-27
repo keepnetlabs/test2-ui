@@ -289,12 +289,31 @@ export default {
     },
     transformStatisticData(data) {
       data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
+      const unknownDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'unknown')
+      const naDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'n/a')
+      let unknownData, naData
+      if (unknownDataIndex !== -1) {
+        unknownData = data[unknownDataIndex]
+        data.splice(unknownDataIndex, 1)
+      }
+      if (naDataIndex !== -1) {
+        naData = data[naDataIndex]
+        data.splice(naDataIndex, 1)
+      }
+      const totalExcludedData = {
+        count: (parseInt(naData?.count) || 0) + (parseInt(unknownData?.count) || 0),
+        percentage: (parseInt(naData?.percentage) || 0) + (parseInt(unknownData?.percentage) || 0)
+      }
       const otherData = data.slice(5, data.length)
       const totalOtherData = otherData.reduce(
         (a, b) => {
           return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
         },
-        { count: 0, name: 'Other', percentage: 0 }
+        {
+          count: totalExcludedData.count || 0,
+          name: 'Other',
+          percentage: totalExcludedData.percentage || 0
+        }
       )
       totalOtherData.percentage = totalOtherData.percentage.toFixed(2)
       if (!totalOtherData.count) return [...data.slice(0, 5)]
