@@ -9,7 +9,7 @@
         >
           <v-list-item-title>
             <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
-            <span>Delete</span>
+            <span>Edit</span>
           </v-list-item-title>
         </v-list-item>
       </div>
