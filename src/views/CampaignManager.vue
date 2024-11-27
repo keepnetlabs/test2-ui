@@ -1,10 +1,5 @@
 <template>
   <KContainer tabless class="campaign-manager">
-    <CampaignManagerScenarioStatisticsModal
-      v-if="isShowScenarioStatistics"
-      :navigation-drawer-value="isShowScenarioStatistics"
-      @navigation-drawer-change="handleStatisticsModalStatusChange"
-    />
     <CommonCampaignManagerCreateNewInstanceDialog
       v-if="isShowLaunchDialog"
       :status="isShowLaunchDialog"
@@ -80,7 +75,6 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
-      @on-show-scenario-statistics="isShowScenarioStatistics = true"
     />
     <CampaignManagerItemTable
       v-if="selectedParentItem"
@@ -133,11 +127,9 @@ import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignMana
 import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
 import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
-import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
 export default {
   name: 'CampaignManager',
   components: {
-    CampaignManagerScenarioStatisticsModal,
     CommonCampaignManagerCancelCampaignDialog,
     CommonCampaignManagerLaunchCampaignDialog,
     CommonCampaignManagerPreviewDialog,
@@ -178,8 +170,7 @@ export default {
       multipleSystemUserPayload: {},
       startStopCampaignPayload: {},
       isStartDialogActionButtonDisabled: false,
-      isStopDialogActionButtonDisabled: false,
-      isShowScenarioStatistics: false
+      isStopDialogActionButtonDisabled: false
     }
   },
   computed: {
@@ -220,16 +211,6 @@ export default {
     }
   },
   methods: {
-    handleStatisticsModalStatusChange(status) {
-      if (status) {
-        this.isShowScenarioStatistics = status
-        return
-      }
-      document.querySelector('.k-navigation-drawer').style.right = '-100%'
-      setTimeout(() => {
-        this.isShowScenarioStatistics = status
-      }, 250)
-    },
     toggleShowLaunchDialog() {
       if (this.isShowLaunchDialog) this.launchResourceId = ''
       this.isShowLaunchDialog = !this.isShowLaunchDialog

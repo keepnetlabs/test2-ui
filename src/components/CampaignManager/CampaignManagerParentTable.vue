@@ -124,14 +124,6 @@
         </template>
         <span class="tooltip-span">{{ 'Add a Campaign' }}</span>
       </VTooltip>
-      <VTooltip bottom>
-        <template #activator="{ on }">
-          <v-btn v-on="on" icon @click="toggleShowScenarioStatistics">
-            <VIcon color="#757575">mdi-chart-bar</VIcon>
-          </v-btn>
-        </template>
-        <span>Show Scenario Statistics</span>
-      </VTooltip>
     </template>
   </DataTable>
 </template>
@@ -414,9 +406,6 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
-    },
-    toggleShowScenarioStatistics() {
-      this.$emit('on-show-scenario-statistics')
     }
   }
 }
