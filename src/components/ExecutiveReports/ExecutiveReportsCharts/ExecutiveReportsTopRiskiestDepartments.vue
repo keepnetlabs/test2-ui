@@ -116,7 +116,13 @@ export default {
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText(text, x < 176 ? 176 : x, y)
+                let xComparator = x
+                if (window.innerWidth >= 1280 && window.innerWidth < 1440) {
+                  xComparator = x < 130 ? 130 : x
+                } else if (window.innerWidth >= 1440) {
+                  xComparator = x < 190 ? 190 : x
+                }
+                ctx.fillText(text, xComparator, y)
               }
             }
           }
