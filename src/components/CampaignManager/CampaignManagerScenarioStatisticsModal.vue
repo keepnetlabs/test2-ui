@@ -290,7 +290,6 @@ export default {
     transformStatisticData(data) {
       const unknownDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'unknown')
       const naDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'n/a')
-      console.log('naDataIndex', naDataIndex)
       let unknownData, naData
       if (unknownDataIndex !== -1) {
         unknownData = data[unknownDataIndex]
