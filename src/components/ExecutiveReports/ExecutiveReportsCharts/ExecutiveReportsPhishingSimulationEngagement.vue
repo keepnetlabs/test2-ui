@@ -309,19 +309,22 @@ export default {
                     ? 'Users Who Did Not Click And Reported'
                     : 'Users Who Did Not Reported'
                 const percentage = average.toString().includes('.') ? average.toFixed(2) : average
+                const customSpacer =
+                  label !== labels.UserWhoDidNotClickAndReported ? '       ' : '   '
                 return {
-                  text: Array.from(
-                    labels.UserWhoDidNotClickAndReported +
-                      labels.UserWhoDidNotClickAndReported +
-                      '     '
-                  )
+                  text: Array.from(label + label + customSpacer)
                     .fill('')
                     .join(' '),
                   fillStyle: item.borderColor,
                   lineWidth: 0,
                   datasetIndex: index,
-                  textParts: [labels.UserWhoDidNotClickAndReported, `(${percentage}%)`],
-                  customMarginLeft: label === labels.UserWhoDidNotClickAndReported ? 16 : 10
+                  textParts: [label, `(${percentage}%)`],
+                  customMarginLeft:
+                    label === labels.UserWhoDidNotClickAndReported
+                      ? 16
+                      : label === labels.UserWhoClickedAndReported
+                      ? 8
+                      : 6
                 }
               })
             },
