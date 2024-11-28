@@ -220,8 +220,13 @@ export default {
       }
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
-        if (!CHART_COLORS[data]) return
-        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        if (data === labels.Completed && completed) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.InProgress && inProgress) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.Incomplete && incomplete) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        }
       })
       this.chartOptions = {
         ...chartOptions,
@@ -250,7 +255,7 @@ export default {
           }
         }
       }
-      this.chartData = [completed, inProgress, incomplete]
+      this.chartData = [completed, inProgress, incomplete].filter((val) => val > 0)
       this.isLoading = false
       this.isEmpty = false
     },
