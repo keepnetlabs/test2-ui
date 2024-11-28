@@ -15,6 +15,7 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugin"
               :add-custom-legend-label-height="16"
             />
           </template>
@@ -45,6 +46,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import { getExecutiveReportChartData } from '@/api/reports'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import labels from '../../../model/constants/labels'
 
 export default {
   name: 'ExecutiveReportsPhishingSimulationEngagement',
@@ -89,7 +91,35 @@ export default {
         message: 'You do not have any report conclusion'
       },
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugin: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                const text = textParts[0]
+                const percentage = textParts[1]
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -278,13 +308,20 @@ export default {
                     : item.label === 'Users Who Did Not Click And Reported (%)'
                     ? 'Users Who Did Not Click And Reported'
                     : 'Users Who Did Not Reported'
+                const percentage = average.toString().includes('.') ? average.toFixed(2) : average
                 return {
-                  text: `${label} (${
-                    average.toString().includes('.') ? average.toFixed(2) : average
-                  }%)`,
+                  text: Array.from(
+                    labels.UserWhoDidNotClickAndReported +
+                      labels.UserWhoDidNotClickAndReported +
+                      '     '
+                  )
+                    .fill('')
+                    .join(' '),
                   fillStyle: item.borderColor,
                   lineWidth: 0,
-                  datasetIndex: index
+                  datasetIndex: index,
+                  textParts: [labels.UserWhoDidNotClickAndReported, `(${percentage}%)`],
+                  customMarginLeft: label === labels.UserWhoDidNotClickAndReported ? 16 : 10
                 }
               })
             },

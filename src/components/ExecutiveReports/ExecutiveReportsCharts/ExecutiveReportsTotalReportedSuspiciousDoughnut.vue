@@ -320,7 +320,15 @@ export default {
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
         if (!CHART_COLORS[data]) return
-        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        if (data === labels.Undetected && undetectedPercentage) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.Malicious && maliciousPercentage) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.Phishing && phishingPercentage) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.Simulation && simulationPercentage) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        }
       })
       this.chartOptions = {
         ...chartOptions,

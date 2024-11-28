@@ -533,7 +533,7 @@ export default {
               if (dataIndex === dataset.data.length - 1) return 'top'
               if (dataIndex > 0) {
                 if (data[dataIndex].y < data[dataIndex - 1].y) {
-                  if (data[dataIndex - 1].y / data[dataIndex].y >= 2) {
+                  if (data[dataIndex - 1].y / data[dataIndex].y >= 2.01) {
                     if (data[dataIndex + 1] && data[dataIndex + 1].y > data[dataIndex].y)
                       return 'bottom'
                   } else if (data[dataIndex + 1] && data[dataIndex + 1].y <= data[dataIndex].y) {

@@ -215,7 +215,7 @@ export default {
                     labels.SimulatedUsers +
                       labels.SimulatedUsers +
                       data.datasets[0].data[0] +
-                      ' (users) '
+                      ' (users)    '
                   )
                     .fill('')
                     .join(' '),
