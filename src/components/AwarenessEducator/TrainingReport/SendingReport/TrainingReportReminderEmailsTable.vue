@@ -357,9 +357,7 @@ export default {
   methods: {
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
-          (field) => !customFieldNames.includes(field.FieldName)
-        )
+        ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
         (col) => col.FieldName === 'SmtpName'
