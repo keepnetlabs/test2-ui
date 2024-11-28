@@ -8,6 +8,8 @@ export const labels = {
   PhishingCampaignTrends: 'Phishing Campaign Trends',
   ExcludeFromThisReport: 'Exclude from this report',
   UserWhoDidNotClickAndReported: 'Users Who Did Not Click And Reported',
+  UserWhoDidNotReported: 'Users Who Did Not Reported',
+  UserWhoClickedAndReported: 'Users Who Clicked And Reported',
   ScreenSaverName: 'Screensaver Name',
   InfoGraphicName: 'Infographic Name',
   RepeatOffenders: 'Repeat Offenders',
