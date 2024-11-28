@@ -288,9 +288,9 @@ export default {
         })
     },
     transformStatisticData(data) {
-      data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
       const unknownDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'unknown')
       const naDataIndex = data.findIndex((item) => item.name.toLocaleLowerCase() === 'n/a')
+      console.log('naDataIndex', naDataIndex)
       let unknownData, naData
       if (unknownDataIndex !== -1) {
         unknownData = data[unknownDataIndex]
@@ -300,11 +300,23 @@ export default {
         naData = data[naDataIndex]
         data.splice(naDataIndex, 1)
       }
+      data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
       const totalExcludedData = {
         count: (parseInt(naData?.count) || 0) + (parseInt(unknownData?.count) || 0),
         percentage: (parseInt(naData?.percentage) || 0) + (parseInt(unknownData?.percentage) || 0)
       }
-      const otherData = data.slice(5, data.length)
+      const firstData = data.slice(0, 5)
+      const otherData = data.slice(5)
+      const firstDataTotal = firstData.reduce(
+        (a, b) => {
+          return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
+        },
+        {
+          count: 0,
+          name: 'Other',
+          percentage: 0
+        }
+      )
       const totalOtherData = otherData.reduce(
         (a, b) => {
           return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
@@ -315,9 +327,9 @@ export default {
           percentage: totalExcludedData.percentage || 0
         }
       )
-      totalOtherData.percentage = totalOtherData.percentage.toFixed(2)
-      if (!totalOtherData.count) return [...data.slice(0, 5)]
-      return [...data.slice(0, 5), totalOtherData]
+      totalOtherData.percentage = (100 - firstDataTotal.percentage).toFixed(2)
+      if (data.length <= 5 && !totalOtherData.count) return firstData
+      return [...firstData, totalOtherData]
     },
     handleDrawerClickOutside() {
       this.$emit('navigation-drawer-change', false)
