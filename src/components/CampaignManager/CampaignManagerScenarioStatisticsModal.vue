@@ -327,6 +327,8 @@ export default {
         }
       )
       totalOtherData.percentage = (100 - firstDataTotal.percentage).toFixed(2)
+      if (totalOtherData?.percentage?.includes('.00'))
+        totalOtherData.percentage = totalOtherData.percentage.replace('.00', '')
       if (data.length <= 5 && !totalOtherData.count) return firstData
       return [...firstData, totalOtherData]
     },
