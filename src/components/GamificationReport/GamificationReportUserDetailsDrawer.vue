@@ -57,7 +57,7 @@
                   >{{ overallScore.percentage }}%</span
                 >
                 <span class="gamification-report__user-details-drawer-card__overall-score-points"
-                  >{{ overallScore.points }} pts</span
+                  >{{ overallScore.points }} points</span
                 >
               </div>
               <div
