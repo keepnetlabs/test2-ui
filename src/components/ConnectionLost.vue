@@ -1,24 +1,19 @@
 <template>
   <div>
-    <v-card class="pa-6">
-      <v-list-item class="pl-0">
-        <div class="v-btn v-cart-icon-wrapper">
-          <v-icon medium left color="blue" class="ml-2">
-            mdi-wifi-strength-off
-          </v-icon>
-        </div>
-        <v-list-item-content>
-          <v-list-item-title class="v-card-headline">Connection Is Lost</v-list-item-title>
-          <v-list-item-subtitle class="connection-lost-title"
-            >Cannot connect to the web</v-list-item-subtitle
-          >
-        </v-list-item-content>
-      </v-list-item>
-      <div class="connection-lost-sub-title mt-3">You may lose your unsaved progress</div>
-      <div class="connection-lost-button d-flex flex-row flex-wrap justify-end">
-        <v-btn text color="#2196f3" @click="$emit('onIUnderstand', true)">I UNDERSTAND</v-btn>
+    <v-list-item class="pl-0">
+      <div class="v-btn v-cart-icon-wrapper">
+        <v-icon medium left color="blue" class="ml-2">
+          mdi-wifi-strength-off
+        </v-icon>
       </div>
-    </v-card>
+      <v-list-item-content>
+        <v-list-item-title class="v-card-headline">Connection Is Lost</v-list-item-title>
+        <v-list-item-subtitle class="connection-lost-title"
+          >Cannot connect to the web</v-list-item-subtitle
+        >
+      </v-list-item-content>
+    </v-list-item>
+    <div class="connection-lost-sub-title mt-3">You may lose your unsaved progress</div>
   </div>
 </template>
 

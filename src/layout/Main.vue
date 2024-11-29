@@ -45,11 +45,18 @@
         ></switch-account>
       </v-dialog>
     </v-row>
-    <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
-      <div class="connection-lost-wrapper">
-        <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
-      </div>
-    </v-overlay>
+    <AppDialog v-if="!isDisconnected" :status="!isDisconnected" :z-index="99999">
+      <template #app-dialog-body>
+        <div class="connection-lost-wrapper">
+          <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
+        </div>
+      </template>
+      <template #app-dialog-footer>
+        <div class="connection-lost-button d-flex flex-row flex-wrap justify-end">
+          <v-btn text color="#2196f3" @click="onIUnderstandClick(true)">I UNDERSTAND</v-btn>
+        </div>
+      </template>
+    </AppDialog>
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
@@ -1030,10 +1037,12 @@ import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
 import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
+import AppDialog from '@/components/AppDialog.vue'
 
 export default {
   name: 'Main',
   components: {
+    AppDialog,
     InitializeCompanyModal,
     AppRouterLink,
     LeavingDialog,
