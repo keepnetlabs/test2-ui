@@ -609,6 +609,16 @@ export default {
     this.callForTimeline()
     this.callForPerformanceRates()
     this.callForGetTimeZones()
+    document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
+    document.querySelector('.user-wrapper').style.background = 'transparent'
+    document.querySelector('.user-name-dropdown').style.background = 'transparent'
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('.page-nav__fixed-content').style.background = ''
+    document.querySelector('.user-wrapper').style.background = ''
+    document.querySelector('.user-name-dropdown').style.background = ''
+    document.querySelector('html').style.overflowY = 'auto'
   },
   methods: {
     callForTimeline(isAppend = false) {
@@ -628,7 +638,7 @@ export default {
         endDate: this.datePayload.endDate,
         pagination: {
           pageNumber: this.serverSideProps.pageNumber,
-          pageSize: 5,
+          pageSize: 25,
           orderBy: 'ActionTime',
           ascending: true
         },
@@ -642,7 +652,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = res?.data?.data?.totalNumberOfRecords || 0
           this.serverSideProps.totalNumberOfPages = res?.data?.data?.totalNumberOfPages || 0
           this.serverSideProps.pageNumber = res?.data?.data?.pageNumber || 1
-          console.log('res?.data?.data?.results', res?.data?.data?.results)
           if (isAppend) {
             const newTimeline = res?.data?.data?.results || []
             this.timeline = [...this.timeline, ...newTimeline]
@@ -682,7 +691,6 @@ export default {
       this.debounce(() => {})
     },
     isProductAwareness(item) {
-      console.log('item', item)
       return (
         item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR' ||
         item.productType === 'SECURITY AWARENESS' ||
