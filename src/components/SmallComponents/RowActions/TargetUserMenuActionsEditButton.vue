@@ -5,7 +5,7 @@
         <v-list-item
           :disabled="getDisabledStatusOfAction"
           :id="`btn-edit--target-user-${scope.$index}`"
-          @click="!getDisabledStatusOfAction && $emit('on-delete', scope.row)"
+          @click="!getDisabledStatusOfAction && $emit('on-click', scope.row)"
         >
           <v-list-item-title>
             <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
