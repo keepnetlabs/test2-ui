@@ -249,22 +249,22 @@ export default {
           title: 'Top Rules',
           isAllowed: this?.permissions?.topRules
         },
-        TopPosts: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          key: 'TopPosts',
-          title: 'Top Posts',
-          isAllowed: this?.permissions?.topPosts
-        },
+        // TopPosts: {
+        //   x: 0,
+        //   y: 0,
+        //   w: 3,
+        //   minW: 3,
+        //   defaultW: 3,
+        //   midW: 6,
+        //   h: 6,
+        //   defaultH: 6,
+        //   minH: 6,
+        //   maxH: 6,
+        //   i: createRandomCryptStringNumber(),
+        //   key: 'TopPosts',
+        //   title: 'Top Posts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         Reporters: {
           x: 0,
           y: 0,
@@ -546,11 +546,11 @@ export default {
           key: 'TopRules',
           isAllowed: this?.permissions?.topRules
         },
-        {
-          name: 'Top Posts',
-          key: 'TopPosts',
-          isAllowed: this?.permissions?.topPosts
-        },
+        // {
+        //   name: 'Top Posts',
+        //   key: 'TopPosts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         {
           name: 'Reporters',
           key: 'Reporters',
@@ -1033,22 +1033,22 @@ export default {
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
         },
-        {
-          x: 6,
-          y: 12,
-          w: 6,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.1349604029153395',
-          key: 'TopPosts',
-          title: 'Top Posts',
-          isAllowed: this?.permissions?.topPosts
-        },
+        // {
+        //   x: 6,
+        //   y: 12,
+        //   w: 6,
+        //   minW: 3,
+        //   defaultW: 3,
+        //   midW: 6,
+        //   h: 6,
+        //   defaultH: 6,
+        //   minH: 6,
+        //   maxH: 6,
+        //   i: '0.1349604029153395',
+        //   key: 'TopPosts',
+        //   title: 'Top Posts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         {
           x: 0,
           y: 15,
