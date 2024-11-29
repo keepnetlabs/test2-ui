@@ -117,10 +117,6 @@ export default {
         ].includes(this.scope.row.type)
       )
         return false
-      if (
-        [ENROLLMENT_STATUSES.FINISHED, ENROLLMENT_STATUSES.STOPPED].includes(this.scope.row.status)
-      )
-        return false
       return this.scope?.row?.isReminderActive
     },
     isScheduled() {
