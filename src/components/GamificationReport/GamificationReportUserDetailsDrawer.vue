@@ -57,7 +57,7 @@
                   >{{ overallScore.percentage }}%</span
                 >
                 <span class="gamification-report__user-details-drawer-card__overall-score-points"
-                  >{{ overallScore.points }} pts</span
+                  >{{ overallScore.points }} points</span
                 >
               </div>
               <div
@@ -344,15 +344,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -387,15 +381,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -434,15 +422,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -627,6 +609,16 @@ export default {
     this.callForTimeline()
     this.callForPerformanceRates()
     this.callForGetTimeZones()
+    document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
+    document.querySelector('.user-wrapper').style.background = 'transparent'
+    document.querySelector('.user-name-dropdown').style.background = 'transparent'
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('.page-nav__fixed-content').style.background = ''
+    document.querySelector('.user-wrapper').style.background = ''
+    document.querySelector('.user-name-dropdown').style.background = ''
+    document.querySelector('html').style.overflowY = 'auto'
   },
   methods: {
     callForTimeline(isAppend = false) {
@@ -646,7 +638,7 @@ export default {
         endDate: this.datePayload.endDate,
         pagination: {
           pageNumber: this.serverSideProps.pageNumber,
-          pageSize: 5,
+          pageSize: 25,
           orderBy: 'ActionTime',
           ascending: true
         },
@@ -696,9 +688,14 @@ export default {
         })
     },
     handleSearch(event) {
-      this.debounce(() => {
-        // TODO: Call for search
-      })
+      this.debounce(() => {})
+    },
+    isProductAwareness(item) {
+      return (
+        item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR' ||
+        item.productType === 'SECURITY AWARENESS' ||
+        item.productType.split(' - ')[0] === 'SECURITY AWARENESS'
+      )
     },
     handleSetActiveFilter(filter) {
       if (filter && this.activeFilter.key === filter.key) return
@@ -987,7 +984,7 @@ export default {
       if (['Vishing Simulator', 'Callback Simulator'].includes(item.product)) {
         return ''
       }
-      if (item.product === 'Awareness Educator') {
+      if (item.product === 'Awareness Educator' || item.product === 'Security Awareness') {
         return item?.materialType || ''
       }
       return item.scenarioMethod
