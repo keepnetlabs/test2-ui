@@ -443,10 +443,11 @@ export default {
     getNewIndexForPageText() {
       const defaultIndex = this.formValues.landingPages.length + 1
       let newPageIndex =
-        this.formValues.landingPages.length === 2
+        this.editedLandingPages.length === 2
           ? parseInt(this.editedLandingPages[1].name.split(' ')[1]) + 1
           : defaultIndex
       const firstPageIndex = parseInt(this?.formValues?.landingPages[0].name.split(' ')[1])
+      if (isNaN(firstPageIndex)) return newPageIndex
       if (firstPageIndex === newPageIndex) newPageIndex += 1
       if (firstPageIndex > newPageIndex) newPageIndex = firstPageIndex + 1
       return newPageIndex
