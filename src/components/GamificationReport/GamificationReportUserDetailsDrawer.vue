@@ -275,11 +275,7 @@
             </div>
           </div>
           <DatatableLoading v-if="isTimelineLoading" :loading="isTimelineLoading" />
-          <div
-            v-else
-            class="gamification-report__user-details-drawer-timeline"
-            :style="{ paddingBottom: isLoadMoreVisible ? '92px' : '0px' }"
-          >
+          <div v-else class="gamification-report__user-details-drawer-timeline">
             <VTimeline v-if="!!timeline.length" dense clipped>
               <VTimelineItem v-for="(item, index) in timeline" :key="index" medium>
                 <template #icon>
@@ -453,7 +449,6 @@
                 outlined
                 text
                 style="border: none;"
-                class="mt-2"
                 :style="{ 'background-color': hover ? '#F2F2F2' : '#FFFFFF' }"
                 @click="handleLoadMore"
               >
