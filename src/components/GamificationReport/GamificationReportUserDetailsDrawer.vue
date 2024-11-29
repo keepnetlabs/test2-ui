@@ -344,15 +344,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -387,15 +381,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -434,15 +422,9 @@
                     }}</span>
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? item.categoryDescription
-                        : item.difficultyType
+                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                     }}</span>
-                    {{
-                      item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR'
-                        ? 'category'
-                        : 'difficulity'
-                    }}.
+                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
                   </span>
                   <div>
                     <span class="gamification-report__timeline-item-bottom-text">{{
@@ -660,6 +642,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = res?.data?.data?.totalNumberOfRecords || 0
           this.serverSideProps.totalNumberOfPages = res?.data?.data?.totalNumberOfPages || 0
           this.serverSideProps.pageNumber = res?.data?.data?.pageNumber || 1
+          console.log('res?.data?.data?.results', res?.data?.data?.results)
           if (isAppend) {
             const newTimeline = res?.data?.data?.results || []
             this.timeline = [...this.timeline, ...newTimeline]
@@ -696,9 +679,15 @@ export default {
         })
     },
     handleSearch(event) {
-      this.debounce(() => {
-        // TODO: Call for search
-      })
+      this.debounce(() => {})
+    },
+    isProductAwareness(item) {
+      console.log('item', item)
+      return (
+        item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR' ||
+        item.productType === 'SECURITY AWARENESS' ||
+        item.productType.split(' - ')[0] === 'SECURITY AWARENESS'
+      )
     },
     handleSetActiveFilter(filter) {
       if (filter && this.activeFilter.key === filter.key) return
@@ -987,7 +976,7 @@ export default {
       if (['Vishing Simulator', 'Callback Simulator'].includes(item.product)) {
         return ''
       }
-      if (item.product === 'Awareness Educator') {
+      if (item.product === 'Awareness Educator' || item.product === 'Security Awareness') {
         return item?.materialType || ''
       }
       return item.scenarioMethod

@@ -161,6 +161,7 @@
         font-size: 18px;
         text-align: center;
         color: #383b41b8;
+        padding-top: 8px;
       }
     }
 
@@ -312,7 +313,12 @@
   &__user-details-drawer-load-more-button {
   }
 }
-
+.v-timeline{
+  margin-top:-8px !important;
+  &-item{
+    padding-right:16px !important;
+  }
+}
 .v-timeline-item__dot {
   box-shadow: none !important;
 }
