@@ -119,9 +119,6 @@ export default {
         return false
       return this.scope?.row?.isReminderActive
     },
-    isScheduled() {
-      return this.scope.row.status === ENROLLMENT_STATUSES.SCHEDULED
-    },
     isScormProxy() {
       return this.scope.row.status === ENROLLMENT_STATUSES.SCORM_PROXY
     },
