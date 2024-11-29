@@ -15,6 +15,7 @@
       :key="item.i"
       :static="isStatic"
       v-bind="item"
+      title=""
       @move="moveEvent"
       @resize="resizeEvent"
       @moved="movedEvent"
