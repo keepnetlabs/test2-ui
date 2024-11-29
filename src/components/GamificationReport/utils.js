@@ -101,7 +101,7 @@ export const userActivityDetailsFilters = [
     isFilterActive: false
   },
   {
-    text: 'Difficulty',
+    text: 'Phishing Difficulty',
     icon: 'mdi-signal-cellular-3',
     key: 'difficulty',
     show: true,
