@@ -399,6 +399,7 @@ export default {
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
+        formData.replyTracking = refCampaignManagerCampaignInfo.formData.replyTracking
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =

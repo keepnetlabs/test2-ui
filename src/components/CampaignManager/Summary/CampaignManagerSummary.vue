@@ -574,7 +574,8 @@ export default {
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
           'Tracking Duration': formData.duration,
-          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
+          'Reply Tracking': formData.replyTracking.isReplyTracking ? 'On' : 'Off'
         }
       }
       const methodSet = new Set()
@@ -589,7 +590,8 @@ export default {
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
         'Tracking Duration': formData.duration,
-        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
+        'Reply Tracking': formData.replyTracking ? 'On' : 'Off'
       }
     },
     getTotalRandomlySelectedUserCount() {

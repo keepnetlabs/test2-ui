@@ -13,6 +13,8 @@ export const labels = {
   ScreenSaverName: 'Screensaver Name',
   InfoGraphicName: 'Infographic Name',
   RepeatOffenders: 'Repeat Offenders',
+  ReplyTracking: 'Reply Tracking',
+  ReplyTrackingSub: 'Enter custom reply-to address to track replies',
   DescriptionInfographicSub: 'Describe the infographic briefly',
   ScreensaverContentStep2Sub: 'Upload screensaver content by language',
   Infographic: 'Infographic',

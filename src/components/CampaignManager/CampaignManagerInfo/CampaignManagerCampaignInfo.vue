@@ -60,6 +60,7 @@
           </template>
         </KSelect>
       </FormGroup>
+      <CampaignManagerReplyTracking />
       <FormGroup
         v-if="showDuration"
         has-hint
@@ -113,9 +114,11 @@ import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroup
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import CampaignManagerReplyTracking from '@/components/CampaignManager/CampaignManagerReplyTracking.vue'
 export default {
   name: 'CampaignManagerCampaignInfo',
   components: {
+    CampaignManagerReplyTracking,
     FormGroup,
     InputEntityName,
     CreateNewUserGroupModal,
@@ -171,7 +174,14 @@ export default {
       formData: {
         name: '',
         duration: 365,
-        excludeFromReports: false
+        excludeFromReports: false,
+        replyTracking: {
+          isReplyTracking: false,
+          subDomain: '',
+          domain: '',
+          isSaveForReview: false,
+          isSaveOutOfOfficeForReview: false
+        }
       },
       rules: {
         name: [
