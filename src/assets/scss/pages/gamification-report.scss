@@ -161,6 +161,7 @@
         font-size: 18px;
         text-align: center;
         color: #383b41b8;
+        padding-top: 8px;
       }
     }
 
@@ -300,19 +301,18 @@
   }
 
   &__user-details-drawer-load-more-button-container {
-    position: fixed;
-    bottom: 0;
-    padding: 24px 0;
-    left: 48px;
-    right: 48px;
-    background-color: #ffffff;
-    z-index: 10;
+    padding:16px;
   }
 
   &__user-details-drawer-load-more-button {
   }
 }
-
+.v-timeline{
+  margin-top:-8px !important;
+  &-item{
+    padding-right:16px !important;
+  }
+}
 .v-timeline-item__dot {
   box-shadow: none !important;
 }
