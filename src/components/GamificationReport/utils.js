@@ -9,6 +9,7 @@ export const ACTIVITY_TYPE_COLOR_MAP = {
   'Entered Digits': '#F56C6C',
   'Scanned QR Link': '#F56C6C',
   'Vished (Dialed Number)': '#F56C6C',
+  'Opened Email But Not Clicked Training Link': '#F56C6C',
   Answered: '#E6A23C',
   'Training Completed': '#43A047',
   'Clicked Training Link': '#43A047',
@@ -19,7 +20,7 @@ export const ACTIVITY_TYPE_COLOR_MAP = {
   'Downloaded Poster': '#43A047',
   'Downloaded Infographic': '#43A047',
   'Email Sent': '#1173C1',
-  Called: '#1173C1',
+  'Call Sent': '#1173C1',
   'SMS Sent': '#1173C1'
 }
 
@@ -34,6 +35,7 @@ export const ACTIVITY_TYPES_FAIL_MAP = {
   'Entered Digits': true,
   'Scanned QR Link': true,
   'Vished (Dialed Number)': true,
+  'Opened Email But Not Clicked Training Link': true,
   Answered: false,
   'Training Completed': false,
   'Clicked Training Link': false,
@@ -44,7 +46,7 @@ export const ACTIVITY_TYPES_FAIL_MAP = {
   'Downloaded Poster': false,
   'Downloaded Infographic': false,
   'Email Sent': false,
-  Called: false,
+  'Call Sent': false,
   'SMS Sent': false
 }
 
@@ -59,6 +61,7 @@ export const ACTIVITY_TYPES_NEUTRAL_MAP = {
   'Entered Digits': false,
   'Scanned QR Link': false,
   'Vished (Dialed Number)': false,
+  'Opened Email But Not Clicked Training Link': false,
   Answered: false,
   'Training Completed': false,
   'Clicked Training Link': false,
@@ -69,7 +72,7 @@ export const ACTIVITY_TYPES_NEUTRAL_MAP = {
   'Downloaded Poster': false,
   'Downloaded Infographic': false,
   'Email Sent': true,
-  Called: true,
+  'Call Sent': true,
   'SMS Sent': true
 }
 

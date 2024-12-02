@@ -50,7 +50,7 @@
             <template v-else>
               <div class="gamification-report__user-details-drawer-card__overall-score">
                 <span class="gamification-report__user-details-drawer-card__overall-score-text"
-                  >Overall score</span
+                  >Overall performance</span
                 >
                 <span
                   class="gamification-report__user-details-drawer-card__overall-score-percentage"
@@ -338,6 +338,7 @@
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
+                    {{ ` ${item.campaignType} ` }}
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
                       isProductAwareness(item) ? item.categoryDescription : item.difficultyType
@@ -375,6 +376,7 @@
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
+                    {{ ` ${item.campaignType} ` }}
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
                       isProductAwareness(item) ? item.categoryDescription : item.difficultyType
@@ -416,6 +418,7 @@
                     <span class="gamification-report__timeline-item-bold-text">{{
                       item.name
                     }}</span>
+                    {{ ` ${item.campaignType} ` }}
                     at
                     <span class="gamification-report__timeline-item-bold-text">{{
                       isProductAwareness(item) ? item.categoryDescription : item.difficultyType
@@ -961,7 +964,7 @@ export default {
         }
         return require('@/assets/img/timeline-quishing-success-icon.svg')
       }
-      if (productType === 'Awareness Educator'.toUpperCase()) {
+      if (productType === 'SECURITY AWARENESS'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-fail-icon.svg')
         }
