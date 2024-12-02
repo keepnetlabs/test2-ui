@@ -255,6 +255,15 @@
     &--first {
       border-top: none !important;
     }
+
+    &-date-header {
+      .v-timeline-item__dot {
+        margin-bottom: -24px;
+      }
+      .v-timeline-item__inner-dot.primary {
+        background-color: #E0E0E0 !important;
+      }
+    }
   }
 
   &__timeline-item-activity-type {
