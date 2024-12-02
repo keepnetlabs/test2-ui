@@ -288,7 +288,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             overrideWidth: true,
-            width: 300
+            minWidth: 160
           },
           {
             property: 'lastName',
@@ -300,7 +300,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             overrideWidth: true,
-            width: 300
+            minWidth: 160
           },
           {
             property: 'email',
@@ -312,7 +312,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             overrideWidth: true,
-            width: 300
+            minWidth: 175
           },
           {
             property: 'department',
@@ -324,7 +324,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             overrideWidth: true,
-            width: 300
+            minWidth: 175
           },
           {
             property: 'performance',
@@ -336,7 +336,7 @@ export default {
             type: 'text',
             filterableType: 'text',
             overrideWidth: true,
-            width: 300
+            minWidth: 175
           },
           {
             property: 'points',
@@ -348,7 +348,7 @@ export default {
             type: 'text',
             filterableType: 'number',
             overrideWidth: true,
-            width: 300
+            minWidth: 175
           }
         ],
         iEmpty: {
