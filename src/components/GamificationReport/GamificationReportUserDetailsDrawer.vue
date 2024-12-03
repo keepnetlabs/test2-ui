@@ -65,7 +65,11 @@
                 :key="index"
                 class="gamification-report__user-details-drawer-card__product"
               >
-                <img :src="getCardProductIcon(item.product)" :alt="item.product" />
+                <img
+                  :src="getCardProductIcon(item.product)"
+                  :alt="item.product"
+                  style="width: 42px; height: 42px;"
+                />
                 <span class="gamification-report__user-details-drawer-card__product-text">{{
                   item.product
                 }}</span>
@@ -280,6 +284,7 @@
               <VTimelineItem v-for="(item, index) in timeline" :key="index" medium>
                 <template #icon>
                   <img
+                    style="width: 32px; height: 32px;"
                     :src="getProductIconPath(item)"
                     :alt="`${item.productType} - ${item.ActionType}`"
                   />
@@ -904,76 +909,76 @@ export default {
     },
     getCardProductIcon(product) {
       if (product === 'Phishing Simulator')
-        return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
+        return require('@/assets/img/gamification-report-user-details-phishing-icon.png')
       if (product === 'Callback Simulator')
-        return require('@/assets/img/gamification-report-user-details-callback-icon.svg')
+        return require('@/assets/img/gamification-report-user-details-callback-icon.png')
       if (product === 'Vishing Simulator')
-        return require('@/assets/img/gamification-report-user-details-vishing-icon.svg')
-      if (product === 'Awareness Educator')
-        return require('@/assets/img/gamification-report-user-details-awareness-icon.svg')
+        return require('@/assets/img/gamification-report-user-details-vishing-icon.png')
+      if (product === 'Security Awareness')
+        return require('@/assets/img/gamification-report-user-details-awareness-icon.png')
       if (product === 'Smishing Simulator')
-        return require('@/assets/img/gamification-report-user-details-smishing-icon.svg')
+        return require('@/assets/img/gamification-report-user-details-smishing-icon.png')
       if (product === 'Quishing Simulator')
-        return require('@/assets/img/gamification-report-user-details-quishing-icon.svg')
-      return require('@/assets/img/gamification-report-user-details-phishing-icon.svg')
+        return require('@/assets/img/gamification-report-user-details-quishing-icon.png')
+      return require('@/assets/img/gamification-report-user-details-phishing-icon.png')
     },
     getProductIconPath(item) {
       const productType = item.productType.split(' - ')[0]
       if (productType === 'Phishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-phishing-fail-icon.svg')
+          return require('@/assets/img/timeline-phishing-fail-icon.png')
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-phishing-neutral-icon.svg')
+          return require('@/assets/img/timeline-phishing-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-phishing-success-icon.svg')
+        return require('@/assets/img/timeline-phishing-success-icon.png')
       }
       if (productType === 'Callback Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-callback-fail-icon.svg')
+          return require('@/assets/img/timeline-callback-fail-icon.png')
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-callback-neutral-icon.svg')
+          return require('@/assets/img/timeline-callback-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-callback-success-icon.svg')
+        return require('@/assets/img/timeline-callback-success-icon.png')
       }
       if (productType === 'Vishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-vishing-fail-icon.svg')
+          return require('@/assets/img/timeline-vishing-fail-icon.png')
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-vishing-neutral-icon.svg')
+          return require('@/assets/img/timeline-vishing-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-vishing-answered-icon.svg')
+        return require('@/assets/img/timeline-vishing-answered-icon.png')
       }
       if (productType === 'Smishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-smishing-neutral-icon.svg')
+          return require('@/assets/img/timeline-smishing-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-smishing-fail-icon.svg')
+        return require('@/assets/img/timeline-smishing-fail-icon.png')
       }
       if (productType === 'Quishing Simulator'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-quishing-fail-icon.svg')
+          return require('@/assets/img/timeline-quishing-fail-icon.png')
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-quishing-neutral-icon.svg')
+          return require('@/assets/img/timeline-quishing-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-quishing-success-icon.svg')
+        return require('@/assets/img/timeline-quishing-success-icon.png')
       }
-      if (productType === 'Awareness Educator'.toUpperCase()) {
+      if (productType === 'Security Awareness'.toUpperCase()) {
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-awareness-fail-icon.svg')
+          return require('@/assets/img/timeline-awareness-fail-icon.png')
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
-          return require('@/assets/img/timeline-awareness-neutral-icon.svg')
+          return require('@/assets/img/timeline-awareness-neutral-icon.png')
         }
-        return require('@/assets/img/timeline-awareness-success-icon.svg')
+        return require('@/assets/img/timeline-awareness-success-icon.png')
       }
       if (productType === 'Incident Responder'.toUpperCase()) {
-        return require('@/assets/img/timeline-ir-success-icon.svg')
+        return require('@/assets/img/timeline-ir-success-icon.png')
       }
-      return require('@/assets/img/timeline-phishing-success-icon.svg')
+      return require('@/assets/img/timeline-phishing-success-icon.png')
     },
     getScenarioMethodText(item) {
       if (['Vishing Simulator', 'Callback Simulator'].includes(item.product)) {
