@@ -1522,6 +1522,7 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
+        this.$store.dispatch('login/getCurrentCompany')
         this.callForSystemSummary()
         if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal()
         this.interval = setInterval(() => {
