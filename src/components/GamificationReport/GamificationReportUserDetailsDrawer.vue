@@ -50,7 +50,7 @@
             <template v-else>
               <div class="gamification-report__user-details-drawer-card__overall-score">
                 <span class="gamification-report__user-details-drawer-card__overall-score-text"
-                  >Overall score</span
+                  >Overall performance</span
                 >
                 <span
                   class="gamification-report__user-details-drawer-card__overall-score-percentage"
@@ -281,159 +281,184 @@
           <DatatableLoading v-if="isTimelineLoading" :loading="isTimelineLoading" />
           <div v-else class="gamification-report__user-details-drawer-timeline">
             <VTimeline v-if="!!timeline.length" dense clipped>
-              <VTimelineItem v-for="(item, index) in timeline" :key="index" medium>
-                <template #icon>
-                  <img
-                    style="width: 32px; height: 32px;"
-                    :src="getProductIconPath(item)"
-                    :alt="`${item.productType} - ${item.ActionType}`"
-                  />
-                </template>
-                <div
-                  v-if="item.productType === 'Incident Responder'.toUpperCase()"
-                  :class="[
-                    'gamification-report__timeline-item',
-                    index === 0 ? 'gamification-report__timeline-item--first' : ''
-                  ]"
-                >
-                  <div class="d-flex justify-space-between align-items-center">
-                    <span
-                      class="gamification-report__timeline-item-activity-type"
-                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
-                      >{{ item.ActionType }}</span
-                    >
-                    <span class="gamification-report__timeline-item-date">{{
-                      item.ActionTime
-                    }}</span>
+              <template v-for="(item, index) in timeline">
+                <VTimelineItem v-if="item.type !== 'header'" medium :key="index">
+                  <template #icon>
+                    <img
+                      style="width: 32px; height: 32px;"
+                      :src="getProductIconPath(item)"
+                      :alt="`${item.productType} - ${item.ActionType}`"
+                    />
+                  </template>
+                  <div
+                    v-if="item.productType === 'Incident Responder'.toUpperCase()"
+                    :class="[
+                      'gamification-report__timeline-item',
+                      index === 0 ? 'gamification-report__timeline-item--first' : ''
+                    ]"
+                  >
+                    <div class="d-flex justify-space-between align-items-center">
+                      <span
+                        class="gamification-report__timeline-item-activity-type"
+                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        >{{ item.ActionType }}</span
+                      >
+                      <span class="gamification-report__timeline-item-date">{{
+                        item.ActionTime
+                      }}</span>
+                    </div>
+                    <span class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.name
+                      }}</span>
+                      resulted in a
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.result
+                      }}</span>
+                      after analysis.
+                    </span>
+                    <div>
+                      <span class="gamification-report__timeline-item-bottom-text">{{
+                        item.productType
+                      }}</span>
+                    </div>
                   </div>
-                  <span class="gamification-report__timeline-item-middle-text">
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.name
-                    }}</span>
-                    resulted in a
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.result
-                    }}</span>
-                    after analysis.
-                  </span>
-                  <div>
-                    <span class="gamification-report__timeline-item-bottom-text">{{
-                      item.productType
-                    }}</span>
+                  <div
+                    v-else-if="ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]"
+                    :class="[
+                      'gamification-report__timeline-item',
+                      index === 0 ? 'gamification-report__timeline-item--first' : ''
+                    ]"
+                  >
+                    <div class="d-flex justify-space-between align-items-center">
+                      <span
+                        class="gamification-report__timeline-item-activity-type"
+                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        >{{ item.ActionType }}</span
+                      >
+                      <span class="gamification-report__timeline-item-date">{{
+                        item.ActionTime
+                      }}</span>
+                    </div>
+                    <span class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.name
+                      }}</span>
+                      {{ ` ${item.campaignType} ` }}
+                      at
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        isProductAwareness(item) ? item.categoryDescription : item.difficultyType
+                      }}</span>
+                      {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                    </span>
+                    <div>
+                      <span class="gamification-report__timeline-item-bottom-text">{{
+                        item.productType
+                      }}</span>
+                    </div>
                   </div>
-                </div>
-                <div
-                  v-else-if="ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]"
-                  :class="[
-                    'gamification-report__timeline-item',
-                    index === 0 ? 'gamification-report__timeline-item--first' : ''
-                  ]"
-                >
-                  <div class="d-flex justify-space-between align-items-center">
-                    <span
-                      class="gamification-report__timeline-item-activity-type"
-                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
-                      >{{ item.ActionType }}</span
-                    >
-                    <span class="gamification-report__timeline-item-date">{{
-                      item.ActionTime
-                    }}</span>
+                  <div
+                    v-else-if="
+                      ['smishing', 'vishing', 'quishing'].includes(
+                        item.productType.split(' - ')[0].toLowerCase()
+                      ) && ACTIVITY_TYPES_FAIL_MAP[item.ActionType]
+                    "
+                    :class="[
+                      'gamification-report__timeline-item',
+                      index === 0 ? 'gamification-report__timeline-item--first' : ''
+                    ]"
+                  >
+                    <div class="d-flex justify-space-between align-items-center">
+                      <span
+                        class="gamification-report__timeline-item-activity-type"
+                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        >{{ item.ActionType }}</span
+                      >
+                      <span class="gamification-report__timeline-item-date">{{
+                        item.ActionTime
+                      }}</span>
+                    </div>
+                    <span class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.name
+                      }}</span>
+                      {{ ` ${item.campaignType} ` }}
+                      at
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        isProductAwareness(item) ? item.categoryDescription : item.difficultyType
+                      }}</span>
+                      {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                    </span>
+                    <div>
+                      <span class="gamification-report__timeline-item-bottom-text">{{
+                        item.productType
+                      }}</span>
+                    </div>
                   </div>
-                  <span class="gamification-report__timeline-item-middle-text">
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.name
-                    }}</span>
-                    at
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
-                    }}</span>
-                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
-                  </span>
-                  <div>
-                    <span class="gamification-report__timeline-item-bottom-text">{{
-                      item.productType
-                    }}</span>
+                  <div
+                    v-else
+                    :class="[
+                      'gamification-report__timeline-item',
+                      index === 0 ? 'gamification-report__timeline-item--first' : ''
+                    ]"
+                  >
+                    <div class="d-flex justify-space-between align-items-center">
+                      <span
+                        class="gamification-report__timeline-item-activity-type"
+                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        >{{ item.ActionType }}</span
+                      >
+                      <span class="gamification-report__timeline-item-date">{{
+                        item.ActionTime
+                      }}</span>
+                    </div>
+                    <span class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.points }} points</span
+                      >
+                      with
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.campaignPerformance }}%</span
+                      >
+                      total score on
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.name
+                      }}</span>
+                      {{ ` ${item.campaignType} ` }}
+                      at
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        isProductAwareness(item) ? item.categoryDescription : item.difficultyType
+                      }}</span>
+                      {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                    </span>
+                    <div>
+                      <span class="gamification-report__timeline-item-bottom-text">{{
+                        item.productType
+                      }}</span>
+                    </div>
                   </div>
-                </div>
-                <div
-                  v-else-if="
-                    ['smishing', 'vishing', 'quishing'].includes(
-                      item.productType.split(' - ')[0].toLowerCase()
-                    ) && ACTIVITY_TYPES_FAIL_MAP[item.ActionType]
-                  "
-                  :class="[
-                    'gamification-report__timeline-item',
-                    index === 0 ? 'gamification-report__timeline-item--first' : ''
-                  ]"
-                >
-                  <div class="d-flex justify-space-between align-items-center">
-                    <span
-                      class="gamification-report__timeline-item-activity-type"
-                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
-                      >{{ item.ActionType }}</span
-                    >
-                    <span class="gamification-report__timeline-item-date">{{
-                      item.ActionTime
-                    }}</span>
-                  </div>
-                  <span class="gamification-report__timeline-item-middle-text">
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.name
-                    }}</span>
-                    at
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
-                    }}</span>
-                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
-                  </span>
-                  <div>
-                    <span class="gamification-report__timeline-item-bottom-text">{{
-                      item.productType
-                    }}</span>
-                  </div>
-                </div>
-                <div
+                </VTimelineItem>
+                <VTimelineItem
+                  class="gamification-report__timeline-item-date-header"
                   v-else
-                  :class="[
-                    'gamification-report__timeline-item',
-                    index === 0 ? 'gamification-report__timeline-item--first' : ''
-                  ]"
+                  small
+                  :key="index"
                 >
-                  <div class="d-flex justify-space-between align-items-center">
-                    <span
-                      class="gamification-report__timeline-item-activity-type"
-                      :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
-                      >{{ item.ActionType }}</span
-                    >
-                    <span class="gamification-report__timeline-item-date">{{
-                      item.ActionTime
+                  <template #icon>
+                    <img src="@/assets/img/timeline-date-header-icon.svg" :alt="item.text" />
+                  </template>
+                  <div
+                    :class="[
+                      'gamification-report__timeline-item pt-6',
+                      index === 0 ? 'gamification-report__timeline-item--first' : ''
+                    ]"
+                  >
+                    <span class="gamification-report__timeline-item-middle-text">{{
+                      item.text
                     }}</span>
                   </div>
-                  <span class="gamification-report__timeline-item-middle-text">
-                    <span class="gamification-report__timeline-item-bold-text"
-                      >{{ item.points }} points</span
-                    >
-                    with
-                    <span class="gamification-report__timeline-item-bold-text"
-                      >{{ item.campaignPerformance }}%</span
-                    >
-                    total score on
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      item.name
-                    }}</span>
-                    at
-                    <span class="gamification-report__timeline-item-bold-text">{{
-                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
-                    }}</span>
-                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
-                  </span>
-                  <div>
-                    <span class="gamification-report__timeline-item-bottom-text">{{
-                      item.productType
-                    }}</span>
-                  </div>
-                </div>
-              </VTimelineItem>
+                </VTimelineItem>
+              </template>
             </VTimeline>
             <div v-else class="gamification-report__user-details-drawer-timeline-empty">
               <span class="gamification-report__user-details-drawer-timeline-empty-text"
@@ -653,15 +678,34 @@ export default {
           this.serverSideProps.totalNumberOfPages = res?.data?.data?.totalNumberOfPages || 0
           this.serverSideProps.pageNumber = res?.data?.data?.pageNumber || 1
           if (isAppend) {
-            const newTimeline = res?.data?.data?.results || []
+            const newTimeline = this.addDateHeaders(res?.data?.data?.results || [])
             this.timeline = [...this.timeline, ...newTimeline]
           } else {
-            this.timeline = res?.data?.data?.results || []
+            this.timeline = this.addDateHeaders(res?.data?.data?.results || [])
           }
         })
         .finally(() => {
           this.isTimelineLoading = false
         })
+    },
+    addDateHeaders(timeline) {
+      const timelineWithHeaders = [...timeline]
+      const uniqueDates = [
+        ...new Set(timelineWithHeaders.map((activity) => activity.ActionTimeWithDay))
+      ]
+      for (let i = 0; i < uniqueDates.length; i++) {
+        if (this.timeline.some((activity) => activity.ActionTimeWithDay === uniqueDates[i]))
+          continue
+        const firstActivityIndex = timelineWithHeaders.findIndex(
+          (activity) => activity.ActionTimeWithDay === uniqueDates[i]
+        )
+        if (firstActivityIndex === -1) continue
+        timelineWithHeaders.splice(firstActivityIndex, 0, {
+          type: 'header',
+          text: timelineWithHeaders[firstActivityIndex].ActionTimeWithDay
+        })
+      }
+      return timelineWithHeaders
     },
     callForPerformanceRates() {
       const payload = {
