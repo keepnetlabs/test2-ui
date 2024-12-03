@@ -398,7 +398,6 @@ export default {
         tooltips: {
           enabled: false,
           mode: 'nearest',
-
           custom: function (tooltipModel) {
             let tooltipEl = document.getElementById('chartjs-tooltip-users-time-to-failure')
 

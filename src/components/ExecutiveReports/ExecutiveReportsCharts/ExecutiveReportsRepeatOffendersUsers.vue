@@ -259,7 +259,7 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#383B41',
+            color: '#fff',
             anchor: function (context) {
               if (context.dataset.data.includes(0)) return 'start'
               return 'top'
@@ -275,10 +275,7 @@ export default {
               return 'center'
             },
             display: true,
-            font: {
-              size: 12,
-              family: 'Open Sans, sans-serif'
-            },
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
               if (value) return `${value}%`
               return ``

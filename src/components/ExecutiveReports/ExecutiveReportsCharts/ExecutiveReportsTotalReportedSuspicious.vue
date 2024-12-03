@@ -16,6 +16,7 @@
               :chart-data="chartData"
               :chart-options="chartOptions"
               :custom-plugin="customPlugin"
+              :another-custom-plugin="anotherCustomPlugin"
             />
           </template>
           <div
@@ -43,6 +44,7 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportsTotalReportedSuspicious',
   components: {
@@ -101,6 +103,31 @@ export default {
           ctx.lineTo(xAxis.right, yAxis.bottom)
           ctx.stroke()
           ctx.restore()
+        }
+      },
+      anotherCustomPlugin: {
+        afterDraw: (chart) => {
+          const ctx = chart.chart.ctx
+          const fontSize = 12
+          const fontFamily = 'Open Sans, sans-serif'
+          chart.legend.legendItems.forEach((legendItem, index) => {
+            const textParts = legendItem.textParts
+            if (textParts) {
+              let text = textParts[0]
+              let percentage = `(${textParts[1]}%)`
+              const x = chart.legend.legendHitBoxes[index].left + 17
+              const y = chart.legend.legendHitBoxes[index].top + 6
+              ctx.fillStyle = '#383B41'
+              ctx.fillText(text, x, y)
+              ctx.font = `bold ${fontSize}px ${fontFamily}`
+              ctx.fillText(
+                percentage,
+                x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                y + 0.5
+              )
+              ctx.font = `${fontSize}px ${fontFamily}`
+            }
+          })
         }
       }
     }
@@ -235,7 +262,43 @@ export default {
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            color: '#383B41',
+            font: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12,
+            onClick: (e) => e.stopPropagation(),
+            generateLabels: (chart = {}) => {
+              const { data } = chart
+              console.log('data', data)
+              return data.datasets[0].data.map((d, index) => {
+                const label = data.yLabels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d.x]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d.x]
+                const comparatorVal = 4
+                return {
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d.x + ' (%) '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[data.yLabels[index]]
+                    ? CHART_COLORS[data.yLabels[index]].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft: label === 'Undetected' ? 5 : label === 'Simulation' ? 3 : 1
+                }
+              })
+            }
+          }
         },
         tooltips: {
           enabled: false,

@@ -234,8 +234,8 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
             clamp: true,
             anchor: function (context) {
@@ -246,6 +246,11 @@ export default {
             align: function (context) {
               const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
               if (isZeroTwice) return 'center'
+              const dataArr = context.dataset.data
+              if (context.dataIndex === 0) {
+                const comparator = dataArr[context.dataIndex] - dataArr[context.dataIndex + 1]
+                if (comparator <= 3 || comparator >= -3) return 'end'
+              }
               return 'center'
             },
             formatter(value) {

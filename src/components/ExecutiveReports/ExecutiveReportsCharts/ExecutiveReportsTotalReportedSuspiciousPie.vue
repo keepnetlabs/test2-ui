@@ -322,7 +322,7 @@ export default {
         plugins: {
           datalabels: {
             color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
             clamp: true,
             anchor: function () {

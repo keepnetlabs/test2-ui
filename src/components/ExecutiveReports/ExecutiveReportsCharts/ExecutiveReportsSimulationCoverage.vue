@@ -116,7 +116,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 const text = textParts[0]
-                const percentage = `(${textParts[1]} users)`
+                const percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -143,6 +143,12 @@ export default {
   created() {
     if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
     else this.callForData()
+  },
+  mounted() {
+    window.addEventListener('resize', () => {
+      this.setChartData(this.defaultWidgetData)
+      this.$forceUpdate()
+    })
   },
   methods: {
     callForData() {
@@ -198,24 +204,22 @@ export default {
         legend: {
           display: true,
           position: 'top',
-          align: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 'start' : 'center',
+          align: 'center',
           labels: {
             usePointStyle: true,
             fontColor: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 24 : 32,
+            padding: 24,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
               const splittedNonSimulatedUsers = labels.NonSimulatedUsers.split(' ')
               const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
+              const emptySpace = window.innerWidth < 1480 ? '     ' : '  '
               return [
                 {
                   text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[0].data[0] +
-                      ' (users)    '
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + ' '
                   )
                     .fill('')
                     .join(' '),
@@ -235,7 +239,7 @@ export default {
                     labels.NonSimulatedUsers +
                       labels.NonSimulatedUsers +
                       data.datasets[0].data[1] +
-                      ' (users) '
+                      emptySpace
                   )
                     .fill('')
                     .join(' '),
@@ -262,7 +266,7 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#383B41',
+            color: '#fff',
             anchor: function (context) {
               if (context.dataset.data.includes(0)) return 'start'
               return 'top'
@@ -278,10 +282,7 @@ export default {
               return 'center'
             },
             display: true,
-            font: {
-              size: 12,
-              family: 'Open Sans, sans-serif'
-            },
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
               if (value) return `${value}%`
               return ``

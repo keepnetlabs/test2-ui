@@ -213,9 +213,20 @@ export default {
         },
         plugins: {
           datalabels: {
-            color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
+            clamp: true,
+            offset: -8,
+            align: function (context) {
+              const dataArr = context.dataset.data
+              if (context.dataIndex === 0 && dataArr[context.dataIndex + 1] < 8) {
+                const comparator = dataArr[context.dataIndex] - dataArr[context.dataIndex + 1]
+                if (comparator <= 3 || comparator >= -3) return 'right'
+              }
+              return 'center'
+            },
+            anchor: 'center',
             formatter(value) {
               if (value === 0) return ''
               return `${value}%`
