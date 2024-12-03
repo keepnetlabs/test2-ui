@@ -41,19 +41,43 @@
             :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
           />
         </form-group>
-        <form-group title="SMTP" has-hint>
-          <k-select
-            v-bind="commonRules"
-            v-model.trim="formValues.smtpSettingResourceId"
-            id="input--notification-template-smtp"
-            :items="smtpItems"
+        <form-group :title="labels.EmailDelivery" :sub-title="labels.EmailDeliverySub" has-hint>
+          <KSelect
+            v-bind="emailDeliveryProps"
+            v-model.trim="emailDelivery"
+            id="input--company-manager-advanced-settings-smtp"
             class="new-integration__select"
             dense
             outlined
-            placeholder="Select Option"
-            :disabled="editItemsDisabled"
-          />
+            item-text="name"
+            placeholder="Select configuration"
+            no-data-text="No Email Delivery configuration available"
+            return-object
+            :items="emailDeliveryItems"
+            :slots="{ item: true, selection: false }"
+            @change="handleChangeEmailDelivery"
+          >
+            <template #item="{ item }">
+              <v-list-item-content :disabled="item.disabled">
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                <v-list-item-subtitle v-if="item.description" class="tlp_subtitle">{{
+                  item.description
+                }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+          </KSelect>
         </form-group>
+        <FormGroup>
+          <AlertBox
+            v-if="canRenderAlertBox"
+            style="margin-top: -20px;"
+            class="bg-aqua-light mb-4"
+            icon-color="#2196F3"
+            icon-name="mdi-information"
+            text="If a DEC configuration exists for both the reseller and its sub-companies, you can conduct an email phishing simulation using the respective company's DEC configuration. In the absence of a specific configuration, the system will send the simulation via SMTP using the relevant company's default SMTP settings as a fallback."
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          />
+        </FormGroup>
         <form-group title="Tags" sub-title="Define tags for the notification template">
           <InputTag
             ref="refTags"
@@ -117,7 +141,10 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { MERGED_TEXTS_MAP } from '@/components/Company Settings/utils'
-
+import { getDefaultEmailDeliverySetting, getEmailDeliveries } from '@/api/phishingsimulator'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import { mapGetters } from 'vuex'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -129,7 +156,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    InputEntityName
+    InputEntityName,
+    AlertBox
   },
   props: {
     status: {
@@ -151,6 +179,7 @@ export default {
   data() {
     return {
       labels,
+      emailDeliveryItems: [],
       loading: false,
       isSelectedNotificationEnrollment: false,
       activeBlockManagerComponents: {},
@@ -165,13 +194,21 @@ export default {
           (v) => Validations.startsWithSpace(v)
         ]
       },
+      emailDeliveryProps: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [(v) => Validations.required(v, labels.Required)]
+      },
+      emailDelivery: null,
       initialFormValues: null,
       formValues: {
         availableForRequests: [],
         tags: [],
         name: '',
         emailTemplateCategoryResourceId: '',
+        emailDeliverySettingType: '',
         smtpSettingResourceId: '',
+        directEmailSettingResourceId: '',
         fromAddress: '',
         fromName: '',
         subject: '',
@@ -202,6 +239,19 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getUser: 'auth/userGetter'
+    }),
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
+    },
+    canRenderAlertBox() {
+      return (
+        this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
+      )
+    },
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment')?.value
     },
@@ -291,11 +341,95 @@ export default {
     }
     this.callForDatas()
     this.callForNotificationTemplate()
+    this.callForEmailDeliveries()
+    this.callForDefaultEmailDeliverySetting()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    callForEmailDeliveries() {
+      getEmailDeliveries().then((res) => {
+        const {
+          data: { data: { results = [] } = {} }
+        } = res || {}
+        const deliveries = []
+        const smtpItems = results.filter((item) => item.type === EMAIL_DELIVERY_TYPES.SMTP)
+        if (smtpItems.length) {
+          deliveries.push({ header: 'SMTP' })
+          deliveries.push(...smtpItems)
+        }
+        const directEmailItems = results.filter(
+          (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        )
+        if (directEmailItems.length) {
+          deliveries.push({ header: 'Direct Email Creation' })
+          if (
+            this.getUser?.role?.name === 'Reseller' &&
+            this.targetGroupCompanyNames.some((cn) => cn !== this.getCompanyName)
+          ) {
+            deliveries.push(directEmailItems[0])
+            const disabledItems = directEmailItems.map((d) => ({
+              name: d.name,
+              description:
+                'This DEC setting is disabled because you’ve selected user group(s) which doesn’t belong to you.',
+              disabled: true
+            }))
+            disabledItems.splice(0, 1)
+            deliveries.push(...disabledItems)
+          } else {
+            deliveries.push(...directEmailItems)
+          }
+        }
+        this.emailDeliveryItems = deliveries
+        this.$nextTick(() => {
+          //setting default smtp setting
+          if (
+            this.isEdit ||
+            (!this.formValues.smtpSettingResourceId &&
+              !this.formValues.directEmailSettingResourceId)
+          )
+            return
+          const defaultDECSettingIndex = deliveries.findIndex(
+            (item) => item.resourceId === this.formValues.directEmailSettingResourceId
+          )
+          if (defaultDECSettingIndex !== -1) {
+            this.emailDelivery = deliveries[defaultDECSettingIndex]
+            return
+          }
+          this.emailDelivery =
+            deliveries.find((item) => item.resourceId === this.formValues.smtpSettingResourceId) ||
+            {}
+        })
+      })
+    },
+    callForDefaultEmailDeliverySetting() {
+      if (this.isEdit) return
+      getDefaultEmailDeliverySetting().then((res) => {
+        if (res?.data?.data?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) {
+          this.formValues.directEmailSettingResourceId = res?.data?.data?.resourceId
+          this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        } else {
+          this.formValues.smtpSettingResourceId = res?.data?.data?.resourceId
+          this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        }
+      })
+    },
+    handleChangeEmailDelivery(delivery = {}) {
+      // this.buttonKey = createRandomCryptStringNumber()
+      // this.isTestMailSend = false
+      // this.isShowSmtpInputError = false
+      // this.testEmailErrorMessage = ''
+      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
+        this.formValues.smtpSettingResourceId = delivery.resourceId
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        this.formValues.directEmailSettingResourceId = ''
+      } else {
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        this.formValues.directEmailSettingResourceId = delivery.resourceId
+        this.formValues.smtpSettingResourceId = ''
+      }
+    },
     callForNotificationTemplate() {
       if (!this?.selectedItem?.resourceId) return
       this.loading = true

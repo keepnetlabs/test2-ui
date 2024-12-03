@@ -107,6 +107,7 @@ import {
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
@@ -217,18 +218,30 @@ export default {
               })) || []
           },
           {
-            property: 'smtpName',
+            property: PROPERTY_STORE.EMAIL_DELIVERY,
             align: 'left',
             editable: false,
-            label: 'SMTP',
-            hideSort: true,
-            filterable: false,
-            sortable: false,
+            label: labels.EmailDelivery,
+            sortable: true,
             show: true,
             fixed: false,
+            width: 200,
             type: 'text',
-            width: 150
+            filterableType: 'text'
           }
+          // {
+          //   property: 'smtpName',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'SMTP',
+          //   hideSort: true,
+          //   filterable: false,
+          //   sortable: false,
+          //   show: true,
+          //   fixed: false,
+          //   type: 'text',
+          //   width: 150
+          // }
           /*
           {
             property: 'emailType',
