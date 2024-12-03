@@ -953,7 +953,7 @@ export default {
         return require('@/assets/img/gamification-report-user-details-callback-icon.svg')
       if (product === 'Vishing Simulator')
         return require('@/assets/img/gamification-report-user-details-vishing-icon.svg')
-      if (product === 'Awareness Educator')
+      if (product === 'Security Awareness')
         return require('@/assets/img/gamification-report-user-details-awareness-icon.svg')
       if (product === 'Smishing Simulator')
         return require('@/assets/img/gamification-report-user-details-smishing-icon.svg')
