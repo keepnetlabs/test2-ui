@@ -307,7 +307,7 @@ export default {
         },
         plugins: {
           datalabels: {
-            color: '#fff',
+            color: '#000',
             offset: -8,
             font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,

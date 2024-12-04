@@ -266,7 +266,7 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#fff',
+            color: '#000',
             anchor: function (context) {
               if (context.dataset.data.includes(0)) return 'start'
               return 'top'
