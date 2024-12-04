@@ -366,11 +366,11 @@ export default {
       } = reportDetail
       return {
         downloaded: {
-          userCount: totalUserClickedCount,
+          userCount: completedCount,
           userPercent:
             totalTargetUserCount === 0
               ? '0'
-              : ((totalUserClickedCount / totalTargetUserCount) * 100).toFixed()
+              : ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         openedEmail: {
           userCount: totalUserOpenedCount,

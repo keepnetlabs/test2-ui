@@ -178,8 +178,8 @@ export default {
       return completedTraining ? completedTraining : {}
     },
     getDownloadedData() {
-      const { downloaded } = this.items
-      return downloaded ? downloaded : {}
+      const { completedTraining } = this.items
+      return completedTraining ? completedTraining : {}
     },
     getNoResponseData() {
       const { noResponse } = this.items
