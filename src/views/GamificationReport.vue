@@ -275,7 +275,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 120
+            overrideWidth: true,
+            width: 150
           },
           {
             property: 'firstName',
@@ -286,7 +287,8 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            overrideWidth: 175
+            overrideWidth: true,
+            minWidth: 160
           },
           {
             property: 'lastName',
@@ -297,7 +299,8 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            overrideWidth: 175
+            overrideWidth: true,
+            minWidth: 160
           },
           {
             property: 'email',
@@ -308,7 +311,8 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            overrideWidth: 175
+            overrideWidth: true,
+            minWidth: 175
           },
           {
             property: 'department',
@@ -319,7 +323,8 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            overrideWidth: 175
+            overrideWidth: true,
+            minWidth: 175
           },
           {
             property: 'performance',
@@ -329,18 +334,21 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text'
+            filterableType: 'text',
+            overrideWidth: true,
+            minWidth: 175
           },
           {
             property: 'points',
             align: 'right',
-            fixed: 'right',
             editable: false,
             label: 'Total Points',
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'number'
+            filterableType: 'number',
+            overrideWidth: true,
+            minWidth: 175
           }
         ],
         iEmpty: {

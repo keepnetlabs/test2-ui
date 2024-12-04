@@ -9,7 +9,6 @@ export default {
   name: 'App',
   created() {
     this.$store.dispatch('login/getWhiteLabelByUrl')
-    this.$store.dispatch('login/getCurrentCompany')
   },
   computed: {
     ...mapGetters({
