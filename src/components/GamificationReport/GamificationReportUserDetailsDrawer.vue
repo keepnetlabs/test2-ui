@@ -50,7 +50,7 @@
             <template v-else>
               <div class="gamification-report__user-details-drawer-card__overall-score">
                 <span class="gamification-report__user-details-drawer-card__overall-score-text"
-                  >Overall performance</span
+                  >Overall Performance</span
                 >
                 <span
                   class="gamification-report__user-details-drawer-card__overall-score-percentage"

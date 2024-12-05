@@ -334,7 +334,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
+            filterableType: 'number',
             overrideWidth: true,
             minWidth: 175
           },
@@ -346,7 +346,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'number',
+            filterableType: 'negativeNumber',
             overrideWidth: true,
             minWidth: 175
           }
