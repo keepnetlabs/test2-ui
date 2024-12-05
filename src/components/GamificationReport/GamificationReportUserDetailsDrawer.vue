@@ -443,7 +443,7 @@
                         {{ item.points > 0 ? 'earned' : 'lost' }}
                       </span>
                       <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.points.replace('-', '') }} points</span
+                        >{{ item?.points?.toString().replace('-', '') }} points</span
                       >
                       in the
                       <span class="gamification-report__timeline-item-bold-text"
@@ -465,7 +465,7 @@
                         {{ item.points > 0 ? 'earned' : 'lost' }}
                       </span>
                       <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.points.replace('-', '') }} points</span
+                        >{{ item?.points?.toString().replace('-', '') }} points</span
                       >
                       in the
                       <span class="gamification-report__timeline-item-bold-text"
