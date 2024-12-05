@@ -438,16 +438,14 @@
                       v-if="isProductAwareness(item)"
                       class="gamification-report__timeline-item-middle-text"
                     >
-                      <span class="gamification-report__timeline-item-bold-text">
-                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}
-                      </span>
+                      {{ selectedRow.firstName }} {{ selectedRow.lastName }}
                       <span class="gamification-report__timeline-item-bold-text">
                         {{ item.points > 0 ? 'earned' : 'lost' }}
                       </span>
-                      <span class="gamification-report__timeline-item-bold-text">{{
-                        item.points
-                      }}</span>
-                      points in the
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.points.replace('-', '') }} points</span
+                      >
+                      in the
                       <span class="gamification-report__timeline-item-bold-text"
                         >{{ item.name }}
                       </span>
@@ -462,16 +460,14 @@
                       >
                     </span>
                     <span v-else class="gamification-report__timeline-item-middle-text">
-                      <span class="gamification-report__timeline-item-bold-text">
-                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}
-                      </span>
+                      {{ selectedRow.firstName }} {{ selectedRow.lastName }}
                       <span class="gamification-report__timeline-item-bold-text">
                         {{ item.points > 0 ? 'earned' : 'lost' }}
                       </span>
-                      <span class="gamification-report__timeline-item-bold-text">{{
-                        item.points
-                      }}</span>
-                      points in the
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.points.replace('-', '') }} points</span
+                      >
+                      in the
                       <span class="gamification-report__timeline-item-bold-text"
                         >{{ item.name }}
                       </span>
@@ -1118,8 +1114,7 @@ export default {
       return ''
     },
     handleDrawerClickOutside() {
-      console.log('iam clicked outside')
-      if (!this.isShowDownloadModal) this.$emit('on-close')
+      if (!this.isShowDownloadModal && !this.menu) this.$emit('on-close')
     }
   }
 }
