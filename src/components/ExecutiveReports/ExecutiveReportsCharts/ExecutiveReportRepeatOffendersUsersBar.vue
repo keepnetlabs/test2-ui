@@ -374,6 +374,18 @@ export default {
           datalabels: {
             color: '#000',
             display: true,
+            clamp: true,
+            offset: offendersPercentage < 5 ? -8 : window.innerWidth < 1480 ? -16 : -20,
+            align({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (data[dataIndex] <= 5) return 'end'
+              return 'center'
+            },
+            anchor({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (data[dataIndex] <= 5) return 'end'
+              return 'center'
+            },
             font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
               return `${value}%`
