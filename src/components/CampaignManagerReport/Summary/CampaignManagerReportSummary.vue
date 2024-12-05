@@ -232,11 +232,16 @@ export default {
       return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0, categoryDistributionType } = this
-        .campaignSummary?.campaignInfo || {
+      const {
+        endDate = '0',
+        totalTargetUserCount = 0,
+        categoryDistributionType,
+        replyTracking
+      } = this.campaignSummary?.campaignInfo || {
         endDate: '0',
         totalTargetUserCount: 0,
-        categoryDistributionType: 'Manually'
+        categoryDistributionType: 'Manually',
+        replyTracking: 'Off'
       }
       const { smartGroupInfo } = this.campaignSummary
       const languages = new Set()
@@ -250,7 +255,8 @@ export default {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : '',
-        'Scenario Distribution': categoryDistributionType
+        'Scenario Distribution': categoryDistributionType,
+        'Reply Tracking': replyTracking ? 'On' : 'Off'
       }
     },
     getCampaignSummaryHelperData() {

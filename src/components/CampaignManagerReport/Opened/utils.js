@@ -66,6 +66,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  REPLY_TYPE: {
+    property: PROPERTY_STORE.REPLY_TYPE,
+    align: 'left',
+    label: labels.ReplyType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
     align: 'left',
@@ -402,6 +414,18 @@ export const COLUMNS = {
     property: 'lastSubmittedTime',
     align: 'left',
     label: labels.LastSubmission,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  REPLY_SENT: {
+    property: 'lastSubmittedTime',
+    align: 'left',
+    label: labels.ReplySent,
     fixed: false,
     sortable: true,
     show: true,

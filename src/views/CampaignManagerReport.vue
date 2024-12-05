@@ -44,6 +44,7 @@ import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/p
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
 import KContainer from '@/components/KContainer/KContainer'
+import CampaignManagerReportReplied from '@/components/CampaignManagerReport/Replied/CampaignManagerReportReplied.vue'
 
 export default {
   name: 'CampaignManagerReport',
@@ -89,6 +90,13 @@ export default {
           id: 'campaign-manager-report-submitted-date-content',
           label: labels.SubmittedData,
           component: CampaignManagerReportSubmittedData,
+          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
+        },
+        {
+          name: labels.Replied,
+          id: 'campaign-manager-report-replied-content',
+          label: labels.Replied,
+          component: CampaignManagerReportReplied,
           isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
         },
         {
