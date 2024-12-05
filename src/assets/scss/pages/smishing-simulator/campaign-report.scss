@@ -17,3 +17,20 @@
     gap: 1rem;
   }
 }
+.campaign-report-replied-detail-popup-item{
+  color: #383B41;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  & > span:first-child, & > div > span{
+  color:rgba(56, 59, 65, 0.72)
+  }
+  &-paginated{
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.campaign-manager-report-replied-detail-content{
+
+}
