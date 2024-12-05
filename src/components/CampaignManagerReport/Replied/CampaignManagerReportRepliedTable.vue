@@ -27,8 +27,6 @@
     @searchChangedEvent="handleSearchChange"
     @downloadEvent="exportCampaignManagerReportSubmittedTable"
     @refreshAction="callForData"
-    @on-resend="handleOnResend"
-    @on-detail="handleOnDetail"
     @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
@@ -37,21 +35,9 @@
         :id="tableOptions.rowActions[0].id"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
-        :disabledTooltipText="
-          campaignDurationExpired()
-            ? 'You cannot resend this campaign because its lifetime has expired'
-            : 'Resend'
-        "
-        @on-click="handleOnResend(scope.row)"
-      />
-      <DefaultButtonRowAction
-        :icon="tableOptions.rowActions[1].icon"
-        :id="tableOptions.rowActions[1].id"
-        :text="tableOptions.rowActions[1].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[1].disabled"
-        @on-click="handleOnDetail(scope.row)"
+        :disabled="tableOptions.rowActions[0].disabled"
+        disabledTooltipText="Save reply email content for review is off."
+        @on-click="handleDetail(scope.row)"
       />
     </template>
     <template #datatable-custom-column="{ scope, col }">
@@ -136,7 +122,7 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.REPLY_TYPE,
-          COLUMNS.LAST_SUBMISSION
+          COLUMNS.REPLY_SENT
         ],
         addButton: {
           show: false
@@ -148,8 +134,8 @@ export default {
           {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
-            icon: '$custom-resend',
-            action: 'on-resend',
+            icon: 'mdi-eye',
+            action: 'on-preview',
             disabled: false
           }
         ]
@@ -157,12 +143,6 @@ export default {
     }
   },
   watch: {
-    passwordComplexities: {
-      immediate: true,
-      handler() {
-        this.setPasswordComplexityItems()
-      }
-    },
     customFields: {
       deep: true,
       immediate: true,
@@ -236,17 +216,7 @@ export default {
         )
       })
     },
-    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      const payload = {
-        Types: [3],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
-        excludedItems: excludedResourceIdList || [],
-        selectAll: !!isSelectedAllEver,
-        filter: this.axiosPayload.filter
-      }
-      this.$emit('on-resend', payload)
-    },
-    handleOnDetail(row) {
+    handleDetail(row) {
       this.$emit('on-detail', row)
     }
   }

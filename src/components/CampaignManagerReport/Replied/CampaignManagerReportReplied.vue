@@ -10,7 +10,7 @@
       @on-confirm="resendItem"
     />
     <CampaignManagerReportHeader :title="labels.RepliedTitle" :subtitle="labels.RepliedSub" />
-    <CampaignManagerReportSubmittedItemDetailDialog
+    <CampaignManagerReportRepliedDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
       :item="selectedRow"
@@ -33,16 +33,16 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
-import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
 import { useResend } from '@/hooks/useResend'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 import CampaignManagerReportRepliedTable from '@/components/CampaignManagerReport/Replied/CampaignManagerReportRepliedTable.vue'
+import CampaignManagerReportRepliedDetailDialog from '@/components/CampaignManagerReport/Replied/CampaignManagerReportRepliedDetailDialog.vue'
 export default {
   name: 'CampaignManagerReportReplied',
   components: {
+    CampaignManagerReportRepliedDetailDialog,
     CampaignManagerReportRepliedTable,
     CampaignManagerReportResendDialog,
-    CampaignManagerReportSubmittedItemDetailDialog,
     CampaignManagerReportHeader
   },
   mixins: [useResend],

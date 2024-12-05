@@ -16,19 +16,18 @@
         ]"
       >
         <div>
-          <span class="campaign-manager-reply-tracking__content-span">reply@</span>
           <VTextField
             :value="value.subDomain"
             ref="refSubdomain"
             required
-            placeholder="Enter sub domain"
+            placeholder="Enter custom address"
             outlined
             dense
             :rules="value.isReplyTracking && subdomainRules"
             :disabled="!value.isReplyTracking"
             @input="handleDomainChange"
           />
-          <span class="campaign-manager-reply-tracking__content-span">.</span>
+          <span class="campaign-manager-reply-tracking__content-span">@</span>
           <KSelect
             v-model.trim="value.domain"
             outlined
@@ -44,7 +43,7 @@
             v-model="value.isSaveForReview"
             hide-details
             :ripple="false"
-            class="pt-0"
+            class="pt-1"
             color="#2196f3"
             label="Save reply email content for review"
             :disabled="!value.isReplyTracking"
