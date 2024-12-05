@@ -116,7 +116,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 const text = textParts[0]
-                const percentage = `(${textParts[1]} users)`
+                const percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -212,7 +212,7 @@ export default {
                     labels.RepeatOffenders +
                       labels.RepeatOffenders +
                       data.datasets[0].data[1] +
-                      ' (users) '
+                      '  '
                   )
                     .fill('')
                     .join(' '),
@@ -229,10 +229,7 @@ export default {
                 },
                 {
                   text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[0].data[0] +
-                      ' (users) '
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + '  '
                   )
                     .fill('')
                     .join(' '),
@@ -259,7 +256,9 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#fff',
+            color: '#000',
+            display: true,
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             anchor: function (context) {
               if (context.dataset.data.includes(0)) return 'start'
               return 'top'
@@ -274,8 +273,6 @@ export default {
               }
               return 'center'
             },
-            display: true,
-            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
               if (value) return `${value}%`
               return ``

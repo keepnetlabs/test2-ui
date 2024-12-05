@@ -166,10 +166,11 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0) {
+        this.isEmpty = true
+        return
       }
-      const yLabels = data[0].widgetDatas.map((obj) => {
-        return obj.dataObject.ActionRange
-      })
+      const yLabels = ['Undetected', 'Malicious', 'Phishing', 'Simulation']
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {
           x: obj.values[0].value,
@@ -192,6 +193,21 @@ export default {
       } else {
         maxX = 100
       }
+      const undetected = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Undetected'
+      )?.values
+      const undetectedPercentage = undetected ? undetected[0].value : 0
+      const malicious = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Malicious'
+      )?.values
+      const maliciousPercentage = malicious ? malicious[0].value : 0
+      const phishing = data[0].widgetDatas.find((obj) => obj.dataObject.ActionRange === 'Phishing')
+        ?.values
+      const phishingPercentage = phishing ? phishing[0].value : 0
+      const simulation = data[0].widgetDatas.find(
+        (obj) => obj.dataObject.ActionRange === 'Simulation'
+      )?.values
+      const simulationPercentage = simulation ? simulation[0].value : 0
       this.chartOptions = {
         devicePixelRatio: 2,
         indexAxis: 'y',
@@ -273,18 +289,22 @@ export default {
             onClick: (e) => e.stopPropagation(),
             generateLabels: (chart = {}) => {
               const { data } = chart
-              console.log('data', data)
-              return data.datasets[0].data.map((d, index) => {
+              return [
+                undetectedPercentage,
+                maliciousPercentage,
+                phishingPercentage,
+                simulationPercentage
+              ].map((d, index) => {
                 const label = data.yLabels[index]
                 const splittedLabel = label.split(' ')
                 const textParts =
                   splittedLabel.length === 1
-                    ? [splittedLabel[0], d.x]
-                    : [splittedLabel[0] + ' ' + splittedLabel[1], d.x]
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
                 const comparatorVal = 4
                 return {
                   text: Array.from(
-                    label + label + label.substring(0, label.length / comparatorVal) + d.x + ' (%) '
+                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
                   )
                     .fill('')
                     .join(' '),

@@ -358,7 +358,6 @@ export default {
             color: '#383B41',
             clamp: true,
             formatter: function (value) {
-              console.log('value', value)
               return value + '%'
             },
             borderRadius: 4,
