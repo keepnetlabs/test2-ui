@@ -9,6 +9,7 @@
       @changeDownloadModalStatus="changeDownloadModalStatus"
     />
     <VNavigationDrawer
+      v-click-outside="handleDrawerClickOutside"
       :value="status"
       class="k-navigation-drawer"
       temporary
@@ -308,14 +309,14 @@
                       }}</span>
                     </div>
                     <span class="gamification-report__timeline-item-middle-text">
+                      The reported email with
                       <span class="gamification-report__timeline-item-bold-text">{{
                         item.name
                       }}</span>
-                      resulted in a
-                      <span class="gamification-report__timeline-item-bold-text">{{
-                        item.result
-                      }}</span>
-                      after analysis.
+                      subject was analyzed by the incident responder and resulted in
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.result }}.</span
+                      >
                     </span>
                     <div>
                       <span class="gamification-report__timeline-item-bottom-text">{{
@@ -340,16 +341,37 @@
                         item.ActionTime
                       }}</span>
                     </div>
-                    <span class="gamification-report__timeline-item-middle-text">
+                    <span
+                      v-if="isProductAwareness(item)"
+                      class="gamification-report__timeline-item-middle-text"
+                    >
+                      Enrollment email sent to
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ selectedRow.firstName }} {{ selectedRow.lastName }}
+                      </span>
+                      for
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      enrollment in the
                       <span class="gamification-report__timeline-item-bold-text">{{
-                        item.name
+                        item.categoryDescription
                       }}</span>
-                      {{ ` ${item.campaignType} ` }}
-                      at
+                      category.
+                    </span>
+                    <span v-else class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      <span>{{ getProductType(item) }} </span>
+                      with
                       <span class="gamification-report__timeline-item-bold-text">{{
                         isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                       }}</span>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }} has been sent to
+                      <span class="gamification-report__timeline-item-bold-text">
+                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}.
+                      </span>
                     </span>
                     <div>
                       <span class="gamification-report__timeline-item-bottom-text">{{
@@ -412,24 +434,56 @@
                         item.ActionTime
                       }}</span>
                     </div>
-                    <span class="gamification-report__timeline-item-middle-text">
-                      <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.points }} points</span
-                      >
-                      with
-                      <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.campaignPerformance }}%</span
-                      >
-                      total score on
+                    <span
+                      v-if="isProductAwareness(item)"
+                      class="gamification-report__timeline-item-middle-text"
+                    >
+                      <span class="gamification-report__timeline-item-bold-text">
+                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}
+                      </span>
+                      <span class="gamification-report__timeline-item-bold-text">
+                        {{ item.points > 0 ? 'earned' : 'lost' }}
+                      </span>
                       <span class="gamification-report__timeline-item-bold-text">{{
-                        item.name
+                        item.points
                       }}</span>
-                      {{ ` ${item.campaignType} ` }}
-                      at
+                      points in the
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      enrollment in the
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.categoryDescription
+                      }}</span>
+                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}, with an enrollment
+                      performance of
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.campaignPerformance }}%.</span
+                      >
+                    </span>
+                    <span v-else class="gamification-report__timeline-item-middle-text">
+                      <span class="gamification-report__timeline-item-bold-text">
+                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}
+                      </span>
+                      <span class="gamification-report__timeline-item-bold-text">
+                        {{ item.points > 0 ? 'earned' : 'lost' }}
+                      </span>
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.points
+                      }}</span>
+                      points in the
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      {{ getProductType(item) }} at
                       <span class="gamification-report__timeline-item-bold-text">{{
                         isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                       }}</span>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}, with a campaign
+                      performance of
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.campaignPerformance }}%.</span
+                      >
                     </span>
                     <div>
                       <span class="gamification-report__timeline-item-bottom-text">{{
@@ -569,6 +623,9 @@ export default {
     }
   },
   computed: {
+    ACTIVITY_TYPES_FAIL_MAP() {
+      return ACTIVITY_TYPES_FAIL_MAP
+    },
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
@@ -1045,6 +1102,24 @@ export default {
       const timezoneText = this.timezones?.find?.((tz) => tz.value === item.timezoneId)?.text || ''
       const timzoneLeftText = timezoneText.split(' ')[0]
       return timzoneLeftText
+    },
+    getProductType(product) {
+      if (product.productType.split(' - ')[0] === 'PHISHING SIMULATOR') {
+        return 'phishing campaign'
+      } else if (product.productType.split(' - ')[0] === 'SMISHING SIMULATOR') {
+        return 'smishing campaign'
+      } else if (product.productType.split(' - ')[0] === 'CALLBACK SIMULATOR') {
+        return 'callback campaign'
+      } else if (product.productType.split(' - ')[0] === 'VISHING SIMULATOR') {
+        return 'vishing campaign'
+      } else if (product.productType.split(' - ')[0] === 'QUISHING SIMULATOR') {
+        return 'quishing campaign'
+      }
+      return ''
+    },
+    handleDrawerClickOutside() {
+      console.log('iam clicked outside')
+      if (!this.isShowDownloadModal) this.$emit('on-close')
     }
   }
 }
