@@ -732,8 +732,11 @@ export default {
       this.isUserDetailsDrawerOpen = true
     },
     handleCloseDrawer() {
-      this.selectedRow = null
-      this.isUserDetailsDrawerOpen = false
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      setTimeout(() => {
+        this.selectedRow = null
+        this.isUserDetailsDrawerOpen = false
+      }, 250)
     },
     handleRedirectToSCIMSync() {
       this.$router.push('/company/company-settings?tab=scim-settings&showModal=true')
