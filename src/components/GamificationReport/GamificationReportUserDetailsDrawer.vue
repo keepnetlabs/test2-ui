@@ -529,7 +529,7 @@
                 outlined
                 text
                 style="border: none;"
-                :style="{ 'background-color': hover ? '#F2F2F2' : '#FFFFFF' }"
+                :style="{ 'background-color': hover ? '#F2F2F2' : '#FFFFFF', marginBottom: '16px' }"
                 @click="handleLoadMore"
               >
                 <span style="color: #2196f3; font-weight: 600;">LOAD MORE</span>
