@@ -1841,6 +1841,7 @@ export default {
         )
       }
       this.handleRefresh()
+      this?.$refs?.elTableRef?.clearSort()
       this.$emit('clear-filters')
     },
     handleRowClick(row) {
