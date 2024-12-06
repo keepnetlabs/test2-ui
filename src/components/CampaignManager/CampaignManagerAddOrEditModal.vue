@@ -438,17 +438,19 @@ export default {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
       const { name, duration, excludeFromReports, emailReplySettings } = this.selectedRowFormData
-      const [subdomain, domain] = emailReplySettings?.customReplyToAddress?.split('@')
+      const [subdomain, domain] = emailReplySettings
+        ? emailReplySettings?.customReplyToAddress?.split('@') || ['', '']
+        : ['', '']
       return {
         name,
         duration,
         excludeFromReports,
         emailReplySettings: {
-          isEnabled: emailReplySettings.isEnabled,
+          isEnabled: emailReplySettings?.isEnabled || false,
           subDomain: subdomain || '',
           domain: domain || '',
-          isSaveContentEnabled: emailReplySettings.isSaveContentEnabled || false,
-          isOutOfOfficeEnabled: emailReplySettings.isOutOfOfficeEnabled || false
+          isSaveContentEnabled: emailReplySettings?.isSaveContentEnabled || false,
+          isOutOfOfficeEnabled: emailReplySettings?.isOutOfOfficeEnabled || false
         }
       }
     },
