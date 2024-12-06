@@ -10,9 +10,13 @@
       >{{ performer.firstName }} {{ performer.lastName }}</span
     >
     <span class="gamification-report__top-performer-card-email">{{ performer.email }}</span>
-    <span class="gamification-report__top-performer-card-department">{{
-      performer.department
-    }}</span>
+    <span
+      :class="[
+        'gamification-report__top-performer-card-department',
+        isAllDepartmentsEmpty && 'gamification-report__top-performer-card-department--empty'
+      ]"
+      >{{ performer.department }}</span
+    >
     <span class="gamification-report__top-performer-card-score"
       >{{ performer.performance }}% PERFORMANCE</span
     >
@@ -26,6 +30,10 @@ export default {
     performer: {
       type: Object,
       required: true
+    },
+    isAllDepartmentsEmpty: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

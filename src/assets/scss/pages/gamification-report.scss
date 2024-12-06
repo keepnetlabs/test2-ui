@@ -70,6 +70,11 @@
       font-size: 14px;
       line-height: 19px;
       margin-bottom: 4px;
+      min-height: 19px;
+    }
+
+    &-department--empty {
+      display: none;
     }
 
     &-score {
@@ -147,7 +152,7 @@
         font-weight: 700;
         font-size: 64px;
         height: 46px;
-        margin-top:-12px;
+        margin-top: -12px;
         text-align: center;
         color: #383b41;
         margin-bottom: 24px;
@@ -252,7 +257,7 @@
         margin-bottom: -24px;
       }
       .v-timeline-item__inner-dot.primary {
-        background-color: #E0E0E0 !important;
+        background-color: #e0e0e0 !important;
       }
     }
   }
@@ -301,16 +306,13 @@
   }
 
   &__user-details-drawer-load-more-button-container {
-    padding:16px;
-  }
-
-  &__user-details-drawer-load-more-button {
+    padding: 16px;
   }
 }
-.v-timeline{
-  margin-top:-8px !important;
-  &-item{
-    padding-right:16px !important;
+.v-timeline {
+  margin-top: -8px !important;
+  &-item {
+    padding-right: 16px !important;
   }
 }
 .v-timeline-item__dot {
