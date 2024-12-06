@@ -56,6 +56,7 @@
           <LeaderboardTopPerformerCard
             v-for="(performer, index) in topPerformers"
             :performer="performer"
+            :isAllDepartmentsEmpty="topPerformers.every((tp) => !tp.department)"
             :key="index"
             @click="handleDetails(performer)"
           />
