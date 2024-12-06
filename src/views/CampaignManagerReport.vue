@@ -168,6 +168,13 @@ export default {
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          const trackingReplyInfo = response?.data?.data?.campaignInfo?.trackingReplyInfo
+          if (!trackingReplyInfo || trackingReplyInfo === 'Off') {
+            this.tabItems.splice(
+              this.tabItems.findIndex((tab) => tab.name === labels.Replied),
+              1
+            )
+          }
           this.campaignDurationExpired = response?.data?.data?.campaignDurationExpired || false
           const scenarios = response?.data?.data?.scenarios || []
           const firstScenario = scenarios[0]

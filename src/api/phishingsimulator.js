@@ -340,6 +340,12 @@ export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
     payload
   )
 }
+export function searchCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
 
 export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(

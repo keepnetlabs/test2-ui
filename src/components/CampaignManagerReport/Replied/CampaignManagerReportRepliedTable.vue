@@ -63,7 +63,8 @@ import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import {
   exportCampaignJobUserEmailSubmitted,
-  searchCampaignJobUserEmailSubmitted
+  searchCampaignJobUserEmailSubmitted,
+  searchCampaignJobUserReplied
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -164,7 +165,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailSubmitted(this.axiosPayload, this.id, this.instanceGroup)
+      searchCampaignJobUserReplied(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
             data: {

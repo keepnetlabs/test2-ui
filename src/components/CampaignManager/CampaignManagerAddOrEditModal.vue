@@ -399,7 +399,7 @@ export default {
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
-        formData.replyTracking = refCampaignManagerCampaignInfo.formData.replyTracking
+        formData.emailReplySettings = refCampaignManagerCampaignInfo.formData.emailReplySettings
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
@@ -437,11 +437,19 @@ export default {
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const { name, duration, excludeFromReports } = this.selectedRowFormData
+      const { name, duration, excludeFromReports, emailReplySettings } = this.selectedRowFormData
+      const [subdomain, domain] = emailReplySettings?.customReplyToAddress?.split('@')
       return {
         name,
         duration,
-        excludeFromReports
+        excludeFromReports,
+        emailReplySettings: {
+          isEnabled: emailReplySettings.isEnabled,
+          subDomain: subdomain || '',
+          domain: domain || '',
+          isSaveContentEnabled: emailReplySettings.isSaveContentEnabled || false,
+          isOutOfOfficeEnabled: emailReplySettings.isOutOfOfficeEnabled || false
+        }
       }
     },
     getDefaultValuesOfPhishingScenarios() {
@@ -674,7 +682,6 @@ export default {
             scrollToComponent(el)
             return
           }
-          //if languages empty set all languages
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
@@ -832,11 +839,21 @@ export default {
               trainingRedirectPage
             })
           })
+          const emailReplySettings = {
+            ...campaignManagerFormData.emailReplySettings,
+            customReplyToAddress:
+              campaignManagerFormData.emailReplySettings.subDomain +
+              '@' +
+              campaignManagerFormData.emailReplySettings.domain
+          }
+          delete emailReplySettings.subDomain
+          delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
+            emailReplySettings,
             duration: campaignManagerFormData.duration,
             scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:

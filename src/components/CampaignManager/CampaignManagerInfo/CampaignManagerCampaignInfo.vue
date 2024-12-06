@@ -60,7 +60,7 @@
           </template>
         </KSelect>
       </FormGroup>
-      <CampaignManagerReplyTracking />
+      <CampaignManagerReplyTracking v-model="formData.emailReplySettings" />
       <FormGroup
         v-if="showDuration"
         has-hint
@@ -175,12 +175,12 @@ export default {
         name: '',
         duration: 365,
         excludeFromReports: false,
-        replyTracking: {
-          isReplyTracking: false,
+        emailReplySettings: {
+          isEnabled: false,
           subDomain: '',
           domain: '',
-          isSaveForReview: false,
-          isSaveOutOfOfficeForReview: false
+          isSaveContentEnabled: false,
+          isOutOfOfficeEnabled: false
         }
       },
       rules: {
