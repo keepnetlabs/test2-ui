@@ -346,9 +346,7 @@
                       class="gamification-report__timeline-item-middle-text"
                     >
                       Enrollment email sent to
-                      <span class="gamification-report__timeline-item-bold-text"
-                        >{{ selectedRow.firstName }} {{ selectedRow.lastName }}
-                      </span>
+                      <span>{{ selectedRow.firstName }} {{ selectedRow.lastName }} </span>
                       for
                       <span class="gamification-report__timeline-item-bold-text"
                         >{{ item.name }}
@@ -369,9 +367,7 @@
                         isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                       }}</span>
                       {{ isProductAwareness(item) ? 'category' : 'difficulty' }} has been sent to
-                      <span class="gamification-report__timeline-item-bold-text">
-                        {{ selectedRow.firstName }} {{ selectedRow.lastName }}.
-                      </span>
+                      <span> {{ selectedRow.firstName }} {{ selectedRow.lastName }}. </span>
                     </span>
                     <div>
                       <span class="gamification-report__timeline-item-bottom-text">{{
@@ -978,14 +974,14 @@ export default {
           actionTypes,
           difficultyTypes,
           products: productTypes,
-          datePeriod: this.axiosPayload.datePeriod,
           showOnlyFailedEvents: this.isOnlyShowFailedEvents,
           pagination: {
             pageNumber: downloadSettings.pageNumber,
             pageSize: downloadSettings.pageSize,
             orderBy: this.axiosPayload.orderBy,
             ascending: this.axiosPayload.ascending
-          }
+          },
+          ...this.datePayload
         }
         exportUserActivityDetails(payload).then((response) => {
           const { data } = response
