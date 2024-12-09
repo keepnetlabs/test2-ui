@@ -346,6 +346,22 @@ export function searchCampaignJobUserReplied(payload = {}, id = '', instanceGrou
     payload
   )
 }
+export function searchCampaignJobUserRepliedDetails(payload = {}, id = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-replied/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
 
 export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(

@@ -13,27 +13,26 @@
     <template #app-dialog-body>
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <div v-else>
-        <div>
+        <div class="d-flex flex-column gap-1">
           <div class="campaign-report-replied-detail-popup-item">
-            <span>From:</span><span>{{ activeFormData.fromName }}</span> -
-            <span>{{ activeFormData.from }}</span>
+            <span>From: </span><span>{{ getCurrentTemplate.from }}</span>
           </div>
           <div class="campaign-report-replied-detail-popup-item">
-            <span>To:</span> <span>{{ activeFormData.to }}</span>
+            <span>To: </span> <span>{{ getCurrentTemplate.to }}</span>
           </div>
           <div class="campaign-report-replied-detail-popup-item">
-            <span>Subject:</span> <span>{{ activeFormData.subject }} </span>
+            <span>Subject: </span> <span>{{ getCurrentTemplate.subject }} </span>
           </div>
           <div
             class="campaign-report-replied-detail-popup-item campaign-report-replied-detail-popup-item-paginated"
           >
             <div>
-              <span>Reply Sent:</span> <span>{{ activeFormData.replySent }}</span>
+              <span>Reply Sent: </span> <span>{{ getCurrentTemplate.replySent }}</span>
             </div>
             <div>
               <div class="d-flex align-center">
                 <span v-if="repliedTemplates.length"
-                  >Replied email 1 of {{ repliedTemplates.length }}}</span
+                  >Replied email 1 of {{ repliedTemplates.length }}</span
                 >
                 <div class="landing-page-template-preview__control-buttons">
                   <v-btn
@@ -74,12 +73,14 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
+import { searchCampaignJobUserRepliedDetails } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'CampaignManagerReportRepliedDetailDialog',
   components: {
@@ -104,16 +105,11 @@ export default {
         id: 'campaign-manager-submitted-detail-item-data-table',
         ascending: 'ascending'
       },
+      serverSideProps: new ServerSideProps(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'replySent' }),
       isLoading: false,
       repliedTemplates: [],
-      selectedTemplateIndex: 0,
-      activeFormData: {
-        from: '',
-        fromName: '',
-        to: '',
-        subject: '',
-        replySent: ''
-      }
+      selectedTemplateIndex: 0
     }
   },
   computed: {
@@ -122,6 +118,9 @@ export default {
     },
     hasReplyTemplate() {
       return this?.repliedTemplates?.length > 0
+    },
+    getCurrentTemplate() {
+      return this?.repliedTemplates[this.selectedTemplateIndex] || {}
     },
     getCurrentReplyTemplate() {
       return this?.repliedTemplates[this.selectedTemplateIndex]?.content
@@ -139,7 +138,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailSubmittedDetails(this.axiosPayload, this.item?.resourceId)
+      searchCampaignJobUserRepliedDetails(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {
             data: {
@@ -149,7 +148,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
+          this.repliedTemplates = results
         })
         .finally(this.setLoading)
     },

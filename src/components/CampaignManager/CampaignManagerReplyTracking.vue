@@ -2,7 +2,7 @@
   <div
     :class="[
       'campaign-manager-reply-tracking',
-      !value.isReplyTracking ? 'campaign-manager-reply-tracking--disabled' : ''
+      !value.isEnabled ? 'campaign-manager-reply-tracking--disabled' : ''
     ]"
   >
     <FormGroup :title="labels.ReplyTracking" :sub-title="labels.ReplyTrackingSub">

@@ -25,7 +25,7 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportCampaignManagerReportSubmittedTable"
+    @downloadEvent="exportCampaignManagerReportRepliedTable"
     @refreshAction="callForData"
     @on-selection-text-change="handleSelectionChange"
   >
@@ -35,8 +35,8 @@
         :id="tableOptions.rowActions[0].id"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
-        disabledTooltipText="Save reply email content for review is off."
+        :disabled="tableOptions.rowActions[0].disabled || !scope.row.isSaveContentEnabled"
+        disabled-tooltip-text="Save reply email content for review is off."
         @on-click="handleDetail(scope.row)"
       />
     </template>
@@ -44,8 +44,8 @@
       <CampaignManagerReportTimeZoneColumn
         v-if="col.property === COLUMNS.REPLY_SENT.property"
         :scope="scope"
-        :timeKey="COLUMNS.LAST_SUBMISSION.property"
-        localTimeKey="lastSubmittedTimeToLocalUser"
+        time-key="replySent"
+        local-time-key="replySentToLocalUser"
       />
     </template>
   </DataTable>
@@ -61,11 +61,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import {
-  exportCampaignJobUserEmailSubmitted,
-  searchCampaignJobUserEmailSubmitted,
-  searchCampaignJobUserReplied
-} from '@/api/phishingsimulator'
+import { exportCampaignJobUserReplied, searchCampaignJobUserReplied } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
@@ -133,8 +129,8 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
+            name: labels.Preview,
+            id: 'btn-preview--row-actions-campaign-manager-report-replied-data',
             icon: 'mdi-eye',
             action: 'on-preview',
             disabled: false
@@ -185,15 +181,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    setPasswordComplexityItems() {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'minPasswordComplexity'),
-        'filterableItems',
-        this.passwordComplexities.map((item) => ({ ...item, value: item.text }))
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    exportCampaignManagerReportSubmittedTable(downloadTypes) {
+    exportCampaignManagerReportRepliedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
@@ -204,17 +192,15 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailSubmitted(payload, this.id, this.instanceGroup).then(
-          (response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Campaign-Report-Submitted-Data.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
-          }
-        )
+        exportCampaignJobUserReplied(payload, this.id, this.instanceGroup).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Replied-Data.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     handleDetail(row) {

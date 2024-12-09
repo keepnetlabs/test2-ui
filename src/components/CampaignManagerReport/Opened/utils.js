@@ -76,7 +76,12 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'text'
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Manual Reply', value: '1' },
+      { text: 'Out of Office Reply', value: '2' }
+    ],
+    filterableCustomFieldName: 'replyTypeId'
   },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
@@ -423,7 +428,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   REPLY_SENT: {
-    property: 'lastSubmittedTime',
+    property: 'replySent',
     align: 'left',
     label: labels.ReplySent,
     fixed: false,
