@@ -113,6 +113,7 @@ import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -261,17 +262,29 @@ export default {
               })) || []
           },
           {
-            property: 'smtpName',
+            property: PROPERTY_STORE.EMAIL_DELIVERY,
             align: 'left',
             editable: false,
-            label: 'SMTP',
+            label: labels.EmailDelivery,
             sortable: true,
             show: true,
             fixed: false,
+            width: 200,
             type: 'text',
-            width: 150,
             filterableType: 'text'
           }
+          // {
+          //   property: 'smtpName',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'SMTP',
+          //   sortable: true,
+          //   show: true,
+          //   fixed: false,
+          //   type: 'text',
+          //   width: 150,
+          //   filterableType: 'text'
+          // }
           /*
           {
             property: 'emailType',

@@ -70,6 +70,11 @@
       font-size: 14px;
       line-height: 19px;
       margin-bottom: 4px;
+      min-height: 19px;
+    }
+
+    &-department--empty {
+      display: none;
     }
 
     &-score {
@@ -84,8 +89,6 @@
   }
 
   &__user-details-drawer-header {
-    position: sticky;
-    top: 0;
     z-index: 10;
     border-top-left-radius: 8px;
     background-image: url("../../assets/img/gamification-report-user-details-header-background.svg");
@@ -116,8 +119,6 @@
 
   &__user-details-drawer-card {
     padding: 32px 48px;
-    position: sticky;
-    top: 240px;
     z-index: 10;
     background-color: #ffffff;
 
@@ -144,7 +145,6 @@
         line-height: 24px;
         text-align: center;
         color: #383b41;
-        text-transform: uppercase;
         font-weight: 600;
       }
 
@@ -152,7 +152,7 @@
         font-weight: 700;
         font-size: 64px;
         height: 46px;
-        margin-top:-12px;
+        margin-top: -12px;
         text-align: center;
         color: #383b41;
         margin-bottom: 24px;
@@ -199,20 +199,15 @@
     padding: 0px 48px;
 
     &-header {
-      position: sticky;
-      top: 332px;
       z-index: 10;
       padding-bottom: 8px;
       background-color: #ffffff;
       font-weight: 600;
-      font-weight: 20px;
       font-size: 20px;
     }
   }
 
   &__user-details-drawer-filters-container {
-    position: sticky;
-    top: 370px;
     z-index: 10;
     background-color: #fafafa;
     border: 1px solid #e0e0e0;
@@ -262,7 +257,7 @@
         margin-bottom: -24px;
       }
       .v-timeline-item__inner-dot.primary {
-        background-color: #E0E0E0 !important;
+        background-color: #e0e0e0 !important;
       }
     }
   }
@@ -311,16 +306,13 @@
   }
 
   &__user-details-drawer-load-more-button-container {
-    padding:16px;
-  }
-
-  &__user-details-drawer-load-more-button {
+    padding: 16px;
   }
 }
-.v-timeline{
-  margin-top:-8px !important;
-  &-item{
-    padding-right:16px !important;
+.v-timeline {
+  margin-top: -8px !important;
+  &-item {
+    padding-right: 16px !important;
   }
 }
 .v-timeline-item__dot {
