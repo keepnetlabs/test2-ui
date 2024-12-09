@@ -121,9 +121,9 @@ export default {
             data: { results }
           }
         } = response || {}
-        this.domainItems = results.map(({ domain, resourceId }) => ({
+        this.domainItems = results.map(({ domain }) => ({
           text: domain,
-          value: resourceId
+          value: domain
         }))
         console.log('this.domainItems', this.domainItems)
       })
