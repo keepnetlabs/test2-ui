@@ -126,6 +126,9 @@ export function createEmailTemplate(payload = {}) {
 export function getEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}`)
 }
+export function getNotificationTemplatesDeliverySettings() {
+  return testRequest.get(`/companies/email-templates/email-delivery-setting-list`)
+}
 export function getDefaultEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}/default`)
 }

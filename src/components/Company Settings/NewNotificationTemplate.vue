@@ -41,8 +41,13 @@
             :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
           />
         </form-group>
-        <form-group :title="labels.EmailDelivery" :sub-title="labels.EmailDeliverySub" has-hint>
+        <form-group
+          :title="labels.EmailDelivery"
+          sub-title="Select email delivery configuration for this Notification Template"
+          has-hint
+        >
           <KSelect
+            v-if="isAwarenessEducatorTemplateSelected"
             v-bind="emailDeliveryProps"
             v-model.trim="emailDelivery"
             id="input--company-manager-advanced-settings-smtp"
@@ -66,6 +71,18 @@
               </v-list-item-content>
             </template>
           </KSelect>
+          <KSelect
+            v-else
+            v-bind="emailDeliveryProps"
+            v-model.trim="formValues.smtpSettingResourceId"
+            id="input--company-manager-advanced-settings-smtp"
+            class="new-integration__select"
+            dense
+            outlined
+            placeholder="Select configuration"
+            no-data-text="No Email Delivery configuration available"
+            :items="smtpItems"
+          />
         </form-group>
         <FormGroup>
           <AlertBox
@@ -129,7 +146,8 @@ import {
   getEmailTemplate,
   getMergedTags,
   getTemplateTypes,
-  updateEmailTemplate
+  updateEmailTemplate,
+  getNotificationTemplatesDeliverySettings
 } from '@/api/company'
 import { searchSmtpSettings } from '@/api/smtpSettings'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -141,7 +159,7 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { MERGED_TEXTS_MAP } from '@/components/Company Settings/utils'
-import { getDefaultEmailDeliverySetting, getEmailDeliveries } from '@/api/phishingsimulator'
+import { getDefaultEmailDeliverySetting } from '@/api/phishingsimulator'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { mapGetters } from 'vuex'
 import AlertBox from '@/components/AlertBox'
@@ -206,7 +224,7 @@ export default {
         tags: [],
         name: '',
         emailTemplateCategoryResourceId: '',
-        emailDeliverySettingType: '',
+        emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP,
         smtpSettingResourceId: '',
         directEmailSettingResourceId: '',
         fromAddress: '',
@@ -217,6 +235,8 @@ export default {
       },
       categoryItems: [],
       smtpItems: [],
+      defaultDECSettingResourceId: null,
+      defaultSMTPSettingResourceId: null,
       validations: {
         mail
       },
@@ -251,6 +271,24 @@ export default {
       return (
         this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
       )
+    },
+    isAwarenessEducatorTemplateSelected() {
+      if (!this.formValues.emailTemplateCategoryResourceId) return false
+      const selectedTemplateCategoryName =
+        this.categoryItems?.find?.(
+          (template) => template.value === this.formValues.emailTemplateCategoryResourceId
+        )?.text || ''
+      return [
+        'Training Enrollment',
+        'Learning Path Enrollment Reminder',
+        'Poster Enrollment',
+        'Learning Path Enrollment',
+        'Infographic Enrollment',
+        'Enrollment after Failed in a Simulation',
+        'Scheduled Report',
+        'Enrollment Reminder',
+        'Certificate'
+      ].includes(selectedTemplateCategoryName)
     },
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment')?.value
@@ -339,17 +377,50 @@ export default {
     if (!this.selectedItem) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-    this.callForDatas()
+    this.callForCategories()
     this.callForNotificationTemplate()
     this.callForEmailDeliveries()
+    this.callForSMTPSettings()
     this.callForDefaultEmailDeliverySetting()
+  },
+  mounted() {
+    this.$watch(
+      (vm) => [vm.formValues, vm.emailDeliveryItems],
+      ([formValues, emailDeliveryItems]) => {
+        if (!formValues || !emailDeliveryItems.length || !this.selectedItem) return
+        if (formValues.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
+          const selectedSMTPSettingIndex = emailDeliveryItems.findIndex(
+            (item) => item.resourceId === formValues.smtpSettingResourceId
+          )
+          if (selectedSMTPSettingIndex === -1) return
+          this.emailDelivery = emailDeliveryItems[selectedSMTPSettingIndex]
+        } else {
+          const selectedDECSettingIndex = emailDeliveryItems.findIndex(
+            (item) => item.resourceId === formValues.directEmailSettingResourceId
+          )
+          if (selectedDECSettingIndex === -1) return
+          this.emailDelivery = emailDeliveryItems[selectedDECSettingIndex]
+        }
+      },
+      {
+        deep: true
+      }
+    )
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    callForSMTPSettings() {
+      searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
+        const { data: { data: smtpSettingsData = {} } = {} } = response
+        this.smtpItems = smtpSettingsData.results.map((smtpItem) => {
+          return { text: smtpItem.name, value: smtpItem.resourceId }
+        })
+      })
+    },
     callForEmailDeliveries() {
-      getEmailDeliveries().then((res) => {
+      getNotificationTemplatesDeliverySettings().then((res) => {
         const {
           data: { data: { results = [] } = {} }
         } = res || {}
@@ -364,54 +435,18 @@ export default {
         )
         if (directEmailItems.length) {
           deliveries.push({ header: 'Direct Email Creation' })
-          if (
-            this.getUser?.role?.name === 'Reseller' &&
-            this.targetGroupCompanyNames.some((cn) => cn !== this.getCompanyName)
-          ) {
-            deliveries.push(directEmailItems[0])
-            const disabledItems = directEmailItems.map((d) => ({
-              name: d.name,
-              description:
-                'This DEC setting is disabled because you’ve selected user group(s) which doesn’t belong to you.',
-              disabled: true
-            }))
-            disabledItems.splice(0, 1)
-            deliveries.push(...disabledItems)
-          } else {
-            deliveries.push(...directEmailItems)
-          }
+          deliveries.push(...directEmailItems)
         }
         this.emailDeliveryItems = deliveries
-        this.$nextTick(() => {
-          //setting default smtp setting
-          if (
-            this.isEdit ||
-            (!this.formValues.smtpSettingResourceId &&
-              !this.formValues.directEmailSettingResourceId)
-          )
-            return
-          const defaultDECSettingIndex = deliveries.findIndex(
-            (item) => item.resourceId === this.formValues.directEmailSettingResourceId
-          )
-          if (defaultDECSettingIndex !== -1) {
-            this.emailDelivery = deliveries[defaultDECSettingIndex]
-            return
-          }
-          this.emailDelivery =
-            deliveries.find((item) => item.resourceId === this.formValues.smtpSettingResourceId) ||
-            {}
-        })
       })
     },
     callForDefaultEmailDeliverySetting() {
-      if (this.isEdit) return
+      if (!!this.selectedItem) return
       getDefaultEmailDeliverySetting().then((res) => {
         if (res?.data?.data?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) {
-          this.formValues.directEmailSettingResourceId = res?.data?.data?.resourceId
-          this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+          this.defaultDECSettingResourceId = res?.data?.data?.resourceId
         } else {
-          this.formValues.smtpSettingResourceId = res?.data?.data?.resourceId
-          this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+          this.defaultSMTPSettingResourceId = res?.data?.data?.resourceId
         }
       })
     },
@@ -423,11 +458,11 @@ export default {
       if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
         this.formValues.smtpSettingResourceId = delivery.resourceId
         this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
-        this.formValues.directEmailSettingResourceId = ''
+        this.formValues.directEmailSettingResourceId = null
       } else {
         this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
         this.formValues.directEmailSettingResourceId = delivery.resourceId
-        this.formValues.smtpSettingResourceId = ''
+        this.formValues.smtpSettingResourceId = null
       }
     },
     callForNotificationTemplate() {
@@ -445,6 +480,7 @@ export default {
             }
             this.formValues[key] = value
           }
+          this.formValues.emailDeliverySettingType = response.data.data.emailDeliveryType
           if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
@@ -455,13 +491,11 @@ export default {
           this.loading = false
         })
     },
-    callForDatas() {
-      Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
-        const [categories, smtpSettings] = response
+    callForCategories() {
+      getTemplateTypes().then((response) => {
         const {
           data: { data: categoriesData }
-        } = categories
-        const { data: { data: smtpSettingsData = {} } = {} } = smtpSettings
+        } = response
         this.categoryItems = categoriesData.map((category) => {
           return {
             text: category.name,
@@ -469,16 +503,7 @@ export default {
             template: category?.template
           }
         })
-        this.smtpItems = smtpSettingsData.results.map((smtpItem) => {
-          return { text: smtpItem.name, value: smtpItem.resourceId }
-        })
       })
-    },
-    callForCategories() {
-      return getTemplateTypes()
-    },
-    callForSmtpSettings() {
-      return searchSmtpSettings(this.smtpAxiosPayload)
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
