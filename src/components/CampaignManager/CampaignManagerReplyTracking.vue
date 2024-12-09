@@ -125,7 +125,6 @@ export default {
           text: domain,
           value: domain
         }))
-        console.log('this.domainItems', this.domainItems)
       })
     },
     handleDomainChange(subDomain) {

@@ -7,6 +7,7 @@
     max-height-size="900"
     icon="mdi-eye"
     :title="getTitle"
+    :subtitle="getSubtitle"
     :status="status"
     @changeStatus="handleClose"
   >
@@ -114,10 +115,10 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Out of Office Reply Preview`
+      return `${this.item.replyType} Preview`
     },
-    hasReplyTemplate() {
-      return this?.repliedTemplates?.length > 0
+    getSubtitle() {
+      return `${this.item.firstName} ${this.item.lastName}`
     },
     getCurrentTemplate() {
       return this?.repliedTemplates[this.selectedTemplateIndex] || {}

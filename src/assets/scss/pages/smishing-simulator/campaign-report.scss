@@ -23,7 +23,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 21px;
-  & > span:first-child, & > div > span{
+  & > span:first-child, & > div > span:first-child{
   color:rgba(56, 59, 65, 0.72)
   }
   &-paginated{

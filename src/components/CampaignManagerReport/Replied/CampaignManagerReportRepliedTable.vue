@@ -35,7 +35,7 @@
         :id="tableOptions.rowActions[0].id"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || !scope.row.isSaveContentEnabled"
+        :disabled="tableOptions.rowActions[0].disabled || !scope.row.isTrackingReplyContentEnabled"
         disabled-tooltip-text="Save reply email content for review is off."
         @on-click="handleDetail(scope.row)"
       />
