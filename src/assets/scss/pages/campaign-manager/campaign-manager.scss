@@ -225,3 +225,45 @@
     line-height: 18px;
   }
 }
+#app{
+  .campaign-manager-reply-tracking{
+    border-radius: 8px;
+    padding:16px;
+    background-color: #FAFAFA;
+    max-width: 554px;
+    margin-bottom:24px;
+    &--disabled{
+      background-color: #F2F2F2;
+    }
+    &__title{
+      display: flex;
+      align-items: center;
+      gap:16px;
+      .v-input--switch .v-input--switch__track{
+        color: #383B41;
+      }
+    }
+    &__content {
+      & > div{
+        gap: 8px;
+        display: flex;
+        align-items: center;
+      }
+      &-span{
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        margin-top:-12px;
+      }
+      &--disabled{
+        opacity:.72;
+      }
+      .v-text-field--outlined:not(.v-input--is-focused).v-input--is-disabled > .v-input__control > .v-input__slot{
+        background-color: #fff !important;
+      }
+      .v-text-field__details{
+        margin-bottom: -4px;
+      }
+    }
+  }
+}
