@@ -340,6 +340,28 @@ export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
     payload
   )
 }
+export function searchCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+export function searchCampaignJobUserRepliedDetails(payload = {}, id = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-replied/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
 
 export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(

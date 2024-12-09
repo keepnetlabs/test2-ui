@@ -175,6 +175,7 @@ export const PROPERTY_STORE = {
   MATERIAL_NAME: 'trainingName',
   SCREENSAVER_NAME: 'trainingName',
   CREATION_TYPE: 'creationType',
+  REPLY_TYPE: 'replyType',
   FREQUENCY: 'frequency',
   REPORTNAME: 'reportName',
   BEHAVIOURS: 'behaviours',

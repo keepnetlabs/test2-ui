@@ -106,10 +106,7 @@ import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerRe
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
-import {
-  SCENARIO_DISTRIBUTION,
-  SCENARIO_DISTRIBUTION_TEXTS
-} from '@/components/CampaignManager/utils'
+import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -232,11 +229,16 @@ export default {
       return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0, categoryDistributionType } = this
-        .campaignSummary?.campaignInfo || {
+      const {
+        endDate = '0',
+        totalTargetUserCount = 0,
+        categoryDistributionType,
+        trackingReplyInfo
+      } = this.campaignSummary?.campaignInfo || {
         endDate: '0',
         totalTargetUserCount: 0,
-        categoryDistributionType: 'Manually'
+        categoryDistributionType: 'Manually',
+        trackingReplyInfo: ''
       }
       const { smartGroupInfo } = this.campaignSummary
       const languages = new Set()
@@ -250,7 +252,8 @@ export default {
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : '',
-        'Scenario Distribution': categoryDistributionType
+        'Scenario Distribution': categoryDistributionType,
+        'Reply Tracking': trackingReplyInfo
       }
     },
     getCampaignSummaryHelperData() {
