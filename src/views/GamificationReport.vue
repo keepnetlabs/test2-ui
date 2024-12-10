@@ -56,6 +56,7 @@
           <LeaderboardTopPerformerCard
             v-for="(performer, index) in topPerformers"
             :performer="performer"
+            :isAllDepartmentsEmpty="topPerformers.every((tp) => !tp.department)"
             :key="index"
             @click="handleDetails(performer)"
           />
@@ -334,7 +335,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
+            filterableType: 'number',
             overrideWidth: true,
             minWidth: 175
           },
@@ -346,7 +347,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'number',
+            filterableType: 'negativeNumber',
             overrideWidth: true,
             minWidth: 175
           }

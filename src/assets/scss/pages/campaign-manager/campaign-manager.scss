@@ -232,6 +232,9 @@
     background-color: #FAFAFA;
     max-width: 554px;
     margin-bottom:24px;
+    &--disabled{
+      background-color: #F2F2F2;
+    }
     &__title{
       display: flex;
       align-items: center;
@@ -253,7 +256,7 @@
         margin-top:-12px;
       }
       &--disabled{
-        opacity:.5;
+        opacity:.72;
       }
       .v-text-field--outlined:not(.v-input--is-focused).v-input--is-disabled > .v-input__control > .v-input__slot{
         background-color: #fff !important;

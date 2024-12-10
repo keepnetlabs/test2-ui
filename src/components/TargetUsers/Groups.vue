@@ -125,6 +125,9 @@
             :scope="scope"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
+            :showTooltip="scope.row.name === 'Repeat Offenders'"
+            :disabled="scope.row.name === 'Repeat Offenders'"
+            disabledTooltipText="Users cannot be added to the Repeat Offenders group."
             @on-click="handleAddGroup(scope.row)"
           />
           <TargetGroupRowActionsDeleteButton

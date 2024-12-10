@@ -64,22 +64,22 @@
         ></v-text-field>
         <div class="d-flex" v-if="filteredSelectValue === 'between'">
           <v-text-field
+            v-model="filterValueBetween[0]"
             placeholder="Enter Value"
             class="filter__text"
             outlined
             dense
-            v-model="filterValueBetween[0]"
             height="40"
             type="number"
             onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
           ></v-text-field>
           <span class="ml-2 mr-2" style="line-height: 12px;">-</span>
           <v-text-field
+            v-model="filterValueBetween[1]"
             placeholder="Enter Value"
             class="filter__text"
             outlined
             dense
-            v-model="filterValueBetween[1]"
             height="40"
             type="number"
             onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
@@ -205,7 +205,7 @@
         >
         </v-checkbox>
       </template>
-      <template v-if="filterableType === 'number'">
+      <template v-if="filterableType === 'number' || filterableType === 'negativeNumber'">
         <v-select
           :items="numberFilterItems"
           dense
@@ -216,6 +216,7 @@
           v-model="filteredSelectValueNumber"
         ></v-select>
         <v-text-field
+          v-if="filterableType === 'number'"
           placeholder="Enter Value"
           class="filter__text"
           outlined
@@ -224,9 +225,19 @@
           height="40"
           type="number"
           onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
-        >
-          ></v-text-field
-        >
+        ></v-text-field>
+        <v-text-field
+          v-else-if="filterableType === 'negativeNumber'"
+          ref="refInputNumber"
+          v-model="filterValue"
+          placeholder="Enter Value"
+          class="filter__text"
+          outlined
+          dense
+          height="40"
+          type="number"
+          onkeypress="return event.target.value.includes('--') ? false : event.target.value.length ? event.target.value.indexOf('-') === 0 ? (event.keyCode === 8 || (event.charCode >= 48 && event.charCode <= 57)) : (!event.target.value.includes('-') && event.charCode !== 45 && (event.charCode >= 48 && event.charCode <= 57)) : event.charCode === 45 || (event.charCode >= 48 && event.charCode <= 57);"
+        ></v-text-field>
       </template>
       <div class="filter__footer">
         <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
@@ -550,7 +561,7 @@ export default {
         })
         this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
       }
-      if (this.filterableType === 'number') {
+      if (this.filterableType === 'number' || this.filterableType === 'negativeNumber') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
           FieldName: this.fieldName,

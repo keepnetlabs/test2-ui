@@ -575,7 +575,7 @@ export default {
           difficulty: [...difficultySet].join(', '),
           'Tracking Duration': formData.duration,
           'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
-          'Reply Tracking': formData.replyTracking.isReplyTracking ? 'On' : 'Off'
+          'Reply Tracking': formData.emailReplySettings?.isEnabled ? 'On' : 'Off'
         }
       }
       const methodSet = new Set()
@@ -591,7 +591,7 @@ export default {
         difficulty: [...difficultySet].join(', '),
         'Tracking Duration': formData.duration,
         'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
-        'Reply Tracking': formData.replyTracking ? 'On' : 'Off'
+        'Reply Tracking': formData.emailReplySettings?.isEnabled ? 'On' : 'Off'
       }
     },
     getTotalRandomlySelectedUserCount() {
