@@ -245,7 +245,7 @@ export default {
         const multiplier = stepSize * index
         data[0].widgetDatas[0].values.forEach((item) => {
           if (item.name === 'AverageClickTime') {
-            if (index < yLabels.length - 1) {
+            if (index < yLabels.length) {
               companyAvgLinkClickData[index] = { x: multiplier, y: item.value }
             }
           } else if (item.name === 'industryAverageClickTime') {
@@ -254,7 +254,7 @@ export default {
               industryAvgLinkClickData[index + 1] = { x: maxX, y: item.value }
             }
           } else if (item.name === 'AverageDataSubmitTime') {
-            if (index < yLabels.length - 1) {
+            if (index < yLabels.length) {
               companyAvgDataSubmitData[index] = { x: multiplier, y: item.value }
             }
           } else if (item.name === 'industryAverageDataSubmitTime') {
@@ -398,7 +398,6 @@ export default {
         tooltips: {
           enabled: false,
           mode: 'nearest',
-
           custom: function (tooltipModel) {
             let tooltipEl = document.getElementById('chartjs-tooltip-users-time-to-failure')
 

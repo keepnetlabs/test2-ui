@@ -156,6 +156,9 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0) {
+        this.isEmpty = true
+        return
       }
       const undetected = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Undetected'
@@ -181,10 +184,12 @@ export default {
         tooltips: {
           enabled: false,
           custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-total-reported-suspicious-pie')
+            let tooltipEl = document.getElementById(
+              'chartjs-tooltip-total-reported-suspicious-doughnut'
+            )
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-total-reported-suspicious-pie'
+              tooltipEl.id = 'chartjs-tooltip-total-reported-suspicious-doughnut'
               tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
               document.body.appendChild(tooltipEl)
             }
@@ -206,6 +211,9 @@ export default {
               tableRoot.style.width = '100%'
               let titleRow = document.createElement('tr')
               const valArr = tooltipModel.body[0].lines[0].split(':')
+              if (valArr[0] === 'Phishing' && !phishing) {
+                valArr[0] = 'Simulation'
+              }
               titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 14px;">${valArr[0]}</th>`
               tableRoot.appendChild(titleRow)
               const addTr = (label, val, addPaddingBottom = true) => {
@@ -226,7 +234,7 @@ export default {
                 val = undetected[1].value
               } else if (type === 'Malicious') {
                 val = malicious[1].value
-              } else if (type === 'Phishing') {
+              } else if (type === 'Phishing' && phishing) {
                 val = phishing[1].value
               } else if (type === 'Simulation') {
                 val = simulation[1].value
@@ -307,8 +315,9 @@ export default {
         },
         plugins: {
           datalabels: {
-            color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            offset: -8,
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
             formatter(value) {
               if (value === 0) return ''
