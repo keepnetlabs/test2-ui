@@ -96,13 +96,12 @@
         <span @click="handleGroupNameClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] }}
         </span>
-        <VTooltip v-if="scope.row.name === 'Repeat Offenders'" bottom max-width="270">
+        <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="270">
           <template #activator="{ on }">
             <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
           </template>
           <span>
-            The Repeat Offenders group is an automated target group that includes users who were
-            phished multiple times in the last 3 months across all campaigns.
+            {{ getGroupNameTooltipMessage(scope.row) }}
           </span>
         </VTooltip>
       </template>
@@ -111,12 +110,8 @@
           :id="tableOptions.rowActions[0].id"
           type="groups"
           :scope="scope"
-          :disabled="scope.row.name === 'Repeat Offenders'"
-          :tooltipMessage="
-            scope.row.name === 'Repeat Offenders'
-              ? 'The Repeat Offenders group cannot be edited.'
-              : ''
-          "
+          :disabled="isTooltipRenderable(scope.row)"
+          :tooltipMessage="getEditButtonTooltipMessage(scope.row)"
           @on-click="handleEditBtnClick"
         />
         <RowActionsMenu>
@@ -125,20 +120,16 @@
             :scope="scope"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
-            :showTooltip="scope.row.name === 'Repeat Offenders'"
-            :disabled="scope.row.name === 'Repeat Offenders'"
-            disabledTooltipText="Users cannot be added to the Repeat Offenders group."
+            :showTooltip="isTooltipRenderable(scope.row)"
+            :disabled="isTooltipRenderable(scope.row)"
+            :disabledTooltipText="getAddUsersToGroupButtonTooltipMessage(scope.row)"
             @on-click="handleAddGroup(scope.row)"
           />
           <TargetGroupRowActionsDeleteButton
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
-            :disabled="scope.row.name === 'Repeat Offenders'"
-            :tooltipMessage="
-              scope.row.name === 'Repeat Offenders'
-                ? 'The Repeat Offenders group cannot be deleted.'
-                : ''
-            "
+            :disabled="isTooltipRenderable(scope.row)"
+            :tooltipMessage="getDeleteButtonTooltipMessage(scope.row)"
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -378,11 +369,51 @@ export default {
     }
   },
   methods: {
-    handleRowIsSelectable(row) {
-      if (row?.name === 'Repeat Offenders') {
-        return false
+    getEditButtonTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders') {
+        return 'Repeat Offenders group is can not be edited.'
       }
-      return true
+      if (row.name === 'New Hires') {
+        return 'New Hires group is can not be edited.'
+      }
+      return ''
+    },
+    getGroupNameTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders') {
+        return 'The Repeat Offenders group is an automated target group that includes users who were phished multiple times in the last 3 months across all campaigns.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New hires are automatically added to this group for 30 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
+      }
+      return ''
+    },
+    getAddUsersToGroupButtonTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders') {
+        return 'Users cannot be added to the Repeat Offenders group.'
+      }
+      if (row.name === 'New Hires') {
+        return 'Users cannot be added to the New Hires group.'
+      }
+      return ''
+    },
+    getDeleteButtonTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders') {
+        return 'Repeat Offenders group is can not be deleted.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New Hires group is can not be deleted.'
+      }
+      return ''
+    },
+    isTooltipRenderable(row) {
+      return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
+    },
+    handleRowIsSelectable(row) {
+      return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
     },
     handleEditBtnClick(row) {
       this.$refs.refGroupsTable.handleEdit(row)
