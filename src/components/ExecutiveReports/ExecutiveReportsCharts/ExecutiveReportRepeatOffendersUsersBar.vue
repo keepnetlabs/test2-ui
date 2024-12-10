@@ -180,6 +180,10 @@ export default {
       const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
         ?.value
       const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
+      let offset = -20
+      if (offendersPercentage < 5) offset = -8
+      else if (window.innerWidth > 1281 && window.innerWidth < 1480) offset = -16
+      else if (window.innerWidth < 1281) offset = -12
       this.chartOptions = {
         indexAxis: 'y',
         devicePixelRatio: 2,
@@ -375,7 +379,7 @@ export default {
             color: '#000',
             display: true,
             clamp: true,
-            offset: offendersPercentage < 5 ? -8 : window.innerWidth < 1480 ? -16 : -20,
+            offset,
             align({ dataIndex, dataset }) {
               const { data } = dataset
               if (data[dataIndex] <= 5) return 'end'

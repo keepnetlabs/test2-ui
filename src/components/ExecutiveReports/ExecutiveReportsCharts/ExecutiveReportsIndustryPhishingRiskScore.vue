@@ -212,7 +212,10 @@ export default {
           }
         }
       })
-      const maxPhishingRiskScore = Math.max(...phishingRiskScoreData.map((obj) => obj.y))
+      const maxPhishingRiskScore = Math.max(
+        ...phishingRiskScoreData.map((obj) => obj.y),
+        ...industryAverageData.map((obj) => obj.y)
+      )
       this.chartData = {
         labels: xLabels,
         datasets: [
@@ -542,7 +545,11 @@ export default {
               if (dataIndex > 0) {
                 if (data[dataIndex].y < data[dataIndex - 1].y) {
                   if (data[dataIndex - 1].y / data[dataIndex].y >= 2.01) {
-                    if (data[dataIndex + 1] && data[dataIndex + 1].y > data[dataIndex].y) {
+                    if (
+                      data[dataIndex + 1] &&
+                      data[dataIndex + 1].y > data[dataIndex].y &&
+                      data[dataIndex].y > 10
+                    ) {
                       return 'bottom'
                     }
                   } else if (data[dataIndex + 1] && data[dataIndex + 1].y <= data[dataIndex].y) {
@@ -551,6 +558,7 @@ export default {
                   if (maxPhishingRiskScore / data[dataIndex].y > 100) {
                     return 'top'
                   }
+                  if (data[dataIndex].y <= 10) return 'top'
                   return 'bottom'
                 }
               }
