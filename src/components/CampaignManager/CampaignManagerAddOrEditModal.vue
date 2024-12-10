@@ -89,7 +89,8 @@
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
               :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
-              isPhishing
+              is-phishing
+              show-reply-tracking
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @smartGroupSelected="handleSmartGroupSelected"
             />
