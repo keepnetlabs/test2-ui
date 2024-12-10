@@ -60,7 +60,10 @@
           </template>
         </KSelect>
       </FormGroup>
-      <CampaignManagerReplyTracking v-model="formData.emailReplySettings" />
+      <CampaignManagerReplyTracking
+        v-if="showReplyTracking"
+        v-model="formData.emailReplySettings"
+      />
       <FormGroup
         v-if="showDuration"
         has-hint
@@ -114,7 +117,7 @@ import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroup
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
-import CampaignManagerReplyTracking from '@/components/CampaignManager/CampaignManagerReplyTracking.vue'
+import CampaignManagerReplyTracking from '@/components/CampaignManager/CampaignManagerReplyTracking'
 export default {
   name: 'CampaignManagerCampaignInfo',
   components: {
@@ -153,6 +156,10 @@ export default {
     },
     initialClickedUserGroupResourceId: {
       type: String
+    },
+    showReplyTracking: {
+      type: Boolean,
+      default: false
     }
   },
   directives: {
