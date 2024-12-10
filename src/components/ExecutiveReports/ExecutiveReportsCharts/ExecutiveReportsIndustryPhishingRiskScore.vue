@@ -577,7 +577,7 @@ export default {
               color: '#383B41',
               weight: '600'
             },
-            backgroundColor: function (context) {
+            backgroundColor: function () {
               return 'transparent'
             },
             borderRadius: 4,
