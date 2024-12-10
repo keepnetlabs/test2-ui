@@ -17,6 +17,8 @@
               add-data-plugin
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugins"
+              :add-custom-legend-label-height="12"
             />
           </template>
           <div
@@ -44,6 +46,8 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import labels from '@/model/constants/labels'
 export default {
   name: 'ExecutiveReportsSimulationCoverageBar',
   components: {
@@ -87,7 +91,34 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]})`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -174,11 +205,6 @@ export default {
         devicePixelRatio: 2,
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 24
-          }
-        },
         scales: {
           xAxes: [
             {
@@ -228,7 +254,61 @@ export default {
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          onClick: (e) => e.stopPropagation(),
+          labels: {
+            usePointStyle: true,
+            color: '#383B41',
+            font: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12,
+            generateLabels: (chart = {}) => {
+              const { data } = chart
+              const splittedNonSimulatedUsers = labels.NonSimulatedUsers.split(' ')
+              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
+              const emptySpace = window.innerWidth < 1480 ? '     ' : '  '
+              return [
+                {
+                  text: Array.from(
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + '  '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.SimulatedUsersCoverage]
+                    ? CHART_COLORS[labels.SimulatedUsersCoverage].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 0,
+                  textParts: [
+                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
+                    realSimulatedUsers
+                  ],
+                  customMarginLeft: 7
+                },
+                {
+                  text: Array.from(
+                    labels.NonSimulatedUsers +
+                      labels.NonSimulatedUsers +
+                      data.datasets[0].data[1] +
+                      emptySpace
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.NonSimulatedUsers]
+                    ? CHART_COLORS[labels.NonSimulatedUsers].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 1,
+                  textParts: [
+                    splittedNonSimulatedUsers[0] + ' ' + splittedNonSimulatedUsers[1],
+                    nonSimulatedUsers
+                  ],
+                  customMarginLeft: 4
+                }
+              ]
+            }
+          }
         },
         tooltips: {
           enabled: false,

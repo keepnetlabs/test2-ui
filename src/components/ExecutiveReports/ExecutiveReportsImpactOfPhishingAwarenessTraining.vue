@@ -181,30 +181,53 @@ export default {
       const annotations = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'Percentage')?.annotations
       })
+      annotations.push('')
+      annotations.unshift('')
       const companyPhishingRiskScoreDataset = datasets.filter((d) => d.name === 'Percentage')
       const industryAverageDataset = datasets.filter((d) => d.name === 'IndustryAverage')
       const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      const firstTimestamp = industryAverageDataset[0].x
+      const lastTimestamp = industryAverageDataset[industryAverageDataset.length - 1].x
+      const oneMonthInMs = 30 * 24 * 60 * 60 * 1000
+      const firstTimestampPrevMonth = firstTimestamp - oneMonthInMs
+      const lastTimestampNextMonth = lastTimestamp + oneMonthInMs
       this.chartData = {
         datasets: [
           {
             type: 'line',
             label: 'Industry Avg',
-            data: industryAverageDataset,
+            data: [
+              { x: firstTimestampPrevMonth, y: industryAverageData[0] },
+              ...industryAverageDataset,
+              { x: lastTimestampNextMonth, y: industryAverageData[industryAverageData.length - 1] }
+            ],
             borderColor: '#007bff',
             backgroundColor: '#1173C1',
             borderWidth: 2,
             fill: false,
+            offset: true,
             pointRadius: 0,
             pointHoverRadius: 0,
-            borderDash: [20, 20],
+            borderDash: [15, 15],
             lineTension: 0,
             order: 1
           },
           {
             type: 'bar',
             barThickness: 32,
+            offset: true,
             label: 'Phishing Risk Score',
-            data: companyPhishingRiskScoreDataset,
+            data: [
+              {
+                x: firstTimestampPrevMonth,
+                y: 0
+              },
+              ...companyPhishingRiskScoreDataset,
+              {
+                x: lastTimestampNextMonth,
+                y: 0
+              }
+            ],
             backgroundColor: function (context) {
               const index = context.dataIndex
               const value = context.dataset.data[index].y
@@ -227,16 +250,11 @@ export default {
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
-        layout: {
-          padding: {
-            right: 36
-          }
-        },
         maintainAspectRatio: false,
         scales: {
           xAxes: [
             {
-              offset: true,
+              offset: false,
               scaleLabel: {
                 display: true,
                 labelString: 'Month/Year',
@@ -254,8 +272,9 @@ export default {
                 callback(value) {
                   const splittedVal = value.split('/')
                   const monthName = monthNamesLong[splittedVal[0] - 1]
-                  return `${monthName}/${value.split('/')[1]}`
-                }
+                  return `${monthName.substring(0, 3)}/${value.split('/')[1]}`
+                },
+                display: true
               },
               type: 'time',
               time: {

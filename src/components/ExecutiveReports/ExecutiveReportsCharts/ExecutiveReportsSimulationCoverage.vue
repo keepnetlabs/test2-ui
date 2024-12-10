@@ -116,7 +116,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 const text = textParts[0]
-                const percentage = `(${textParts[1]} users)`
+                const percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -143,6 +143,12 @@ export default {
   created() {
     if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
     else this.callForData()
+  },
+  mounted() {
+    window.addEventListener('resize', () => {
+      this.setChartData(this.defaultWidgetData)
+      this.$forceUpdate()
+    })
   },
   methods: {
     callForData() {
@@ -193,29 +199,99 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
         tooltips: {
-          enabled: false
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-total-reported-suspicious-pie')
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-total-reported-suspicious-pie'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
+              document.body.appendChild(tooltipEl)
+            }
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+              return
+            }
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            if (tooltipModel.body) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const valArr = tooltipModel.body[0].lines[0].split(':')
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 14px;">${valArr[0]}</th>`
+              tableRoot.appendChild(titleRow)
+              const addTr = (label, val, addPaddingBottom = true) => {
+                let tr = document.createElement('tr')
+                let backgroundColor = valArr[0] === 'Simulated Users' ? '#2196F3' : '#F56C6C'
+                tr.innerHTML = `
+                <td style="font-weight:600;font-size:12px;"><span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>${label}:&nbsp;
+                </td>
+
+                <td style="font-weight:600;font-size:12px;">${val}</td>
+            `
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (addPaddingBottom) tr.style.paddingBottom = '8px'
+                tableRoot.appendChild(tr)
+              }
+              const value = valArr[0] === 'Simulated Users' ? simulatedUsers : nonSimulatedUsers
+              addTr('Number of Users', value, false)
+            }
+            const position = this._chart.canvas.getBoundingClientRect()
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+            })
+          },
+          xPadding: 16,
+          yPadding: 16
         },
         legend: {
           display: true,
           position: 'top',
-          align: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 'start' : 'center',
+          align: 'center',
           labels: {
             usePointStyle: true,
             fontColor: '#383B41',
             font: 'Open-sans,sans-serif',
-            padding: window.innerWidth < 1500 && window.innerWidth >= 1400 ? 24 : 32,
+            padding: 24,
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
               const splittedNonSimulatedUsers = labels.NonSimulatedUsers.split(' ')
               const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
+              const emptySpace = window.innerWidth < 1480 ? '     ' : '  '
               return [
                 {
                   text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[0].data[0] +
-                      ' (users)    '
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + '  '
                   )
                     .fill('')
                     .join(' '),
@@ -235,7 +311,7 @@ export default {
                     labels.NonSimulatedUsers +
                       labels.NonSimulatedUsers +
                       data.datasets[0].data[1] +
-                      ' (users) '
+                      emptySpace
                   )
                     .fill('')
                     .join(' '),
@@ -262,7 +338,7 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#383B41',
+            color: '#000',
             anchor: function (context) {
               if (context.dataset.data.includes(0)) return 'start'
               return 'top'
@@ -278,10 +354,7 @@ export default {
               return 'center'
             },
             display: true,
-            font: {
-              size: 12,
-              family: 'Open Sans, sans-serif'
-            },
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
               if (value) return `${value}%`
               return ``

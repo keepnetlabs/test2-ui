@@ -160,6 +160,9 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0) {
+        this.isEmpty = true
+        return
       }
       const undetected = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Undetected'
@@ -321,8 +324,8 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
             clamp: true,
             anchor: function () {

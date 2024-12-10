@@ -218,7 +218,7 @@ export default {
             barThickness: 2,
             categoryPercentage: 0.5,
             barPercentage: 0.5,
-            label: 'Average Dwell Time: 25 minutes',
+            label: 'Average Dwell Time',
             data: averageDwellTimeBarData,
             backgroundColor: '#B6791D',
             borderColor: '#B6791D',
@@ -300,7 +300,6 @@ export default {
             usePointStyle: true,
             fontColor: '#757575',
             generateLabels(chart = {}) {
-              const { data } = chart
               return [
                 {
                   text: '',
@@ -396,37 +395,22 @@ export default {
         },
         plugins: {
           datalabels: {
-            display: false,
-            offset: 12,
-            color: '#383B41',
-            formatter: function (value, context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return '---- Reporting practices have steadily improved'
-              }
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                return 'Significant decrease in reporting practices ----'
-              }
-              return ''
-            },
-            align: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return 'right'
-              }
-              return 'left'
-            },
-            anchor: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return 'right'
-              }
-              return 'left'
-            },
-            font: {
-              size: 10,
-              color: '#383B41',
-              weight: 'normal'
-            },
+            display: true,
+            align: 'start',
+            offset: -20,
+            anchor: 'end',
+            color: '#000',
             borderRadius: 4,
-            padding: 6
+            padding: 6,
+            formatter: function (value, context) {
+              if (
+                context.dataset.label === 'line' ||
+                value.y <= 0 ||
+                context.dataset.label.includes('Average Dwell Time')
+              )
+                return ''
+              return value + '%'
+            }
           }
         }
       }

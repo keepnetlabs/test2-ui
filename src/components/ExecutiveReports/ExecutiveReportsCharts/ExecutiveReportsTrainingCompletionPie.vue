@@ -178,7 +178,93 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
         tooltips: {
-          enabled: false
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-doughnut')
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-training-completion-doughnut'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
+              document.body.appendChild(tooltipEl)
+            }
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+              return
+            }
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            if (tooltipModel.body) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const valArr = tooltipModel.body[0].lines[0].split(':')
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 12px;">${valArr[0]}</th>`
+              tableRoot.appendChild(titleRow)
+              const addTr = (label, val, addPaddingBottom = true) => {
+                let tr = document.createElement('tr')
+                let backgroundColor =
+                  valArr[0] === 'Completed'
+                    ? '#43A047'
+                    : valArr[0] === 'In Progress'
+                    ? '#2196F3'
+                    : '#B83A3A'
+                tr.innerHTML = `
+                <td style="font-weight:600;font-size:12px;"><span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>${label}:&nbsp;
+                </td>
+
+                <td style="font-weight:600;font-size:12px;">${val}</td>
+            `
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (addPaddingBottom) tr.style.paddingBottom = '8px'
+                tableRoot.appendChild(tr)
+              }
+              const type = valArr[0]
+              let val = 0
+              if (type === 'Completed') {
+                val = completed
+              } else if (type === 'In Progress') {
+                val = inProgress
+              } else if (type === 'Incomplete') {
+                val = incomplete
+              }
+              addTr('Percentage of Users', val + '%', false)
+            }
+            const position = this._chart.canvas.getBoundingClientRect()
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+            })
+          },
+          xPadding: 16,
+          yPadding: 16
         },
         legend: {
           display: true,
@@ -234,8 +320,8 @@ export default {
         showTooltipLine: true,
         plugins: {
           datalabels: {
-            color: '#fff',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
             clamp: true,
             anchor: function (context) {
@@ -246,6 +332,11 @@ export default {
             align: function (context) {
               const isZeroTwice = context.dataset.data.filter((d) => d === 0).length > 1
               if (isZeroTwice) return 'center'
+              const dataArr = context.dataset.data
+              if (context.dataIndex === 0) {
+                const comparator = dataArr[context.dataIndex] - dataArr[context.dataIndex + 1]
+                if (comparator <= 3 || comparator >= -3) return 'end'
+              }
               return 'center'
             },
             formatter(value) {
