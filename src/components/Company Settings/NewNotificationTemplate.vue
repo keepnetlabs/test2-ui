@@ -480,7 +480,10 @@ export default {
             }
             this.formValues[key] = value
           }
-          this.formValues.emailDeliverySettingType = response.data.data.emailDeliveryType
+          this.formValues.emailDeliverySettingType =
+            response?.data?.data?.emailDeliveryType ||
+            response?.data?.data?.emailDeliverySettingType ||
+            EMAIL_DELIVERY_TYPES.SMTP
           if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
