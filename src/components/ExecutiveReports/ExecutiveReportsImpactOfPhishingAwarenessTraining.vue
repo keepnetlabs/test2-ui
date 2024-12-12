@@ -232,12 +232,10 @@ export default {
               const index = context.dataIndex
               const value = context.dataset.data[index].y
               let color = '#43A047'
-              if (value - industryAverageData[index] >= 0) {
+              const avgIndex = industryAverageData[index] || industryAverageData[0]
+              if (value - avgIndex >= 0) {
                 color = '#F56C6C'
-              } else if (
-                value - industryAverageData[index] < 0 &&
-                value - industryAverageData[index] > -10
-              ) {
+              } else if (value - avgIndex < 0 && value - avgIndex > -10) {
                 color = '#D1AD0C'
               }
               return color
@@ -450,7 +448,7 @@ export default {
               if (context.dataset.label === 'Industry Avg') return ''
               if (annotations[context.dataIndex]) {
                 return annotations[context.dataIndex].definition
-              }
+              } else if (value?.y > 0) return `${value?.y}%`
               return ''
             },
             font: {

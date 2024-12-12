@@ -197,21 +197,17 @@ export default {
         (obj) => obj.dataObject.ActionRange === 'Undetected'
       )?.values
       const undetectedCount = undetected ? undetected[1].value : 0
-      const undetectedPercentage = undetected ? undetected[0].value : 0
       const malicious = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Malicious'
       )?.values
       const maliciousCount = malicious ? malicious[1].value : 0
-      const maliciousPercentage = malicious ? malicious[0].value : 0
       const phishing = data[0].widgetDatas.find((obj) => obj.dataObject.ActionRange === 'Phishing')
         ?.values
       const phishingCount = phishing ? phishing[1].value : 0
-      const phishingPercentage = phishing ? phishing[0].value : 0
       const simulation = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Simulation'
       )?.values
       const simulationCount = simulation ? simulation[1].value : 0
-      const simulationPercentage = simulation ? simulation[0].value : 0
       this.chartOptions = {
         devicePixelRatio: 2,
         indexAxis: 'y',
@@ -304,7 +300,7 @@ export default {
                   const comparatorVal = 4
                   return {
                     text: Array.from(
-                      label + label + label.substring(0, label.length / comparatorVal) + d + '   '
+                      label + label + label.substring(0, label.length / comparatorVal) + d + '  '
                     )
                       .fill('')
                       .join(' '),
@@ -418,7 +414,7 @@ export default {
             clamp: true,
             formatter: function (value) {
               if (!value.x) return ''
-              return `${value.details['Number of Reporting']} (${value.x}%)`
+              return `${value.x}%`
             },
             borderRadius: 4,
             padding: 6
