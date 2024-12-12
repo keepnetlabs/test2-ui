@@ -107,7 +107,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 let text = textParts[0]
-                let percentage = `(${textParts[1]}%)`
+                let percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -163,8 +163,11 @@ export default {
       }
       const { values } = data[0].widgetDatas[0]
       const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const completedCount = values.find((obj) => obj.name === 'CompletedCount')?.value
       const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const inProgressCount = values.find((obj) => obj.name === 'InProgressCount')?.value
       const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
+      const incompleteCount = values.find((obj) => obj.name === 'IncompleteCount')?.value
       const chartOptions = {
         showLabels: true,
         responsive: true,
@@ -271,7 +274,7 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return [completed, inProgress, incomplete].map((d, index) => {
+              return [completedCount, inProgressCount, incompleteCount].map((d, index) => {
                 const label = data.labels[index]
                 const splittedLabel = label.split(' ')
                 const textParts =
@@ -281,7 +284,7 @@ export default {
                 const comparatorVal = label === 'Completed' ? 2 : 4
                 return {
                   text: Array.from(
-                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
+                    label + label + label.substring(0, label.length / comparatorVal) + d + '   '
                   )
                     .fill('')
                     .join(' '),
@@ -291,7 +294,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Completed' ? 4 : 0
+                  customMarginLeft: label === 'Completed' ? 4 : label === 'Incomplete' ? 2 : 0
                 }
               })
             }
