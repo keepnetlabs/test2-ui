@@ -103,7 +103,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 let text = textParts[0]
-                let percentage = `(${textParts[1]}%)`
+                let percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -163,17 +163,21 @@ export default {
       const undetected = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Undetected'
       )?.values
+      const undetectedCount = undetected ? undetected[1].value : 0
       const undetectedPercentage = undetected ? undetected[0].value : 0
       const malicious = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Malicious'
       )?.values
+      const maliciousCount = malicious ? malicious[1].value : 0
       const maliciousPercentage = malicious ? malicious[0].value : 0
       const phishing = data[0].widgetDatas.find((obj) => obj.dataObject.ActionRange === 'Phishing')
         ?.values
+      const phishingCount = phishing ? phishing[1].value : 0
       const phishingPercentage = phishing ? phishing[0].value : 0
       const simulation = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Simulation'
       )?.values
+      const simulationCount = simulation ? simulation[1].value : 0
       const simulationPercentage = simulation ? simulation[0].value : 0
       const chartOptions = {
         showLabels: true,
@@ -282,34 +286,31 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return [
-                undetectedPercentage,
-                maliciousPercentage,
-                phishingPercentage,
-                simulationPercentage
-              ].map((d, index) => {
-                const label = data.labels[index]
-                const splittedLabel = label.split(' ')
-                const textParts =
-                  splittedLabel.length === 1
-                    ? [splittedLabel[0], d]
-                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
-                const comparatorVal = label === 'Completed' ? 2 : 4
-                return {
-                  text: Array.from(
-                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
-                  )
-                    .fill('')
-                    .join(' '),
-                  fillStyle: CHART_COLORS[data.labels[index]]
-                    ? CHART_COLORS[data.labels[index]].backgroundColor
-                    : null,
-                  lineWidth: 0,
-                  datasetIndex: index,
-                  textParts,
-                  customMarginLeft: label === 'Undetected' ? 5 : label === 'Simulation' ? 3 : 1
+              return [undetectedCount, maliciousCount, phishingCount, simulationCount].map(
+                (d, index) => {
+                  const label = data.labels[index]
+                  const splittedLabel = label.split(' ')
+                  const textParts =
+                    splittedLabel.length === 1
+                      ? [splittedLabel[0], d]
+                      : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                  const comparatorVal = 4
+                  return {
+                    text: Array.from(
+                      label + label + label.substring(0, label.length / comparatorVal) + d + '   '
+                    )
+                      .fill('')
+                      .join(' '),
+                    fillStyle: CHART_COLORS[data.labels[index]]
+                      ? CHART_COLORS[data.labels[index]].backgroundColor
+                      : null,
+                    lineWidth: 0,
+                    datasetIndex: index,
+                    textParts,
+                    customMarginLeft: label === 'Undetected' ? 5 : label === 'Simulation' ? 3 : 1
+                  }
                 }
-              })
+              )
             }
           }
         },
