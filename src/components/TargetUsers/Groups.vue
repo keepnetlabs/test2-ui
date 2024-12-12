@@ -413,7 +413,7 @@ export default {
       return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
     },
     handleRowIsSelectable(row) {
-      return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
+      return row?.name && !['Repeat Offenders', 'New Hires'].includes(row.name)
     },
     handleEditBtnClick(row) {
       this.$refs.refGroupsTable.handleEdit(row)
