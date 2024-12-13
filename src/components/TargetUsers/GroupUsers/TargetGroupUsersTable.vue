@@ -346,6 +346,13 @@ export default {
           this.tableOptions.addButton = {
             show: false
           }
+        } else if (val === 'New Hires') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
         } else {
           this.tableOptions.iEmpty = {
             message: labels.NoTargetGroupUserAdded,
