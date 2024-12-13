@@ -184,7 +184,7 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: 'Phishing Risk Score',
-                fontColor: '#B6791D'
+                fontColor: '#383B41'
               },
               offset: false,
               gridLines: {
@@ -199,7 +199,7 @@ export default {
                 max: maxY > 100 ? maxY : 100,
                 stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                 labelOffset: 0,
-                fontColor: '#B6791D',
+                fontColor: '#383B41',
                 fontFamily: 'Open Sans, sans-serif',
                 beginAtZero: true,
                 padding: 12,
