@@ -56,7 +56,7 @@
             @click.stop
           />
         </div>
-        <div>
+        <div v-if="false">
           <VCheckbox
             v-model="value.isOutOfOfficeEnabled"
             hide-details
