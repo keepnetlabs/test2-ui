@@ -1073,15 +1073,6 @@ export default {
       }
       return require('@/assets/img/timeline-phishing-success-icon.png')
     },
-    getScenarioMethodText(item) {
-      if (['Vishing Simulator', 'Callback Simulator'].includes(item.product)) {
-        return ''
-      }
-      if (item.product === 'Awareness Educator' || item.product === 'Security Awareness') {
-        return item?.materialType || ''
-      }
-      return item.scenarioMethod
-    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
@@ -1089,11 +1080,6 @@ export default {
       ) {
         this.$store.dispatch('common/getTimezone')
       }
-    },
-    getTimezoneText(item) {
-      const timezoneText = this.timezones?.find?.((tz) => tz.value === item.timezoneId)?.text || ''
-      const timzoneLeftText = timezoneText.split(' ')[0]
-      return timzoneLeftText
     },
     getProductType(product) {
       if (product.productType.split(' - ')[0] === 'PHISHING SIMULATOR') {

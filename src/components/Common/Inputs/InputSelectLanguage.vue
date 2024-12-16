@@ -84,7 +84,7 @@ export default {
     },
     label: {
       type: String
-    },
+    }
   },
   methods: {
     handleLanguageChange(newVal) {

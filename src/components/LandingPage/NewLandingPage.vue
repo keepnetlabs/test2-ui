@@ -329,7 +329,7 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 export default {
-  name: 'NewEmailTemplates',
+  name: 'NewLandingPage',
   components: {
     InputPhishingMethod,
     InputPhishingLink,
