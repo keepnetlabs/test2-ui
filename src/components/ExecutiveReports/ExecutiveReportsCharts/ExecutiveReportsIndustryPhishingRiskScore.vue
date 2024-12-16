@@ -175,7 +175,9 @@ export default {
       )
       this.industryAverageObj = industryAverageObj
       const totalUserActions = data[0]?.widgetDatas.reduce((acc, item) => {
-        return acc + item.dataObject.totalReportedCount + item.dataObject.totalMetrics
+        const temporalAcc = item.dataObject.totalReportedCount + item.dataObject.totalMetrics
+        if (temporalAcc > acc) acc = temporalAcc
+        return acc
       }, 0)
       let maxTotalUserActions = totalUserActions
       const remainder = Math.floor(maxTotalUserActions / 50)
@@ -192,15 +194,18 @@ export default {
         obj.values.map((val) => {
           if (val.name === 'RiskScore') {
             phishingRiskScoreData.push({ ...generalObj, y: val.value })
+            if (val.value > maxY) {
+              maxY = val.value
+            }
           } else if (val.name === 'TotalMetrics') {
             phishingSimulationMetricsData.push({ ...generalObj, y: val.value })
           } else if (val.name === 'TotalReportedCount') {
             phishReportersData.push({ ...generalObj, y: val.value })
           } else if (val.name === 'IndustryAverage') {
             industryAverageData.push({ ...generalObj, y: val.value })
-          }
-          if (val.value > maxY) {
-            maxY = val.value
+            if (val.value > maxY) {
+              maxY = val.value
+            }
           }
         })
         return {
@@ -216,6 +221,12 @@ export default {
         ...phishingRiskScoreData.map((obj) => obj.y),
         ...industryAverageData.map((obj) => obj.y)
       )
+      let maxYRemainder = Math.floor(maxY / 50)
+      if (!maxYRemainder) {
+        maxY = 100
+      } else {
+        maxY = maxYRemainder * 50 + 50
+      }
       this.chartData = {
         labels: xLabels,
         datasets: [
