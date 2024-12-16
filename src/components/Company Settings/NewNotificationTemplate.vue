@@ -13,7 +13,7 @@
     @closeOverlay="closeOverlay"
     @submit="submit"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="Template Name" has-hint>
@@ -285,7 +285,6 @@ export default {
         'Learning Path Enrollment',
         'Infographic Enrollment',
         'Enrollment after Failed in a Simulation',
-        'Scheduled Report',
         'Enrollment Reminder',
         'Certificate'
       ].includes(selectedTemplateCategoryName)
