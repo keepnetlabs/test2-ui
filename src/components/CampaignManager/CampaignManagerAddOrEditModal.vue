@@ -847,7 +847,8 @@ export default {
             customReplyToAddress:
               campaignManagerFormData.emailReplySettings.subDomain +
               '@' +
-              campaignManagerFormData.emailReplySettings.domain
+              campaignManagerFormData.emailReplySettings.domain,
+            isOutOfOfficeEnabled: false
           }
           delete emailReplySettings.subDomain
           delete emailReplySettings.domain
