@@ -85,6 +85,18 @@
                   </v-select>
                 </div>
               </div>
+              <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreateLandingPageTemplateClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text">Create Email Template</span>
+                </v-btn>
+              </div>
             </div>
           </div>
           <multipane class="vertical-panes" layout="vertical">
@@ -1014,6 +1026,9 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    handleCreateLandingPageTemplateClick() {
+      this.$emit('on-create-landing-page-template')
+    },
     handleTemplateEdit(val) {
       this.$emit('template-edit', val)
     },

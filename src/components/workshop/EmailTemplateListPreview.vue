@@ -929,7 +929,7 @@ export default {
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
       else if (this.isQuishingTypeEmail)
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
-      this.apiFuncs
+      return this.apiFuncs
         .list(bodyData)
         .then((response) => {
           const { data } = response
@@ -970,6 +970,15 @@ export default {
           this.showLoader = false
           this.$emit('loading', false)
         })
+    },
+    setItemToFirstIndex(resourceId = '') {
+      const itemIndex = this.listData.findIndex((item) => item.resourceId === resourceId)
+      if (itemIndex === -1) return
+      this.listData = [
+        this.listData[itemIndex],
+        ...this.listData.slice(0, itemIndex),
+        ...this.listData.slice(itemIndex + 1)
+      ]
     },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight

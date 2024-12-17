@@ -47,7 +47,8 @@
           :status="isOpenLandingPageDrawer"
           :is-a-i-ally-enabled="true"
           :landing-page-data="landingPageData"
-          @changeNewEmailTemplateModalStatus="isOpenLandingPageDrawer = false"
+          :email-template-id="createdLandingPageResourceId"
+          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
         />
       </VNavigationDrawer>
       <v-stepper light v-model="step" class="k-stepper">
@@ -735,6 +736,7 @@ export default {
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
       createdEmailTemplateResourceId: '',
+      createdLandingPageResourceId: '',
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
@@ -1081,9 +1083,24 @@ export default {
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdEmailTemplateResourceId = createdResourceId
       document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate)
+        this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
+          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
+        })
       setTimeout(() => {
-        if (forceUpdate)
-          this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId)
+        this.toggleEmailTemplateDrawer()
+      }, 250)
+    },
+    handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
+      this.createdLandingPageResourceId = createdResourceId
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate)
+        this.$refs.refLandingPageTemplateListPreview
+          .getTemplates(true, createdResourceId)
+          .then(() => {
+            this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
+          })
+      setTimeout(() => {
         this.toggleEmailTemplateDrawer()
       }, 250)
     },
