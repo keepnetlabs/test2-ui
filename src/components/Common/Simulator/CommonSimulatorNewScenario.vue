@@ -9,6 +9,7 @@
   >
     <template #overlay-body>
       <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewEmailTemplateModal"
         v-if="isOpenEmailTemplateDrawer"
         v-model="isOpenEmailTemplateDrawer"
         class="k-navigation-drawer"
@@ -24,17 +25,17 @@
           ref="newEmailTemplate"
           :status="isOpenEmailTemplateDrawer"
           :should-remove-overflow="false"
+          :show-leaving-dialog="false"
           :email-template-id="createdEmailTemplateResourceId"
           @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
         />
       </VNavigationDrawer>
       <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
         v-if="isOpenLandingPageDrawer"
         v-model="isOpenLandingPageDrawer"
         class="k-navigation-drawer"
-        temporary
         fixed
-        stateless
         overlay-color="rgba(0, 0, 0, 0.17)"
         overlay-opacity="1"
         right
@@ -46,6 +47,8 @@
           ref="newLandingPage"
           :status="isOpenLandingPageDrawer"
           :is-a-i-ally-enabled="true"
+          :should-remove-overflow="false"
+          :show-leaving-dialog="false"
           :landing-page-data="landingPageData"
           :email-template-id="createdLandingPageResourceId"
           @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
@@ -237,6 +240,7 @@
                     @loading="isSubmitDisabled = $event"
                     @template-edit="handleTemplateEdit"
                     @edit-mode="handleLandingPageEditModeChange"
+                    @on-create-landing-page-template="toggleLandingPageDrawer"
                 /></v-list-item-content>
               </v-list-item>
             </div>
@@ -1091,6 +1095,23 @@ export default {
         this.toggleEmailTemplateDrawer()
       }, 250)
     },
+    handleClickOutsideNewEmailTemplateModal() {
+      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
+        return
+      }
+      this.handleCloseNewEmailTemplateModal()
+    },
+    handleClickOutsideNewLandingPageTemplateModal() {
+      if (
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
+      ) {
+        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
+        return
+      }
+      this.handleCloseNewLandingPageTemplateModal()
+    },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
       document.querySelector('.k-navigation-drawer').style.right = '-100%'
@@ -1101,7 +1122,7 @@ export default {
             this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
           })
       setTimeout(() => {
-        this.toggleEmailTemplateDrawer()
+        this.toggleLandingPageDrawer()
       }, 250)
     },
     toggleLandingPageDrawer() {

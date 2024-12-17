@@ -1,5 +1,11 @@
 <template>
-  <app-modal v-if="status" icon-name="mdi-file" :status="status" :title="getTitle">
+  <app-modal
+    v-if="status"
+    icon-name="mdi-file"
+    :status="status"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -349,6 +355,10 @@ export default {
     isEdit: {
       type: Boolean
     },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
+    },
     isDuplicate: {
       type: Boolean,
       default: false
@@ -361,6 +371,10 @@ export default {
     },
     isAIAllyEnabled: {
       type: Boolean
+    },
+    showLeavingDialog: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -515,6 +529,7 @@ export default {
       if (!isChanged) {
         return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {

@@ -280,6 +280,10 @@ export default {
     shouldRemoveOverflow: {
       type: Boolean,
       default: true
+    },
+    showLeavingDialog: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -583,6 +587,7 @@ export default {
       if (!isChanged) {
         return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
