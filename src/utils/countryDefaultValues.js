@@ -105,6 +105,13 @@ export default [
     phoneNumberCode: '+375'
   },
   {
+    name: 'Kosovo',
+    timeFormat: '24h',
+    dateFormat: 'dd/MM/yyyy',
+    timezone: 'Central European Standard Time',
+    phoneNumberCode: '+383'
+  },
+  {
     name: 'Belgium',
     timeFormat: '24h',
     dateFormat: 'dd/MM/yyyy',
