@@ -16,6 +16,10 @@ export default [
     language: 'English'
   },
   {
+    country: 'Kosovo',
+    language: ''
+  },
+  {
     country: 'Andorra',
     language: 'Catalan'
   },
