@@ -14,6 +14,8 @@ export const ACTIVITY_TYPE_COLOR_MAP = {
   'Training Completed': '#43A047',
   'Clicked Training Link': '#43A047',
   'Clicked Training': '#43A047',
+  'Email Opened': '#E6A23C',
+  'Opened Email': '#E6A23C',
   'Training Not Completed': '#F56C6C',
   'Exam Passed': '#43A047',
   'Exam Failed': '#F56C6C',
@@ -46,6 +48,8 @@ export const ACTIVITY_TYPES_FAIL_MAP = {
   'Downloaded Poster': false,
   'Downloaded Infographic': false,
   'Email Sent': false,
+  'Email Opened': false,
+  'Opened Email': false,
   'Call Sent': false,
   'SMS Sent': false
 }
@@ -66,6 +70,8 @@ export const ACTIVITY_TYPES_NEUTRAL_MAP = {
   'Training Completed': false,
   'Clicked Training Link': false,
   'Clicked Training': false,
+  'Email Opened': false,
+  'Opened Email': false,
   'Training Not Completed': false,
   'Exam Passed': false,
   'Exam Failed': false,
@@ -74,6 +80,10 @@ export const ACTIVITY_TYPES_NEUTRAL_MAP = {
   'Email Sent': true,
   'Call Sent': true,
   'SMS Sent': true
+}
+export const ACTIVITY_TYPES_OPENED_MAP = {
+  'Email Opened': true,
+  'Opened Email': true
 }
 
 export const userActivityDetailsFilters = [

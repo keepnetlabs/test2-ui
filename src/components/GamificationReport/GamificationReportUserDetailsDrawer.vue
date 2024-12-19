@@ -431,7 +431,26 @@
                       }}</span>
                     </div>
                     <span
-                      v-if="isProductAwareness(item)"
+                      v-if="isProductAwareness(item) && ACTIVITY_TYPES_OPENED_MAP[item.ActionType]"
+                      class="gamification-report__timeline-item-middle-text"
+                    >
+                      {{ selectedRow.firstName }} {{ selectedRow.lastName }}
+                      <span>
+                        opened the email for
+                      </span>
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      enrollment in the
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.categoryDescription
+                      }}</span>
+                      <span>
+                        category.
+                      </span>
+                    </span>
+                    <span
+                      v-else-if="isProductAwareness(item)"
                       class="gamification-report__timeline-item-middle-text"
                     >
                       {{ selectedRow.firstName }} {{ selectedRow.lastName }}
@@ -543,6 +562,7 @@ import {
   ACTIVITY_TYPE_COLOR_MAP,
   ACTIVITY_TYPES_FAIL_MAP,
   ACTIVITY_TYPES_NEUTRAL_MAP,
+  ACTIVITY_TYPES_OPENED_MAP,
   userActivityDetailsFilters
 } from './utils'
 import useDebounce from '@/hooks/useDebounce'
@@ -606,6 +626,7 @@ export default {
       search: '',
       ACTIVITY_TYPES_NEUTRAL_MAP,
       ACTIVITY_TYPE_COLOR_MAP,
+      ACTIVITY_TYPES_OPENED_MAP,
       overallScore: {},
       productScores: [],
       timeline: [],
@@ -1065,6 +1086,9 @@ export default {
         }
         if (ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-awareness-neutral-icon.png')
+        }
+        if (ACTIVITY_TYPES_OPENED_MAP[item.ActionType]) {
+          return require('@/assets/img/opened-email-yellow.png')
         }
         return require('@/assets/img/timeline-awareness-success-icon.png')
       }
