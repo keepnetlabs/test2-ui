@@ -588,8 +588,13 @@ export default {
             })
         } else {
           createLandingPage(payload)
-            .then(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            .then((response) => {
+              this.$emit(
+                'changeNewEmailTemplateModalStatus',
+                false,
+                true,
+                response?.data?.data?.resourceId
+              )
             })
             .finally(() => {
               this.isSubmitDisabled = false
