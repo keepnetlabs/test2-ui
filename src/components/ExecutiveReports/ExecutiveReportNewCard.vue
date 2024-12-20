@@ -325,7 +325,6 @@ import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveRepor
 import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
 import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
 import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
