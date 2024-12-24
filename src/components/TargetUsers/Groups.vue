@@ -96,7 +96,7 @@
         <span @click="handleGroupNameClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] }}
         </span>
-        <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="270">
+        <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="320">
           <template #activator="{ on }">
             <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
           </template>
@@ -382,7 +382,7 @@ export default {
     getGroupNameTooltipMessage(row) {
       if (!row?.name) return ''
       if (row.name === 'Repeat Offenders') {
-        return 'The Repeat Offenders group is an automated target group that includes users who were phished multiple times in the last 3 months across all campaigns.'
+        return 'Users who fail two or more phishing campaigns are automatically added to the Repeat Offenders group, posing a higher security risk. Prioritize targeted training and simulations for their adaptation to your security culture, and they will be automatically removed once the risk is reduced.'
       }
       if (row.name === 'New Hires') {
         return 'New hires are automatically added to this group for 30 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'

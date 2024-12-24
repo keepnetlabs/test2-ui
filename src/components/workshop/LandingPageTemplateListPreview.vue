@@ -34,7 +34,7 @@
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
           <div class="landingPagePreview-content--search px-6 py-6">
-            <div class="d-flex justify-space-between">
+            <div class="d-flex justify-space-between align-center">
               <div class="d-flex">
                 <div>
                   <VTextField
@@ -78,12 +78,27 @@
                     item-value="value"
                     outlined
                     persistent-hint
+                    hide-details
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="getTemplatesForSearch"
                   >
                   </v-select>
                 </div>
+              </div>
+              <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreateLandingPageTemplateClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text"
+                    >Create Landing Page Template</span
+                  >
+                </v-btn>
               </div>
             </div>
           </div>
@@ -1014,6 +1029,9 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    handleCreateLandingPageTemplateClick() {
+      this.$emit('on-create-landing-page-template')
+    },
     handleTemplateEdit(val) {
       this.$emit('template-edit', val)
     },
@@ -1294,7 +1312,7 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      this.apiFuncs
+      return this.apiFuncs
         .list(this.bodyData)
         .then((response) => {
           const { data } = response
@@ -1338,6 +1356,15 @@ export default {
           this.showLoader = false
           this.$emit('loading', false)
         })
+    },
+    setItemToFirstIndex(resourceId = '') {
+      const itemIndex = this.listData.findIndex((item) => item.resourceId === resourceId)
+      if (itemIndex === -1) return
+      this.listData = [
+        this.listData[itemIndex],
+        ...this.listData.slice(0, itemIndex),
+        ...this.listData.slice(itemIndex + 1)
+      ]
     },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
