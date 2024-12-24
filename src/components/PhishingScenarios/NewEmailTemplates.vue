@@ -1,5 +1,10 @@
 <template>
-  <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
+  <app-modal
+    :status="status"
+    icon-name="mdi-email"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -271,6 +276,14 @@ export default {
     },
     isAIAllyEnabled: {
       type: Boolean
+    },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
+    },
+    showLeavingDialog: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -574,6 +587,7 @@ export default {
       if (!isChanged) {
         return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
@@ -650,8 +664,13 @@ export default {
           })
       } else {
         createPhishingEmailTemplate(payload)
-          .then(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+          .then((response) => {
+            this.$emit(
+              'changeNewEmailTemplateModalStatus',
+              false,
+              true,
+              response?.data?.data?.resourceId
+            )
           })
           .finally(() => {
             this.isSubmitDisabled = false

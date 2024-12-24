@@ -1,5 +1,11 @@
 <template>
-  <app-modal v-if="status" icon-name="mdi-file" :status="status" :title="getTitle">
+  <app-modal
+    v-if="status"
+    icon-name="mdi-file"
+    :status="status"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -329,7 +335,7 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 export default {
-  name: 'NewEmailTemplates',
+  name: 'NewLandingPage',
   components: {
     InputPhishingMethod,
     InputPhishingLink,
@@ -349,6 +355,10 @@ export default {
     isEdit: {
       type: Boolean
     },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
+    },
     isDuplicate: {
       type: Boolean,
       default: false
@@ -361,6 +371,10 @@ export default {
     },
     isAIAllyEnabled: {
       type: Boolean
+    },
+    showLeavingDialog: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -515,6 +529,7 @@ export default {
       if (!isChanged) {
         return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
@@ -573,8 +588,13 @@ export default {
             })
         } else {
           createLandingPage(payload)
-            .then(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            .then((response) => {
+              this.$emit(
+                'changeNewEmailTemplateModalStatus',
+                false,
+                true,
+                response?.data?.data?.resourceId
+              )
             })
             .finally(() => {
               this.isSubmitDisabled = false

@@ -147,17 +147,23 @@ export default {
       let isAverageAdded = false
       let averageDwellTime = 0
       let averageDwellTimeIndex = 0
+      let maxDwellTime = 0
       const labels = widgetDatas.reduce((acc, item) => {
         const { ActionRange } = item.dataObject
         averageDwellTime = item.values.find(({ name }) => name === 'AverageDwellTime').value
-        if (ActionRange < averageDwellTime) {
+        const itemValue = item.values.find(({ name }) => name === 'Percentage').value
+        const numberActionRange = parseInt(ActionRange.split('-')[0].trim())
+        if (numberActionRange < averageDwellTime) {
           acc.push(ActionRange)
-        } else if (ActionRange > averageDwellTime && !isAverageAdded) {
-          acc.push(averageDwellTime)
-          averageDwellTimeIndex = acc.length - 1
+        } else if (numberActionRange >= averageDwellTime) {
+          if (!isAverageAdded) {
+            acc.push(averageDwellTime)
+            averageDwellTimeIndex = acc.length - 1
+          }
           acc.push(ActionRange)
           isAverageAdded = true
         }
+        if (itemValue > maxDwellTime) maxDwellTime = itemValue
         return acc
       }, [])
       const dwellTimeBarData = widgetDatas.reduce((acc, item, index) => {
@@ -206,8 +212,14 @@ export default {
             barThickness: 32,
             data: dwellTimeBarData,
             label: 'dwell bar',
-            backgroundColor: '#0198AC',
             borderColor: '#0198AC',
+            backgroundColor: function (context) {
+              const index = context.dataIndex
+              const value = context.dataset.data[index]
+              let color = '#0198AC'
+              if (value === maxDwellTime) color = '#003d45'
+              return color
+            },
             fill: false,
             order: 2,
             stack: 'Stack 1',

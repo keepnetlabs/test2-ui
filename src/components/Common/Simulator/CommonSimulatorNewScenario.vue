@@ -8,26 +8,52 @@
     :showFooter="!isTemplateEditing"
   >
     <template #overlay-body>
-      <!--
       <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewEmailTemplateModal"
+        v-if="isOpenEmailTemplateDrawer"
+        v-model="isOpenEmailTemplateDrawer"
         class="k-navigation-drawer"
-        v-model="isOpenLandingPageDrawer"
-        temporary
         fixed
+        overlay-color="rgba(0, 0, 0, 0.17)"
+        overlay-opacity="1"
         right
-        width="calc(100% - 96px)"
+        width="calc(100% - 72px)"
+        height="100%"
+      >
+        <NewEmailTemplates
+          v-if="isOpenEmailTemplateDrawer"
+          ref="newEmailTemplate"
+          :status="isOpenEmailTemplateDrawer"
+          :should-remove-overflow="false"
+          :show-leaving-dialog="false"
+          :email-template-id="createdEmailTemplateResourceId"
+          @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+        />
+      </VNavigationDrawer>
+      <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
+        v-if="isOpenLandingPageDrawer"
+        v-model="isOpenLandingPageDrawer"
+        class="k-navigation-drawer"
+        fixed
+        overlay-color="rgba(0, 0, 0, 0.17)"
+        overlay-opacity="1"
+        right
+        width="calc(100% - 72px)"
         height="100%"
       >
         <NewLandingPage
           v-if="isOpenLandingPageDrawer"
           ref="newLandingPage"
           :status="isOpenLandingPageDrawer"
-          :isAIAllyEnabled="true"
+          :is-a-i-ally-enabled="true"
+          :should-remove-overflow="false"
+          :show-leaving-dialog="false"
           :landing-page-data="landingPageData"
-          @changeNewEmailTemplateModalStatus="isOpenLandingPageDrawer = false"
+          :email-template-id="createdLandingPageResourceId"
+          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
         />
       </VNavigationDrawer>
-      <!-->
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -182,6 +208,7 @@
                     @loading="isSubmitDisabled = $event"
                     @template-edit="handleTemplateEdit"
                     @edit-mode="handleEditModeChange"
+                    @on-create-email-template="toggleEmailTemplateDrawer"
                   />
                 </v-list-item-content>
               </v-list-item>
@@ -213,6 +240,7 @@
                     @loading="isSubmitDisabled = $event"
                     @template-edit="handleTemplateEdit"
                     @edit-mode="handleLandingPageEditModeChange"
+                    @on-create-landing-page-template="toggleLandingPageDrawer"
                 /></v-list-item-content>
               </v-list-item>
             </div>
@@ -652,9 +680,13 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { mapGetters } from 'vuex'
+import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
+import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    NewEmailTemplates,
+    NewLandingPage,
     KSelect,
     InputPhishingMethod,
     ConfigureCompanyStepHeader,
@@ -703,9 +735,12 @@ export default {
     return {
       landingPageData: null,
       isOpenLandingPageDrawer: false,
+      isOpenEmailTemplateDrawer: false,
       isTemplateEditing: false,
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
+      createdEmailTemplateResourceId: '',
+      createdLandingPageResourceId: '',
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
@@ -1020,15 +1055,6 @@ export default {
     getLandingPageFormDetails().then((response) => {
       this.landingPageData = response.data.data
     })
-    setTimeout(() => {
-      /*
-      document.querySelectorAll('.v-overlay__content').forEach((el, index) => {
-        el.style.overflow = 'hidden'
-      })
-
-       */
-      this.isOpenLandingPageDrawer = true
-    }, 2000)
     if (this.isDuplicate) this.setFooterDuplicateIds()
     this.callForLanguages()
     if (this.isEdit) {
@@ -1037,11 +1063,9 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isInitial = false
     }
-    if (!(this.isEdit || this.isDuplicate)) {
-      const preferredLanguageTypeResourceId =
+    if (!(this.isEdit || this.isDuplicate))
+      this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
-      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
-    }
   },
   methods: {
     getDifficultyColor,
@@ -1059,6 +1083,53 @@ export default {
       this.categoryText =
         this.scenarioDetailsLookup?.categories?.find((item) => item.value === categoryId)?.text ||
         ''
+    },
+    handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
+      this.createdEmailTemplateResourceId = createdResourceId
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate)
+        this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
+          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
+        })
+      setTimeout(() => {
+        this.toggleEmailTemplateDrawer()
+      }, 250)
+    },
+    handleClickOutsideNewEmailTemplateModal() {
+      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
+        return
+      }
+      this.handleCloseNewEmailTemplateModal()
+    },
+    handleClickOutsideNewLandingPageTemplateModal() {
+      if (
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
+      ) {
+        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
+        return
+      }
+      this.handleCloseNewLandingPageTemplateModal()
+    },
+    handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
+      this.createdLandingPageResourceId = createdResourceId
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate)
+        this.$refs.refLandingPageTemplateListPreview
+          .getTemplates(true, createdResourceId)
+          .then(() => {
+            this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
+          })
+      setTimeout(() => {
+        this.toggleLandingPageDrawer()
+      }, 250)
+    },
+    toggleLandingPageDrawer() {
+      this.isOpenLandingPageDrawer = !this.isOpenLandingPageDrawer
+    },
+    toggleEmailTemplateDrawer() {
+      this.isOpenEmailTemplateDrawer = !this.isOpenEmailTemplateDrawer
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {

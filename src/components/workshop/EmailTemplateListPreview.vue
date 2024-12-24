@@ -58,7 +58,7 @@
       <div class="emailTemplatePreview__container-main">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
-            <div class="d-flex justify-space-between">
+            <div class="d-flex justify-space-between align-center mr-6">
               <div class="d-flex">
                 <div>
                   <VTextField
@@ -107,6 +107,18 @@
                   >
                   </v-select>
                 </div>
+              </div>
+              <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreateEmailTemplateClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text">Create Email Template</span>
+                </v-btn>
               </div>
             </div>
           </div>
@@ -598,6 +610,9 @@ export default {
     this.getTemplates(true, this.emailTemplateResourceId)
   },
   methods: {
+    handleCreateEmailTemplateClick() {
+      this.$emit('on-create-email-template')
+    },
     handleShowRenameAttachmentModal() {
       this.isRenameAttachmentModalVisible = true
     },
@@ -914,7 +929,7 @@ export default {
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
       else if (this.isQuishingTypeEmail)
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
-      this.apiFuncs
+      return this.apiFuncs
         .list(bodyData)
         .then((response) => {
           const { data } = response
@@ -955,6 +970,15 @@ export default {
           this.showLoader = false
           this.$emit('loading', false)
         })
+    },
+    setItemToFirstIndex(resourceId = '') {
+      const itemIndex = this.listData.findIndex((item) => item.resourceId === resourceId)
+      if (itemIndex === -1) return
+      this.listData = [
+        this.listData[itemIndex],
+        ...this.listData.slice(0, itemIndex),
+        ...this.listData.slice(itemIndex + 1)
+      ]
     },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
