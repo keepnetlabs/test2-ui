@@ -169,6 +169,11 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data && data[0] && data[0].widgetDatas.length) {
+        if (data[0].widgetDatas[0].values?.length) {
+          this.isEmpty = !data[0].widgetDatas[0].values.some((row) => !!row.value)
+          if (this.isEmpty) return
+        }
       }
       let backgroundColor = []
       this.valueEnums.forEach((data) => {

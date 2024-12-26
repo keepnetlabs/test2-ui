@@ -173,6 +173,11 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data && data[0] && data[0].widgetDatas.length) {
+        if (data[0].widgetDatas[0].values?.length) {
+          this.isEmpty = !data[0].widgetDatas[0].values.some((row) => !!row.value)
+          if (this.isEmpty) return
+        }
       }
       const { values } = data[0].widgetDatas[0]
       const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
@@ -392,6 +397,7 @@ export default {
             },
             font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             formatter(value) {
+              if (value === 0) return ''
               return `${value}%`
             }
           }
