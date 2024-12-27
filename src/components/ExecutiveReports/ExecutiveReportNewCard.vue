@@ -325,6 +325,7 @@ import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveRepor
 import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
 import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
 import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
+import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -1274,6 +1275,7 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
+      return ExecutiveReportAvgPhishingSimClickerRate
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
