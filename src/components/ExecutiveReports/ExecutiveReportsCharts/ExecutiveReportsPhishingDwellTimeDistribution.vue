@@ -216,7 +216,7 @@ export default {
             backgroundColor: function (context) {
               const index = context.dataIndex
               const value = context.dataset.data[index]
-              let color = '#0198AC'
+              let color = '#00BCD4'
               if (value === maxDwellTime) color = '#0198AC'
               return color
             },
