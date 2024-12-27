@@ -25,7 +25,14 @@
                 Cybersecurity Benefit
               </h3>
               <div class="executive-report-avg-phishing-sim-clicker-msg-desc">
-                Achieved PLA target, reducing phishing risks through improved employee awareness.
+                <div v-if="true">
+                  <strong>Improved</strong> likelihood external phishing attacks can be identified
+                  and address preemptively
+                </div>
+                <div v-else>
+                  No repeat offenders detected, reflecting strong security awareness – keep
+                  reinforcing positive behavior.
+                </div>
               </div>
             </div>
           </template>
@@ -159,7 +166,16 @@ export default {
             ctx.drawImage(
               redPolygon,
               xScale.getPixelForValue(0) + 26,
-              redPolygonPos + 2 - redPolygon.height / 2
+              redPolygonPos + 1 - redPolygon.height / 2
+            )
+            ctx.fillStyle = '#B83A3A'
+            const redData = this.chartData.datasets[1].data[0][1]
+            const redDataLength = redData.toString().length
+            const comparatorLength = redDataLength === 1 ? -7 : redDataLength === 2 ? 0 : 8
+            ctx.fillText(
+              `${redData}%`,
+              xScale.getPixelForValue(0) - comparatorLength,
+              redPolygonPos + 2
             )
           },
           afterUpdate: function (chart) {
@@ -322,98 +338,7 @@ export default {
           }
         },
         tooltips: {
-          enabled: false,
-          custom: function (tooltipModel) {
-            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-bar')
-            if (!tooltipEl) {
-              tooltipEl = document.createElement('div')
-              tooltipEl.id = 'chartjs-tooltip-training-completion-bar'
-              tooltipEl.innerHTML =
-                '<div class="tooltip-content"><table></table></div><div class="tooltip-footer"></div>'
-              document.body.appendChild(tooltipEl)
-            }
-
-            tooltipEl.classList.remove('above', 'below', 'no-transform')
-            if (tooltipModel.yAlign) {
-              tooltipEl.classList.add(tooltipModel.yAlign)
-            } else {
-              tooltipEl.classList.add('no-transform')
-            }
-
-            let position = this._chart.canvas.getBoundingClientRect()
-
-            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
-            tooltipEl.style.opacity = 1
-            tooltipEl.style.display = 'block'
-            tooltipEl.style.position = 'absolute'
-            tooltipEl.style.left =
-              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
-            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
-            tooltipEl.style.pointerEvents = 'none'
-
-            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
-            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
-            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
-            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
-            tooltipContent.style.padding =
-              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
-            tooltipContent.style.background = 'white'
-            tooltipContent.style.border = '1px solid #ccc'
-            tooltipContent.style.borderRadius = '8px'
-            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
-            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
-              let tableRoot = tooltipContent.querySelector('table')
-              tableRoot.innerHTML = ''
-              tableRoot.style.width = '100%'
-              let titleRow = document.createElement('tr')
-              const xValue = tooltipModel.dataPoints[0].xLabel
-              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
-              tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
-              this._chart.data.datasets.forEach((dataset) => {
-                let datasetLabel = dataset.label
-                let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Completed'
-                    ? '#217124'
-                    : tooltipModel.dataPoints[0].label === 'Incomplete'
-                    ? '#B83A3A'
-                    : '#2196F3'
-                let tr = document.createElement('tr')
-                tr.innerHTML = `
-                <td>
-                    <span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
-                    ${datasetLabel}:&nbsp;
-                </td>
-                <td>${dataValue}%</td>
-            `
-                if (
-                  datasetLabel ===
-                  this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
-                ) {
-                  tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
-                } else {
-                  tr.style.fontWeight = 'normal'
-                }
-
-                tr.style.display = 'flex'
-                tr.style.justifyContent = 'space-between'
-                tr.style.paddingBottom = '6px'
-                tableRoot.appendChild(tr)
-              })
-            }
-            this._chart.canvas.addEventListener('mouseout', () => {
-              tooltipEl.style.opacity = 0
-              tooltipEl.style.display = 'none'
-            })
-          },
-          xPadding: 16,
-          yPadding: 16
+          enabled: false
         },
         plugins: {
           datalabels: {
@@ -434,6 +359,15 @@ export default {
           }
         }
       }
+      let currentLevel = 1
+      const currentLevelData = []
+      if (currentLevel === 0) {
+        currentLevelData.push([0, currentLevel])
+      } else if (currentLevel <= 2) {
+        currentLevelData.push([1, currentLevel])
+      } else {
+        currentLevelData.push([2.5, currentLevel])
+      }
       this.chartData = {
         labels: ['Repeat Offenders'],
         datasets: [
@@ -446,7 +380,6 @@ export default {
               const ctx = chart.ctx
               //const index = context.dataIndex
               //const value = context.dataset.data[index]
-              console.log('chart.height', chart.height)
               const gradient = ctx.createLinearGradient(0, 0, 0, chart.height - 48)
               gradient.addColorStop(0, '#932727')
               gradient.addColorStop(1, '#F56C6C')
@@ -458,7 +391,7 @@ export default {
           },
           {
             label: 'Inner Bar',
-            data: [[3, 60]],
+            data: currentLevelData,
             backgroundColor: function (context) {
               const chart = context.chart
               const ctx = chart.ctx
