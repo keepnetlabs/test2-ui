@@ -474,6 +474,25 @@
                         >{{ item.campaignPerformance }}%.</span
                       >
                     </span>
+                    <span
+                      v-else-if="ACTIVITY_TYPES_OPENED_MAP[item.ActionType]"
+                      class="gamification-report__timeline-item-middle-text"
+                    >
+                      {{ selectedRow.firstName }} {{ selectedRow.lastName }}
+                      <span>
+                        opened the email for
+                      </span>
+                      <span class="gamification-report__timeline-item-bold-text"
+                        >{{ item.name }}
+                      </span>
+                      {{ getProductType(item) }} with
+                      <span class="gamification-report__timeline-item-bold-text">{{
+                        item.difficultyType
+                      }}</span>
+                      <span>
+                        difficulty.
+                      </span>
+                    </span>
                     <span v-else class="gamification-report__timeline-item-middle-text">
                       {{ selectedRow.firstName }} {{ selectedRow.lastName }}
                       <span class="gamification-report__timeline-item-bold-text">
@@ -1039,6 +1058,9 @@ export default {
     getProductIconPath(item) {
       const productType = item.productType.split(' - ')[0]
       if (productType === 'Phishing Simulator'.toUpperCase()) {
+        if (ACTIVITY_TYPES_OPENED_MAP[item.ActionType]) {
+          return require('@/assets/img/ir-email-opened.png')
+        }
         if (ACTIVITY_TYPES_FAIL_MAP[item.ActionType]) {
           return require('@/assets/img/timeline-phishing-fail-icon.png')
         }
