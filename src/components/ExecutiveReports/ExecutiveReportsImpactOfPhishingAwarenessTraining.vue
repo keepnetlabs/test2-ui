@@ -185,7 +185,13 @@ export default {
       annotations.unshift('')
       const companyPhishingRiskScoreDataset = datasets.filter((d) => d.name === 'Percentage')
       const industryAverageDataset = datasets.filter((d) => d.name === 'IndustryAverage')
-      const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      let maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      if (maxTick <= 20) maxTick = 20
+      else if (maxTick <= 40) maxTick = 40
+      else if (maxTick <= 60) maxTick = 60
+      else if (maxTick <= 80) maxTick = 80
+      else if (maxTick <= 100) maxTick = 100
+
       const firstTimestamp = industryAverageDataset[0].x
       const lastTimestamp = industryAverageDataset[industryAverageDataset.length - 1].x
       const oneMonthInMs = 30 * 24 * 60 * 60 * 1000

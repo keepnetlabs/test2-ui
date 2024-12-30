@@ -310,7 +310,7 @@ export default {
                     : 'Users Who Did Not Reported'
                 const percentage = average.toString().includes('.') ? average.toFixed(2) : average
                 const customSpacer =
-                  label !== labels.UserWhoDidNotClickAndReported ? '        ' : '    '
+                  label !== labels.UserWhoDidNotClickAndReported ? '        ' : '     '
                 return {
                   text: Array.from(label + label + customSpacer)
                     .fill('')
