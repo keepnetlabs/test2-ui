@@ -294,7 +294,7 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: maxTick < 50 ? 50 : maxTick,
+                max: maxTick,
                 stepSize: maxTick < 50 ? 10 : maxTick <= 100 ? 20 : maxTick / 5,
                 labelOffset: 0,
                 padding: 12,
