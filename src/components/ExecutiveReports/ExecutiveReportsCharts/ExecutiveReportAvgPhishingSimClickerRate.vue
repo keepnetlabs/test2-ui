@@ -163,19 +163,21 @@ export default {
             ctx.lineWidth = 1
             ctx.stroke()
             ctx.drawImage(orangePolygon, orangeTotalPosX, orangeTotalPosY)
+            const redData = this.chartData.datasets[1].data[0][1]
+            const comparatorPolygonRed = redData <= 2 ? -2 : 1
             ctx.drawImage(
               redPolygon,
               xScale.getPixelForValue(0) + 26,
-              redPolygonPos + 1 - redPolygon.height / 2
+              redPolygonPos + comparatorPolygonRed - redPolygon.height / 2
             )
             ctx.fillStyle = '#B83A3A'
-            const redData = this.chartData.datasets[1].data[0][1]
             const redDataLength = redData.toString().length
             const comparatorLength = redDataLength === 1 ? -7 : redDataLength === 2 ? 0 : 8
+            const comparatorTextLength = redData <= 2 ? -1 : 2
             ctx.fillText(
               `${redData}%`,
               xScale.getPixelForValue(0) - comparatorLength,
-              redPolygonPos + 2
+              redPolygonPos + comparatorTextLength
             )
           },
           afterUpdate: function (chart) {
@@ -359,12 +361,12 @@ export default {
           }
         }
       }
-      let currentLevel = 1
+      let currentLevel = 2
       const currentLevelData = []
       if (currentLevel === 0) {
         currentLevelData.push([0, currentLevel])
-      } else if (currentLevel <= 2) {
-        currentLevelData.push([1, currentLevel])
+      } else if (currentLevel < 2) {
+        currentLevelData.push([2, currentLevel])
       } else {
         currentLevelData.push([2.5, currentLevel])
       }
@@ -373,7 +375,7 @@ export default {
         datasets: [
           {
             label: 'Outer Bar',
-            data: [[1, 100]],
+            data: [[0.5, 100]],
             backgroundColor: ['transparent'],
             borderColor: function (context) {
               const chart = context.chart
