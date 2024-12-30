@@ -1,5 +1,10 @@
 <template>
-  <div class="download-add-in__list-item">
+  <div
+    :class="[
+      'download-add-in__list-item',
+      hideBorder ? 'download-add-in__list-item--hide-border' : ''
+    ]"
+  >
     <div>
       <img v-if="src" :src="src" :alt="alt" />
       <div class="download-add-in__list-item-title" v-if="title">{{ title }}</div>
@@ -35,6 +40,7 @@
         </v-btn>
       </slot>
     </div>
+    <slot></slot>
   </div>
 </template>
 <script>
@@ -59,6 +65,10 @@ export default {
     description: {
       type: String,
       default: ''
+    },
+    hideBorder: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

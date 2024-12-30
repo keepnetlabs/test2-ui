@@ -313,7 +313,7 @@
     }
 
     .overlay__container {
-        max-height: 720px !important;
+        max-height: 730px !important;
     }
 
 
@@ -334,6 +334,7 @@
     }
     &__list-item{
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       padding:16px 0;
@@ -348,6 +349,9 @@
         font-size: 14px;
         font-weight: 400;
         line-height: 21px
+      }
+      &--hide-border{
+        border-bottom: none !important;
       }
     }
 }
