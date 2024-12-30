@@ -191,6 +191,7 @@ export default {
       else if (maxTick <= 60) maxTick = 60
       else if (maxTick <= 80) maxTick = 80
       else if (maxTick <= 100) maxTick = 100
+      else maxTick = Math.floor(maxTick / 50) * 50 + 50
 
       const firstTimestamp = industryAverageDataset[0].x
       const lastTimestamp = industryAverageDataset[industryAverageDataset.length - 1].x
