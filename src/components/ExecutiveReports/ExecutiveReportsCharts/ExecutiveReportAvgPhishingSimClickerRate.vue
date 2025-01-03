@@ -25,7 +25,7 @@
                 Cybersecurity Benefit
               </h3>
               <div class="executive-report-avg-phishing-sim-clicker-msg-desc">
-                <div v-if="true">
+                <div v-if="isValueGreaterThanZero">
                   <strong>Improved</strong> likelihood external phishing attacks can be identified
                   and address preemptively
                 </div>
@@ -101,6 +101,7 @@ export default {
     return {
       isLoading: false,
       isEmpty: false,
+      isValueGreaterThanZero: false,
       empty: {
         message: 'You do not have any report conclusion'
       },
@@ -241,6 +242,15 @@ export default {
       currentLevelImg.src = require('../../../assets/img/polygon-2.svg')
       const plaImg = new Image()
       plaImg.src = require('../../../assets/img/polygon-1.svg')
+      let currentLevel = 24
+      const currentLevelData = []
+      if (currentLevel === 0) {
+        currentLevelData.push([0, currentLevel])
+      } else if (currentLevel < 2) {
+        currentLevelData.push([2, currentLevel])
+      } else {
+        currentLevelData.push([2.5, currentLevel])
+      }
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
@@ -286,6 +296,7 @@ export default {
                 fontFamily: 'Open-sans,sans-serif',
                 fontSize: 12,
                 fontColor: '#383B41',
+                fontWeight: 400,
                 labelString: 'Percentage of Users'
               },
               gridLines: {
@@ -332,7 +343,7 @@ export default {
                     .join(' '),
                   pointStyle: plaImg,
                   customMarginLeft: 12,
-                  textParts: ['Protection Level Agreement (PLA)', '(5%)'],
+                  textParts: [plaLabel, `(${currentLevel}%)`],
                   datasetIndex: 1
                 }
               ]
@@ -361,15 +372,7 @@ export default {
           }
         }
       }
-      let currentLevel = 2
-      const currentLevelData = []
-      if (currentLevel === 0) {
-        currentLevelData.push([0, currentLevel])
-      } else if (currentLevel < 2) {
-        currentLevelData.push([2, currentLevel])
-      } else {
-        currentLevelData.push([2.5, currentLevel])
-      }
+
       this.chartData = {
         labels: ['Repeat Offenders'],
         datasets: [
