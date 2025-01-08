@@ -28,12 +28,12 @@
   transform:translateY(-40%);
   border-left: 2px solid #E6A23C;
   max-width:200px;
+  min-width:200px;
 
   &-title{
     font-weight: 600;
   }
   &-title,&-desc{
-    margin-left: 8px !important;
     color: #383B41;
     font-size: 12px;
     font-style: normal;

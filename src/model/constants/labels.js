@@ -926,6 +926,7 @@ export const labels = {
   Progress: 'Progress',
   InvalidEmailAddress: 'Invalid email address',
   SaveAndDownload: 'Save and Download',
+  ManageAndDownload: 'Manage and Download',
   SaveChanges: 'Save Changes',
   NoInvestigationStarted: 'No investigation has been started, yet',
   NoInvestigation: 'You do not have any investigations',
