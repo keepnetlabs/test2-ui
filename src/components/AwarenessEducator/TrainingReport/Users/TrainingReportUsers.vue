@@ -325,7 +325,7 @@ export default {
         label: 'Current Step',
         sortable: false,
         hideSort: true,
-        show: true,
+        show: false,
         type: 'text',
         width: 180
       })
@@ -463,12 +463,16 @@ export default {
           )
           if (learningPathIndex === -1) return
           filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[
-              learningPathIndex
-            ]?.enumResults?.map((item) => ({
-              text: item.displayName || item.name,
-              value: item.name
-            })) || []
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[learningPathIndex]?.enumResults
+              ?.filter((item) => {
+                return !['OpenedEmail', 'ClickedLink', 'Downloaded'].includes(item.name)
+              })
+              ?.map((item) => {
+                return {
+                  text: item.displayName || item.name,
+                  value: item.name
+                }
+              }) || []
         }
         if (
           this.trainingSummary?.trainingDetails?.trainingTypeName ===
