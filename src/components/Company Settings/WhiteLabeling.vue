@@ -100,9 +100,9 @@
             key="mainLogo"
             id="input--whitelabeling-main-logo"
             :class="getFileUploadClasses(getMainLogo)"
-            hint="Upload png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
+            hint="Upload png, jpg. Suggested size: 180px * 60px. Max. file size 2MB"
             ref="refMainLogo"
-            :extensions="['png', 'jpg', 'svg']"
+            :extensions="['png', 'jpg']"
             @inputFile="onMenuLogoChange"
             :size="2"
           />
@@ -187,9 +187,9 @@
             id="input--whitelabeling-notification-template-logo"
             key="emailTemplateLogo"
             :class="getFileUploadClasses(getEmailTemplateLogo)"
-            hint="Upload png, jpg, svg. Suggested size: 320px * 320px. Max. file size 2MB"
+            hint="Upload png, jpg. Suggested size: 320px * 320px. Max. file size 2MB"
             ref="refNotificationTemplateLogo"
-            :extensions="['png', 'jpg', 'svg']"
+            :extensions="['png', 'jpg']"
             @inputFile="onNotificationTemplateLogoChange"
             :size="2"
           />
