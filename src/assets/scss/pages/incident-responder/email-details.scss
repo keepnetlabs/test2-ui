@@ -688,7 +688,7 @@
 }
 .email-details-url__content-recursive{
   margin-top:40px;
-  margin-left:152px;
+  margin-left:160px;
   margin-right: -4px;
 }
 .email-details-inside-url{
@@ -696,16 +696,16 @@
   &::before{
     content:"";
     position:absolute;
-    left:-128px;
+    left:-136px;
     top:50%;
     transform:translateY(-50%);
-    width:128px;
+    width:136px;
     height:2px;
     background-color:#E0E0E0;
   }
   &__badge{
     position: absolute;
-    left:-98px;
+    left:-102px;
     top:50%;
     transform:translateY(-50%);
     &--redirect{
@@ -714,7 +714,7 @@
   }
   &__vertical-line{
     position: absolute;
-    left:-128px;
+    left:-136px;
     top:-40px;
     width: 2px;
     height: 120%;
@@ -732,7 +732,7 @@
   & > .email-details-inside-url-vertical-line{
     content:"";
     position: absolute;
-    left:-128px;
+    left:-136px;
     top:-40px;
     width: 2px;
     height: 100%;
@@ -747,7 +747,7 @@
 }
 .email-details-inside-url__removal-white{
   position: absolute;
-  left:-128px;
+  left:-136px;
   top:50%;
   background-color: white;
   width:2px;

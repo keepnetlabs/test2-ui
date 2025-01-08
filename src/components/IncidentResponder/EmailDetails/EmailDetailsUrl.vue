@@ -1,5 +1,11 @@
 <template>
-  <section :style="!insideURL ? { padding: '8px', overflowY: 'hidden', overflowX: 'auto' } : ''">
+  <section
+    :style="
+      !insideURL
+        ? { padding: '8px', marginLeft: '-8px', overflowY: 'hidden', overflowX: 'auto' }
+        : ''
+    "
+  >
     <v-expansion-panels multiple v-model="panel" class="email-details-inside-url-expansions">
       <div v-if="insideURL" :class="getVerticalLineClasses"></div>
       <div v-for="(url, index) in mailDetails.urls" :key="url.resourceId" class="mr-1">
@@ -15,19 +21,23 @@
                 : ''
             ]"
           />
-          <div v-if="insideURL" class="email-details-inside-url__badge">
+          <div
+            v-if="insideURL"
+            class="email-details-inside-url__badge"
+            :style="recursiveIndex ? { left: '-120px' } : ''"
+          >
             <badge
+              :id="`badge--incident-responder-email-details-url-${index}`"
               class="email-details-inside-url__badge"
               outline
-              text="Main URL"
+              :text="isMainItem ? `Main URL` : `Redirect URL #${recursiveIndex}`"
               size="small"
               class-name="mr-4 badge"
               color="#757575"
-              :id="`badge--incident-responder-email-details-url-${index}`"
             />
           </div>
           <div
-            v-if="insideURL && mailDetails.urls.length - 1 === index"
+            v-if="insideURL && isLastItem"
             class="email-details-inside-url__removal-white"
             style=""
           ></div>
@@ -51,10 +61,10 @@
               <badge
                 v-if="isRedirectUrl(url)"
                 outline
-                text="Redirect URL"
                 size="small"
                 class-name="mr-4 badge"
                 color="#1173C1"
+                text="Redirect URL"
                 :id="`badge--incident-responder-email-details-url-${index}`"
               />
               <badge
@@ -100,16 +110,7 @@
             transition="scale-transition"
             class="pa-0 no-shadow"
           >
-            <div class="email-details-url__content-recursive" v-if="isRedirectUrl(url)">
-              <email-details-url
-                inside-u-r-l
-                :mailDetails="mailDetails"
-                :is-loading="isLoading"
-                @get-post-details="$emit('get-post-details')"
-              />
-            </div>
-
-            <div v-else class="attachments-table">
+            <div class="attachments-table">
               <data-table
                 id="urlAnalysisTable"
                 ref="refUrlAnalysisTable"
@@ -163,11 +164,24 @@
         >
           <email-details-url
             inside-u-r-l
-            :mailDetails="mailDetails"
+            is-main-item
+            :mailDetails="{ urls: getFirstItemURL(url) }"
             :is-loading="isLoading"
-            :recursiveIndex="recursiveIndex + 1"
             @get-post-details="$emit('get-post-details')"
           />
+          <div
+            v-for="(redirectUrl, redirectURLIndex) in url.redirectUrls"
+            :key="redirectUrl.resourceId"
+          >
+            <email-details-url
+              inside-u-r-l
+              :mailDetails="{ urls: [redirectUrl] }"
+              :is-last-item="redirectUrl === url.redirectUrls[url.redirectUrls.length - 1]"
+              :is-loading="isLoading"
+              :recursiveIndex="redirectURLIndex + 1"
+              @get-post-details="$emit('get-post-details')"
+            />
+          </div>
         </div>
       </div>
     </v-expansion-panels>
@@ -207,12 +221,21 @@ export default {
     parentHeight: {
       type: Number,
       default: 0
+    },
+    isMainItem: {
+      type: Boolean,
+      default: false
+    },
+    isLastItem: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       INTEGRATION_TYPES,
       panel: [],
+      redirectURLIndex: 0,
       showSecondCollapse: [],
       iEmpty: {
         message: labels.EmptyUrl
@@ -310,8 +333,7 @@ export default {
       }
     },
     isRedirectUrl(url) {
-      return true
-      return url.result === 'Redirect'
+      return url?.redirectUrls?.length
     },
     getExpansionPanelHeaderText(url, index = 0) {
       const isRedirectUrl = this.isRedirectUrl(url)
@@ -320,6 +342,11 @@ export default {
       return this.showSecondCollapse.findIndex((item) => item === index) > -1
         ? collapseText
         : defaultText
+    },
+    getFirstItemURL(url) {
+      const copyOfUrls = JSON.parse(JSON.stringify(url))
+      copyOfUrls.redirectUrls = []
+      return [copyOfUrls]
     }
   }
 }

@@ -402,7 +402,6 @@ export default {
               const ctx = chart.ctx
               //const index = context.dataIndex
               //const value = context.dataset.data[index]
-              console.log('chart.height', chart.height)
               const gradient = ctx.createLinearGradient(0, 0, 0, chart.height - 48)
               gradient.addColorStop(0, '#932727')
               gradient.addColorStop(1, '#F56C6C')

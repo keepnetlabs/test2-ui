@@ -574,6 +574,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        ExecutiveReportAvgPhishingSimClickerRate: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'ExecutiveReportAvgPhishingSimClickerRate',
+          isAllowed: true,
+          parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         HumanRiskScoreforHighestRiskUsersWidget: {
           x: 0,
           y: 0,
@@ -926,7 +947,8 @@ export default {
             widget.widgetType === 'SimulationCoverageWidget' ||
             widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
             widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
-            widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget'
+            widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget' ||
+            widget.widgetType === 'ExecutiveReportAvgPhishingSimClickerRate'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1275,7 +1297,6 @@ export default {
       this.$emit('on-delete', item)
     },
     getComponent(componentString, name, item) {
-      return ExecutiveReportAvgPhishingSimClickerRate
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries
@@ -1317,6 +1338,8 @@ export default {
           return ExecutiveReportsPhishingDwellTimeDistribution
         case 'ResponseTimesToPhishingActionsWidget':
           return ExecutiveReportsUsersTimeToFailure
+        case 'ExecutiveReportAvgPhishingSimClickerRate':
+          return ExecutiveReportAvgPhishingSimClickerRate
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
