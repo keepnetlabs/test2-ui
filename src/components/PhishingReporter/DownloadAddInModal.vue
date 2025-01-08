@@ -1,25 +1,16 @@
 <template>
-  <v-overlay :value="status" :z-index="99" fixed class="download-add-in">
-    <UnlinkMicrosoftAccessDialog
-      v-if="isShowUnlinkDialog"
-      :status="isShowUnlinkDialog"
-      @close="toggleUnlinkDialog"
-      @confirm="handleUnlinkMicrosoftDialog"
-    />
+  <v-overlay :value="status" :z-index="9999" fixed class="download-add-in">
     <v-card
       class="overlay__container"
       light
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 820px !important;
-        max-width: 820px !important;
+        width: 700px !important;
+        max-width: 700px !important;
       "
     >
-      <v-list-item
-        class="pl-0 pr-0 add-in-configuration__list-item"
-        style="border-bottom: 1px solid #f5f7fa; padding-bottom: 16px;"
-      >
+      <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
         </div>
@@ -36,60 +27,25 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <div class="mt-4">
-        <DownloadAddInListItem
-          :src="require('../../assets/img/google-workspace.svg')"
-          :is-loading="googleWorkSpaceSpinnerStatus"
-          description="JSON add-in for web-based Google Workspace emails"
-          @button-click="callForGenerateGoogleWorkSpaceAddIn"
-        />
-        <DownloadAddInListItem
-          :src="require('../../assets/img/outlook.svg')"
-          :is-loading="outlookSpinnerStatus"
-          description="MSI add-in for Windows Outlook Desktop"
-          @button-click="callForGenerateOutlookAddIn"
-        />
-        <DownloadAddInListItem
-          :src="require('../../assets/img/microsoft-365-logo.svg')"
-          :is-loading="gmailSpinnerStatus"
-          class="flex-nowrap"
-          hide-border
-          title="Spam Integration"
-          description="Advanced XML add-in for web-based M365 emails, requires admin consent"
-        >
-          <template #buttons>
-            <div :style="{ minWidth: !isAccountConnected ? '294px' : 'auto' }">
-              <VBtn
-                v-if="!isAccountConnected"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-              >
-                Connect Account
-              </VBtn>
-              <VBtn
-                v-else
-                text
-                color="#F56C6C"
-                style="text-transform: capitalize; font-weight: 600; font-size: 12px;"
-                @click="toggleUnlinkDialog"
-              >
-                <v-icon left>mdi-link-off</v-icon>
-                <span>Unlink</span>
-              </VBtn>
-              <VBtn
+      <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
+        <div class="logos-buttons__container mt-10">
+          <div class="logos-buttons__first-row">
+            <div class="logo-and-button">
+              <div style="display: flex; align-items: center; height: 40px;">
+                <img src="../../assets/img/google-workspace.png" alt="g-suite-logo" />
+              </div>
+              <v-btn
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
+                style="margin-left: 5px !important;"
                 color="#2196f3"
                 rounded
-                :loading="gmailSpinnerStatus"
-                @click="callForGenerateO365AddIn"
+                :loading="googleWorkSpaceSpinnerStatus"
+                @click="callForGenerateGoogleWorkSpaceAddIn"
               >
                 <v-icon left>mdi-download</v-icon>
                 Download
-                <template #loader>
+                <template v-slot:loader>
                   <img
                     src="../../assets/img/spinner.svg"
                     class="add-in-settings__spinner"
@@ -99,40 +55,102 @@
                     Generating...
                   </span>
                 </template>
-              </VBtn>
+              </v-btn>
             </div>
-          </template>
-        </DownloadAddInListItem>
-        <DownloadAddInListItem
-          :is-loading="gmailSpinnerStatus"
-          class="mt-n4"
-          title="Legacy Version"
-          description="Basic XML add-in for web-based M365 emails"
-          @button-click="callForGenerateO365AddIn"
-        >
-          <AlertBox
-            class="bg-phishing-gray mt-4"
-            icon-color="#757575"
-            icon-name="mdi-information"
-            :slots="{ primaryAction: false, secondaryAction: false }"
-          >
-            <template #text>
-              <span class="ml-2" style="font-size: 14px;"
-                ><strong>M365 Spam Integration</strong> provides improved spam detection, more
-                accurate reports, and seamless compatibility with Microsoft tools. Without it, only
-                basic reporting features are available.</span
+            <div class="logo-and-button">
+              <div style="height: 40px;">
+                <img src="../../assets/img/outlook.svg" alt="outlook-logo" />
+              </div>
+              <v-btn
+                id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in ml-5"
+                style="margin-left: -6px;"
+                color="#2196f3"
+                rounded
+                :loading="outlookSpinnerStatus"
+                @click="callForGenerateOutlookAddIn"
               >
-            </template>
-          </AlertBox>
-        </DownloadAddInListItem>
-        <DownloadAddInListItem
-          :is-loading="diagnosticToolSpinnerStatus"
-          hide-border
-          title="Diagnostic Tool"
-          description="Only for Outlook Desktop (Windows OS only)"
-          @button-click="callForGenerateDiagnosticTool"
-        />
-      </div>
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template v-slot:loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </v-btn>
+            </div>
+            <div class="logo-and-button">
+              <div style="height: 35px;">
+                <img src="../../assets/img/microsoft-365-logo.svg" alt="microsoft-365-logo" />
+              </div>
+              <v-btn
+                id="btn-download-office--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in mr-n1"
+                color="#2196f3"
+                rounded
+                :loading="gmailSpinnerStatus"
+                @click="callForGenerateO365AddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template v-slot:loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </v-btn>
+            </div>
+          </div>
+        </div>
+      </v-list-item>
+      <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
+        <div class="link__container"></div>
+      </v-list-item>
+
+      <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
+        <div class="link__header">Diagnostic Tool</div>
+      </v-list-item>
+      <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
+        <div class="link__sub-header">
+          Only for Outlook Desktop (Windows OS only)
+        </div>
+      </v-list-item>
+      <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
+        <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
+      </v-list-item>
+      <v-list-item class="px-0 add-in-configuration__list-item mt-5" style="margin-left: 30px;">
+        <v-btn
+          @click="callForGenerateDiagnosticTool"
+          id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
+          class="white--text btn-util btn-download-add-in ml-n1"
+          color="#2196f3"
+          :loading="diagnosticToolSpinnerStatus"
+          rounded
+        >
+          <v-icon left>mdi-download</v-icon>
+          Download
+          <template v-slot:loader>
+            <img
+              src="../../assets/img/spinner.svg"
+              class="add-in-settings__spinner"
+              alt="spinner"
+            />
+            <span style="font-size: 14px; text-transform: capitalize;">
+              Generating...
+            </span>
+          </template>
+        </v-btn>
+      </v-list-item>
       <v-list-item class="px-0 mt-6 add-in-configuration__list-item">
         <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
@@ -149,6 +167,7 @@
 </template>
 
 <script>
+import DiagnosticTool from './Settings/DiagnosticTool'
 import {
   downloadDiagnosticTool,
   downloadOutlookAddIn,
@@ -157,9 +176,6 @@ import {
   generateO365AddIn,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
-import DownloadAddInListItem from '@/components/PhishingReporter/DownloadAddInListItem.vue'
-import AlertBox from '@/components/AlertBox.vue'
-import UnlinkMicrosoftAccessDialog from '@/components/PhishingReporter/UnlinkMicrosoftAccessDialog.vue'
 export default {
   name: 'DownloadAddInModal',
   props: {
@@ -168,15 +184,12 @@ export default {
     }
   },
   components: {
-    UnlinkMicrosoftAccessDialog,
-    AlertBox,
-    DownloadAddInListItem
+    // Logos,
+    DiagnosticTool
   },
   data() {
     return {
       outlookSpinnerStatus: false,
-      isAccountConnected: true,
-      isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
       downloadOutlookAddInTimeout: null,
       diagnosticToolAddInTimeout: null,
@@ -287,11 +300,7 @@ export default {
         clearTimeout(this.downloadOutlookAddInTimeout)
         this.downloadOutlookAddInTimeout = null
       }
-    },
-    toggleUnlinkDialog() {
-      this.isShowUnlinkDialog = !this.isShowUnlinkDialog
-    },
-    handleUnlinkMicrosoftDialog() {}
+    }
   }
 }
 </script>
