@@ -8,7 +8,7 @@
   >
     <v-expansion-panels multiple v-model="panel" class="email-details-inside-url-expansions">
       <div v-if="insideURL" :class="getVerticalLineClasses"></div>
-      <div v-for="(url, index) in mailDetails.urls" :key="url.resourceId" class="mr-1">
+      <div v-for="(url, index) in mailDetails.urls" :key="url.resourceId" class="mr-1 w-100">
         <v-expansion-panel
           :id="`email-details-url-expansion-panel-${index}`"
           :class="['attachment-analysis-item', insideURL ? 'email-details-inside-url' : '']"
