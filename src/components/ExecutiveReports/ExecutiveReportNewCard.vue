@@ -574,7 +574,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
-        ExecutiveReportAvgPhishingSimClickerRate: {
+        RepeatOffendersUsersRateWidget: {
           x: 0,
           y: 0,
           w: 12,
@@ -587,7 +587,7 @@ export default {
           maxH: 6,
           i: createRandomCryptStringNumber(),
           title: 'Phishing Simulation Repeat Offenders Rate',
-          key: 'ExecutiveReportAvgPhishingSimClickerRate',
+          key: 'RepeatOffendersUsersRateWidget',
           isAllowed: true,
           parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
           chartType: 'stackedBar',
@@ -948,7 +948,7 @@ export default {
             widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
             widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
             widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget' ||
-            widget.widgetType === 'ExecutiveReportAvgPhishingSimClickerRate'
+            widget.widgetType === 'RepeatOffendersUsersRateWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1338,7 +1338,7 @@ export default {
           return ExecutiveReportsPhishingDwellTimeDistribution
         case 'ResponseTimesToPhishingActionsWidget':
           return ExecutiveReportsUsersTimeToFailure
-        case 'ExecutiveReportAvgPhishingSimClickerRate':
+        case 'RepeatOffendersUsersRateWidget':
           return ExecutiveReportAvgPhishingSimClickerRate
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget

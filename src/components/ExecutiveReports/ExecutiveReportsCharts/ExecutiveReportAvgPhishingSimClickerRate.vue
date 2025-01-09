@@ -238,11 +238,18 @@ export default {
         return
       }
       const { values } = data[0].widgetDatas[0]
+      const repeatOffendersCount = values.find((value) => value.name === 'CountRepeatOffender')
+        ?.value
+      const repeatOffendersPercentage = values.find(
+        (value) => value.name === 'RepeatOffenderPercentage'
+      )?.value
+      if (repeatOffendersPercentage) this.isValueGreaterThanZero = true
+      const pla = values.find((value) => value.name === 'PLA')?.value
       const currentLevelImg = new Image()
       currentLevelImg.src = require('../../../assets/img/polygon-2.svg')
       const plaImg = new Image()
       plaImg.src = require('../../../assets/img/polygon-1.svg')
-      let currentLevel = 24
+      let currentLevel = repeatOffendersPercentage
       const currentLevelData = []
       if (currentLevel === 0) {
         currentLevelData.push([0, currentLevel])
@@ -335,7 +342,10 @@ export default {
                   datasetIndex: 0,
                   customMarginLeft: 6,
                   pointStyle: currentLevelImg,
-                  textParts: ['Current Level', '(100 users)']
+                  textParts: [
+                    'Current Level',
+                    `(${repeatOffendersCount} user${repeatOffendersCount > 1 ? 's' : ''})`
+                  ]
                 },
                 {
                   text: Array.from(plaLabel + plaLabel)
@@ -343,7 +353,7 @@ export default {
                     .join(' '),
                   pointStyle: plaImg,
                   customMarginLeft: 12,
-                  textParts: [plaLabel, `(${currentLevel}%)`],
+                  textParts: [plaLabel, `(${pla}%)`],
                   datasetIndex: 1
                 }
               ]
@@ -414,7 +424,7 @@ export default {
           },
           {
             label: 'PLA',
-            data: [70],
+            data: [pla],
             backgroundColor: 'transparent',
             borderColor: 'transparent',
             fill: false
