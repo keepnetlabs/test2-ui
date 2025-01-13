@@ -115,7 +115,7 @@ export const trainingLibraryFilters = [
     isFilterActive: false
   },
   {
-    text: 'Target Audience',
+    text: 'Role',
     icon: 'mdi-account-multiple',
     key: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true,

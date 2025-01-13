@@ -42,7 +42,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
     show: true
   },
   TARGET_AUDIENCE: {
-    label: 'Target Audience',
+    label: 'Role',
     property: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true
   },
@@ -104,7 +104,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
     show: true
   },
   TARGET_AUDIENCE: {
-    label: 'Target Audience',
+    label: 'Role',
     property: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true
   },

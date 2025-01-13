@@ -44,7 +44,7 @@
         item-text="text"
         item-value="value"
         hint="*Required"
-        placeholder="Select target audience"
+        placeholder="Select role"
         :rules="[(v) => Validations.required(v, labels.Required)]"
         :items="targetAudiences"
       ></KSelect>
