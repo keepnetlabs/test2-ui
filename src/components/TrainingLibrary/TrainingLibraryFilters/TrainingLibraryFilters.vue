@@ -133,7 +133,6 @@ import { mapGetters, mapActions } from 'vuex'
 import TrainingLibrarySelectFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibrarySelectFilter.vue'
 import TrainingLibraryDateFilter from './TrainingLibraryDateFilter.vue'
 import TrainingLibraryLongTextSearchFilter from '@/components/TrainingLibrary/TrainingLibraryFilters/TrainingLibraryLongTextSearchFilter.vue'
-
 export default {
   name: 'TrainingLibraryFilters',
   components: {

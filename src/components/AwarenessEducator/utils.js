@@ -197,7 +197,7 @@ export const COLUMNS = {
     property: PROPERTY_STORE.TARGET_AUDIENCE,
     align: 'left',
     editable: false,
-    label: labels.TargetAudience,
+    label: labels.Role,
     sortable: true,
     show: true,
     type: 'text',
