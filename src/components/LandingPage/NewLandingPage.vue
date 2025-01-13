@@ -163,7 +163,7 @@
                     >
                       <template #label>
                         Stop bots to prevent false clicks.
-                        <VTooltip bottom max-width="260">
+                        <VTooltip bottom max-width="260" z-index="9999999">
                           <template #activator="{ on }">
                             <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
                           </template>

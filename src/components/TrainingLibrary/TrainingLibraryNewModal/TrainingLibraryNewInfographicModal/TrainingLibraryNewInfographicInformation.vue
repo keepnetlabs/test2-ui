@@ -38,11 +38,7 @@
     </FormGroup>
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
-    <FormGroup
-      has-hint
-      :title="labels.TargetAudience"
-      :sub-title="labels.TargetAudienceInfographicSub"
-    >
+    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceInfographicSub">
       <KSelect
         v-model.trim="formData.targetAudience"
         persistent-hint
@@ -52,7 +48,7 @@
         item-text="text"
         item-value="value"
         hint="*Required"
-        placeholder="Select target audience"
+        placeholder="Select role"
         :rules="[(v) => Validations.required(v, labels.Required)]"
         :items="getTargetAudiences"
       ></KSelect>
