@@ -7,6 +7,7 @@
       item-disabled="disabled"
       :item-text="itemTextKey"
       :item-value="itemValueKey"
+      :disabled="disabled"
       outlined
       hint="*Required"
       required
@@ -69,6 +70,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

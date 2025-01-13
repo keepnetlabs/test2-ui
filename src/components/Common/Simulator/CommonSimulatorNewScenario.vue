@@ -27,6 +27,7 @@
           :should-remove-overflow="false"
           :show-leaving-dialog="false"
           :email-template-id="createdEmailTemplateResourceId"
+          :selected-method-text="getSelectedMethodText"
           @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
         />
       </VNavigationDrawer>
@@ -51,6 +52,7 @@
           :show-leaving-dialog="false"
           :landing-page-data="landingPageData"
           :email-template-id="createdLandingPageResourceId"
+          :selected-method-text="getSelectedMethodText"
           @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
         />
       </VNavigationDrawer>
@@ -799,6 +801,11 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSelectedMethodText() {
+      let selectedMethod = this.getMethodText
+      if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
+      return selectedMethod
+    },
     getURLText() {
       return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
     },
