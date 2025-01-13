@@ -355,7 +355,7 @@
                     </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
-                        v-mask="'###########'"
+                        v-mask="'######'"
                         ref="userLimit"
                         :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
@@ -369,18 +369,6 @@
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
-                      <v-btn
-                        height="40"
-                        class="company-create-modal__btn-unlimited"
-                        id="btn-unlimited--company"
-                        color="#2196f3"
-                        text
-                        @click="clickUnlimited"
-                        :disabled="stepLock"
-                        >{{
-                          formData.IsNumberOfUsersLimited ? 'MAKE UNLIMITED' : 'LIMIT USER'
-                        }}</v-btn
-                      >
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -635,6 +623,7 @@ import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWar
 import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import countryLanguageMap from '@/utils/countryLanguageMap'
+import { numberRangeRule } from '../../utils/validations'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -804,7 +793,8 @@ export default {
       return this.formData.IsNumberOfUsersLimited
         ? [
             (v) => this.validations.required(v, 'Required'),
-            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+            (v) => /^\d+$/gi.test(v) || 'Invalid number',
+            (v) => this.validations.numberRangeRule(v, 1, 200000)
           ]
         : [true]
     },
