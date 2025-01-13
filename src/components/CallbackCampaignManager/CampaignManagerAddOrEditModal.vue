@@ -593,9 +593,7 @@ export default {
             this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
               (acc, row) => {
                 if (row.status !== 'Active') return acc
-                const phoneNumberCount =
-                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
-                return acc + phoneNumberCount
+                return acc + row.count
               },
               0
             )
