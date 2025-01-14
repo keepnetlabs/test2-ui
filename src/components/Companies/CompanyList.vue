@@ -278,6 +278,18 @@ export default {
             width: 180
           },
           {
+            property: PROPERTY_STORE.RESELLERNAME,
+            align: 'left',
+            editable: false,
+            label: 'Reseller Name',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 180
+          },
+          {
             property: PROPERTY_STORE.INDUSTRYNAME,
             align: 'left',
             editable: false,
