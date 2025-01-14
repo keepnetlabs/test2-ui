@@ -1,8 +1,11 @@
 <template>
   <v-overlay :value="status" :z-index="9999" fixed class="download-add-in">
     <v-card
-      class="overlay__container"
       light
+      :class="[
+        'overlay__container',
+        isAccountConnected ? 'overlay__container-account-connected' : ''
+      ]"
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
