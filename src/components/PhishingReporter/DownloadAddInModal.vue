@@ -7,8 +7,11 @@
       @confirm="handleUnlinkMicrosoftDialog"
     />
     <v-card
-      class="overlay__container"
       light
+      :class="[
+        'overlay__container',
+        isAccountConnected ? 'overlay__container-account-connected' : ''
+      ]"
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;

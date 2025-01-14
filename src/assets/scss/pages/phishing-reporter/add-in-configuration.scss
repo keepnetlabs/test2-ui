@@ -312,9 +312,13 @@
         height: 100%;
     }
 
+
     .overlay__container {
-        max-height: 730px !important;
+        max-height: 724px !important;
     }
+    .overlay__container-account-connected.overlay__container{
+      max-height: 710px !important;
+     }
 
 
     &__title {
