@@ -17,7 +17,7 @@ export default [
   },
   {
     country: 'Kosovo',
-    language: ''
+    language: 'Albanian'
   },
   {
     country: 'Andorra',
@@ -449,7 +449,7 @@ export default [
   },
   {
     country: 'Montenegro',
-    language: 'Montenegrin'
+    language: 'Albanian'
   },
   {
     country: 'Morocco',
@@ -497,7 +497,7 @@ export default [
   },
   {
     country: 'North Macedonia',
-    language: 'Macedonian'
+    language: 'Albanian'
   },
   {
     country: 'Norway',
