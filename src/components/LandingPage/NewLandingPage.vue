@@ -73,6 +73,7 @@
                   item-value-key="value"
                   :max-length="256"
                   :items="landingPageData.methodTypes"
+                  :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                 />
                 <form-group
                   has-hint
@@ -375,6 +376,10 @@ export default {
     showLeavingDialog: {
       type: Boolean,
       default: true
+    },
+    selectedMethodText: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -681,6 +686,8 @@ export default {
     }
     if (!this.isEdit)
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
+    if (this.landingPageData && this.selectedMethodText)
+      this.formValues.methodTypeId = this.selectedMethodText.startsWith('Click') ? '1' : '2'
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     this.callForLanguages()
@@ -722,9 +729,8 @@ export default {
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
-      const preferredLanguageTypeResourceId =
+      this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
-      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   }
 }
