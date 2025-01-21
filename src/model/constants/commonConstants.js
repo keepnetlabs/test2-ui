@@ -285,6 +285,7 @@ export const PROPERTY_STORE = {
   DELIVERY: 'delivery',
   DELIVERY_TYPE: 'deliveryType',
   COMPANYNAME: 'companyName',
+  RESELLERNAME: 'resellerName',
   APIKEY: 'apiKey',
   DATECREATED: 'dateCreated',
   RESULTTAG: 'resultTag',

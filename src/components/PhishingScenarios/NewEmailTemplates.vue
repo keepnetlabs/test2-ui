@@ -52,6 +52,7 @@
                 </FormGroup>
                 <InputPhishingMethod
                   v-model.trim="formValues.categoryResourceId"
+                  :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                   :items="methodItems"
                 />
                 <form-group
@@ -245,6 +246,7 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
+import { getEmailTemplateMethodItems } from './utils'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -284,9 +286,23 @@ export default {
     showLeavingDialog: {
       type: Boolean,
       default: true
+    },
+    selectedMethodText: {
+      type: String,
+      default: ''
     }
   },
   data() {
+    let methodItems = JSON.parse(JSON.stringify(getEmailTemplateMethodItems()))
+    let categoryResourceId = 'WNZt0sCVCWB3'
+    if (this.selectedMethodText) {
+      if (this.selectedMethodText === 'MFA') {
+        methodItems = methodItems.filter((mItem) => mItem.name !== 'Attachment')
+      } else {
+        categoryResourceId = methodItems.find((mItem) => mItem.name === this.selectedMethodText)
+          ?.resourceId
+      }
+    }
     return {
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
@@ -314,7 +330,7 @@ export default {
       formValues: {
         name: '',
         description: '',
-        categoryResourceId: 'WNZt0sCVCWB3',
+        categoryResourceId,
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
         fromAddress: null,
@@ -342,35 +358,7 @@ export default {
         ]
       },
       editItemsDisabled: false,
-      methodItems: [
-        {
-          resourceId: 'WNZt0sCVCWB3',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Click Only',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'DYC0gugxJMjT',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Data Submission',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: '7dLrW2kdBTDs',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Attachment',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
+      methodItems,
       difficultyItems: [
         {
           resourceId: 'mT0CeYGgKsVb',

@@ -304,13 +304,13 @@
                         item-text="name"
                         item-value="resourceId"
                         outlined
-                        placeholder="Select an option"
-                        :rules="[expiryPeriodValidation]"
-                        @change="expiryPeriodChange"
-                        :disabled="stepLock"
-                        hint="*Required"
-                        :menu-props="{ offsetY: true }"
                         persistent-hint
+                        placeholder="Select an option"
+                        hint="*Required"
+                        :disabled="stepLock"
+                        :rules="[expiryPeriodValidation]"
+                        :menu-props="{ offsetY: true }"
+                        @change="expiryPeriodChange"
                       >
                         <template v-slot:selection="{ item }">
                           <span>
@@ -355,7 +355,7 @@
                     </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
-                        v-mask="'###########'"
+                        v-mask="'######'"
                         ref="userLimit"
                         :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
@@ -369,18 +369,6 @@
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
-                      <v-btn
-                        height="40"
-                        class="company-create-modal__btn-unlimited"
-                        id="btn-unlimited--company"
-                        color="#2196f3"
-                        text
-                        @click="clickUnlimited"
-                        :disabled="stepLock"
-                        >{{
-                          formData.IsNumberOfUsersLimited ? 'MAKE UNLIMITED' : 'LIMIT USER'
-                        }}</v-btn
-                      >
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -635,6 +623,8 @@ import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWar
 import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import countryLanguageMap from '@/utils/countryLanguageMap'
+import { numberRangeRule } from '../../utils/validations'
+import { getTimeZoneForMoment } from '../../utils/functions'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -668,6 +658,7 @@ export default {
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
       languageItems: [],
+      isExpiryDateLimited: true,
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -804,7 +795,8 @@ export default {
       return this.formData.IsNumberOfUsersLimited
         ? [
             (v) => this.validations.required(v, 'Required'),
-            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+            (v) => /^\d+$/gi.test(v) || 'Invalid number',
+            (v) => this.validations.numberRangeRule(v, 1, 200000)
           ]
         : [true]
     },
@@ -814,7 +806,8 @@ export default {
     isEndDateDisabled() {
       return (
         this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
-        this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4'
+        this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4' ||
+        this.isExpiryDateLimited
       )
     },
     isSecondStepDisabled() {
@@ -868,6 +861,26 @@ export default {
       }
     },
     'formData.LicenseStartDate'(newVal, oldVal) {
+      if (this.isExpiryDateLimited) {
+        if (!newVal) this.formData.LicenseEndDate = ''
+        else {
+          let endDate = ''
+          const [firstPart, secondPart, thirdPart] = this.formData?.LicenseStartDate?.split(
+            ' '
+          )?.[0]?.split('/')
+          if (this.dateFormat === 'YYYY/MM/DD') {
+            endDate = new Date(firstPart, parseInt(secondPart) + 2, thirdPart)
+          } else if (this.dateFormat === 'MM/DD/YYYY') {
+            endDate = new Date(thirdPart, parseInt(firstPart) + 2, secondPart)
+          } else if (this.dateFormat === 'DD/MM/YYYY') {
+            endDate = new Date(thirdPart, parseInt(secondPart) + 2, firstPart)
+          } else {
+            endDate = new Date(thirdPart, parseInt(secondPart) + 2, firstPart)
+          }
+          this.formData.LicenseEndDate = this.$moment(endDate).format(getTimeZoneForMoment())
+        }
+        return
+      }
       this.startDateValidation = oldVal && !newVal ? 'Start date should be picked' : ''
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
       if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
@@ -944,6 +957,12 @@ export default {
     }
   },
   mounted() {
+    if (this.isExpiryDateLimited) {
+      this.formData.LicenseStartDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+      this.formData.LicenseEndDate = this.$moment(Date.now() + 90 * 60 * 60 * 24 * 1000).format(
+        getTimeZoneForMoment()
+      )
+    }
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
