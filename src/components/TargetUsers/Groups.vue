@@ -92,18 +92,20 @@
           <span class="tooltip-span">{{ 'Add Group' }}</span>
         </v-tooltip>
       </template>
-      <template v-slot:datatable-custom-column="{ scope, col }">
-        <span @click="handleGroupNameClick(scope.row)" class="popup-link">
-          {{ scope.row[col.property] }}
-        </span>
-        <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="320">
-          <template #activator="{ on }">
-            <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
-          </template>
-          <span>
-            {{ getGroupNameTooltipMessage(scope.row) }}
+      <template #datatable-custom-column="{ scope, col }">
+        <span>
+          <span @click="handleGroupNameClick(scope.row)" class="popup-link">
+            {{ scope.row[col.property] }}
           </span>
-        </VTooltip>
+          <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="320">
+            <template #activator="{ on }">
+              <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
+            </template>
+            <span>
+              {{ getGroupNameTooltipMessage(scope.row) }}
+            </span>
+          </VTooltip>
+        </span>
       </template>
       <template #datatable-row-actions="{ scope }">
         <TargetUserRowActionsEditButton
