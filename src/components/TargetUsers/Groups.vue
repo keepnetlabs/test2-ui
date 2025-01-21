@@ -377,7 +377,8 @@ export default {
       if (row.name === 'New Hires') {
         return 'New Hires group is can not be edited.'
       }
-      return ''
+      if (row.name === 'Non-Simulated Users')
+        return 'Non-Simulated Users group is can not be edited.'
     },
     getGroupNameTooltipMessage(row) {
       if (!row?.name) return ''
@@ -387,6 +388,8 @@ export default {
       if (row.name === 'New Hires') {
         return 'New hires are automatically added to this group for 30 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
       }
+      if (row.name === 'Non-Simulated Users')
+        return 'Users who haven’t participated in any simulations are automatically added to this group and removed once they do. Use this group to target users new to simulations.'
       return ''
     },
     getAddUsersToGroupButtonTooltipMessage(row) {
@@ -397,7 +400,8 @@ export default {
       if (row.name === 'New Hires') {
         return 'Users cannot be added to the New Hires group.'
       }
-      return ''
+      if (row.name === 'Non-Simulated Users')
+        return 'Users cannot be added to the Non-Simulated Users group.'
     },
     getDeleteButtonTooltipMessage(row) {
       if (!row?.name) return ''
@@ -407,13 +411,18 @@ export default {
       if (row.name === 'New Hires') {
         return 'New Hires group is can not be deleted.'
       }
-      return ''
+      if (row.name === 'Non-Simulated Users')
+        return 'Non-Simulated Users group is can not be deleted.'
     },
     isTooltipRenderable(row) {
-      return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
+      return (
+        row?.name && ['Repeat Offenders', 'New Hires', 'Non-Simulated Users'].includes(row.name)
+      )
     },
     handleRowIsSelectable(row) {
-      return row?.name && !['Repeat Offenders', 'New Hires'].includes(row.name)
+      return (
+        row?.name && !['Repeat Offenders', 'New Hires', 'Non-Simulated Users'].includes(row.name)
+      )
     },
     handleEditBtnClick(row) {
       this.$refs.refGroupsTable.handleEdit(row)

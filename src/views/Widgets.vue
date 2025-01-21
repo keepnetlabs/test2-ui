@@ -93,6 +93,7 @@ import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
 import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
+import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 export default {
   name: 'Widgets',
   components: {
@@ -518,6 +519,34 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
+        },
+        RepeatOffendersUsersRateWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          card: {
+            title: 'Phishing Simulation Repeat Offenders Rate',
+            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+            key: 'RepeatOffendersUsersRateWidget',
+            resourceId: 'mpdEh10N5E4d'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
         }
       },
       availableWidgets: [
@@ -624,6 +653,11 @@ export default {
         {
           name: 'Repeat Offenders Users (Threshold: 2)',
           key: 'RepeatOffendersUsersThresholdWidget',
+          isAllowed: true
+        },
+        {
+          name: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
           isAllowed: true
         }
       ],
@@ -827,6 +861,8 @@ export default {
           return ExecutiveReportsImpactOfPhishingAwarenessTraining
         case 'RepeatOffendersUsersThresholdWidget':
           return ExecutiveReportRepeatOffendersUsersBar
+        case 'RepeatOffendersUsersRateWidget':
+          return ExecutiveReportAvgPhishingSimClickerRate
         default:
           return
       }
@@ -1208,6 +1244,34 @@ export default {
           key: 'TopPhishingSimulationReporters',
           title: 'Top Phishing Simulation Reporters',
           isAllowed: true,
+          isDashboardWidget: true
+        },
+        {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          card: {
+            title: 'Phishing Simulation Repeat Offenders Rate',
+            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+            key: 'RepeatOffendersUsersRateWidget',
+            resourceId: 'mpdEh10N5E4d'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         }
       ]
