@@ -307,7 +307,7 @@
                         persistent-hint
                         placeholder="Select an option"
                         hint="*Required"
-                        :disabled="stepLock"
+                        :disabled="stepLock || isExpiryDateLimited"
                         :rules="[expiryPeriodValidation]"
                         :menu-props="{ offsetY: true }"
                         @change="expiryPeriodChange"
@@ -590,6 +590,7 @@
 import * as validations from '@/utils/validations'
 import {
   createCompany,
+  expiryDateLimited,
   searchCompanies,
   searchCompanyGroupsWithParents,
   updateCompany
@@ -623,7 +624,6 @@ import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWar
 import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import countryLanguageMap from '@/utils/countryLanguageMap'
-import { numberRangeRule } from '../../utils/validations'
 import { getTimeZoneForMoment } from '../../utils/functions'
 export default {
   name: 'CompanyCreateOrEdit',
@@ -869,13 +869,13 @@ export default {
             ' '
           )?.[0]?.split('/')
           if (this.dateFormat === 'YYYY/MM/DD') {
-            endDate = new Date(firstPart, parseInt(secondPart) + 2, thirdPart)
+            endDate = new Date(parseInt(firstPart), parseInt(secondPart) + 2, parseInt(thirdPart))
           } else if (this.dateFormat === 'MM/DD/YYYY') {
-            endDate = new Date(thirdPart, parseInt(firstPart) + 2, secondPart)
+            endDate = new Date(parseInt(thirdPart), parseInt(firstPart) + 2, parseInt(secondPart))
           } else if (this.dateFormat === 'DD/MM/YYYY') {
-            endDate = new Date(thirdPart, parseInt(secondPart) + 2, firstPart)
+            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
           } else {
-            endDate = new Date(thirdPart, parseInt(secondPart) + 2, firstPart)
+            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
           }
           this.formData.LicenseEndDate = this.$moment(endDate).format(getTimeZoneForMoment())
         }
@@ -957,12 +957,7 @@ export default {
     }
   },
   mounted() {
-    if (this.isExpiryDateLimited) {
-      this.formData.LicenseStartDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
-      this.formData.LicenseEndDate = this.$moment(Date.now() + 90 * 60 * 60 * 24 * 1000).format(
-        getTimeZoneForMoment()
-      )
-    }
+    this.callForExpiryDateLimited()
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
@@ -1008,6 +1003,20 @@ export default {
     }
   },
   methods: {
+    callForExpiryDateLimited() {
+      expiryDateLimited(this.$moment(Date.now()).format(getTimeZoneForMoment())).then(
+        (response) => {
+          if (Object.keys(response?.data?.data).length) {
+            this.isExpiryDateLimited = true
+            if (this.edit) return
+            this.formData.LicenseStartDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+            this.formData.LicenseEndDate = this.$moment(
+              Date.now() + 90 * 60 * 60 * 24 * 1000
+            ).format(getTimeZoneForMoment())
+          }
+        }
+      )
+    },
     correctDateFormat() {
       if (this.formData.DateFormat.toLocaleLowerCase() === 'dd/mm/yyyy') {
         this.formData.DateFormat = 'dd/MM/yyyy'
