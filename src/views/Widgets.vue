@@ -492,34 +492,6 @@ export default {
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         },
-        RepeatOffendersUsersThresholdWidget: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 12,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          title: 'Repeat Offenders Users Threshold',
-          key: 'RepeatOffendersUsersThresholdWidget',
-          card: {
-            title: 'Repeat Offenders Users (Threshold: 2)',
-            parentKey: 'Percentage of users who are repeat offenders',
-            key: 'RepeatOffendersUsersThresholdWidget',
-            resourceId: 'NtjzN0TxgXWT'
-          },
-          isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-          isDashboardWidget: true
-        },
         RepeatOffendersUsersRateWidget: {
           x: 0,
           y: 0,
@@ -648,11 +620,6 @@ export default {
         {
           name: 'Impact of Phishing Awareness Training',
           key: 'ImpactOfPhishingAwarenessTrainingWidget',
-          isAllowed: true
-        },
-        {
-          name: 'Repeat Offenders Users (Threshold: 2)',
-          key: 'RepeatOffendersUsersThresholdWidget',
           isAllowed: true
         },
         {
@@ -859,8 +826,6 @@ export default {
           return ExecutiveReportsIndustryPhishingRiskScore
         case 'ImpactOfPhishingAwarenessTrainingWidget':
           return ExecutiveReportsImpactOfPhishingAwarenessTraining
-        case 'RepeatOffendersUsersThresholdWidget':
-          return ExecutiveReportRepeatOffendersUsersBar
         case 'RepeatOffendersUsersRateWidget':
           return ExecutiveReportAvgPhishingSimClickerRate
         default:
@@ -1007,6 +972,7 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        /*
         {
           x: 0,
           y: 9,
@@ -1035,6 +1001,8 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+
+         */
         /*
         {
           x: 0,
@@ -1248,7 +1216,7 @@ export default {
         },
         {
           x: 0,
-          y: 0,
+          y: 30,
           w: 6,
           minW: 6,
           defaultW: 6,

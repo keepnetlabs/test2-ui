@@ -381,6 +381,7 @@ export default {
       }
       if (row.name === 'Non-Simulated Users')
         return 'Non-Simulated Users group is can not be edited.'
+      if (row.name === 'Untrained Users') return 'Untraining Users group is can not be edited.'
     },
     getGroupNameTooltipMessage(row) {
       if (!row?.name) return ''
@@ -392,6 +393,8 @@ export default {
       }
       if (row.name === 'Non-Simulated Users')
         return 'Users who haven’t participated in any simulations are automatically added to this group and removed once they do. Use this group to target users new to simulations.'
+      if (row.name === 'Untrained Users')
+        return 'Users who haven’t enrolled any training are automatically added to this group and removed once they do. Use this group to prioritize training for these users.'
       return ''
     },
     getAddUsersToGroupButtonTooltipMessage(row) {
@@ -404,6 +407,8 @@ export default {
       }
       if (row.name === 'Non-Simulated Users')
         return 'Users cannot be added to the Non-Simulated Users group.'
+      if (row.name === 'Untrained Users')
+        return 'Users cannot be added to the Untraining Users group.'
     },
     getDeleteButtonTooltipMessage(row) {
       if (!row?.name) return ''
@@ -415,6 +420,7 @@ export default {
       }
       if (row.name === 'Non-Simulated Users')
         return 'Non-Simulated Users group is can not be deleted.'
+      if (row.name === 'Untrained Users') return 'Untraining Users group is can not be deleted.'
     },
     isTooltipRenderable(row) {
       return (
