@@ -47,6 +47,11 @@ export function searchCompanyGroupsWithParents(payload) {
 export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
+export function expiryDateLimited(date) {
+  return testRequest.post('/companies/licenseexpirydate', {
+    licenseStartDate: date
+  })
+}
 
 function createCompanyPayload(payload) {
   const parsedStartDatePart = payload.LicenseStartDate?.split(' ')?.[0]
