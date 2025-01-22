@@ -424,12 +424,18 @@ export default {
     },
     isTooltipRenderable(row) {
       return (
-        row?.name && ['Repeat Offenders', 'New Hires', 'Non-Simulated Users'].includes(row.name)
+        row?.name &&
+        ['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
+          row.name
+        )
       )
     },
     handleRowIsSelectable(row) {
       return (
-        row?.name && !['Repeat Offenders', 'New Hires', 'Non-Simulated Users'].includes(row.name)
+        row?.name &&
+        !['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
+          row.name
+        )
       )
     },
     handleEditBtnClick(row) {
