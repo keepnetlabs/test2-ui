@@ -353,6 +353,20 @@ export default {
           this.tableOptions.addButton = {
             show: false
           }
+        } else if (val === 'Non-simulated Users') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else if (val === 'Untrained Users') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
         } else {
           this.tableOptions.iEmpty = {
             message: labels.NoTargetGroupUserAdded,
