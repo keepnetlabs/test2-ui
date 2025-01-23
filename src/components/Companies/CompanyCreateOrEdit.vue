@@ -796,7 +796,11 @@ export default {
         ? [
             (v) => this.validations.required(v, 'Required'),
             (v) => /^\d+$/gi.test(v) || 'Invalid number',
-            (v) => this.validations.numberRangeRule(v, 1, 200000)
+            (v) => {
+              return parseInt(v) > 200000
+                ? 'Number of users has exceeded 200,000. Please reduce the number of users to continue.'
+                : null
+            }
           ]
         : [true]
     },
