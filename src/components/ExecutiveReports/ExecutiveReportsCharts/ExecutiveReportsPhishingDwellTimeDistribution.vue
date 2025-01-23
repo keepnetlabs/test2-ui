@@ -230,7 +230,7 @@ export default {
             barThickness: 2,
             categoryPercentage: 0.5,
             barPercentage: 0.5,
-            label: 'Average Dwell Time',
+            label: 'Median Dwell Time',
             data: averageDwellTimeBarData,
             backgroundColor: '#B6791D',
             borderColor: '#B6791D',
@@ -319,7 +319,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: 0,
                   industryAverage: averageDwellTime,
-                  textParts: ['Average Dwell Time:', averageDwellTime]
+                  textParts: ['Median Dwell Time:', averageDwellTime]
                 }
               ]
             },
@@ -418,7 +418,7 @@ export default {
               if (
                 context.dataset.label === 'line' ||
                 value.y <= 0 ||
-                context.dataset.label.includes('Average Dwell Time')
+                context.dataset.label.includes('Median Dwell Time')
               )
                 return ''
               return value + '%'
