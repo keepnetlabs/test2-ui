@@ -96,7 +96,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 const text = textParts[0]
-                const percentage = `${textParts[1]} minutes`
+                const percentage = `${textParts[1]} minute${textParts[1] > 1 ? 's' : ''}`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
