@@ -353,7 +353,7 @@ export default {
           this.tableOptions.addButton = {
             show: false
           }
-        } else if (val === 'Non-simulated Users') {
+        } else if (val === 'Non-simulated Users' || val === 'Non-Simulated Users') {
           this.tableOptions.iEmpty = {
             message: labels.NoTargetGroupUserAdded
           }
