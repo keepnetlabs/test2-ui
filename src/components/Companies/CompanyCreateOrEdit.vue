@@ -658,7 +658,7 @@ export default {
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
       languageItems: [],
-      isExpiryDateLimited: true,
+      isExpiryDateLimited: false,
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -801,7 +801,7 @@ export default {
         : [true]
     },
     numberOfUsersPlaceholder() {
-      return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
+      return 'Enter number of users'
     },
     isEndDateDisabled() {
       return (
