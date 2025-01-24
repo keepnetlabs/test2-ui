@@ -48,6 +48,23 @@
                   :id="`text--incident-responder-email-details-url-${index}`"
                   class="left-side d-flex align-center"
                 >
+                  <img
+                    v-if="false"
+                    class="mr-1"
+                    src="../../../assets/img/link-icon.png"
+                    alt="link icon"
+                  />
+                  <VTooltip bottom>
+                    <template #activator="{ on }">
+                      <img
+                        v-on="on"
+                        class="mr-1"
+                        src="../../../assets/img/qr-code-mini.svg"
+                        alt="link icon"
+                      />
+                    </template>
+                    <span>{{ getQrCodeTooltipMessage }}</span>
+                  </VTooltip>
                   <p class="attachment-name mr-2" style="word-break: break-word; min-width: 250px;">
                     {{ url.url }}
                   </p>
@@ -306,6 +323,20 @@ export default {
         'email-details-inside-url-vertical-line',
         isLastUrlOpen ? 'email-details-inside-url-vertical-line-last-index--open' : ''
       ]
+    },
+    getQrCodeTooltipMessage() {
+      if (true) {
+        return 'QR code is in an HTML attachment.'
+      } else if (true) {
+        return "QR code is in the email's HTML body."
+      } else if (true) {
+        return 'QR code is in an attached file.'
+      } else if (true) {
+        return 'QR code is an image in the email body.'
+      } else if (true) {
+        return 'QR code is in the attached PDF content.'
+      }
+      return 'QR code is in an attached Word document.'
     }
   },
   methods: {
