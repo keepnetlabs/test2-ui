@@ -51,7 +51,7 @@
                   <img
                     v-if="!url.qrCodeSource"
                     class="mr-1"
-                    src="../../../assets/img/link-icon.png"
+                    src="../../../assets/img/link-icon.svg"
                     alt="link icon"
                   />
                   <VTooltip v-else bottom>
