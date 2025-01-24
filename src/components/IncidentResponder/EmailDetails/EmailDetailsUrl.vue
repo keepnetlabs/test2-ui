@@ -48,6 +48,23 @@
                   :id="`text--incident-responder-email-details-url-${index}`"
                   class="left-side d-flex align-center"
                 >
+                  <img
+                    v-if="!url.qrCodeSource"
+                    class="mr-1"
+                    src="../../../assets/img/link-icon.png"
+                    alt="link icon"
+                  />
+                  <VTooltip v-else bottom>
+                    <template #activator="{ on }">
+                      <img
+                        v-on="on"
+                        class="mr-1"
+                        src="../../../assets/img/qr-code-mini.svg"
+                        alt="qr code icon"
+                      />
+                    </template>
+                    <span>{{ url.qrCodeSourceDefinition }}</span>
+                  </VTooltip>
                   <p class="attachment-name mr-2" style="word-break: break-word; min-width: 250px;">
                     {{ url.url }}
                   </p>
