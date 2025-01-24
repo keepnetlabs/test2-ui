@@ -60,7 +60,7 @@
                         v-on="on"
                         class="mr-1"
                         src="../../../assets/img/qr-code-mini.svg"
-                        alt="link icon"
+                        alt="qr code icon"
                       />
                     </template>
                     <span>{{ url.qrCodeSourceDefinition }}</span>
