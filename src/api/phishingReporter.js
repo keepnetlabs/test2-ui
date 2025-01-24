@@ -89,3 +89,21 @@ export function bulkDeletePhishingUsers(payload = {}) {
     data: payload
   })
 }
+export function createGraphAccount(payload) {
+  return testRequest.post('/phishing-reporter/link-graph-account', payload)
+}
+export function deleteGraphAccount() {
+  return testRequest.delete('/phishing-reporter/unlink-graph-account')
+}
+export function connectGraphAccount(payload) {
+  return testRequest.post('/phishing-reporter/o365-spam-reporting/settings', payload)
+}
+export function downloadSpamReport(payload) {
+  return testRequest.post(
+    '/phishing-reporter/generate/microsoft365-spam-reporting-addin',
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}

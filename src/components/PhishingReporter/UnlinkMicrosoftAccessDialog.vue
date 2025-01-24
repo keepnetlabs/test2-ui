@@ -16,6 +16,7 @@
         action-button-color="#F56C6C"
         cancel-button-color="#383B41"
         action-button-text="UNLINK"
+        :confirm-button-disabled="isActionButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleConfirm"
       />
@@ -26,6 +27,7 @@
 <script>
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 import AppDialog from '@/components/AppDialog.vue'
+import { deleteGraphAccount } from '@/api/phishingReporter'
 
 export default {
   name: 'UnlinkMicrosoftAccessDialog',
@@ -36,13 +38,24 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      isActionButtonDisabled: false
+    }
+  },
   methods: {
-    handleClose() {
-      this.$emit('close')
+    handleClose(forceUpdate = false) {
+      this.$emit('close', forceUpdate)
     },
     handleConfirm() {
-      this.$emit('confirm')
-      this.handleClose()
+      this.isActionButtonDisabled = true
+      deleteGraphAccount()
+        .then(() => {
+          this.handleClose()
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

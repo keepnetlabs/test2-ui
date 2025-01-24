@@ -10,6 +10,7 @@
     <download-add-in-modal
       v-if="downloadAddInModalStatus"
       :status="downloadAddInModalStatus"
+      :form-data="formData"
       @handleClose="downloadAddInModalStatus = false"
     />
     <el-tabs
