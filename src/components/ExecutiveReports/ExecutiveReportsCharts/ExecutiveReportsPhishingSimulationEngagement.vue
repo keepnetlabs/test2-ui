@@ -299,9 +299,15 @@ export default {
             fontColor: '#383B41',
             generateLabels(chart = {}) {
               const { data } = chart
+              console.log('data.datasets', data.datasets)
               return data.datasets.map((item, index) => {
-                const average =
+                console.log(
+                  'tem.data.reduce((total, current) => total + current.y, 0) / item.data.length',
                   item.data.reduce((total, current) => total + current.y, 0) / item.data.length
+                )
+                const average = Math.round(
+                  item.data.reduce((total, current) => total + current.y, 0) / item.data.length
+                )
                 const label =
                   item.label === 'Users Who Clicked And Reported (%)'
                     ? 'Users Who Clicked And Reported'
