@@ -342,10 +342,7 @@ export default {
                   datasetIndex: 0,
                   customMarginLeft: 6,
                   pointStyle: currentLevelImg,
-                  textParts: [
-                    'Current Level',
-                    `(${repeatOffendersCount} user${repeatOffendersCount > 1 ? 's' : ''})`
-                  ]
+                  textParts: ['Current Level', `(${repeatOffendersPercentage}%)`]
                 },
                 {
                   text: Array.from(plaLabel + plaLabel)
