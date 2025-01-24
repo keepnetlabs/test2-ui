@@ -4,7 +4,6 @@
       v-if="isShowUnlinkDialog"
       :status="isShowUnlinkDialog"
       @close="toggleUnlinkDialog"
-      @confirm="handleUnlinkMicrosoftDialog"
     />
     <v-card
       light
@@ -54,7 +53,7 @@
         />
         <DownloadAddInListItem
           :src="require('../../assets/img/microsoft-365-logo.svg')"
-          :is-loading="gmailSpinnerStatus"
+          :is-loading="o365SpinnerStatus"
           class="flex-nowrap"
           hide-border
           title="Spam Integration"
@@ -68,6 +67,7 @@
                 style="margin-left: 5px !important; text-transform: capitalize;"
                 color="#2196f3"
                 rounded
+                @click="handleConnectAccount"
               >
                 Connect Account
               </VBtn>
@@ -87,8 +87,8 @@
                 style="margin-left: 5px !important; text-transform: capitalize;"
                 color="#2196f3"
                 rounded
-                :loading="gmailSpinnerStatus"
-                @click="callForGenerateO365AddIn"
+                :loading="o365SpinnerStatus"
+                @click="callForGenerateO365SpamAddIn"
               >
                 <v-icon left>mdi-download</v-icon>
                 Download
@@ -153,8 +153,11 @@
 
 <script>
 import {
+  connectGraphAccount,
+  createGraphAccount,
   downloadDiagnosticTool,
   downloadOutlookAddIn,
+  downloadSpamReport,
   generateDiagnosticTool,
   generateGoogleWorkSpaceAddIn,
   generateO365AddIn,
@@ -168,6 +171,9 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    formData: {
+      type: Object
     }
   },
   components: {
@@ -178,12 +184,13 @@ export default {
   data() {
     return {
       outlookSpinnerStatus: false,
-      isAccountConnected: true,
+      isAccountConnected: this.formData ? this.formData.isGraphAccountConnected : false,
       isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
       downloadOutlookAddInTimeout: null,
       diagnosticToolAddInTimeout: null,
       gmailSpinnerStatus: false,
+      o365SpinnerStatus: false,
       googleWorkSpaceSpinnerStatus: false
     }
   },
@@ -224,6 +231,20 @@ export default {
         })
         .finally(() => {
           this.gmailSpinnerStatus = false
+        })
+    },
+    callForGenerateO365SpamAddIn() {
+      this.o365SpinnerStatus = true
+      downloadSpamReport()
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Microsoft365PhishingReporterSpamAddin.xml`
+          link.click()
+        })
+        .finally(() => {
+          this.o365SpinnerStatus = false
         })
     },
     callForDownloadOutlookAddIn(resourceId) {
@@ -291,10 +312,19 @@ export default {
         this.downloadOutlookAddInTimeout = null
       }
     },
-    toggleUnlinkDialog() {
+    toggleUnlinkDialog(forceUpdate = false) {
+      if (forceUpdate) this.isShowUnlinkDialog = false
       this.isShowUnlinkDialog = !this.isShowUnlinkDialog
     },
-    handleUnlinkMicrosoftDialog() {}
+    handleUnlinkMicrosoftDialog() {},
+    handleConnectAccount() {
+      connectGraphAccount().then((response) => {
+        const {
+          data: { data }
+        } = response
+        const { applicationId, redirectUrl } = data
+      })
+    }
   }
 }
 </script>

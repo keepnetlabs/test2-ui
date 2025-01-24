@@ -522,14 +522,14 @@ export default {
         .then((response) => {
           const res = response
           this.$set(
-            this.tableOptions.columns[1],
+            this.tableOptions.columns[2],
             'filterableItems',
             res
               .filter((item) => item.genericCodeTypeId === 2)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
           this.$set(
-            this.tableOptions.columns[2],
+            this.tableOptions.columns[3],
             'filterableItems',
             res
               .filter((item) => item.genericCodeTypeId === 3)
