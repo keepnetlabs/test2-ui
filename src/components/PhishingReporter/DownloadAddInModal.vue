@@ -18,12 +18,12 @@
           <v-list-item-title
             id="text--phishing-reporter-download-add-in-modal-title"
             class="v-card-headline download-add-in__title"
-            >Download Add-in</v-list-item-title
+          >Download Add-in</v-list-item-title
           >
           <v-list-item-subtitle
             id="text--phishing-reporter-download-add-in-modal-subtitle"
             class="v-card-sub-header"
-            >You can download the add-in below
+          >You can download the add-in below
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
