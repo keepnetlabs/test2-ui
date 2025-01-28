@@ -312,6 +312,7 @@
     height: 100%;
   }
 
+
   .overlay__container {
     max-height: 384px !important;
   }
@@ -330,5 +331,27 @@
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3 !important;
+  }
+  &__list-item{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding:16px 0;
+    border-bottom:1px solid #D9D9D9;
+    &-title{
+      color:#383B41;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    &-desc{
+      color:rgba(56, 59, 65, 0.72);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 21px
+    }
+    &--hide-border{
+      border-bottom: none !important;
+    }
   }
 }
