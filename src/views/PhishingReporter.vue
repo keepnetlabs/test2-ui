@@ -232,6 +232,14 @@ export default {
     }
     this.getPhishingReportSummary()
     this.getPhishingReport()
+    if (
+      this.$route.query?.tenant ||
+      (this.$route.query?.error &&
+        (this.$route.query?.error_description || this.$route.query?.error_subcode))
+    ) {
+      this.tab = 'phishing-reporter-settings'
+      return
+    }
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }

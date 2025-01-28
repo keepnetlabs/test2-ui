@@ -154,7 +154,6 @@
 <script>
 import {
   connectGraphAccount,
-  createGraphAccount,
   downloadDiagnosticTool,
   downloadOutlookAddIn,
   downloadSpamReport,
@@ -313,16 +312,20 @@ export default {
       }
     },
     toggleUnlinkDialog(forceUpdate = false) {
-      if (forceUpdate) this.isShowUnlinkDialog = false
+      if (forceUpdate) {
+        this.isShowUnlinkDialog = false
+        this.formData.isGraphAccountConnected = false
+      }
       this.isShowUnlinkDialog = !this.isShowUnlinkDialog
     },
-    handleUnlinkMicrosoftDialog() {},
     handleConnectAccount() {
       connectGraphAccount().then((response) => {
         const {
           data: { data }
         } = response
-        const { applicationId, redirectUrl } = data
+        window.location.href = `https://login.microsoftonline.com/common/adminconsent?client_id=${
+          data.applicationId
+        }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
       })
     }
   }
