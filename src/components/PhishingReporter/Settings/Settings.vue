@@ -107,11 +107,19 @@ import AddinSettings from './AddinSettings'
 import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
-import { createPhishingReporter } from '@/api/phishingReporter'
+import { createGraphAccount, createPhishingReporter } from '@/api/phishingReporter'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DownloadAddInModal from '../DownloadAddInModal'
+import labels from '@/model/constants/labels'
 export default {
   name: 'Settings',
+  components: {
+    DownloadAddInModal,
+    AddinSettings,
+    EmailSettings,
+    OtherSettings,
+    DiagnosticTool
+  },
   props: {
     formData: {
       type: Object,
@@ -124,6 +132,16 @@ export default {
     applicationType: {
       type: String,
       default: COMMON_CONSTANTS.OUTLOOK
+    }
+  },
+  data() {
+    return {
+      saveDisable: false,
+      tab: 'phishing-reporter-settings-add-in-settings',
+      spinnerStatus: false,
+      downloadAddInModalStatus: false,
+      isMicrosoftEmailCreationInitial: false,
+      tenantId: ''
     }
   },
   watch: {
@@ -147,19 +165,35 @@ export default {
       })
     }
   },
-  components: {
-    DownloadAddInModal,
-    AddinSettings,
-    EmailSettings,
-    OtherSettings,
-    DiagnosticTool
-  },
-  data() {
-    return {
-      saveDisable: false,
-      tab: 'phishing-reporter-settings-add-in-settings',
-      spinnerStatus: false,
-      downloadAddInModalStatus: false
+  created() {
+    const { query = {} } = this.$route
+    const {
+      tenant = '',
+      state = '',
+      error = '',
+      error_description = '',
+      error_subcode = ''
+    } = query
+    this.isMicrosoftEmailCreationInitial = !tenant
+    const errorSubCodeMessage =
+      error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
+    const errorMessage = error && (error_description || errorSubCodeMessage)
+    if (!this.isMicrosoftEmailCreationInitial || errorMessage) {
+      if (errorMessage) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: errorMessage,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+        this.downloadAddInModalStatus = true
+      } else {
+        this.tenantId = tenant
+        createGraphAccount({ tenantId: this.tenantId }).then(() => {
+          this.formData.isGraphAccountConnected = true
+          this.downloadAddInModalStatus = true
+        })
+        this.$router.replace('/phishing-reporter')
+      }
     }
   },
   methods: {
