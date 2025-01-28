@@ -23,6 +23,7 @@
         <NewEmailTemplates
           v-if="isOpenEmailTemplateDrawer"
           ref="newEmailTemplate"
+          is-a-i-ally-enabled
           :status="isOpenEmailTemplateDrawer"
           :should-remove-overflow="false"
           :show-leaving-dialog="false"
