@@ -1,5 +1,10 @@
 <template>
   <Fragment>
+    <GamificationReportPerformanceDetailsDrawer
+      v-if="isShowGamificationReportPerformanceDetails"
+      :selected-row="selectedRow"
+      :status="isShowGamificationReportPerformanceDetails"
+    />
     <DownloadModal
       v-if="isShowDownloadModal"
       :isShow="isWantToDownload"
@@ -594,9 +599,11 @@ import GamificationReportUserDetailsDrawerFilterBadge from './GamificationReport
 import { getUserPerformanceRates, getUserTimeline, exportUserActivityDetails } from '@/api/reports'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import ThreeListItemLoading from '@/components/SkeletonLoading/ThreeListItemLoading'
+import GamificationReportPerformanceDetailsDrawer from './GamificationReportPerformanceDetails/GamificationReportPerformanceDetailsDrawer.vue'
 export default {
   name: 'GamificationReportUserDetailsDrawer',
   components: {
+    GamificationReportPerformanceDetailsDrawer,
     Fragment,
     DownloadModal,
     TrainingLibrarySearchFilter,
@@ -629,6 +636,7 @@ export default {
   },
   data() {
     return {
+      isShowGamificationReportPerformanceDetails: true,
       isTimelineLoading: false,
       isPerformanceRatesLoading: false,
       menu: false,

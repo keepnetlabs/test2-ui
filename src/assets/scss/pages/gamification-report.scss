@@ -318,3 +318,33 @@
 .v-timeline-item__dot {
   box-shadow: none !important;
 }
+.gamification-report-performance-details-table{
+  margin-top:16px;
+  table{
+    width:100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    table-layout:fixed;
+    td,th{
+      border: 1px solid #E0E0E0;
+      padding: 16px;
+      text-align: left;
+    }
+    td{
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px;
+      color:#383B41;
+    }
+  }
+  thead tr {
+    background-color: #F2F2F2;
+    th {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 16px;
+      color: #383B41;
+    }
+  }
+}
