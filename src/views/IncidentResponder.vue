@@ -2095,6 +2095,7 @@ export default {
         const payload = {
           resourceIdList: []
         }
+        console.log('this.clusteredRow', this.clusteredRow)
         const cluster = this.getClusteredField(this.selectedCluster)
         let selectedFilter = this.isShowingClusteredTable
           ? this.clusteredTableAxios
@@ -2109,7 +2110,7 @@ export default {
             selectedFilter.filter.FilterGroups[0].FilterItems.push({
               FieldName: cluster,
               Operator: '=',
-              Value: this.selectedCluster
+              Value: this.clusteredRow[cluster]
             })
           }
         }
