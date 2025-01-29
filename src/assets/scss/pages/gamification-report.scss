@@ -347,4 +347,15 @@
       color: #383B41;
     }
   }
+  tbody tr:nth-child(even) {
+    background-color: #FAFAFA;
+  }
+}
+.gamification-report-performance-details-table-column{
+  &--number{
+    font-weight:600 !important;
+  }
+}
+.gamification-report-performance-details-info-card{
+
 }
