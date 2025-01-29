@@ -2095,13 +2095,30 @@ export default {
         const payload = {
           resourceIdList: []
         }
+        console.log('this.clusteredRow', this.clusteredRow)
+        const cluster = this.getClusteredField(this.selectedCluster)
+        let selectedFilter = this.isShowingClusteredTable
+          ? this.clusteredTableAxios
+          : this.requestBodyReportedEmails.filter
+        selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
+        if (this.isShowingClusteredTable) {
+          if (
+            !selectedFilter.filter.FilterGroups[0].FilterItems.find(
+              (item) => item.FieldName === cluster
+            )
+          ) {
+            selectedFilter.filter.FilterGroups[0].FilterItems.push({
+              FieldName: cluster,
+              Operator: '=',
+              Value: this.clusteredRow[cluster]
+            })
+          }
+        }
         if (isSelectedAllEver) {
           payload['selectAll'] = {
-            filter: this.isShowingClusteredTable
-              ? this.clusteredTableAxios
-              : this.requestBodyReportedEmails.filter,
+            filter: selectedFilter,
             excludedResourceIdList,
-            clusteredBy: this.isShowingClusteredTable ? this.clusteredTableAxios.clusteredBy : ''
+            clusteredBy: this.isShowingClusteredTable ? this.selectedCluster : ''
           }
         }
         const sets = {
