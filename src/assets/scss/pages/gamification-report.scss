@@ -324,7 +324,7 @@
     width:100%;
     border-collapse: collapse;
     border-radius: 8px;
-    table-layout:fixed;
+    table-layout:auto;
     td,th{
       border: 1px solid #E0E0E0;
       padding: 16px;
@@ -355,7 +355,28 @@
   &--number{
     font-weight:600 !important;
   }
+  &--link a{
+    color:#2196F3 !important;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+  }
 }
 .gamification-report-performance-details-info-card{
-
+  border-radius: 8px;
+  background-color:#F1F8FE;
+  border:1px solid #1173C1;
+  padding:16px;
+  &__title{
+    color:#1173C1;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+  &__description{
+    color:#383B41;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
 }
