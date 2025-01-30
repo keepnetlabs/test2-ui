@@ -92,7 +92,6 @@ import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports
 import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
 import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
-import ExecutiveReportRepeatOffendersUsersBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportRepeatOffendersUsersBar.vue'
 import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 export default {
   name: 'Widgets',
@@ -672,6 +671,19 @@ export default {
           this.handleDeleteShadows()
           this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
         }, 20)
+      } finally {
+        if (!this.layout.find((widget) => widget.key === 'RepeatOffendersUsersRateWidget')) {
+          const isAvailable = this.availableWidgets.find(
+            (widget) => widget.key === 'RepeatOffendersUsersRateWidget'
+          )
+          if (!isAvailable) {
+            this.availableWidgets.push({
+              name: 'Phishing Simulation Repeat Offenders Rate',
+              key: 'RepeatOffendersUsersRateWidget',
+              isAllowed: true
+            })
+          }
+        }
       }
     }
   },

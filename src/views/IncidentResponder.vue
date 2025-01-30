@@ -2095,7 +2095,6 @@ export default {
         const payload = {
           resourceIdList: []
         }
-        console.log('this.clusteredRow', this.clusteredRow)
         const cluster = this.getClusteredField(this.selectedCluster)
         let selectedFilter = this.isShowingClusteredTable
           ? this.clusteredTableAxios
