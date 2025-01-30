@@ -605,6 +605,10 @@
     overflow: hidden;
     white-space: nowrap;
     max-width: 198px;
+    &::after{
+      content:'';
+      display: block;
+    }
   }
 }
 .training-library-input-behaviour {
