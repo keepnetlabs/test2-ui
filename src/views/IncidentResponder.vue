@@ -2116,8 +2116,7 @@ export default {
         if (isSelectedAllEver) {
           payload['selectAll'] = {
             filter: selectedFilter,
-            excludedResourceIdList,
-            clusteredBy: this.isShowingClusteredTable ? this.selectedCluster : ''
+            excludedResourceIdList
           }
         }
         const sets = {
