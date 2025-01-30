@@ -58,6 +58,11 @@
           :columns="actionColumns"
           :data="actionTableData"
         />
+        <GamificationReportPerformanceDetailsInfoCard
+          class="mt-4 mb-8"
+          title="Celebrate Progress"
+          description="Selami has made significant progress by earning 150 points. Only a few steps remain to achieve full potential. Completing the remaining actions will unlock new milestones and rewards, demonstrating expertise and dedication."
+        />
       </div>
     </div>
   </VNavigationDrawer>
@@ -139,7 +144,8 @@ export default {
           key: 'priority',
           type: 'badge',
           align: 'center',
-          maxWidth: '100px'
+          maxWidth: '120px',
+          minWidth: '120px'
         },
         {
           label: 'Action',
@@ -159,15 +165,46 @@ export default {
         {
           label: 'Points Available',
           key: 'pointsAvailable',
-          type: 'number'
+          align: 'center',
+          type: 'number',
+          maxWidth: '160px'
         },
         {
           label: 'Next Step',
           key: 'nextStep',
+          align: 'center',
           type: 'link'
         }
       ],
       actionTableData: [
+        {
+          priority: 'Critical',
+          action: 'Send reminder to report remaining phishing emails',
+          activityName: 'Unreported 8 campaigns',
+          pointsAvailable: '400',
+          nextStep: 'Go to Report'
+        },
+        {
+          priority: 'Critical',
+          action: 'Send reminder to report remaining phishing emails',
+          activityName: 'Unreported 8 campaigns',
+          pointsAvailable: '400',
+          nextStep: 'Go to Report'
+        },
+        {
+          priority: 'Critical',
+          action: 'Send reminder to report remaining phishing emails',
+          activityName: 'Unreported 8 campaigns',
+          pointsAvailable: '400',
+          nextStep: 'Go to Report'
+        },
+        {
+          priority: 'Critical',
+          action: 'Send reminder to report remaining phishing emails',
+          activityName: 'Unreported 8 campaigns',
+          pointsAvailable: '400',
+          nextStep: 'Go to Report'
+        },
         {
           priority: 'Critical',
           action: 'Send reminder to report remaining phishing emails',

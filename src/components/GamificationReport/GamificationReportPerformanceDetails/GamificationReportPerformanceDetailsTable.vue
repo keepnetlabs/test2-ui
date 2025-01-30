@@ -3,11 +3,7 @@
     <table>
       <thead>
         <tr>
-          <th
-            v-for="column in columns"
-            :key="column.key"
-            :style="{ textAlign: column.align || 'left', maxWidth: column.maxWidth || 'auto' }"
-          >
+          <th v-for="column in columns" :key="column.key" :style="{ ...getCommonTDStyle(column) }">
             {{ column.label }}
           </th>
         </tr>
@@ -18,12 +14,9 @@
             v-for="column in columns"
             :key="column.key"
             :class="`gamification-report-performance-details-table-column--${column.type}`"
-            :style="{ textAlign: column.align || 'left' }"
+            :style="{ ...getCommonTDStyle(column) }"
           >
-            <span
-              v-if="column.type === 'text' || column.type === 'number'"
-              :style="{ textAlign: column.align || 'left', maxWidth: column.maxWidth || 'auto' }"
-            >
+            <span v-if="column.type === 'text' || column.type === 'number'">
               {{ row[column.key] }}
             </span>
             <Badge
@@ -67,6 +60,13 @@ export default {
     return {}
   },
   methods: {
+    getCommonTDStyle(column) {
+      return {
+        textAlign: column.align || 'left',
+        maxWidth: column.maxWidth || 'auto',
+        minWidth: column.minWidth || 'auto'
+      }
+    },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
     },
