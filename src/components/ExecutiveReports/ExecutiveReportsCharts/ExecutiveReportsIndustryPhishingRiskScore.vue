@@ -274,7 +274,7 @@ export default {
             order: 2
           },
           {
-            label: 'Phishing Simulation Metrics',
+            label: 'Total Risky Actions',
             type: 'bar',
             yAxisID: 'B',
             data: phishingSimulationMetricsData,
@@ -334,7 +334,7 @@ export default {
               display: true,
               scaleLabel: {
                 display: true,
-                labelString: 'Total User Actions',
+                labelString: 'Total Risky Actions',
                 fontColor: '#383B41'
               },
               gridLines: {
