@@ -91,7 +91,7 @@
       <TrainingReportSummaryInfoCard
         v-bind="getCompletedTrainingData"
         background-color="#43A047"
-        :title="labels.CompletedTrainingPath"
+        :title="labels.CompletedLearningPath"
         :is-loading="isLoading"
         :icon-src="noResponseIcon"
       >

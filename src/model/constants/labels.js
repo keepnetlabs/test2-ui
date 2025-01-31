@@ -54,6 +54,7 @@ export const labels = {
   PosterDelivery: 'Poster Delivery',
   StartedLearningPath: 'Started Learning Path',
   CompletedTrainingPath: 'Completed Training Path',
+  CompletedLearningPath: 'Completed Learning Path',
   EmptyTrainingReportUserLearningPaths: 'You do not have any users enrolled for this learning path',
   InfographicDelivery: 'Infographic Delivery',
   PreviewedPoster: 'Previewed Poster',
