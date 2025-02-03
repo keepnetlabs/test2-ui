@@ -91,7 +91,8 @@ export default {
     defaultSmsTextTemplate: {
       type: String,
       default:
-        'Dear {FULLNAME}\n' + '{TRAININGNAME} assigned to you. Please enroll it on {TRAININGURL}'
+        'Dear {FULLNAME}\n' +
+        '{TRAININGNAME} assigned to you. Please enroll via this link {TRAININGURL}'
     },
     defaultMergeTags: {
       type: Array,
