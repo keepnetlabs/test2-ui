@@ -346,6 +346,20 @@ export default {
             ]
           },
           {
+            property: PROPERTY_STORE.TAGS,
+            align: 'left',
+            editable: false,
+            label: 'Tags',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'smallBadge',
+            width: 150,
+            hasTooltip: true,
+            filterableType: 'text',
+            filterableCustomFieldName: PROPERTY_STORE.TAGS
+          },
+          {
             property: PROPERTY_STORE.LICENSEENDDATE,
             align: 'left',
             editable: false,

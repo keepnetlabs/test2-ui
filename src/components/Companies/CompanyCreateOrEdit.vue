@@ -202,6 +202,15 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
+                <form-group class-name="mt-6" title="Tags" sub-title="Define tags for the company">
+                  <InputTag
+                    v-model="formData.tags"
+                    ref="refTags"
+                    :id="`input--action-tags`"
+                    :items="[]"
+                    class="hide-caret"
+                  />
+                </form-group>
                 <v-list-item>
                   <v-list-item-content>
                     <v-switch
@@ -209,7 +218,7 @@
                       id="input--company-status"
                       :ripple="false"
                       dense
-                      :label="formData.statusId === '1' ? 'Active' : 'Inactive'"
+                      :label="formData.statusId === '1' ? 'ACTIVE' : 'INACTIVE'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
                       :true-value="'1'"
@@ -625,6 +634,7 @@ import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import countryLanguageMap from '@/utils/countryLanguageMap'
 import { getTimeZoneForMoment } from '../../utils/functions'
+import InputTag from '@/components/Common/Inputs/InputTag.vue'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -633,6 +643,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    InputTag,
     ConfigureCompanyStepHeader,
     FormGroup,
     InputTimezone,
@@ -700,7 +711,8 @@ export default {
         statusId: '1',
         DateFormat: 'dd/MM/yyyy',
         TimeFormat: '24h',
-        timeZoneId: ''
+        timeZoneId: '',
+        tags: []
       },
       dateFormatList: [
         {
