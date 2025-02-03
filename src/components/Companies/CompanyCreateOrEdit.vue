@@ -624,7 +624,7 @@ import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWar
 import moment from 'moment'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import countryLanguageMap from '@/utils/countryLanguageMap'
-import { getTimeZoneForMoment } from '../../utils/functions'
+import { getTimeZoneForMoment } from '@/utils/functions'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -844,6 +844,7 @@ export default {
         this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
         const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
         if (nativeLanguageIndex !== -1) {
+          debugger
           const nativeLanguageResourceId =
             this.languageItems.find(
               (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
