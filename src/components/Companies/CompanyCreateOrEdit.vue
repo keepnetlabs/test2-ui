@@ -844,7 +844,6 @@ export default {
         this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
         const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
         if (nativeLanguageIndex !== -1) {
-          debugger
           const nativeLanguageResourceId =
             this.languageItems.find(
               (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
