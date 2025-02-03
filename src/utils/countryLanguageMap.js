@@ -121,7 +121,7 @@ export default [
   },
   {
     country: 'Brunei Darussalam',
-    language: 'Malay'
+    language: 'Malay (Malaysia)'
   },
   {
     country: 'Bulgaria',
@@ -397,7 +397,7 @@ export default [
   },
   {
     country: 'Malaysia',
-    language: 'Malay'
+    language: 'Malay (Malaysia)'
   },
   {
     country: 'Maldives',
