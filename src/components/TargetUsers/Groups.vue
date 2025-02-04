@@ -389,7 +389,7 @@ export default {
         return 'Users who fail two or more phishing campaigns are automatically added to the Repeat Offenders group, posing a higher security risk. Prioritize targeted training and simulations for their adaptation to your security culture, and they will be automatically removed once the risk is reduced.'
       }
       if (row.name === 'New Hires') {
-        return 'New hires are automatically added to this group for 30 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
+        return 'New hires are automatically added to this group for 90 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
       }
       if (row.name === 'Non-Simulated Users')
         return 'Users who haven’t participated in any simulations are automatically added to this group and removed once they do. Use this group to target users new to simulations.'
