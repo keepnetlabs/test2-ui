@@ -177,7 +177,9 @@ export default {
         this.usersFromUnverifiedDomainsCount
       } active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
-      } with unverified domains in this group. Please verify the domains in order to send emails.`
+      } with unverified domains in this group. Please verify the domains in order to send ${
+        this.isSmishing ? 'sms' : 'emails'
+      }.`
     },
     getPhoneNumberWarningText() {
       return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${

@@ -98,7 +98,7 @@
               ref="refCampaignManagerTargetAudience"
               last-column-name="phoneNumber"
               :default-values="getDefaultTargetAudienceSettings"
-              :is-vishing="true"
+              :is-vishing="false"
               :is-all-groups="!isEdit"
               :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :selected-target-groups.sync="selectedTargetGroups"
