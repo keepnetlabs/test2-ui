@@ -80,15 +80,16 @@
         <span v-else> {{ scope.row[col.property] }}</span>
       </template>
       <template v-if="scope.column.property === 'categoryDistributionType'">
-        <div class="campaign-manager-parent-categoryDistributionType-column">
+        <span class="campaign-manager-parent-categoryDistributionType-column">
           <VIcon
             v-if="scope.row[col.property] === SCENARIO_DISTRIBUTION_TEXTS[3]"
             color="#2196F3"
+            style="margin-top: -1px; margin-right: 2px;"
             small
             >mdi-creation</VIcon
           >
-          <span>{{ scope.row[col.property] }}</span>
-        </div>
+          <span style="display: ruby;">{{ scope.row[col.property] }}</span>
+        </span>
       </template>
     </template>
     <template #datatable-row-actions="{ scope }">
