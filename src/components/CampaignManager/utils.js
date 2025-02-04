@@ -60,7 +60,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'slot',
-    width: 240,
+    width: 260,
     filterableType: 'select',
     filterableItems: scenarioDistributionFilterItems,
     filterableCustomFieldName: 'ScenarioDistribution'
