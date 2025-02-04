@@ -636,7 +636,7 @@ export default {
   },
   data() {
     return {
-      isShowGamificationReportPerformanceDetails: true,
+      isShowGamificationReportPerformanceDetails: false,
       isTimelineLoading: false,
       isPerformanceRatesLoading: false,
       menu: false,
