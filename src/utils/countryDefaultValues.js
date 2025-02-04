@@ -749,6 +749,13 @@ export default [
     phoneNumberCode: '+60'
   },
   {
+    name: 'Brunei Darussalam',
+    timeFormat: '24h',
+    dateFormat: 'dd/MM/yyyy',
+    timezone: 'Singapore Standard Time',
+    phoneNumberCode: '+60'
+  },
+  {
     name: 'Maldives',
     timeFormat: '12h',
     dateFormat: 'MM/dd/yyyy',
