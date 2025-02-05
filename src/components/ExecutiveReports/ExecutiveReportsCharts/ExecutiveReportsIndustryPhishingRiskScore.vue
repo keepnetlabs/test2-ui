@@ -334,7 +334,7 @@ export default {
               display: true,
               scaleLabel: {
                 display: true,
-                labelString: 'Total Risky Actions',
+                labelString: 'Total Actions',
                 fontColor: '#383B41'
               },
               gridLines: {

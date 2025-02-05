@@ -992,6 +992,7 @@ export default {
       this.formData.LicenseStartDate = this.selectedExtend.licenseStartDate
       this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
       this.formData.IsNumberOfUsersLimited = this.selectedExtend.isNumberOfUsersLimited
+      this.formData.tags = this.selectedExtend.tags || []
       this.formData.LicenseModuleResourceIdArray = this.selectedExtend.licenseModules
       this.formData.licenseTypeName = this.selectedExtend.licenseTypeName
       this.formData.NumberOfUsers = this.selectedExtend.isNumberOfUsersLimited
@@ -1308,10 +1309,6 @@ export default {
     onFileChanged(file) {
       this.formData.logoURL = ''
       this.formData.File = file
-    },
-    clickUnlimited() {
-      this.formData.IsNumberOfUsersLimited = !this.formData.IsNumberOfUsersLimited
-      this.formData.NumberOfUsers = ''
     },
     cancelForm() {
       this.formData = []
