@@ -49,6 +49,31 @@
       :forCompany="true"
       @changeModalStatus="changeGroupModalStatus"
     />
+    <AlertBox
+      v-if="canRenderAlertbox"
+      class="mb-6"
+      icon-name="mdi-information"
+      icon-color="#000"
+      style="background-color: #fafafa !important; border: 1px solid #e0e0e0;"
+      :slots="{ primaryAction: true, secondaryAction: true }"
+    >
+      <template>
+        <div class="d-flex gap-2">
+          <div>
+            <VIcon color="#000">mdi-information</VIcon>
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 18px; color: #383b41;">
+              8 companies have exceeded their user limits. Use the filter to identify them.
+            </div>
+            <div style="color: #757575; font-size: 14px;">
+              Use the Filter Exceeding Limit button below to filter the table and review these
+              companies.
+            </div>
+          </div>
+        </div>
+      </template>
+    </AlertBox>
     <datatable
       v-bind="bindPropsIsSafari"
       id="companies-data-table"
@@ -191,6 +216,43 @@
           @close="closeExtend"
         />
       </template>
+      <template #addUsers>
+        <VTooltip bottom>
+          <template #activator="{ on }">
+            <VBtn
+              v-on="on"
+              :class="[isExceedingLimitFilterDisabled && 'btn-add--disabled']"
+              color="#757575"
+              text
+              plain
+              style="order: 1; margin-right: 4px;"
+              @click="handleExceedingFilterClick()"
+            >
+              <span class="button-new__text button-new__text--secondary">{{
+                getExceedingLimitFilterLabel
+              }}</span>
+            </VBtn>
+          </template>
+          <span>{{ getExceedingLimitFilterTooltip }}</span>
+        </VTooltip>
+        <VTooltip bottom opacity="1">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              v-on="{ ...tooltip }"
+              :disabled="tableOptions.addButton.disabled"
+              id="btn-add--target-users-people"
+              class="button-new"
+              style="margin-right: 16px; order: 1;"
+              rounded
+              color="#2196f3"
+            >
+              <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+              <span class="button-new__text">NEW</span>
+            </v-btn>
+          </template>
+          <span class="tooltip-span">Add Company</span>
+        </VTooltip>
+      </template>
     </datatable>
   </div>
 </template>
@@ -225,9 +287,11 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import AlertBox from '@/components/AlertBox.vue'
 export default {
   name: 'CompanyList',
   components: {
+    AlertBox,
     ConfigureNewCompanyModal,
     AppModal,
     CreateItemModal,
@@ -243,7 +307,9 @@ export default {
   data() {
     return {
       isDeleting: false,
+      isExceedingLimitFilterDisabled: false,
       loading: true,
+      canRenderAlertbox: false,
       tableData: [],
       isMultipleDelete: false,
       createdCompanyResourceIdForConfigureCompany: '',
@@ -461,7 +527,18 @@ export default {
       }
     }
   },
+  computed: {
+    getExceedingLimitFilterLabel() {
+      return 'FILTER EXCEEDING LIMIT'
+    },
+    getExceedingLimitFilterTooltip() {
+      if (this.isExceedingLimitFilterDisabled)
+        return 'No companies exceeding their user limits, so the filter is disabled.'
+      return 'Filter exceeding limit'
+    }
+  },
   methods: {
+    handleExceedingFilterClick() {},
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.companyResourceId),
