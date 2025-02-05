@@ -88,7 +88,7 @@
             small
             >mdi-creation</VIcon
           >
-          <span style="display: ruby;">{{ scope.row[col.property] }}</span>
+          <span>{{ scope.row[col.property] }}</span>
         </span>
       </template>
     </template>
