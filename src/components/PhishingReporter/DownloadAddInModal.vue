@@ -315,7 +315,7 @@ export default {
       if (forceUpdate) {
         this.isShowUnlinkDialog = false
         this.formData.isGraphAccountConnected = false
-        this.isGraphAccountConnected = false
+        this.isAccountConnected = false
       }
       this.isShowUnlinkDialog = !this.isShowUnlinkDialog
     },
