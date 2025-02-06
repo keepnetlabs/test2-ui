@@ -99,6 +99,7 @@
       :axios-payload.sync="payload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :manage-column-filter-status-from-parent="{ status: isTargetUserCountExceedLimit }"
       active-cluster=""
       @clusterChanged="clusterChanged"
       @delete="handleTableItemDelete"
@@ -226,7 +227,7 @@
               text
               plain
               style="order: 1; margin-right: 4px;"
-              @click="handleExceedingFilterClick()"
+              @click="handleExceedingFilterClick"
             >
               <span class="button-new__text button-new__text--secondary">{{
                 getExceedingLimitFilterLabel
@@ -245,6 +246,7 @@
               style="margin-right: 16px; order: 1;"
               rounded
               color="#2196f3"
+              @click="addButton"
             >
               <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
               <span class="button-new__text">NEW</span>
@@ -422,8 +424,7 @@ export default {
             type: 'smallBadge',
             width: 150,
             hasTooltip: true,
-            filterableType: 'text',
-            filterableCustomFieldName: PROPERTY_STORE.TAGS
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.LICENSEENDDATE,
@@ -511,7 +512,8 @@ export default {
       },
       payload: getDefaultAxiosPayload(),
       defaultPayload: getDefaultAxiosPayload(),
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      isTargetUserCountExceedLimit: false
     }
   },
   watch: {
@@ -538,7 +540,10 @@ export default {
     }
   },
   methods: {
-    handleExceedingFilterClick() {},
+    handleExceedingFilterClick() {
+      this.isTargetUserCountExceedLimit = !this.isTargetUserCountExceedLimit
+      this.getTableData()
+    },
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.companyResourceId),
@@ -631,7 +636,12 @@ export default {
         .finally(() => this.getTableData())
     },
     getTableData(payload) {
-      const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
+      const _payload = {
+        ...this.payload,
+        ...payload,
+        isClustered: this.isClustered,
+        isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
+      }
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
