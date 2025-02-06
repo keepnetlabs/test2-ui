@@ -94,7 +94,8 @@ export default {
       return `${index}ab-${createRandomCryptStringNumber()}`
     },
     getBadges() {
-      const badges = this.scope.row[this.col.property].filter(Boolean) || []
+      const item = this.scope.row[this.col.property] || []
+      const badges = item.filter(Boolean) || []
       const width = this.scope.column.width
       if (this.checkIsChanged(badges, width)) {
         this.width = width
