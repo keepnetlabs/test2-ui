@@ -64,7 +64,8 @@
           </div>
           <div>
             <div style="font-weight: 600; font-size: 18px; color: #383b41;">
-              8 companies have exceeded their user limits. Use the filter to identify them.
+              {{ limitExceededTargetUserCount }} companies have exceeded their user limits. Use the
+              filter to identify them.
             </div>
             <div style="color: #757575; font-size: 14px;">
               Use the Filter Exceeding Limit button below to filter the table and review these
@@ -222,11 +223,11 @@
           <template #activator="{ on }">
             <VBtn
               v-on="on"
-              :class="[isExceedingLimitFilterDisabled && 'btn-add--disabled']"
               color="#757575"
               text
               plain
               style="order: 1; margin-right: 4px;"
+              :disabled="isExceedingLimitFilterDisabled"
               @click="handleExceedingFilterClick"
             >
               <span class="button-new__text button-new__text--secondary">{{
@@ -513,7 +514,8 @@ export default {
       payload: getDefaultAxiosPayload(),
       defaultPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
-      isTargetUserCountExceedLimit: false
+      isTargetUserCountExceedLimit: false,
+      limitExceededTargetUserCount: 0
     }
   },
   watch: {
@@ -531,17 +533,20 @@ export default {
   },
   computed: {
     getExceedingLimitFilterLabel() {
+      if (this.isTargetUserCountExceedLimit) return 'REMOVE FILTER'
       return 'FILTER EXCEEDING LIMIT'
     },
     getExceedingLimitFilterTooltip() {
       if (this.isExceedingLimitFilterDisabled)
         return 'No companies exceeding their user limits, so the filter is disabled.'
+      if (this.isTargetUserCountExceedLimit) return 'Remove Filter'
       return 'Filter exceeding limit'
     }
   },
   methods: {
     handleExceedingFilterClick() {
       this.isTargetUserCountExceedLimit = !this.isTargetUserCountExceedLimit
+      if (this.isTargetUserCountExceedLimit) this.canRenderAlertbox = false
       this.getTableData()
     },
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
@@ -653,6 +658,16 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
+          if (!this.tableData.length) {
+            this.limitExceededTargetUserCount = 0
+            if (!this.isTargetUserCountExceedLimit) this.isExceedingLimitFilterDisabled = true
+          } else {
+            this.limitExceededTargetUserCount = this.tableData[0].limitExceededTargetUserCount || 0
+            if (this.limitExceededTargetUserCount > 0) this.isExceedingLimitFilterDisabled = false
+            if (this.limitExceededTargetUserCount > 0 && !this.isTargetUserCountExceedLimit) {
+              this.canRenderAlertbox = true
+            }
+          }
         })
         .catch(() => {
           this.tableData = []
