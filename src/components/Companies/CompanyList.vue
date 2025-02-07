@@ -100,7 +100,9 @@
       :axios-payload.sync="payload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-      :manage-column-filter-status-from-parent="{ status: isTargetUserCountExceedLimit }"
+      :manage-column-filter-status-from-parent="
+        isTargetUserCountExceedLimit ? { status: isTargetUserCountExceedLimit } : null
+      "
       active-cluster=""
       @clusterChanged="clusterChanged"
       @delete="handleTableItemDelete"
@@ -188,21 +190,23 @@
         >
           {{ scope.row.companyName }}
         </span>
-        <template v-else-if="scope.column.property === 'numberOfUsers'">
-          <v-tooltip bottom v-if="isNumberOfUsersExceed(scope.row)">
-            <template #activator="{ on }">
+        <template v-else-if="scope.column.property === 'targetUserCount'">
+          <span v-if="isNumberOfUsersExceed(scope.row)">
+            <span>{{ scope.row['targetUserCount'] }}</span>
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <VIcon v-on="on" color="#B6791D" style="margin-top: -2px;" small
+                  >mdi-information</VIcon
+                >
+              </template>
               <span
-                v-on="on"
-                :class="{ 'number-of-users-exceed': isNumberOfUsersExceed(scope.row) }"
-                >{{ ` ${scope.row['numberOfUsers']} ` }}</span
+                >This company exceeded its user limit by
+                {{ exceedNumberOfUsersCount(scope.row) }} users.</span
               >
-            </template>
-            <span>{{
-              `License limit is exceeded. Current target user count is ${scope.row['targetUserCount']}.`
-            }}</span>
-          </v-tooltip>
+            </VTooltip>
+          </span>
           <span v-else>
-            {{ scope.row['numberOfUsers'] }}
+            {{ scope.row['targetUserCount'] }}
           </span>
         </template>
       </template>
@@ -221,19 +225,23 @@
       <template #addUsers>
         <VTooltip bottom>
           <template #activator="{ on }">
-            <VBtn
-              v-on="on"
-              color="#757575"
-              text
-              plain
-              style="order: 1; margin-right: 4px;"
-              :disabled="isExceedingLimitFilterDisabled"
-              @click="handleExceedingFilterClick"
-            >
-              <span class="button-new__text button-new__text--secondary">{{
-                getExceedingLimitFilterLabel
-              }}</span>
-            </VBtn>
+            <div v-on="on">
+              <VBtn
+                color="#757575"
+                text
+                plain
+                :style="{
+                  order: 1,
+                  marginRight: '4px',
+                  pointerEvents: isExceedingLimitFilterDisabled ? 'none' : 'auto'
+                }"
+                @click="handleExceedingFilterClick"
+              >
+                <span class="button-new__text button-new__text--secondary">{{
+                  getExceedingLimitFilterLabel
+                }}</span>
+              </VBtn>
+            </div>
           </template>
           <span>{{ getExceedingLimitFilterTooltip }}</span>
         </VTooltip>
@@ -392,7 +400,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'number',
+            type: 'slot',
             width: 160,
             filterableType: 'number',
             emptyText: 0
@@ -404,7 +412,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'number',
             filterableType: 'text',
             width: 180,
             filterOptionProps: [
@@ -601,6 +609,9 @@ export default {
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
     },
+    exceedNumberOfUsersCount({ numberOfUsers, targetUserCount } = {}) {
+      return Number(targetUserCount) - Number(numberOfUsers)
+    },
     handleChangeIsSettingsOpen(val) {
       if (val) {
         this.isShowExtended = false
@@ -660,10 +671,12 @@ export default {
               : []
           if (!this.tableData.length) {
             this.limitExceededTargetUserCount = 0
+            this.canRenderAlertbox = false
             if (!this.isTargetUserCountExceedLimit) this.isExceedingLimitFilterDisabled = true
           } else {
             this.limitExceededTargetUserCount = this.tableData[0].limitExceededTargetUserCount || 0
-            if (this.limitExceededTargetUserCount > 0) this.isExceedingLimitFilterDisabled = false
+            this.isExceedingLimitFilterDisabled = this.limitExceededTargetUserCount <= 0
+            if (this.limitExceededTargetUserCount <= 0) this.canRenderAlertbox = false
             if (this.limitExceededTargetUserCount > 0 && !this.isTargetUserCountExceedLimit) {
               this.canRenderAlertbox = true
             }
@@ -761,7 +774,8 @@ export default {
           isClustered: this.isClustered,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.payload.filter
+          filter: this.payload.filter,
+          isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
         }
         exportCompanies(payload)
           .then((response) => {
