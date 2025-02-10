@@ -700,9 +700,11 @@ export default {
     },
     setEditData() {
       if (this.editData) {
+        console.log('this.editData', this.editData)
         const preferredLanguage = this.languageItems.find(
           (language) => language.text === this.editData.preferredLanguage
         )
+        console.log('preferredLanguage', preferredLanguage)
         const editedData = { ...this.editData }
         const customFieldProp = 'customFieldValues'
         const customFields = editedData[customFieldProp]
@@ -722,7 +724,7 @@ export default {
           timeZoneId:
             this.getTimeZoneList.find((tz) => tz.text === editedData.timeZone)?.value || null,
           isActive: editedData.status === 'Active',
-          preferredLanguageId: preferredLanguage?.resourceId
+          preferredLanguageId: preferredLanguage?.value
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       }
