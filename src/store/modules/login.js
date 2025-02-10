@@ -41,6 +41,7 @@ const login = {
       }
     },
     SET_COMPANY(state, payload) {
+      console.log('payload', payload)
       state.company = payload
     }
   },
