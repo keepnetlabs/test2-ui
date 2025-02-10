@@ -71,6 +71,19 @@
               id="input--target-user-department"
             />
           </form-group>
+          <FormGroup title="Preferred Language">
+            <k-select
+              v-model="formValues.preferredLanguageId"
+              :items="languageItems"
+              :return-object="false"
+              clearable
+              class="tlp-select"
+              id="input--company-preferred-language"
+              outlined
+              placeholder="Select an option"
+            >
+            </k-select>
+          </FormGroup>
           <FormGroup
             class="mb-6"
             title="Time Zone"
@@ -321,6 +334,9 @@ export default {
     },
     companyLicense: {
       type: Object
+    },
+    languageItems: {
+      type: Array
     }
   },
   directives: {
@@ -341,6 +357,7 @@ export default {
       initialFormValues: null,
       formValues: {
         targetGroupResourceIds: [],
+        preferredLanguageId: this.getCurrentCompany?.preferredLanguageTypeResourceId || '',
         firstName: '',
         lastName: '',
         email: '',
@@ -369,7 +386,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCountryName: 'whitelabel/getCountryName'
+      getCountryName: 'whitelabel/getCountryName',
+      getCurrentCompany: 'login/getCurrentCompany'
     }),
     getDialogBody() {
       return this.companyLicense
@@ -424,6 +442,11 @@ export default {
     }
     this.callForGetTimeZones()
     this.setEditData()
+  },
+  mounted() {
+    if (!this.editData)
+      this.formValues.preferredLanguageId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || ''
   },
   methods: {
     handleCreateGroup() {
@@ -677,6 +700,9 @@ export default {
     },
     setEditData() {
       if (this.editData) {
+        const preferredLanguage = this.languageItems.find(
+          (language) => language.text === this.editData.preferredLanguage
+        )
         const editedData = { ...this.editData }
         const customFieldProp = 'customFieldValues'
         const customFields = editedData[customFieldProp]
@@ -695,7 +721,8 @@ export default {
           ...editedData,
           timeZoneId:
             this.getTimeZoneList.find((tz) => tz.text === editedData.timeZone)?.value || null,
-          isActive: editedData.status === 'Active'
+          isActive: editedData.status === 'Active',
+          preferredLanguageId: preferredLanguage?.resourceId
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       }
