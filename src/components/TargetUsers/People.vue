@@ -583,7 +583,7 @@ export default {
             show: true,
             type: 'text',
             fixed: false,
-            width: 190,
+            width: 200,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'preferredLanguageId'
@@ -747,7 +747,7 @@ export default {
             value: language.resourceId
           })) || []
         this.$set(
-          this.tableOptions.defaultColumns.find((col) => col.property === 'preferredLanguageId'),
+          this.tableOptions.defaultColumns.find((col) => col.property === 'preferredLanguage'),
           'filterableItems',
           this.languageFilterOptions
         )
@@ -932,6 +932,12 @@ export default {
       )
       if (timeZoneIndex !== -1) {
         this.payload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      const preferredLanguageIndex = this.payload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'PreferredLanguage'
+      )
+      if (preferredLanguageIndex !== -1) {
+        this.payload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
       }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
