@@ -118,6 +118,7 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import { getValue } from '@/utils/validations'
 import { mapGetters } from 'vuex'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -243,6 +244,20 @@ export default {
           dbName: 'department'
         },
         {
+          property: 'preferredLanguage',
+          align: 'left',
+          editable: false,
+          label: labels.PreferredLanguage,
+          sortable: true,
+          show: true,
+          type: 'text',
+          fixed: false,
+          width: 200,
+          filterableType: 'select',
+          filterableItems: [],
+          filterableCustomFieldName: 'preferredLanguageId'
+        },
+        {
           property: PROPERTY_STORE.TIME_ZONE,
           align: 'left',
           editable: false,
@@ -326,7 +341,8 @@ export default {
       tableData: [],
       customFields: [],
       selections: [],
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      languageFilterOptions: []
     }
   },
   computed: {
@@ -394,11 +410,26 @@ export default {
   },
   created() {
     this.callForGetTimeZones()
+    this.callForLanguages()
     if (this.resourceId) {
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        this.$set(
+          this.defaultColumns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+      })
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
@@ -429,6 +460,12 @@ export default {
       )
       if (timeZoneIndex !== -1) {
         this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      const preferredLanguageIndex = this.payload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'PreferredLanguage'
+      )
+      if (preferredLanguageIndex !== -1) {
+        this.payload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
       }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
