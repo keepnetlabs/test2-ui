@@ -22,6 +22,7 @@ export const labels = {
   Infographic: 'Infographic',
   DescriptionScreensaverSub: 'Describe the screensaver briefly',
   InfographicSummary: 'Infographic Summary',
+  PreferredLanguage: 'Preferred Language',
   ScheduleName: 'Schedule Name',
   ReplySent: 'Reply Sent',
   ReplyType: 'Reply Type',

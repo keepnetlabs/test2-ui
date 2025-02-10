@@ -33,6 +33,7 @@
       :editData="selectedRow"
       :custom-fields="customFields"
       :company-license="companyLicense"
+      :language-items="languageFilterOptions"
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
     />
@@ -394,7 +395,7 @@ import AlertBox from '@/components//AlertBox'
 import UnverifiedDomainsModal from '@/components/TargetUsers/UnverifiedDomainsModal'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
-
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'People',
   components: {
@@ -425,6 +426,7 @@ export default {
   emits: ['call-for-company-licenses'],
   data() {
     return {
+      languageFilterOptions: [],
       formDetails: null,
       isUserDetailsDrawerOpen: false,
       isUnverifiedDomainsLoading: true,
@@ -573,6 +575,20 @@ export default {
             dbName: 'Department'
           },
           {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: labels.PreferredLanguage,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 190,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'preferredLanguageId'
+          },
+          {
             property: PROPERTY_STORE.TIME_ZONE,
             align: 'left',
             editable: false,
@@ -705,13 +721,6 @@ export default {
       return this.repeatedOffendersCount > 0
     }
   },
-  created() {
-    this.callForFormDetails()
-    this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.callForGetTimeZones()
-    this.callForTargetGroups()
-    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
-  },
   watch: {
     getTimezones: {
       deep: true,
@@ -721,7 +730,29 @@ export default {
       }
     }
   },
+  created() {
+    this.callForLanguages()
+    this.callForFormDetails()
+    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.callForGetTimeZones()
+    this.callForTargetGroups()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
+  },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        this.$set(
+          this.tableOptions.defaultColumns.find((col) => col.property === 'preferredLanguageId'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+      })
+    },
     callForFormDetails() {
       getLeaderboardFormDetails().then((res) => {
         this.formDetails = res?.data?.data || []
@@ -1029,14 +1060,6 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
-      // this.payload.filter.FilterGroups[1].FilterItems = [
-      //   ...this.payload.filter.FilterGroups[1].FilterItems.filter(
-      //     (item) =>
-      //       !this.customFields.some((cf) => {
-      //         return cf.name === item.FieldName
-      //       })
-      //   )
-      // ]
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
