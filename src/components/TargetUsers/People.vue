@@ -575,7 +575,7 @@ export default {
             dbName: 'Department'
           },
           {
-            property: 'preferredLanguageId',
+            property: 'preferredLanguage',
             align: 'left',
             editable: false,
             label: labels.PreferredLanguage,
@@ -585,7 +585,8 @@ export default {
             fixed: false,
             width: 190,
             filterableType: 'select',
-            filterableItems: []
+            filterableItems: [],
+            filterableCustomFieldName: 'preferredLanguageId'
           },
           {
             property: PROPERTY_STORE.TIME_ZONE,
