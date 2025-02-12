@@ -213,7 +213,6 @@
                   placeholder="Enter Entity ID"
                   outlined
                   dense
-                  disabled
                 ></v-text-field>
               </template>
             </input-with-copy-to-clipboard>
