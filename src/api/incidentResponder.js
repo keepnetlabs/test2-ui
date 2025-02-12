@@ -54,3 +54,12 @@ export function reAnalyzeEmail(resourceId = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function confirmationRequiredForEdit(payload) {
+  return Promise.resolve(() => {
+    return {
+      userCount: 100,
+      emailCount: 100
+    }
+  })
+  //return testRequest.post(`/notified-emails/confirmation-required`, payload)
+}

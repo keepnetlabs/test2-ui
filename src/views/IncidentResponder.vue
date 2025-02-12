@@ -53,6 +53,16 @@
         @confirm="confirmFilterByHash"
         @close="closeFilterByHashModal"
       />
+      <ConfirmationRequiredPopup
+        v-if="isShowConfirmationRequired"
+        :status="isShowConfirmationRequired"
+        :payload="confirmationPayload"
+        :email-count="confirmationDialogEmailCount"
+        :user-count="confirmationDialogUserCount"
+        :is-action-button-disabled="confirmationRequiredActionButtonDisabled"
+        @on-close="handleConfirmationRequiredClose"
+        @on-confirm="handleEditAfterConfirmation"
+      />
       <IncidentResponderHeaderCards ref="refIncidentResponderCards" />
       <div
         v-if="getIncidentResponderNotifiedEmailPermission"
@@ -460,6 +470,7 @@
 </template>
 <script>
 import {
+  confirmationRequiredForEdit,
   searchNotifiedMail,
   updateNotifiedEmail,
   updateNotifiedEmailBulk
@@ -503,8 +514,10 @@ import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
+import ConfirmationRequiredPopup from '@/components/IncidentResponder/ConfirmationRequiredPopup.vue'
 export default {
   components: {
+    ConfirmationRequiredPopup,
     ReportedEmailTrends,
     RecentlyReportedIncidents,
     RecentInvestigations,
@@ -534,13 +547,19 @@ export default {
       filterBy: 'MD5',
       hash: ''
     },
+    confirmationPayload: {},
+    isShowConfirmationRequired: false,
+    isExtendedViewSaveButtonDisabled: false,
     isFilterByHashModalVisible: false,
     waitingItemForApiItems: [],
     isShowEmailTemplateModal: false,
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
+    confirmationRequiredActionButtonDisabled: false,
     emailTemplates: [],
     templateTypes: [],
+    confirmationDialogEmailCount: 0,
+    confirmationDialogUserCount: 0,
     mailDetails: {
       name: '',
       resourceId: ''
@@ -1401,6 +1420,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleConfirmationRequiredClose() {
+      this.isExtendedViewSaveButtonDisabled = false
+      this.isShowConfirmationRequired = false
+    },
     handleFilterByHash() {
       if (this.isParentTableHashFilterActive || this.isClusteredTableHashFilterActive) {
         this.clearFilterByHashProps()
@@ -1791,6 +1814,7 @@ export default {
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
+      if (this.isExtendedViewSaveButtonDisabled) return true
       return (
         JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView) &&
         this.selectedTemplateResourceId === this.defaultSelectedTemplateResourceId
@@ -2090,7 +2114,23 @@ export default {
       }
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+      this.confirmationPayload = { selectedRows, excludedResourceIdList, isSelectedAllEver }
       this.isExtendedViewCancelButtonDisabled = true
+      let selectedFilter = this.isShowingClusteredTable
+        ? this.clusteredTableAxios
+        : this.requestBodyReportedEmails.filter
+      confirmationRequiredForEdit(selectedFilter).then((response) => {
+        this.confirmationDialogUserCount = response.confirmationDialogEmailCount
+        this.confirmationDialogEmailCount = response.confirmationDialogUserCount
+        this.isShowConfirmationRequired = true
+      })
+    },
+    handleEditAfterConfirmation({
+      selectedRows = [],
+      excludedResourceIdList = [],
+      isSelectedAllEver = false
+    }) {
+      this.confirmationRequiredActionButtonDisabled = true
       if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
         const payload = {
           resourceIdList: []
@@ -2200,6 +2240,8 @@ export default {
     },
     handleUpdateNotifiedEmailFinally() {
       this.isExtendedViewCancelButtonDisabled = false
+      this.confirmationRequiredActionButtonDisabled = false
+      this.isShowConfirmationRequired = false
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
