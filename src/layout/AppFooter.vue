@@ -32,7 +32,7 @@
         id="btn--dashboard-footer-eula"
         class="footer-item__third--2"
         target="_blank"
-        href="https://keepnetlabs.com/end-user-license-agreement"
+        :href="footerLinks.footerEulaUrl"
         >EULA</a
       >
     </div>
