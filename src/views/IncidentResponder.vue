@@ -1795,7 +1795,7 @@ export default {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.unshift({
         FieldName: fieldName,
         Operator: '=',
-        Value: this.clusteredRow[fieldName]
+        Value: this.clusteredRow[fieldName] || '{none}'
       })
     },
     getClusteredField(field = '') {
@@ -2186,7 +2186,7 @@ export default {
           selectedFilter.filter.FilterGroups[0].FilterItems.push({
             FieldName: cluster,
             Operator: '=',
-            Value: this.clusteredRow[cluster]
+            Value: this.clusteredRow[cluster] || '{none}'
           })
         }
       }
