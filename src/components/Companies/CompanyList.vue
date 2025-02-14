@@ -64,7 +64,7 @@
           </div>
           <div>
             <div style="font-weight: 600; font-size: 18px; color: #383b41;">
-              {{ limitExceededTargetUserCount }} companies have exceeded their user limits. Use the
+              {{ limitExceededCompanyCount }} companies have exceeded their user limits. Use the
               filter to identify them.
             </div>
             <div style="color: #757575; font-size: 14px;">
@@ -523,7 +523,7 @@ export default {
       defaultPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTargetUserCountExceedLimit: false,
-      limitExceededTargetUserCount: 0
+      limitExceededCompanyCount: 0
     }
   },
   watch: {
@@ -661,7 +661,12 @@ export default {
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          const {
+            totalNumberOfRecords,
+            totalNumberOfPages,
+            pageNumber,
+            limitExceededCompanyCount
+          } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -670,14 +675,14 @@ export default {
               ? this.getManipulatedTableData(response.data.data.results)
               : []
           if (!this.tableData.length) {
-            this.limitExceededTargetUserCount = 0
+            this.limitExceededCompanyCount = 0
             this.canRenderAlertbox = false
             if (!this.isTargetUserCountExceedLimit) this.isExceedingLimitFilterDisabled = true
           } else {
-            this.limitExceededTargetUserCount = this.tableData[0].limitExceededTargetUserCount || 0
-            this.isExceedingLimitFilterDisabled = this.limitExceededTargetUserCount <= 0
-            if (this.limitExceededTargetUserCount <= 0) this.canRenderAlertbox = false
-            if (this.limitExceededTargetUserCount > 0 && !this.isTargetUserCountExceedLimit) {
+            this.limitExceededCompanyCount = limitExceededCompanyCount || 0
+            this.isExceedingLimitFilterDisabled = this.limitExceededCompanyCount <= 0
+            if (this.limitExceededCompanyCount <= 0) this.canRenderAlertbox = false
+            if (this.limitExceededCompanyCount > 0 && !this.isTargetUserCountExceedLimit) {
               this.canRenderAlertbox = true
             }
           }
