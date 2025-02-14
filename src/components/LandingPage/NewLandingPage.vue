@@ -202,6 +202,8 @@
                               :offset-y="true"
                               nudge-left="50"
                               bottom
+                              :value="isPageAddMenuOpen[index]"
+                              @input="isPageAddMenuOpen[index] = $event"
                             >
                               <template v-slot:activator="{ on }">
                                 <v-icon
@@ -391,6 +393,7 @@ export default {
         saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
       },
       languageOptions: [],
+      isPageAddMenuOpen: [],
       disabledLabel: null,
       tab: 'page1',
       isSubmitDisabled: false,
@@ -477,6 +480,7 @@ export default {
         this.tab = 'page1'
         this.formValues.landingPages[0].order = 1
       }
+      setTimeout(() => (this.isPageAddMenuOpen[index] = false), 100)
     },
     handleUploadHTML() {
       this.$refs.refHtmlFile.click()

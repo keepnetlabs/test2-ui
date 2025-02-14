@@ -131,7 +131,7 @@ export default {
             property: 'isInvisibleCaptchaEnabled',
             align: 'left',
             editable: false,
-            label: 'Invisible CAPTCHA',
+            label: 'Stop Bot Activity',
             sortable: false,
             hideSort: true,
             show: true,
