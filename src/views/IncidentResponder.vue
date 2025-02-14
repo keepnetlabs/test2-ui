@@ -2128,9 +2128,11 @@ export default {
         isSelectedAllEver
       )
       confirmationRequiredForEdit(payload).then((response) => {
-        console.log('payload', payload)
-        this.confirmationDialogUserCount = response.confirmationDialogEmailCount
-        this.confirmationDialogEmailCount = response.confirmationDialogUserCount
+        const {
+          data: { data = {} }
+        } = response || {}
+        this.confirmationDialogUserCount = data.userCount
+        this.confirmationDialogEmailCount = data.emailCount
         this.isShowConfirmationRequired = true
       })
     },
