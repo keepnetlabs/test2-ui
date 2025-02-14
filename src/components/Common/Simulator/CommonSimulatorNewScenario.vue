@@ -1118,6 +1118,7 @@ export default {
         this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
         return
       }
+      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
       this.handleCloseNewLandingPageTemplateModal()
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
