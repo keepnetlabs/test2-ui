@@ -69,6 +69,7 @@
           :loading="extendedViewLoading"
           :wait-api="waitExtendedViewApi"
           :is-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+          :extended-view-calling-api="extendedViewCallingApi"
           @closeCreateMode="$emit('closeCreateMode')"
           @closeEditPopup="closeEditPopup"
           @handleEdit="handleExtendedViewEdit"
@@ -1370,6 +1371,10 @@ export default {
       type: Function
     },
     isReportWithExam: {
+      type: Boolean,
+      default: false
+    },
+    extendedViewCallingApi: {
       type: Boolean,
       default: false
     }

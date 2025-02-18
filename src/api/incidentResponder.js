@@ -55,11 +55,5 @@ export function reAnalyzeEmail(resourceId = '') {
   })
 }
 export function confirmationRequiredForEdit(payload) {
-  return Promise.resolve(() => {
-    return {
-      userCount: 100,
-      emailCount: 100
-    }
-  })
-  //return testRequest.post(`/notified-emails/confirmation-required`, payload)
+  return testRequest.post(`/notified-emails/bulk-update-email-stats`, payload)
 }

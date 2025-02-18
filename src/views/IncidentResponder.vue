@@ -117,6 +117,7 @@
             :row-actions="clusteredTable.rowActions"
             :extendedViewValue="extendedViewValue"
             :select-event="clusteredTable.selectEvent"
+            :extended-view-calling-api="extendedViewCallingApi"
             :extendedViewDisableChanger="extendedViewDisableChanger"
             :add-button="clusteredTable.addButton"
             @on-filter-by-hash="handleFilterByHash"
@@ -268,6 +269,7 @@
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
             :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+            :extended-view-calling-api="extendedViewCallingApi"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
             :extended-view-options="emails.extendedViewOptions"
@@ -547,6 +549,7 @@ export default {
       filterBy: 'MD5',
       hash: ''
     },
+    extendedViewCallingApi: false,
     confirmationPayload: {},
     isShowConfirmationRequired: false,
     isExtendedViewSaveButtonDisabled: false,
@@ -1792,7 +1795,7 @@ export default {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.unshift({
         FieldName: fieldName,
         Operator: '=',
-        Value: this.clusteredRow[fieldName]
+        Value: this.clusteredRow[fieldName] || '{none}'
       })
     },
     getClusteredField(field = '') {
@@ -2115,13 +2118,21 @@ export default {
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
       this.confirmationPayload = { selectedRows, excludedResourceIdList, isSelectedAllEver }
-      this.isExtendedViewCancelButtonDisabled = true
-      let selectedFilter = this.isShowingClusteredTable
-        ? this.clusteredTableAxios
-        : this.requestBodyReportedEmails.filter
-      confirmationRequiredForEdit(selectedFilter).then((response) => {
-        this.confirmationDialogUserCount = response.confirmationDialogEmailCount
-        this.confirmationDialogEmailCount = response.confirmationDialogUserCount
+      if (!(selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable))) {
+        this.handleEditAfterConfirmation(this.confirmationPayload)
+        return
+      }
+      const payload = this.getEditBulkPayload(
+        selectedRows,
+        excludedResourceIdList,
+        isSelectedAllEver
+      )
+      confirmationRequiredForEdit(payload).then((response) => {
+        const {
+          data: { data = {} }
+        } = response || {}
+        this.confirmationDialogUserCount = data.userCount
+        this.confirmationDialogEmailCount = data.emailCount
         this.isShowConfirmationRequired = true
       })
     },
@@ -2131,74 +2142,14 @@ export default {
       isSelectedAllEver = false
     }) {
       this.confirmationRequiredActionButtonDisabled = true
+      this.isExtendedViewSaveButtonDisabled = true
+      this.extendedViewCallingApi = true
       if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
-        const payload = {
-          resourceIdList: []
-        }
-        const cluster = this.getClusteredField(this.selectedCluster)
-        let selectedFilter = this.isShowingClusteredTable
-          ? this.clusteredTableAxios
-          : this.requestBodyReportedEmails.filter
-        selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
-        if (this.isShowingClusteredTable) {
-          if (
-            !selectedFilter.filter.FilterGroups[0].FilterItems.find(
-              (item) => item.FieldName === cluster
-            )
-          ) {
-            selectedFilter.filter.FilterGroups[0].FilterItems.push({
-              FieldName: cluster,
-              Operator: '=',
-              Value: this.clusteredRow[cluster]
-            })
-          }
-        }
-        if (isSelectedAllEver) {
-          payload['selectAll'] = {
-            filter: selectedFilter,
-            excludedResourceIdList
-          }
-        }
-        const sets = {
-          result: new Set(),
-          status: new Set(),
-          tag: new Set(),
-          note: new Set(),
-          isNotifyUser: new Set(),
-          customMessage: new Set()
-        }
-        selectedRows.forEach((row) => {
-          payload.resourceIdList.push(row.resourceId)
-          if (this.selectedCluster && !this.isShowingClusteredTable) {
-            const item = this.reportedEmailsData.find(
-              (clusteredRow) => clusteredRow.resourceId === row.resourceId
-            )
-            if (item) {
-              payload.resourceIdList = [
-                ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
-              ]
-            }
-          }
-          sets.result.add(row.result)
-          sets.status.add(row.status)
-          const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
-          sets.tag.add(tags)
-          sets.note.add(row.note)
-          sets.isNotifyUser.add(row.isNotifyUser)
-          sets.customMessage.add(row.customMessage)
-        })
-        for (const key of Object.keys(sets)) {
-          if (sets[key].size === 1) {
-            payload[key] = [...sets[key]][0]
-          }
-          if (key === 'isNotifyUser') {
-            payload[key] = this.extendedView.isNotify
-          }
-          if (key === 'customMessage') {
-            payload[key] = this.extendedView.customMessage
-          }
-        }
-        payload.notificationTemplateResourceId = this.selectedTemplateResourceId
+        const payload = this.getEditBulkPayload(
+          selectedRows,
+          excludedResourceIdList,
+          isSelectedAllEver
+        )
         updateNotifiedEmailBulk(payload)
           .then(this.handleUpdateNotifiedEmailResponse)
           .finally(this.handleUpdateNotifiedEmailFinally)
@@ -2218,6 +2169,76 @@ export default {
           .then(this.handleUpdateNotifiedEmailResponse)
           .finally(this.handleUpdateNotifiedEmailFinally)
       }
+    },
+    getEditBulkPayload(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+      const payload = {
+        resourceIdList: []
+      }
+      const cluster = this.getClusteredField(this.selectedCluster)
+      let selectedFilter = this.isShowingClusteredTable
+        ? this.clusteredTableAxios
+        : this.requestBodyReportedEmails.filter
+      selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
+      if (this.isShowingClusteredTable) {
+        if (
+          !selectedFilter.filter.FilterGroups[0].FilterItems.find(
+            (item) => item.FieldName === cluster
+          )
+        ) {
+          selectedFilter.filter.FilterGroups[0].FilterItems.push({
+            FieldName: cluster,
+            Operator: '=',
+            Value: this.clusteredRow[cluster] || '{none}'
+          })
+        }
+      }
+      if (isSelectedAllEver) {
+        payload['selectAll'] = {
+          filter: selectedFilter,
+          excludedResourceIdList
+        }
+      }
+      const sets = {
+        result: new Set(),
+        status: new Set(),
+        tag: new Set(),
+        note: new Set(),
+        isNotifyUser: new Set(),
+        customMessage: new Set()
+      }
+      selectedRows.forEach((row) => {
+        payload.resourceIdList.push(row.resourceId)
+        if (this.selectedCluster && !this.isShowingClusteredTable) {
+          const item = this.reportedEmailsData.find(
+            (clusteredRow) => clusteredRow.resourceId === row.resourceId
+          )
+          if (item) {
+            payload.resourceIdList = [
+              ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
+            ]
+          }
+        }
+        sets.result.add(row.result)
+        sets.status.add(row.status)
+        const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
+        sets.tag.add(tags)
+        sets.note.add(row.note)
+        sets.isNotifyUser.add(row.isNotifyUser)
+        sets.customMessage.add(row.customMessage)
+      })
+      for (const key of Object.keys(sets)) {
+        if (sets[key].size === 1) {
+          payload[key] = [...sets[key]][0]
+        }
+        if (key === 'isNotifyUser') {
+          payload[key] = this.extendedView.isNotify
+        }
+        if (key === 'customMessage') {
+          payload[key] = this.extendedView.customMessage
+        }
+      }
+      payload.notificationTemplateResourceId = this.selectedTemplateResourceId
+      return payload
     },
     irDetailsOnClick(row) {
       window.open(`${window.location.href}/reported-emails/email-details/${row.resourceId}`)
@@ -2241,6 +2262,8 @@ export default {
     handleUpdateNotifiedEmailFinally() {
       this.isExtendedViewCancelButtonDisabled = false
       this.confirmationRequiredActionButtonDisabled = false
+      this.isExtendedViewSaveButtonDisabled = false
+      this.extendedViewCallingApi = false
       this.isShowConfirmationRequired = false
     },
     exportReportedListEmails(

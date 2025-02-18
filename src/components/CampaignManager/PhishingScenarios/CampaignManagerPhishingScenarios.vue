@@ -478,7 +478,7 @@
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Invisible CAPTCHA: </span>
+                          <span class="template-preview__text--title">Stop Bot Activity: </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.isInvisibleCaptchaEnabled
                           }}</span>
