@@ -201,7 +201,9 @@ export default {
       reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
       learningPathEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId'
+        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId',
+      learningPathReminderEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getLearningPathReminderEmailNotificationTemplateTypeResourceId'
     }),
     isSmsNotification() {
       if (this.step === 2 || this.step === 3)
@@ -349,18 +351,18 @@ export default {
     },
     callForFormDetails() {
       //get reminder email
-      getDefaultEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then(
-        (response) => {
-          const {
-            data: { data }
-          } = response
-          this.reminderData = {
-            createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template.template,
-            name: data.template.name || 'Default Reminder Email'
-          }
+      getDefaultEmailTemplate(
+        this.learningPathReminderEmailNotificationTemplateTypeResourceId
+      ).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.reminderData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template.template,
+          name: data.template.name || 'Default Reminder Email'
         }
-      )
+      })
       //get certificate email
       getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then(
         (response) => {
