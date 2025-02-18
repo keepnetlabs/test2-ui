@@ -502,7 +502,8 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone',
       timeZones: 'common/getTimezones',
-      timezoneFormat: 'auth/getTimezoneFormat'
+      timezoneFormat: 'auth/getTimezoneFormat',
+      getCurrentCompany: 'login/getCurrentCompany'
     }),
     getSaveText() {
       if (this.formValues.scheduleType === '1') {
@@ -683,8 +684,7 @@ export default {
       immediate: true,
       handler(val) {
         if (val) {
-          this.selectedTimeZoneText =
-            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+          //this.selectedTimeZoneText = this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
           getTimeByTimeZone(val).then((res) => {
             if (res?.data?.data) {
               this.formValues.scheduleDate = res.data.data
@@ -692,6 +692,16 @@ export default {
           })
         }
         this.checkTimezoneValid()
+      }
+    },
+    timeZones: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.selectedTimeZoneText = val.timeZoneList?.find(
+            (item) => item.id === this.getCurrentCompany?.timeZoneId
+          )?.displayName
+        }
       }
     }
   },
