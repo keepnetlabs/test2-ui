@@ -32,7 +32,7 @@
         @click="submitWithDownload"
       >
         <v-icon left>mdi-download</v-icon>
-        {{ labels.ManageAndDownload }}
+        {{ labels.SaveAndDownload }}
       </v-btn>
       <div
         class="add-in-settings__link"
