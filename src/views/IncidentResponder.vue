@@ -53,6 +53,16 @@
         @confirm="confirmFilterByHash"
         @close="closeFilterByHashModal"
       />
+      <ConfirmationRequiredPopup
+        v-if="isShowConfirmationRequired"
+        :status="isShowConfirmationRequired"
+        :payload="confirmationPayload"
+        :email-count="confirmationDialogEmailCount"
+        :user-count="confirmationDialogUserCount"
+        :is-action-button-disabled="confirmationRequiredActionButtonDisabled"
+        @on-close="handleConfirmationRequiredClose"
+        @on-confirm="handleEditAfterConfirmation"
+      />
       <IncidentResponderHeaderCards ref="refIncidentResponderCards" />
       <div
         v-if="getIncidentResponderNotifiedEmailPermission"
@@ -107,6 +117,7 @@
             :row-actions="clusteredTable.rowActions"
             :extendedViewValue="extendedViewValue"
             :select-event="clusteredTable.selectEvent"
+            :extended-view-calling-api="extendedViewCallingApi"
             :extendedViewDisableChanger="extendedViewDisableChanger"
             :add-button="clusteredTable.addButton"
             @on-filter-by-hash="handleFilterByHash"
@@ -258,6 +269,7 @@
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
             :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+            :extended-view-calling-api="extendedViewCallingApi"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
             :extended-view-options="emails.extendedViewOptions"
@@ -460,6 +472,7 @@
 </template>
 <script>
 import {
+  confirmationRequiredForEdit,
   searchNotifiedMail,
   updateNotifiedEmail,
   updateNotifiedEmailBulk
@@ -503,8 +516,10 @@ import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
+import ConfirmationRequiredPopup from '@/components/IncidentResponder/ConfirmationRequiredPopup.vue'
 export default {
   components: {
+    ConfirmationRequiredPopup,
     ReportedEmailTrends,
     RecentlyReportedIncidents,
     RecentInvestigations,
@@ -534,13 +549,20 @@ export default {
       filterBy: 'MD5',
       hash: ''
     },
+    extendedViewCallingApi: false,
+    confirmationPayload: {},
+    isShowConfirmationRequired: false,
+    isExtendedViewSaveButtonDisabled: false,
     isFilterByHashModalVisible: false,
     waitingItemForApiItems: [],
     isShowEmailTemplateModal: false,
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
+    confirmationRequiredActionButtonDisabled: false,
     emailTemplates: [],
     templateTypes: [],
+    confirmationDialogEmailCount: 0,
+    confirmationDialogUserCount: 0,
     mailDetails: {
       name: '',
       resourceId: ''
@@ -1401,6 +1423,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleConfirmationRequiredClose() {
+      this.isExtendedViewSaveButtonDisabled = false
+      this.isShowConfirmationRequired = false
+    },
     handleFilterByHash() {
       if (this.isParentTableHashFilterActive || this.isClusteredTableHashFilterActive) {
         this.clearFilterByHashProps()
@@ -1791,6 +1817,7 @@ export default {
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
+      if (this.isExtendedViewSaveButtonDisabled) return true
       return (
         JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView) &&
         this.selectedTemplateResourceId === this.defaultSelectedTemplateResourceId
@@ -2090,75 +2117,39 @@ export default {
       }
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
-      this.isExtendedViewCancelButtonDisabled = true
+      this.confirmationPayload = { selectedRows, excludedResourceIdList, isSelectedAllEver }
+      if (!(selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable))) {
+        this.handleEditAfterConfirmation(this.confirmationPayload)
+        return
+      }
+      const payload = this.getEditBulkPayload(
+        selectedRows,
+        excludedResourceIdList,
+        isSelectedAllEver
+      )
+      confirmationRequiredForEdit(payload).then((response) => {
+        const {
+          data: { data = {} }
+        } = response || {}
+        this.confirmationDialogUserCount = data.userCount
+        this.confirmationDialogEmailCount = data.emailCount
+        this.isShowConfirmationRequired = true
+      })
+    },
+    handleEditAfterConfirmation({
+      selectedRows = [],
+      excludedResourceIdList = [],
+      isSelectedAllEver = false
+    }) {
+      this.confirmationRequiredActionButtonDisabled = true
+      this.isExtendedViewSaveButtonDisabled = true
+      this.extendedViewCallingApi = true
       if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
-        const payload = {
-          resourceIdList: []
-        }
-        const cluster = this.getClusteredField(this.selectedCluster)
-        let selectedFilter = this.isShowingClusteredTable
-          ? this.clusteredTableAxios
-          : this.requestBodyReportedEmails.filter
-        selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
-        if (this.isShowingClusteredTable) {
-          if (
-            !selectedFilter.filter.FilterGroups[0].FilterItems.find(
-              (item) => item.FieldName === cluster
-            )
-          ) {
-            selectedFilter.filter.FilterGroups[0].FilterItems.push({
-              FieldName: cluster,
-              Operator: '=',
-              Value: this.clusteredRow[cluster] || '{none}'
-            })
-          }
-        }
-        if (isSelectedAllEver) {
-          payload['selectAll'] = {
-            filter: selectedFilter,
-            excludedResourceIdList
-          }
-        }
-        const sets = {
-          result: new Set(),
-          status: new Set(),
-          tag: new Set(),
-          note: new Set(),
-          isNotifyUser: new Set(),
-          customMessage: new Set()
-        }
-        selectedRows.forEach((row) => {
-          payload.resourceIdList.push(row.resourceId)
-          if (this.selectedCluster && !this.isShowingClusteredTable) {
-            const item = this.reportedEmailsData.find(
-              (clusteredRow) => clusteredRow.resourceId === row.resourceId
-            )
-            if (item) {
-              payload.resourceIdList = [
-                ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
-              ]
-            }
-          }
-          sets.result.add(row.result)
-          sets.status.add(row.status)
-          const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
-          sets.tag.add(tags)
-          sets.note.add(row.note)
-          sets.isNotifyUser.add(row.isNotifyUser)
-          sets.customMessage.add(row.customMessage)
-        })
-        for (const key of Object.keys(sets)) {
-          if (sets[key].size === 1) {
-            payload[key] = [...sets[key]][0]
-          }
-          if (key === 'isNotifyUser') {
-            payload[key] = this.extendedView.isNotify
-          }
-          if (key === 'customMessage') {
-            payload[key] = this.extendedView.customMessage
-          }
-        }
-        payload.notificationTemplateResourceId = this.selectedTemplateResourceId
+        const payload = this.getEditBulkPayload(
+          selectedRows,
+          excludedResourceIdList,
+          isSelectedAllEver
+        )
         updateNotifiedEmailBulk(payload)
           .then(this.handleUpdateNotifiedEmailResponse)
           .finally(this.handleUpdateNotifiedEmailFinally)
@@ -2178,6 +2169,76 @@ export default {
           .then(this.handleUpdateNotifiedEmailResponse)
           .finally(this.handleUpdateNotifiedEmailFinally)
       }
+    },
+    getEditBulkPayload(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+      const payload = {
+        resourceIdList: []
+      }
+      const cluster = this.getClusteredField(this.selectedCluster)
+      let selectedFilter = this.isShowingClusteredTable
+        ? this.clusteredTableAxios
+        : this.requestBodyReportedEmails.filter
+      selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
+      if (this.isShowingClusteredTable) {
+        if (
+          !selectedFilter.filter.FilterGroups[0].FilterItems.find(
+            (item) => item.FieldName === cluster
+          )
+        ) {
+          selectedFilter.filter.FilterGroups[0].FilterItems.push({
+            FieldName: cluster,
+            Operator: '=',
+            Value: this.clusteredRow[cluster] || '{none}'
+          })
+        }
+      }
+      if (isSelectedAllEver) {
+        payload['selectAll'] = {
+          filter: selectedFilter,
+          excludedResourceIdList
+        }
+      }
+      const sets = {
+        result: new Set(),
+        status: new Set(),
+        tag: new Set(),
+        note: new Set(),
+        isNotifyUser: new Set(),
+        customMessage: new Set()
+      }
+      selectedRows.forEach((row) => {
+        payload.resourceIdList.push(row.resourceId)
+        if (this.selectedCluster && !this.isShowingClusteredTable) {
+          const item = this.reportedEmailsData.find(
+            (clusteredRow) => clusteredRow.resourceId === row.resourceId
+          )
+          if (item) {
+            payload.resourceIdList = [
+              ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
+            ]
+          }
+        }
+        sets.result.add(row.result)
+        sets.status.add(row.status)
+        const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
+        sets.tag.add(tags)
+        sets.note.add(row.note)
+        sets.isNotifyUser.add(row.isNotifyUser)
+        sets.customMessage.add(row.customMessage)
+      })
+      for (const key of Object.keys(sets)) {
+        if (sets[key].size === 1) {
+          payload[key] = [...sets[key]][0]
+        }
+        if (key === 'isNotifyUser') {
+          payload[key] = this.extendedView.isNotify
+        }
+        if (key === 'customMessage') {
+          payload[key] = this.extendedView.customMessage
+        }
+      }
+      payload.notificationTemplateResourceId = this.selectedTemplateResourceId
+      return payload
     },
     irDetailsOnClick(row) {
       window.open(`${window.location.href}/reported-emails/email-details/${row.resourceId}`)
@@ -2200,6 +2261,10 @@ export default {
     },
     handleUpdateNotifiedEmailFinally() {
       this.isExtendedViewCancelButtonDisabled = false
+      this.confirmationRequiredActionButtonDisabled = false
+      this.isExtendedViewSaveButtonDisabled = false
+      this.extendedViewCallingApi = false
+      this.isShowConfirmationRequired = false
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
