@@ -461,11 +461,11 @@ export default {
       if (timeZoneIndex !== -1) {
         this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
       }
-      const preferredLanguageIndex = this.payload.filter.FilterGroups[1].FilterItems.findIndex(
+      const preferredLanguageIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
         (item) => item.FieldName === 'PreferredLanguage'
       )
       if (preferredLanguageIndex !== -1) {
-        this.payload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
       }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
