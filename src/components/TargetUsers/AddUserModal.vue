@@ -699,7 +699,6 @@ export default {
         .finally(() => (this.saveDisable = false))
     },
     setEditData() {
-      console.log('languageItems', this.languageItems)
       if (this.editData) {
         let preferredLanguage = ''
         if (this.languageItems) {
