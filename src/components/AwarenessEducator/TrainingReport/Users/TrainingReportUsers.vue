@@ -288,6 +288,18 @@ export default {
           ]
         : []),
       {
+        property: 'firstCompletionDate',
+        align: 'left',
+        editable: false,
+        label: 'First Completion',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'date'
+      },
+      {
         property: 'lastInteractionDate',
         align: 'left',
         editable: false,

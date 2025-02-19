@@ -164,6 +164,7 @@ export default {
             fixed: 'right',
             sortable: true,
             show: true,
+            minWidth: 200,
             type: 'text',
             filterableType: 'date'
           }
