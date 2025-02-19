@@ -699,10 +699,14 @@ export default {
         .finally(() => (this.saveDisable = false))
     },
     setEditData() {
+      console.log('languageItems', this.languageItems)
       if (this.editData) {
-        const preferredLanguage = this.languageItems.find(
-          (language) => language.text === this.editData.preferredLanguage
-        )
+        let preferredLanguage = ''
+        if (this.languageItems) {
+          preferredLanguage = this.languageItems.find(
+            (language) => language.text === this.editData.preferredLanguage
+          )
+        }
         const editedData = { ...this.editData }
         const customFieldProp = 'customFieldValues'
         const customFields = editedData[customFieldProp]
