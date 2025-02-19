@@ -700,9 +700,12 @@ export default {
     },
     setEditData() {
       if (this.editData) {
-        const preferredLanguage = this.languageItems.find(
-          (language) => language.text === this.editData.preferredLanguage
-        )
+        let preferredLanguage = ''
+        if (this.languageItems) {
+          preferredLanguage = this.languageItems.find(
+            (language) => language.text === this.editData.preferredLanguage
+          )
+        }
         const editedData = { ...this.editData }
         const customFieldProp = 'customFieldValues'
         const customFields = editedData[customFieldProp]
