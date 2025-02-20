@@ -18,7 +18,7 @@
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
-    :axios-payload.sync="filterPayload"
+    :axios-payload.sync="axiosPayload"
     :count-row="tableOptions.countRow"
     :cell-padding="32"
     :showRefreshButton="false"
@@ -47,7 +47,7 @@ export default {
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
-    filterPayload: {
+    axiosPayload: {
       type: Object
     }
   },
@@ -141,11 +141,10 @@ export default {
     }
   },
   created() {
-    this.serverSideProps.pageSize = 5
-    if (!!this.filterPayload) this.callForData()
+    if (!!this.axiosPayload) this.callForData()
   },
   watch: {
-    filterPayload: {
+    axiosPayload: {
       deep: true,
       handler(val) {
         if (val) this.callForData()
@@ -155,7 +154,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchScenarioInfo(this.filterPayload)
+      searchScenarioInfo(this.axiosPayload)
         .then((response) => {
           const {
             data: {
