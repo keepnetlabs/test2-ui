@@ -50,6 +50,7 @@ const {
   WHITE_LABEL_PERMISSIONS,
   PROXY_SETTINGS_PERMISSIONS,
   SAML_INTEGRATION_PERMISSIONS,
+  GOOGLE_USER_PROVISION_PERMISSIONS,
   SCIM_SETTINGS_PERMISSIONS,
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
@@ -137,6 +138,7 @@ const defaultState = {
   whiteLabelingPermissions: WHITE_LABEL_PERMISSIONS,
   proxySettingsPermissions: PROXY_SETTINGS_PERMISSIONS,
   samlIntegrationPermissions: SAML_INTEGRATION_PERMISSIONS,
+  googleUserProvisionPermissions: GOOGLE_USER_PROVISION_PERMISSIONS,
   scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
@@ -1133,6 +1135,9 @@ const store = {
     getSAMLIntegrationExportPermissions(state) {
       return state?.samlIntegrationPermissions?.EXPORT?.hasPermission
     },
+    getGoogleUserProvisionGetPermissions(state) {
+      return state?.googleUserProvisionPermissions?.GET?.hasPermission
+    },
     getSCIMSettingsSearchPermissions(state) {
       return state?.scimSettingsPermissions?.SEARCH?.hasPermission
     },
@@ -1614,6 +1619,7 @@ const store = {
         'whiteLabelingPermissions',
         'proxySettingsPermissions',
         'samlIntegrationPermissions',
+        'googleUserProvisionPermissions',
         'scimSettingsPermissions',
         'siemIntegrationPermissions',
         'systemUsersPermissions',
