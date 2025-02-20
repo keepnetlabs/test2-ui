@@ -1094,8 +1094,9 @@ export default {
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdEmailTemplateResourceId = createdResourceId
-      document.querySelector('.k-navigation-drawer').style.right = '-100%'
-      if (forceUpdate)
+      if (document.querySelector('.k-navigation-drawer'))
+        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
         this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
           this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
         })
