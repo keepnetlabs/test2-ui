@@ -57,7 +57,7 @@
           <FormGroup
             title="2. Select Sync Source"
             sub-title="Specify where to search for users to sync"
-            class="mb-6"
+            class="mb-4"
             :style="{
               opacity: isSynced ? '56%' : '100%',
               pointerEvents: isSynced ? 'none' : 'all'
@@ -80,7 +80,7 @@
           <FormGroup
             :title="getSelectGroupsTitle"
             :sub-title="getSelectGroupsSubTitle"
-            class="mb-6"
+            class="mb-2"
             :style="{
               opacity: isSynced ? '56%' : '100%',
               pointerEvents: isSynced ? 'none' : 'all'
@@ -600,7 +600,7 @@ export default {
             this.formValues.provisioningConfig.sync.details = this.formValues.provisioningConfig.sync.details[0]
             this.targetGroupPayload.selectTargetUserResourceIds = this.formValues.provisioningConfig.sync.details
             this.$nextTick(() => {
-              this.$refs.inputTargetGroup.callForTargetGroups()
+              if (this.$refs.inputTargetGroup) this.$refs.inputTargetGroup.callForTargetGroups()
             })
           }
         })
