@@ -71,7 +71,7 @@ export default {
       this.tab = 'templates'
       this.$nextTick(() => {
         if (this.$refs?.refTemplates) {
-          this.$refs?.refTemplates.changeNewEmailTemplateModalStatus(true, false)
+          this.$refs?.refTemplates?.changeNewEmailTemplateModalStatus(true, false)
         }
       })
     },
@@ -79,7 +79,7 @@ export default {
       this.tab = 'landingPage'
       this.$nextTick(() => {
         if (this.$refs?.refLandingPageList) {
-          this.$refs?.refLandingPageList.changeNewEmailTemplateModalStatus(true, false)
+          this.$refs?.refLandingPageList?.changeNewEmailTemplateModalStatus(true, false)
         }
       })
     }
@@ -100,7 +100,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refTemplates, refLandingPageList } = this.$refs
-
     if (refScenarios && refScenarios.modalStatus) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
@@ -117,7 +116,8 @@ export default {
       refTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
     } else if (refTemplates && refTemplates.modalStatus) {
-      refTemplates.checkIfCanCloseNewEmailTemplate()
+      if (typeof refTemplates.checkIfCanCloseNewEmailTemplate === 'function')
+        refTemplates.checkIfCanCloseNewEmailTemplate()
       next(false)
     } else if (
       refLandingPageList &&

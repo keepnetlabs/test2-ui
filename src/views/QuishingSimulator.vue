@@ -85,7 +85,8 @@ export default {
       refEmailTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
     } else if (refEmailTemplates && refEmailTemplates.isShowNewEmailTemplateModal) {
-      refEmailTemplates.checkIfCanCloseNewEmailTemplate()
+      if (typeof refEmailTemplates.checkIfCanCloseNewEmailTemplate === 'function')
+        refEmailTemplates.checkIfCanCloseNewEmailTemplate()
       next(false)
     } else if (
       refLandingPageList &&
