@@ -1124,8 +1124,9 @@ export default {
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
-      document.querySelector('.k-navigation-drawer').style.right = '-100%'
-      if (forceUpdate)
+      if (document.querySelector('.k-navigation-drawer'))
+        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)
           .then(() => {

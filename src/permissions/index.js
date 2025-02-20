@@ -2100,6 +2100,13 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  GOOGLE_USER_PROVISION_PERMISSIONS: {
+    GET: {
+      url: `google-user-provisioning`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
   SCIM_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SCIM.ROOT_URL}`,

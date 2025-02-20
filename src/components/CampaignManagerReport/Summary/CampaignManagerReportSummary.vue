@@ -240,7 +240,7 @@ export default {
         categoryDistributionType: 'Manually',
         trackingReplyInfo: ''
       }
-      const { smartGroupInfo } = this.campaignSummary
+      const { smartGroupInfo } = this?.campaignSummary || {}
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)

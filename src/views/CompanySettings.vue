@@ -169,6 +169,7 @@ export default {
         'permissions/getNotificationTemplatesSearchPermissions',
       getRestApiSearchPermissions: 'permissions/getRestApiSearchPermissions',
       getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
+      getGoogleUserProvisionGetPermissions: 'permissions/getGoogleUserProvisionGetPermissions',
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
@@ -197,7 +198,7 @@ export default {
         name: 'notification-template'
       },
       {
-        permission: true,
+        permission: this.getGoogleUserProvisionGetPermissions,
         name: 'google-user-provisioning'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },

@@ -292,7 +292,7 @@ export default {
       const templateKey = this.isQuishingTypeIndividualPrintOut
         ? 'quishingTemplate'
         : 'emailTemplate'
-      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId.toString() === '3'
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto?.methodTypeId?.toString() === '3'
       let template = phishingScenarioPreviewDto?.[templateKey]?.template || ''
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)

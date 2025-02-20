@@ -249,20 +249,26 @@ export default {
   },
   created() {
     this.callForData()
-    document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
-    document.querySelector('.user-wrapper').style.background = 'transparent'
-    document.querySelector('.user-name-dropdown').style.background = 'transparent'
-    document.querySelector('html').style.overflowY = 'hidden'
+    if (document.querySelector('.page-nav__fixed-content'))
+      document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
+    if (document.querySelector('.user-wrapper'))
+      document.querySelector('.user-wrapper').style.background = 'transparent'
+    if (document.querySelector('.user-name-dropdown'))
+      document.querySelector('.user-name-dropdown').style.background = 'transparent'
+    if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'hidden'
     setTimeout(() => {
       this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
     }, 100)
   },
   beforeDestroy() {
     setTimeout(() => {
-      document.querySelector('.page-nav__fixed-content').style.background = ''
-      document.querySelector('.user-wrapper').style.background = ''
-      document.querySelector('.user-name-dropdown').style.background = ''
-      document.querySelector('html').style.overflowY = 'auto'
+      if (document.querySelector('.page-nav__fixed-content'))
+        document.querySelector('.page-nav__fixed-content').style.background = ''
+      if (document.querySelector('.user-wrapper'))
+        document.querySelector('.user-wrapper').style.background = ''
+      if (document.querySelector('.user-name-dropdown'))
+        document.querySelector('.user-name-dropdown').style.background = ''
+      if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'auto'
     }, 250)
   },
   methods: {

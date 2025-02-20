@@ -25,10 +25,17 @@
         <p class="mb-0 ml-8">
           &bull; A3: Bot activity that happened in the same second that matched other rules.
         </p>
-        <p class="mb-0 ml-8">
-          &bull; A4: Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
-          user was still redirected to the phishing page.
-        </p>
+        <div class="mb-0 ml-8">
+          &bull; A4: Stop Bot Activity Challenge
+          <p class="mb-0 ml-4">
+            &bull; A4.1 Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
+            user was still redirected to the phishing page.
+          </p>
+          <p class="mb-0 ml-4">
+            &bull; A4.2 A real browser should pass challenges, but this browser did not load the
+            challenge.
+          </p>
+        </div>
       </div>
     </div>
   </div>

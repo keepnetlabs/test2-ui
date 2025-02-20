@@ -128,7 +128,7 @@
     </div>
     <CampaignManagerSummaryScenarioInfoTable
       v-if="isDistributionNotManual"
-      :filterPayload="getScenarioInfoTableFilterPayload"
+      :axios-payload="getScenarioInfoTableFilterPayload"
     />
     <ElTabs
       v-if="phishingScenarios.length"
