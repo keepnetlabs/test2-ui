@@ -2087,7 +2087,8 @@ export default {
       }
     },
     changeFirstColumnWidth(width = 200) {
-      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = width
+      if (this?.$refs?.refReportedEmails?.$refs?.elTableRef)
+        this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = width
     },
     matchingPopupClick(match) {
       this.selectedMatch = match

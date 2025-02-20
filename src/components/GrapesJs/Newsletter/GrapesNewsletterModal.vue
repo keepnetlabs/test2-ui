@@ -307,12 +307,17 @@ export default {
           obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img['previewLink']
           return obj
         })
-        assetManager.add(assets)
+        if (assetManager && typeof assetManager.add === 'function') assetManager.add(assets)
         this.renderAssetsToAssetsManager(data)
       })
     },
     renderAssetsToAssetsManager(data = []) {
-      this.editor.AssetManager.render(data)
+      if (
+        this.editor &&
+        this.editor.AssetManager &&
+        typeof this.editor.AssetManager.render === 'function'
+      )
+        this.editor.AssetManager.render(data)
     },
     destroyEditor() {
       this.editor.destroy()
