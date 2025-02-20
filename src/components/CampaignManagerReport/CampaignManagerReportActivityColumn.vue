@@ -59,7 +59,10 @@ export default {
         return 'Bot Activity Rules: A1'
       }
       if (this?.scope?.row?.sandBoxType >= 16) {
-        return 'Bot Activity Rules: A4'
+        return 'Bot Activity Rules: A4.1'
+      }
+      if (this?.scope?.row?.sandBoxType >= 32) {
+        return 'Bot Activity Rules: A4.2'
       }
       if (this?.scope?.row?.sandBoxType >= 8) {
         return 'Bot Activity Rules: A3'
