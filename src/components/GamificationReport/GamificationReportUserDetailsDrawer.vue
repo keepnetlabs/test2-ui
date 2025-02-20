@@ -731,16 +731,22 @@ export default {
     this.callForTimeline()
     this.callForPerformanceRates()
     this.callForGetTimeZones()
-    document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
-    document.querySelector('.user-wrapper').style.background = 'transparent'
-    document.querySelector('.user-name-dropdown').style.background = 'transparent'
-    document.querySelector('html').style.overflowY = 'hidden'
+    if (document.querySelector('.page-nav__fixed-content'))
+      document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
+    if (document.querySelector('.user-wrapper'))
+      document.querySelector('.user-wrapper').style.background = 'transparent'
+    if (document.querySelector('.user-name-dropdown'))
+      document.querySelector('.user-name-dropdown').style.background = 'transparent'
+    if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'hidden'
   },
   beforeDestroy() {
-    document.querySelector('.page-nav__fixed-content').style.background = ''
-    document.querySelector('.user-wrapper').style.background = ''
-    document.querySelector('.user-name-dropdown').style.background = ''
-    document.querySelector('html').style.overflowY = 'auto'
+    if (document.querySelector('.page-nav__fixed-content'))
+      document.querySelector('.page-nav__fixed-content').style.background = ''
+    if (document.querySelector('.user-wrapper'))
+      document.querySelector('.user-wrapper').style.background = ''
+    if (document.querySelector('.user-name-dropdown'))
+      document.querySelector('.user-name-dropdown').style.background = ''
+    if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'auto'
   },
   methods: {
     callForTimeline(isAppend = false) {
