@@ -569,7 +569,7 @@ export default {
       })
     },
     setActiveScenario(phishingScenarioPreviewDto = {}) {
-      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId === 3
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto?.methodTypeId === 3
       this.emailTemplate = phishingScenarioPreviewDto?.emailTemplate?.template || ''
       this.emailTemplateParams = {
         name: phishingScenarioPreviewDto?.emailTemplate?.name || '',
