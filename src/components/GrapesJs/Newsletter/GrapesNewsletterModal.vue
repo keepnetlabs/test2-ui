@@ -120,20 +120,32 @@ export default {
         if (selected && selected.is('link')) {
           document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
           setTimeout(() => {
-            document
-              .querySelector(
+            if (
+              document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
               )
-              ?.addEventListener('change', () => {
-                this.setMergeTextNames()
-              })
-            document
-              .querySelector(
+            ) {
+              document
+                .querySelector(
+                  '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+                )
+                ?.addEventListener('change', () => {
+                  this.setMergeTextNames()
+                })
+            }
+            if (
+              document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
-              ?.addEventListener('change', () => {
-                this.setMergeTextNames()
-              })
+            ) {
+              document
+                .querySelector(
+                  '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+                )
+                ?.addEventListener('change', () => {
+                  this.setMergeTextNames()
+                })
+            }
             if (selected.getTrait('href').props().value === '') {
               const el = document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
@@ -227,14 +239,16 @@ export default {
         attributes: { title: 'Preview' },
         active: false
       })
-      document.querySelector('span[title="Preview"]').addEventListener('click', () => {
-        const win = window.open('', '_blank')
-        win.document.title = 'Mail Preview'
-        win.document.body.innerHTML = this.getGrapesEditorContent().replace(
-          /{COMPANYLOGO}/g,
-          this?.$store?.state?.whitelabel.mainLogoUrl || ''
-        )
-      })
+      if (document.querySelector('span[title="Preview"]')) {
+        document.querySelector('span[title="Preview"]').addEventListener('click', () => {
+          const win = window.open('', '_blank')
+          win.document.title = 'Mail Preview'
+          win.document.body.innerHTML = this.getGrapesEditorContent().replace(
+            /{COMPANYLOGO}/g,
+            this?.$store?.state?.whitelabel.mainLogoUrl || ''
+          )
+        })
+      }
       pn.getButton('options', 'sw-visibility').set('active', 0)
     },
     addCustomCSS() {
@@ -955,58 +969,61 @@ export default {
         }
         this.addCustomProperties()
         this.addFonts()
-        document.querySelector('.fa-code').addEventListener('click', () => {
-          const editor = this.editor
-          const html = editor.runCommand('get-html-juiced')
-          let md = editor.Modal
-          // Init code viewer if not yet instantiated
-          let codeViewer = editor.CodeManager.getViewer('CodeMirror')
-          let viewer
-          let container = document.createElement('div')
-          let btnImp = document.createElement('button')
-          let btnCopyToClipboard = document.createElement('button')
-          // Init import button
-          btnImp.innerHTML = 'Import'
-          btnImp.type = 'button'
-          btnCopyToClipboard.innerHTML = 'Copy to clipboard'
-          btnImp.className = 'gjs-btn-prim gjs-btn-import mt-2'
-          btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import mt-2'
-          btnImp.onclick = () => {
-            editor.DomComponents.getWrapper().set('content', '')
-            const code = codeViewer.editor.getValue()
-            const callback = (importedCode = code) => {
-              const doc = new DOMParser().parseFromString(importedCode, 'text/html')
-              editor.setComponents(doc.children[0].outerHTML)
-              editor.getWrapper().setStyle(doc.body.style.cssText)
-              editor.Modal.close()
+        if (document.querySelector('.fa-code')) {
+          document.querySelector('.fa-code').addEventListener('click', () => {
+            const editor = this.editor
+            const html = editor.runCommand('get-html-juiced')
+            let md = editor.Modal
+            // Init code viewer if not yet instantiated
+            let codeViewer = editor.CodeManager.getViewer('CodeMirror')
+            let viewer
+            let container = document.createElement('div')
+            let btnImp = document.createElement('button')
+            let btnCopyToClipboard = document.createElement('button')
+            // Init import button
+            btnImp.innerHTML = 'Import'
+            btnImp.type = 'button'
+            btnCopyToClipboard.innerHTML = 'Copy to clipboard'
+            btnImp.className = 'gjs-btn-prim gjs-btn-import mt-2'
+            btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import mt-2'
+            btnImp.onclick = () => {
+              editor.DomComponents.getWrapper().set('content', '')
+              const code = codeViewer.editor.getValue()
+              const callback = (importedCode = code) => {
+                const doc = new DOMParser().parseFromString(importedCode, 'text/html')
+                editor.setComponents(doc.children[0].outerHTML)
+                editor.getWrapper().setStyle(doc.body.style.cssText)
+                editor.Modal.close()
+              }
+              minifyHTML(code)
+                .then((response) => {
+                  callback(response?.data?.data?.htmlContent || '')
+                })
+                .catch(() => callback(code))
             }
-            minifyHTML(code)
-              .then((response) => {
-                callback(response?.data?.data?.htmlContent || '')
-              })
-              .catch(() => callback(code))
-          }
-          btnCopyToClipboard.type = 'button'
-          btnCopyToClipboard.onclick = () => {
-            copyToClipboard(codeViewer.editor.getValue())
-          }
-          codeViewer.set({
-            codeName: 'htmlmixed',
-            readOnly: 0,
-            theme: 'hopscotch'
+            btnCopyToClipboard.type = 'button'
+            btnCopyToClipboard.onclick = () => {
+              copyToClipboard(codeViewer.editor.getValue())
+            }
+            codeViewer.set({
+              codeName: 'htmlmixed',
+              readOnly: 0,
+              theme: 'hopscotch'
+            })
+            let txtarea = document.createElement('textarea')
+            container.appendChild(txtarea)
+            container.appendChild(btnImp)
+            container.appendChild(btnCopyToClipboard)
+            codeViewer.init(txtarea)
+            viewer = codeViewer.editor
+            viewer.setOption('lineWrapping', 1)
+            md.setContent('')
+            md.setContent(container)
+            codeViewer.setContent(html)
+            viewer.refresh()
           })
-          let txtarea = document.createElement('textarea')
-          container.appendChild(txtarea)
-          container.appendChild(btnImp)
-          container.appendChild(btnCopyToClipboard)
-          codeViewer.init(txtarea)
-          viewer = codeViewer.editor
-          viewer.setOption('lineWrapping', 1)
-          md.setContent('')
-          md.setContent(container)
-          codeViewer.setContent(html)
-          viewer.refresh()
-        })
+        }
+
         this.handleAssetUploadEvents()
       })
     },
