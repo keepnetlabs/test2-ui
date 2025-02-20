@@ -120,7 +120,8 @@ export default {
       refTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
     } else if (refTemplates && refTemplates.modalStatus) {
-      refTemplates.checkIfCanCloseNewEmailTemplate()
+      if (typeof refTemplates.checkIfCanCloseCallbackTemplateModal === 'function')
+        refTemplates.checkIfCanCloseCallbackTemplateModal()
       next(false)
     } else if (
       refEmailTemplates &&
