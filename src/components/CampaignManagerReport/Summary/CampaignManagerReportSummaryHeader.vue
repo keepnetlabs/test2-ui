@@ -168,10 +168,12 @@ export default {
     },
     handleTrainingReport() {
       if (this.isMultipleTrainingReport) this.toggleShowTrainingReportsDialog()
-      else
+      else {
+        if (!this.trainingReportDialogItems.length) return
         window.open(
           `/awareness-educator/enrollments/training-report/${this.trainingReportDialogItems[0].enrollmentId}`
         )
+      }
     },
     toggleShowTrainingReportsDialog() {
       this.isShowTrainingReportsDialog = !this.isShowTrainingReportsDialog
