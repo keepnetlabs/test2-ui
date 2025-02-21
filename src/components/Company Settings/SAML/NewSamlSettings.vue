@@ -552,6 +552,9 @@ export default {
               data: { data }
             } = response
             delete data.defaultRoleResourceId
+            if (this.isEdit) {
+              delete data.entityID
+            }
             for (const key of Object.keys(data)) {
               this.formValues[key] = data[key]
             }
