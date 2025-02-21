@@ -154,20 +154,20 @@ export default {
             tags: tagNames,
             targetAudience,
             category,
-            compliances: compliances.map(({ complianceId }) => complianceId),
-            behaviours: behaviours.map(({ behaviourId }) => behaviourId)
+            compliances: compliances?.map(({ complianceId }) => complianceId),
+            behaviours: behaviours?.map(({ behaviourId }) => behaviourId)
           })
           refTrainingCourseInformation.setMakeAvailableForData(availableForList)
           refTrainingContent.setFormData({ hasQuiz, type })
           refTrainingContent.setTrainingContents(trainingContents)
           this.selectedCompaniesAndGroups = availableForList
-            .map((af) => {
+            ?.map((af) => {
               if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
                 return null
               }
               return { resourceId: af.targetResourceId, typeName: af.typeName }
             })
-            .filter(Boolean)
+            ?.filter(Boolean)
         }
       })
     }
@@ -220,8 +220,8 @@ export default {
             tagNames,
             availableForRequests,
             type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
-            compliances: compliances.map((compliance) => ({ complianceId: compliance })),
-            behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour }))
+            compliances: compliances?.map((compliance) => ({ complianceId: compliance })),
+            behaviours: behaviours?.map((behaviour) => ({ behaviourId: behaviour }))
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''
@@ -278,16 +278,16 @@ export default {
       payload.append('trainingDetail.targetAudience', targetAudience)
       payload.append('trainingDetail.hasQuiz', hasQuiz)
       payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-      tags.map((tag, index) => {
+      tags?.map((tag, index) => {
         payload.append(`trainingDetail.tagNames[${index}]`, tag)
       })
-      compliances.map((compliance, index) => {
+      compliances?.map((compliance, index) => {
         payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
       })
-      behaviours.map((behaviour, index) => {
+      behaviours?.map((behaviour, index) => {
         payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
       })
-      availableForRequests.map((request, index) => {
+      availableForRequests?.map((request, index) => {
         payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)
         payload.append(
           `trainingDetail.availableForRequests[${index}].resourceId`,
