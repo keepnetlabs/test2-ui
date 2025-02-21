@@ -13,7 +13,7 @@
     <div v-if="showBodyDetail" class="executive-report-search-card__content mt-2">
       <div
         v-for="(chart, index) in card.widgets"
-        :key="chart.name"
+        :key="index"
         class="executive-report-search-card__content-chart cursor-pointer position-relative"
         @click="handleAddChart(chart, card.widgets, index)"
       >

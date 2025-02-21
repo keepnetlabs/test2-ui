@@ -11,12 +11,11 @@
         hide-details
         prepend-inner-icon="mdi-magnify"
         placeholder="Search"
-        @input="handleSearch"
       />
       <div v-if="!isLoading" class="executive-report-search-card-container mt-4">
         <ExecutiveReportSearchCard
-          v-for="card in getCards"
-          :key="card.name"
+          v-for="(card, index) in getCards"
+          :key="index"
           :card="card"
           @on-add-chart="handleSearchAdd"
         />
@@ -121,7 +120,6 @@ export default {
         })
       }
     },
-    handleSearch(value) {},
     handleSearchAdd(chart) {
       const isAdded = this.$refs.refCharts.addWidget(chart)
       if (isAdded) this.$set(chart, 'isAdded', true)
