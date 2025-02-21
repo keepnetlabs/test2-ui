@@ -551,8 +551,8 @@ export default {
             const {
               data: { data }
             } = response
-            delete data.defaultRoleResourceId
             if (this.isEdit) {
+              delete data.defaultRoleResourceId
               delete data.entityID
             }
             for (const key of Object.keys(data)) {
