@@ -91,102 +91,17 @@
         :key="index"
         :label="`Step ${index + 1}: ${training.name}`"
       >
-        <ElTabs v-model="selectedTrainingTab" v-if="!isLoading" class="k-sub-tab mt-4">
-          <ElTabPane name="preview" :label="labels.Preview">
-            <div class="training-library-preview mt-4 training-library-training-preview">
-              <div class="d-flex justify-space-between align-center">
-                <div>
-                  <span class="training-library-preview__title"
-                    >{{ getActiveMaterialNameLabel }}
-                  </span>
-                  <span class="training-library-preview__desc">{{ training.name }}</span>
-                </div>
-                <div :key="activeTrainingContentButtonKey" class="d-flex align-center gap-2">
-                  <TrainingLibraryNewBadge
-                    v-if="activeTrainingContentParams && activeTrainingContentParams.isNew"
-                  />
-                  <TrainingLibraryFavoriteButton
-                    v-if="activeTrainingContentParams"
-                    ref="refFavoriteButtonActiveContent"
-                    :is-default-favourite="activeTrainingContentParams.isFavourite"
-                    :training-id="activeTrainingContentId"
-                  />
-                </div>
-              </div>
-              <FormGroupHorizontalContent
-                class="mt-4 justify-start"
-                style="max-width: 500px;"
-                :label="getActiveMaterialNameLanguageLabel"
-              >
-                <KSelect
-                  v-model="activeTrainingLanguageId"
-                  dense
-                  outlined
-                  class="max-width-200"
-                  placeholder="Select Option"
-                  :items="activeTrainingContentLanguages"
-                  @input="callForTemplatePreview(true)"
-                />
-              </FormGroupHorizontalContent>
-              <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
-              <div v-if="isTrainingTypeTraining">
-                <iframe
-                  v-if="activeTemplate && !isTemplateLoading"
-                  :key="iframeKey"
-                  :class="['training-library-preview__player', iframeClass]"
-                  allowfullscreen
-                  title="Training Preview"
-                  :src="activeTemplate"
-                ></iframe>
-              </div>
-              <div v-else>
-                <div v-if="!isTemplateLoading">
-                  <hr class="my-4" />
-                  <div class="d-flex justify-space-between align-center mb-4">
-                    <div>
-                      <span class="template-preview__text--title text-preview-gray"
-                        >File Name:
-                      </span>
-                      <span class="template-preview__text--body">{{ fileName }}</span>
-                    </div>
-
-                    <VBtn
-                      id="btn-preview-indiviual-printout"
-                      class="white--text btn-util btn-download-add-in"
-                      style="text-transform: none;"
-                      color="#2196F3"
-                      rounded
-                      :style="getDownloadActiveTrainingContentStyle"
-                      @click="handleDownloadActiveTrainingContent"
-                    >
-                      <v-icon left>mdi-download</v-icon>
-                      {{
-                        activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
-                          ? labels.DownloadPoster
-                          : labels.DownloadInfographic
-                      }}
-                    </VBtn>
-                  </div>
-                  <div class="max-w-100 d-flex justify-center w-100">
-                    <img
-                      v-if="!isPdf"
-                      class="max-w-100"
-                      :src="activeTrainingContentSrc"
-                      alt="Preview"
-                    />
-                    <pdf v-else class="w-100" :src="activeTrainingContentPdfSrc" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ElTabPane>
-          <ElTabPane
-            :label="labels.Details"
-            name="details"
-            id="campaign-manager-info--training-details-content"
-          >
-            <template v-if="activeTrainingContentParams">
-              <div class="training-library-preview__details-item">
+      </ElTabPane>
+      <ElTabs
+        v-show="tab !== 'details'"
+        v-model="selectedTrainingTab"
+        v-if="!isLoading"
+        class="k-sub-tab mt-4"
+      >
+        <ElTabPane name="preview" :label="labels.Preview">
+          <div class="training-library-preview mt-4 training-library-training-preview">
+            <div class="d-flex justify-space-between align-center">
+              <div>
                 <span class="training-library-preview__title"
                   >{{ getActiveMaterialNameLabel }}
                 </span>
@@ -194,94 +109,190 @@
                   activeTrainingContentParams.name
                 }}</span>
               </div>
-              <div v-if="isTrainingTypeTraining" class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Vendor Name: </span>
-                <span class="training-library-preview__desc">{{
-                  activeTrainingContentParams.vendor
-                }}</span>
+              <div :key="activeTrainingContentButtonKey" class="d-flex align-center gap-2">
+                <TrainingLibraryNewBadge
+                  v-if="activeTrainingContentParams && activeTrainingContentParams.isNew"
+                />
+                <TrainingLibraryFavoriteButton
+                  v-if="activeTrainingContentParams"
+                  ref="refFavoriteButtonActiveContent"
+                  :is-default-favourite="activeTrainingContentParams.isFavourite"
+                  :training-id="activeTrainingContentId"
+                />
               </div>
-              <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Category Name: </span>
-                <span class="training-library-preview__desc">{{
-                  activeTrainingContentParams.categoryName || activeTrainingContentParams.category
-                }}</span>
-              </div>
-              <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Description: </span>
-                <span class="training-library-preview__desc">{{
-                  activeTrainingContentParams.description ||
-                  activeTrainingContentParams.trainingDescription
-                }}</span>
-              </div>
-              <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Target Audience: </span>
-                <span class="training-library-preview__desc">{{
-                  activeTrainingContentParams.targetAudienceName ||
-                  activeTrainingContentParams.targetAudience
-                }}</span>
-              </div>
-              <div class="training-library-preview__details-item align-baseline">
-                <div>
-                  <span class="training-library-preview__title">Languages: </span>
-                </div>
-                <div class="d-flex flex-wrap gap-2 ml-2">
-                  <span
-                    v-for="(lang, langIndex) in activeTrainingContentLanguageCodes"
-                    :key="langIndex"
-                    class="training-library-preview__tag"
-                    >{{ lang }}</span
-                  >
-                </div>
-              </div>
-              <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Created By: </span>
-                <span class="training-library-preview__desc">{{
-                  activeTrainingContentParams.createdBy
-                }}</span>
-              </div>
-              <div class="training-library-preview__details-item align-baseline">
-                <div>
-                  <span class="training-library-preview__title">Compliances: </span>
-                </div>
-                <div class="d-flex flex-wrap gap-2 ml-2">
-                  <span
-                    v-for="(compliance, tIndex) in activeTrainingContentParams.complianceNames"
-                    :key="tIndex"
-                    class="training-library-preview__tag"
-                    >{{ compliance }}</span
-                  >
-                </div>
-              </div>
-              <div class="training-library-preview__details-item align-baseline">
-                <div>
-                  <span class="training-library-preview__title">Tags: </span>
-                </div>
-                <div class="d-flex flex-wrap gap-2 ml-2">
-                  <span
-                    v-for="(tag, tagIndex) in activeTrainingContentParams.tagNames"
-                    :key="tagIndex"
-                    class="training-library-preview__tag"
-                    >{{ tag }}</span
-                  >
-                </div>
-              </div>
+            </div>
+            <FormGroupHorizontalContent
+              class="mt-4 justify-start"
+              style="max-width: 500px;"
+              :label="getActiveMaterialNameLanguageLabel"
+            >
+              <KSelect
+                v-model="activeTrainingLanguageId"
+                dense
+                outlined
+                class="max-width-200"
+                placeholder="Select Option"
+                :items="activeTrainingContentLanguages"
+                @input="callForTemplatePreview(true)"
+              />
+            </FormGroupHorizontalContent>
+            <DatatableLoading v-if="isTemplateLoading" :loading="isTemplateLoading" />
+            <div v-if="isTrainingTypeTraining">
+              <iframe
+                v-if="activeTemplate && !isTemplateLoading"
+                :key="iframeKey"
+                :class="['training-library-preview__player', iframeClass]"
+                allowfullscreen
+                title="Training Preview"
+                :src="activeTemplate"
+              ></iframe>
+            </div>
+            <div v-else>
+              <div v-if="!isTemplateLoading">
+                <hr class="my-4" />
+                <div class="d-flex justify-space-between align-center mb-4">
+                  <div>
+                    <span class="template-preview__text--title text-preview-gray">File Name: </span>
+                    <span class="template-preview__text--body">{{ fileName }}</span>
+                  </div>
 
-              <div class="training-library-preview__details-item">
-                <span class="training-library-preview__title">Behaviours: </span>
-                <ul>
-                  <li
-                    v-for="(behaviour, bIndex) in activeTrainingContentParams.behaviourNames"
-                    :key="bIndex"
-                    class="training-library-preview__desc"
+                  <VBtn
+                    id="btn-preview-indiviual-printout"
+                    class="white--text btn-util btn-download-add-in"
+                    style="text-transform: none;"
+                    color="#2196F3"
+                    rounded
+                    :style="getDownloadActiveTrainingContentStyle"
+                    @click="handleDownloadActiveTrainingContent"
                   >
-                    {{ behaviour }}
-                  </li>
-                </ul>
+                    <v-icon left>mdi-download</v-icon>
+                    {{
+                      activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+                        ? labels.DownloadPoster
+                        : labels.DownloadInfographic
+                    }}
+                  </VBtn>
+                </div>
+                <div class="max-w-100 d-flex justify-center w-100">
+                  <img
+                    v-if="!isPdf"
+                    class="max-w-100"
+                    :key="activeTrainingContentSrc"
+                    :src="activeTrainingContentSrc"
+                    alt="Preview"
+                  />
+                  <pdf
+                    v-else
+                    ref="refPdf"
+                    class="w-100"
+                    :key="activeTrainingContentPdfSrc"
+                    :src="activeTrainingContentPdfSrc"
+                    @error="handleError"
+                  />
+                </div>
               </div>
-            </template>
-          </ElTabPane>
-        </ElTabs>
-      </ElTabPane>
+            </div>
+          </div>
+        </ElTabPane>
+        <ElTabPane
+          :label="labels.Details"
+          name="details"
+          id="campaign-manager-info--training-details-content"
+        >
+          <template v-if="activeTrainingContentParams">
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">{{ getActiveMaterialNameLabel }} </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.name
+              }}</span>
+            </div>
+            <div v-if="isTrainingTypeTraining" class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Vendor Name: </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.vendor
+              }}</span>
+            </div>
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Category Name: </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.categoryName || activeTrainingContentParams.category
+              }}</span>
+            </div>
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Description: </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.description ||
+                activeTrainingContentParams.trainingDescription
+              }}</span>
+            </div>
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Target Audience: </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.targetAudienceName ||
+                activeTrainingContentParams.targetAudience
+              }}</span>
+            </div>
+            <div class="training-library-preview__details-item align-baseline">
+              <div>
+                <span class="training-library-preview__title">Languages: </span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 ml-2">
+                <span
+                  v-for="(lang, langIndex) in activeTrainingContentLanguageCodes"
+                  :key="langIndex"
+                  class="training-library-preview__tag"
+                  >{{ lang }}</span
+                >
+              </div>
+            </div>
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Created By: </span>
+              <span class="training-library-preview__desc">{{
+                activeTrainingContentParams.createdBy
+              }}</span>
+            </div>
+            <div class="training-library-preview__details-item align-baseline">
+              <div>
+                <span class="training-library-preview__title">Compliances: </span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 ml-2">
+                <span
+                  v-for="(compliance, tIndex) in activeTrainingContentParams.complianceNames"
+                  :key="tIndex"
+                  class="training-library-preview__tag"
+                  >{{ compliance }}</span
+                >
+              </div>
+            </div>
+            <div class="training-library-preview__details-item align-baseline">
+              <div>
+                <span class="training-library-preview__title">Tags: </span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 ml-2">
+                <span
+                  v-for="(tag, tagIndex) in activeTrainingContentParams.tagNames"
+                  :key="tagIndex"
+                  class="training-library-preview__tag"
+                  >{{ tag }}</span
+                >
+              </div>
+            </div>
+
+            <div class="training-library-preview__details-item">
+              <span class="training-library-preview__title">Behaviours: </span>
+              <ul>
+                <li
+                  v-for="(behaviour, bIndex) in activeTrainingContentParams.behaviourNames"
+                  :key="bIndex"
+                  class="training-library-preview__desc"
+                >
+                  {{ behaviour }}
+                </li>
+              </ul>
+            </div>
+          </template>
+        </ElTabPane>
+      </ElTabs>
     </ElTabs>
   </div>
 </template>
@@ -473,7 +484,8 @@ export default {
       link.href = data
       link.download = `${this.fileName}`
       link.click()
-    }
+    },
+    handleError(e) {}
   }
 }
 </script>
