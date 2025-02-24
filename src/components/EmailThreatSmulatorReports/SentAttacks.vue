@@ -37,7 +37,19 @@
       @searchChangedEvent="handleSearchChange"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <div class="d-flex align-center justify-center">
+        <span
+          v-if="scope.column.property === 'riskFactor'"
+          :id="`text--send-attack-result-${scope.$index}`"
+          class="datatable-link d-flex justify-center cursor-default"
+        >
+          <div
+            class="av-risk-factor py-1 cursor-default"
+            :style="setStatusColor(scope.row.riskFactor)"
+          >
+            {{ scope.row.riskFactor }}
+          </div>
+        </span>
+        <div v-else class="d-flex align-center justify-center">
           <div
             class="report-result-btn py-1 cursor-default"
             :class="scope.row.result.toLowerCase()"
@@ -132,6 +144,17 @@ export default {
             filterableType: 'text'
           },
           {
+            property: 'riskFactor',
+            align: 'center',
+            editable: false,
+            label: 'Severity',
+            sortable: true,
+            show: true,
+            type: 'slot',
+            width: 150,
+            filterableType: 'number'
+          },
+          {
             property: 'deliveryStatus',
             align: 'center',
             editable: false,
@@ -196,6 +219,17 @@ export default {
     })
   },
   methods: {
+    setStatusColor(riskFactor) {
+      let color = '#1173C1'
+      if (riskFactor === 5) {
+        color = '#0198AC'
+      } else if (riskFactor >= 6 && riskFactor <= 7) {
+        color = '#B6791D'
+      } else if (riskFactor >= 8) {
+        color = '#B83A3A'
+      }
+      return `border-color: ${color};color: ${color};`
+    },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
