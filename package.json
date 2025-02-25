@@ -47,7 +47,7 @@
     "vue-grid-layout": "^2.3.9",
     "vue-moment": "^4.1.0",
     "vue-multipane": "^0.9.5",
-    "vue-pdf": "4.2.0",
+    "vue-pdf": "4.3.0",
     "vue-query-builder": "^0.8.2",
     "vue-recaptcha": "^1.2.0",
     "vue-router": "^3.3.4",
@@ -93,8 +93,7 @@
     "lru-cache": "5.1.1",
     "glob": "7.2.3",
     "babel-loader": "8.3.0",
-    "nopt": "7.2.1",
-    "pdfjs-dist": "2.5.207"
+    "nopt": "7.2.1"
   },
   "eslintConfig": {
     "root": true,
