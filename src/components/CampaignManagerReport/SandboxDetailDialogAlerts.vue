@@ -28,8 +28,8 @@
         <div class="mb-0 ml-8">
           &bull; A4: Stop Bot Activity Challenge
           <p class="mb-0 ml-4">
-            &bull; A4.1 Phishing link clicked, Invisible Captcha detected bot-like behavior, but the
-            user was still redirected to the phishing page.
+            &bull; A4.1 The phishing link was clicked, and bot-like behavior was detected. However,
+            the user was still redirected to the phishing page.
           </p>
           <p class="mb-0 ml-4">
             &bull; A4.2 A real browser should pass challenges, but this browser did not load the
