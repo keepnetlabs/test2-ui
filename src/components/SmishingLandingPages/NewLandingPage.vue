@@ -178,12 +178,24 @@
                       :extension-types="getExtensionTypes"
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
+                      @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                      @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
                     <VCheckbox
                       v-model="formValues.isInvisibleCaptchaEnabled"
                       color="#2196f3"
                       hide-details
-                      class="mb-10"
+                      :class="[
+                        'mb-10',
+                        isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                      ]"
+                      :ripple="false"
+                      :readonly="isInvisibleCaptchaDisabled"
+                      :style="
+                        isInvisibleCaptchaDisabled
+                          ? { opacity: 0.38, cursor: 'default !important' }
+                          : ''
+                      "
                     >
                       <template #label>
                         Stop bots to prevent false clicks.
@@ -392,6 +404,7 @@ export default {
       },
       languageOptions: [],
       disabledLabel: null,
+      isInvisibleCaptchaDisabled: false,
       tab: 'page1',
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -662,6 +675,10 @@ export default {
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
+        const findedDomain = this.landingPageData?.domainRecords?.find(
+          (domain) => domain.value === phishingLink?.domainRecordId?.toString()
+        )
+        this.isInvisibleCaptchaDisabled = findedDomain ? !findedDomain?.extraDatas[1]?.value : false
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList

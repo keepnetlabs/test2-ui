@@ -312,6 +312,9 @@
     }
   }
 }
+.invisible-captcha-checkbox input,.invisible-captcha-checkbox label{
+  cursor:default !important;
+}
 
 #landingPagePreview__save-changes-button:disabled {
   opacity: 0.5;
