@@ -93,6 +93,7 @@
               show-reply-tracking
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @smartGroupSelected="handleSmartGroupSelected"
+              :hyperPersonalization.sync="handleHyperPersonalizationChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -158,6 +159,7 @@
               :is-edit="isEdit"
               :isDuplicate="isDuplicate"
               :phishing-type-id="1"
+              :is-frequency-disabled="isFrequencyDisabled"
               :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -277,6 +279,7 @@ export default {
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
       clickedUserGroupResourceId: null,
+      hyperPersonalization: '',
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -305,6 +308,9 @@ export default {
     }
   },
   computed: {
+    isFrequencyDisabled() {
+      return this.hyperPersonalization !== '1'
+    },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
         ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
@@ -571,6 +577,10 @@ export default {
   methods: {
     handleSmartGroupSelected(group) {
       this.smartGroup = group
+    },
+    handleHyperPersonalizationChanged(hyperPersonalization) {
+      console.log('hyperPersonalization', hyperPersonalization)
+      this.hyperPersonalization = hyperPersonalization
     },
     handleTotalPhishingScenariosCountChange(val) {
       this.totalPhishingScenariosCount = val

@@ -98,9 +98,18 @@
         no-data-text="No frequency configuration available"
         :rules="rules.frequency"
         :items="frequencyItems"
-        :disabled="isEdit"
+        :disabled="isEdit || isFrequencyDisabled"
       />
     </FormGroup>
+    <AlertBox
+      v-if="isFrequencyDisabled"
+      style="margin-top: -12px; max-width: 554px;"
+      class="bg-aqua-light mb-4"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      text="When sending in the target users' preferred language, only the 'One Time' frequency is available."
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <InputSchedule
       v-model="inputScheduleFormData"
       :isEditOrDuplicate="isEdit || isDuplicate"
@@ -176,6 +185,10 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    isFrequencyDisabled: {
+      type: Boolean,
+      default: false
     },
     isDuplicate: {
       type: Boolean

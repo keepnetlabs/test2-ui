@@ -19,6 +19,33 @@
       </FormGroup>
       <FormGroup
         v-if="isPhishing"
+        title="Hyper-Personalization"
+        sub-title="Tailor scenarios to the user’s language."
+      >
+        <KSelect
+          :value="hyperPersonalization"
+          class="tlp-select"
+          outlined
+          placeholder="Select an option"
+          item-text="name"
+          item-value="value"
+          :items="hyperPersonalizationItems"
+          :return-object="false"
+          :slots="{ item: true, selection: false }"
+          @change="$emit('hyperPersonalization', $event)"
+        >
+          <template #item="{ item }">
+            <v-list-item-content>
+              <v-list-item-title> {{ item.name }}</v-list-item-title>
+              <v-list-item-subtitle class="tlp_subtitle">{{
+                item.description
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </template>
+        </KSelect>
+      </FormGroup>
+      <FormGroup
+        v-if="isPhishing"
         title="Smart Grouping"
         sub-title="Users who failed the campaign are automatically added to the selected target group."
       >
@@ -160,6 +187,10 @@ export default {
     showReplyTracking: {
       type: Boolean,
       default: false
+    },
+    hyperPersonalization: {
+      type: String,
+      default: ''
     }
   },
   directives: {
@@ -177,6 +208,19 @@ export default {
       }),
       targetGroupList: [],
       targetGroups: [],
+      hyperPersonalizationItems: [
+        {
+          name: 'Send in a manually selected language',
+          description: 'Manually choose a language to send the scenario to all recipients.',
+          value: '0'
+        },
+        {
+          name: "Send in the target users' preferred language",
+          description:
+            "Sent in each recipient's preferred language. If not set, it defaults to the company language (English).",
+          value: '1'
+        }
+      ],
       labels,
       formData: {
         name: '',

@@ -39,6 +39,11 @@
         text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
+      <AlertBox
+        v-if="canRenderAlertboxLanguage"
+        :text="getPreferredLanguageText"
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
     </div>
     <div>
       <DataTable
@@ -117,6 +122,8 @@ export default {
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
+      userFormPreferredLanguage: 0,
+      userFromPreferredScenario: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -171,6 +178,12 @@ export default {
     },
     canRenderNoPhoneNumberAlertBox() {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+    },
+    canRenderAlertboxLanguage() {
+      return true
+    },
+    getPreferredLanguageText() {
+      return `${this.userFormPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
