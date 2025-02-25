@@ -77,6 +77,9 @@
                     persistent-hint
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
+                    type="combobox"
+                    multiple
+                    min-width-type="medium"
                     :items="languages"
                     :slots="{ selection: true }"
                     @change="isShowSelectedScenarios = false"
@@ -993,9 +996,9 @@ export default {
           (item) => item.FieldName === 'LanguageTypeResourceId'
         )
         const obj = {
-          Value: val,
+          Value: val?.map?.((item) => item)?.join(',') || '',
           FieldName: 'LanguageTypeResourceId',
-          Operator: 'Contains'
+          Operator: 'Include'
         }
         if (index > -1) {
           if (!val) {

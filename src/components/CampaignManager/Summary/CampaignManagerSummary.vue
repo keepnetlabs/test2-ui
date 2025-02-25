@@ -570,6 +570,9 @@ export default {
         })
         return {
           name: formData.name,
+          'Hyper-Personalization': formData.sendUserPreferredLanguage
+            ? 'Preferred Language'
+            : 'Manually',
           'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
@@ -586,6 +589,9 @@ export default {
       })
       return {
         name: formData.name,
+        'Hyper-Personalization': formData.sendUserPreferredLanguage
+          ? 'Preferred Language'
+          : 'Manually',
         'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),

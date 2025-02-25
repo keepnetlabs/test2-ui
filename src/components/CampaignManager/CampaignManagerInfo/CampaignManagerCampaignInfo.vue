@@ -32,7 +32,7 @@
           :items="hyperPersonalizationItems"
           :return-object="false"
           :slots="{ item: true, selection: false }"
-          @change="$emit('hyperPersonalization', $event)"
+          @change="$emit('hyperPersonalizationChange', $event)"
         >
           <template #item="{ item }">
             <v-list-item-content>
@@ -189,8 +189,8 @@ export default {
       default: false
     },
     hyperPersonalization: {
-      type: String,
-      default: ''
+      type: Boolean,
+      default: false
     }
   },
   directives: {
@@ -212,13 +212,13 @@ export default {
         {
           name: 'Send in a manually selected language',
           description: 'Manually choose a language to send the scenario to all recipients.',
-          value: '0'
+          value: false
         },
         {
           name: "Send in the target users' preferred language",
           description:
             "Sent in each recipient's preferred language. If not set, it defaults to the company language (English).",
-          value: '1'
+          value: true
         }
       ],
       labels,

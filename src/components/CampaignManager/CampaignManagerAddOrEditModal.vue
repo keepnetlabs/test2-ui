@@ -93,7 +93,7 @@
               show-reply-tracking
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @smartGroupSelected="handleSmartGroupSelected"
-              :hyperPersonalization.sync="handleHyperPersonalizationChanged"
+              @hyperPersonalizationChange="handleHyperPersonalizationChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -279,7 +279,7 @@ export default {
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
       clickedUserGroupResourceId: null,
-      hyperPersonalization: '',
+      sendUserPreferredLanguage: false,
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -309,7 +309,7 @@ export default {
   },
   computed: {
     isFrequencyDisabled() {
-      return this.hyperPersonalization !== '1'
+      return this.sendUserPreferredLanguage !== true
     },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
@@ -433,6 +433,7 @@ export default {
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
         formData.scenarioDistribution = this.scenarioDistribution
         formData.smartGroup = this.smartGroup
+        formData.sendUserPreferredLanguage = this.sendUserPreferredLanguage
         if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
           formData.trainingForCategory = this.trainingForCategory
           formData.categoryFilter = this.categoryFilter
@@ -578,9 +579,8 @@ export default {
     handleSmartGroupSelected(group) {
       this.smartGroup = group
     },
-    handleHyperPersonalizationChanged(hyperPersonalization) {
-      console.log('hyperPersonalization', hyperPersonalization)
-      this.hyperPersonalization = hyperPersonalization
+    handleHyperPersonalizationChanged(sendUserPreferredLanguage) {
+      this.sendUserPreferredLanguage = sendUserPreferredLanguage
     },
     handleTotalPhishingScenariosCountChange(val) {
       this.totalPhishingScenariosCount = val
@@ -599,10 +599,11 @@ export default {
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
+        console.log('response', response)
         this.languageOptions =
           response?.map((language) => ({
             name: language.name,
-            text: language.description,
+            text: language.name,
             value: language.resourceId
           })) || []
       })
