@@ -516,15 +516,25 @@ export default {
         this.$set(
           this.tableOptions.columns[1],
           'filterableItems',
-          response.data.data.methodTypes.map((item) => item.text)
+          response?.data?.data?.methodTypes?.map((item) => item.text)
         )
         this.$set(
           this.tableOptions.columns[3],
           'filterableItems',
-          response.data.data.difficultyTypes.map((item) => item.text)
+          response?.data?.data?.difficultyTypes?.map((item) => item.text)
         )
         this?.$refs?.refLandingPageList?.reRenderFilters()
-        this.landingPageData = response.data.data
+        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+          return {
+            text: item.domain,
+            value: item.id.toString(),
+            extraDatas: [
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              { text: item.isStopBotActivity, value: item.isStopBotActivity }
+            ]
+          }
+        })
+        this.landingPageData = { ...response.data.data, domainRecords }
       })
     }
   }
