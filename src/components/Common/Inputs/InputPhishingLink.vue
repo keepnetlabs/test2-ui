@@ -245,6 +245,8 @@ export default {
         extensionTypeId: this.extensionTypes[0]?.value || '',
         parameterTypeId: this.parameterTypes[0]?.value || ''
       })
+      this.$emit('invisible-captcha', !this.domainRecords[0]?.extraDatas[1]?.value)
+      this.$emit('captcha-default-value', this.domainRecords[0]?.extraDatas[1]?.value)
     },
     changeDisabledLabel() {
       this.disabledLabel = `${
@@ -289,6 +291,8 @@ export default {
           domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value,
           'urlSchemaTypeId'
         )
+        this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
+        this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
       })
     }
   }

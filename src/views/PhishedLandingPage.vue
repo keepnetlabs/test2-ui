@@ -55,6 +55,9 @@ export default {
   created() {
     this.callForData()
   },
+  mounted() {
+    if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'auto'
+  },
   methods: {
     callForData() {
       const query = this?.$route?.query

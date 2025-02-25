@@ -311,12 +311,24 @@
                               :parameter-types="getParameterTypes"
                               :path-types="getPathTypes"
                               @link-change="handleLinkChange"
+                              @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                              @captcha-default-value="editData.isInvisibleCaptchaEnabled = $event"
                             />
                             <VCheckbox
                               v-model="editData.isInvisibleCaptchaEnabled"
                               color="#2196f3"
                               hide-details
-                              class="mb-10"
+                              :class="[
+                                'mb-10',
+                                isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                              ]"
+                              :ripple="false"
+                              :readonly="isInvisibleCaptchaDisabled"
+                              :style="
+                                isInvisibleCaptchaDisabled
+                                  ? { opacity: 0.38, cursor: 'default !important' }
+                                  : ''
+                              "
                             >
                               <template #label>
                                 Stop bots to prevent false clicks.
@@ -642,12 +654,24 @@
                             :parameter-types="getParameterTypes"
                             :path-types="getPathTypes"
                             @link-change="handleLinkChange"
+                            @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                            @captcha-default-value="editData.isInvisibleCaptchaEnabled = $event"
                           />
                           <VCheckbox
                             v-model="editData.isInvisibleCaptchaEnabled"
                             color="#2196f3"
                             hide-details
-                            class="mb-10"
+                            :class="[
+                              'mb-10',
+                              isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                            ]"
+                            :ripple="false"
+                            :readonly="isInvisibleCaptchaDisabled"
+                            :style="
+                              isInvisibleCaptchaDisabled
+                                ? { opacity: 0.38, cursor: 'default !important' }
+                                : ''
+                            "
                           >
                             <template #label>
                               Stop bots to prevent false clicks.
@@ -916,6 +940,7 @@ export default {
       Validations,
       labels,
       templateName: '',
+      isInvisibleCaptchaDisabled: false,
       selectedTab: 'landingPage',
       selectedLandingPageTab: '1',
       selectedEditLandingPageTab: '1',
@@ -1108,7 +1133,17 @@ export default {
     },
     callForLandingPageFormDetails() {
       getLandingPageFormDetails().then((response) => {
-        this.landingPageData = response.data.data
+        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+          return {
+            text: item.domain,
+            value: item.id.toString(),
+            extraDatas: [
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              { text: item.isStopBotActivity, value: item.isStopBotActivity }
+            ]
+          }
+        })
+        this.landingPageData = { ...response.data.data, domainRecords }
       })
     },
     handleEdit() {
@@ -1120,6 +1155,10 @@ export default {
         extensionTypeId: this.landingPageTemplateData?.extensionTypeId?.toString(),
         parameterTypeId: this.landingPageTemplateData?.parameterTypeId?.toString()
       }
+      const findedDomain = this.landingPageData?.domainRecords?.find(
+        (domain) => domain.value === this.landingPageTemplateData?.domainRecordId?.toString()
+      )
+      this.isInvisibleCaptchaDisabled = findedDomain ? !findedDomain?.extraDatas[1]?.value : false
       this.editData = {
         name: this.templateName,
         phishingLink: phishingLink,

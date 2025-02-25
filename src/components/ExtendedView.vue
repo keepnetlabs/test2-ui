@@ -978,7 +978,6 @@ export default {
       })
     },
     handleEditComboBoxChange(value, props) {
-      console.log('iam changed')
       if (!value.length) {
         this.copyOfEditedRows.map((item) => {
           item[props] = ''
