@@ -85,7 +85,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-if="data.index === 0">Language (1)</span>
+                      <span v-if="data.index === 0">Language ({{ language.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -655,7 +655,6 @@ export default {
       method: '',
       difficulty: '',
       language: '',
-      languageText: '',
       category: '',
       totalPhishingScenariosCount: 0,
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
@@ -699,9 +698,12 @@ export default {
         }))
         badges.push(...methodBadges)
       }
-      if (this.languageText) {
-        const languageBadge = { key: 'Language', value: this.languageText }
-        badges.push(languageBadge)
+      if (this.language.length) {
+        const languageBadges = this.language.map((item) => ({
+          key: 'Language',
+          value: item.text
+        }))
+        badges.push(...languageBadges)
       }
       if (this.difficulty.length) {
         const difficultyBadges = this.difficulty.map((item) => ({
@@ -811,7 +813,20 @@ export default {
           (item) => item.fieldName === 'LanguageTypeResourceId'
         )
         if (languageIndex !== -1) {
-          this.language = val.filterGroups[0].filterItems[languageIndex].value
+          if (val.filterGroups[0].filterItems[languageIndex].value.includes(',')) {
+            const languageValues = val.filterGroups[0].filterItems[languageIndex].value.split(',')
+            const findedLanguageValues = this.languages.filter((item) =>
+              languageValues.includes(item.value)
+            )
+            this.language = findedLanguageValues.map((item) => ({
+              text: item.text,
+              value: item.value
+            }))
+          } else {
+            const languageValue = val.filterGroups[0].filterItems[languageIndex].value
+            const findedLanguage = this.languages.find((item) => item.value === languageValue)
+            this.language = [{ text: findedLanguage.text, value: findedLanguage.value }]
+          }
         }
         const difficultyIndex = val.filterGroups[0].filterItems.findIndex(
           (item) => item.fieldName === 'difficulty'
@@ -984,19 +999,11 @@ export default {
     },
     language(val) {
       this.debounce(() => {
-        if (val) {
-          const languageIndex = this.languages.findIndex((lang) => lang.value === val)
-          if (languageIndex !== -1) {
-            this.languageText = this.languages?.[languageIndex]?.name || ''
-          }
-        } else {
-          this.languageText = ''
-        }
         const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
           (item) => item.FieldName === 'LanguageTypeResourceId'
         )
         const obj = {
-          Value: val?.map?.((item) => item)?.join(',') || '',
+          Value: val?.map?.((item) => item.value)?.join(',') || '',
           FieldName: 'LanguageTypeResourceId',
           Operator: 'Include'
         }

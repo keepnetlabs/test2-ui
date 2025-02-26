@@ -309,7 +309,7 @@ export default {
   },
   computed: {
     isFrequencyDisabled() {
-      return this.sendUserPreferredLanguage !== true
+      return this.sendUserPreferredLanguage === true
     },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
@@ -599,7 +599,6 @@ export default {
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
-        console.log('response', response)
         this.languageOptions =
           response?.map((language) => ({
             name: language.name,
