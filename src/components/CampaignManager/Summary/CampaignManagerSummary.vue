@@ -93,6 +93,11 @@
               :text="getTimeZoneWarningText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderAlertboxLanguage"
+              :text="getPreferredLanguageText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -359,6 +364,8 @@ export default {
   },
   data() {
     return {
+      userFromPreferredLanguage: 0,
+      userFromPreferredScenario: 5,
       SCENARIO_DISTRIBUTION_TEXTS,
       SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
@@ -407,6 +414,12 @@ export default {
           (row) => row.status === 'Active'
         ) || []
       return activeItems
+    },
+    canRenderAlertboxLanguage() {
+      return true
+    },
+    getPreferredLanguageText() {
+      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams

@@ -122,7 +122,7 @@ export default {
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
-      userFormPreferredLanguage: 0,
+      userFromPreferredLanguage: 0,
       userFromPreferredScenario: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -183,7 +183,7 @@ export default {
       return true
     },
     getPreferredLanguageText() {
-      return `${this.userFormPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
+      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
