@@ -2178,7 +2178,7 @@ export default {
       const cluster = this.getClusteredField(this.selectedCluster)
       let selectedFilter = this.isShowingClusteredTable
         ? this.clusteredTableAxios
-        : this.requestBodyReportedEmails.filter
+        : this.requestBodyReportedEmails
       selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
       if (this.isShowingClusteredTable) {
         if (
