@@ -87,6 +87,7 @@
                 style="margin-left: 5px !important; text-transform: capitalize;"
                 color="#2196f3"
                 rounded
+                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
                 :loading="o365SpinnerStatus"
                 @click="callForGenerateO365SpamAddIn"
               >
