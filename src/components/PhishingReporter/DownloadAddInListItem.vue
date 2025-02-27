@@ -48,7 +48,7 @@ export default {
   name: 'DownloadAddInListItem',
   props: {
     src: {
-      type: Object || String
+      type: String || Object
     },
     alt: {
       type: String,

@@ -51,7 +51,7 @@ export default {
       this.isActionButtonDisabled = true
       deleteGraphAccount()
         .then(() => {
-          this.handleClose()
+          this.handleClose(true)
         })
         .finally(() => {
           this.isActionButtonDisabled = false
