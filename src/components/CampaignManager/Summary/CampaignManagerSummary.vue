@@ -582,11 +582,11 @@ export default {
           methodSet.add(pScenario.method)
           difficultySet.add(pScenario.difficulty)
         })
+        console.log('formData.sendUserPreferredLanguage', formData.sendUserPreferredLanguage)
         return {
           name: formData.name,
-          'Hyper-Personalization': formData.sendUserPreferredLanguage
-            ? 'Preferred Language'
-            : 'Manually',
+          'Hyper-Personalization':
+            formData.sendUserPreferredLanguage === '1' ? 'Preferred Language' : 'Manually',
           'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
@@ -603,9 +603,8 @@ export default {
       })
       return {
         name: formData.name,
-        'Hyper-Personalization': formData.sendUserPreferredLanguage
-          ? 'Preferred Language'
-          : 'Manually',
+        'Hyper-Personalization':
+          formData.sendUserPreferredLanguage === '1' ? 'Preferred Language' : 'Manually',
         'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),

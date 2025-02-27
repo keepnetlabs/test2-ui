@@ -866,7 +866,7 @@ export default {
           delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
-            sendUserPreferredLanguage: this.sendUserPreferredLanguage,
+            sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
