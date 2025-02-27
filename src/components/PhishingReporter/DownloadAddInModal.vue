@@ -56,11 +56,11 @@
           :is-loading="o365SpinnerStatus"
           class="flex-nowrap"
           hide-border
-          title="Spam Integration"
-          description="Advanced XML add-in for web-based M365 emails, requires admin consent"
+          title="Ribbon View"
+          description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
         >
           <template #buttons>
-            <div :style="{ minWidth: !isAccountConnected ? '294px' : 'auto' }">
+            <div :style="{ minWidth: isAccountConnected ? '228px' : '294px', marginTop: '24px' }">
               <VBtn
                 v-if="!isAccountConnected"
                 class="white--text btn-util btn-download-add-in"
@@ -76,7 +76,7 @@
                 text
                 color="#F56C6C"
                 style="text-transform: capitalize; font-weight: 600; font-size: 12px;"
-                @click="toggleUnlinkDialog"
+                @click="toggleUnlinkDialog(false)"
               >
                 <v-icon left>mdi-link-off</v-icon>
                 <span>Unlink</span>
@@ -109,22 +109,25 @@
         <DownloadAddInListItem
           :is-loading="gmailSpinnerStatus"
           class="mt-n4"
-          title="Legacy Version"
-          description="Basic XML add-in for web-based M365 emails"
+          title="Page View"
+          :description="`Users can report phishing directly from the main ribbon with a dedicated &quot;Report&quot; button.`"
           @button-click="callForGenerateO365AddIn"
         >
           <AlertBox
-            class="bg-phishing-gray mt-4"
-            icon-color="#757575"
-            icon-name="mdi-information"
+            v-if="isAccountConnected"
+            class="mt-4 w-100"
+            style="background-color: rgba(67, 160, 71, 0.15);"
+            icon-name="mdi-check-circle"
+            icon-color="#43A047"
             :slots="{ primaryAction: false, secondaryAction: false }"
           >
             <template #text>
-              <span class="ml-2" style="font-size: 14px;"
-                ><strong>M365 Spam Integration</strong> provides improved spam detection, more
-                accurate reports, and seamless compatibility with Microsoft tools. Without it, only
-                basic reporting features are available.</span
-              >
+              <div class="ml-2" style="font-size: 14px; color: #383b41;">
+                <div class="fw-600">GRAPH Authorization Successful</div>
+                <div style="color: #000;">
+                  All Phishing Reporters in your domain can now use the Graph APIs.
+                </div>
+              </div>
             </template>
           </AlertBox>
         </DownloadAddInListItem>
@@ -313,7 +316,6 @@ export default {
     },
     toggleUnlinkDialog(forceUpdate = false) {
       if (forceUpdate) {
-        this.isShowUnlinkDialog = false
         this.formData.isGraphAccountConnected = false
         this.isAccountConnected = false
       }
