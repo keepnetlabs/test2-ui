@@ -95,6 +95,7 @@
             />
             <AlertBox
               v-if="canRenderAlertboxLanguage"
+              class="mt-4"
               :text="getPreferredLanguageText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />

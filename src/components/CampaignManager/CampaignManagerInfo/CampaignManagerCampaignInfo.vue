@@ -27,16 +27,16 @@
           class="tlp-select"
           outlined
           placeholder="Select an option"
-          item-text="name"
+          item-text="text"
           item-value="value"
-          :items="hyperPersonalizationItems"
+          :items="getHyperPersonalizationItems"
           :return-object="false"
           :slots="{ item: true, selection: false }"
           @change="$emit('hyperPersonalizationChange', $event)"
         >
           <template #item="{ item }">
             <v-list-item-content>
-              <v-list-item-title> {{ item.name }}</v-list-item-title>
+              <v-list-item-title> {{ item.text }}</v-list-item-title>
               <v-list-item-subtitle class="tlp_subtitle">{{
                 item.description
               }}</v-list-item-subtitle>
@@ -189,8 +189,12 @@ export default {
       default: false
     },
     hyperPersonalization: {
-      type: Boolean,
-      default: false
+      type: String,
+      default: ''
+    },
+    formDetails: {
+      type: Object,
+      default: () => ({})
     }
   },
   directives: {
@@ -208,19 +212,6 @@ export default {
       }),
       targetGroupList: [],
       targetGroups: [],
-      hyperPersonalizationItems: [
-        {
-          name: 'Send in a manually selected language',
-          description: 'Manually choose a language to send the scenario to all recipients.',
-          value: false
-        },
-        {
-          name: "Send in the target users' preferred language",
-          description:
-            "Sent in each recipient's preferred language. If not set, it defaults to the company language (English).",
-          value: true
-        }
-      ],
       labels,
       formData: {
         name: '',
@@ -301,6 +292,15 @@ export default {
   computed: {
     noTargetGroupText() {
       return this.isTargetGroupsLoading ? 'Loading...' : 'No target group available'
+    },
+    getHyperPersonalizationItems() {
+      return this?.formDetails?.sendUserPreferredLanguageTypes?.map((item) => {
+        return {
+          text: this.getItemTitle(item.value),
+          description: item.text,
+          value: item.value
+        }
+      })
     }
   },
   created() {
@@ -309,6 +309,10 @@ export default {
     this.callForTargetGroups()
   },
   methods: {
+    getItemTitle(value) {
+      if (value === '0') return 'Send in a manually selected language'
+      return "Send in the target users' preferred language"
+    },
     handleCreateGroup() {
       this.isTargetGroupModalVisible = true
       if (this.$refs?.refTargetGroupSelect?.$refs?.refComponent)

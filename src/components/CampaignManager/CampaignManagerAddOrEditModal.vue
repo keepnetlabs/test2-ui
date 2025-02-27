@@ -89,8 +89,10 @@
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
               :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
+              :form-details="formDetails"
               is-phishing
               show-reply-tracking
+              :hyper-personalization="sendUserPreferredLanguage"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @smartGroupSelected="handleSmartGroupSelected"
               @hyperPersonalizationChange="handleHyperPersonalizationChanged"
@@ -279,7 +281,7 @@ export default {
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
       clickedUserGroupResourceId: null,
-      sendUserPreferredLanguage: false,
+      sendUserPreferredLanguage: '0',
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -309,7 +311,7 @@ export default {
   },
   computed: {
     isFrequencyDisabled() {
-      return this.sendUserPreferredLanguage === true
+      return this.sendUserPreferredLanguage === '1'
     },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
@@ -864,6 +866,7 @@ export default {
           delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
+            sendUserPreferredLanguage: this.sendUserPreferredLanguage,
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
