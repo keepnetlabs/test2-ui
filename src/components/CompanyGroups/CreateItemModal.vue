@@ -155,7 +155,7 @@ export default {
       totalNumberOfPagesOfCompanies: 1,
       payload: {
         pageNumber: 1,
-        pageSize: 10,
+        pageSize: 10000,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
