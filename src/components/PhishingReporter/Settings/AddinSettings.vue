@@ -367,7 +367,7 @@
                   v-model="setting.isDeleteEmailBeforeAnalysis"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                 ></v-checkbox>
-                <div class="">
+                <div class="flex-grow-1">
                   <KSelect
                     v-model.trim="setting.isDeleteWithoutConfirmation"
                     style="max-width: 200px;"
@@ -400,7 +400,26 @@
                     icon-name="mdi-information"
                     text="Emails that are deleted may be moved to the trash folder due to Microsoft's policies."
                     :slots="{ primaryAction: false, secondaryAction: false }"
-                  />
+                  >
+                    <template #text>
+                      <div
+                        v-if="!setting.isDeleteWithoutConfirmation"
+                        style="color: #383b41; font-size: 14px; margin-left: 8px;"
+                      >
+                        Emails that are deleted may be moved to the trash folder due to Microsoft's
+                        policies.
+                      </div>
+                      <div v-else style="color: #383b41; font-size: 14px; margin-left: 8px;">
+                        <ul>
+                          <li>
+                            Emails that are deleted may be moved to the trash folder due to
+                            Microsoft's policies.
+                          </li>
+                          <li>The 'With Confirmation' option is not available in Ribbon View.</li>
+                        </ul>
+                      </div>
+                    </template>
+                  </AlertBox>
                 </div>
               </div>
               <div class="add-in-settings__body-item">
