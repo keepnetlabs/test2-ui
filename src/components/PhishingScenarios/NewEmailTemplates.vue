@@ -55,21 +55,6 @@
                   :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                   :items="methodItems"
                 />
-                <form-group
-                  has-hint
-                  title="Language"
-                  sub-title="Select the language you are writing this webpage template in"
-                >
-                  <input-select-language
-                    v-model="formValues.languageTypeResourceId"
-                    v-bind="commonRules"
-                    item-text="text"
-                    item-value="value"
-                    required
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                  />
-                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     ref="refTags"
@@ -129,35 +114,51 @@
                       class-name="email-template mt-8 p-4"
                       onsubmit="return false"
                     >
-                      <template #title>
+                      <div>
                         <div class="d-flex align-baseline justify-space-between mb-3">
-                          <label class="k-form-group__title">Email Template</label>
-                          <v-tooltip bottom opacity="1">
-                            <template v-slot:activator="{ on }">
-                              <v-btn
-                                v-on="on"
-                                rounded
-                                outlined
-                                color="#2196f3"
-                                style="font-weight: 600;"
-                                @click="handleUploadEmailButtonClick"
-                              >
-                                <v-icon style="font-size: 20px; margin-top: 1px;"
-                                  >mdi-upload</v-icon
+                          <div class="max-w-554">
+                            <Treeselect
+                              always-open
+                              multi-select
+                              auto-deselect-ancestors
+                              auto-select-descendants
+                              search-nested
+                              flat
+                              multiple
+                              placeholder="Select Language"
+                              :value="selectedLanguages"
+                              :options="treeSelectLanguageOptions"
+                              value-consist-of="LEAF_PRIORITY"
+                            />
+                          </div>
+                          <div>
+                            <v-tooltip bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-btn
+                                  v-on="on"
+                                  rounded
+                                  outlined
+                                  color="#2196f3"
+                                  style="font-weight: 600;"
+                                  @click="handleUploadEmailButtonClick"
                                 >
-                                <span class="button-new__text">IMPORT EMAIL</span>
-                              </v-btn>
-                            </template>
-                            <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
-                          </v-tooltip>
-                          <input
-                            v-show="false"
-                            ref="refInputFileUpload"
-                            type="file"
-                            @change="handleFileUpload"
-                          />
+                                  <v-icon style="font-size: 20px; margin-top: 1px;"
+                                    >mdi-upload</v-icon
+                                  >
+                                  <span class="button-new__text">IMPORT EMAIL</span>
+                                </v-btn>
+                              </template>
+                              <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
+                            </v-tooltip>
+                            <input
+                              v-show="false"
+                              ref="refInputFileUpload"
+                              type="file"
+                              @change="handleFileUpload"
+                            />
+                          </div>
                         </div>
-                      </template>
+                      </div>
                       <EmailTemplate
                         ref="refEmailTemplate"
                         :is-ai-assistant="true"
@@ -222,8 +223,8 @@
 </template>
 
 <script>
+import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -256,10 +257,10 @@ export default {
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    Treeselect
   },
   props: {
     status: {
@@ -318,6 +319,29 @@ export default {
       isRenameModalVisible: false,
       attachmentName: '',
       languageOptions: [],
+      selectedLanguages: [],
+      treeSelectLanguageOptions: [
+        {
+          id: 'PreferredLanguages',
+          label: 'Preferred Languages',
+          children: [
+            {
+              id: 'English',
+              label: 'English'
+            }
+          ]
+        },
+        {
+          id: 'AllLanguages',
+          label: 'All Languages',
+          children: [
+            {
+              id: 'Turkish',
+              label: 'Turkish'
+            }
+          ]
+        }
+      ],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
