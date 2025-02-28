@@ -527,6 +527,7 @@ import { mapGetters } from 'vuex'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import { Fragment } from 'vue-frag'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'TargetUserImportFromAFile',
   components: {
@@ -658,6 +659,7 @@ export default {
         headers: [],
         tableData: []
       },
+      languageFilterOptions: [],
       tableData: [],
       tableOptions: {
         columns: [
@@ -725,6 +727,20 @@ export default {
             filterableType: 'text',
             dbName: 'PhoneNumber',
             emptyText: 'No Data'
+          },
+          {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: labels.PreferredLanguage,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 200,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'preferredLanguageId'
           },
           {
             property: PROPERTY_STORE.TIME_ZONE,
@@ -834,6 +850,20 @@ export default {
             filterableType: 'text',
             dbName: 'PhoneNumber',
             emptyText: 'No Data'
+          },
+          {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: labels.PreferredLanguage,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 200,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'preferredLanguageId'
           },
           {
             property: PROPERTY_STORE.TIME_ZONE,
@@ -955,6 +985,25 @@ export default {
         filterableItems
       )
       this?.$refs?.refValidateList?.reRenderFilters()
+    },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+        this.$set(
+          this.tableOptions.backupColumns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+      })
     },
     addRowClassName({ row }) {
       return row?.validationDetail?.length > 0 ? ' target-user-import-file__error-row' : ''
@@ -1263,6 +1312,12 @@ export default {
       )
       if (timeZoneIndex !== -1) {
         this.bodyData.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      const languageIndex = this.bodyData.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'preferredLanguage'
+      )
+      if (languageIndex !== -1) {
+        this.bodyData.filter.FilterGroups[1].FilterItems.splice(languageIndex, 1)
       }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
@@ -1613,6 +1668,7 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.callForLanguages()
     this.getTargetUsers()
   },
   beforeRouteLeave(to, from, next) {
