@@ -403,7 +403,7 @@
                   >
                     <template #text>
                       <div
-                        v-if="!setting.isDeleteWithoutConfirmation"
+                        v-if="setting.isDeleteWithoutConfirmation"
                         style="color: #383b41; font-size: 14px; margin-left: 8px;"
                       >
                         Emails that are deleted may be moved to the trash folder due to Microsoft's
