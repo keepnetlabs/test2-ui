@@ -33,7 +33,6 @@
       />
       <AlertBox
         v-if="canRenderNoPhoneNumberAlertBox"
-        class="mt-4"
         icon-color="#B83A3A"
         style="background-color: #f56c6c33;"
         text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
@@ -123,7 +122,7 @@ export default {
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       userFromPreferredLanguage: 0,
-      userFromPreferredScenario: 0,
+      userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -180,10 +179,16 @@ export default {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     canRenderAlertboxLanguage() {
-      return true
+      return (
+        this.userFromPreferredLanguage > 0 ||
+        (this.userFromCompanyLanguage > 0 &&
+          !this.isVishing &&
+          !this.isSmishing &&
+          !this.isAwareness)
+      )
     },
     getPreferredLanguageText() {
-      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
+      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromCompanyLanguage} others in the company language.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${

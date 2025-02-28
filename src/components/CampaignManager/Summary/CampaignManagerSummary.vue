@@ -366,7 +366,7 @@ export default {
   data() {
     return {
       userFromPreferredLanguage: 0,
-      userFromPreferredScenario: 5,
+      userFromCompanyLanguage: 0,
       SCENARIO_DISTRIBUTION_TEXTS,
       SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
@@ -417,10 +417,16 @@ export default {
       return activeItems
     },
     canRenderAlertboxLanguage() {
-      return true
+      return (
+        this.userFromPreferredLanguage > 0 ||
+        (this.userFromCompanyLanguage > 0 &&
+          !this.isVishing &&
+          !this.isSmishing &&
+          !this.isAwareness)
+      )
     },
     getPreferredLanguageText() {
-      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromPreferredScenario} others in the company language.`
+      return `${this.userFromPreferredLanguage} users get the scenario in their preferred language; ${this.userFromCompanyLanguage} others in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams
