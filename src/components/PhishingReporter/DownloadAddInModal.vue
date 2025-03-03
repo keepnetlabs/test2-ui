@@ -243,7 +243,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Microsoft365PhishingReporterSpamAddin.xml`
+          link.download = `MicrosoftPhishingReporterRibbon.xml`
           link.click()
         })
         .finally(() => {
