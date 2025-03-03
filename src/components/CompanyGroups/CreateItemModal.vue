@@ -19,7 +19,7 @@
         lazy-validation
       >
         <v-list-item class="px-0">
-          <v-list-item-content class="pt-0">
+          <v-list-item-content :class="!isEdit ? 'pt-0' : 'py-0 mb-n3'">
             <label class="create-company-group__label">Company Group Name</label>
             <InputEntityName
               v-model.trim="groupName"
@@ -29,7 +29,7 @@
             />
           </v-list-item-content>
         </v-list-item>
-        <v-list-item class="p-0">
+        <v-list-item v-if="!isEdit" class="p-0">
           <v-list-item-content class="py-0" style="overflow: visible;">
             <label class="create-company-group__label mb-0">Add Members</label>
             <v-list-item-title
@@ -155,7 +155,7 @@ export default {
       totalNumberOfPagesOfCompanies: 1,
       payload: {
         pageNumber: 1,
-        pageSize: 10,
+        pageSize: 10000,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
