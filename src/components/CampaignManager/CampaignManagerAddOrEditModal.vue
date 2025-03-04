@@ -143,6 +143,10 @@
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
               :isMFAScenarioSelected="isMFAScenarioSelected"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :scenario-resource-ids="getSelectedScenariosResourceIds"
+              :is-phishing="true"
+              :send-user-preferred-language="sendUserPreferredLanguage"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -227,7 +231,7 @@ import {
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import { getTargetGroupCountDetail } from '@/api/targetUsers'
+import { getTargetGroupCountDetailExt } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
@@ -545,6 +549,9 @@ export default {
         return refCampaignManagerTargetAudience?.formData || defaultObj
       }
       return defaultObj
+    },
+    getSelectedScenariosResourceIds() {
+      return this.selectedPhishingScenarios.map((pScenario) => pScenario.resourceId)
     }
   },
   watch: {
@@ -701,6 +708,11 @@ export default {
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
           this.changeStep()
+          if (
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup
+              ?.$refs?.refGroupUsersTable
+          )
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupUsersTable?.callForData()
           return
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
@@ -712,9 +724,13 @@ export default {
           if (totalTargetUserCount) {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
-            this.userCountDetailResponse = await getTargetGroupCountDetail(
-              this.targetGroupResourceIds
-            )
+            this.userCountDetailResponse = await getTargetGroupCountDetailExt({
+              targetGroupResourceIds: this.targetGroupResourceIds,
+              scenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              ),
+              sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+            })
             if (
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
