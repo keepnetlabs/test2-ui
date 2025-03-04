@@ -846,22 +846,26 @@ export default {
   },
   watch: {
     getSelectedCountry(val) {
+      console.log('val', val)
       if (this.edit || !val) return
       const countryDefaultValuesIndex = countryDefaultValues.findIndex(
         (country) => country.name === val
       )
+      const englishResourceId = this.languageItems.find((item) => item.name === 'English')
+        ?.resourceId
       if (countryDefaultValuesIndex !== -1) {
         this.formData.DateFormat = countryDefaultValues[countryDefaultValuesIndex].dateFormat
         this.formData.TimeFormat = countryDefaultValues[countryDefaultValuesIndex].timeFormat
         this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
         const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
         if (nativeLanguageIndex !== -1) {
-          const nativeLanguageResourceId =
+          this.formData.PreferredLanguageTypeResourceId =
             this.languageItems.find(
               (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
-            )?.resourceId || ''
-          this.formData.PreferredLanguageTypeResourceId = nativeLanguageResourceId
+            )?.resourceId || englishResourceId
         }
+      } else {
+        this.formData.PreferredLanguageTypeResourceId = englishResourceId
       }
     },
     isCallbackSelected(val) {
@@ -1085,10 +1089,7 @@ export default {
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-          this.languageItems = [
-            { name: 'All Languages', resourceId: '' },
-            ...res?.filter((item) => item.genericCodeTypeId === 21)
-          ]
+          this.languageItems = [...res?.filter((item) => item.genericCodeTypeId === 21)]
           this.notificationTemplates = res
             .filter((item) => item.genericCodeTypeId === 5)
             .map((notificationTemplate, ind) => {
