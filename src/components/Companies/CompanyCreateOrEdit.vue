@@ -1137,6 +1137,10 @@ export default {
                 )
               }
             }
+            if (!this.formData.PreferredLanguageTypeResourceId) {
+              const englishResourceId = this.languageItems.find((item) => item.name === 'English')
+              this.formData.PreferredLanguageTypeResourceId = englishResourceId?.resourceId
+            }
           }
         }
       )
