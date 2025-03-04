@@ -846,7 +846,6 @@ export default {
   },
   watch: {
     getSelectedCountry(val) {
-      console.log('val', val)
       if (this.edit || !val) return
       const countryDefaultValuesIndex = countryDefaultValues.findIndex(
         (country) => country.name === val
