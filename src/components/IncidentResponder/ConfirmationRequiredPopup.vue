@@ -8,8 +8,16 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      The edit action will be applied to the selected {{ emailCount }} emails, and
-      {{ userCount }} users will be notified about the update. Do you want to proceed?
+      <div>
+        <span v-if="isNotified">
+          The edit action will be applied to the selected {{ emailCount }} emails, and
+          {{ userCount }} users will be notified about the update. Do you want to proceed?
+        </span>
+        <span v-else>
+          The edit action will be applied to the selected {{ emailCount }} emails. Do you want to
+          proceed?
+        </span>
+      </div>
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -53,6 +61,10 @@ export default {
     payload: {
       type: Object,
       default: () => ({})
+    },
+    isNotified: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
