@@ -25,7 +25,7 @@
         searchType="attachmentOpened"
         @on-close="toggleShowSandboxActivityDialog"
       />
-      <SandboxDetailDialogAlerts />
+      <SandboxDetailDialogAlerts :is-show-v4-rule="false" />
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
