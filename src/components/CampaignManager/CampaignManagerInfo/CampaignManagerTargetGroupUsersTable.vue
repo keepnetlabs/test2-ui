@@ -33,10 +33,15 @@
       />
       <AlertBox
         v-if="canRenderNoPhoneNumberAlertBox"
-        class="mt-4"
         icon-color="#B83A3A"
         style="background-color: #f56c6c33;"
         text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
+      <AlertBox
+        v-if="canRenderAlertboxLanguage"
+        class="w-100"
+        :text="getPreferredLanguageText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </div>
@@ -59,7 +64,11 @@
 <script>
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import { getTargetGroupCountDetail, searchTargetGroupUsers } from '@/api/targetUsers'
+import {
+  getTargetGroupCountDetail,
+  searchTargetGroupUsers,
+  getTargetGroupCountDetailExt
+} from '@/api/targetUsers'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
@@ -106,6 +115,22 @@ export default {
     addPhoneNumberColumn: {
       type: Boolean,
       default: false
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
+    },
+    targetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    scenarioResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    sendUserPreferredLanguage: {
+      type: String,
+      default: '0'
     }
   },
   data() {
@@ -117,6 +142,8 @@ export default {
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
+      userFromPreferredLanguage: 0,
+      userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -171,6 +198,22 @@ export default {
     },
     canRenderNoPhoneNumberAlertBox() {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
+    },
+    canRenderAlertboxLanguage() {
+      return (
+        this.userFromPreferredLanguage > 0 ||
+        (this.userFromCompanyLanguage > 0 &&
+          !this.isVishing &&
+          !this.isSmishing &&
+          !this.isAwareness)
+      )
+    },
+    getPreferredLanguageText() {
+      return `${this.userFromPreferredLanguage} user${
+        this.userFromPreferredLanguage > 1 ? 's' : ''
+      } get the scenario in their preferred language; ${this.userFromCompanyLanguage} other${
+        this.userFromCompanyLanguage > 1 ? 's' : ''
+      } in the company language.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
@@ -311,7 +354,19 @@ export default {
           this.tableData = data.results || []
         })
         .then(() => {
-          getTargetGroupCountDetail([this.resourceId])
+          const isCallingPreferred =
+            this.isPhishing && parseInt(this.sendUserPreferredLanguage) === 1
+          const method = isCallingPreferred
+            ? getTargetGroupCountDetailExt
+            : getTargetGroupCountDetail
+          const payload = isCallingPreferred
+            ? {
+                targetGroupResourceIds: [this.resourceId],
+                scenarioResourceIds: this.scenarioResourceIds || [],
+                sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+              }
+            : [this.resourceId]
+          method(payload)
             .then((response) => {
               if (!Object.keys(response).length) return
               const {
@@ -338,6 +393,12 @@ export default {
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
               this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
               this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
+              this.userFromCompanyLanguage = data.find(
+                (row) => row.status === 'Active'
+              )?.hasCompanyPreferredLanguage?.[0]?.count
+              this.userFromPreferredLanguage = data.find(
+                (row) => row.status === 'Active'
+              )?.hasPreferredLanguage[0]?.count
               this.setLoading(false)
             })
             .catch(() => {
