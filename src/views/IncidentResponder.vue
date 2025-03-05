@@ -60,6 +60,7 @@
         :email-count="confirmationDialogEmailCount"
         :user-count="confirmationDialogUserCount"
         :is-action-button-disabled="confirmationRequiredActionButtonDisabled"
+        :is-notified="extendedView.isNotify"
         @on-close="handleConfirmationRequiredClose"
         @on-confirm="handleEditAfterConfirmation"
       />

@@ -10,7 +10,7 @@ export const defaultDialogBoxSettings = {
   analysisThankYouMessage:
     'Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.',
   isDeleteEmailBeforeAnalysis: true,
-  isDeleteWithoutConfirmation: false,
+  isDeleteWithoutConfirmation: true,
   msgBoxBtnYesText: 'Yes',
   msgBoxBtnNoText: 'No',
   msgBoxBtnOkText: 'Okay',

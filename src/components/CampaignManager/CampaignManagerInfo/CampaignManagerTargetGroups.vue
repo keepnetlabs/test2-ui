@@ -53,6 +53,7 @@
             }"
           >
             <CampaignManagerTargetGroupUsersTable
+              ref="refGroupUsersTable"
               class="ml-4"
               :is-target-group-empty="isTargetGroupEmpty"
               :is-target-group-loading="isTargetGroupLoading"
@@ -65,6 +66,10 @@
               :is-awareness="isAwareness"
               :isMFAScenarioSelected="isMFAScenarioSelected"
               :add-phone-number-column="isAwareness"
+              :scenario-resource-ids="scenarioResourceIds"
+              :is-phishing="isPhishing"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :send-user-preferred-language="sendUserPreferredLanguage"
             />
           </div>
         </Multipane>
@@ -138,6 +143,22 @@ export default {
     addPhoneNumberColumn: {
       type: Boolean,
       default: false
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
+    },
+    targetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    scenarioResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    sendUserPreferredLanguage: {
+      type: String,
+      default: '0'
     }
   },
   data() {
