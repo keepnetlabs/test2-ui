@@ -428,7 +428,6 @@ export default {
       const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
         (row) => row.status === 'Active'
       )
-      console.log('activeData', activeData)
       return activeData.reduce((acc, row) => {
         return acc + row?.hasCompanyPreferredLanguage[0]?.count
       }, 0)
@@ -437,7 +436,6 @@ export default {
       const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
         (row) => row.status === 'Active'
       )
-      console.log('activeData', activeData)
       return activeData.reduce((acc, row) => {
         return acc + row?.hasPreferredLanguage[0]?.count
       }, 0)

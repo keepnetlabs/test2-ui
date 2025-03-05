@@ -315,7 +315,7 @@ export default {
   },
   computed: {
     isFrequencyDisabled() {
-      return this.sendUserPreferredLanguage === '1'
+      return this.sendUserPreferredLanguage.toString() === '1'
     },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
@@ -632,6 +632,7 @@ export default {
         this.initialScenarioDistribution =
           data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
         this.selectedRowFormData = data
+        this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
           resourceId: tGroup.value
