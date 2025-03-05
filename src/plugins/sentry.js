@@ -64,7 +64,8 @@ const CONSTANTS = {
     'Request failed with status code 400',
     'Request failed with status code 401',
     'Request failed with status code 409',
-    `https://phishing-embed.livingsecurity.com`
+    `https://phishing-embed.livingsecurity.com`,
+    'HTTP/1.1 Overhead'
   ],
   NETWORK_ERROR: 'Network Error',
   USER_FLOW: [
