@@ -28,15 +28,28 @@ const CONSTANTS = {
     "null is not an object (evaluating 'this.getDoc().querySelector')",
     'v.get is not a function',
     "undefined is not an object (evaluating '__gCrWeb.instantSearch.clearHighlight')",
-    `Cannot read properties of null (reading 'offsetWidth')`
+    `Cannot read properties of null (reading 'offsetWidth')`,
+    `Failed to execute 'querySelectorAll' on 'Document': The provided selector is empty.`,
+    `Cannot read properties of undefined (reading 'getCosmeticsFilters')`,
+    `Cannot read properties of undefined (reading 'getBoundingClientRect')`,
+    'a.getEl is not a function',
+    "Cannot read properties of undefined (reading '__ob__')",
+    `undefined is not an object (evaluating 'this.get("selected").lastComponent')`,
+    `undefined is not an object (evaluating 'this.get("selected").allComponents')`
   ],
   VUETIFY_INTERNAL: [
     "Cannot read properties of undefined (reading 'getTiles')",
-    't.hasAttribute is not a function'
+    't.hasAttribute is not a function',
+    '[Vuetify] Rules should return a string or boolean'
   ],
   VUE_ROUTER: [
     'Navigation aborted from',
-    `Redirected when going from "/reports/executive-reports" to "/reports/executive-reports/new" via a navigation guard.`
+    `Redirected when going from "/reports/executive-reports" to "/reports/executive-reports/new" via a navigation guard.`,
+    'Redirected when going from "/awareness-educator/enrollments" to "/awareness-educator/enrollments/training-report',
+    'Avoided redundant navigation to current location: /threat-sharing',
+    `Avoided redundant navigation to current location: "/reports/executive-reports".`,
+    'Avoided redundant navigation to current location: "/company/job-log".',
+    'Redirected when going from "/login" to "/email-threat-simulator"'
   ],
   SMARTLOOK: 'smartlook',
   RECORDER_ERROR: 'Could not start new session on document.visible event',
@@ -45,7 +58,14 @@ const CONSTANTS = {
     'timeout of 100000ms exceeded',
     'Request aborted',
     'Request failed with status code 524',
-    'Non-Error promise rejection captured with value: Timeout'
+    'Non-Error promise rejection captured with value: Timeout',
+    'Failed to fetch',
+    'Request failed with status code 403',
+    'Request failed with status code 400',
+    'Request failed with status code 401',
+    'Request failed with status code 409',
+    `https://phishing-embed.livingsecurity.com`,
+    'HTTP/1.1 Overhead'
   ],
   NETWORK_ERROR: 'Network Error',
   USER_FLOW: [
@@ -63,8 +83,7 @@ const CONSTANTS = {
   LOGIN_NAVIGATION_DUPLICATED: [
     'Avoided redundant navigation to current location: "/login"',
     'Redirected when going from "/login" to "/" via a navigation guard.',
-    'Navigation aborted from "/login?',
-    'Avoided redundant navigation to current location: /threat-sharing'
+    'Navigation aborted from "/login?'
   ],
   ANIMATION_FRAME: [
     'window.requestAnimationFrame is not a function',
@@ -80,14 +99,29 @@ const CONSTANTS = {
     `Cannot read properties of undefined (reading 'indexOf')`,
     `Cannot read properties of undefined (reading 'powerBiEmbed')`
   ],
-  VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`],
+  VUE_PDF: [`Cannot read properties of undefined (reading 'catch')`, 'l.cancel() is undefined'],
   SAFARI: [`undefined is not an object (evaluating 'n.features')`],
   VUE_MULTIPANE: ['t.className.match is not a function'],
   SENTRY: [`Cannot read properties of null (reading 'role')`],
   IOS: [
     `TypeError: undefined is not an object (evaluating '__gCrWeb.instantSearch.setIOSParameters')`,
     `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`
-  ]
+  ],
+  HTML2CANVAS: ["Cannot use 'in' operator to search for 'length' in null"],
+  SCORM: [
+    'https://dash.keepnetlabs.com/training/scorm/watch',
+    `Can't find variable: gmo`,
+    'Non-Error promise rejection captured with value:',
+    `Cannot read properties of undefined (reading 'key')`,
+    `Object captured as exception with keys: message`
+  ],
+  SESSION_STACK: [`Cannot use 'in' operator to search for 'activeTime' in undefined`],
+  ELEMENT_UI: [
+    'e.getFullYear is not a function',
+    't.getFullYear is not a function',
+    'e.getHours is not a function'
+  ],
+  ZARAZ: ['https://acmeproducts.keepnetlabs.com/login']
 }
 export default (router) => {
   if (!sentryStatus) return
@@ -116,7 +150,12 @@ export default (router) => {
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
       'ResizeObserver loop completed with undelivered notifications.',
-      'Userflow.js error reply (undefined): undefined'
+      'Userflow.js error reply (undefined): undefined',
+      'NetworkError when attempting to fetch resource.',
+      'NotSupportedError: Failed to load because no supported source was found.',
+      `Cannot read properties of undefined (reading 'status')`,
+      `Cannot read properties of undefined (reading 'message')`,
+      'Event `CustomEvent` (type=error) captured as exception'
     ],
     trackComponents: true,
     tracesSampleRate: 1.0,
@@ -128,7 +167,6 @@ export default (router) => {
       if (window.location.pathname.includes('/training/scorm')) {
         return null
       }
-      return event
     }
     if (event?.level === CONSTANTS.ERROR && event?.exception?.values?.[0]) {
       const message = event.exception.values[0].value
@@ -148,6 +186,11 @@ export default (router) => {
       if (CONSTANTS.SENTRY.some((m) => message.includes(m))) return null
       if (CONSTANTS.IOS.some((m) => message.includes(m))) return null
       if (CONSTANTS.VUE_ROUTER.some((m) => message.includes(m))) return null
+      if (CONSTANTS.HTML2CANVAS.some((m) => message.includes(m))) return null
+      if (CONSTANTS.SCORM.some((m) => message.includes(m))) return null
+      if (CONSTANTS.SESSION_STACK.some((m) => message.includes(m))) return null
+      if (CONSTANTS.ELEMENT_UI.some((m) => message.includes(m))) return null
+      if (CONSTANTS.ZARAZ.some((m) => message.includes(m))) return null
       if (message.includes(CONSTANTS.SMARTLOOK)) return null
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.RESIZE_OBSERVER)) return null
