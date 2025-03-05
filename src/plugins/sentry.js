@@ -57,13 +57,14 @@ const CONSTANTS = {
   AXIOS_ERROR: [
     'timeout of 100000ms exceeded',
     'Request aborted',
-    'Request failed with status code 524',
     'Non-Error promise rejection captured with value: Timeout',
     'Failed to fetch',
+    'Request failed with status code 524',
     'Request failed with status code 403',
     'Request failed with status code 400',
     'Request failed with status code 401',
     'Request failed with status code 409',
+    'Request failed with status code 404',
     `https://phishing-embed.livingsecurity.com`,
     'HTTP/1.1 Overhead'
   ],
@@ -155,7 +156,14 @@ export default (router) => {
       'NotSupportedError: Failed to load because no supported source was found.',
       `Cannot read properties of undefined (reading 'status')`,
       `Cannot read properties of undefined (reading 'message')`,
-      'Event `CustomEvent` (type=error) captured as exception'
+      'Event `CustomEvent` (type=error) captured as exception',
+      'Load failed',
+      'Request failed with status code 524',
+      'Request failed with status code 403',
+      'Request failed with status code 400',
+      'Request failed with status code 401',
+      'Request failed with status code 409',
+      'Request failed with status code 404'
     ],
     trackComponents: true,
     tracesSampleRate: 1.0,
@@ -195,6 +203,12 @@ export default (router) => {
       if (message.includes(CONSTANTS.RECORDER_ERROR)) return null
       if (message.includes(CONSTANTS.RESIZE_OBSERVER)) return null
       if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
+    } else if (
+      event?.level === CONSTANTS.ERROR &&
+      event?.message?.includes('Vuetify') &&
+      event?.message?.includes('HTTP/1.1 Overhead')
+    ) {
+      return null
     }
     return event
   })
