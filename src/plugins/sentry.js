@@ -39,7 +39,8 @@ const CONSTANTS = {
   ],
   VUETIFY_INTERNAL: [
     "Cannot read properties of undefined (reading 'getTiles')",
-    't.hasAttribute is not a function'
+    't.hasAttribute is not a function',
+    '[Vuetify] Rules should return a string or boolean'
   ],
   VUE_ROUTER: [
     'Navigation aborted from',
