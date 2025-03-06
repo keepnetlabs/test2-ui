@@ -123,13 +123,16 @@
                               auto-deselect-ancestors
                               auto-select-descendants
                               search-nested
-                              flat
                               multiple
                               placeholder="Select Language"
                               :value="selectedLanguages"
                               :options="treeSelectLanguageOptions"
-                              value-consist-of="LEAF_PRIORITY"
-                            />
+                              valueConsistsOf="LEAF_PRIORITY"
+                            >
+                              <div slot="value-label" slot-scope="{ node }">
+                                Language(16)
+                              </div>
+                            </Treeselect>
                           </div>
                           <div>
                             <v-tooltip bottom opacity="1">
