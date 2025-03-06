@@ -93,6 +93,12 @@
               :text="getTimeZoneWarningText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderAlertboxLanguage"
+              class="mt-4"
+              :text="getPreferredLanguageText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -359,6 +365,8 @@ export default {
   },
   data() {
     return {
+      userFromPreferredLanguage: 0,
+      userFromCompanyLanguage: 0,
       SCENARIO_DISTRIBUTION_TEXTS,
       SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
@@ -407,6 +415,33 @@ export default {
           (row) => row.status === 'Active'
         ) || []
       return activeItems
+    },
+    canRenderAlertboxLanguage() {
+      return (
+        parseInt(this.formData?.sendUserPreferredLanguage) === 1 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
+    },
+    getUserFromCompanyLanguage() {
+      const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
+        (row) => row.status === 'Active'
+      )
+      return activeData.reduce((acc, row) => {
+        return acc + row?.hasCompanyPreferredLanguage[0]?.count
+      }, 0)
+    },
+    getUserFromPreferredLanguage() {
+      const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
+        (row) => row.status === 'Active'
+      )
+      return activeData.reduce((acc, row) => {
+        return acc + row?.hasPreferredLanguage[0]?.count
+      }, 0)
+    },
+    getPreferredLanguageText() {
+      return `${this.getUserFromCompanyLanguage} users get the scenario in their preferred language; ${this.getUserFromPreferredLanguage} others in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams
@@ -570,6 +605,8 @@ export default {
         })
         return {
           name: formData.name,
+          'Hyper-Personalization':
+            parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
           'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
@@ -586,6 +623,8 @@ export default {
       })
       return {
         name: formData.name,
+        'Hyper-Personalization':
+          parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
         'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),

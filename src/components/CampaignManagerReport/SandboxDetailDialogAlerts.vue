@@ -25,7 +25,7 @@
         <p class="mb-0 ml-8">
           &bull; A3: Bot activity that happened in the same second that matched other rules.
         </p>
-        <div class="mb-0 ml-8">
+        <div v-if="isShowV4Rule" class="mb-0 ml-8">
           &bull; A4: Stop Bot Activity Challenge
           <p class="mb-0 ml-4">
             &bull; A4.1: The phishing link was clicked, but the challenge was failed.
@@ -45,6 +45,12 @@ import AlertBox from '@/components/AlertBox.vue'
 export default {
   name: 'SandboxDetailDialogAlerts',
   components: { AlertBox },
+  props: {
+    isShowV4Rule: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       isShowAccordion: false

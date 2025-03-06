@@ -44,6 +44,9 @@ export function searchAllTargetGroups(payload) {
 export function getTargetGroupCountDetail(payload) {
   return testRequest.post(`/target-groups/targetgroupusercountdetail`, payload)
 }
+export function getTargetGroupCountDetailExt(payload) {
+  return testRequest.post(`/target-groups/targetgroupusercountdetailext`, payload)
+}
 
 export function createTargetGroup(payload) {
   return testRequest.post('/target-groups', payload, { snackbar: COMMON_SNACKBAR })

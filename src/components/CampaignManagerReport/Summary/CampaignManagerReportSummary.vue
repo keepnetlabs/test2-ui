@@ -240,7 +240,7 @@ export default {
         categoryDistributionType: 'Manually',
         trackingReplyInfo: ''
       }
-      const { smartGroupInfo } = this?.campaignSummary || {}
+      const { smartGroupInfo, campaignInfo = {} } = this?.campaignSummary || {}
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)
@@ -248,6 +248,10 @@ export default {
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Groups': this?.targetGroups || [],
+        'Hyper-Personalization':
+          parseInt(campaignInfo?.sendUserPreferredLanguage) === 1
+            ? 'Preferred Language'
+            : 'Manually',
         'Smart Grouping': smartGroupInfo,
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,

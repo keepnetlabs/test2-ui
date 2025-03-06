@@ -89,10 +89,13 @@
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
               :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
+              :form-details="formDetails"
               is-phishing
               show-reply-tracking
+              :hyper-personalization="sendUserPreferredLanguage"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @smartGroupSelected="handleSmartGroupSelected"
+              @hyperPersonalizationChange="handleHyperPersonalizationChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -140,6 +143,10 @@
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
               :isMFAScenarioSelected="isMFAScenarioSelected"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :scenario-resource-ids="getSelectedScenariosResourceIds"
+              :is-phishing="true"
+              :send-user-preferred-language="sendUserPreferredLanguage"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -158,6 +165,7 @@
               :is-edit="isEdit"
               :isDuplicate="isDuplicate"
               :phishing-type-id="1"
+              :is-frequency-disabled="isFrequencyDisabled"
               :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -223,7 +231,7 @@ import {
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import { getTargetGroupCountDetail } from '@/api/targetUsers'
+import { getTargetGroupCountDetailExt } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
@@ -277,6 +285,7 @@ export default {
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
       clickedUserGroupResourceId: null,
+      sendUserPreferredLanguage: '0',
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -305,6 +314,9 @@ export default {
     }
   },
   computed: {
+    isFrequencyDisabled() {
+      return this.sendUserPreferredLanguage.toString() === '1'
+    },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
         ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
@@ -427,6 +439,7 @@ export default {
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
         formData.scenarioDistribution = this.scenarioDistribution
         formData.smartGroup = this.smartGroup
+        formData.sendUserPreferredLanguage = this.sendUserPreferredLanguage
         if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
           formData.trainingForCategory = this.trainingForCategory
           formData.categoryFilter = this.categoryFilter
@@ -536,6 +549,9 @@ export default {
         return refCampaignManagerTargetAudience?.formData || defaultObj
       }
       return defaultObj
+    },
+    getSelectedScenariosResourceIds() {
+      return this.selectedPhishingScenarios.map((pScenario) => pScenario.resourceId)
     }
   },
   watch: {
@@ -572,6 +588,9 @@ export default {
     handleSmartGroupSelected(group) {
       this.smartGroup = group
     },
+    handleHyperPersonalizationChanged(sendUserPreferredLanguage) {
+      this.sendUserPreferredLanguage = sendUserPreferredLanguage
+    },
     handleTotalPhishingScenariosCountChange(val) {
       this.totalPhishingScenariosCount = val
     },
@@ -592,7 +611,7 @@ export default {
         this.languageOptions =
           response?.map((language) => ({
             name: language.name,
-            text: language.description,
+            text: language.name,
             value: language.resourceId
           })) || []
       })
@@ -613,6 +632,7 @@ export default {
         this.initialScenarioDistribution =
           data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
         this.selectedRowFormData = data
+        this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
           resourceId: tGroup.value
@@ -689,6 +709,11 @@ export default {
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
           this.changeStep()
+          if (
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup
+              ?.$refs?.refGroupUsersTable
+          )
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupUsersTable?.callForData()
           return
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
@@ -700,9 +725,13 @@ export default {
           if (totalTargetUserCount) {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
-            this.userCountDetailResponse = await getTargetGroupCountDetail(
-              this.targetGroupResourceIds
-            )
+            this.userCountDetailResponse = await getTargetGroupCountDetailExt({
+              targetGroupResourceIds: this.targetGroupResourceIds,
+              scenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              ),
+              sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+            })
             if (
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
@@ -854,6 +883,7 @@ export default {
           delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
+            sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
