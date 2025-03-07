@@ -109,6 +109,13 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
+                    <FormGroup
+                      class-name="mt-8"
+                      title="Languages Settings"
+                      sub-title="Choose a language for automatic localization; 178 languages are supported."
+                    >
+                      <InputLanguagesSettings />
+                    </FormGroup>
                     <form-group
                       title="Email Template"
                       class-name="email-template mt-8 p-4"
@@ -116,24 +123,6 @@
                     >
                       <div>
                         <div class="d-flex align-baseline justify-space-between mb-3">
-                          <div class="max-w-554">
-                            <Treeselect
-                              always-open
-                              multi-select
-                              auto-deselect-ancestors
-                              auto-select-descendants
-                              search-nested
-                              multiple
-                              placeholder="Select Language"
-                              :value="selectedLanguages"
-                              :options="treeSelectLanguageOptions"
-                              valueConsistsOf="LEAF_PRIORITY"
-                            >
-                              <div slot="value-label" slot-scope="{ node }">
-                                Language(16)
-                              </div>
-                            </Treeselect>
-                          </div>
                           <div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
@@ -226,7 +215,6 @@
 </template>
 
 <script>
-import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -251,9 +239,11 @@ import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
 import { getEmailTemplateMethodItems } from './utils'
+import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 export default {
   name: 'NewEmailTemplates',
   components: {
+    InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
     AppModal,
@@ -262,8 +252,7 @@ export default {
     EmailTemplate,
     InputTag,
     InputEntityName,
-    InputDescription,
-    Treeselect
+    InputDescription
   },
   props: {
     status: {
