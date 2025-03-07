@@ -156,9 +156,12 @@
                     <VIcon color="#FFFFFF" class="mr-2" :size="24">mdi-creation</VIcon>
                     <div class="emailTemplatePreview__ai-ally-highlight-content-center">
                       <span style="font-weight: 600;">NEW!</span>
-                      <span>
-                        AI Ally customizes scenarios based on user details, including location,
-                        department, and phone number. Select a category to enable this feature.
+                      <span style="font-weight: 400; font-size: 12px;">
+                        {{
+                          isPreferredLanguage
+                            ? `AI Ally customizes scenarios based on user details, including location, department, phone number, and preferred language. Select a category to enable this feature.`
+                            : `AI Ally customizes scenarios based on user details, including location, department, and phone number. Select a category to enable this feature.`
+                        }}
                       </span>
                     </div>
                     <v-btn color="#FFFFFF" icon @click="isAIAllyHighlightVisible = false">
@@ -631,6 +634,10 @@ export default {
     },
     initialScenarioDistribution: {
       type: Number
+    },
+    isPreferredLanguage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
