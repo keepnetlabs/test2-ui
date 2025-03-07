@@ -117,6 +117,9 @@
               :initialCategoryFilter="initialCategoryFilter"
               :initialScenarioDistribution="initialScenarioDistribution"
               :initialTrainingForCategory="initialTrainingForCategory"
+              :is-preferred-language="
+                sendUserPreferredLanguage === 1 || sendUserPreferredLanguage === '1'
+              "
               @distributionChanged="handleDistributionChanged"
               @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
               @trainingForCategoryChanged="handleTrainingForCategoryChanged"
