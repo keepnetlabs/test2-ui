@@ -155,6 +155,7 @@ import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerRep
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 import Badge from '@/components/Badge'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -210,6 +211,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_DELIVERY,
           COLUMNS.DATE_SENT,
@@ -342,8 +344,22 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForLanguages()
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      })
+    },
     handleSelectionChange(selectionCount) {
       this.$emit('on-selection-text-change', selectionCount)
     },
