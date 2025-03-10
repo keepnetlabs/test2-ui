@@ -91,6 +91,7 @@ import CampaignManagerReportActivityColumn from '@/components/CampaignManagerRep
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'CampaignManagerReportClickedTable',
@@ -145,6 +146,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_CLICKED,
           COLUMNS.TIMES_CLICKED,
@@ -188,6 +190,7 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForLanguages()
   },
   watch: {
     customFields: {
@@ -208,6 +211,19 @@ export default {
     }
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      })
+    },
     handleSelectionChange(selectionCount) {
       this.$emit('on-selection-text-change', selectionCount)
     },
