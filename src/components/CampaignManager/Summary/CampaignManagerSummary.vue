@@ -429,7 +429,8 @@ export default {
         (row) => row.status === 'Active'
       )
       return activeData.reduce((acc, row) => {
-        return acc + row?.hasCompanyPreferredLanguage[0]?.count
+        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
       }, 0)
     },
     getUserFromPreferredLanguage() {
@@ -437,11 +438,12 @@ export default {
         (row) => row.status === 'Active'
       )
       return activeData.reduce((acc, row) => {
-        return acc + row?.hasPreferredLanguage[0]?.count
+        const yesStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
       }, 0)
     },
     getPreferredLanguageText() {
-      return `${this.getUserFromCompanyLanguage} users get the scenario in their preferred language; ${this.getUserFromPreferredLanguage} others in the company language.`
+      return `${this.getUserFromPreferredLanguage} users get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} others in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams

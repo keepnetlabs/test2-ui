@@ -150,6 +150,7 @@ export default (router) => {
     ],
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
+      'Maximum call stack size exceeded',
       'ResizeObserver loop completed with undelivered notifications.',
       'Userflow.js error reply (undefined): undefined',
       'NetworkError when attempting to fetch resource.',
@@ -205,8 +206,11 @@ export default (router) => {
       if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
     } else if (
       event?.level === CONSTANTS.ERROR &&
-      event?.message?.includes('Vuetify') &&
-      event?.message?.includes('HTTP/1.1 Overhead')
+      (event?.message?.includes('Vuetify') ||
+        event?.message?.includes('HTTP/1.1 Overhead') ||
+        event?.message?.includes('[object Event]') ||
+        event?.message?.includes('[object ProgressEvent]') ||
+        event?.message?.includes('<unknown>'))
     ) {
       return null
     }

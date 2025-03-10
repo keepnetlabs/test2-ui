@@ -393,12 +393,15 @@ export default {
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
               this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
               this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
-              this.userFromCompanyLanguage = data.find(
-                (row) => row.status === 'Active'
-              )?.hasCompanyPreferredLanguage?.[0]?.count
-              this.userFromPreferredLanguage = data.find(
-                (row) => row.status === 'Active'
-              )?.hasPreferredLanguage[0]?.count
+              const activeData = data.find((row) => row.status === 'Active')
+              const yesCompanyPrefYesItem = activeData?.hasCompanyPreferredLanguage?.find(
+                (row) => row.status === 'Yes'
+              )
+              this.userFromCompanyLanguage = yesCompanyPrefYesItem?.count || 0
+              const yesUserPrefYesItem = activeData?.hasPreferredLanguage?.find(
+                (row) => row.status === 'Yes'
+              )
+              this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
               this.setLoading(false)
             })
             .catch(() => {
