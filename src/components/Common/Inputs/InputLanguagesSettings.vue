@@ -1,5 +1,5 @@
 <template>
-  <div class="position-relative">
+  <div class="position-relative" v-click-outside="handleClickOutside">
     <VTextField
       v-model.trim="getTextFieldValue"
       ref="refSearchTextField"
@@ -23,13 +23,14 @@
             placeholder="Search"
           />
           <VTreeview
+            :value="value"
             class="input-languages-settings-treeview"
             dense
-            return-object
             selectable
             open-all
-            item-text="name"
-            item-key="resourceId"
+            return-object
+            item-text="text"
+            item-key="value"
             :search="searchValue"
             :hoverable="false"
             :items="getItems"
@@ -56,30 +57,35 @@
 <script>
 export default {
   name: 'InputLanguagesSettings',
+  props: {
+    value: {
+      type: Array
+    }
+  },
   data() {
     return {
       appendIcon: 'mdi-menu-down',
-      selectedLanguages: [],
+      selectedLanguages: this.value || [],
       loading: false,
       menuMaxHeight: '300px',
       searchValue: '',
       items: [
         {
-          resourceId: 1,
-          name: 'Preferred Languages',
+          value: 1,
+          text: 'Preferred Languages',
           children: [
-            { resourceId: 2, name: 'English (United Kingdom)' },
-            { resourceId: 3, name: 'English (United States)', active: false, visible: false },
-            { resourceId: 4, name: 'German' }
+            { value: 2, text: 'English (United Kingdom)' },
+            { value: 3, text: 'English (United States)', active: false, visible: false },
+            { value: 4, text: 'German' }
           ]
         },
         {
-          resourceId: 5,
-          name: 'All Languages',
+          value: 5,
+          text: 'All Languages',
           children: [
-            { resourceId: 6, name: 'French' },
-            { resourceId: 7, name: 'Spanish' },
-            { resourceId: 8, name: 'Italian' }
+            { value: 6, text: 'French' },
+            { value: 7, text: 'Spanish' },
+            { value: 8, text: 'Italian' }
           ]
         }
       ]
@@ -87,7 +93,8 @@ export default {
   },
   computed: {
     getTextFieldValue() {
-      return 'Languages(17)'
+      const length = this.value.length
+      return `Language${length > 1 ? 's' : ''} (${length})`
     },
     getAddButtonStyle() {
       const style = { marginTop: '2px' }
@@ -112,8 +119,16 @@ export default {
     }
   },
   methods: {
-    handleAdd() {},
-    handleTreeViewChange() {},
+    handleAdd() {
+      this.$emit('input', this.selectedLanguages)
+      this.changeMenuStatus('hidden')
+    },
+    handleClickOutside() {
+      this.changeMenuStatus('hidden')
+    },
+    handleTreeViewChange(event) {
+      this.selectedLanguages = event
+    },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
     },

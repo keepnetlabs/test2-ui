@@ -114,7 +114,7 @@
                       title="Languages Settings"
                       sub-title="Choose a language for automatic localization; 178 languages are supported."
                     >
-                      <InputLanguagesSettings />
+                      <InputLanguagesSettings v-model="selectedLanguages" />
                     </FormGroup>
                     <form-group
                       title="Email Template"
@@ -123,6 +123,20 @@
                     >
                       <div>
                         <div class="d-flex align-baseline justify-space-between mb-3">
+                          <div>
+                            <KSelect
+                              v-model="activeLanguage"
+                              class="input-languages-email-template-preview-select"
+                              label="Template Preview"
+                              outlined
+                              dense
+                              hide-details
+                              placeholder="Select a language"
+                              style="max-width: 554px; min-width: 554px;"
+                              :disabled="selectedLanguages.length === 0"
+                              :items="selectedLanguages"
+                            />
+                          </div>
                           <div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
@@ -240,9 +254,11 @@ import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.
 import { mapGetters } from 'vuex'
 import { getEmailTemplateMethodItems } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
 export default {
   name: 'NewEmailTemplates',
   components: {
+    KSelect,
     InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
@@ -312,6 +328,7 @@ export default {
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
+      activeLanguage: '',
       treeSelectLanguageOptions: [
         {
           id: 'PreferredLanguages',
@@ -436,6 +453,22 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    }
+  },
+  watch: {
+    selectedLanguages(val) {
+      if (!val.length) {
+        this.activeLanguage = ''
+      } else {
+        if (this.activeLanguage) {
+          const isInSelected = val.find((item) => item.value === this.activeLanguage)
+          if (!isInSelected) {
+            this.activeLanguage = val[0].value
+          }
+        } else {
+          this.activeLanguage = val[0].value
+        }
+      }
     }
   },
   created() {
