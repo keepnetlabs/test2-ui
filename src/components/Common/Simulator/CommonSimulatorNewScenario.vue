@@ -1061,7 +1061,17 @@ export default {
   },
   created() {
     getLandingPageFormDetails().then((response) => {
-      this.landingPageData = response.data.data
+      const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+        return {
+          text: item.domain,
+          value: item.id.toString(),
+          extraDatas: [
+            { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+            { text: item.isStopBotActivity, value: item.isStopBotActivity }
+          ]
+        }
+      })
+      this.landingPageData = { ...response.data.data, domainRecords }
     })
     if (this.isDuplicate) this.setFooterDuplicateIds()
     this.callForLanguages()

@@ -210,6 +210,7 @@ export default (router) => {
         event?.message?.includes('HTTP/1.1 Overhead') ||
         event?.message?.includes('[object Event]') ||
         event?.message?.includes('[object ProgressEvent]') ||
+        event?.message?.includes('Large Render Blocking Asset') ||
         event?.message?.includes('<unknown>'))
     ) {
       return null
