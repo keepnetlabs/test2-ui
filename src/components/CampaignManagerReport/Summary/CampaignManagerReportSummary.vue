@@ -307,7 +307,7 @@ export default {
           this.formDetails?.methodTypes?.find((item) => parseInt(item.value) === methodTypeId)
             ?.text || ''
         const difficultyText =
-          this.formDetails?.difficultyTypess
+          this.formDetails?.difficultyTypes
             ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
             ?.map((item) => item.text)
             ?.join(',') || ''
