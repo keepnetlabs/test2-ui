@@ -124,17 +124,12 @@
                       <div>
                         <div class="d-flex align-baseline justify-space-between mb-3">
                           <div>
-                            <KSelect
+                            <InputLanguagePreview
                               v-model="activeLanguage"
-                              class="input-languages-email-template-preview-select"
-                              label="Template Preview"
-                              outlined
-                              dense
-                              hide-details
-                              placeholder="Select a language"
                               style="max-width: 554px; min-width: 554px;"
-                              :disabled="selectedLanguages.length === 0"
+                              hide-details
                               :items="selectedLanguages"
+                              :disabled="selectedLanguages.length === 0"
                             />
                           </div>
                           <div>
@@ -254,11 +249,11 @@ import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.
 import { mapGetters } from 'vuex'
 import { getEmailTemplateMethodItems } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
-import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'NewEmailTemplates',
   components: {
-    KSelect,
+    InputLanguagePreview,
     InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,

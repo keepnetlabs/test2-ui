@@ -6,6 +6,7 @@
       id="input-language-settings"
       outlined
       hide-details
+      readonly
       autocomplete="off"
       placeholder="Search languages to manage"
       :append-icon="appendIcon"
@@ -23,6 +24,7 @@
             placeholder="Search"
           />
           <VTreeview
+            ref="refTreeView"
             :value="value"
             class="input-languages-settings-treeview"
             dense
@@ -124,6 +126,7 @@ export default {
       this.changeMenuStatus('hidden')
     },
     handleClickOutside() {
+      this.selectedLanguages = this.value
       this.changeMenuStatus('hidden')
     },
     handleTreeViewChange(event) {
