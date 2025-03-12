@@ -122,9 +122,9 @@
             :scope="scope"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
-            :showTooltip="isTooltipRenderable(scope.row)"
-            :disabled="isTooltipRenderable(scope.row)"
-            :disabledTooltipText="getAddUsersToGroupButtonTooltipMessage(scope.row)"
+            :showTooltip="isTooltipRenderable(scope.row, true)"
+            :disabled="isTooltipRenderable(scope.row, true)"
+            :disabledTooltipText="getAddUsersToGroupButtonTooltipMessage(scope.row, true)"
             @on-click="handleAddGroup(scope.row)"
           />
           <TargetGroupRowActionsDeleteButton
@@ -397,8 +397,9 @@ export default {
         return 'Users who haven’t enrolled any training are automatically added to this group and removed once they do. Use this group to prioritize training for these users.'
       return ''
     },
-    getAddUsersToGroupButtonTooltipMessage(row) {
+    getAddUsersToGroupButtonTooltipMessage(row, isCheckSCIM = false) {
       if (!row?.name) return ''
+      if (isCheckSCIM && row.scimSettingName) return 'Users cannot be added to the SCIM group.'
       if (row.name === 'Repeat Offenders') {
         return 'Users cannot be added to the Repeat Offenders group.'
       }
@@ -422,7 +423,8 @@ export default {
         return 'Non-Simulated Users group is can not be deleted.'
       if (row.name === 'Untrained Users') return 'Untraining Users group is can not be deleted.'
     },
-    isTooltipRenderable(row) {
+    isTooltipRenderable(row, isCheckSCIM) {
+      if (isCheckSCIM && row.scimSettingName) return true
       return (
         row?.name &&
         ['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
