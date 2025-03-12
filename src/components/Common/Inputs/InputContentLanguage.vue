@@ -116,10 +116,11 @@ export default {
     callForContentLanguageItems() {
       if (!this.trainingId) return
       AwarenessEducatorService.getContentLanguageItems(this?.trainingId).then((response) => {
-        this.contentLanguageItems = response?.data?.data?.map((lang) => ({
-          text: lang.name,
-          value: lang.id
-        }))
+        this.contentLanguageItems =
+          response?.data?.data?.map((lang) => ({
+            text: lang.name,
+            value: lang.id
+          })) || []
         this.contentLanguageItems.unshift({
           text: labels.AllLanguages,
           value: labels.All
