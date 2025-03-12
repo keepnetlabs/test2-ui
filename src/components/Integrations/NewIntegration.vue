@@ -1714,6 +1714,7 @@ export default {
       }
     },
     retryTestConnection(item) {
+      if (!item) return
       item.status = 'loading'
       this.loadingState.push('loading')
       const payload = {
