@@ -334,7 +334,7 @@ export default {
         this.$set(
           this.tableOptions.columns[4],
           'filterableItems',
-          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+          this?.scenarioDetailsLookup?.difficultyTypes?.map((item) => {
             return { text: item.text, value: item.text }
           })
         )

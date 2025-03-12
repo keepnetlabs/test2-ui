@@ -106,6 +106,7 @@ const CONSTANTS = {
   SENTRY: [`Cannot read properties of null (reading 'role')`],
   IOS: [
     `TypeError: undefined is not an object (evaluating '__gCrWeb.instantSearch.setIOSParameters')`,
+    `TypeError: undefined is not an object (evaluating 'a.K')`,
     `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`
   ],
   HTML2CANVAS: ["Cannot use 'in' operator to search for 'length' in null"],
@@ -164,7 +165,8 @@ export default (router) => {
       'Request failed with status code 400',
       'Request failed with status code 401',
       'Request failed with status code 409',
-      'Request failed with status code 404'
+      'Request failed with status code 404',
+      'timed out while waiting for outgoing message to echo back'
     ],
     trackComponents: true,
     tracesSampleRate: 1.0,
