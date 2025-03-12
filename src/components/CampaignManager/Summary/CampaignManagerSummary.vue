@@ -202,12 +202,6 @@
                 </Badge>
               </div>
             </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              From: {{ emailTemplateParams.fromName }}
-              <span>&#60;</span>
-              {{ emailTemplateParams.fromAddress }}
-              <span>&#62;</span>
-            </div>
             <div
               v-if="!!getPhishingFile"
               class="attachment-wrapper mt-2 mb-0"
@@ -262,8 +256,52 @@
           <div
             v-if="isShowEmailTemplate"
             class="campaign-manager-last-step__email-template-body-preview-container"
+            style="background: #fafafa;"
           >
-            <div class="campaign-manager-last-step__email-template-body-preview">
+            <div class="mb-6">
+              <InputLanguagePreview
+                v-model="languagePreview"
+                persistent-hint
+                class="max-w-554"
+                hint="This template is available in 35 languages."
+                :items="selectedTemplateLanguages"
+                @input="handleEmailTemplatePreviewLanguageChange"
+              />
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">Subject: </span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.subject
+                }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">From: </span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.fromAddress
+                }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">From Name: </span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.fromName
+                }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">From Email Address:</span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.fromEmailAddress
+                }}</span>
+              </div>
+              <div>
+                <span class="fw-600 text-primary-color">CC:</span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.cc
+                }}</span>
+              </div>
+            </div>
+            <div
+              class="campaign-manager-last-step__email-template-body-preview"
+              style="background: #fafafa; padding: 0;"
+            >
               <KEmailPreview
                 v-if="!!emailTemplateParams.template"
                 ref="refPreview"
@@ -323,9 +361,11 @@ import {
   SEND_RANDOMLY_USERS_CALCULATE_TYPES
 } from '@/components/CampaignManager/utils'
 import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
+import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'CampaignManagerSummary',
   components: {
+    InputLanguagePreview,
     CampaignManagerReportSummaryTraining,
     CampaignManagerSummaryScenarioInfoTable,
     KEmailPreview,
@@ -373,6 +413,8 @@ export default {
       trainingLanguages: [],
       selectedTrainingLanguages: [],
       labels,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false,
@@ -858,7 +900,8 @@ export default {
     },
     toggleScheduleDialog() {
       this.isShowScheduleDialog = !this.isShowScheduleDialog
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange() {}
   }
 }
 </script>

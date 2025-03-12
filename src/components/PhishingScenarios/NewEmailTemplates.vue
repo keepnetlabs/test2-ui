@@ -118,7 +118,7 @@
                     </FormGroup>
                     <form-group
                       title="Email Template"
-                      class-name="email-template mt-8 p-4"
+                      class-name="email-template mt-6 p-4"
                       onsubmit="return false"
                     >
                       <div>

@@ -75,9 +75,8 @@
         </template>
       </v-btn>
     </FormGroup>
-    <FormGroup>
+    <FormGroup v-if="canRenderAlertBox">
       <AlertBox
-        v-if="canRenderAlertBox"
         style="margin-top: -20px;"
         class="bg-aqua-light mb-4"
         icon-color="#2196F3"

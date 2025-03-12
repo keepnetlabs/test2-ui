@@ -320,7 +320,7 @@
                             </VTooltip>
                           </div>
                           <div
-                            v-if="!isQuishingTypeIndividualPrintOut"
+                            v-if="!isQuishingTypeIndividualPrintOut && !isPhishing"
                             class="template-summary__sub-title mt-2"
                           >
                             From:
@@ -392,16 +392,59 @@
                     </div>
                     <div
                       v-if="showTemplate1"
-                      class="summary-content summary-content__collapsable"
+                      class="summary-content summary-content__collapsable pt-0"
                       style="border: none;"
                     >
-                      <div class="summary-template">
-                        <KEmailPreview
-                          v-if="!!summaryData.emailTemplate.template"
-                          :key="summaryData.emailTemplate.template"
-                          :html="summaryData.emailTemplate.template"
-                          is-extra-height
-                        />
+                      <div>
+                        <div class="summary-template">
+                          <div class="my-6">
+                            <InputLanguagePreview
+                              v-model="languagePreview"
+                              persistent-hint
+                              class="max-w-554"
+                              hint="This template is available in 35 languages."
+                              :items="selectedTemplateLanguages"
+                              @input="handleEmailTemplatePreviewLanguageChange"
+                            />
+                            <div class="mb-2">
+                              <span class="fw-600 text-primary-color">Subject: </span>
+                              <span class="fw-400 text-primary-color">{{
+                                summaryData.emailTemplate && summaryData.emailTemplate.subject
+                              }}</span>
+                            </div>
+                            <div class="mb-2">
+                              <span class="fw-600 text-primary-color">From: </span>
+                              <span class="fw-400 text-primary-color">{{
+                                summaryData.emailTemplate && summaryData.emailTemplate.fromAddress
+                              }}</span>
+                            </div>
+                            <div class="mb-2">
+                              <span class="fw-600 text-primary-color">From Name: </span>
+                              <span class="fw-400 text-primary-color">{{
+                                summaryData.emailTemplate && summaryData.emailTemplate.fromName
+                              }}</span>
+                            </div>
+                            <div class="mb-2">
+                              <span class="fw-600 text-primary-color">From Email Address:</span>
+                              <span class="fw-400 text-primary-color">{{
+                                summaryData.emailTemplate &&
+                                summaryData.emailTemplate.fromEmailAddress
+                              }}</span>
+                            </div>
+                            <div>
+                              <span class="fw-600 text-primary-color">CC:</span>
+                              <span class="fw-400 text-primary-color">{{
+                                summaryData.emailTemplate && summaryData.emailTemplate.cc
+                              }}</span>
+                            </div>
+                          </div>
+                          <KEmailPreview
+                            v-if="!!summaryData.emailTemplate.template"
+                            :key="summaryData.emailTemplate.template"
+                            :html="summaryData.emailTemplate.template"
+                            is-extra-height
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -685,9 +728,11 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { mapGetters } from 'vuex'
 import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
+import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    InputLanguagePreview,
     NewEmailTemplates,
     NewLandingPage,
     KSelect,
@@ -736,6 +781,7 @@ export default {
   },
   data() {
     return {
+      languagePreview: '',
       landingPageData: null,
       isOpenLandingPageDrawer: false,
       isOpenEmailTemplateDrawer: false,
@@ -802,6 +848,9 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    selectedTemplateLanguages() {
+      return []
+    },
     getSelectedMethodText() {
       let selectedMethod = this.getMethodText
       if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
@@ -1450,7 +1499,8 @@ export default {
       this.landingPageTemplateId = null
       this.landingPageTemplateResourceId = null
       this.emailTemplateResourceId = null
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange(value) {}
   }
 }
 </script>

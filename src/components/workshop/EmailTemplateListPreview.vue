@@ -76,6 +76,36 @@
                     "
                   />
                 </div>
+                <div>
+                  <KSelect
+                    v-model="languageSelectValue"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios filter-field-scenarios__language"
+                    custom-menu-class="filter-field-scenarios__language-menu"
+                    :min-width-type="isPhishing ? 'medium' : ''"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      min-width: 150px;
+                    "
+                    :type="isPhishing ? 'autocomplete' : 'select'"
+                    :multiple="isPhishing"
+                    :slots="isPhishing ? { selection: true } : {}"
+                    @change="handleInputLanguageChange"
+                  >
+                    <template v-if="isPhishing" #selection="data">
+                      <span v-if="data.index === 0"
+                        >Language ({{ languageSelectValue.length }})</span
+                      >
+                    </template>
+                  </KSelect>
+                </div>
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
@@ -90,22 +120,6 @@
                     :items="difficulties"
                     @change="getTemplatesForSearch"
                   />
-                </div>
-                <div style="max-width: 140px;">
-                  <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
-                    :items="languages"
-                    placeholder="Language"
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    persistent-hint
-                    class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
-                    @change="getTemplatesForSearch"
-                  >
-                  </v-select>
                 </div>
               </div>
               <div v-if="isPhishing">
@@ -505,6 +519,7 @@ export default {
       labels,
       isSaving: false,
       emailTemplateData: {},
+      languageSelectValue: this.isPhishing ? [] : '',
       attachmentName: '',
       isRenameAttachmentModalVisible: false,
       isAttachmentError: false,
@@ -898,6 +913,12 @@ export default {
             this.$emit('loading', false)
           })
       }, 500)
+    },
+    handleInputLanguageChange(value) {
+      this.bodyData.filter.FilterGroups[0].FilterItems[2].value = this.isPhishing
+        ? value.join(',')
+        : value
+      this.getTemplatesForSearch()
     },
     getTemplatesForSearch() {
       this.bodyData.pageSize = 100

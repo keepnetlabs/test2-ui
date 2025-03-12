@@ -153,6 +153,15 @@
   .filter-field-scenarios {
     padding: 24px 16px !important;
     max-width: 140px;
+    &__language{
+      &-menu{
+        .v-list-item__action {
+          margin-right:16px !important;
+        }
+      }
+      .v-select__selections{
+      }
+    }
   }
 
   .template-list {

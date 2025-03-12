@@ -8,6 +8,7 @@
       :status="isShowTemplate"
       :landing-page-params="landingPageParams"
       :email-template="emailTemplate"
+      :email-template-params="emailTemplateParams"
       :tab="tab"
       :landing-page-templates="landingPageTemplates"
       @on-close="toggleTemplateDialog"
@@ -266,7 +267,7 @@
             </div>
           </div>
           <div class="px-6 pt-4">
-            <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
+            <ElTabs v-model="upperTab" class="phishing-campaign-tab-container">
               <ElTabPane name="scenarios" label="Scenarios" />
               <ElTabPane
                 v-if="
@@ -392,34 +393,52 @@
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
-                          <span class="template-preview__text--title">Template Name: </span>
-                          <span class="template-preview__text--body">{{
-                            emailTemplateParams.name
+                          <span class="fw-600 text-primary-color">Template Name: </span>
+                          <span class="fw-400 text-primary-color">{{
+                            emailTemplateParams && emailTemplateParams.name
                           }}</span>
                         </div>
-                        <div>
-                          <span class="template-preview__text--title">Subject: </span>
-                          <span class="template-preview__text--body">{{
-                            emailTemplateParams.subject
-                          }}</span>
-                        </div>
-                        <div>
-                          <span class="template-preview__text--title">From Name: </span>
-                          <span class="template-preview__text--body">{{
-                            emailTemplateParams.fromName
-                          }}</span>
-                        </div>
-                        <div>
-                          <span class="template-preview__text--title">From Email Address: </span>
-                          <span class="template-preview__text--body">{{
-                            emailTemplateParams.fromAddress
-                          }}</span>
-                        </div>
-                        <div v-if="emailTemplateParams.ccAddresses.length > 0">
-                          <span class="template-preview__text--title">CC: </span>
-                          <span class="template-preview__text--body">{{
-                            emailTemplateParams.ccAddresses.join(',')
-                          }}</span>
+                        <div style="background: #e0e0e0; height: 1px; max-width: 554px;"></div>
+                        <div class="mb-4">
+                          <InputLanguagePreview
+                            v-model="languagePreview"
+                            persistent-hint
+                            class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                            hint="This template is available in 35 languages."
+                            :items="selectedTemplateLanguages"
+                            :hide-details="false"
+                            @input="handleEmailTemplatePreviewLanguageChange"
+                          />
+                          <div class="mb-2">
+                            <span class="fw-600 text-primary-color">Subject: </span>
+                            <span class="fw-400 text-primary-color">{{
+                              emailTemplateParams && emailTemplateParams.subject
+                            }}</span>
+                          </div>
+                          <div class="mb-2">
+                            <span class="fw-600 text-primary-color">From: </span>
+                            <span class="fw-400 text-primary-color">{{
+                              emailTemplateParams && emailTemplateParams.fromAddress
+                            }}</span>
+                          </div>
+                          <div class="mb-2">
+                            <span class="fw-600 text-primary-color">From Name: </span>
+                            <span class="fw-400 text-primary-color">{{
+                              emailTemplateParams && emailTemplateParams.fromName
+                            }}</span>
+                          </div>
+                          <div class="mb-2">
+                            <span class="fw-600 text-primary-color">From Email Address:</span>
+                            <span class="fw-400 text-primary-color">{{
+                              emailTemplateParams && emailTemplateParams.fromEmailAddress
+                            }}</span>
+                          </div>
+                          <div>
+                            <span class="fw-600 text-primary-color">CC:</span>
+                            <span class="fw-400 text-primary-color">{{
+                              emailTemplateParams && emailTemplateParams.cc
+                            }}</span>
+                          </div>
                         </div>
                         <div
                           v-if="!!getPhishingFile"
@@ -435,7 +454,7 @@
                           </div>
                         </div>
                       </div>
-                      <hr class="mt-4" v-if="!!emailTemplate" />
+                      <hr v-if="!!emailTemplate" />
                       <KEmailPreview
                         v-if="!!emailTemplate"
                         :key="emailTemplate"
@@ -570,10 +589,12 @@ import {
   scenarioDistributionItems,
   SCENARIO_DISTRIBUTION
 } from '@/components/CampaignManager/utils'
+import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
 
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
+    InputLanguagePreview,
     TrainingLibraryPreviewDialog,
     CampaignManagerPhishingScenariosPreviewDialog,
     CampaignManagerPhishingScenariosTrainingTab,
@@ -673,6 +694,8 @@ export default {
       phishingScenarioItems: [],
       isMethodMfa: false,
       isShowTrainingDialog: false,
+      languagePreview: [],
+      selectedTemplateLanguages: [],
       isShowCategoryTrainingDialog: false,
       enumTypes: {}
     }
@@ -1323,7 +1346,8 @@ export default {
     },
     toggleShowCategoryTrainingDialog() {
       this.isShowCategoryTrainingDialog = !this.isShowCategoryTrainingDialog
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange() {}
   }
 }
 </script>
