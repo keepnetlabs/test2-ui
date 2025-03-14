@@ -72,6 +72,7 @@ import {
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
@@ -131,6 +132,13 @@ export default {
     sendUserPreferredLanguage: {
       type: String,
       default: '0'
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: 0
+    },
+    categoryFilter: {
+      type: Object
     }
   },
   data() {
@@ -365,6 +373,12 @@ export default {
                 sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
               }
             : [this.resourceId]
+          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY && isCallingPreferred) {
+            payload.categoryFilter = {
+              Condition: this.categoryFilter.filter.Condition,
+              FilterGroups: this.categoryFilter.filter.FilterGroups
+            }
+          }
           method(payload)
             .then((response) => {
               if (!Object.keys(response).length) return
