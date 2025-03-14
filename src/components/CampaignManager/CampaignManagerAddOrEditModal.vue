@@ -14,6 +14,14 @@
         :error-message="createErrorMessage"
         @on-close="createErrorMessage = ''"
       />
+      <CampaignManagerLanguageSupportDialog
+        v-if="isShowMissingLanguageSupportDialog"
+        :status="isShowMissingLanguageSupportDialog"
+        :target-group-resource-ids="targetGroupResourceIds"
+        :selected-target-groups="selectedTargetGroups"
+        @on-close="toggleShowMissingLanguageSupportDialog"
+        @on-confirm="onConfirmLanguageSupportDialog"
+      />
       <!--
     <VNavigationDrawer
       class="k-navigation-drawer"
@@ -244,6 +252,7 @@ import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+import CampaignManagerLanguageSupportDialog from '@/components/CampaignManager/CampaignManagerLanguageSupportDialog.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -252,6 +261,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    CampaignManagerLanguageSupportDialog,
     CampaignManagerDeliverySettings,
     CampaignManagerTargetAudience,
     CustomError,
@@ -284,6 +294,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      isShowMissingLanguageSupportDialog: false,
       isOpenPhishingDrawer: false,
       smartGroup: null,
       initialClickedUserGroupResourceId: null,
@@ -588,6 +599,13 @@ export default {
     }, 2000)
   },
   methods: {
+    toggleShowMissingLanguageSupportDialog() {
+      this.isShowMissingLanguageSupportDialog = !this.isShowMissingLanguageSupportDialog
+    },
+    onConfirmLanguageSupportDialog() {
+      this.step = 2
+      this.isShowMissingLanguageSupportDialog = !this.isShowMissingLanguageSupportDialog
+    },
     handleSmartGroupSelected(group) {
       this.smartGroup = group
     },
@@ -735,6 +753,16 @@ export default {
               ),
               sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
             })
+            if (parseInt(this.sendUserPreferredLanguage) === 1) {
+              const hasRandomLanguage = this.userCountDetailResponse?.data?.data.some((data) => {
+                const randomLanguage = data?.hasRandomLanguage
+                return !!randomLanguage?.find((r) => r.status === 'Yes')?.count
+              })
+              if (hasRandomLanguage) {
+                this.setActionButtonDisability(false)
+                return this.toggleShowMissingLanguageSupportDialog()
+              }
+            }
             if (
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
