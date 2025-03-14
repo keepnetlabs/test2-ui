@@ -443,7 +443,11 @@ export default {
       }, 0)
     },
     getPreferredLanguageText() {
-      return `${this.getUserFromPreferredLanguage} users get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} others in the company language.`
+      return `${this.getUserFromPreferredLanguage} user${
+        this.getUserFromPreferredLanguage > 1 ? 's' : ''
+      } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
+        this.getUserFromPreferredLanguage > 1 ? 's' : ''
+      } in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams
