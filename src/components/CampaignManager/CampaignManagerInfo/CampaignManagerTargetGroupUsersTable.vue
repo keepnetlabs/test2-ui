@@ -200,7 +200,12 @@ export default {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     canRenderAlertboxLanguage() {
-      return !this.isVishing && !this.isSmishing && !this.isAwareness
+      return (
+        parseInt(this.sendUserPreferredLanguage) === 1 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
     },
     getPreferredLanguageText() {
       return `${this.userFromPreferredLanguage} user${
