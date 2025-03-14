@@ -947,7 +947,7 @@ export default {
     },
     getLandingPageDifficulty() {
       return (
-        this.scenarioDetailsLookup.difficultyTypes.find(
+        this?.scenarioDetailsLookup?.difficultyTypes?.find(
           (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
         )?.text || ''
       )
@@ -1069,7 +1069,7 @@ export default {
         : null
     },
     getLandingPageDifficultyColor() {
-      const difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
+      const difficultyType = this?.scenarioDetailsLookup?.difficultyTypes?.find(
         (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
       )?.text
       if (difficultyType === 'Easy') return '#217124'
@@ -1078,7 +1078,7 @@ export default {
     },
     getDifficultyType() {
       return (
-        this.scenarioDetailsLookup['difficultyTypes'].find(
+        this.scenarioDetailsLookup['difficultyTypes']?.find(
           (item) => item.value === this.generalDifficultyTypeId
         )?.text || ''
       )

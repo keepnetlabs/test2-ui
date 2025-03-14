@@ -51,7 +51,7 @@
             :valueFormat="parsedFormat"
             :picker-options="pickerOptions"
             :prefix-icon="'el-icon-date'"
-            @input="dateRange = ''"
+            @input="handleDateRangeInputChange"
           />
           <VBtn
             class="training-library-card__footer-btn"
@@ -1366,6 +1366,16 @@ export default {
     },
     setDefaultWidgetData(key, data) {
       this.defaultWidgetData[key] = data
+    },
+    handleDateRangeInputChange(dateRange) {
+      this.dateRange = dateRange
+      if (!dateRange) {
+        this.formData.executiveReportDateRange = [
+          this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          this.$moment(Date.now()).format(getTimeZoneForMoment())
+        ]
+        this.formData.datePeriod = 1
+      }
     }
   }
 }
