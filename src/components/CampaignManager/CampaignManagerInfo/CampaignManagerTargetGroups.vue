@@ -70,6 +70,8 @@
               :is-phishing="isPhishing"
               :target-group-resource-ids="targetGroupResourceIds"
               :send-user-preferred-language="sendUserPreferredLanguage"
+              :scenario-distribution="scenarioDistribution"
+              :category-filter="categoryFilter"
             />
           </div>
         </Multipane>
@@ -159,6 +161,13 @@ export default {
     sendUserPreferredLanguage: {
       type: String,
       default: '0'
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: 0
+    },
+    categoryFilter: {
+      type: Object
     }
   },
   data() {
