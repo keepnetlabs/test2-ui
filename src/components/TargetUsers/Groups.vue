@@ -399,7 +399,7 @@ export default {
     },
     getAddUsersToGroupButtonTooltipMessage(row, isCheckSCIM = false) {
       if (!row?.name) return ''
-      if (isCheckSCIM && row.scimSettingName) return 'Users cannot be added to the SCIM group.'
+      if (isCheckSCIM && row.isScimGroup) return 'Users cannot be added to the SCIM group.'
       if (row.name === 'Repeat Offenders') {
         return 'Users cannot be added to the Repeat Offenders group.'
       }
@@ -424,7 +424,7 @@ export default {
       if (row.name === 'Untrained Users') return 'Untraining Users group is can not be deleted.'
     },
     isTooltipRenderable(row, isCheckSCIM) {
-      if (isCheckSCIM && row.scimSettingName) return true
+      if (isCheckSCIM && row.isScimGroup) return true
       return (
         row?.name &&
         ['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
