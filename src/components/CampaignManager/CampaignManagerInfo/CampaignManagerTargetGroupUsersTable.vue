@@ -151,6 +151,7 @@ export default {
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       userFromPreferredLanguage: 0,
+      userFromPreferredLanguagesText: 'e.g., French, German, Spanish, and 7 more',
       userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -216,6 +217,7 @@ export default {
       )
     },
     getPreferredLanguageText() {
+      //return `Selected scenarios don’t match users’ preferred languages (${this.userFromPreferredLanguagesText}), so the company language (${this.$store.getters['login/getCurrentCompany']?.name}) will be used.`
       return `${this.userFromPreferredLanguage} user${
         this.userFromPreferredLanguage > 1 ? 's' : ''
       } get the scenario in their preferred language; ${this.userFromCompanyLanguage} other${
