@@ -1028,7 +1028,10 @@ export default {
     template: {
       handler(val) {
         this.previewTemplate =
-          val?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') || ''
+          val?.replace(
+            /{COMPANYLOGO}/g,
+            this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+          ) || ''
       },
       immediate: true
     },
