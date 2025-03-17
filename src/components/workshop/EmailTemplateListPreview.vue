@@ -365,7 +365,7 @@
                   />
                 </template>
                 <template v-else>
-                  <div class="template-preview">
+                  <div class="template-preview" :style="isPhishing ? 'padding-bottom:8px;' : ''">
                     <div v-if="!isPhishing" class="template-preview__icon">
                       <v-btn
                         v-if="!!templateHTML"
@@ -379,26 +379,68 @@
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!templateHTML">
                       <div>
-                        <span class="template-preview__text--title">Template Name: </span>
-                        <span class="template-preview__text--body">{{
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >Template Name:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
                           selectedTemplateHeader
                         }}</span>
                       </div>
-                      <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">Subject: </span>
-                        <span class="template-preview__text--body">{{ templateSubject }}</span>
+                      <div
+                        v-if="isPhishing"
+                        style="background: #e0e0e0; height: 1px; max-width: 554px;"
+                      ></div>
+                      <div v-if="isPhishing">
+                        <InputLanguagePreview
+                          v-model="languagePreview"
+                          persistent-hint
+                          class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                          hint="This template is available in 35 languages."
+                          :items="selectedTemplateLanguages"
+                          :hide-details="false"
+                          @input="handleEmailTemplatePreviewLanguageChange"
+                        />
+                      </div>
+                      <div
+                        :class="isPhishing ? 'mt-n2' : ''"
+                        v-if="!isQuishingTypeIndividualPrintOut"
+                      >
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >Subject:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateSubject
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Name: </span>
-                        <span class="template-preview__text--body">{{ templateFromName }}</span>
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >From:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateFromName
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Email Address: </span>
-                        <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >From Name:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateFromName
+                        }}</span>
+                      </div>
+                      <div v-if="!isQuishingTypeIndividualPrintOut">
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >From Email Address:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateFromEmail
+                        }}</span>
                       </div>
                       <div v-if="isPhishing">
-                        <span class="template-preview__text--title">CC: </span>
-                        <span class="template-preview__text--body">{{
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >CC:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
                           templateCCAddresses.join(', ')
                         }}</span>
                       </div>
@@ -464,6 +506,7 @@ import { isDifferent } from '@/utils/functions'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -503,6 +546,7 @@ export default {
     'infinite-scroll': InfiniteScroll
   },
   components: {
+    InputLanguagePreview,
     KSelect,
     ShowMoreTags,
     KEmailPreview,
@@ -517,6 +561,8 @@ export default {
   data() {
     return {
       labels,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       isSaving: false,
       emailTemplateData: {},
       languageSelectValue: this.isPhishing ? [] : '',
@@ -1067,7 +1113,8 @@ export default {
         .finally(() => {
           this.loadingTemplatePreview = false
         })
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange() {}
   }
 }
 </script>
