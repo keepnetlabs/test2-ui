@@ -148,6 +148,7 @@ export default {
       activeUserCount: 0,
       preferredLanguages: [],
       randomLanguages: [],
+      activeCompanyName: '',
       activeUsersWithPhoneNumberCount: 0,
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
@@ -229,9 +230,10 @@ export default {
           } more`
         prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
       }
+      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
       return `Selected scenarios don’t match users’ preferred language${
         preferredLanguagesLength > 1 ? 's' : ''
-      } (${prefLanguagesText}), so the company language (${this.randomLanguages[0]}) will be used.`
+      } (${prefLanguagesText}), so the company language (${companyLanguage}) will be used.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
@@ -448,6 +450,7 @@ export default {
               })
               this.preferredLanguages = Array.from(preferredLanguages)
               this.randomLanguages = Array.from(randomLanguages)
+              this.activeCompanyName = activeData?.companyPreferredLanguage
               this.setLoading(false)
             })
             .catch(() => {
