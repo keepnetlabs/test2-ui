@@ -146,12 +146,15 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
       activeUserCount: 0,
+      preferredLanguages: [],
+      randomLanguages: [],
       activeUsersWithPhoneNumberCount: 0,
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       userFromPreferredLanguage: 0,
       userFromPreferredLanguagesText: 'e.g., French, German, Spanish, and 7 more',
+      userFromCompanyLanguageText: '',
       userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -217,12 +220,18 @@ export default {
       )
     },
     getPreferredLanguageText() {
-      //return `Selected scenarios don’t match users’ preferred languages (${this.userFromPreferredLanguagesText}), so the company language (${this.$store.getters['login/getCurrentCompany']?.name}) will be used.`
-      return `${this.userFromPreferredLanguage} user${
-        this.userFromPreferredLanguage > 1 ? 's' : ''
-      } get the scenario in their preferred language; ${this.userFromCompanyLanguage} other${
-        this.userFromCompanyLanguage > 1 ? 's' : ''
-      } in the company language.`
+      const preferredLanguagesLength = this.preferredLanguages.length
+      let prefLanguagesText = this.preferredLanguages[0]
+      if (preferredLanguagesLength > 1) {
+        if (preferredLanguagesLength > 3)
+          prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
+            preferredLanguagesLength - 3
+          } more`
+        prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
+      }
+      return `Selected scenarios don’t match users’ preferred language${
+        preferredLanguagesLength > 1 ? 's' : ''
+      } (${prefLanguagesText}), so the company language (${this.randomLanguages[0]}) will be used.`
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
@@ -417,6 +426,28 @@ export default {
                 (row) => row.status === 'Yes'
               )
               this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
+              const preferredLanguages = new Set()
+              const randomLanguages = new Set()
+              data.map((row) => {
+                if (row.hasPreferredLanguage) {
+                  const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
+                  if (noPrefLanguages.length) {
+                    noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
+                      preferredLanguages.add(lang.status)
+                    })
+                  }
+                }
+                if (row.hasRandomLanguage) {
+                  const noRandomLanguages = row.hasRandomLanguage.filter((r) => r.status === 'Yes')
+                  if (noRandomLanguages.length) {
+                    noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
+                      randomLanguages.add(lang.status)
+                    })
+                  }
+                }
+              })
+              this.preferredLanguages = Array.from(preferredLanguages)
+              this.randomLanguages = Array.from(randomLanguages)
               this.setLoading(false)
             })
             .catch(() => {
