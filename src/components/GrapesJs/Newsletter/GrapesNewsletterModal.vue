@@ -245,7 +245,7 @@ export default {
           win.document.title = 'Mail Preview'
           win.document.body.innerHTML = this.getGrapesEditorContent().replace(
             /{COMPANYLOGO}/g,
-            this?.$store?.state?.whitelabel.mainLogoUrl || ''
+            this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           )
         })
       }
