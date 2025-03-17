@@ -40,26 +40,55 @@
                   </VTooltip>
                 </span>
               </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+              <div
+                v-if="isPhishing"
+                style="background: #e0e0e0; height: 1px; max-width: 554px;"
+              ></div>
+              <div v-if="isPhishing">
+                <InputLanguagePreview
+                  v-model="languagePreview"
+                  persistent-hint
+                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                  hint="This template is available in 35 languages."
+                  :items="selectedTemplateLanguages"
+                  :hide-details="false"
+                  @input="handleEmailTemplatePreviewLanguageChange"
+                />
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From Email Address: </span>
-                <span class="template-preview__text--body">{{
+                <span class="template-preview__text--title mt-n2 fw-600 text-primary-color"
+                  >Subject:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.subject
+                }}</span>
+              </div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title fw-600 text-primary-color">From: </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.fromName
+                }}</span>
+              </div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title fw-600 text-primary-color"
+                  >From Name:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.fromName
+                }}</span>
+              </div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title fw-600 text-primary-color"
+                  >From Email Address:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
               <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title">CC: </span>
-                <span class="template-preview__text--body">{{
+                <span class="template-preview__text--title fw-600 text-primary-color">CC: </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.ccAddresses.join(', ')
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--subject">Subject: </span>
-                <span class="template-preview__text--subject">{{
-                  emailTemplateParams.subject
                 }}</span>
               </div>
               <div
@@ -131,9 +160,11 @@ import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simula
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
+    InputLanguagePreview,
     AppDialogFooterWithClose,
     AppDialog,
     AttachmentsPreview,
@@ -162,6 +193,8 @@ export default {
       emailTemplate: null,
       landingPageTemplates: [],
       isMethodMfa: false,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
@@ -324,7 +357,8 @@ export default {
         .finally(() => {
           this.isIndividualPrintoutButtonDisabled = false
         })
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange() {}
   }
 }
 </script>
