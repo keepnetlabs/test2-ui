@@ -72,6 +72,7 @@ import {
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
@@ -131,6 +132,13 @@ export default {
     sendUserPreferredLanguage: {
       type: String,
       default: '0'
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: 0
+    },
+    categoryFilter: {
+      type: Object
     }
   },
   data() {
@@ -143,6 +151,7 @@ export default {
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       userFromPreferredLanguage: 0,
+      userFromPreferredLanguagesText: 'e.g., French, German, Spanish, and 7 more',
       userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -200,9 +209,15 @@ export default {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
     canRenderAlertboxLanguage() {
-      return !this.isVishing && !this.isSmishing && !this.isAwareness
+      return (
+        parseInt(this.sendUserPreferredLanguage) === 1 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
     },
     getPreferredLanguageText() {
+      //return `Selected scenarios don’t match users’ preferred languages (${this.userFromPreferredLanguagesText}), so the company language (${this.$store.getters['login/getCurrentCompany']?.name}) will be used.`
       return `${this.userFromPreferredLanguage} user${
         this.userFromPreferredLanguage > 1 ? 's' : ''
       } get the scenario in their preferred language; ${this.userFromCompanyLanguage} other${
@@ -360,6 +375,12 @@ export default {
                 sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
               }
             : [this.resourceId]
+          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY && isCallingPreferred) {
+            payload.categoryFilter = {
+              Condition: this.categoryFilter.filter.Condition,
+              FilterGroups: this.categoryFilter.filter.FilterGroups
+            }
+          }
           method(payload)
             .then((response) => {
               if (!Object.keys(response).length) return

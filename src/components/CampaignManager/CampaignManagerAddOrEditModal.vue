@@ -158,6 +158,8 @@
               :scenario-resource-ids="getSelectedScenariosResourceIds"
               :is-phishing="true"
               :send-user-preferred-language="sendUserPreferredLanguage"
+              :scenario-distribution="scenarioDistribution"
+              :category-filter="categoryFilter"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -746,13 +748,20 @@ export default {
           if (totalTargetUserCount) {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
-            this.userCountDetailResponse = await getTargetGroupCountDetailExt({
+            const payload = {
               targetGroupResourceIds: this.targetGroupResourceIds,
               scenarioResourceIds: this.selectedPhishingScenarios.map(
                 (pScenario) => pScenario.resourceId
               ),
               sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
-            })
+            }
+            if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+              payload.categoryFilter = {
+                Condition: this.categoryFilter.filter.Condition,
+                FilterGroups: this.categoryFilter.filter.FilterGroups
+              }
+            }
+            this.userCountDetailResponse = await getTargetGroupCountDetailExt(payload)
             if (parseInt(this.sendUserPreferredLanguage) === 1) {
               const hasRandomLanguage = this.userCountDetailResponse?.data?.data.some((data) => {
                 const randomLanguage = data?.hasRandomLanguage
