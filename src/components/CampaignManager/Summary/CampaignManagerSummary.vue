@@ -446,7 +446,7 @@ export default {
       return `${this.getUserFromPreferredLanguage} user${
         this.getUserFromPreferredLanguage > 1 ? 's' : ''
       } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
-        this.getUserFromPreferredLanguage > 1 ? 's' : ''
+        this.getUserFromCompanyLanguage > 1 ? 's' : ''
       } in the company language.`
     },
     isRenderTrainingCard() {
