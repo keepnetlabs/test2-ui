@@ -250,7 +250,6 @@ export default {
     getUserFromPreferredLanguage() {
       if (!this.userCountDetailResponse) return
       const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
-      console.log('activeData', activeData)
       return activeData.reduce((acc, row) => {
         const yesStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'Yes')
         return acc + yesStatusItem?.count || 0
