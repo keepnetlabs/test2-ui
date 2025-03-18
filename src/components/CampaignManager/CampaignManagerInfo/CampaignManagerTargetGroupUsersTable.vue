@@ -223,6 +223,10 @@ export default {
     getPreferredLanguageText() {
       const preferredLanguagesLength = this.preferredLanguages.length
       let prefLanguagesText = this.preferredLanguages[0]
+      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
+      if (preferredLanguagesLength === 0) {
+        return `User's preferred languages are not defined, so the company language (${companyLanguage}) will be used.`
+      }
       if (preferredLanguagesLength > 1) {
         if (preferredLanguagesLength > 3)
           prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
@@ -230,7 +234,6 @@ export default {
           } more`
         prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
       }
-      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
       return `Selected scenarios don’t match users’ preferred language${
         preferredLanguagesLength > 1 ? 's' : ''
       } (${prefLanguagesText}), so the company language (${companyLanguage}) will be used.`
