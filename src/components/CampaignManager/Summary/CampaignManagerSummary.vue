@@ -258,7 +258,7 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
             style="background: #fafafa;"
           >
-            <div class="mb-6">
+            <div class="mb-3">
               <InputLanguagePreview
                 v-model="languagePreview"
                 persistent-hint
