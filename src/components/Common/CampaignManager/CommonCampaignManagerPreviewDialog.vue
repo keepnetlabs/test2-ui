@@ -43,16 +43,6 @@
               }}</span>
             </div>
             <div v-if="!!emailTemplate" class="template-preview__text">
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
@@ -65,15 +55,49 @@
                   <span>This template was generated with AI</span>
                 </VTooltip>
               </div>
-              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title">CC: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.ccAddresses.join(', ')
+              <div
+                v-if="isPhishing"
+                style="background: #e0e0e0; height: 1px; max-width: 554px;"
+              ></div>
+              <div v-if="isPhishing">
+                <InputLanguagePreview
+                  v-model="languagePreview"
+                  persistent-hint
+                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                  hint="This template is available in 35 languages."
+                  :items="selectedTemplateLanguages"
+                  :hide-details="false"
+                  @input="handleEmailTemplatePreviewLanguageChange"
+                />
+              </div>
+              <div
+                v-if="!isQuishingTypeIndividualPrintOut"
+                class="template-preview__text--title mt-n2"
+              >
+                <span class="fw-600 text-primary-color">Subject: </span>
+                <span class="fw-400 text-primary-color">{{ emailTemplateParams.subject }}</span>
+              </div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title fw-600 text-primary-color"
+                  >From Name:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.fromName
                 }}</span>
               </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--subject">
-                <span>Subject: </span>
-                <span>{{ emailTemplateParams.subject }}</span>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title fw-600 text-primary-color"
+                  >From Email Address:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.fromAddress
+                }}</span>
+              </div>
+              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <span class="template-preview__text--title fw-600 text-primary-color">CC: </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
               </div>
               <div
                 v-if="isQuishingTypeIndividualPrintOut"
@@ -165,10 +189,12 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import QuishingService from '@/api/quishing'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
   components: {
+    InputLanguagePreview,
     TrainingLibraryPreview,
     AppDialogFooterWithClose,
     TabsWithMfaSettings,
@@ -201,6 +227,8 @@ export default {
       emailTemplateParams: {},
       landingPageParams: {},
       trainingParams: {},
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       category: '',
       tab: 'email',
       isLoading: false,
@@ -380,7 +408,8 @@ export default {
         if (this.trainingParams.languages)
           this.trainingParams.languages = this.trainingParams.languages.join(', ')
       })
-    }
+    },
+    handleEmailTemplatePreviewLanguageChange() {}
   }
 }
 </script>

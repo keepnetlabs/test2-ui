@@ -64,12 +64,6 @@
                 }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title fw-600 text-primary-color">From: </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.fromName
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title fw-600 text-primary-color"
                   >From Name:
                 </span>

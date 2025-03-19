@@ -68,7 +68,7 @@
       :category="getScenarioCategory"
       :isFetchingSummary="isLoading"
     />
-    <CampaignManagerReportSummaryEmail
+    <CampaignManagerReportSummaryPhishingEmail
       :difficulties="difficulties"
       :methods="methods"
       :form-data="getEmailTemplateData"
@@ -95,7 +95,6 @@
 import CampaignManagerReportSummaryHeader from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryHeader'
 import CampaignManagerReportSummaryCards from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
-import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
@@ -107,13 +106,14 @@ import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Su
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
 import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
+import CampaignManagerReportSummaryPhishingEmail from './CampaignManagerReportSummaryPhishingEmail.vue'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryPhishingEmail,
     CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
-    CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader,
