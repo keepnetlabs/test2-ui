@@ -64,7 +64,7 @@
                   v-model="languagePreview"
                   persistent-hint
                   class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  hint="This template is available in 35 languages."
+                  :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
                   :items="selectedTemplateLanguages"
                   :hide-details="false"
                   @input="handleEmailTemplatePreviewLanguageChange"
