@@ -423,7 +423,7 @@ export default {
         const {
           data: { data }
         } = response
-        if (data?.isScimGroup) {
+        if (data?.isScimGroup || data?.isGoogleGroup) {
           this.tableOptions.addButton = {
             show: false
           }
