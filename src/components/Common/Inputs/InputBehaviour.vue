@@ -18,15 +18,17 @@
       @input="$emit('input', $event)"
     >
       <template #item="{ item,parent,attrs,on }">
-        <VListItem v-on="on">
+        <VListItem>
           <VListItemAction>
-            <VSimpleCheckbox :value="attrs.inputValue" color="#2196f3" />
+            <VSimpleCheckbox v-on="{ click: on.click }" :value="attrs.inputValue" color="#2196f3" />
           </VListItemAction>
           <VTooltip right content-class="training-library-input-behaviour__tooltip">
             <template #activator="{ on: tooltip }">
-              <VListItemTitle v-on="tooltip" class="training-library-input-behaviour__activator">{{
-                item.text
-              }}</VListItemTitle>
+              <VListItemTitle
+                v-on="{ ...tooltip, click: on.click }"
+                class="training-library-input-behaviour__activator cursor-pointer"
+                >{{ item.text }}</VListItemTitle
+              >
             </template>
             <span>{{ item.text }}</span>
           </VTooltip>
@@ -83,6 +85,11 @@ export default {
     ...mapGetters({
       getBehaviours: 'trainingLibraryHelpers/getBehaviours'
     })
+  },
+  methods: {
+    getParams(on) {
+      console.log('on', on)
+    }
   }
 }
 </script>

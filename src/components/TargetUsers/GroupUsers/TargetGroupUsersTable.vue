@@ -413,7 +413,7 @@ export default {
     this.callForGetTimeZones()
     this.callForLanguages()
     if (this.resourceId) {
-      this.callForTargetGroup()
+      if (this.resourceId !== '7Tna1kvZXAgX') this.callForTargetGroup()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
