@@ -101,6 +101,7 @@ import {
 import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
+  getTargetGroup,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers,
   searchTargetGroupUsers
@@ -412,10 +413,23 @@ export default {
     this.callForGetTimeZones()
     this.callForLanguages()
     if (this.resourceId) {
+      this.callForTargetGroup()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
   methods: {
+    callForTargetGroup() {
+      getTargetGroup(this.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        if (data?.isScimGroup) {
+          this.tableOptions.addButton = {
+            show: false
+          }
+        }
+      })
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageFilterOptions =
