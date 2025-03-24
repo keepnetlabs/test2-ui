@@ -57,6 +57,9 @@ export function updateTargetGroup(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function getTargetGroup(resourceId) {
+  return testRequest.get(`/target-groups/${resourceId}`)
+}
 
 export function deleteTargetGroup(resourceId) {
   return testRequest.delete(`/target-groups/${resourceId}`, { snackbar: COMMON_SNACKBAR })
