@@ -85,11 +85,6 @@ export default {
     ...mapGetters({
       getBehaviours: 'trainingLibraryHelpers/getBehaviours'
     })
-  },
-  methods: {
-    getParams(on) {
-      console.log('on', on)
-    }
   }
 }
 </script>
