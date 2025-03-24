@@ -170,8 +170,8 @@ export default {
     },
     getTitle() {
       let text = 'User'
-      text += this.bulkImportPayload.selectedRowCount > 1 ? 's' : ''
-      return `Add ${this.bulkImportPayload.selectedRowCount} ${text} To User Groups`
+      text += this?.bulkImportPayload?.selectedRowCount > 1 ? 's' : ''
+      return `Add ${this?.bulkImportPayload?.selectedRowCount || '1'} ${text} To User Groups`
     }
   },
   created() {
