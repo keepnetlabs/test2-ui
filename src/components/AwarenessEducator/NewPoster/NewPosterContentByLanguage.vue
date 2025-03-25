@@ -14,17 +14,36 @@
         :menu-props="{ offsetY: true }"
         :disabled="isLanguageDisabled"
       />
-      <v-btn
-        v-if="isRemovable"
-        outlined
-        class="new-training-content-by-language__button"
-        :ripple="false"
-        :disabled="isUploading"
-        @click="handleRemove"
-      >
-        <v-icon left> mdi-delete </v-icon>
-        Remove
-      </v-btn>
+      <template v-if="isRemovable">
+        <VTooltip v-if="isRenderTooltip" bottom>
+          <template #activator="{on}">
+            <div v-on="on">
+              <VBtn
+                outlined
+                class="new-training-content-by-language__button"
+                :ripple="false"
+                :style="getRemovableButtonStyle"
+                @click="handleRemove"
+              >
+                <v-icon left> mdi-delete </v-icon>
+                Remove
+              </VBtn>
+            </div>
+          </template>
+          <span>{{ value && value.warningMessage }}</span>
+        </VTooltip>
+        <VBtn
+          v-else
+          outlined
+          class="new-training-content-by-language__button"
+          :ripple="false"
+          :style="getRemovableButtonStyle"
+          @click="handleRemove"
+        >
+          <v-icon left> mdi-delete </v-icon>
+          Remove
+        </VBtn>
+      </template>
     </FormGroupHorizontalContent>
     <FormGroupHorizontalContent
       class="training-library-content-by-language"
@@ -112,6 +131,17 @@ export default {
     }
   },
   computed: {
+    getRemovableButtonStyle() {
+      const style = {}
+      if (this.isUploading || this?.value?.isDeleteable) {
+        style.opacity = 0.5
+        style.pointerEvents = 'none'
+      }
+      return style
+    },
+    isRenderTooltip() {
+      return this?.value?.isDeleteable
+    },
     isLanguageDisabled() {
       return !!this?.filePreviews?.length || this.isDisabled
     },
