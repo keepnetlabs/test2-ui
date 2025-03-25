@@ -151,7 +151,9 @@ export default {
         languageId: content.languageId,
         file: null,
         filePreviews: [{ name: content.name, size: content.size }],
-        typeWithDisplayName: content.typeWithDisplayName
+        typeWithDisplayName: content.typeWithDisplayName,
+        isDeleteable: content.isDeleteable,
+        warningMessage: content.warningMessage
       }))
     },
     handleRemove(index) {

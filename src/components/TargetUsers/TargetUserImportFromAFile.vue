@@ -967,7 +967,7 @@ export default {
                 {
                   FieldName: 'Status',
                   Operator: 'Include',
-                  Value: 'New,Exists,Error'
+                  Value: 'New,Exists,Error,SCIM'
                 }
               ],
               FilterGroups: []
@@ -1108,7 +1108,7 @@ export default {
       this.isShowInvalid = !this.isShowInvalid
       this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
-      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error,SCIM'
       this.step3Loading = true
       this.getDatatableList()
     },
@@ -1607,7 +1607,7 @@ export default {
                 {
                   FieldName: 'Status',
                   Operator: 'Include',
-                  Value: 'New,Exists,Error'
+                  Value: 'New,Exists,Error,SCIM'
                 }
               ],
               FilterGroups: []
