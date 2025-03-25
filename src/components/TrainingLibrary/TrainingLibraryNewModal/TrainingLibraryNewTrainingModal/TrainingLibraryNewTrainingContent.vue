@@ -152,7 +152,7 @@ export default {
         file: null,
         filePreviews: [{ name: content.name, size: content.size }],
         typeWithDisplayName: content.typeWithDisplayName,
-        isDeleteable: content.isDeleteable,
+        isDeleteable: !content.isDeleteable,
         warningMessage: content.warningMessage
       }))
     },
