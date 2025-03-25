@@ -197,7 +197,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                  <div class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnYesText"
                   initialPlaceholder="Enter confirm button label"
@@ -209,7 +214,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">No Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">No Button Label</label>
+                  <div class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnNoText"
                   initialPlaceholder="Enter a no button label"
@@ -221,7 +231,12 @@
                 />
               </div>
               <div v-if="false" class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                  <div class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnCancelText"
                   initialPlaceholder="Enter cancel button label"
@@ -233,7 +248,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                  <div class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnOkText"
                   initialPlaceholder="Enter okay button label"
