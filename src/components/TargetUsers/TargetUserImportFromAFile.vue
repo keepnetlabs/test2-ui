@@ -1144,7 +1144,7 @@ export default {
       })
     },
     getTargetUsers() {
-      getTargetGroups({ params: { hasExternalGroups: false } }).then((response) => {
+      getTargetGroups().then((response) => {
         const {
           data: { data }
         } = response
