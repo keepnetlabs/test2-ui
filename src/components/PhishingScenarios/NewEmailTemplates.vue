@@ -498,6 +498,23 @@ export default {
             }
           ]
         }
+        this.languagesPayload.push({
+          languageTypeResourceId: this.formValues.languageTypeResourceId,
+          subject: this.formValues.subject,
+          fromName: this.formValues.fromName,
+          fromAddress: this.formValues.fromAddress,
+          ccAddresses: this.formValues.ccAddresses || [],
+          template: this.formValues.template,
+          prompt: this.formValues.prompt,
+          toneResourceId: this.formValues.toneResourceId,
+          localizationResourceId: this.formValues.localizationResourceId
+        })
+        this.activeLanguage = this.formValues.languageTypeResourceId
+        //TODO
+        this.selectedLanguages.push({
+          text: 'English (UK)',
+          value: this.activeLanguage
+        })
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }

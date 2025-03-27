@@ -96,7 +96,7 @@ export default {
           value: 1,
           text: 'Preferred Languages',
           children: [
-            { value: 2, text: 'English (United Kingdom)' },
+            { value: '280faa1981b6', text: 'English (United Kingdom)' },
             { value: 3, text: 'English (United States)' },
             { value: 4, text: 'German' }
           ]

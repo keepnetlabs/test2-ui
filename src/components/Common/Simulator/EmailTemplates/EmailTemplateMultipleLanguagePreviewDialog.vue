@@ -15,7 +15,11 @@
       <div v-if="!isPreviewLoading" class="template-preview">
         <div class="template-preview__text" v-if="!!templateHTML">
           <template>
-            <InputLanguagePreview persistent-hint @input="handleLanguageChange" />
+            <InputLanguagePreview
+              persistent-hint
+              :hint="`This template is available in ${emailTemplateParams.length || 0} languages.`"
+              @input="handleLanguageChange"
+            />
             <div>
               <span class="template-preview__text--title">From: </span>
               <span class="template-preview__text--body">{{

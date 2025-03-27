@@ -11,7 +11,10 @@ export default {
       return getScenarioDataDetails().then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {
           methodTypes: [],
-          difficultyTypes: []
+          difficultyTypes: [],
+          languageTypes: [],
+          preferredLanguageTypes: [],
+          companyLanguageTypeResourceId: ''
         }
         return response
       })
