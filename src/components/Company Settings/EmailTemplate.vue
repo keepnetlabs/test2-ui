@@ -832,100 +832,6 @@ export default {
       localeOptions: [],
       usaStateResourceIds: [],
       usaResourceId: ''
-      // [
-      //   {
-      //     text: 'United Kingdom',
-      //     value: 'United Kingdom',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'United States',
-      //     value: 'United States',
-      //     isVisible: true,
-      //     children: [
-      //       {
-      //         text: 'Alabama',
-      //         value: 'Alabama'
-      //       },
-      //       {
-      //         text: 'Alaska',
-      //         value: 'Alaska'
-      //       },
-      //       {
-      //         text: 'Arizona',
-      //         value: 'Arizona'
-      //       },
-      //       {
-      //         text: 'Arkansas',
-      //         value: 'Arkansas'
-      //       },
-      //       {
-      //         text: 'California',
-      //         value: 'California'
-      //       },
-      //       {
-      //         text: 'Colorado',
-      //         value: 'Colorado'
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     text: 'Turkey',
-      //     value: 'Turkey',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'France',
-      //     value: 'France',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'Arabia',
-      //     value: 'Arabia',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'China',
-      //     value: 'China',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'Alabama',
-      //     value: 'Alabama',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Alaska',
-      //     value: 'Alaska',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Arizona',
-      //     value: 'Arizona',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Arkansas',
-      //     value: 'Arkansas',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'California',
-      //     value: 'California',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Colorado',
-      //     value: 'Colorado',
-      //     isVisible: false,
-      //     disabled: true
-      //   }
-      // ]
     }
   },
   computed: {
@@ -1045,6 +951,7 @@ export default {
   mounted() {
     this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
+    console.log('this.defaultTemplate', this.defaultTemplate)
     this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },

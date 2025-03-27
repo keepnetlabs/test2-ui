@@ -237,6 +237,7 @@ export default {
             editable: false,
             label: 'Verification',
             sortable: true,
+            width: 180,
             show: true,
             type: 'text',
             filterableType: 'select',

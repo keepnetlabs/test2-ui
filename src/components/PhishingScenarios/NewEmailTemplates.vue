@@ -175,7 +175,7 @@
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="getSelectedLanguagePayload.subject"
-                        :template.sync="formValues.template"
+                        :template.sync="getSelectedLanguagePayload.template"
                         :ai-assistant.sync="formValues.aiAssistant"
                         :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
                         :ai-assistant-total-right="aiAssistantTotalRights"
@@ -185,20 +185,24 @@
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
-                        :language-type-resource-id.sync="formValues.languageTypeResourceId"
+                        :language-type-resource-id.sync="
+                          getSelectedLanguagePayload.languageTypeResourceId
+                        "
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :isAIAllyEnabled="isAIAllyEnabled"
                         :method-type-id="getMethodTypeId"
-                        :prompt.sync="formValues.prompt"
-                        :toneResourceId.sync="formValues.toneResourceId"
-                        :localizationResourceId.sync="formValues.localizationResourceId"
+                        :prompt.sync="getSelectedLanguagePayload.prompt"
+                        :toneResourceId.sync="getSelectedLanguagePayload.toneResourceId"
+                        :localizationResourceId.sync="
+                          getSelectedLanguagePayload.localizationResourceId
+                        "
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
                         :is-plain-text.sync="isPlainText"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
-                        @handleEditHtmlTemplate="formValues.template = $event"
+                        @handleEditHtmlTemplate="getSelectedLanguagePayload.template = $event"
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
@@ -498,9 +502,8 @@ export default {
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
-      const preferredLanguageTypeResourceId =
+      this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
-      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {
@@ -610,7 +613,9 @@ export default {
           fromName: '',
           fromAddress: '',
           ccAddresses: [],
-          template: '',
+          template: this.initialFormValues.template,
+          prompt: '',
+          toneResourceId: '',
           localizationResourceId: ''
         }
       })
