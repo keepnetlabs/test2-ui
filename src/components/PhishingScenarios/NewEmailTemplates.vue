@@ -111,10 +111,14 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <FormGroup
                       class-name="mt-8"
+                      style="max-width: 753px;"
                       title="Languages Settings"
                       sub-title="Choose a language for automatic localization; 178 languages are supported."
                     >
-                      <InputLanguagesSettings v-model="selectedLanguages" />
+                      <InputLanguagesSettings
+                        v-model="selectedLanguages"
+                        @input="handleSelectedLanguagesChange"
+                      />
                     </FormGroup>
                     <form-group
                       title="Email Template"
@@ -165,12 +169,12 @@
                         :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
-                        :from-address.sync="formValues.fromAddress"
-                        :cc-addresses.sync="formValues.ccAddresses"
-                        :from-name.sync="formValues.fromName"
+                        :from-address.sync="getSelectedLanguagePayload.fromAddress"
+                        :cc-addresses.sync="getSelectedLanguagePayload.ccAddresses"
+                        :from-name.sync="getSelectedLanguagePayload.fromName"
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
-                        :subject.sync="formValues.subject"
+                        :subject.sync="getSelectedLanguagePayload.subject"
                         :template.sync="formValues.template"
                         :ai-assistant.sync="formValues.aiAssistant"
                         :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
@@ -324,28 +328,6 @@ export default {
       languageOptions: [],
       selectedLanguages: [],
       activeLanguage: '',
-      treeSelectLanguageOptions: [
-        {
-          id: 'PreferredLanguages',
-          label: 'Preferred Languages',
-          children: [
-            {
-              id: 'English',
-              label: 'English'
-            }
-          ]
-        },
-        {
-          id: 'AllLanguages',
-          label: 'All Languages',
-          children: [
-            {
-              id: 'Turkish',
-              label: 'Turkish'
-            }
-          ]
-        }
-      ],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -375,6 +357,7 @@ export default {
         toneResourceId: '',
         localizationResourceId: ''
       },
+      languagesPayload: [],
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
       commonRules: {
@@ -422,6 +405,12 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSelectedLanguagePayload() {
+      return (
+        this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) ||
+        {}
+      )
+    },
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Email Template'
@@ -608,6 +597,23 @@ export default {
       }
       this.isPhishingFileModified = true
       this.isAddedNewPhishingFile = true
+    },
+    handleSelectedLanguagesChange(languages) {
+      this.languagesPayload = languages.map((language) => {
+        const item = this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === language.value
+        )
+        if (item) return item
+        return {
+          languageTypeResourceId: language.value,
+          subject: '',
+          fromName: '',
+          fromAddress: '',
+          ccAddresses: [],
+          template: '',
+          localizationResourceId: ''
+        }
+      })
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
