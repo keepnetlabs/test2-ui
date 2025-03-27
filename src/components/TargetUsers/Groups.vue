@@ -400,6 +400,7 @@ export default {
     getAddUsersToGroupButtonTooltipMessage(row, isCheckSCIM = false) {
       if (!row?.name) return ''
       if (isCheckSCIM && row.isScimGroup) return 'Users cannot be added to the SCIM group.'
+      if (row.isGoogleGroup) return 'Users cannot be added to the Google group.'
       if (row.name === 'Repeat Offenders') {
         return 'Users cannot be added to the Repeat Offenders group.'
       }
@@ -425,6 +426,7 @@ export default {
     },
     isTooltipRenderable(row, isCheckSCIM) {
       if (isCheckSCIM && row.isScimGroup) return true
+      if (row.isGoogleGroup) return true
       return (
         row?.name &&
         ['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(

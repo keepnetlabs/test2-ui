@@ -239,6 +239,7 @@ export default {
             sortable: true,
             width: 180,
             show: true,
+            width: 180,
             type: 'text',
             filterableType: 'select',
             filterableItems: [
