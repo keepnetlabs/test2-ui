@@ -1,44 +1,53 @@
 <template>
   <div class="position-relative" v-click-outside="handleClickOutside">
-    <VTextField
-      v-model.trim="getTextFieldValue"
-      ref="refSearchTextField"
-      id="input-language-settings"
-      outlined
-      hide-details
-      readonly
-      autocomplete="off"
-      placeholder="Search languages to manage"
-      :append-icon="appendIcon"
-      @focus="handleSearchInputFocus"
-    />
+    <div class="d-flex gap-4">
+      <VTextField
+        v-model.trim="getTextFieldValue"
+        ref="refSearchTextField"
+        id="input-language-settings"
+        outlined
+        hide-details
+        readonly
+        autocomplete="off"
+        placeholder="Search languages to manage"
+        :append-icon="appendIcon"
+        @focus="handleSearchInputFocus"
+      />
+      <VBtn rounded outlined color="#2196f3" style="font-weight: 600;">
+        <v-icon style="font-size: 20px; margin-top: 1px;">mdi-creation</v-icon>
+        <span class="button-new__text">Generate with AI</span>
+      </VBtn>
+    </div>
     <div v-show="!loading" class="switch-account__container input-language-settings__container">
       <div>
         <div class="px-4 py-4 pb-12" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
-          <VTextField
-            v-model.trim="searchValue"
-            outlined
-            hide-details
-            autocomplete="off"
-            prepend-inner-icon="mdi-magnify"
-            placeholder="Search"
-          />
-          <VTreeview
-            ref="refTreeView"
-            :value="value"
-            class="input-languages-settings-treeview"
-            dense
-            selectable
-            open-all
-            return-object
-            item-text="text"
-            item-key="value"
-            :search="searchValue"
-            :hoverable="false"
-            :items="getItems"
-            @input="handleTreeViewChange"
-          >
-          </VTreeview>
+          <div>
+            <VTextField
+              v-model.trim="searchValue"
+              outlined
+              hide-details
+              autocomplete="off"
+              prepend-inner-icon="mdi-magnify"
+              placeholder="Search"
+            />
+            <VTreeview
+              :key="treeViewKey"
+              ref="refTreeView"
+              :value="value"
+              class="input-languages-settings-treeview"
+              dense
+              selectable
+              open-all
+              return-object
+              item-text="text"
+              item-key="value"
+              :search="searchValue"
+              :hoverable="false"
+              :items="getItems"
+              @input="handleTreeViewChange"
+            >
+            </VTreeview>
+          </div>
         </div>
       </div>
       <div class="p-4 input-language-settings__footer">
@@ -57,6 +66,8 @@
 </template>
 
 <script>
+import { createRandomCryptStringNumber } from '@/utils/functions'
+
 export default {
   name: 'InputLanguagesSettings',
   props: {
@@ -67,6 +78,7 @@ export default {
   data() {
     return {
       appendIcon: 'mdi-menu-down',
+      treeViewKey: `key-${createRandomCryptStringNumber()}`,
       selectedLanguages: this.value || [],
       loading: false,
       menuMaxHeight: '300px',
@@ -77,7 +89,7 @@ export default {
           text: 'Preferred Languages',
           children: [
             { value: 2, text: 'English (United Kingdom)' },
-            { value: 3, text: 'English (United States)', active: false, visible: false },
+            { value: 3, text: 'English (United States)' },
             { value: 4, text: 'German' }
           ]
         },
@@ -126,6 +138,7 @@ export default {
       this.changeMenuStatus('hidden')
     },
     handleClickOutside() {
+      this.treeViewKey = `key-${createRandomCryptStringNumber()}`
       this.selectedLanguages = this.value
       this.changeMenuStatus('hidden')
     },

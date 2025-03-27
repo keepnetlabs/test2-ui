@@ -39,6 +39,13 @@
   .v-treeview-node__label{
     overflow: visible;
   }
+  .v-treeview-node__root{
+    min-height: 36px !important;
+  }
+  .mdi-checkbox-marked.v-treeview-node__checkbox{
+    color: #2196F3 !important;
+    caret-color: #2196F3 !important;
+  }
 }
 .input-language-settings__footer{
   box-shadow: 0 3px 18px 0 rgba(56, 59, 65, 0.04), 0 5px 12px 0 rgba(91, 91, 91, 0.12);

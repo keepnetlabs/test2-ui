@@ -101,6 +101,7 @@ import {
 import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
+  getTargetGroup,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers,
   searchTargetGroupUsers
@@ -579,6 +580,9 @@ export default {
       } else {
         searchTargetGroupUsers(id, this.axiosPayload)
           .then((response) => {
+            getTargetGroup(this.resourceId).then((response) => {
+              console.log('response', response)
+            })
             const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
               response?.data?.data || {}
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords

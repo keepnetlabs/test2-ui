@@ -814,6 +814,7 @@ export default {
       Validations,
       initialFormValues: {},
       quishingType: '',
+      selectedTemplateLanguages: [],
       categoryText: '',
       formValues: {
         name: '',
@@ -848,9 +849,6 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
-    selectedTemplateLanguages() {
-      return []
-    },
     getSelectedMethodText() {
       let selectedMethod = this.getMethodText
       if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
