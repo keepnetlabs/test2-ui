@@ -11,21 +11,39 @@
   >
     <template #app-dialog-body>
       <div>
-        <div>
-          The selected scenarios do not support some users'
-          <strong class="text-primary-color fw-600">preferred language(s).</strong>
+        <div v-if="!isCompanyNamesDifferent">
+          <div>
+            Selected scenarios don’t match users
+            <strong class="text-primary-color fw-600">preferred languages </strong> ({{
+              getMissingPreferredLanguages
+            }}). The
+            <span class="text-primary-color fw-600>"
+              >company language is {{ getCompanyPreferredLanguage }}</span
+            >, but no {{ getCompanyPreferredLanguage }} scenario is available either.
+          </div>
+          <div class="mt-3">
+            <strong class="text-primary-color fw-600"
+              >To proceed, select scenarios in users’ languages or in
+              {{ getCompanyPreferredLanguage }}.</strong
+            >
+          </div>
         </div>
-        <div class="mt-3">
-          To resolve this issue:
-          <ul>
-            <li>
-              <strong class="text-primary-color fw-600"
-                >Modify the scenario selection to include the company language{{
-                  getLanguageText
-                }}.</strong
-              >
-            </li>
-          </ul>
+        <div v-else>
+          <div>
+            The selected scenarios do not match the
+            <span class="fw-600 text-primary-color">preferred languages</span> of users ({{
+              getMissingPreferredLanguages
+            }}). Additionally, the
+            <span class="fw-600 text-primary-color"
+              >default languages of the selected companies</span
+            >
+            are missing:
+          </div>
+          <div class="my-3 fw-600 text-primary-color">{{ getMissingCompanyLanguages }}</div>
+          <div class="fw-600 text-primary-color">
+            To proceed, select scenarios in the users’ preferred languages or in the respective
+            default languages of the selected companies.
+          </div>
         </div>
       </div>
     </template>
@@ -58,12 +76,21 @@ export default {
     },
     selectedTargetGroups: {
       type: Array
+    },
+    userCountDetailResponse: {
+      type: Object
+    }
+  },
+  data() {
+    return {
+      preferredLanguages: [],
+      randomLanguages: []
     }
   },
   computed: {
     getCompanyPreferredLanguage() {
       if (!this.$store.getters['login/getCurrentCompany']) return
-      return ` (${this.$store.getters['login/getCurrentCompany']?.preferredLanguageTypeName})`
+      return `${this.$store.getters['login/getCurrentCompany']?.preferredLanguageTypeName}`
     },
     getCompanyName() {
       if (!this.$store.getters['login/getCurrentCompany']) return
@@ -72,10 +99,45 @@ export default {
     isCompanyNamesDifferent() {
       return this.selectedTargetGroups.some((group) => group.companyName !== this.getCompanyName)
     },
-    getLanguageText() {
-      if (this.isCompanyNamesDifferent) return this.targetGroupResourceIds.length > 1 ? '(s)' : ''
-      return this.getCompanyPreferredLanguage
+    getMissingPreferredLanguages() {
+      const preferredLanguagesLength = this.preferredLanguages.length
+      if (preferredLanguagesLength > 1) {
+        if (preferredLanguagesLength > 3)
+          return `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
+            preferredLanguagesLength - 3
+          } more`
+        return `e.g., ${this.preferredLanguages.join(', ')}`
+      }
+      return this.preferredLanguages[0]
+    },
+    getMissingCompanyLanguages() {
+      return this.randomLanguages.join(', ')
     }
+  },
+  created() {
+    const data = this.userCountDetailResponse?.data?.data
+    const preferredLanguages = new Set()
+    const randomLanguages = new Set()
+    data.map((row) => {
+      if (row.hasPreferredLanguage) {
+        const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
+        if (noPrefLanguages.length) {
+          noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
+            preferredLanguages.add(lang.status)
+          })
+        }
+      }
+      if (row.hasRandomLanguage) {
+        const noRandomLanguages = row.hasRandomLanguage.filter((r) => r.status === 'Yes')
+        if (noRandomLanguages.length) {
+          noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
+            randomLanguages.add(lang.status)
+          })
+        }
+      }
+    })
+    this.preferredLanguages = Array.from(preferredLanguages)
+    this.randomLanguages = Array.from(randomLanguages)
   },
   methods: {
     handleClose() {

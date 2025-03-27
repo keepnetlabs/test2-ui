@@ -19,6 +19,7 @@
         :status="isShowMissingLanguageSupportDialog"
         :target-group-resource-ids="targetGroupResourceIds"
         :selected-target-groups="selectedTargetGroups"
+        :user-count-detail-response="userCountDetailResponse"
         @on-close="toggleShowMissingLanguageSupportDialog"
         @on-confirm="onConfirmLanguageSupportDialog"
       />
@@ -763,7 +764,7 @@ export default {
             }
             this.userCountDetailResponse = await getTargetGroupCountDetailExt(payload)
             if (parseInt(this.sendUserPreferredLanguage) === 1) {
-              const hasRandomLanguage = this.userCountDetailResponse?.data?.data.some((data) => {
+              const hasRandomLanguage = this.userCountDetailResponse?.data?.data?.some((data) => {
                 const randomLanguage = data?.hasRandomLanguage
                 return !!randomLanguage?.find((r) => r.status === 'Yes')?.count
               })

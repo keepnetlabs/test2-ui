@@ -413,10 +413,23 @@ export default {
     this.callForGetTimeZones()
     this.callForLanguages()
     if (this.resourceId) {
+      if (this.resourceId !== '7Tna1kvZXAgX') this.callForTargetGroup()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
   methods: {
+    callForTargetGroup() {
+      getTargetGroup(this.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        if (data?.isScimGroup || data?.isGoogleGroup) {
+          this.tableOptions.addButton = {
+            show: false
+          }
+        }
+      })
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageFilterOptions =

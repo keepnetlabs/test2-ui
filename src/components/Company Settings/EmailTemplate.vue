@@ -951,9 +951,7 @@ export default {
   mounted() {
     this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
-    console.log('this.defaultTemplate', this.defaultTemplate)
     this.setDefaultTemplate()
-    this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   beforeDestroy() {
     if (this.timeoutId) clearTimeout(this.timeoutId)
