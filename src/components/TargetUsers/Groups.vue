@@ -373,7 +373,7 @@ export default {
   methods: {
     getEditButtonTooltipMessage(row) {
       if (!row?.name) return ''
-      if (row.name === 'Repeat Offenders') {
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
         return 'Repeat Offenders group is can not be edited.'
       }
       if (row.name === 'New Hires') {
@@ -385,7 +385,7 @@ export default {
     },
     getGroupNameTooltipMessage(row) {
       if (!row?.name) return ''
-      if (row.name === 'Repeat Offenders') {
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
         return 'Users who fail two or more phishing campaigns are automatically added to the Repeat Offenders group, posing a higher security risk. Prioritize targeted training and simulations for their adaptation to your security culture, and they will be automatically removed once the risk is reduced.'
       }
       if (row.name === 'New Hires') {
@@ -401,7 +401,7 @@ export default {
       if (!row?.name) return ''
       if (isCheckSCIM && row.isScimGroup) return 'Users cannot be added to the SCIM group.'
       if (row.isGoogleGroup) return 'Users cannot be added to the Google group.'
-      if (row.name === 'Repeat Offenders') {
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
         return 'Users cannot be added to the Repeat Offenders group.'
       }
       if (row.name === 'New Hires') {
@@ -414,7 +414,7 @@ export default {
     },
     getDeleteButtonTooltipMessage(row) {
       if (!row?.name) return ''
-      if (row.name === 'Repeat Offenders') {
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
         return 'Repeat Offenders group is can not be deleted.'
       }
       if (row.name === 'New Hires') {
@@ -426,20 +426,27 @@ export default {
     },
     isTooltipRenderable(row, isCheckSCIM) {
       if (isCheckSCIM && row.isScimGroup) return true
-      if (row.isGoogleGroup) return true
       return (
         row?.name &&
-        ['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
-          row.name
-        )
+        [
+          'Repeat Offenders',
+          'Repeated Offenders',
+          'New Hires',
+          'Non-Simulated Users',
+          'Untrained Users'
+        ].includes(row.name)
       )
     },
     handleRowIsSelectable(row) {
       return (
         row?.name &&
-        !['Repeat Offenders', 'New Hires', 'Non-Simulated Users', 'Untrained Users'].includes(
-          row.name
-        )
+        ![
+          'Repeat Offenders',
+          'Repeated Offenders',
+          'New Hires',
+          'Non-Simulated Users',
+          'Untrained Users'
+        ].includes(row.name)
       )
     },
     handleEditBtnClick(row) {
