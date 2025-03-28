@@ -199,7 +199,7 @@
               <div class="add-in-settings__body-item mb-4">
                 <div class="mt-n5">
                   <label class="add-in-settings__list-item-header">Confirm Button Label</label>
-                  <div class="add-in-settings__list-item-subheader">
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
                     Edits to this field will not apply in the M365 add-in.
                   </div>
                 </div>
@@ -216,7 +216,7 @@
               <div class="add-in-settings__body-item mb-4">
                 <div class="mt-n5">
                   <label class="add-in-settings__list-item-header">No Button Label</label>
-                  <div class="add-in-settings__list-item-subheader">
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
                     Edits to this field will not apply in the M365 add-in.
                   </div>
                 </div>
@@ -233,7 +233,7 @@
               <div v-if="false" class="add-in-settings__body-item mb-4">
                 <div class="mt-n5">
                   <label class="add-in-settings__list-item-header">Cancel Button Label</label>
-                  <div class="add-in-settings__list-item-subheader">
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
                     Edits to this field will not apply in the M365 add-in.
                   </div>
                 </div>
@@ -250,7 +250,7 @@
               <div class="add-in-settings__body-item mb-4">
                 <div class="mt-n5">
                   <label class="add-in-settings__list-item-header">Okay Button Label</label>
-                  <div class="add-in-settings__list-item-subheader">
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
                     Edits to this field will not apply in the M365 add-in.
                   </div>
                 </div>
