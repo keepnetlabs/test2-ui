@@ -420,6 +420,7 @@ const trainingLibrary = {
       }
     },
     SET_FILTER_TO_PAYLOAD(state, payload) {
+      console.log('payload', payload)
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       let value

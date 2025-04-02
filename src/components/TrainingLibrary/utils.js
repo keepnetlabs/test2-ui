@@ -57,10 +57,10 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     label: labels.MaterialName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 200
   },
   LEARNING_PATH_NAME: {
@@ -83,7 +83,9 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 160
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
   },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,
@@ -94,6 +96,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 200
   },
   TARGET_AUDIENCE: {
@@ -105,6 +109,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 200
   },
   LANGUAGES: {
@@ -117,6 +123,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     show: true,
     width: 160,
     type: 'smallBadge',
+    filterableType: 'select',
+    filterableItems: [],
     hasTooltip: true
   },
   CREATED_BY: {
@@ -128,6 +136,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 160
   },
   COMPLIANCE: {
@@ -139,6 +148,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'smallBadge',
+    filterableType: 'select',
+    filterableItems: [],
     width: 160
   },
   TAGS: {
@@ -150,6 +161,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'smallBadge',
+    filterableType: 'text',
     width: 160
   },
   VENDOR: {
@@ -161,6 +173,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 160
   },
   DATE_CREATED: {
@@ -172,6 +186,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     overrideWidth: true,
     show: false,
+    filterableType: 'date',
     type: 'text',
     width: 160
   }
