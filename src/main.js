@@ -30,7 +30,7 @@ const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
 const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
 const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
 if (isCloud) {
-  useSentry(router)
+  if (!window.location.origin.includes('test-ui.devkeepnet.com')) useSentry(router)
   //Google Tag Manager
   !!gtmStatus &&
     Vue.use(VueTagManager, {
