@@ -226,7 +226,6 @@ export default {
     }
   },
   mounted() {
-    console.log('this.isEdit', this.isEdit)
     if (!this.isEdit) this.setDefaultValue()
   },
   methods: {
@@ -246,7 +245,6 @@ export default {
         extensionTypeId: this.extensionTypes[0]?.value || '',
         parameterTypeId: this.parameterTypes[0]?.value || ''
       })
-      console.log('setDefaultVALUE')
       this.$emit('invisible-captcha', !this.domainRecords[0]?.extraDatas[1]?.value)
       this.$emit('captcha-default-value', this.domainRecords[0]?.extraDatas[1]?.value)
     },
