@@ -72,6 +72,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 200
   },
   TYPE: {

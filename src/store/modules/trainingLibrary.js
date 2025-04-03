@@ -87,6 +87,7 @@ const trainingLibrary = {
     firstColFixed: true,
     lastColFixed: true,
     isListView: true,
+    tableFilterRenderKey: `table-filter-key-${createRandomCryptStringNumber()}`,
     selectedTrainingContent: 'All Materials',
     selectedSubTrainingContent: 'All Types',
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
@@ -149,7 +150,8 @@ const trainingLibrary = {
     getScreensaverSendModal: (state) => state.screensaverSendModal,
     getLearningPathSendModal: (state) => state.learningPathSendModal,
     getFilters: (state) => state.filters,
-    getFiltersRenderKey: (state) => state.filtersRenderKey
+    getFiltersRenderKey: (state) => state.filtersRenderKey,
+    getTableFilterRenderKey: (state) => state.tableFilterRenderKey
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
@@ -451,6 +453,7 @@ const trainingLibrary = {
           Operator: payload.activeOperator
         })
       }
+      state.tableFilterRenderKey = `tableFilterRenderKey-${createRandomCryptStringNumber()}`
     },
     SET_FILTER_TYPE_TO_PAYLOAD(state) {
       state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType

@@ -24,6 +24,8 @@
     @server-side-size-changed="serverSideSizeChanged"
     @onEmptyBtnClicked="handleAddLearningPath"
     @add-training="handleAddLearningPath"
+    @columnFilterChanged="columnFilterChanged"
+    @columnFilterCleared="columnFilterCleared"
   >
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryLearningPathRowActions
@@ -37,8 +39,6 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
@@ -107,6 +107,7 @@ export default {
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',
       isLoading: 'trainingLibrary/getIsLoading',
+      filters: 'trainingLibrary/getFilters',
       renderedColumns: 'trainingLibrary/getRenderedColumns',
       firstColFixed: 'trainingLibrary/getFirstColFixed',
       lastColFixed: 'trainingLibrary/getLastColFixed'
@@ -159,7 +160,9 @@ export default {
   methods: {
     ...mapActions({
       callForData: 'trainingLibrary/callForTrainingLibrary',
-      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal'
+      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
+      setFilterToPayload: 'trainingLibrary/setFilterToPayload',
+      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     handleAddLearningPath() {
       this.setNewLearningPathModal({
@@ -179,6 +182,45 @@ export default {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
       this.callForData()
+    },
+    columnFilterChanged(filter) {
+      const activeFilter = this.filters.find(
+        (item) => item.key.toLowerCase() === filter.FieldName.toLowerCase()
+      )
+      console.log('filter', filter)
+      console.log('this.$refs.', this.$refs.refTable.filterValues)
+      this.$set(activeFilter, 'isFilterActive', true)
+      let activeValue = filter.Value
+      if (filter.Operator === 'Include') {
+        activeValue = filter.Value.split(',').map((i) => {
+          const num = Number(i)
+          if (!isNaN(num)) return num
+          else return i
+        })
+      }
+      this.$set(activeFilter, 'activeValue', activeValue)
+      this.$set(activeFilter, 'activeOperator', filter.Operator)
+      this.setFilterToPayload(activeFilter)
+    },
+    columnFilterCleared(fieldName) {
+      const filter = this.filters.find((item) => item.key.toLowerCase() === fieldName.toLowerCase())
+      this.$set(filter, 'isFilterActive', false)
+      let filterValue, filterOperator
+      if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
+        filterValue = []
+        filterOperator = 'Include'
+      } else if (filter.filterType === 'select') {
+        filterValue = ''
+        filterOperator = 'Contains'
+      } else {
+        filterValue = ''
+        filterOperator = '='
+      }
+      this.$set(filter, 'value', filterValue)
+      this.$set(filter, 'activeValue', filterValue)
+      this.$set(filter, 'operator', filterOperator)
+      this.$set(filter, 'activeOperator', filterOperator)
+      this.removeFilterFromPayload(filter)
     }
   }
 }

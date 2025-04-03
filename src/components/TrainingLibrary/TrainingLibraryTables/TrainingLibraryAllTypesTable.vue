@@ -194,7 +194,8 @@ export default {
       getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getCompliances: 'trainingLibraryHelpers/getCompliances',
-      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
+      getTableFilterRenderKey: 'trainingLibrary/getTableFilterRenderKey'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
@@ -248,6 +249,22 @@ export default {
           })
         }
       }
+    },
+    getTableFilterRenderKey(val) {
+      const filterValues = {}
+      this.filters.forEach((filter) => {
+        const { activeOperator, activeValue, key } = filter
+        if (activeOperator === 'Include') {
+          if (activeValue.length) {
+            filterValues[key] = activeValue.split(',')
+          }
+        } else if (activeOperator === 'Contains') {
+        } else if (activeOperator === '=') {
+        }
+      })
+      console.log('this.filters', this.filters)
+      console.log('filterValues', filterValues)
+      this.$refs.refTable.reRenderFilters(filterValues)
     },
     getTrainingTypes(val) {
       const typeColumn = this.tableOptions.columns.find(
@@ -303,7 +320,8 @@ export default {
   methods: {
     ...mapActions({
       callForData: 'trainingLibrary/callForTrainingLibrary',
-      setFilterToPayload: 'trainingLibrary/setFilterToPayload'
+      setFilterToPayload: 'trainingLibrary/setFilterToPayload',
+      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
     }),
     serverSidePageNumberChanged(pageNumber = 1) {
       this.axiosPayload.pageNumber = pageNumber
@@ -327,20 +345,40 @@ export default {
         (item) => item.key.toLowerCase() === filter.FieldName.toLowerCase()
       )
       console.log('filter', filter)
-      activeFilter.isFilterActive = true
+      console.log('this.$refs.', this.$refs.refTable.filterValues)
+      this.$set(activeFilter, 'isFilterActive', true)
+      let activeValue = filter.Value
       if (filter.Operator === 'Include') {
-        activeFilter.activeValue = filter.Value.split(',').map((i) => {
+        activeValue = filter.Value.split(',').map((i) => {
           const num = Number(i)
           if (!isNaN(num)) return num
           else return i
         })
-      } else {
-        activeFilter.activeValue = filter.Value
       }
-      activeFilter.activeOperator = filter.Operator
+      this.$set(activeFilter, 'activeValue', activeValue)
+      this.$set(activeFilter, 'activeOperator', filter.Operator)
       this.setFilterToPayload(activeFilter)
     },
-    columnFilterCleared(fieldName) {}
+    columnFilterCleared(fieldName) {
+      const filter = this.filters.find((item) => item.key.toLowerCase() === fieldName.toLowerCase())
+      this.$set(filter, 'isFilterActive', false)
+      let filterValue, filterOperator
+      if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
+        filterValue = []
+        filterOperator = 'Include'
+      } else if (filter.filterType === 'select') {
+        filterValue = ''
+        filterOperator = 'Contains'
+      } else {
+        filterValue = ''
+        filterOperator = '='
+      }
+      this.$set(filter, 'value', filterValue)
+      this.$set(filter, 'activeValue', filterValue)
+      this.$set(filter, 'operator', filterOperator)
+      this.$set(filter, 'activeOperator', filterOperator)
+      this.removeFilterFromPayload(filter)
+    }
   }
 }
 </script>
