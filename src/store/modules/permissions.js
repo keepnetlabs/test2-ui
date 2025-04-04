@@ -1001,7 +1001,6 @@ const store = {
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
       return (
-        getters?.getRestApiSearchPermissions ||
         getters?.getNotificationTemplatesSearchPermissions ||
         getters?.getWhiteLabelingGetPermissions ||
         getters?.getSMTPSettingsSearchPermissions ||
