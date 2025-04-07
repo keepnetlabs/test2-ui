@@ -16,9 +16,7 @@
     <v-form ref="refForm">
       <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
-          <div class="other-settings__list-item-header">
-            Proxy Settings
-          </div>
+          <div class="other-settings__list-item-header">Proxy Settings</div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 other-settings__list-item">
@@ -42,30 +40,30 @@
           <div class="other-settings__api-settings-container">
             <label class="mt-n2">Site URL</label>
             <v-text-field
-              placeholder="Enter a site url"
+              v-bind="getHintValues"
+              v-model.trim="formValues.apiUrl"
+              id="input--phishing-reporter-api-settings"
+              class="mt-2 other-settings__list-item-container-item--1"
               outlined
               dense
-              v-bind="getHintValues"
-              class="mt-2 other-settings__list-item-container-item--1"
-              id="input--phishing-reporter-api-settings"
-              v-model.trim="formValues.apiUrl"
-              :rules="siteUrlRules"
+              placeholder="Enter a site url"
               height="40"
+              :rules="siteUrlRules"
               :readonly="!showForm"
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container mt-n3">
             <label class="other-settings__list-item-header mt-n2">{{ labels.ApiKey }}</label>
             <v-text-field
+              v-bind="getHintValues"
+              v-model.trim="formValues.apiKey"
               placeholder="Enter an api key"
               outlined
               dense
               id="input--phishing-reporter-api-key"
-              v-bind="getHintValues"
-              class="mt-2 other-settings__list-item-container-item--2"
-              v-model.trim="formValues.apiKey"
-              :rules="apiKeyRules"
               height="40"
+              class="mt-2 other-settings__list-item-container-item--2"
+              :rules="apiKeyRules"
               :readonly="!showForm"
             ></v-text-field>
           </div>
@@ -74,19 +72,19 @@
             <v-text-field
               v-bind="getHintValues"
               v-model.trim="formValues.companyKey"
-              placeholder="Enter a Company ID"
+              id="input--phishing-reporter-company-id"
+              class="mt-n1 ml-6"
               outlined
               dense
-              class="mt-n1 ml-6"
-              id="input--phishing-reporter-company-id"
+              disabled
               height="40"
+              placeholder="Enter a Company ID"
               :rules="apiKeyRules"
               :readonly="!showForm"
             ></v-text-field>
           </div>
         </v-list-item-content>
       </v-list-item>
-
       <v-list-item class="px-0 other-settings__list-item mt-n1">
         <v-list-item-content>
           <label class="other-settings__list-item-header">Enterprise Vault</label>
@@ -129,10 +127,10 @@
 
       <phishing-settings-footer
         v-if="showFooter"
-        @submit="submit($event)"
-        @submitWithDownload="submit($event, true)"
         class-name="mt-4"
         :saveDisable="saveDisable"
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
       />
     </v-form>
   </v-container>

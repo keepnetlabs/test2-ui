@@ -2149,6 +2149,13 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  AI_ALLY_SETTINGS_PERMISSIONS: {
+    GET: {
+      url: `companies/ai`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
   SIEM_INTEGRATION_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}`,

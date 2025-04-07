@@ -9,7 +9,12 @@
       >
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
-      <el-tab-pane label="AI Ally Settings" name="ai-ally-settings" id="ai-ally-settings-content">
+      <el-tab-pane
+        v-if="getAIAllySettingsGetPermissions"
+        label="AI Ally Settings"
+        name="ai-ally-settings"
+        id="ai-ally-settings-content"
+      >
         <AIAllySettings v-if="tab === 'ai-ally-settings'"
       /></el-tab-pane>
       <el-tab-pane
@@ -39,6 +44,7 @@
           ref="refNotificationTemplates"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getGoogleUserProvisionGetPermissions"
         label="Google User Provisioning"
         name="google-user-provisioning"
         id="google-user-provisioning-content"
@@ -56,7 +62,7 @@
         <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
       /></el-tab-pane>
       <el-tab-pane
-        vif="getWhiteLabelingGetPermissions"
+        v-if="getWhiteLabelingGetPermissions"
         label="White Labeling"
         name="white-labeling"
         id="white-labeling-content"
@@ -178,13 +184,17 @@ export default {
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
       getDirectEmailCreationSearchPermissions:
         'permissions/getDirectEmailCreationSearchPermissions',
-      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission'
+      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
     })
   },
   created() {
     this.tab = [
-      { permission: true, name: 'privacy' },
-      { permission: true, name: 'ai-ally-settings' },
+      { permission: this.getAccountPrivacyPermission, name: 'privacy' },
+      {
+        permission: this.getAIAllySettingsGetPermissions,
+        name: 'ai-ally-settings'
+      },
       {
         permission: this.getSMTPSettingsSearchPermissions,
         name: 'smtp-settings'
