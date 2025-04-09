@@ -1,6 +1,6 @@
 <template>
   <KContainer id="quishing-settings">
-    <ElTabs v-model="tab">
+    <ElTabs ref="refTabs" :value="tab" @input="changeTabStatus">
       <ElTabPane
         v-if="getDomainSearchPermissions"
         label="Domains"
@@ -23,7 +23,7 @@
         name="ExcludeIpAddress"
         id="exclude-ip-address-content"
       >
-        <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" />
+        <ExcludeIPAddress v-if="tab === 'ExcludeIpAddress'" ref="refExcludeIPAddress" />
       </ElTabPane>
     </ElTabs>
   </KContainer>
@@ -63,12 +63,20 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    const { refDomains, refDnsServiceList } = this.$refs
+    const { refDomains, refDnsServiceList, refExcludeIPAddress } = this.$refs
     if (refDomains && refDomains.modalStatus) {
       refDomains.checkIfCanCloseDomainModal()
       next(false)
     } else if (refDnsServiceList && refDnsServiceList.modalStatus) {
       refDnsServiceList.checkIfCanCloseDnsServiceModal()
+      next(false)
+    } else if (refExcludeIPAddress && !refExcludeIPAddress?.isInitialDataAndModelEqual) {
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          next(true)
+        }
+      })
       next(false)
     } else {
       next()
@@ -76,6 +84,20 @@ export default {
   },
   methods: {
     changeTabStatus(tabStatus) {
+      if (this.tab === 'ExcludeIpAddress' && tabStatus !== 'ExcludeIpAddress') {
+        if (!this?.$refs?.refExcludeIPAddress?.isInitialDataAndModelEqual) {
+          this.tab = 'ExcludeIpAddress'
+          this.$refs.refTabs.value = 'ExcludeIpAddress'
+          this.$refs.refTabs.currentName = 'ExcludeIpAddress'
+          this.$store.dispatch('common/setIsShowLeavingDialog', {
+            show: true,
+            callback: () => {
+              this.tab = tabStatus
+            }
+          })
+          return
+        }
+      }
       this.tab = tabStatus
     }
   }
