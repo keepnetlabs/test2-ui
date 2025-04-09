@@ -1,6 +1,6 @@
 <template>
   <KContainer id="smishing-settings">
-    <el-tabs v-model="tab">
+    <el-tabs ref="refTabs" :value="tab" @input="changeTabStatus">
       <el-tab-pane
         v-if="getSmishingDomainSearchPermissions"
         label="Domains"
@@ -89,6 +89,20 @@ export default {
   },
   methods: {
     changeTabStatus(tabStatus) {
+      if (this.tab === 'ExcludeIpAddress' && tabStatus !== 'ExcludeIpAddress') {
+        if (!this?.$refs?.refExcludeIPAddress?.isInitialDataAndModelEqual) {
+          this.tab = 'ExcludeIpAddress'
+          this.$refs.refTabs.value = 'ExcludeIpAddress'
+          this.$refs.refTabs.currentName = 'ExcludeIpAddress'
+          this.$store.dispatch('common/setIsShowLeavingDialog', {
+            show: true,
+            callback: () => {
+              this.tab = tabStatus
+            }
+          })
+          return
+        }
+      }
       this.tab = tabStatus
     }
   }

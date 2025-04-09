@@ -1,6 +1,6 @@
 <template>
   <KContainer id="quishing-settings">
-    <ElTabs v-model="tab">
+    <ElTabs ref="refTabs" :value="tab" @input="changeTabStatus">
       <ElTabPane
         v-if="getDomainSearchPermissions"
         label="Domains"
@@ -84,6 +84,20 @@ export default {
   },
   methods: {
     changeTabStatus(tabStatus) {
+      if (this.tab === 'ExcludeIpAddress' && tabStatus !== 'ExcludeIpAddress') {
+        if (!this?.$refs?.refExcludeIPAddress?.isInitialDataAndModelEqual) {
+          this.tab = 'ExcludeIpAddress'
+          this.$refs.refTabs.value = 'ExcludeIpAddress'
+          this.$refs.refTabs.currentName = 'ExcludeIpAddress'
+          this.$store.dispatch('common/setIsShowLeavingDialog', {
+            show: true,
+            callback: () => {
+              this.tab = tabStatus
+            }
+          })
+          return
+        }
+      }
       this.tab = tabStatus
     }
   }
