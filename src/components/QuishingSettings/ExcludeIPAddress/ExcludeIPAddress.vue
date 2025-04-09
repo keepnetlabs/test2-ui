@@ -86,6 +86,7 @@ export default {
       ],
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
+      initialData: [],
       dataContainerWithSearchItems: [],
       labels,
       ipRules: [
@@ -97,6 +98,11 @@ export default {
   },
   created() {
     this.getExcludedIPAddresses()
+  },
+  computed: {
+    isInitialDataAndModelEqual() {
+      return JSON.stringify(this.dataContainerWithSearchItems) === JSON.stringify(this.initialData)
+    }
   },
   watch: {
     ipAddressSearch(val) {
@@ -115,6 +121,7 @@ export default {
           this.dataContainerWithSearchItems =
             response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
             []
+          this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
         })
         .finally(() => {
           this.isLoading = false
