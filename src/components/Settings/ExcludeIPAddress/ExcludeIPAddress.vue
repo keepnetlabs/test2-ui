@@ -85,6 +85,7 @@ export default {
       isActionButtonDisabled: !this.$store.getters[
         'permissions/getExcludedIpAddressPostPermissions'
       ],
+      initialData: [],
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
@@ -108,6 +109,11 @@ export default {
       }
     }
   },
+  computed: {
+    isInitialDataAndModelEqual() {
+      return JSON.stringify(this.dataContainerWithSearchItems) === JSON.stringify(this.initialData)
+    }
+  },
   methods: {
     getExcludedIPAddresses() {
       this.isLoading = true
@@ -116,6 +122,7 @@ export default {
           this.dataContainerWithSearchItems =
             response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
             []
+          this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
         })
         .finally(() => {
           this.isLoading = false
