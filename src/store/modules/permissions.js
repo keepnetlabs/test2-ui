@@ -67,6 +67,7 @@ const {
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
+  AI_ALLY_SETTINGS_PERMISSIONS, 
   DIRECT_EMAIL_CREATION_PERMISSIONS,
   ADVANCED_REPORTS_PERMISSIONS,
   EXECUTIVE_REPORTS_PERMISSIONS,
@@ -122,6 +123,7 @@ const defaultState = {
   quishingCampaignReportsPermissions: QUISHING_CAMPAIGN_REPORTS_PERMISSIONS,
   domainPermisisons: DOMAIN_PERMISSIONS,
   dnsPermissions: DNS_PERMISSIONS,
+  aiAllySettingsPermissions: AI_ALLY_SETTINGS_PERMISSIONS,
   incidentResponderOtherPermissions: INCIDENT_RESPONDER_OTHER_PERMISSIONS,
   investigationPermissions: INVESTIGATION_PERMISSIONS,
   integrationPermissions: INTEGRATION_PERMISSIONS,
@@ -1068,6 +1070,9 @@ const store = {
     getNotificationTemplatesMakeDefaultPermissions(state) {
       return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
     },
+    getAIAllySettingsGetPermissions(state) {
+      return state?.aiAllySettingsPermissions?.GET?.hasPermission
+    },
     getRestApiSearchPermissions(state) {
       return state?.restApiPermissions?.SEARCH?.hasPermission
     },
@@ -1615,6 +1620,7 @@ const store = {
         'smtpSettingsPermissions',
         'notificationTemplatesPermissions',
         'restApiPermissions',
+        'aiAllySettingsPermissions',
         'whiteLabelingPermissions',
         'proxySettingsPermissions',
         'samlIntegrationPermissions',
