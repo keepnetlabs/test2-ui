@@ -293,6 +293,7 @@ const trainingLibrary = {
         state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType = 'Or'
         return
       }
+      console.log('filters', filters)
       const {
         filters: savedFilters = {},
         filterOptionsFilters = [],
@@ -316,6 +317,7 @@ const trainingLibrary = {
       state.selectedSubTrainingContent = selectedSubTrainingContent
       setTimeout(() => {
         state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
+        state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
       }, 500)
     },
     SET_FILTERS_TO_LOCAL_STORAGE(state) {
@@ -401,6 +403,7 @@ const trainingLibrary = {
       state.filterType = 'Or'
       state.sortBy = 'Date Created - New to old'
       state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
     },
     SET_SORT_BY_TO_PAYLOAD(state, payload) {
       state.axiosPayload.ascending = payload.ascending
@@ -422,7 +425,6 @@ const trainingLibrary = {
       }
     },
     SET_FILTER_TO_PAYLOAD(state, payload) {
-      console.log('payload', payload)
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
       const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
       let value
@@ -453,7 +455,7 @@ const trainingLibrary = {
           Operator: payload.activeOperator
         })
       }
-      state.tableFilterRenderKey = `tableFilterRenderKey-${createRandomCryptStringNumber()}`
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
     },
     SET_FILTER_TYPE_TO_PAYLOAD(state) {
       state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType
@@ -471,6 +473,7 @@ const trainingLibrary = {
         if (!payload.activeValue.length) filterItems.splice(fIndex, 1)
         else filterItems[fIndex].Value = payload.activeValue.join(',')
       } else filterItems.splice(fIndex, 1)
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
     },
     RESET_PAGINATION(state) {
       state.axiosPayload.pageNumber = 1

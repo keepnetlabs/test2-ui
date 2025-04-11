@@ -17,7 +17,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   INFOGRAPHIC_NAME: {
     property: PROPERTY_STORE.INFOGRAPHIC_NAME,
@@ -28,7 +29,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   POSTER_NAME: {
     property: PROPERTY_STORE.POSTER_NAME,
@@ -39,7 +41,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   TRAINING_NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
@@ -50,7 +53,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     hideSort: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   MATERIAL_NAME: {
     property: PROPERTY_STORE.MATERIAL_NAME,
@@ -80,8 +84,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Type,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
     width: 160,
@@ -93,8 +96,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Category,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
     filterableType: 'select',
@@ -106,8 +108,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Role,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
     filterableType: 'select',
@@ -119,8 +120,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Languages,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     width: 160,
     type: 'smallBadge',
@@ -133,8 +133,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.CreatedBy,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
     filterableType: 'text',
@@ -145,8 +144,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Compliance,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'smallBadge',
     filterableType: 'select',
