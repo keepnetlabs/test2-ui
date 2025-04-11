@@ -13,7 +13,7 @@
     @closeOverlay="closeOverlay"
     @submit="submit"
   >
-    <template v-slot:overlay-body>
+    <template #overlay-body>
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="Template Name" has-hint>
@@ -41,19 +41,60 @@
             :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
           />
         </form-group>
-        <form-group title="SMTP" has-hint>
-          <k-select
-            v-bind="commonRules"
-            v-model.trim="formValues.smtpSettingResourceId"
-            id="input--notification-template-smtp"
-            :items="smtpItems"
+        <form-group
+          :title="labels.EmailDelivery"
+          sub-title="Select email delivery configuration for this Notification Template"
+          has-hint
+        >
+          <KSelect
+            v-if="isAwarenessEducatorTemplateSelected"
+            v-bind="emailDeliveryProps"
+            v-model.trim="emailDelivery"
+            id="input--company-manager-advanced-settings-smtp"
             class="new-integration__select"
             dense
             outlined
-            placeholder="Select Option"
-            :disabled="editItemsDisabled"
+            item-text="name"
+            placeholder="Select configuration"
+            no-data-text="No Email Delivery configuration available"
+            return-object
+            :items="emailDeliveryItems"
+            :slots="{ item: true, selection: false }"
+            @change="handleChangeEmailDelivery"
+          >
+            <template #item="{ item }">
+              <v-list-item-content :disabled="item.disabled">
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                <v-list-item-subtitle v-if="item.description" class="tlp_subtitle">{{
+                  item.description
+                }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+          </KSelect>
+          <KSelect
+            v-else
+            v-bind="emailDeliveryProps"
+            v-model.trim="formValues.smtpSettingResourceId"
+            id="input--company-manager-advanced-settings-smtp"
+            class="new-integration__select"
+            dense
+            outlined
+            placeholder="Select configuration"
+            no-data-text="No Email Delivery configuration available"
+            :items="smtpItems"
           />
         </form-group>
+        <FormGroup>
+          <AlertBox
+            v-if="canRenderAlertBox"
+            style="margin-top: -20px;"
+            class="bg-aqua-light mb-4"
+            icon-color="#2196F3"
+            icon-name="mdi-information"
+            text="If a DEC configuration exists for both the reseller and its sub-companies, you can conduct an email phishing simulation using the respective company's DEC configuration. In the absence of a specific configuration, the system will send the simulation via SMTP using the relevant company's default SMTP settings as a fallback."
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          />
+        </FormGroup>
         <form-group title="Tags" sub-title="Define tags for the notification template">
           <InputTag
             ref="refTags"
@@ -81,6 +122,7 @@
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
             :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
+            :isLearningPathEnrollmentSelected="isLearningPathEnrollmentSelected"
             :isNotificationTemplate="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
             :cc-addresses.sync="formValues.ccAddresses"
@@ -104,7 +146,8 @@ import {
   getEmailTemplate,
   getMergedTags,
   getTemplateTypes,
-  updateEmailTemplate
+  updateEmailTemplate,
+  getNotificationTemplatesDeliverySettings
 } from '@/api/company'
 import { searchSmtpSettings } from '@/api/smtpSettings'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -116,7 +159,10 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { MERGED_TEXTS_MAP } from '@/components/Company Settings/utils'
-
+import { getDefaultEmailDeliverySetting } from '@/api/phishingsimulator'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import { mapGetters } from 'vuex'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -128,7 +174,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    InputEntityName
+    InputEntityName,
+    AlertBox
   },
   props: {
     status: {
@@ -150,6 +197,7 @@ export default {
   data() {
     return {
       labels,
+      emailDeliveryItems: [],
       loading: false,
       isSelectedNotificationEnrollment: false,
       activeBlockManagerComponents: {},
@@ -164,13 +212,21 @@ export default {
           (v) => Validations.startsWithSpace(v)
         ]
       },
+      emailDeliveryProps: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [(v) => Validations.required(v, labels.Required)]
+      },
+      emailDelivery: null,
       initialFormValues: null,
       formValues: {
         availableForRequests: [],
         tags: [],
         name: '',
         emailTemplateCategoryResourceId: '',
+        emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP,
         smtpSettingResourceId: '',
+        directEmailSettingResourceId: '',
         fromAddress: '',
         fromName: '',
         subject: '',
@@ -179,6 +235,8 @@ export default {
       },
       categoryItems: [],
       smtpItems: [],
+      defaultDECSettingResourceId: null,
+      defaultSMTPSettingResourceId: null,
       validations: {
         mail
       },
@@ -201,8 +259,52 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getUser: 'auth/userGetter'
+    }),
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
+    },
+    canRenderAlertBox() {
+      return (
+        this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
+      )
+    },
+    isAwarenessEducatorTemplateSelected() {
+      if (!this.formValues.emailTemplateCategoryResourceId) return false
+      const selectedTemplateCategoryName =
+        this.categoryItems?.find?.(
+          (template) => template.value === this.formValues.emailTemplateCategoryResourceId
+        )?.text || ''
+      return [
+        'Training Enrollment',
+        'Learning Path Enrollment Reminder',
+        'Poster Enrollment',
+        'Learning Path Enrollment',
+        'Infographic Enrollment',
+        'Enrollment after Failed in a Simulation',
+        'Enrollment Reminder',
+        'Certificate'
+      ].includes(selectedTemplateCategoryName)
+    },
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment')?.value
+    },
+    getLearningPathEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Learning Path Enrollment')
+        ?.value
+    },
+    getTrainingEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Training Enrollment')?.value
+    },
+    getPosterEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Poster Enrollment')?.value
+    },
+    getInfographicEnrollmentTemplateResourceId() {
+      return this.categoryItems?.find((template) => template.text === 'Infographic Enrollment')
+        ?.value
     },
     getEnrollmentReminderTemplateResourceId() {
       return this.categoryItems?.find((template) => template.text === 'Enrollment Reminder')?.value
@@ -217,8 +319,18 @@ export default {
       return [
         this.getEnrollmentTemplateResourceId,
         this.getEnrollmentReminderTemplateResourceId,
-        this.getEnrollmentAfterFailedInASimulationTemplateResourceId
+        this.getEnrollmentAfterFailedInASimulationTemplateResourceId,
+        this.getTrainingEnrollmentTemplateResourceId,
+        this.getLearningPathEnrollmentTemplateResourceId,
+        this.getPosterEnrollmentTemplateResourceId,
+        this.getInfographicEnrollmentTemplateResourceId
       ].includes(this.formValues.emailTemplateCategoryResourceId)
+    },
+    isLearningPathEnrollmentSelected() {
+      return (
+        this.formValues?.emailTemplateCategoryResourceId ===
+        this.getLearningPathEnrollmentTemplateResourceId
+      )
     },
     getModalId() {
       return this.selectedItem ? this.getSelectedItemTitleId : 'new-notification-template-modal'
@@ -264,13 +376,94 @@ export default {
     if (!this.selectedItem) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-    this.callForDatas()
+    this.callForCategories()
     this.callForNotificationTemplate()
+    this.callForEmailDeliveries()
+    this.callForSMTPSettings()
+    this.callForDefaultEmailDeliverySetting()
+  },
+  mounted() {
+    this.$watch(
+      (vm) => [vm.formValues, vm.emailDeliveryItems],
+      ([formValues, emailDeliveryItems]) => {
+        if (!formValues || !emailDeliveryItems.length || !this.selectedItem) return
+        if (formValues.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
+          const selectedSMTPSettingIndex = emailDeliveryItems.findIndex(
+            (item) => item.resourceId === formValues.smtpSettingResourceId
+          )
+          if (selectedSMTPSettingIndex === -1) return
+          this.emailDelivery = emailDeliveryItems[selectedSMTPSettingIndex]
+        } else {
+          const selectedDECSettingIndex = emailDeliveryItems.findIndex(
+            (item) => item.resourceId === formValues.directEmailSettingResourceId
+          )
+          if (selectedDECSettingIndex === -1) return
+          this.emailDelivery = emailDeliveryItems[selectedDECSettingIndex]
+        }
+      },
+      {
+        deep: true
+      }
+    )
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    callForSMTPSettings() {
+      searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
+        const { data: { data: smtpSettingsData = {} } = {} } = response
+        this.smtpItems = smtpSettingsData.results.map((smtpItem) => {
+          return { text: smtpItem.name, value: smtpItem.resourceId }
+        })
+      })
+    },
+    callForEmailDeliveries() {
+      getNotificationTemplatesDeliverySettings().then((res) => {
+        const {
+          data: { data: { results = [] } = {} }
+        } = res || {}
+        const deliveries = []
+        const smtpItems = results.filter((item) => item.type === EMAIL_DELIVERY_TYPES.SMTP)
+        if (smtpItems.length) {
+          deliveries.push({ header: 'SMTP' })
+          deliveries.push(...smtpItems)
+        }
+        const directEmailItems = results.filter(
+          (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        )
+        if (directEmailItems.length) {
+          deliveries.push({ header: 'Direct Email Creation' })
+          deliveries.push(...directEmailItems)
+        }
+        this.emailDeliveryItems = deliveries
+      })
+    },
+    callForDefaultEmailDeliverySetting() {
+      if (!!this.selectedItem) return
+      getDefaultEmailDeliverySetting().then((res) => {
+        if (res?.data?.data?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) {
+          this.defaultDECSettingResourceId = res?.data?.data?.resourceId
+        } else {
+          this.defaultSMTPSettingResourceId = res?.data?.data?.resourceId
+        }
+      })
+    },
+    handleChangeEmailDelivery(delivery = {}) {
+      // this.buttonKey = createRandomCryptStringNumber()
+      // this.isTestMailSend = false
+      // this.isShowSmtpInputError = false
+      // this.testEmailErrorMessage = ''
+      if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
+        this.formValues.smtpSettingResourceId = delivery.resourceId
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+        this.formValues.directEmailSettingResourceId = null
+      } else {
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+        this.formValues.directEmailSettingResourceId = delivery.resourceId
+        this.formValues.smtpSettingResourceId = null
+      }
+    },
     callForNotificationTemplate() {
       if (!this?.selectedItem?.resourceId) return
       this.loading = true
@@ -286,6 +479,10 @@ export default {
             }
             this.formValues[key] = value
           }
+          this.formValues.emailDeliverySettingType =
+            response?.data?.data?.emailDeliveryType ||
+            response?.data?.data?.emailDeliverySettingType ||
+            EMAIL_DELIVERY_TYPES.SMTP
           if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
@@ -296,13 +493,11 @@ export default {
           this.loading = false
         })
     },
-    callForDatas() {
-      Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
-        const [categories, smtpSettings] = response
+    callForCategories() {
+      getTemplateTypes().then((response) => {
         const {
           data: { data: categoriesData }
-        } = categories
-        const { data: { data: smtpSettingsData = {} } = {} } = smtpSettings
+        } = response
         this.categoryItems = categoriesData.map((category) => {
           return {
             text: category.name,
@@ -310,16 +505,7 @@ export default {
             template: category?.template
           }
         })
-        this.smtpItems = smtpSettingsData.results.map((smtpItem) => {
-          return { text: smtpItem.name, value: smtpItem.resourceId }
-        })
       })
-    },
-    callForCategories() {
-      return getTemplateTypes()
-    },
-    callForSmtpSettings() {
-      return searchSmtpSettings(this.smtpAxiosPayload)
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)

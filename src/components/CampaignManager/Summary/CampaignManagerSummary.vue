@@ -20,7 +20,19 @@
         icon="mdi-alert-circle"
         :title="labels.CampaignInfo"
         :items="getCampaignInfoItems"
-      />
+      >
+        <template #ScenarioDistribution="{ props: { key, val } }">
+          <div class="campaign-manager-summary-card__body-item-key">
+            {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+          </div>
+          <div class="campaign-manager-summary-card__body-item-value">
+            <VIcon v-if="val === SCENARIO_DISTRIBUTION_TEXTS[3]" color="#2196F3" class="mr-2" small
+              >mdi-creation</VIcon
+            >
+            {{ val }}
+          </div>
+        </template>
+      </CampaignManagerSummaryCard>
       <CampaignManagerSummaryCard
         icon="mdi-cog"
         :title="labels.Settings"
@@ -81,6 +93,12 @@
               :text="getTimeZoneWarningText"
               :slots="{ primaryAction: false, secondaryAction: false }"
             />
+            <AlertBox
+              v-if="canRenderAlertboxLanguage"
+              class="mt-4"
+              :text="getPreferredLanguageText"
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -116,7 +134,7 @@
     </div>
     <CampaignManagerSummaryScenarioInfoTable
       v-if="isDistributionNotManual"
-      :filterPayload="getScenarioInfoTableFilterPayload"
+      :axios-payload="getScenarioInfoTableFilterPayload"
     />
     <ElTabs
       v-if="phishingScenarios.length"
@@ -151,7 +169,15 @@
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ emailTemplateParams.name }}
+                <span>{{ emailTemplateParams.name }}</span>
+                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                      >mdi-creation</VIcon
+                    >
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
               </div>
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
@@ -339,6 +365,9 @@ export default {
   },
   data() {
     return {
+      userFromPreferredLanguage: 0,
+      userFromCompanyLanguage: 0,
+      SCENARIO_DISTRIBUTION_TEXTS,
       SCENARIO_DISTRIBUTION,
       SCENARIO_TYPES,
       trainingLanguages: [],
@@ -381,7 +410,44 @@ export default {
       return this.formData?.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
     },
     getTargetGroupItems() {
-      return this.formData?.userCountDetailResponse?.data?.data || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
+      return activeItems
+    },
+    canRenderAlertboxLanguage() {
+      return (
+        parseInt(this.formData?.sendUserPreferredLanguage) === 1 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
+    },
+    getUserFromCompanyLanguage() {
+      const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
+        (row) => row.status === 'Active'
+      )
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
+    },
+    getUserFromPreferredLanguage() {
+      const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
+        (row) => row.status === 'Active'
+      )
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
+    },
+    getPreferredLanguageText() {
+      return `${this.getUserFromPreferredLanguage} user${
+        this.getUserFromPreferredLanguage > 1 ? 's' : ''
+      } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
+        this.getUserFromCompanyLanguage > 1 ? 's' : ''
+      } in the company language.`
     },
     isRenderTrainingCard() {
       return this.trainingParams
@@ -545,10 +611,14 @@ export default {
         })
         return {
           name: formData.name,
+          'Hyper-Personalization':
+            parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+          'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
           'Tracking Duration': formData.duration,
-          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+          'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
+          'Reply Tracking': formData.emailReplySettings?.isEnabled ? 'On' : 'Off'
         }
       }
       const methodSet = new Set()
@@ -559,10 +629,14 @@ export default {
       })
       return {
         name: formData.name,
+        'Hyper-Personalization':
+          parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+        'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
         'Tracking Duration': formData.duration,
-        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution]
+        'Scenario Distribution': SCENARIO_DISTRIBUTION_TEXTS[formData.scenarioDistribution],
+        'Reply Tracking': formData.emailReplySettings?.isEnabled ? 'On' : 'Off'
       }
     },
     getTotalRandomlySelectedUserCount() {
@@ -705,7 +779,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            isAssistedByAI
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -720,7 +795,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            template
+            template,
+            isAssistedByAI
           }
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
@@ -732,7 +808,9 @@ export default {
             urlTemplate,
             difficultyTypeId,
             languageTypeResourceId,
-            methodTypeId
+            methodTypeId,
+            isAssistedByAI: isAssistedByAILandingPage,
+            isAssistedbyAI: isAssistedByAILower
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -741,7 +819,8 @@ export default {
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
-            landingPageTemplates: landingPages
+            landingPageTemplates: landingPages,
+            isAssistedByAI: isAssistedByAILandingPage || isAssistedByAILower
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId

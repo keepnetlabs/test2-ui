@@ -54,7 +54,10 @@
           :is="getComponent(item.key)"
           :resizable="false"
           :editMode="editMode"
+          :card="item.card"
+          :is-dashboard-widget="item.isDashboardWidget"
           @deleteWidget="deleteWidget(item, index)"
+          @on-delete="deleteWidget(item, index)"
           @handleSelectPlaybookId="handleSelectedPlaybook"
         />
       </smart-widget>
@@ -84,7 +87,12 @@ import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPh
 import MostEngagedCampaigns from '@/components/Common/Widget/WidgetComponents/MostEngagedCampaigns'
 import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends'
 import TopPhishingSimulationReporters from '@/components/Common/Widget/WidgetComponents/TopPhishingSimulationReporters'
-import { createRandomCryptStringNumber } from '@/utils/functions'
+import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/functions'
+import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
+import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
+import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
+import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
+import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 export default {
   name: 'Widgets',
   components: {
@@ -241,22 +249,22 @@ export default {
           title: 'Top Rules',
           isAllowed: this?.permissions?.topRules
         },
-        TopPosts: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          key: 'TopPosts',
-          title: 'Top Posts',
-          isAllowed: this?.permissions?.topPosts
-        },
+        // TopPosts: {
+        //   x: 0,
+        //   y: 0,
+        //   w: 3,
+        //   minW: 3,
+        //   defaultW: 3,
+        //   midW: 6,
+        //   h: 6,
+        //   defaultH: 6,
+        //   minH: 6,
+        //   maxH: 6,
+        //   i: createRandomCryptStringNumber(),
+        //   key: 'TopPosts',
+        //   title: 'Top Posts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         Reporters: {
           x: 0,
           y: 0,
@@ -368,6 +376,148 @@ export default {
           key: 'TopPhishingSimulationReporters',
           title: 'Top Phishing Simulation Reporters',
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard
+        },
+        SimulationCoverageWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          card: {
+            title: 'Simulation Coverage',
+            parentKey: 'Simulation proportion of simulated versus non-simulated users',
+            key: 'SimulationCoverageWidget',
+            resourceId: 'k8PWY03vDPke'
+          },
+          i: createRandomCryptStringNumber(),
+          title: 'Simulation Coverage',
+          key: 'SimulationCoverageWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'pie',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
+        },
+        TrainingCompletionWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Training Completion',
+          key: 'TrainingCompletionWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'bar',
+          dateInterval: 'month',
+          card: {
+            title: 'Training Completion',
+            parentKey: 'Measure the training coverage across the company',
+            key: 'TrainingCompletionWidget',
+            resourceId: 'MY5C2U34WAgw'
+          },
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
+        },
+        IndustryPhishingRiskScoreWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Industry Phishing Risk Score',
+          key: 'IndustryPhishingRiskScoreWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          card: {
+            title: 'Industry Phishing Risk Score',
+            parentKey:
+              'Phishing risk score comparing user responses and report rates against an industry average',
+            key: 'IndustryPhishingRiskScoreWidget',
+            resourceId: 'uyzuHENtMZU0'
+          },
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
+        },
+        ImpactOfPhishingAwarenessTrainingWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Impact of Phishing Awareness Training',
+          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          card: {
+            title: 'Impact of Phishing Awareness Training',
+            parentKey:
+              'Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program',
+            key: 'ImpactOfPhishingAwarenessTrainingWidget',
+            resourceId: '9c29GEAMmurS'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
+        },
+        RepeatOffendersUsersRateWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          card: {
+            title: 'Phishing Simulation Repeat Offenders Rate',
+            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+            key: 'RepeatOffendersUsersRateWidget',
+            resourceId: 'mpdEh10N5E4d'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
         }
       },
       availableWidgets: [
@@ -396,11 +546,11 @@ export default {
           key: 'TopRules',
           isAllowed: this?.permissions?.topRules
         },
-        {
-          name: 'Top Posts',
-          key: 'TopPosts',
-          isAllowed: this?.permissions?.topPosts
-        },
+        // {
+        //   name: 'Top Posts',
+        //   key: 'TopPosts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         {
           name: 'Reporters',
           key: 'Reporters',
@@ -450,6 +600,31 @@ export default {
           name: 'Top Phishing Simulation Reporters',
           key: 'TopPhishingSimulationReporters',
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard
+        },
+        {
+          name: 'Simulation Coverage',
+          key: 'SimulationCoverageWidget',
+          isAllowed: true
+        },
+        {
+          name: 'Training Completion',
+          key: 'TrainingCompletionWidget',
+          isAllowed: true
+        },
+        {
+          name: 'Industry Phishing Risk Score',
+          key: 'IndustryPhishingRiskScoreWidget',
+          isAllowed: true
+        },
+        {
+          name: 'Impact of Phishing Awareness Training',
+          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          isAllowed: true
+        },
+        {
+          name: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          isAllowed: true
         }
       ],
       style:
@@ -496,6 +671,19 @@ export default {
           this.handleDeleteShadows()
           this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
         }, 20)
+      } finally {
+        if (!this.layout.find((widget) => widget.key === 'RepeatOffendersUsersRateWidget')) {
+          const isAvailable = this.availableWidgets.find(
+            (widget) => widget.key === 'RepeatOffendersUsersRateWidget'
+          )
+          if (!isAvailable) {
+            this.availableWidgets.push({
+              name: 'Phishing Simulation Repeat Offenders Rate',
+              key: 'RepeatOffendersUsersRateWidget',
+              isAllowed: true
+            })
+          }
+        }
       }
     }
   },
@@ -642,6 +830,16 @@ export default {
           return RoiSummaryIrHeader
         case 'TopPhishingSimulationReporters':
           return TopPhishingSimulationReporters
+        case 'SimulationCoverageWidget':
+          return ExecutiveReportsSimulationCoverageBar
+        case 'TrainingCompletionWidget':
+          return ExecutiveReportsTrainingCompletionBar
+        case 'IndustryPhishingRiskScoreWidget':
+          return ExecutiveReportsIndustryPhishingRiskScore
+        case 'ImpactOfPhishingAwarenessTrainingWidget':
+          return ExecutiveReportsImpactOfPhishingAwarenessTraining
+        case 'RepeatOffendersUsersRateWidget':
+          return ExecutiveReportAvgPhishingSimClickerRate
         default:
           return
       }
@@ -671,6 +869,22 @@ export default {
     getDefaultLayoutObject() {
       let widgets = [
         {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.36222415873736824',
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header',
+          isAllowed: this?.permissions?.phishingReporterCard
+        },
+        {
           x: 3,
           y: 0,
           w: 3,
@@ -684,6 +898,22 @@ export default {
           i: '0.4439548718965418',
           key: 'IncidentAnalysisIrHeader',
           title: 'Incident Analysis Ir Header',
+          isAllowed: this?.permissions?.irSummary
+        },
+        {
+          x: 6,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.955736738495951',
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header',
           isAllowed: this?.permissions?.irSummary
         },
         {
@@ -704,36 +934,87 @@ export default {
         },
         {
           x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          maxH: 3,
-          i: '0.36222415873736824',
-          key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header',
-          isAllowed: this?.permissions?.phishingReporterCard
+          y: 3,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: 'IndustryPhishingRiskScoreWidget',
+          card: {
+            title: 'Industry Phishing Risk Score',
+            parentKey:
+              'Phishing risk score comparing user responses and report rates against an industry average',
+            key: 'TrainingCompletionWidget',
+            resourceId: 'uyzuHENtMZU0'
+          },
+          isDashboardWidget: true,
+          isAllowed: true
         },
         {
-          x: 6,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          maxH: 3,
-          i: '0.955736738495951',
-          key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header',
-          isAllowed: this?.permissions?.irSummary
+          x: 0,
+          y: 6,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Impact of Phishing Awareness Training',
+          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          card: {
+            title: 'Impact of Phishing Awareness Training',
+            parentKey:
+              'Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program',
+            key: 'ImpactOfPhishingAwarenessTrainingWidget',
+            resourceId: '9c29GEAMmurS'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          isDashboardWidget: true,
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        /*
+        {
+          x: 0,
+          y: 9,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Repeat Offenders Users Threshold',
+          key: 'RepeatOffendersUsersThresholdWidget',
+          card: {
+            title: 'Repeat Offenders Users (Threshold: 2)',
+            parentKey: 'Percentage of users who are repeat offenders',
+            key: 'RepeatOffendersUsersThresholdWidget',
+            resourceId: 'NtjzN0TxgXWT'
+          },
+          isAllowed: true,
+          isDashboardWidget: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+
+         */
         /*
         {
           x: 0,
@@ -754,7 +1035,7 @@ export default {
          */
         {
           x: 0,
-          y: 3,
+          y: 12,
           w: 6,
           minW: 6,
           defaultW: 6,
@@ -768,9 +1049,25 @@ export default {
           title: 'Reported Email Trends',
           isAllowed: this?.permissions?.reportedEmailTrends
         },
+        // {
+        //   x: 6,
+        //   y: 12,
+        //   w: 6,
+        //   minW: 3,
+        //   defaultW: 3,
+        //   midW: 6,
+        //   h: 6,
+        //   defaultH: 6,
+        //   minH: 6,
+        //   maxH: 6,
+        //   i: '0.1349604029153395',
+        //   key: 'TopPosts',
+        //   title: 'Top Posts',
+        //   isAllowed: this?.permissions?.topPosts
+        // },
         {
           x: 0,
-          y: 3,
+          y: 15,
           w: 6,
           minW: 6,
           defaultW: 6,
@@ -799,22 +1096,6 @@ export default {
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
           isAllowed: this?.permissions?.runningInvestigation
-        },
-        {
-          x: 6,
-          y: 9,
-          w: 6,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.1349604029153395',
-          key: 'TopPosts',
-          title: 'Top Posts',
-          isAllowed: this?.permissions?.topPosts
         },
         {
           x: 0,
@@ -899,7 +1180,7 @@ export default {
         {
           x: 0,
           y: 27,
-          w: 3,
+          w: 4,
           minW: 3,
           defaultW: 3,
           midW: 6,
@@ -915,7 +1196,7 @@ export default {
         {
           x: 0,
           y: 27,
-          w: 6,
+          w: 4,
           minW: 3,
           defaultW: 6,
           midW: 6,
@@ -931,7 +1212,7 @@ export default {
         {
           x: 0,
           y: 27,
-          w: 6,
+          w: 4,
           minW: 3,
           defaultW: 6,
           midW: 6,
@@ -942,7 +1223,36 @@ export default {
           i: createRandomCryptStringNumber(),
           key: 'TopPhishingSimulationReporters',
           title: 'Top Phishing Simulation Reporters',
-          isAllowed: this?.permissions?.topPhishingSimulationReportersCard
+          isAllowed: true,
+          isDashboardWidget: true
+        },
+        {
+          x: 0,
+          y: 30,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          card: {
+            title: 'Phishing Simulation Repeat Offenders Rate',
+            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+            key: 'RepeatOffendersUsersRateWidget',
+            resourceId: 'mpdEh10N5E4d'
+          },
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+          isDashboardWidget: true
         }
       ]
       widgets = widgets.reduce((acc, widget) => {
@@ -952,7 +1262,6 @@ export default {
         }
         return acc
       }, [])
-
       return widgets
     },
     callForPostWidgets() {

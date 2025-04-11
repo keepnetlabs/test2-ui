@@ -116,6 +116,39 @@ export const setSchedulingReportStatus = (resourceId, status) => {
 export const getSchedulingReportTargetGroups = () => {
   return testRequest.get('/report-scheduling/target-groups')
 }
+
+export const getLeaderboardData = (payload) => {
+  return testRequest.post('/leaderboard/get-all', payload)
+}
+
+export const getTopPerformersData = (payload) => {
+  return testRequest.post('/leaderboard/get-top-performers', payload)
+}
+
+export const exportLeaderboardData = (payload) => {
+  return testRequest.post('/leaderboard/get-all/export', payload, {
+    responseType: 'blob'
+  })
+}
+
+export const getLeaderboardFormDetails = () => {
+  return testRequest.get('/leaderboard/form-details')
+}
+
+export const getUserPerformanceRates = (payload) => {
+  return testRequest.post('/leaderboard/user-performance', payload)
+}
+
+export const getUserTimeline = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline', payload)
+}
+
+export const exportUserActivityDetails = (payload) => {
+  return testRequest.post('/leaderboard/get-user-timeline/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -124,5 +157,12 @@ export default {
   createReportScheduling,
   updateReportScheduling,
   setSchedulingReportStatus,
-  getSchedulingReportTargetGroups
+  getSchedulingReportTargetGroups,
+  getLeaderboardData,
+  getTopPerformersData,
+  exportLeaderboardData,
+  getLeaderboardFormDetails,
+  getUserPerformanceRates,
+  getUserTimeline,
+  exportUserActivityDetails
 }

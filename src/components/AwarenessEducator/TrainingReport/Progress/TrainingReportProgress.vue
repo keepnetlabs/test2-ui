@@ -5,6 +5,7 @@
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -50,6 +51,7 @@
       @refreshAction="callForData"
       @on-details="handleDetails"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-progress__progress-column">
@@ -77,7 +79,7 @@ import Badge from '@/components/Badge'
 import TrainingReportProgressDetails from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgressDetails'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
@@ -97,10 +99,15 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -268,6 +275,19 @@ export default {
     this.callForData()
   },
   watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val, false)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {
@@ -283,6 +303,19 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)
@@ -338,7 +371,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields, examStatus: row.examStatus || row.examStatusName }
+          })
         })
         .finally(this.setLoading)
     },

@@ -212,10 +212,14 @@ export default {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
     getSaveButtonText() {
+      const scheduleTypeId = this.$refs?.refSendTrainingSettings?.formData?.scheduleTypeId
       if (this.step === 3 && this?.$refs?.refSendTrainingSettings?.formData?.isProxy) {
         return 'SAVE & DOWNLOAD'
       }
-      return 'LAUNCH'
+      if (scheduleTypeId === '1') {
+        return 'LAUNCH'
+      }
+      return 'SCHEDULE'
     },
     getTrainingSummaryFormData() {
       let formData = {}
@@ -501,6 +505,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds,
         name
       } = refSendTrainingSettings.formData
@@ -529,6 +534,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds: newLanguageIds
       }
 

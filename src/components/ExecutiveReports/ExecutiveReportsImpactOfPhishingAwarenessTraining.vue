@@ -6,6 +6,7 @@
           :title="card.title"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :is-dashboard-widget="isDashboardWidget"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
@@ -14,6 +15,7 @@
             <BarChart
               v-if="chartData.datasets"
               add-data-plugin
+              :add-custom-legend-label-height="6"
               :chart-data="chartData"
               :chart-options="chartOptions"
               :custom-plugin="customPlugins"
@@ -76,6 +78,10 @@ export default {
     },
     dateFormat: {
       type: String
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,7 +110,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 7, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
             })
@@ -136,6 +142,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -174,40 +181,68 @@ export default {
       const annotations = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'Percentage')?.annotations
       })
+      annotations.push('')
+      annotations.unshift('')
       const companyPhishingRiskScoreDataset = datasets.filter((d) => d.name === 'Percentage')
       const industryAverageDataset = datasets.filter((d) => d.name === 'IndustryAverage')
-      const maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      let maxTick = Math.max(...companyPhishingRiskScoreData, ...industryAverageData)
+      if (maxTick <= 20) maxTick = 20
+      else if (maxTick <= 40) maxTick = 40
+      else if (maxTick <= 60) maxTick = 60
+      else if (maxTick <= 80) maxTick = 80
+      else if (maxTick <= 100) maxTick = 100
+      else maxTick = Math.floor(maxTick / 50) * 50 + 50
+
+      const firstTimestamp = industryAverageDataset[0].x
+      const lastTimestamp = industryAverageDataset[industryAverageDataset.length - 1].x
+      const oneMonthInMs = 30 * 24 * 60 * 60 * 1000
+      const firstTimestampPrevMonth = firstTimestamp - oneMonthInMs
+      const lastTimestampNextMonth = lastTimestamp + oneMonthInMs
       this.chartData = {
         datasets: [
           {
             type: 'line',
             label: 'Industry Avg',
-            data: industryAverageDataset,
+            data: [
+              { x: firstTimestampPrevMonth, y: industryAverageData[0] },
+              ...industryAverageDataset,
+              { x: lastTimestampNextMonth, y: industryAverageData[industryAverageData.length - 1] }
+            ],
             borderColor: '#007bff',
             backgroundColor: '#1173C1',
             borderWidth: 2,
             fill: false,
+            offset: true,
             pointRadius: 0,
             pointHoverRadius: 0,
-            borderDash: [20, 20],
+            borderDash: [15, 15],
             lineTension: 0,
             order: 1
           },
           {
             type: 'bar',
             barThickness: 32,
+            offset: true,
             label: 'Phishing Risk Score',
-            data: companyPhishingRiskScoreDataset,
+            data: [
+              {
+                x: firstTimestampPrevMonth,
+                y: 0
+              },
+              ...companyPhishingRiskScoreDataset,
+              {
+                x: lastTimestampNextMonth,
+                y: 0
+              }
+            ],
             backgroundColor: function (context) {
               const index = context.dataIndex
               const value = context.dataset.data[index].y
               let color = '#43A047'
-              if (value - industryAverageData[index] >= 0) {
+              const avgIndex = industryAverageData[index] || industryAverageData[0]
+              if (value - avgIndex >= 0) {
                 color = '#F56C6C'
-              } else if (
-                value - industryAverageData[index] < 0 &&
-                value - industryAverageData[index] > -10
-              ) {
+              } else if (value - avgIndex < 0 && value - avgIndex > -10) {
                 color = '#D1AD0C'
               }
               return color
@@ -220,15 +255,11 @@ export default {
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
-        layout: {
-          padding: {
-            right: 36
-          }
-        },
         maintainAspectRatio: false,
         scales: {
           xAxes: [
             {
+              offset: false,
               scaleLabel: {
                 display: true,
                 labelString: 'Month/Year',
@@ -246,8 +277,9 @@ export default {
                 callback(value) {
                   const splittedVal = value.split('/')
                   const monthName = monthNamesLong[splittedVal[0] - 1]
-                  return `${monthName}/${value.split('/')[1]}`
-                }
+                  return `${monthName.substring(0, 3)}/${value.split('/')[1]}`
+                },
+                display: true
               },
               type: 'time',
               time: {
@@ -262,7 +294,7 @@ export default {
             {
               ticks: {
                 min: 0,
-                max: maxTick < 50 ? 50 : maxTick,
+                max: maxTick,
                 stepSize: maxTick < 50 ? 10 : maxTick <= 100 ? 20 : maxTick / 5,
                 labelOffset: 0,
                 padding: 12,
@@ -338,6 +370,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -405,6 +438,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 16,
@@ -421,7 +455,7 @@ export default {
               if (context.dataset.label === 'Industry Avg') return ''
               if (annotations[context.dataIndex]) {
                 return annotations[context.dataIndex].definition
-              }
+              } else if (value?.y > 0) return `${value?.y}%`
               return ''
             },
             font: {

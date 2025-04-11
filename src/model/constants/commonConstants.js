@@ -168,11 +168,14 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  AUDIT_DESCRIPTION: 'auditDescription',
   TIME_ZONE: 'timeZone',
   RECIPIENT_TYPE: 'recipientType',
   INFOGRAPHIC_NAME: 'trainingName',
   MATERIAL_NAME: 'trainingName',
   SCREENSAVER_NAME: 'trainingName',
+  CREATION_TYPE: 'creationType',
+  REPLY_TYPE: 'replyType',
   FREQUENCY: 'frequency',
   REPORTNAME: 'reportName',
   BEHAVIOURS: 'behaviours',
@@ -282,6 +285,7 @@ export const PROPERTY_STORE = {
   DELIVERY: 'delivery',
   DELIVERY_TYPE: 'deliveryType',
   COMPANYNAME: 'companyName',
+  RESELLERNAME: 'resellerName',
   APIKEY: 'apiKey',
   DATECREATED: 'dateCreated',
   RESULTTAG: 'resultTag',
@@ -346,6 +350,7 @@ export const PROPERTY_STORE = {
 }
 
 export const TABLE_SETTINGS_KEYS = {
+  LEADERBOARD: 'LeaderboardTableSettings',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
@@ -527,6 +532,7 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  LEADERBOARD: 'LeaderboardTable',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTable',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTable',

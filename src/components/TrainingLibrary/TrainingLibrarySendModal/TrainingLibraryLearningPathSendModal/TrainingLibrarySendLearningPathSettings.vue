@@ -59,7 +59,7 @@
         ref="refSendTrainingSMSSettings"
         merge-tag-subtitle="SMS text to be sent to target users. Use the mandatory merge tag {LEARNINGPATHNAME} for the link to be added to the SMS"
         default-sms-text-template="Dear {FULLNAME}
-{LEARNINGPATHNAME} assigned to you. Please enroll it on {LEARNINGPATHURL}"
+{LEARNINGPATHNAME} assigned to you. Please enroll via this link {LEARNINGPATHURL}"
         :over-flow-count="4"
         :distributionDelayTimeTypes="distributionDelayTimeTypes"
         :default-merge-tags="learningPathMergeTags"
@@ -155,7 +155,7 @@
       </div>
       <AlertBox
         v-if="isDistributionEnabled"
-        class="bg-aqua-light mt-2"
+        class="bg-aqua-light mt-4"
         icon-color="#2196F3"
         icon-name="mdi-information"
         text="If the delivery time falls on a weekend, it will be sent on the following Monday."
@@ -255,15 +255,22 @@
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </FormGroup>
-    <FormGroup v-if="!formData.isProxy && showCertificate" class="mt-6" :title="labels.Certificate">
-      <v-checkbox
-        v-model="formData.awardCertificate"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
-        hide-details
-        color="#2196f3"
-        label="Award certificate when a user completes the learning path"
-      >
-      </v-checkbox>
+    <FormGroup
+      v-if="!formData.isProxy && showCertificate"
+      class="mt-6"
+      :title="labels.Certificate"
+      style="max-width: 875px;"
+    >
+      <div class="d-flex align-center">
+        <v-checkbox
+          v-model="formData.awardCertificate"
+          id="input--campaign-manager-advanced-settings-randomly-selected"
+          hide-details
+          color="#2196f3"
+          label="Award certificate when a user completes the learning path"
+        >
+        </v-checkbox>
+      </div>
     </FormGroup>
     <FormGroup
       v-if="!formData.isProxy"
@@ -363,6 +370,7 @@ import {
   endTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
   enrollmentAutoEnrollTypeItems,
+  certificateTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
 import { learningPathMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
@@ -436,6 +444,7 @@ export default {
         languageIds: [],
         markedAsTest: false,
         awardCertificate: false,
+        certificateConfigSendType: 'SendOnFirstAttempt',
         isProxy: false,
         distributionDays: 2,
         enrollmentScheduler: {
@@ -468,6 +477,7 @@ export default {
       },
       periodTypeItems,
       endTypeItems,
+      certificateTypeItems,
       enrollmentAutoEnrollTypeItems,
       enrollmentAutoEnrollDayOfWeekItems
     }
@@ -548,13 +558,13 @@ export default {
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       }
     },
     validateForm() {

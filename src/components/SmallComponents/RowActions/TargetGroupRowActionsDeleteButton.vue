@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom offset-overflow>
+  <v-tooltip bottom offset-overflow max-width="200">
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-list-item
@@ -26,6 +26,13 @@ export default {
   props: {
     scope: {
       type: Object
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    tooltipMessage: {
+      type: String
     }
   },
   computed: {
@@ -33,17 +40,22 @@ export default {
       getTargetGroupsDeletePermissions: 'permissions/getTargetGroupsDeletePermissions'
     }),
     getTooltipMessage() {
+      if (this.tooltipMessage) {
+        return this.tooltipMessage
+      }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      if (!row.isEditable)
+      if (!row.isEditable) {
+        if (row.isGoogleGroup) return `Google synced groups cannot be deleted`
         return `${indent}(${
           indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
         }) synced groups cannot be deleted`
+      }
       return !this.getDisabledStatusOfAction ? 'Delete' : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope
-      return !row.isEditable || !this.getTargetGroupsDeletePermissions
+      return !row.isEditable || !this.getTargetGroupsDeletePermissions || this.disabled
     }
   }
 }

@@ -55,6 +55,7 @@
       :axios-payload.sync="tableCredientials"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :getRowIsSelectable="handleRowIsSelectable"
       @downloadEvent="exportTargetGroupsList"
       @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
@@ -91,9 +92,19 @@
           <span class="tooltip-span">{{ 'Add Group' }}</span>
         </v-tooltip>
       </template>
-      <template v-slot:datatable-custom-column="{ scope, col }">
-        <span @click="handleGroupNameClick(scope.row)" class="popup-link">
-          {{ scope.row[col.property] }}
+      <template #datatable-custom-column="{ scope, col }">
+        <span>
+          <span @click="handleGroupNameClick(scope.row)" class="popup-link">
+            {{ scope.row[col.property] }}
+          </span>
+          <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="320">
+            <template #activator="{ on }">
+              <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
+            </template>
+            <span>
+              {{ getGroupNameTooltipMessage(scope.row) }}
+            </span>
+          </VTooltip>
         </span>
       </template>
       <template #datatable-row-actions="{ scope }">
@@ -101,6 +112,8 @@
           :id="tableOptions.rowActions[0].id"
           type="groups"
           :scope="scope"
+          :disabled="isTooltipRenderable(scope.row)"
+          :tooltipMessage="getEditButtonTooltipMessage(scope.row)"
           @on-click="handleEditBtnClick"
         />
         <RowActionsMenu>
@@ -109,11 +122,16 @@
             :scope="scope"
             :icon="tableOptions.rowActions[1].icon"
             :text="tableOptions.rowActions[1].name"
+            :showTooltip="isTooltipRenderable(scope.row, true)"
+            :disabled="isTooltipRenderable(scope.row, true)"
+            :disabledTooltipText="getAddUsersToGroupButtonTooltipMessage(scope.row, true)"
             @on-click="handleAddGroup(scope.row)"
           />
           <TargetGroupRowActionsDeleteButton
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
+            :disabled="isTooltipRenderable(scope.row)"
+            :tooltipMessage="getDeleteButtonTooltipMessage(scope.row)"
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -353,6 +371,84 @@ export default {
     }
   },
   methods: {
+    getEditButtonTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
+        return 'Repeat Offenders group is can not be edited.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New Hires group is can not be edited.'
+      }
+      if (row.name === 'Non-Simulated Users')
+        return 'Non-Simulated Users group is can not be edited.'
+      if (row.name === 'Untrained Users') return 'Untraining Users group is can not be edited.'
+    },
+    getGroupNameTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
+        return 'Users who fail two or more phishing campaigns are automatically added to the Repeat Offenders group, posing a higher security risk. Prioritize targeted training and simulations for their adaptation to your security culture, and they will be automatically removed once the risk is reduced.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New hires are automatically added to this group for 90 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
+      }
+      if (row.name === 'Non-Simulated Users')
+        return 'Users who haven’t participated in any simulations are automatically added to this group and removed once they do. Use this group to target users new to simulations.'
+      if (row.name === 'Untrained Users')
+        return 'Users who haven’t enrolled any training are automatically added to this group and removed once they do. Use this group to prioritize training for these users.'
+      return ''
+    },
+    getAddUsersToGroupButtonTooltipMessage(row, isCheckSCIM = false) {
+      if (!row?.name) return ''
+      if (isCheckSCIM && row.isScimGroup) return 'Users cannot be added to the SCIM group.'
+      if (row.isGoogleGroup) return 'Users cannot be added to the Google group.'
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
+        return 'Users cannot be added to the Repeat Offenders group.'
+      }
+      if (row.name === 'New Hires') {
+        return 'Users cannot be added to the New Hires group.'
+      }
+      if (row.name === 'Non-Simulated Users')
+        return 'Users cannot be added to the Non-Simulated Users group.'
+      if (row.name === 'Untrained Users')
+        return 'Users cannot be added to the Untraining Users group.'
+    },
+    getDeleteButtonTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders' || row.name === 'Repeated Offenders') {
+        return 'Repeat Offenders group is can not be deleted.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New Hires group is can not be deleted.'
+      }
+      if (row.name === 'Non-Simulated Users')
+        return 'Non-Simulated Users group is can not be deleted.'
+      if (row.name === 'Untrained Users') return 'Untraining Users group is can not be deleted.'
+    },
+    isTooltipRenderable(row, isCheckSCIM) {
+      if (isCheckSCIM && row.isScimGroup) return true
+      return (
+        row?.name &&
+        [
+          'Repeat Offenders',
+          'Repeated Offenders',
+          'New Hires',
+          'Non-Simulated Users',
+          'Untrained Users'
+        ].includes(row.name)
+      )
+    },
+    handleRowIsSelectable(row) {
+      return (
+        row?.name &&
+        ![
+          'Repeat Offenders',
+          'Repeated Offenders',
+          'New Hires',
+          'Non-Simulated Users',
+          'Untrained Users'
+        ].includes(row.name)
+      )
+    },
     handleEditBtnClick(row) {
       this.$refs.refGroupsTable.handleEdit(row)
     },
@@ -397,7 +493,7 @@ export default {
     handleGroupNameClick(row) {
       this.$router.push({
         name: 'Target Group Users',
-        params: { id: row.resourceId, label: row.name }
+        params: { id: row.resourceId, label: row.name, isGroupEditable: row.isEditable }
       })
     },
     handleMultipleDelete(selection) {
@@ -426,7 +522,7 @@ export default {
     },
     callForTargetGroups() {
       this.loading = true
-      searchTargetGroups(this.tableCredientials)
+      searchTargetGroups(this.tableCredientials, true)
         .then((response) => {
           const {
             data: { data }

@@ -7,6 +7,7 @@
       :email-template-id="emailTemplateId"
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
+      :isAIAllyEnabled="isAIAllyEnabled"
       :landing-page-data="landingPageData"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
@@ -66,6 +67,23 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template #datatable-custom-column="{ scope }">
+        <span v-if="scope.column.property === 'name'">
+          {{ scope.row.name }}
+          <VTooltip v-if="scope.row.isAssistedByAI" bottom>
+            <template #activator="{ on }">
+              <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+            </template>
+            <span>This template was generated with AI</span>
+          </VTooltip>
+        </span>
+        <span v-else-if="scope.column.property === 'isAssistedByAI'">
+          {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
+        </span>
+        <span v-else-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+          {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
@@ -152,6 +170,11 @@ export default {
     NewLandingPage
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    isAIAllyEnabled: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       SCENARIO_DELETE_DIALOG_TYPES,
@@ -182,8 +205,7 @@ export default {
             label: labels.TemplateName,
             sortable: true,
             show: true,
-            type: 'text',
-            // type: "slot",
+            type: 'slot',
             fixed: 'left',
             width: 240,
             filterableType: 'text'
@@ -226,6 +248,21 @@ export default {
             width: 180
           },
           {
+            property: 'isAssistedByAI',
+            align: 'left',
+            editable: false,
+            label: labels.CreationType,
+            sortable: true,
+            show: true,
+            type: 'slot',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'AI Ally', value: true },
+              { text: 'Manual', value: false }
+            ],
+            width: 180
+          },
+          {
             property: PROPERTY_STORE.CREATEDBY,
             align: 'left',
             editable: false,
@@ -236,6 +273,17 @@ export default {
             filterableType: 'text',
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
+          },
+          {
+            property: 'isInvisibleCaptchaEnabled',
+            align: 'left',
+            editable: false,
+            label: 'Stop Bot Activity',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'slot',
+            width: 175
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -340,6 +388,19 @@ export default {
   methods: {
     deleteLandingPage,
     bulkDeleteLandingPages,
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (col) => col.FieldName === 'isInvisibleCaptchaEnabled'
+      )
+      if (filterItemIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     callForData() {
       this.loading = true
       if (this.getLandingPageTemplatesSearchPermissions) {
@@ -455,15 +516,25 @@ export default {
         this.$set(
           this.tableOptions.columns[1],
           'filterableItems',
-          response.data.data.methodTypes.map((item) => item.text)
+          response?.data?.data?.methodTypes?.map((item) => item.text)
         )
         this.$set(
           this.tableOptions.columns[3],
           'filterableItems',
-          response.data.data.difficultyTypes.map((item) => item.text)
+          response?.data?.data?.difficultyTypes?.map((item) => item.text)
         )
         this?.$refs?.refLandingPageList?.reRenderFilters()
-        this.landingPageData = response.data.data
+        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+          return {
+            text: item.domain,
+            value: item.id.toString(),
+            extraDatas: [
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              { text: item.isStopBotActivity, value: item.isStopBotActivity }
+            ]
+          }
+        })
+        this.landingPageData = { ...response.data.data, domainRecords }
       })
     }
   }

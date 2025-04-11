@@ -73,7 +73,7 @@
                       v-model="currentPassword"
                       label="Current password"
                       class="reset-pass-textfield mb-6"
-                      data-recording-ignore="mask"
+                      data-sentry-mask
                       :rules="[rules.required, rules.minPassword]"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
@@ -95,7 +95,7 @@
                       v-model="newPassword"
                       label="Enter new password"
                       class="reset-pass-textfield mb-6"
-                      data-recording-ignore="mask"
+                      data-sentry-mask
                       :rules="[rules.required, rules.minPassword, rules.maxPassword, rules.equal]"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
@@ -121,7 +121,7 @@
                       :rules="[rules.required, rules.minPassword, rules.maxPassword, rules.equal]"
                       label="Enter new password again"
                       class="reset-pass-textfield"
-                      data-recording-ignore="mask"
+                      data-sentry-mask
                       :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="showNewPassword ? '' : 'password'"
                       @click:append="showNewPassword = !showNewPassword"

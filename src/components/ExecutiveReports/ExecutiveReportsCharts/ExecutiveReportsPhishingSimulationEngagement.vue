@@ -15,6 +15,8 @@
               v-if="chartData.datasets"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugin"
+              :add-custom-legend-label-height="16"
             />
           </template>
           <div
@@ -44,6 +46,7 @@ import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsW
 import { getExecutiveReportChartData } from '@/api/reports'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import labels from '../../../model/constants/labels'
 
 export default {
   name: 'ExecutiveReportsPhishingSimulationEngagement',
@@ -88,7 +91,35 @@ export default {
         message: 'You do not have any report conclusion'
       },
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugin: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                const text = textParts[0]
+                const percentage = textParts[1]
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -114,6 +145,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -146,17 +178,31 @@ export default {
       valueEnums.sort((a, b) => (b > a ? 1 : -1))
       for (let itemType of valueEnums) {
         const typedItems = datasets.filter((item) => item.result === itemType)
-        newDatasets.push({
+        const chartColorType =
+          itemType === 'Users Who Clicked And Reported (%)'
+            ? 'Clicked Email Trends'
+            : itemType === 'Users Who Did Not Click And Reported (%)'
+            ? 'Not Clicked (%)'
+            : 'Not Reported (%)'
+        const index =
+          itemType === 'Users Who Did Not Click And Reported (%)'
+            ? 0
+            : itemType === 'Users Who Did Not Reported (%)'
+            ? 2
+            : 1
+        newDatasets[index] = {
           type: 'bar',
           barThickness: 32,
           label: itemType,
-          ...CHART_COLORS[itemType],
+          ...CHART_COLORS[chartColorType],
           data: typedItems
-        })
+        }
       }
       const maxYData = []
       for (let i = 0; i < newDatasets[0].data.length; i++) {
-        maxYData.push(newDatasets[0].data[i].y + newDatasets[1].data[i].y)
+        maxYData.push(
+          newDatasets[0].data[i].y + newDatasets[1].data[i].y + newDatasets[2].data[i].y
+        )
       }
       let maxY = Math.max(...maxYData)
       if (maxY < 20) {
@@ -166,6 +212,8 @@ export default {
       } else if (maxY < 60) {
         maxY = 80
       } else if (maxY < 80) {
+        maxY = 100
+      } else {
         maxY = 100
       }
       this.chartData = {
@@ -252,11 +300,32 @@ export default {
             generateLabels(chart = {}) {
               const { data } = chart
               return data.datasets.map((item, index) => {
+                const average = Math.round(
+                  item.data.reduce((total, current) => total + current.y, 0) / item.data.length
+                )
+                const label =
+                  item.label === 'Users Who Clicked And Reported (%)'
+                    ? 'Users Who Clicked And Reported'
+                    : item.label === 'Users Who Did Not Click And Reported (%)'
+                    ? 'Users Who Did Not Click And Reported'
+                    : 'Users Who Did Not Reported'
+                const percentage = average.toString().includes('.') ? average.toFixed(2) : average
+                const customSpacer =
+                  label !== labels.UserWhoDidNotClickAndReported ? '        ' : '     '
                 return {
-                  text: item.label,
+                  text: Array.from(label + label + customSpacer)
+                    .fill('')
+                    .join(' '),
                   fillStyle: item.borderColor,
                   lineWidth: 0,
-                  datasetIndex: index
+                  datasetIndex: index,
+                  textParts: [label, `(${percentage}%)`],
+                  customMarginLeft:
+                    label === labels.UserWhoDidNotClickAndReported
+                      ? 16
+                      : label === labels.UserWhoClickedAndReported
+                      ? 8
+                      : 6
                 }
               })
             },
@@ -291,6 +360,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 280 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -311,7 +381,7 @@ export default {
             let tooltipFooter = tooltipEl.querySelector('.tooltip-footer')
             tooltipFooter.style.marginTop = '2px'
             tooltipFooter.style.fontFamily = 'Open-sans,sans-serif'
-            tooltipFooter.style.fontSize = '14px'
+            tooltipFooter.style.fontSize = '12px'
             tooltipFooter.style.borderRadius = '8px'
             tooltipFooter.style.color = '#fff'
             tooltipFooter.style.padding = '16px'
@@ -344,18 +414,15 @@ export default {
               let selectedBackgroundColor = ''
               let selectedLabel = ''
               let selectedValue = ''
-              const totalPhishingReportRate = this._chart.data.datasets.reduce((acc, item) => {
-                let val = item.data[tooltipModel.dataPoints[0].index]
-                return acc + val.y
-              }, 0)
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel =
-                  dataset.label === 'Clicked (%)'
-                    ? 'Clicked Report Rate'
-                    : 'Not Clicked Report Rate'
+                  dataset.label === 'Users Who Clicked And Reported (%)'
+                    ? 'Users Who Clicked And Reported'
+                    : dataset.label === 'Users Who Did Not Click And Reported (%)'
+                    ? 'Users Who Did Not Click And Reported'
+                    : 'Users Who Did Not Reported'
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'
-
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -364,12 +431,10 @@ export default {
                 </td>
                 <td style="font-weight:600">${dataValue.y}%</td>
             `
-
                 if (
                   dataset.label ===
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
-                  tr.style.fontWeight = '600'
                   selectedValue = dataValue
                   selectedLabel = dataset.label
                   selectedBackgroundColor = backgroundColor
@@ -382,6 +447,10 @@ export default {
                 tr.style.paddingBottom = '6px'
                 tableRoot.appendChild(tr)
               })
+              const index = tooltipModel.dataPoints[0].index
+              const totalPhishingReportRate =
+                this._chart.data.datasets[0].data[index].y +
+                this._chart.data.datasets[1].data[index].y
               let lastTr = document.createElement('tr')
               lastTr.innerHTML = `
                 <td>
@@ -395,15 +464,30 @@ export default {
               lastTr.style.justifyContent = 'space-between'
               lastTr.style.paddingTop = '8px'
               tableRoot.appendChild(lastTr)
-              tooltipFooter.style.background = selectedBackgroundColor
-              const explanationText =
-                selectedLabel === 'Clicked (%)'
-                  ? ' of the users who did click the email also reporting it.'
-                  : ' of users identifying and reporting phishing in simulation engagements'
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-weight: normal; display: block;"><span style="font-weight:700;">${selectedValue.y}%</span>${explanationText}</th>`
+              let isIncreased = false
+              let comparatorValue = 0
+              let dataIndex = tooltipModel.dataPoints[0].index
+              if (dataIndex > 0) {
+                const datasets = this._chart.data.datasets
+                const beforeClickedData = datasets[1].data[dataIndex - 1]?.y
+                const beforeNotClickedData = datasets[0].data[dataIndex - 1]?.y
+                const currentClickedData = datasets[1].data[dataIndex]?.y
+                const currentNotClickedData = datasets[0].data[dataIndex]?.y
+                comparatorValue =
+                  currentClickedData -
+                  beforeClickedData +
+                  (currentNotClickedData - beforeNotClickedData)
+                isIncreased = comparatorValue > 0
+              }
+              if (comparatorValue < 0) comparatorValue = -comparatorValue
+              tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
+              const explanationText = isIncreased ? ' increased by' : ' decreased by'
+              tooltipFooter.style.opacity = dataIndex === 0 || comparatorValue === 0 ? 0 : 1
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${comparatorValue}%</span> in simulation users</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
@@ -412,29 +496,19 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            offset: 12,
-            color: '#383B41',
+            align: 'end',
+            anchor: 'end',
+            offset: -2,
+            color: '#000',
             formatter: function (value, context) {
-              if (context.dataset.label === 'Not Clicked (%)' && value.annotations && value.y) {
+              if (context.dataset.label === 'Not Reported (%)' && value.annotations) {
                 return value.annotations.definition
               }
               return ''
             },
-            align: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
-            anchor: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 0) {
-                return 'right'
-              }
-              return 'left'
-            },
             font: {
-              size: 10,
-              color: '#383B41',
+              size: 9,
+              family: 'Open Sans, sans-serif',
               weight: 'normal'
             },
             borderRadius: 4,

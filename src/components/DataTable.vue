@@ -69,6 +69,7 @@
           :loading="extendedViewLoading"
           :wait-api="waitExtendedViewApi"
           :is-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+          :extended-view-calling-api="extendedViewCallingApi"
           @closeCreateMode="$emit('closeCreateMode')"
           @closeEditPopup="closeEditPopup"
           @handleEdit="handleExtendedViewEdit"
@@ -834,9 +835,7 @@
               <div class="empty-table" v-if="!loading">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
-                    <h2>
-                      Sorry, that search and filter criteria has no results.
-                    </h2>
+                    <h2>Sorry, that search and filter criteria has no results.</h2>
                     <p>Please try adjusting your search or filter</p>
                   </slot>
                 </div>
@@ -893,7 +892,7 @@
           v-if="showPagination"
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="serverSideProps.totalNumberOfRecords"
           @current-change="handleServerSideCurrentChange"
           @size-change="handleServerSideSizeChange"
@@ -929,7 +928,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
@@ -953,7 +952,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
-          :page-sizes="pageSizes || [5, 10, 25]"
+          :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
           @size-change="handleFilteredSizeChange"
@@ -1222,7 +1221,7 @@ export default {
     pageSizes: {
       type: Array,
       required: false,
-      default: () => [5, 10, 25]
+      default: () => [5, 10, 25, 50, 100]
     },
     defaultSort: {
       type: String,
@@ -1372,6 +1371,10 @@ export default {
       type: Function
     },
     isReportWithExam: {
+      type: Boolean,
+      default: false
+    },
+    extendedViewCallingApi: {
       type: Boolean,
       default: false
     }
@@ -1552,6 +1555,13 @@ export default {
     }
   },
   watch: {
+    getSelectionText() {
+      const selectionCount =
+        this.isServerSide && this.isServerSideSelection
+          ? this.serverSideSelectionCount
+          : this.multipleSelection.length
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     table(table, oldTable) {
       this.columnStandardisation(this.columns)
       this.initialData = this.isServerSide ? table : [...table]
@@ -1836,6 +1846,7 @@ export default {
         )
       }
       this.handleRefresh()
+      this?.$refs?.elTableRef?.clearSort()
       this.$emit('clear-filters')
     },
     handleRowClick(row) {

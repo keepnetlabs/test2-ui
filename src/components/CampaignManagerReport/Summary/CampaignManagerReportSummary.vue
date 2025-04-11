@@ -106,10 +106,7 @@ import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerRe
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
-import {
-  SCENARIO_DISTRIBUTION,
-  SCENARIO_DISTRIBUTION_TEXTS
-} from '@/components/CampaignManager/utils'
+import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -232,30 +229,46 @@ export default {
       return this.getScenarioMethod.toString() === '3' || false
     },
     getCampaignSummaryItems() {
-      const { endDate = '0', totalTargetUserCount = 0, categoryDistributionType } = this
-        .campaignSummary?.campaignInfo || {
+      const {
+        endDate = '0',
+        totalTargetUserCount = 0,
+        categoryDistributionType,
+        trackingReplyInfo
+      } = this.campaignSummary?.campaignInfo || {
         endDate: '0',
         totalTargetUserCount: 0,
-        categoryDistributionType: 'Manually'
+        categoryDistributionType: 'Manually',
+        trackingReplyInfo: ''
       }
+      const { smartGroupInfo, campaignInfo = {} } = this?.campaignSummary || {}
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
+        'Target Groups': this?.targetGroups || [],
+        'Hyper-Personalization':
+          parseInt(campaignInfo?.sendUserPreferredLanguage) === 1
+            ? 'Preferred Language'
+            : 'Manually',
+        'Smart Grouping': smartGroupInfo,
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languages.size ? [...languages].join(', ') : '',
-        'Scenario Distribution': categoryDistributionType
+        'Scenario Distribution': categoryDistributionType,
+        'Reply Tracking': trackingReplyInfo
       }
     },
     getCampaignSummaryHelperData() {
-      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary || {}
+      const { targetUsers = {}, campaignInfo = {}, smartGroupInfo = {} } =
+        this.campaignSummary || {}
       const { randomlyUsersCount = 0, sendOnlyActiveUsers = false, sendRandomlyUsers = false } =
         targetUsers || {}
       const { totalTargetUserCount = 0 } = campaignInfo
       return {
+        smartGroupInfo,
+        targetGroups: this?.targetGroups || [],
         randomlyUsersCount,
         sendOnlyActiveUsers,
         sendRandomlyUsers,
@@ -294,7 +307,7 @@ export default {
           this.formDetails?.methodTypes?.find((item) => parseInt(item.value) === methodTypeId)
             ?.text || ''
         const difficultyText =
-          this.formDetails?.difficultyTypess
+          this.formDetails?.difficultyTypes
             ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
             ?.map((item) => item.text)
             ?.join(',') || ''

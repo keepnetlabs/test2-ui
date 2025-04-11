@@ -204,11 +204,16 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [
                 {
                   Value: 'false',
                   FieldName: 'isscimgroup',
+                  Operator: 'Include'
+                },
+                {
+                  Value: 'false',
+                  FieldName: 'isgooglegroup',
                   Operator: 'Include'
                 }
               ],

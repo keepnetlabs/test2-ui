@@ -36,6 +36,14 @@
       :text="getAlertBoxText"
       :slots="{ primaryAction: false, secondaryAction: false }"
     />
+    <AlertBox
+      v-if="canRenderNoAvailableNumbersAlertBox"
+      class="mb-4"
+      icon-color="#B6791D"
+      icon-name="mdi-alert"
+      text="There are no available callback phone numbers at the moment. Please contact our support team for further assistance."
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <DataTable
       v-if="getCallbackSettingsSearchPermissions"
       ref="refCallbackSettings"
@@ -282,6 +290,9 @@ export default {
     }),
     canRenderAlertBox() {
       return !this.isLoading
+    },
+    canRenderNoAvailableNumbersAlertBox() {
+      return !this.isLoading && this.selectablePhoneNumberCount === 0
     },
     getAlertBoxText() {
       return `You can add a maximum of ${this.licenseNumberLimit} phone number${

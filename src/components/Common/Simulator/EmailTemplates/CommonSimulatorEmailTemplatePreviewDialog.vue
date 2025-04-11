@@ -18,6 +18,14 @@
             <div>
               <span class="template-preview__text--title">Template Name: </span>
               <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+              <VTooltip v-if="false" bottom>
+                <template #activator="{ on }">
+                  <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                    >mdi-creation</VIcon
+                  >
+                </template>
+                <span>This template was generated with AI</span>
+              </VTooltip>
             </div>
             <div>
               <span class="template-preview__text--title">From Name: </span>
@@ -27,6 +35,12 @@
               <span class="template-preview__text--title">From Email Address: </span>
               <span class="template-preview__text--body">{{
                 emailTemplateParams.fromAddress
+              }}</span>
+            </div>
+            <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+              <span class="template-preview__text--title">CC: </span>
+              <span class="template-preview__text--body">{{
+                emailTemplateParams.ccAddresses.join(', ')
               }}</span>
             </div>
             <div>
@@ -129,6 +143,9 @@ export default {
     }
   },
   computed: {
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -160,6 +177,7 @@ export default {
           const {
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             difficultyResourceId,
             phishingFileName,
@@ -168,6 +186,7 @@ export default {
           this.emailTemplateParams = {
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
@@ -175,7 +194,8 @@ export default {
               ? {
                   name: phishingFileName
                 }
-              : null
+              : null,
+            isAssistedByAI: data.isAssistedByAI
           }
           if (this.type === SCENARIO_TYPES.QUISHING)
             data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)

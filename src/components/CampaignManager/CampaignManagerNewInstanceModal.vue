@@ -26,10 +26,13 @@
       <CampaignManagerTargetGroups
         ref="refCampaignManagerTargetGroup"
         class="mt-2"
+        is-phishing
         :selected-target-groups="formValues.targetGroupResourceIds"
         :response-of-target-groups-items="responseOfTargetGroupsItems"
         :is-valid="isTargetGroupsValid"
         :isMFAScenarioSelected="isMFAScenarioSelected"
+        :send-user-preferred-language="sendUserPreferredLanguage"
+        :scenario-resource-ids="scenarioResourceIds"
         @handle-selection-change="handleTableSelectionChange"
       />
       <CustomError
@@ -74,7 +77,11 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import CustomError from '@/components/CustomError'
 import { getTargetGroupCountDetail, searchTargetGroups } from '@/api/targetUsers'
-import { calculateSendingInfo, launchPhishingCampaign } from '@/api/phishingsimulator'
+import {
+  calculateSendingInfo,
+  getCampaignManager,
+  launchPhishingCampaign
+} from '@/api/phishingsimulator'
 import { isDifferent, getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
@@ -146,6 +153,8 @@ export default {
       defaultTargetGroups: [],
       targetGroupItems: [],
       selectedTimeZoneText: '',
+      sendUserPreferredLanguage: '0',
+      scenarioResourceIds: [],
       inputDistributionFormData: {
         distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
         distributionDelayEvery: 20,
@@ -237,6 +246,11 @@ export default {
     }
   },
   created() {
+    getCampaignManager(this.selectedRow.resourceId).then((response) => {
+      const { data: { data = {} } = {} } = response
+      this.scenarioResourceIds = data?.phishingScenarios?.map((item) => item.value)
+      this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
+    })
     this.callForTargetGroups()
     this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
@@ -325,6 +339,9 @@ export default {
           useTargetUserTimeZone: this.inputScheduleFormData?.useTargetUserTimeZone || false,
           scheduledDateTimeZoneId: this.inputScheduleFormData.scheduledDateTimeZoneId,
           scheduleTypeId: this.inputScheduleFormData.scheduleTypeId,
+          sendingLimit: this.inputDistributionFormData.sendingLimit,
+          distributionDelayEvery: this.inputDistributionFormData.distributionDelayEvery,
+          distributionDelayTimeTypeId: this.inputDistributionFormData.distributionDelayTimeTypeId,
           distributionStartTypeId: this.inputDistributionFormData.distributionStartTypeId,
           distributionStartTime: this.inputDistributionFormData.distributionStartTime,
           distributionEndTime: this.inputDistributionFormData.distributionEndTime,

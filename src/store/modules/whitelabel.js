@@ -27,7 +27,8 @@ const initialState = {
   systemVersion: null,
   companyLicense: null,
   showLicenseExceededDialog: false,
-  countryCode: ''
+  countryCode: '',
+  countryName: ''
 }
 
 const whitelabel = {
@@ -81,6 +82,9 @@ const whitelabel = {
     },
     getCountryCode({ countryCode }) {
       return countryCode
+    },
+    getCountryName({ countryName }) {
+      return countryName
     }
   },
   mutations: {
@@ -116,6 +120,9 @@ const whitelabel = {
     },
     SET_SHOW_EXCEED_DIALOG(state) {
       state.showLicenseExceededDialog = !state.showLicenseExceededDialog
+    },
+    SET_COUNTRY_NAME(state, payload) {
+      state.countryName = payload
     }
   },
   actions: {
@@ -151,7 +158,7 @@ const whitelabel = {
     },
     callForSystemInfoSummary(context = {}, payload = {}) {
       callForSystemInfoSummary().then((response) => {
-        const { versionInfo, companyLicense, summary = {} } = response?.data || {
+        const { versionInfo, companyLicense, company, summary = {} } = response?.data || {
           versionInfo: {
             data: {
               version: ''
@@ -172,10 +179,16 @@ const whitelabel = {
         if (summary?.data?.countryCode) {
           context.commit('SET_DATA', { countryCode: summary?.data?.countryCode })
         }
+        if (company?.data?.countryName) {
+          context.commit('SET_COUNTRY_NAME', company.data.countryName)
+        }
       })
     },
     resetState(context = {}) {
       context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
+    },
+    setState(context = {}, payload) {
+      context.commit('SET_DATA', payload)
     },
     toggleShowExceedDialog(context) {
       context.commit('SET_SHOW_EXCEED_DIALOG')

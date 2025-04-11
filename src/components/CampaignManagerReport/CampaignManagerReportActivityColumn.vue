@@ -10,7 +10,7 @@
           >mdi-information</v-icon
         >
       </template>
-      <span>{{ tooltipText }}</span>
+      <span>{{ getActivityTooltipText() }}</span>
     </v-tooltip>
   </span>
 </template>
@@ -26,13 +26,13 @@ export default {
     },
     tooltipText: {
       type: String,
-      default: 'Sandbox activities are displayed in the details list'
+      default: 'Bot activities are displayed in the details list'
     }
   },
   computed: {
     isRenderTooltip() {
       return (
-        this.scope?.row?.activityType === ACTIVITY_TYPES.SYSTEM ||
+        this.scope?.row?.activityType === ACTIVITY_TYPES.BOT ||
         this.isChangedActivityAndActivityHuman
       )
     },
@@ -40,6 +40,34 @@ export default {
       return (
         this.scope?.row?.activityType === ACTIVITY_TYPES.HUMAN && this.scope.row.isChangedActivity
       )
+    }
+  },
+  methods: {
+    getActivityTooltipText() {
+      if (
+        this?.scope?.row?.activityType === ACTIVITY_TYPES.BOT &&
+        this?.scope?.row?.sandBoxType === undefined
+      ) {
+        return 'Bot activities are displayed in the details list'
+      }
+      if (
+        this?.scope?.row?.activityType === ACTIVITY_TYPES.HUMAN &&
+        this?.scope?.row?.isChangedActivity
+      )
+        return 'Bot activity has been changed to human activity'
+      if (this?.scope?.row?.sandBoxType === 1 || this?.scope?.row?.sandBoxType === 2) {
+        return 'Bot Activity Rules: A1'
+      }
+      if (this?.scope?.row?.sandBoxType >= 32) {
+        return 'Bot Activity Rules: A4.2'
+      }
+      if (this?.scope?.row?.sandBoxType >= 16) {
+        return 'Bot Activity Rules: A4.1'
+      }
+      if (this?.scope?.row?.sandBoxType >= 8) {
+        return 'Bot Activity Rules: A3'
+      }
+      return 'Bot Activity Rules: A2'
     }
   }
 }

@@ -54,3 +54,6 @@ export function reAnalyzeEmail(resourceId = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function confirmationRequiredForEdit(payload) {
+  return testRequest.post(`/notified-emails/bulk-update-email-stats`, payload)
+}

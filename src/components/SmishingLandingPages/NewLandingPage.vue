@@ -178,7 +178,41 @@
                       :extension-types="getExtensionTypes"
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
+                      :is-edit="isEdit"
+                      @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                      @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
+                    <VCheckbox
+                      v-model="formValues.isInvisibleCaptchaEnabled"
+                      color="#2196f3"
+                      hide-details
+                      :class="[
+                        'mb-10',
+                        isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                      ]"
+                      :ripple="false"
+                      :readonly="isInvisibleCaptchaDisabled"
+                      :style="
+                        isInvisibleCaptchaDisabled
+                          ? { opacity: 0.38, cursor: 'default !important' }
+                          : ''
+                      "
+                    >
+                      <template #label>
+                        Stop bots to prevent false clicks.
+                        <VTooltip bottom max-width="260" z-index="9999999">
+                          <template #activator="{ on }">
+                            <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
+                          </template>
+                          <span
+                            >Once enabled, bot activity is automatically detected and stopped to
+                            prevent false clicks, ensuring genuine traffic to the landing
+                            page.</span
+                          >
+                        </VTooltip>
+                      </template>
+                    </VCheckbox>
+                    <FormGroup title="Landing Page Template"></FormGroup>
                     <el-tabs
                       v-model="tab"
                       class="landing-page-tab-content"
@@ -371,6 +405,7 @@ export default {
       },
       languageOptions: [],
       disabledLabel: null,
+      isInvisibleCaptchaDisabled: false,
       tab: 'page1',
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -381,6 +416,7 @@ export default {
       availableForRequests: [],
       initialFormValues: {},
       formValues: {
+        isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
           subDomain: '',
@@ -564,7 +600,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    ...mapGetters({
+      emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getUrlSchemaTypes() {
       return this.landingPageData?.urlSchemaTypes || []
     },
@@ -633,16 +672,25 @@ export default {
         delete data.subDomain
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
+        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId, true)
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
+        const findedDomain = this.landingPageData?.domainRecords?.find(
+          (domain) => domain.value === phishingLink?.domainRecordId?.toString()
+        )
+        this.isInvisibleCaptchaDisabled = findedDomain ? !findedDomain?.extraDatas[1]?.value : false
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   }
 }

@@ -202,6 +202,15 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
+                <form-group class-name="mt-6" title="Tags" sub-title="Define tags for the company">
+                  <InputTag
+                    v-model="formData.tags"
+                    ref="refTags"
+                    :id="`input--action-tags`"
+                    :items="[]"
+                    class="hide-caret"
+                  />
+                </form-group>
                 <v-list-item>
                   <v-list-item-content>
                     <v-switch
@@ -209,7 +218,7 @@
                       id="input--company-status"
                       :ripple="false"
                       dense
-                      :label="formData.statusId === '1' ? 'Active' : 'Inactive'"
+                      :label="formData.statusId === '1' ? 'ACTIVE' : 'INACTIVE'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
                       :true-value="'1'"
@@ -304,13 +313,13 @@
                         item-text="name"
                         item-value="resourceId"
                         outlined
-                        placeholder="Select an option"
-                        :rules="[expiryPeriodValidation]"
-                        @change="expiryPeriodChange"
-                        :disabled="stepLock"
-                        hint="*Required"
-                        :menu-props="{ offsetY: true }"
                         persistent-hint
+                        placeholder="Select an option"
+                        hint="*Required"
+                        :disabled="stepLock || isExpiryDateLimited"
+                        :rules="[expiryPeriodValidation]"
+                        :menu-props="{ offsetY: true }"
+                        @change="expiryPeriodChange"
                       >
                         <template v-slot:selection="{ item }">
                           <span>
@@ -355,7 +364,7 @@
                     </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
-                        v-mask="'###########'"
+                        v-mask="'######'"
                         ref="userLimit"
                         :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
@@ -369,18 +378,6 @@
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
-                      <v-btn
-                        height="40"
-                        class="company-create-modal__btn-unlimited"
-                        id="btn-unlimited--company"
-                        color="#2196f3"
-                        text
-                        @click="clickUnlimited"
-                        :disabled="stepLock"
-                        >{{
-                          formData.IsNumberOfUsersLimited ? 'MAKE UNLIMITED' : 'LIMIT USER'
-                        }}</v-btn
-                      >
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -602,6 +599,7 @@
 import * as validations from '@/utils/validations'
 import {
   createCompany,
+  expiryDateLimited,
   searchCompanies,
   searchCompanyGroupsWithParents,
   updateCompany
@@ -633,6 +631,10 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
 import moment from 'moment'
+import countryDefaultValues from '@/utils/countryDefaultValues'
+import countryLanguageMap from '@/utils/countryLanguageMap'
+import { getTimeZoneForMoment } from '../../utils/functions'
+import InputTag from '@/components/Common/Inputs/InputTag.vue'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -641,6 +643,7 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    InputTag,
     ConfigureCompanyStepHeader,
     FormGroup,
     InputTimezone,
@@ -666,6 +669,7 @@ export default {
       dateFormat: localStorage.getItem('selectedDateFormat'),
       timeFormat: localStorage.getItem('selectedTimeFormat'),
       languageItems: [],
+      isExpiryDateLimited: false,
       startDateValidation: '',
       endDateValidation: '',
       saveDisable: false,
@@ -706,7 +710,9 @@ export default {
         LicenseModuleResourceIdArray: [],
         statusId: '1',
         DateFormat: 'dd/MM/yyyy',
-        TimeFormat: '24h'
+        TimeFormat: '24h',
+        timeZoneId: '',
+        tags: []
       },
       dateFormatList: [
         {
@@ -754,6 +760,17 @@ export default {
     }
   },
   computed: {
+    getSelectedCountry() {
+      if (this.formData.CountryResourceId) {
+        const selectedCountryIndex = this.countries.findIndex(
+          (country) => country.resourceId === this.formData.CountryResourceId
+        )
+        if (selectedCountryIndex !== -1) {
+          return this.countries[selectedCountryIndex].name
+        }
+      }
+      return null
+    },
     getDateFormat() {
       if (this.dateFormat) {
         return this.dateFormat.replaceAll('/', '.').replaceAll('Y', 'y').replaceAll('D', 'd')
@@ -790,17 +807,23 @@ export default {
       return this.formData.IsNumberOfUsersLimited
         ? [
             (v) => this.validations.required(v, 'Required'),
-            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+            (v) => /^\d+$/gi.test(v) || 'Invalid number',
+            (v) => {
+              return parseInt(v) > 200000
+                ? 'Number of users has exceeded 200,000. Please reduce the number of users to continue.'
+                : null
+            }
           ]
         : [true]
     },
     numberOfUsersPlaceholder() {
-      return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
+      return 'Enter number of users'
     },
     isEndDateDisabled() {
       return (
         this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
-        this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4'
+        this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4' ||
+        this.isExpiryDateLimited
       )
     },
     isSecondStepDisabled() {
@@ -822,6 +845,28 @@ export default {
     }
   },
   watch: {
+    getSelectedCountry(val) {
+      if (this.edit || !val) return
+      const countryDefaultValuesIndex = countryDefaultValues.findIndex(
+        (country) => country.name === val
+      )
+      const englishResourceId = this.languageItems.find((item) => item.name === 'English')
+        ?.resourceId
+      if (countryDefaultValuesIndex !== -1) {
+        this.formData.DateFormat = countryDefaultValues[countryDefaultValuesIndex].dateFormat
+        this.formData.TimeFormat = countryDefaultValues[countryDefaultValuesIndex].timeFormat
+        this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
+        const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
+        if (nativeLanguageIndex !== -1) {
+          this.formData.PreferredLanguageTypeResourceId =
+            this.languageItems.find(
+              (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
+            )?.resourceId || englishResourceId
+        }
+      } else {
+        this.formData.PreferredLanguageTypeResourceId = englishResourceId
+      }
+    },
     isCallbackSelected(val) {
       if (!val) {
         this.formData.CallBackNumberBookingCount = null
@@ -835,6 +880,26 @@ export default {
       }
     },
     'formData.LicenseStartDate'(newVal, oldVal) {
+      if (this.isExpiryDateLimited) {
+        if (!newVal) this.formData.LicenseEndDate = ''
+        else {
+          let endDate = ''
+          const [firstPart, secondPart, thirdPart] = this.formData?.LicenseStartDate?.split(
+            ' '
+          )?.[0]?.split('/')
+          if (this.dateFormat === 'YYYY/MM/DD') {
+            endDate = new Date(parseInt(firstPart), parseInt(secondPart) + 2, parseInt(thirdPart))
+          } else if (this.dateFormat === 'MM/DD/YYYY') {
+            endDate = new Date(parseInt(thirdPart), parseInt(firstPart) + 2, parseInt(secondPart))
+          } else if (this.dateFormat === 'DD/MM/YYYY') {
+            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
+          } else {
+            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
+          }
+          this.formData.LicenseEndDate = this.$moment(endDate).format(getTimeZoneForMoment())
+        }
+        return
+      }
       this.startDateValidation = oldVal && !newVal ? 'Start date should be picked' : ''
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
       if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
@@ -911,11 +976,15 @@ export default {
     }
   },
   mounted() {
+    this.callForExpiryDateLimited()
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
     if (this.edit) {
-      this.formData.PreferredLanguageTypeResourceId = this.selectedExtend.preferredLanguageTypeResourceId
+      this.formData.PreferredLanguageTypeResourceId =
+        this.selectedExtend.preferredLanguageTypeResourceId === ''
+          ? this.formData.PreferredLanguageTypeResourceId
+          : this.selectedExtend.preferredLanguageTypeResourceId
       this.stepLock = this.edit
       this.formData.logoURL = this.selectedExtend.logoUrl
       this.formData.Name = this.selectedExtend.name
@@ -929,6 +998,7 @@ export default {
       this.formData.LicenseStartDate = this.selectedExtend.licenseStartDate
       this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
       this.formData.IsNumberOfUsersLimited = this.selectedExtend.isNumberOfUsersLimited
+      this.formData.tags = this.selectedExtend.tags || []
       this.formData.LicenseModuleResourceIdArray = this.selectedExtend.licenseModules
       this.formData.licenseTypeName = this.selectedExtend.licenseTypeName
       this.formData.NumberOfUsers = this.selectedExtend.isNumberOfUsersLimited
@@ -942,6 +1012,7 @@ export default {
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.TimeFormat = this.selectedExtend?.timeFormat || '24h'
       this.formData.DateFormat = this.selectedExtend?.dateFormat || 'dd/MM/yyyy'
+      this.correctDateFormat()
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.formData.timeZoneId = this.selectedExtend.timeZoneId
       this.formData.CallBackNumberBookingCount =
@@ -955,6 +1026,31 @@ export default {
     }
   },
   methods: {
+    callForExpiryDateLimited() {
+      expiryDateLimited(this.$moment(Date.now()).format(getTimeZoneForMoment())).then(
+        (response) => {
+          if (Object.keys(response?.data?.data).length) {
+            this.isExpiryDateLimited = true
+            if (this.edit) return
+            this.formData.LicenseStartDate = this.$moment(Date.now()).format(getTimeZoneForMoment())
+            this.formData.LicenseEndDate = this.$moment(
+              Date.now() + 90 * 60 * 60 * 24 * 1000
+            ).format(getTimeZoneForMoment())
+          }
+        }
+      )
+    },
+    correctDateFormat() {
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'dd/mm/yyyy') {
+        this.formData.DateFormat = 'dd/MM/yyyy'
+      }
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'mm/dd/yyyy') {
+        this.formData.DateFormat = 'MM/dd/yyyy'
+      }
+      if (this.formData.DateFormat.toLocaleLowerCase() === 'yyyy/mm/dd') {
+        this.formData.DateFormat = 'yyyy/MM/dd'
+      }
+    },
     handleCloseWarningModal() {
       this.isWarningModalVisible = false
     },
@@ -995,10 +1091,7 @@ export default {
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-          this.languageItems = [
-            { name: 'All Languages', resourceId: '' },
-            ...res?.filter((item) => item.genericCodeTypeId === 21)
-          ]
+          this.languageItems = [...res?.filter((item) => item.genericCodeTypeId === 21)]
           this.notificationTemplates = res
             .filter((item) => item.genericCodeTypeId === 5)
             .map((notificationTemplate, ind) => {
@@ -1045,6 +1138,10 @@ export default {
                   JSON.stringify(this.formData.LicenseModuleResourceIdArray)
                 )
               }
+            }
+            if (!this.formData.PreferredLanguageTypeResourceId) {
+              const englishResourceId = this.languageItems.find((item) => item.name === 'English')
+              this.formData.PreferredLanguageTypeResourceId = englishResourceId?.resourceId
             }
           }
         }
@@ -1219,10 +1316,6 @@ export default {
     onFileChanged(file) {
       this.formData.logoURL = ''
       this.formData.File = file
-    },
-    clickUnlimited() {
-      this.formData.IsNumberOfUsersLimited = !this.formData.IsNumberOfUsersLimited
-      this.formData.NumberOfUsers = ''
     },
     cancelForm() {
       this.formData = []

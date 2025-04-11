@@ -140,7 +140,11 @@ import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import { emptyInfographicSendModalObj } from '@/components/TrainingLibrary/utils'
-import { endTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
+import {
+  enrollmentAutoEnrollTypeItems,
+  enrollmentAutoEnrollDayOfWeekItems,
+  periodTypeItems
+} from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendInfographicSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibrarySendInfographicSummary.vue'
 import TrainingLibrarySendInfographicSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibrarySendInfographicSettings.vue'
 
@@ -189,6 +193,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      getTimezones: 'common/getTimezones',
       enumTypes: 'trainingLibraryHelpers/getEnumTypes',
       distributionDelayTimeTypes: 'trainingLibraryHelpers/getDistributionDelayTimeTypes',
       certificateEmailNotificationTemplateTypeResourceId:
@@ -213,10 +218,14 @@ export default {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
     getSaveButtonText() {
+      const scheduleTypeId = this.$refs?.refSendTrainingSettings?.formData?.scheduleTypeId
       if (this.step === 3 && this?.$refs?.refSendTrainingSettings?.formData?.isProxy) {
         return 'SAVE & DOWNLOAD'
       }
-      return 'LAUNCH'
+      if (scheduleTypeId === '1') {
+        return 'LAUNCH'
+      }
+      return 'SCHEDULE'
     },
     getTrainingSummaryFormData() {
       let formData = {}
@@ -241,27 +250,50 @@ export default {
         formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
         formData.userCountDetailResponse = this.userCountDetailResponse
         const isProxy = refSendTrainingSettings?.formData?.isProxy
-        const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
-        const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
+        const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          Reminder: sendReminderEvery,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
+            ? {
+                smsText:
+                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
+                    ?.smsTextTemplate,
+                senderPhoneNumber:
+                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
+              }
+            : 'Off',
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Sender Phone Number':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
-              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
-          'SMS Text':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`
         }
-        if (sendReminderEvery) {
-          const reminderEndType =
-            endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
-          formData.settings.Reminder = `Every ${enrollmentReminder.periodCount} ${enrollmentReminder.periodType}. Ends ${reminderEndType}.`
-        } else delete formData.settings['Reminder']
+        if (refSendTrainingSettings.isAutoEnroll) {
+          const autoEnrollType =
+            enrollmentAutoEnrollTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.type
+            )?.text || ''
+          const autoEnrollDayOfWeek =
+            enrollmentAutoEnrollDayOfWeekItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.dayOfWeek
+            )?.text || ''
+          const autoEnrollPeriodType =
+            periodTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
+            )?.text || ''
+          formData.settings['Auto-enroll'] = `Automatically enroll new users ${
+            autoEnrollType === 'next'
+              ? 'on the next ' + autoEnrollDayOfWeek
+              : autoEnrollType === 'in'
+              ? 'in ' + enrollmentAutoEnroll.periodCount + ' ' + autoEnrollPeriodType
+              : autoEnrollType
+          }`
+        } else formData.settings['Auto-enroll'] = 'No'
         if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
           delete formData.settings['Sender Phone Number']
           delete formData.settings['SMS Text']
@@ -290,6 +322,11 @@ export default {
     ...mapActions({
       setInfographicSendModal: 'trainingLibrary/setInfographicSendModal'
     }),
+    getTimeZoneText(timeZoneId) {
+      return (
+        this.getTimezones?.timeZoneList?.find?.((item) => item.id === timeZoneId)?.displayName || ''
+      )
+    },
     callForPhoneNumbers() {
       AwarenessEducatorService.getPhoneNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
@@ -505,6 +542,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds,
         name
       } = refSendTrainingSettings.formData
@@ -533,6 +571,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds: newLanguageIds
       }
 

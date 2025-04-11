@@ -107,7 +107,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 let text = textParts[0]
-                let percentage = `(${textParts[1]}%)`
+                let percentage = `(${textParts[1]})`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -149,6 +149,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -162,8 +163,11 @@ export default {
       }
       const { values } = data[0].widgetDatas[0]
       const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const completedCount = values.find((obj) => obj.name === 'CompletedCount')?.value
       const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const inProgressCount = values.find((obj) => obj.name === 'InProgressCount')?.value
       const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
+      const incompleteCount = values.find((obj) => obj.name === 'IncompleteCount')?.value
       const chartOptions = {
         showLabels: true,
         responsive: true,
@@ -171,7 +175,93 @@ export default {
         rotation: 45,
         maintainAspectRatio: false,
         tooltips: {
-          enabled: false
+          enabled: false,
+          custom: function (tooltipModel) {
+            let tooltipEl = document.getElementById('chartjs-tooltip-training-completion-pie')
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div')
+              tooltipEl.id = 'chartjs-tooltip-training-completion-pie'
+              tooltipEl.innerHTML = '<div class="tooltip-content"><table></table></div>'
+              document.body.appendChild(tooltipEl)
+            }
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+              return
+            }
+            tooltipEl.classList.remove('above', 'below', 'no-transform')
+            if (tooltipModel.yAlign) {
+              tooltipEl.classList.add(tooltipModel.yAlign)
+            } else {
+              tooltipEl.classList.add('no-transform')
+            }
+            let tooltipContent = tooltipEl.querySelector('.tooltip-content')
+            if (tooltipModel.body) {
+              let tableRoot = tooltipContent.querySelector('table')
+              tableRoot.innerHTML = ''
+              tableRoot.style.width = '100%'
+              let titleRow = document.createElement('tr')
+              const valArr = tooltipModel.body[0].lines[0].split(':')
+              titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;font-size: 12px;">${valArr[0]}</th>`
+              tableRoot.appendChild(titleRow)
+              const addTr = (label, val, addPaddingBottom = true) => {
+                let tr = document.createElement('tr')
+                let backgroundColor =
+                  valArr[0] === 'Completed'
+                    ? '#43A047'
+                    : valArr[0] === 'In Progress'
+                    ? '#2196F3'
+                    : '#B83A3A'
+                tr.innerHTML = `
+                <td style="font-weight:600;font-size:12px;"><span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>${label}:&nbsp;
+                </td>
+
+                <td style="font-weight:600;font-size:12px;">${val}</td>
+            `
+                tr.style.display = 'flex'
+                tr.style.justifyContent = 'space-between'
+                if (addPaddingBottom) tr.style.paddingBottom = '8px'
+                tableRoot.appendChild(tr)
+              }
+              const type = valArr[0]
+              let val = 0
+              if (type === 'Completed') {
+                val = completed
+              } else if (type === 'In Progress') {
+                val = inProgress
+              } else if (type === 'Incomplete') {
+                val = incomplete
+              }
+              addTr('Percentage of Users', val + '%', false)
+            }
+            const position = this._chart.canvas.getBoundingClientRect()
+            tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
+            tooltipEl.style.position = 'absolute'
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipEl.style.pointerEvents = 'none'
+            tooltipContent.style.fontFamily = tooltipModel._bodyFontFamily
+            tooltipContent.style.fontSize = tooltipModel.bodyFontSize + 'px'
+            tooltipContent.style.fontStyle = tooltipModel._bodyFontStyle
+            tooltipContent.style.padding =
+              tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
+            tooltipContent.style.background = 'white'
+            tooltipContent.style.border = '1px solid #ccc'
+            tooltipContent.style.borderRadius = '8px'
+            tooltipContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)'
+
+            this._chart.canvas.addEventListener('mouseout', () => {
+              tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
+            })
+          },
+          xPadding: 16,
+          yPadding: 16
         },
         legend: {
           display: true,
@@ -184,7 +274,7 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return data.datasets[0].data.map((d, index) => {
+              return [completedCount, inProgressCount, incompleteCount].map((d, index) => {
                 const label = data.labels[index]
                 const splittedLabel = label.split(' ')
                 const textParts =
@@ -194,7 +284,7 @@ export default {
                 const comparatorVal = label === 'Completed' ? 2 : 4
                 return {
                   text: Array.from(
-                    label + label + label.substring(0, label.length / comparatorVal) + d + ' (%) '
+                    label + label + label.substring(0, label.length / comparatorVal) + d + '   '
                   )
                     .fill('')
                     .join(' '),
@@ -204,7 +294,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Completed' ? 4 : 0
+                  customMarginLeft: label === 'Completed' ? 4 : label === 'Incomplete' ? 2 : 0
                 }
               })
             }
@@ -212,9 +302,20 @@ export default {
         },
         plugins: {
           datalabels: {
-            color: '#383B41',
-            font: { family: 'Open Sans, sans-serif' },
+            color: '#000',
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
             display: true,
+            clamp: true,
+            offset: inProgress <= 2 && completed <= 3 ? -2 : -8,
+            align: function (context) {
+              const dataArr = context.dataset.data
+              if (context.dataIndex === 0 && dataArr[context.dataIndex + 1] < 8) {
+                const comparator = dataArr[context.dataIndex] - dataArr[context.dataIndex + 1]
+                if (comparator <= 3 || comparator >= -3) return 'right'
+              }
+              return 'center'
+            },
+            anchor: 'center',
             formatter(value) {
               if (value === 0) return ''
               return `${value}%`
@@ -225,7 +326,13 @@ export default {
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
         if (!CHART_COLORS[data]) return
-        backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        if (data === labels.Incomplete && incomplete) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.InProgress && inProgress) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        } else if (data === labels.Completed && completed) {
+          backgroundColor.push(CHART_COLORS[data].backgroundColor)
+        }
       })
       this.chartOptions = {
         ...chartOptions,
@@ -243,7 +350,7 @@ export default {
         labels: this.valueEnums,
         datasets: [
           {
-            data: [completed, inProgress, incomplete],
+            data: [completed, inProgress, incomplete].filter((val) => val > 0),
             backgroundColor
           }
         ]

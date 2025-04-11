@@ -69,7 +69,7 @@ export default {
           this.emailTemplate =
             response?.data?.data?.template?.replace(
               /{COMPANYLOGO}/g,
-              this?.$store?.state?.whitelabel.mainLogoUrl || ''
+              this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
             ) || ''
         })
         .finally(() => (this.isLoading = false))

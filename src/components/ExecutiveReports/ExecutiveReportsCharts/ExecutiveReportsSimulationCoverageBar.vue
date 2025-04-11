@@ -6,6 +6,7 @@
           :title="card.title"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :is-dashboard-widget="isDashboardWidget"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
@@ -16,6 +17,8 @@
               add-data-plugin
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugins"
+              :add-custom-legend-label-height="12"
             />
           </template>
           <div
@@ -43,9 +46,8 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'ExecutiveReportsSimulationCoverageBar',
   components: {
@@ -74,6 +76,10 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -85,7 +91,34 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]})`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -111,6 +144,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -125,15 +159,33 @@ export default {
       }
       const { values } = data[0].widgetDatas[0]
       const nonSimulatedUsers = values.find((data) => data.name === 'CountNonSimulated')?.value
-      const simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
+      let simulatedUsers = values.find((data) => data.name === 'CountSimulated')?.value
       let biggestValue = Math.floor(Math.max(nonSimulatedUsers, simulatedUsers))
       const nonSimulated = values.find((data) => data.name === 'NonSimulatedPercentage')?.value
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
-      const remainder = Math.floor(biggestValue / 50)
-      if (!remainder) {
-        biggestValue = 100
+      const realSimulatedUsers = simulatedUsers
+      if (simulated === 1) {
+        const divideValue = nonSimulatedUsers / simulatedUsers
+        if (divideValue > 2000) simulatedUsers *= 20
+        else if (divideValue > 1000) simulatedUsers *= 10
+        else if (divideValue > 500) simulatedUsers *= 5
+        else if (divideValue > 200) simulatedUsers *= 2
+      }
+      if (biggestValue <= 20) {
+        biggestValue = 20
+      } else if (biggestValue > 20 && biggestValue <= 40) {
+        biggestValue = 40
+      } else if (biggestValue > 40 && biggestValue <= 60) {
+        biggestValue = 60
+      } else if (biggestValue > 60 && biggestValue <= 80) {
+        biggestValue = 80
       } else {
-        biggestValue = remainder * 50 + 50
+        const remainder = Math.floor(biggestValue / 50)
+        if (!remainder) {
+          biggestValue = 100
+        } else {
+          biggestValue = remainder * 50 + 50
+        }
       }
       this.chartData = {
         labels: ['Simulated users', 'Non-simulated users'],
@@ -142,7 +194,7 @@ export default {
             barThickness: 32,
             label: 'Percentage',
             data: [simulatedUsers, nonSimulatedUsers],
-            backgroundColor: ['#00BCD4', '#FBF280'],
+            backgroundColor: ['#2196F3', '#F56C6C'],
             borderColor: 'transparent',
             borderWidth: 1,
             order: 2
@@ -153,11 +205,6 @@ export default {
         devicePixelRatio: 2,
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 24
-          }
-        },
         scales: {
           xAxes: [
             {
@@ -207,7 +254,61 @@ export default {
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          onClick: (e) => e.stopPropagation(),
+          labels: {
+            usePointStyle: true,
+            color: '#383B41',
+            font: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12,
+            generateLabels: (chart = {}) => {
+              const { data } = chart
+              const splittedNonSimulatedUsers = labels.NonSimulatedUsers.split(' ')
+              const splittedSimulatedUsers = labels.SimulatedUsers.split(' ')
+              const emptySpace = window.innerWidth < 1480 ? '     ' : '  '
+              return [
+                {
+                  text: Array.from(
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + '  '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.SimulatedUsersCoverage]
+                    ? CHART_COLORS[labels.SimulatedUsersCoverage].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 0,
+                  textParts: [
+                    splittedSimulatedUsers[0] + ' ' + splittedSimulatedUsers[1],
+                    realSimulatedUsers
+                  ],
+                  customMarginLeft: 7
+                },
+                {
+                  text: Array.from(
+                    labels.NonSimulatedUsers +
+                      labels.NonSimulatedUsers +
+                      data.datasets[0].data[1] +
+                      emptySpace
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[labels.NonSimulatedUsers]
+                    ? CHART_COLORS[labels.NonSimulatedUsers].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: 1,
+                  textParts: [
+                    splittedNonSimulatedUsers[0] + ' ' + splittedNonSimulatedUsers[1],
+                    nonSimulatedUsers
+                  ],
+                  customMarginLeft: 4
+                }
+              ]
+            }
+          }
         },
         tooltips: {
           enabled: false,
@@ -232,6 +333,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -263,10 +365,10 @@ export default {
                 let datasetLabel = 'Number of Users'
                 let dataValue =
                   tooltipModel.dataPoints[0].label === 'Simulated users'
-                    ? simulatedUsers
+                    ? realSimulatedUsers
                     : nonSimulatedUsers
                 let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Simulated users' ? '#00BCD4' : '#FBF280'
+                  tooltipModel.dataPoints[0].label === 'Simulated users' ? '#2196F3' : '#F56C6C'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -295,6 +397,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 16,

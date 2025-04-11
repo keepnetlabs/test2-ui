@@ -22,6 +22,13 @@
   >
     <template #item="{ item }">
       <div :class="['mail-configuration-select-sources__item-container']">
+        <v-checkbox
+          v-if="isSmishing"
+          hide-details
+          color="#2196f3"
+          class="mt-n1"
+          :input-value="getSelectedPhoneNumbers.includes(item[itemText])"
+        />
         <div class="mail-configuration-select-sources__item">
           <div class="mail-configuration-select-sources__item-left">
             {{ getPhoneNumberFormatted(item[itemText]) }}
@@ -43,7 +50,7 @@ import * as Validations from '@/utils/validations'
 import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'InputCallerPhoneNumber',
+  name: 'InputPhoneNumberComboBox',
   components: { KSelect },
   props: {
     value: {
@@ -79,7 +86,8 @@ export default {
       default: ''
     },
     rules: {
-      type: Array
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -98,6 +106,9 @@ export default {
       }
 
       return this.phoneNumbers
+    },
+    getSelectedPhoneNumbers() {
+      return this.getPhoneNumberItems.filter(pn => this.value.includes(pn[this.itemValue])).map(pn => pn[this.itemText])
     }
   },
   mounted() {

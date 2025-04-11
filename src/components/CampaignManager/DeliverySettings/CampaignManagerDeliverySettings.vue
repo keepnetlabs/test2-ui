@@ -98,11 +98,21 @@
         no-data-text="No frequency configuration available"
         :rules="rules.frequency"
         :items="frequencyItems"
-        :disabled="isEdit"
+        :disabled="isEdit || isFrequencyDisabled"
       />
     </FormGroup>
+    <AlertBox
+      v-if="isFrequencyDisabled"
+      style="margin-top: -12px; max-width: 554px;"
+      class="bg-aqua-light mb-4"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      text="When sending in the target users' preferred language, only the 'One Time' frequency is available."
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
     <InputSchedule
       v-model="inputScheduleFormData"
+      :isEditOrDuplicate="isEdit || isDuplicate"
       ref="inputSchedule"
       :isPhishing="type === SCENARIO_TYPES.PHISHING"
     />
@@ -126,7 +136,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getSmtpSettings, testConnection } from '@/api/smtpSettings'
+import { getSmtpSettings, testSmtpConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import {
   calculateSendingInfo,
@@ -174,6 +184,13 @@ export default {
       type: Object
     },
     isEdit: {
+      type: Boolean
+    },
+    isFrequencyDisabled: {
+      type: Boolean,
+      default: false
+    },
+    isDuplicate: {
       type: Boolean
     },
     targetGroupResourceIds: {
@@ -267,6 +284,11 @@ export default {
       timeZones: 'common/getTimezones',
       getUser: 'auth/userGetter'
     }),
+    getCompanyName() {
+      return (
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName') || ''
+      )
+    },
     canRenderAlertBox() {
       return (
         this.emailDelivery?.name === `First Use Company's DEC config then Fallback to default SMTP`
@@ -398,7 +420,7 @@ export default {
           if (
             this.type === SCENARIO_TYPES.PHISHING &&
             this.getUser?.role?.name === 'Reseller' &&
-            this.targetGroupCompanyNames.some((cn) => cn !== this.getUser?.userCompany?.name)
+            this.targetGroupCompanyNames.some((cn) => cn !== this.getCompanyName)
           ) {
             deliveries.push(directEmailItems[0])
             const disabledItems = directEmailItems.map((d) => ({
@@ -540,7 +562,6 @@ export default {
         if (this.type === SCENARIO_TYPES.QUISHING)
           template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
         const payload = {
-          ...smtpData,
           to: this.$store.state.auth.user.email,
           from: fromAddress,
           fromName,
@@ -548,7 +569,7 @@ export default {
         }
         if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
         try {
-          await testConnection(payload)
+          await testSmtpConnection(payload, smtpData.resourceId)
           this.isTestMailSend = true
           this.isShowSmtpInputError = false
           this.$nextTick(() => {

@@ -1,0 +1,22 @@
+.campaign-manager-sender-phone-numbers{
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.campaign-manager-sender-phone-number {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__country {
+        color:#383B41B8;
+    }
+
+    &__divider {
+        border: none;
+        border-top: 1px solid #E0E0E0;
+    }
+}

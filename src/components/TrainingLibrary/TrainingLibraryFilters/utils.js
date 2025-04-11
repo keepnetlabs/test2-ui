@@ -64,9 +64,9 @@ export const trainingLibraryFilters = [
     isFilterActive: false
   },
   {
-    text: 'Type',
-    icon: 'mdi-format-list-bulleted-type',
-    key: PROPERTY_STORE.TYPE,
+    text: 'Role',
+    icon: 'mdi-account-multiple',
+    key: PROPERTY_STORE.TARGET_AUDIENCE,
     show: true,
     filterType: 'search',
     operator: 'Include',
@@ -80,6 +80,19 @@ export const trainingLibraryFilters = [
     text: 'Category',
     icon: 'mdi-shape',
     key: PROPERTY_STORE.CATEGORY,
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: [],
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  },
+  {
+    text: 'Type',
+    icon: 'mdi-format-list-bulleted-type',
+    key: PROPERTY_STORE.TYPE,
     show: true,
     filterType: 'search',
     operator: 'Include',
@@ -115,19 +128,6 @@ export const trainingLibraryFilters = [
     isFilterActive: false
   },
   {
-    text: 'Target Audience',
-    icon: 'mdi-account-multiple',
-    key: PROPERTY_STORE.TARGET_AUDIENCE,
-    show: true,
-    filterType: 'search',
-    operator: 'Include',
-    activeOperator: 'Include',
-    items: [],
-    value: [],
-    activeValue: [],
-    isFilterActive: false
-  },
-  {
     text: 'Compliance',
     icon: 'mdi-clipboard-check',
     key: PROPERTY_STORE.COMPLIANCE,
@@ -143,7 +143,7 @@ export const trainingLibraryFilters = [
     text: 'Vendor',
     icon: 'mdi-store',
     key: PROPERTY_STORE.VENDOR,
-    show: false,
+    show: true,
     filterType: 'search',
     items: [],
     value: [],

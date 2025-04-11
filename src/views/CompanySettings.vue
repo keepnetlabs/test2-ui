@@ -10,6 +10,14 @@
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getAIAllySettingsGetPermissions"
+        label="AI Ally Settings"
+        name="ai-ally-settings"
+        id="ai-ally-settings-content"
+      >
+        <AIAllySettings v-if="tab === 'ai-ally-settings'"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getSMTPSettingsSearchPermissions"
         label="SMTP Settings"
         name="smtp-settings"
@@ -36,6 +44,16 @@
           ref="refNotificationTemplates"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getGoogleUserProvisionGetPermissions"
+        label="Google User Provisioning"
+        name="google-user-provisioning"
+        id="google-user-provisioning-content"
+      >
+        <GoogleUserProvisioning
+          v-if="tab === 'google-user-provisioning'"
+          ref="refGoogleUserProvisioning"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getRestApiSearchPermissions"
         label="Rest API"
         name="custom-api"
@@ -44,7 +62,7 @@
         <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
       /></el-tab-pane>
       <el-tab-pane
-        vif="getWhiteLabelingGetPermissions"
+        v-if="getWhiteLabelingGetPermissions"
         label="White Labeling"
         name="white-labeling"
         id="white-labeling-content"
@@ -122,9 +140,14 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
+import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
+
 export default {
   name: 'CompanySettings',
   components: {
+    GoogleUserProvisioning,
+    AIAllySettings,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -152,6 +175,7 @@ export default {
         'permissions/getNotificationTemplatesSearchPermissions',
       getRestApiSearchPermissions: 'permissions/getRestApiSearchPermissions',
       getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
+      getGoogleUserProvisionGetPermissions: 'permissions/getGoogleUserProvisionGetPermissions',
       getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
       getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
       getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
@@ -160,12 +184,17 @@ export default {
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
       getDirectEmailCreationSearchPermissions:
         'permissions/getDirectEmailCreationSearchPermissions',
-      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission'
+      getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
     })
   },
   created() {
     this.tab = [
-      { permission: true, name: 'privacy' },
+      { permission: this.getAccountPrivacyPermission, name: 'privacy' },
+      {
+        permission: this.getAIAllySettingsGetPermissions,
+        name: 'ai-ally-settings'
+      },
       {
         permission: this.getSMTPSettingsSearchPermissions,
         name: 'smtp-settings'
@@ -177,6 +206,10 @@ export default {
       {
         permission: this.getNotificationTemplatesSearchPermissions,
         name: 'notification-template'
+      },
+      {
+        permission: this.getGoogleUserProvisionGetPermissions,
+        name: 'google-user-provisioning'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
       {

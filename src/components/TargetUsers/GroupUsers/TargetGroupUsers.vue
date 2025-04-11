@@ -11,6 +11,7 @@
       :editData="selectedRow"
       :custom-fields="customFields"
       :status="showEditUserModal"
+      :language-items="languageFilterOptions"
       @closeAddUserModal="toggleEditUserModal"
       @closeAddUserModalWithUpdate="closeEditUserModalWithUpdate"
     />
@@ -51,6 +52,7 @@
       class="pb-0"
       :resource-id="resourceId"
       :isServerSide="false"
+      :groupName="getGroupName"
       @handleAddAction="toggleAddUserModal"
       @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
       @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
@@ -73,6 +75,7 @@ import TargetGroupsUsersRemoveFromGroups from '@/components/TargetUsers/GroupUse
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import KContainer from '@/components/KContainer/KContainer'
 import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/TargetUserCreateGroupWithUserDialog'
+import LookupLocalStorage from '../../../helper-classes/lookup-local-storage'
 
 export default {
   name: 'TargetGroupUsers',
@@ -88,6 +91,7 @@ export default {
   },
   data() {
     return {
+      languageFilterOptions: [],
       isShowingTargetUserCreateGroupWithUser: false,
       selectedUserToCreateGroupWith: null,
       customFields: [],
@@ -114,6 +118,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     const {
       $route: { params }
     } = this
@@ -135,6 +140,15 @@ export default {
     next()
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+      })
+    },
     callForGetTargetUserCustomFieldsByCompanyId() {
       getTargetUserCustomFieldsByCompanyId().then((response) => {
         const { data } = response

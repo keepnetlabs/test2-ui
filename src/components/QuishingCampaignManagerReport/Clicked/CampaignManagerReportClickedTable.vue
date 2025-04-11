@@ -30,7 +30,32 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
     @on-activity="handleActivity"
+    @on-selection-text-change="handleSelectionChange"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        v-if="!getQuishingTypePrintOut()"
+        :icon="tableOptions.rowActions[1].icon"
+        :id="tableOptions.rowActions[1].id"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <CampaignManagerReportActivityColumn
         v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
@@ -56,10 +81,11 @@ import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'CampaignManagerReportClickedTable',
-  components: { DataTable, CampaignManagerReportActivityColumn },
+  components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
@@ -77,7 +103,14 @@ export default {
       default: true
     }
   },
-  inject: ['getQuishingTypePrintOut'],
+  inject: {
+    getQuishingTypePrintOut: {
+      type: Function
+    },
+    campaignDurationExpired: {
+      type: Function
+    }
+  },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
@@ -91,15 +124,18 @@ export default {
     ]
     if (isQuishingTypePrintout) {
       columns.push(COLUMNS.TIMES_CLICKED_PRINTOUT)
+      rowActions.push({
+        name: labels.Details,
+        id: 'btn-details--row-actions-campaign-manager-report-clicked',
+        icon: '$custom-details',
+        action: 'on-detail',
+        disabled: !this.$store.getters[
+          'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
+        ]
+      })
     } else {
       columns.push(COLUMNS.TIMES_CLICKED)
       rowActions.push(
-        {
-          name: labels.Resend,
-          id: 'btn-resend--row-actions-campaign-manager-report-clicked',
-          icon: '$custom-resend',
-          action: 'on-resend'
-        },
         {
           name: labels.Details,
           id: 'btn-details--row-actions-campaign-manager-report-clicked',
@@ -108,6 +144,13 @@ export default {
           disabled: !this.$store.getters[
             'permissions/getQuishingCampaignReportsClickedDetailsPermissions'
           ]
+        },
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-clicked',
+          icon: '$custom-resend',
+          action: 'on-resend',
+          disabled: false
         }
       )
     }
@@ -136,17 +179,21 @@ export default {
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_SCANNED,
           COLUMNS.TIMES_SCANNED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
-        ],
-        addButton: {
-          show: true,
-          icon: null,
-          label: 'HIDE SANDBOX ACTIVITY',
-          action: 'on-activity',
-          hideTooltip: true,
-          type: 'outlined',
-          id: 'btn-select--hide-sandbox-activity'
-        },
+          isQuishingTypePrintout ? null : Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+        ].filter(Boolean),
+        addButton: isQuishingTypePrintout
+          ? {
+              show: false
+            }
+          : {
+              show: true,
+              icon: null,
+              label: 'HIDE BOT ACTIVITY',
+              action: 'on-activity',
+              hideTooltip: true,
+              type: 'outlined',
+              id: 'btn-select--hide-sandbox-activity'
+            },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportClicked
         },
@@ -179,6 +226,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2

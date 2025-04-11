@@ -34,7 +34,7 @@
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
           <div class="landingPagePreview-content--search px-6 py-6">
-            <div class="d-flex justify-space-between">
+            <div class="d-flex justify-space-between align-center">
               <div class="d-flex">
                 <div>
                   <VTextField
@@ -78,12 +78,27 @@
                     item-value="value"
                     outlined
                     persistent-hint
+                    hide-details
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="getTemplatesForSearch"
                   >
                   </v-select>
                 </div>
+              </div>
+              <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreateLandingPageTemplateClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text"
+                    >Create Landing Page Template</span
+                  >
+                </v-btn>
               </div>
             </div>
           </div>
@@ -106,8 +121,17 @@
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
-                    <div class="template-list--item template-list--item__header">
-                      {{ item.name }}
+                    <div
+                      class="template-list--item template-list--item__header"
+                      :id="`template-${index}`"
+                    >
+                      <span>{{ item.name }}</span>
+                      <VTooltip v-if="item.isAssistedByAI" bottom :attach="`#template-${index}`">
+                        <template #activator="{ on }">
+                          <VIcon v-on="on" class="ml-1" color="#2196F3" small>mdi-creation</VIcon>
+                        </template>
+                        <span>This template was generated with AI</span>
+                      </VTooltip>
                     </div>
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}
@@ -287,7 +311,41 @@
                               :parameter-types="getParameterTypes"
                               :path-types="getPathTypes"
                               @link-change="handleLinkChange"
+                              @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                              @captcha-default-value="editData.isInvisibleCaptchaEnabled = $event"
                             />
+                            <VCheckbox
+                              v-model="editData.isInvisibleCaptchaEnabled"
+                              color="#2196f3"
+                              hide-details
+                              :class="[
+                                'mb-10',
+                                isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                              ]"
+                              :ripple="false"
+                              :readonly="isInvisibleCaptchaDisabled"
+                              :style="
+                                isInvisibleCaptchaDisabled
+                                  ? { opacity: 0.38, cursor: 'default !important' }
+                                  : ''
+                              "
+                            >
+                              <template #label>
+                                Stop bots to prevent false clicks.
+                                <VTooltip bottom max-width="260" z-index="9999999">
+                                  <template #activator="{ on }">
+                                    <v-icon v-on="on" class="ml-2" color="#757575"
+                                      >mdi-information</v-icon
+                                    >
+                                  </template>
+                                  <span
+                                    >Once enabled, bot activity is automatically detected and
+                                    stopped to prevent false clicks, ensuring genuine traffic to the
+                                    landing page.</span
+                                  >
+                                </VTooltip>
+                              </template>
+                            </VCheckbox>
                           </div>
                           <ElTabs
                             v-model="selectedEditLandingPageTab"
@@ -409,6 +467,12 @@
                               URL:
                             </span>
                             <span class="template-preview__text--body">{{ templateURL }}</span>
+                          </div>
+                          <div>
+                            <span class="template-preview__text--title">Stop Bot Activity: </span>
+                            <span class="template-preview__text--body">{{
+                              isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
+                            }}</span>
                           </div>
                         </div>
                       </div>
@@ -590,7 +654,41 @@
                             :parameter-types="getParameterTypes"
                             :path-types="getPathTypes"
                             @link-change="handleLinkChange"
+                            @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                            @captcha-default-value="editData.isInvisibleCaptchaEnabled = $event"
                           />
+                          <VCheckbox
+                            v-model="editData.isInvisibleCaptchaEnabled"
+                            color="#2196f3"
+                            hide-details
+                            :class="[
+                              'mb-10',
+                              isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
+                            ]"
+                            :ripple="false"
+                            :readonly="isInvisibleCaptchaDisabled"
+                            :style="
+                              isInvisibleCaptchaDisabled
+                                ? { opacity: 0.38, cursor: 'default !important' }
+                                : ''
+                            "
+                          >
+                            <template #label>
+                              Stop bots to prevent false clicks.
+                              <VTooltip bottom max-width="260" z-index="9999999">
+                                <template #activator="{ on }">
+                                  <v-icon v-on="on" class="ml-2" color="#757575"
+                                    >mdi-information</v-icon
+                                  >
+                                </template>
+                                <span
+                                  >Once enabled, bot activity is automatically detected and stopped
+                                  to prevent false clicks, ensuring genuine traffic to the landing
+                                  page.</span
+                                >
+                              </VTooltip>
+                            </template>
+                          </VCheckbox>
                         </div>
                         <ElTabs
                           v-model="selectedEditLandingPageTab"
@@ -665,7 +763,9 @@
                                     <v-icon class="mr-2" size="18" color="#2196f3"
                                       >mdi-plus-circle-outline</v-icon
                                     >
-                                    <span class="landing-page-tab__label"> Add page </span>
+                                    <span class="landing-page-tab__label">
+                                      Add page
+                                    </span>
                                   </v-btn>
                                 </template>
                                 <v-list>
@@ -709,6 +809,12 @@
                           URL:
                         </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
+                      </div>
+                      <div>
+                        <span class="template-preview__text--title">Stop Bot Activity: </span>
+                        <span class="template-preview__text--body">{{
+                          isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
+                        }}</span>
                       </div>
                     </div>
                     <ElTabs
@@ -834,6 +940,7 @@ export default {
       Validations,
       labels,
       templateName: '',
+      isInvisibleCaptchaDisabled: false,
       selectedTab: 'landingPage',
       selectedLandingPageTab: '1',
       selectedEditLandingPageTab: '1',
@@ -849,6 +956,7 @@ export default {
       isTemplateDetails: null,
       loadingTemplates: false,
       templateURL: null,
+      isInvisibleCaptchaEnabled: false,
       selectedPreviousIndex: 0,
       mfaMessageRules: [
         (v) => Validations.required(v),
@@ -877,7 +985,8 @@ export default {
           parameterTypeId: ''
         },
         name: null,
-        landingPages: [{ name: 'landing-page', content: '', order: 1 }]
+        landingPages: [{ name: 'landing-page', content: '', order: 1 }],
+        isInvisibleCaptchaEnabled: false
       },
       landingPageTemplateData: {},
       newUrlTemplate: '',
@@ -945,6 +1054,9 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    handleCreateLandingPageTemplateClick() {
+      this.$emit('on-create-landing-page-template')
+    },
     handleTemplateEdit(val) {
       this.$emit('template-edit', val)
     },
@@ -1021,7 +1133,17 @@ export default {
     },
     callForLandingPageFormDetails() {
       getLandingPageFormDetails().then((response) => {
-        this.landingPageData = response.data.data
+        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+          return {
+            text: item.domain,
+            value: item.id.toString(),
+            extraDatas: [
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              { text: item.isStopBotActivity, value: item.isStopBotActivity }
+            ]
+          }
+        })
+        this.landingPageData = { ...response.data.data, domainRecords }
       })
     },
     handleEdit() {
@@ -1033,10 +1155,15 @@ export default {
         extensionTypeId: this.landingPageTemplateData?.extensionTypeId?.toString(),
         parameterTypeId: this.landingPageTemplateData?.parameterTypeId?.toString()
       }
+      const findedDomain = this.landingPageData?.domainRecords?.find(
+        (domain) => domain.value === this.landingPageTemplateData?.domainRecordId?.toString()
+      )
+      this.isInvisibleCaptchaDisabled = findedDomain ? !findedDomain?.extraDatas[1]?.value : false
       this.editData = {
         name: this.templateName,
         phishingLink: phishingLink,
-        landingPages: this.landingPageTemplates
+        landingPages: this.landingPageTemplates,
+        isInvisibleCaptchaEnabled: this.landingPageTemplateData?.isInvisibleCaptchaEnabled || false
       }
       this?.$refs?.refInputPhishingLink?.checkSchemaTypes(
         this.initialEditData.phishingLink.domainRecordId
@@ -1118,6 +1245,7 @@ export default {
         this.landingPageTemplateData = { ...this.listData[templateIndex] }
         this.templateURL = newTemplate.urlTemplate || ''
         this.templateName = newTemplate.name
+        this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
         this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
         let templates = newTemplate.landingPages || []
         this.landingPageTemplates = templates
@@ -1127,6 +1255,7 @@ export default {
     },
     insertTemplate(newTemplate) {
       this.templateURL = newTemplate.urlTemplate || ''
+      this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
       this.templateName = newTemplate.name
       this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
       let templates = newTemplate.landingPages || []
@@ -1222,7 +1351,7 @@ export default {
       isSearch = false
     ) {
       this.checkAndAddResourceIdToPayload(isInitial, bodyData)
-      this.apiFuncs
+      return this.apiFuncs
         .list(this.bodyData)
         .then((response) => {
           const { data } = response
@@ -1267,6 +1396,15 @@ export default {
           this.$emit('loading', false)
         })
     },
+    setItemToFirstIndex(resourceId = '') {
+      const itemIndex = this.listData.findIndex((item) => item.resourceId === resourceId)
+      if (itemIndex === -1) return
+      this.listData = [
+        this.listData[itemIndex],
+        ...this.listData.slice(0, itemIndex),
+        ...this.listData.slice(itemIndex + 1)
+      ]
+    },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
@@ -1310,6 +1448,7 @@ export default {
         .then((response) => {
           this.landingPageTemplateData = { ...item, ...response?.data?.data } || {}
           this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.isInvisibleCaptchaEnabled = response?.data?.data?.isInvisibleCaptchaEnabled || false
           this.newUrlTemplate = this.templateURL
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''

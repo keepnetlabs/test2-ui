@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tooltip bottom>
+    <v-tooltip bottom max-width="250">
       <template #activator="{ on }">
         <v-btn
           v-on="on"
@@ -27,7 +27,13 @@
         </v-btn>
       </template>
       <v-list class="v-cart-dropdown-list el-table__action-buttons">
-        <v-tooltip v-for="(act, ind) of getItems" :disabled="!act.disabled" :key="ind" bottom>
+        <v-tooltip
+          v-for="(act, ind) of getItems"
+          :disabled="!act.disabled"
+          :key="ind"
+          bottom
+          max-width="250"
+        >
           <template #activator="{ on }">
             <div v-on="on">
               <v-list-item
@@ -141,7 +147,11 @@ export default {
         id: 'btn-edit--row-actions-campaign-manager',
         icon: 'mdi-pencil',
         action: 'on-edit',
-        disabled: !this.getCampaignManagerParentUpdatePermissions || this.scope.row.frequency > 0
+        disabled: !this.getCampaignManagerParentUpdatePermissions || this.scope.row.frequency > 0,
+        disabledText:
+          this.scope.row.frequency > 0
+            ? 'Campaigns with random scenarios cannot be edited once their frequency is set.'
+            : 'Edit'
       }
 
       if (

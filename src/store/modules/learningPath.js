@@ -182,16 +182,19 @@ const learningPath = {
           f.activeValue = []
           f.operator = 'Include'
           f.activeOperator = 'Include'
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         } else if (f.filterType === 'select') {
           f.value = ''
           f.activeValue = ''
           f.operator = 'Contains'
           f.activeOperator = 'Contains'
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         } else {
           f.value = ''
           f.activeValue = ''
           f.operator = '='
           f.activeOperator = '='
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         }
         f.isFilterActive = false
       })

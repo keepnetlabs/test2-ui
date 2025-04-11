@@ -100,7 +100,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     property: PROPERTY_STORE.TARGET_AUDIENCE,
     align: 'left',
     editable: false,
-    label: labels.TargetAudience,
+    label: labels.Role,
     sortable: false,
     hideSort: true,
     show: true,
@@ -159,7 +159,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Vendor,
     sortable: false,
     hideSort: true,
-    show: false,
+    show: true,
     type: 'text',
     width: 160
   },

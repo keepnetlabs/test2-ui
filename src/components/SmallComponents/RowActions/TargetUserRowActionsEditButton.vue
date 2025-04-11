@@ -34,6 +34,13 @@ export default {
     },
     id: {
       type: String
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    tooltipMessage: {
+      type: String
     }
   },
   computed: {
@@ -41,17 +48,21 @@ export default {
       getTargetUsersEditPermissions: 'permissions/getTargetUsersEditPermissions'
     }),
     getTooltipMessage() {
+      if (this.tooltipMessage) {
+        return this.tooltipMessage
+      }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      if (!row.isEditable)
+      if (!row.isEditable) {
+        if (row.isGoogleGroup) return `Google synced ${this.type} cannot be edited`
         return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
           this.type
         } cannot be edited`
-      else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
+      } else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope
-      return !row.isEditable || !this.getTargetUsersEditPermissions
+      return !row.isEditable || !this.getTargetUsersEditPermissions || this.disabled
     }
   }
 }

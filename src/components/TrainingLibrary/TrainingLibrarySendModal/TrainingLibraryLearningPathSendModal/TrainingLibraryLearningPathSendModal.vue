@@ -139,7 +139,12 @@ import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import { emptyLearningPathSendModalObj } from '@/components/TrainingLibrary/utils'
-import { endTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
+import {
+  endTypeItems,
+  enrollmentAutoEnrollTypeItems,
+  enrollmentAutoEnrollDayOfWeekItems,
+  periodTypeItems
+} from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendLearningPathSettings from './TrainingLibrarySendLearningPathSettings.vue'
 import TrainingLibrarySendLearningPathSummary from './TrainingLibrarySendLearningPathSummary.vue'
 
@@ -188,6 +193,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      getTimezones: 'common/getTimezones',
       enumTypes: 'trainingLibraryHelpers/getEnumTypes',
       distributionDelayTimeTypes: 'trainingLibraryHelpers/getDistributionDelayTimeTypes',
       certificateEmailNotificationTemplateTypeResourceId:
@@ -195,7 +201,9 @@ export default {
       reminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
       learningPathEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId'
+        'trainingLibraryHelpers/getLearningPathEmailNotificationTemplateTypeResourceId',
+      learningPathReminderEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getLearningPathReminderEmailNotificationTemplateTypeResourceId'
     }),
     isSmsNotification() {
       if (this.step === 2 || this.step === 3)
@@ -211,10 +219,14 @@ export default {
       return `Send Training - ${this?.selectedRow?.trainingName}`
     },
     getSaveButtonText() {
+      const scheduleTypeId = this.$refs?.refSendTrainingSettings?.formData?.scheduleTypeId
       if (this.step === 3 && this?.$refs?.refSendTrainingSettings?.formData?.isProxy) {
         return 'SAVE & DOWNLOAD'
       }
-      return 'LAUNCH'
+      if (scheduleTypeId === '1') {
+        return 'LAUNCH'
+      }
+      return 'SCHEDULE'
     },
     getTrainingSummaryFormData() {
       let formData = {}
@@ -232,27 +244,71 @@ export default {
         const isProxy = refSendTrainingSettings?.formData?.isProxy
         const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
         const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
+        const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
         formData.settings = {
+          'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
+            ? {
+                smsText:
+                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
+                    ?.smsTextTemplate,
+                senderPhoneNumber:
+                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
+              }
+            : 'Off',
+          'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
-              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
-          Reminder: sendReminderEvery,
-          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
           Distribution: refSendTrainingSettings.isDistributionEnabled
             ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
-            : 'Off',
+            : 'No',
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Sender Phone Number':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
-          'SMS Text':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+          Reminder: sendReminderEvery
         }
         if (sendReminderEvery) {
           const reminderEndType =
             endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
-          formData.settings.Reminder = `Every ${enrollmentReminder.periodCount} ${enrollmentReminder.periodType}. Ends ${reminderEndType}.`
+          formData.settings.Reminder = `Every ${
+            enrollmentReminder.periodCount === '1' ? '' : enrollmentReminder.periodCount
+          } ${
+            enrollmentReminder.periodCount > 1
+              ? enrollmentReminder.periodType.toLowerCase() + 's'
+              : enrollmentReminder.periodType.toLowerCase()
+          } - Ends ${
+            enrollmentReminder.endType === 'OnDate'
+              ? 'on ' + enrollmentReminder.stopTime
+              : enrollmentReminder.endType === 'AfterOccurrences'
+              ? 'after occurrences ' + enrollmentReminder.occurrenceCount + ' times'
+              : reminderEndType
+          }`
         } else formData.settings['Reminder'] = 'No'
+        if (refSendTrainingSettings.isAutoEnroll) {
+          const autoEnrollType =
+            enrollmentAutoEnrollTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.type
+            )?.text || ''
+          const autoEnrollDayOfWeek =
+            enrollmentAutoEnrollDayOfWeekItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.dayOfWeek
+            )?.text || ''
+          const autoEnrollPeriodType =
+            periodTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
+            )?.text || ''
+          formData.settings['Auto-enroll'] = `Automatically enroll new users ${
+            autoEnrollType === 'next'
+              ? 'on the next ' + autoEnrollDayOfWeek
+              : autoEnrollType === 'in'
+              ? 'in ' + enrollmentAutoEnroll.periodCount + ' ' + autoEnrollPeriodType
+              : autoEnrollType
+          }`
+        } else formData.settings['Auto-enroll'] = 'No'
         if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
           delete formData.settings['Sender Phone Number']
           delete formData.settings['SMS Text']
@@ -282,6 +338,11 @@ export default {
     ...mapActions({
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal'
     }),
+    getTimeZoneText(timeZoneId) {
+      return (
+        this.getTimezones?.timeZoneList?.find?.((item) => item.id === timeZoneId)?.displayName || ''
+      )
+    },
     callForPhoneNumbers() {
       AwarenessEducatorService.getPhoneNumbers().then((response) => {
         this.phoneNumberItems = response.data.data
@@ -290,18 +351,18 @@ export default {
     },
     callForFormDetails() {
       //get reminder email
-      getDefaultEmailTemplate(this.reminderEmailNotificationTemplateTypeResourceId).then(
-        (response) => {
-          const {
-            data: { data }
-          } = response
-          this.reminderData = {
-            createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template.template,
-            name: data.template.name || 'Default Reminder Email'
-          }
+      getDefaultEmailTemplate(
+        this.learningPathReminderEmailNotificationTemplateTypeResourceId
+      ).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.reminderData = {
+          createdBy: this?.$store?.state?.auth?.selectedCompanyName,
+          template: data.template.template,
+          name: data.template.name || 'Default Reminder Email'
         }
-      )
+      })
       //get certificate email
       getDefaultEmailTemplate(this.certificateEmailNotificationTemplateTypeResourceId).then(
         (response) => {
@@ -485,6 +546,7 @@ export default {
         scheduleTypeId,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds,
         distributionDays,
         name
@@ -514,6 +576,7 @@ export default {
         enrollmentReminder: sendReminderEvery ? enrollmentReminder : null,
         markedAsTest,
         awardCertificate,
+        certificateConfigSendType,
         languageIds: newLanguageIds,
         distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null
       }

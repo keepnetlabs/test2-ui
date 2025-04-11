@@ -97,7 +97,7 @@ export default {
       )
     },
     isTextToSpeechCompatible() {
-      return this.formValues?.template?.voiceProviderTypeId === 2
+      return [2, 3].includes(this.formValues?.template?.voiceProviderTypeId)
     }
   },
   methods: {

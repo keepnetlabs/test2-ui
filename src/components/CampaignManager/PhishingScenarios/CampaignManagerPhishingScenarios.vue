@@ -35,15 +35,10 @@
                     v-model.trim="search"
                     placeholder="Search"
                     outlined
-                    class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
+                    class="filter-field filter-field-scenarios search-wrapper__search-filter campaign-manager-phishing-scenarios__search pr-2"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
-                    style="
-                      max-width: 328px;
-                      min-width: 328px;
-                      width: 100%;
-                      padding-right: 4px !important;
-                    "
+                    style="padding-right: 4px !important;"
                   />
                 </div>
                 <div>
@@ -69,7 +64,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Type ({{ method.length }})</span>
+                      <span v-if="data.index === 0">Type ({{ method.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -82,12 +77,15 @@
                     persistent-hint
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
+                    type="combobox"
+                    multiple
+                    min-width-type="medium"
                     :items="languages"
                     :slots="{ selection: true }"
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Language (1)</span>
+                      <span v-if="data.index === 0">Language ({{ language.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -113,7 +111,7 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Difficulty ({{ difficulty.length }})</span>
+                      <span v-if="data.index === 0">Difficulty ({{ difficulty.length }})</span>
                     </template>
                   </KSelect>
                 </div>
@@ -140,28 +138,95 @@
                     @change="isShowSelectedScenarios = false"
                   >
                     <template #selection="data">
-                      <span v-show="data.index === 0">Category ({{ category.length }})</span>
+                      <span v-if="data.index === 0">Category ({{ category.length }})</span>
                     </template>
                   </KSelect>
                 </div>
-                <div>
-                  <KSelect
-                    v-model="scenarioDistribution"
-                    :items="scenarioDistributionItems"
-                    placeholder="Select scenarios manually"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    persistent-hint
-                    class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                      max-width: unset;
-                      width: 300px;
-                    "
-                    :disabled="!category.length"
-                  />
+                <div style="position: relative;">
+                  <VSnackbar
+                    :value="isAIAllyHighlightVisible"
+                    :timeout="-1"
+                    absolute
+                    multi-line
+                    top
+                    color="#2195f3"
+                    class="emailTemplatePreview__ai-ally-highlight"
+                    content-class="emailTemplatePreview__ai-ally-highlight-content"
+                  >
+                    <VIcon color="#FFFFFF" class="mr-2" :size="24">mdi-creation</VIcon>
+                    <div class="emailTemplatePreview__ai-ally-highlight-content-center">
+                      <span style="font-weight: 600;">NEW!</span>
+                      <span style="font-weight: 400; font-size: 12px;">
+                        {{
+                          isPreferredLanguage
+                            ? `AI Ally customizes scenarios based on user details, including location, department, phone number, and preferred language. Select a category to enable this feature.`
+                            : `AI Ally customizes scenarios based on user details, including location, department, and phone number. Select a category to enable this feature.`
+                        }}
+                      </span>
+                    </div>
+                    <v-btn color="#FFFFFF" icon @click="isAIAllyHighlightVisible = false">
+                      <VIcon color="#FFFFFF" :size="24">mdi-close</VIcon>
+                    </v-btn>
+                    <div class="triangle">
+                      <div class="over-triangle"></div>
+                    </div>
+                  </VSnackbar>
+                  <VTooltip bottom :disabled="!!category.length" nudge-top="26">
+                    <template #activator="{ on }">
+                      <div v-on="on">
+                        <KSelect
+                          v-model="scenarioDistribution"
+                          :items="scenarioDistributionItems"
+                          placeholder="Select scenarios manually"
+                          item-text="text"
+                          item-value="value"
+                          outlined
+                          persistent-hint
+                          class="filter-field-scenarios campaign-manager-phishing-scenarios__distribution-type"
+                          customMenuClass="campaign-manager-phishing-scenarios__filter-menu"
+                          style="padding-right: 4px !important; padding-left: 4px !important;"
+                          :disabled="!category.length"
+                          :slots="{ item: true, selection: true }"
+                        >
+                          <template #selection="{ item }">
+                            <div
+                              class="d-flex align-center campaign-manager-phishing-scenarios__distribution-type-selection"
+                            >
+                              <VIcon v-if="item.value === 3" color="#2196F3" class="mr-2" small
+                                >mdi-creation</VIcon
+                              >
+                              {{ item.text }}
+                            </div>
+                          </template>
+                          <template #item="{ item, on, attrs }">
+                            <VListItem
+                              v-on="on"
+                              :class="{
+                                'v-list-item--active': scenarioDistribution === item.value
+                              }"
+                            >
+                              <VListItemTitle>
+                                <VIcon v-if="item.value === 3" color="#2196F3" class="mr-2" small
+                                  >mdi-creation</VIcon
+                                >
+                                <span
+                                  :class="[
+                                    item.value !== 3 && scenarioDistribution === item.value
+                                      ? 'ml-5'
+                                      : item.value !== 3
+                                      ? 'ml-6'
+                                      : ''
+                                  ]"
+                                  >{{ item.text }}</span
+                                >
+                              </VListItemTitle>
+                            </VListItem>
+                          </template>
+                        </KSelect>
+                      </div>
+                    </template>
+                    <span>Select category first.</span>
+                  </VTooltip>
                 </div>
               </div>
             </div>
@@ -204,7 +269,10 @@
             <ElTabs v-model="upperTab" class="phishing-scenario-tab-container">
               <ElTabPane name="scenarios" label="Scenarios" />
               <ElTabPane
-                v-if="scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY"
+                v-if="
+                  scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+                  getTrainingSearchPermission
+                "
                 name="training"
                 label="Training"
               >
@@ -347,6 +415,12 @@
                             emailTemplateParams.fromAddress
                           }}</span>
                         </div>
+                        <div v-if="emailTemplateParams.ccAddresses.length > 0">
+                          <span class="template-preview__text--title">CC: </span>
+                          <span class="template-preview__text--body">{{
+                            emailTemplateParams.ccAddresses.join(',')
+                          }}</span>
+                        </div>
                         <div
                           v-if="!!getPhishingFile"
                           class="attachment-wrapper mt-2"
@@ -407,6 +481,12 @@
                           <span class="template-preview__text--title">Phishing URL: </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.urlTemplate
+                          }}</span>
+                        </div>
+                        <div>
+                          <span class="template-preview__text--title">Stop Bot Activity: </span>
+                          <span class="template-preview__text--body">{{
+                            landingPageParams.isInvisibleCaptchaEnabled
                           }}</span>
                         </div>
                       </div>
@@ -490,6 +570,7 @@ import {
   scenarioDistributionItems,
   SCENARIO_DISTRIBUTION
 } from '@/components/CampaignManager/utils'
+
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -553,10 +634,15 @@ export default {
     },
     initialScenarioDistribution: {
       type: Number
+    },
+    isPreferredLanguage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
+      isAIAllyHighlightVisible: true,
       SCENARIO_DISTRIBUTION,
       scenarioDistributionItems,
       tab: 'email',
@@ -576,7 +662,6 @@ export default {
       method: '',
       difficulty: '',
       language: '',
-      languageText: '',
       category: '',
       totalPhishingScenariosCount: 0,
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
@@ -620,9 +705,12 @@ export default {
         }))
         badges.push(...methodBadges)
       }
-      if (this.languageText) {
-        const languageBadge = { key: 'Language', value: this.languageText }
-        badges.push(languageBadge)
+      if (this.language.length) {
+        const languageBadges = this.language.map((item) => ({
+          key: 'Language',
+          value: item.text
+        }))
+        badges.push(...languageBadges)
       }
       if (this.difficulty.length) {
         const difficultyBadges = this.difficulty.map((item) => ({
@@ -732,7 +820,20 @@ export default {
           (item) => item.fieldName === 'LanguageTypeResourceId'
         )
         if (languageIndex !== -1) {
-          this.language = val.filterGroups[0].filterItems[languageIndex].value
+          if (val.filterGroups[0].filterItems[languageIndex].value.includes(',')) {
+            const languageValues = val.filterGroups[0].filterItems[languageIndex].value.split(',')
+            const findedLanguageValues = this.languages.filter((item) =>
+              languageValues.includes(item.value)
+            )
+            this.language = findedLanguageValues.map((item) => ({
+              text: item.text,
+              value: item.value
+            }))
+          } else {
+            const languageValue = val.filterGroups[0].filterItems[languageIndex].value
+            const findedLanguage = this.languages.find((item) => item.value === languageValue)
+            this.language = [{ text: findedLanguage.text, value: findedLanguage.value }]
+          }
         }
         const difficultyIndex = val.filterGroups[0].filterItems.findIndex(
           (item) => item.fieldName === 'difficulty'
@@ -817,6 +918,7 @@ export default {
             true,
             getEnrollmentSendTypeIdByEnum(val.enrollmentSendTypeId),
             val.awardCertificate,
+            val.certificateConfigSendType,
             {
               periodCount: val.periodCount || 1,
               periodType: val.emailPeriodTypeId || 'Day',
@@ -824,6 +926,9 @@ export default {
               occurrenceCount: 1,
               stopTime: '',
               sendReminderEvery: val.isEnrollmentReminderActive || false
+            },
+            {
+              ...val.trainingRedirectPage
             }
           )
         )
@@ -856,79 +961,95 @@ export default {
       }, 500)
     },
     difficulty(val) {
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'difficulty'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item.text)?.join(',') || '',
-        FieldName: 'difficulty',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
+      this.debounce(() => {
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'difficulty'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item.text)?.join(',') || '',
+          FieldName: 'difficulty',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     method(val) {
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'method'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item.text)?.join(',') || '',
-        FieldName: 'method',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
+      this.debounce(() => {
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'method'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item.text)?.join(',') || '',
+          FieldName: 'method',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     language(val) {
-      if (val) {
-        const languageIndex = this.languages.findIndex((lang) => lang.value === val)
-        if (languageIndex !== -1) {
-          this.languageText = this.languages?.[languageIndex]?.name || ''
+      this.debounce(() => {
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'LanguageTypeResourceId'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item.value)?.join(',') || '',
+          FieldName: 'LanguageTypeResourceId',
+          Operator: 'Include'
         }
-      } else {
-        this.languageText = ''
-      }
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'LanguageTypeResourceId'
-      )
-      const obj = {
-        Value: val,
-        FieldName: 'LanguageTypeResourceId',
-        Operator: 'Contains'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
+        if (index > -1) {
+          if (!val) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     category(val) {
-      if (!val?.length) {
-        this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
-      }
-      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-        (item) => item.FieldName === 'Category'
-      )
-      const obj = {
-        Value: val?.map?.((item) => item)?.join(',') || '',
-        FieldName: 'Category',
-        Operator: 'Include'
-      }
-      if (index > -1) {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
-      } else {
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
-      }
-      this.callForPhishingScenarios()
+      this.debounce(() => {
+        if (!val?.length) {
+          this.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
+        }
+        const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (item) => item.FieldName === 'Category'
+        )
+        const obj = {
+          Value: val?.map?.((item) => item)?.join(',') || '',
+          FieldName: 'Category',
+          Operator: 'Include'
+        }
+        if (index > -1) {
+          if (!val?.length) {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          }
+        } else {
+          this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+        }
+        this.callForPhishingScenarios()
+      }, 500)
     },
     items(val) {
       this.phishingScenarioItems = val?.map((item) => ({
@@ -1047,7 +1168,8 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            ccAddresses
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -1055,6 +1177,7 @@ export default {
             fromName,
             fromAddress,
             name,
+            ccAddresses,
             subject,
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
@@ -1069,7 +1192,8 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            isInvisibleCaptchaEnabled = false
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -1079,7 +1203,8 @@ export default {
             method: quishingMethods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
             mfaSmsSenderNumber,
-            mfaTextTemplate
+            mfaTextTemplate,
+            isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
           }
           this.landingPageTemplates = landingPages || []
           this.tab = 'email'

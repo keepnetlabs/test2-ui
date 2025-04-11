@@ -6,6 +6,7 @@
           :title="card.title"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :is-dashboard-widget="isDashboardWidget"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
@@ -78,6 +79,10 @@ export default {
     dateFormat: {
       type: String,
       default: ''
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -116,7 +121,7 @@ export default {
             const textParts = legendItem.textParts
             if (textParts) {
               const text = textParts[0]
-              const percentage = `(${textParts[1]} users)`
+              const percentage = `(${textParts[1]})`
               const x = chart.legend.legendHitBoxes[index].left + 17
               const y = chart.legend.legendHitBoxes[index].top + 6
               ctx.fillStyle = '#383B41'
@@ -157,6 +162,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -167,6 +173,11 @@ export default {
       if (!data[0].widgetDatas.length) {
         this.isEmpty = true
         return
+      } else if (data && data[0] && data[0].widgetDatas.length) {
+        if (data[0].widgetDatas[0].values?.length) {
+          this.isEmpty = !data[0].widgetDatas[0].values.some((row) => !!row.value)
+          if (this.isEmpty) return
+        }
       }
       const { values } = data[0].widgetDatas[0]
       const offenders = values.find((data) => data.name === 'CountRepeatOffender')?.value
@@ -174,6 +185,10 @@ export default {
       const offendersPercentage = values.find((data) => data.name === 'RepeatOffenderPercentage')
         ?.value
       const simulatedPercentage = values.find((data) => data.name === 'PercentageSimulated')?.value
+      let offset = -20
+      if (offendersPercentage < 5) offset = -8
+      else if (window.innerWidth > 1281 && window.innerWidth < 1480) offset = -16
+      else if (window.innerWidth < 1281) offset = -12
       this.chartOptions = {
         indexAxis: 'y',
         devicePixelRatio: 2,
@@ -256,7 +271,7 @@ export default {
                     labels.RepeatOffenders +
                       labels.RepeatOffenders +
                       data.datasets[0].data[0] +
-                      ' (users) '
+                      '  '
                   )
                     .fill('')
                     .join(' '),
@@ -273,10 +288,7 @@ export default {
                 },
                 {
                   text: Array.from(
-                    labels.SimulatedUsers +
-                      labels.SimulatedUsers +
-                      data.datasets[1].data[0] +
-                      ' (users) '
+                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[1].data[0] + '  '
                   )
                     .fill('')
                     .join(' '),
@@ -319,6 +331,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -360,6 +373,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
@@ -367,7 +381,25 @@ export default {
         },
         plugins: {
           datalabels: {
-            display: false
+            color: '#000',
+            display: true,
+            clamp: true,
+            offset,
+            align({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (data[dataIndex] <= 5) return 'end'
+              return 'center'
+            },
+            anchor({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (data[dataIndex] <= 5) return 'end'
+              return 'center'
+            },
+            font: { family: 'Open Sans, sans-serif', weight: 'bold', size: 14 },
+            formatter(value) {
+              if (value === 0) return ''
+              return `${value}%`
+            }
           }
         }
       }

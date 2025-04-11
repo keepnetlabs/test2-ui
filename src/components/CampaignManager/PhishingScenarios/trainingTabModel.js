@@ -6,6 +6,7 @@ export default class TrainingTabModel {
     isCheckboxSelected = false,
     enrollmentSendTypeId = '1',
     awardCertificate = false,
+    certificateConfigSendType = 'SendOnFirstAttempt',
     enrollmentReminder = {
       periodCount: 1,
       periodType: 'Day',
@@ -13,6 +14,12 @@ export default class TrainingTabModel {
       occurrenceCount: 1,
       stopTime: '',
       sendReminderEvery: false
+    },
+    trainingRedirectPage = {
+      informationMessage:
+        'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin',
+      redirectMessage: 'Please start the training and complete the training as soon as possible',
+      startButtonLabel: 'Start Training'
     }
   ) {
     this.trainingId = trainingId
@@ -21,6 +28,8 @@ export default class TrainingTabModel {
     this.isCheckboxSelected = isCheckboxSelected
     this.enrollmentSendTypeId = enrollmentSendTypeId
     this.awardCertificate = awardCertificate
+    this.certificateConfigSendType = certificateConfigSendType
     this.enrollmentReminder = enrollmentReminder
+    this.trainingRedirectPage = trainingRedirectPage
   }
 }

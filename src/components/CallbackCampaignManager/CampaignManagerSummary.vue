@@ -250,7 +250,11 @@ export default {
   },
   computed: {
     getTargetGroupItems() {
-      return this.formData?.userCountDetailResponse?.data?.data || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
+      return activeItems
     },
     isRenderTrainingCard() {
       return this.trainingParams
@@ -368,9 +372,9 @@ export default {
       let text = ''
       if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
-        text = `${this.getTotalActiveUsersWithPhoneNumber} active user${
+        text = `${this.getTotalActiveUsers} active user${
           this.getTotalActiveUsersWithPhoneNumber > 1 ? 's' : ''
-        } with phone numbers from ${targetGroupResourceIds.length} group(s)`
+        } from ${targetGroupResourceIds.length} group(s)`
       }
       return text
     },

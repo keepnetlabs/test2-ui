@@ -4,6 +4,8 @@
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
       :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -51,6 +53,7 @@
           @refreshAction="callForData"
           @on-interactions="handleInteractions"
           @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
         >
           <template #datatable-custom-column="{ scope, col }">
             <div v-if="col.property === 'status'" class="training-report-users__status-column">
@@ -125,6 +128,7 @@ export default {
   },
   data() {
     return {
+      resendItemCount: 0,
       tab: 'target-users',
       isShowResendDialog: false,
       resendPayload: null,
@@ -328,6 +332,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       this.resendPayload = {
         selectedItems: Array.isArray(items)
@@ -366,7 +373,9 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results.map((row) => ({ ...row, examStatus: row.examStatusName })) || []
+          this.tableData =
+            results.map((row) => ({ ...row, examStatus: row.examStatus || row.examStatusName })) ||
+            []
         })
         .finally(this.setLoading)
     },

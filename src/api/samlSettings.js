@@ -44,8 +44,9 @@ export function exportSamlSettings(payload = {}) {
   })
 }
 
-export function downloadMetadata() {
+export function downloadMetadata(entityId = '') {
   return testRequest.get(`${BASE_URL}/download-metadata`, {
+    params: { entityId },
     responseType: 'blob'
   })
 }

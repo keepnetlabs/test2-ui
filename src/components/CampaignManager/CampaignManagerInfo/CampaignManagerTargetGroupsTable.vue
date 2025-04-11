@@ -22,6 +22,19 @@
     @row-click="handleRowClick"
     @handleSelectionChange="$emit('handle-selection-change', $event)"
   >
+    <template #datatable-custom-column="{ scope, col }">
+      <span v-if="col.property === 'name'">
+        {{ scope.row[col.property] }}
+      </span>
+      <VTooltip v-if="isTooltipRenderable(scope.row)" bottom max-width="320" z-index="100">
+        <template #activator="{ on }">
+          <v-icon v-on="on" class="ml-2" size="20" color="#757575">mdi-information</v-icon>
+        </template>
+        <span>
+          {{ getGroupNameTooltipMessage(scope.row) }}
+        </span>
+      </VTooltip>
+    </template>
   </DataTable>
 </template>
 
@@ -84,7 +97,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
+        type: 'slot',
         width: 340,
         isEditable: true,
         filterableType: 'text'
@@ -179,6 +192,19 @@ export default {
     if (this.isCallApiWhenCreated) this.callForData()
   },
   methods: {
+    getGroupNameTooltipMessage(row) {
+      if (!row?.name) return ''
+      if (row.name === 'Repeat Offenders') {
+        return 'Users who fail two or more phishing campaigns are automatically added to the Repeat Offenders group, posing a higher security risk. Prioritize targeted training and simulations for their adaptation to your security culture, and they will be automatically removed once the risk is reduced.'
+      }
+      if (row.name === 'New Hires') {
+        return 'New hires are automatically added to this group for 90 days to receive targeted training and simulations, prioritizing their adaptation to your security culture, before being automatically removed.'
+      }
+      return ''
+    },
+    isTooltipRenderable(row) {
+      return row?.name && ['Repeat Offenders', 'New Hires'].includes(row.name)
+    },
     callForData() {
       this.$nextTick(() => {
         this.setLoading(true)
@@ -203,7 +229,7 @@ export default {
               this.$refs?.refTable?.getSelectedObjectAndSelectRowsByRowKey()
             })
         } else {
-          searchTargetGroups(this.axiosPayload)
+          searchTargetGroups(this.axiosPayload, true)
             .then((response) => {
               this.setDefaultResponseParams(response)
             })

@@ -208,6 +208,7 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import QuishingService from '@/api/quishing'
+import { mapGetters } from 'vuex'
 export default {
   name: 'NewQuishingIndividualPrintoutTemplatesModal',
   components: {
@@ -340,6 +341,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Individual Printout Template'
@@ -400,6 +404,11 @@ export default {
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {

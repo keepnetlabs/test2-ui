@@ -34,7 +34,33 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        v-if="!getQuishingTypePrintOut()"
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        v-if="!getQuishingTypePrintOut()"
+        :icon="tableOptions.rowActions[1].icon"
+        :id="tableOptions.rowActions[1].id"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <div class="campaign-report-sending-report-table__status-column">
         <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
@@ -110,12 +136,19 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
 import QuishingService from '@/api/quishing'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
 export default {
   name: 'CampaignManagerReportSendingReportTable',
-  components: { CampaignManagerReportSendingReportEvent, DataTable, Badge },
+  components: {
+    CampaignManagerReportSendingReportEvent,
+    DataTable,
+    Badge,
+    DefaultButtonRowAction
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -134,6 +167,14 @@ export default {
     isQuishingTypePrintout: {
       type: Boolean,
       default: false
+    }
+  },
+  inject: {
+    getQuishingTypePrintOut: {
+      type: Function
+    },
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
@@ -278,7 +319,7 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return `Event history is only available for ${provider}`
+      return `Event history is only available for SMTP`
     }
   },
   watch: {
@@ -308,6 +349,9 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       const apiFunc = this.isQuishingTypePrintout

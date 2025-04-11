@@ -133,7 +133,9 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               :type="SCENARIO_TYPES.CALLBACK"
+              :phishing-type-id="4"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -292,7 +294,18 @@ export default {
       return `${text} Callback Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3, 4].includes(this.step) ? labels.Next : this.getSaveText
+    },
+    getSaveText() {
+      const scheduleTypeId = this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData
+        .scheduleTypeId
+      if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        return labels.Save
+      }
+      if (this.scheduleInfoResponse?.isStarting) {
+        return labels.Launch
+      }
+      return labels.Schedule
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
@@ -580,9 +593,7 @@ export default {
             this.totalTargetUserCount = this.userCountDetailResponse?.data?.data?.reduce(
               (acc, row) => {
                 if (row.status !== 'Active') return acc
-                const phoneNumberCount =
-                  row?.hasPhoneNumber?.find((r) => r.status === 'Yes')?.count || 0
-                return acc + phoneNumberCount
+                return acc + row.count
               },
               0
             )

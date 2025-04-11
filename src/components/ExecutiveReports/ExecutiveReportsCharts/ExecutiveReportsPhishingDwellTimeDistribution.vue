@@ -43,8 +43,6 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
   name: 'ExecutiveReportsPhishingDwellTimeDistribution',
@@ -78,7 +76,9 @@ export default {
   },
   data() {
     return {
+      chartXScales: [],
       isEmpty: false,
+      averageInside: false,
       empty: {
         message: 'You do not have any report conclusion'
       },
@@ -96,7 +96,7 @@ export default {
               const textParts = legendItem.textParts
               if (textParts) {
                 const text = textParts[0]
-                const percentage = `${textParts[1]} minutes`
+                const percentage = `${textParts[1]} minute${textParts[1] > 1 ? 's' : ''}`
                 const x = chart.legend.legendHitBoxes[index].left + 17
                 const y = chart.legend.legendHitBoxes[index].top + 6
                 ctx.fillStyle = '#383B41'
@@ -106,6 +106,28 @@ export default {
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
             })
+            if (!this.averageInside) return
+            const yScale = chart.scales['y-axis-0']
+            const xScale = chart.scales['A']
+            const dataIndex = this.chartData.datasets[2].data.findIndex((item) => item.x || item.y)
+            const xData = this.chartData.datasets[2].data[dataIndex]
+            let xCoord = xScale.getPixelForValue(dataIndex)
+            const splittedXCoord = this.chartXScales[dataIndex].toString().split(' - ')
+            if (parseInt(splittedXCoord[0]) === xData.x) {
+              xCoord = xCoord - 14
+            } else if (parseInt(splittedXCoord[1]) === xData.x) {
+              xCoord = xCoord + 14
+            } else {
+              const mediumValue = (parseInt(splittedXCoord[0]) + parseInt(splittedXCoord[1])) / 2
+              if (xData.x < mediumValue) xCoord = xCoord - mediumValue
+              else if (xData.x > mediumValue) xCoord = xCoord + mediumValue
+            }
+            ctx.beginPath()
+            ctx.moveTo(xCoord, yScale.bottom)
+            ctx.lineTo(xCoord, yScale.top - 2)
+            ctx.strokeStyle = '#B6791D'
+            ctx.lineWidth = 2
+            ctx.stroke()
           }
         }
       ]
@@ -134,6 +156,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data[0].widgetDatas)
         })
         .finally(() => {
@@ -148,27 +171,39 @@ export default {
       let isAverageAdded = false
       let averageDwellTime = 0
       let averageDwellTimeIndex = 0
+      let maxDwellTime = 0
+      let insideDataIndex = -1
       const labels = widgetDatas.reduce((acc, item) => {
         const { ActionRange } = item.dataObject
         averageDwellTime = item.values.find(({ name }) => name === 'AverageDwellTime').value
-        if (ActionRange < averageDwellTime) {
+        const itemValue = item.values.find(({ name }) => name === 'Percentage').value
+        const numberActionRangeStart = parseInt(ActionRange.split('-')[0].trim())
+        const numberActionRangeEnd = parseInt(ActionRange.split('-')[1].trim())
+        if (numberActionRangeStart <= averageDwellTime) {
           acc.push(ActionRange)
-        } else if (ActionRange > averageDwellTime && !isAverageAdded) {
-          acc.push(averageDwellTime)
-          averageDwellTimeIndex = acc.length - 1
+          if (numberActionRangeEnd >= averageDwellTime) {
+            averageDwellTimeIndex = -1
+            isAverageAdded = true
+            insideDataIndex = acc.length - 1
+          }
+        } else if (numberActionRangeStart >= averageDwellTime) {
+          if (!isAverageAdded) {
+            acc.push(averageDwellTime)
+            averageDwellTimeIndex = acc.length - 1
+          }
           acc.push(ActionRange)
           isAverageAdded = true
         }
+        if (itemValue > maxDwellTime) maxDwellTime = itemValue
         return acc
       }, [])
       const dwellTimeBarData = widgetDatas.reduce((acc, item, index) => {
         let tempData = item.values.find(({ name }) => name === 'Percentage').value
-        if (index === averageDwellTimeIndex && tempData !== averageDwellTime) {
-          acc.push({ x: 0, y: 0 })
-        }
         acc.push(tempData)
         return acc
       }, [])
+      if (averageDwellTimeIndex !== -1)
+        dwellTimeBarData.splice(averageDwellTimeIndex, 0, { x: 0, y: 0 })
       let isAddedIndex = false
       const lineBarData = widgetDatas.reduce((acc, item, index) => {
         let tempData = item.values.find(({ name }) => name === 'Percentage').value
@@ -183,12 +218,18 @@ export default {
         return acc
       }, [])
       const averageDwellTimeBarData = new Array(labels.length).fill({ x: 0, y: 0 })
-      averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
+      if (averageDwellTimeIndex !== -1) {
+        averageDwellTimeBarData[averageDwellTimeIndex] = { x: averageDwellTime, y: 100 }
+      } else if (insideDataIndex > -1) {
+        this.averageInside = true
+        averageDwellTimeBarData[insideDataIndex] = { x: averageDwellTime, y: 100 }
+      }
+      this.chartXScales = labels
       this.chartData = {
         datasets: [
           {
             type: 'line',
-            stacked: true,
+            stacked: false,
             data: lineBarData,
             backgroundColor: '#B3D4FC',
             borderColor: '#B3D4FC',
@@ -198,7 +239,6 @@ export default {
             pointRadius: 0,
             pointStyle: 'dash',
             fill: false,
-            stack: 'Stack 1',
             order: 2,
             xAxisID: 'A'
           },
@@ -207,25 +247,29 @@ export default {
             barThickness: 32,
             data: dwellTimeBarData,
             label: 'dwell bar',
-            backgroundColor: '#0198AC',
             borderColor: '#0198AC',
+            backgroundColor: function (context) {
+              const index = context.dataIndex
+              const value = context.dataset.data[index]
+              let color = '#00BCD4'
+              if (value === maxDwellTime) color = '#0198AC'
+              return color
+            },
             fill: false,
             order: 2,
-            stack: 'Stack 1',
             xAxisID: 'A'
           },
           {
             type: 'bar',
-            barThickness: 2,
+            barThickness: averageDwellTimeIndex !== -1 ? 2 : 0,
             categoryPercentage: 0.5,
             barPercentage: 0.5,
-            label: 'Average Dwell Time: 25 minutes',
+            label: 'Median Dwell Time',
             data: averageDwellTimeBarData,
             backgroundColor: '#B6791D',
             borderColor: '#B6791D',
             fill: false,
-            order: 3,
-            stack: 'Stack 1',
+            order: 1,
             xAxisID: 'A'
           }
         ]
@@ -301,7 +345,6 @@ export default {
             usePointStyle: true,
             fontColor: '#757575',
             generateLabels(chart = {}) {
-              const { data } = chart
               return [
                 {
                   text: '',
@@ -309,7 +352,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: 0,
                   industryAverage: averageDwellTime,
-                  textParts: ['Average Dwell Time:', averageDwellTime]
+                  textParts: ['Median Dwell Time:', averageDwellTime]
                 }
               ]
             },
@@ -341,6 +384,7 @@ export default {
             let position = this._chart.canvas.getBoundingClientRect()
 
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
@@ -388,6 +432,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
@@ -395,37 +440,22 @@ export default {
         },
         plugins: {
           datalabels: {
-            display: false,
-            offset: 12,
-            color: '#383B41',
-            formatter: function (value, context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return '---- Reporting practices have steadily improved'
-              }
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 2) {
-                return 'Significant decrease in reporting practices ----'
-              }
-              return ''
-            },
-            align: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return 'right'
-              }
-              return 'left'
-            },
-            anchor: function (context) {
-              if (context.dataset.label === 'Not Clicked (%)' && context.dataIndex === 1) {
-                return 'right'
-              }
-              return 'left'
-            },
-            font: {
-              size: 10,
-              color: '#383B41',
-              weight: 'normal'
-            },
+            display: true,
+            align: 'start',
+            offset: -20,
+            anchor: 'end',
+            color: '#000',
             borderRadius: 4,
-            padding: 6
+            padding: 6,
+            formatter: function (value, context) {
+              if (
+                context.dataset.label === 'line' ||
+                value.y <= 0 ||
+                context.dataset.label.includes('Median Dwell Time')
+              )
+                return ''
+              return value + '%'
+            }
           }
         }
       }

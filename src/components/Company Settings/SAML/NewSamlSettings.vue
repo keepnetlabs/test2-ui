@@ -459,7 +459,7 @@ export default {
   },
   methods: {
     downloadMetadata() {
-      downloadMetadata().then((response) => {
+      downloadMetadata(this.formValues.entityID).then((response) => {
         const { data } = response
         downloadExportedFile(data, 'SAML Settings', 'XML')
       })
@@ -551,7 +551,10 @@ export default {
             const {
               data: { data }
             } = response
-            delete data.defaultRoleResourceId
+            if (this.isEdit) {
+              delete data.defaultRoleResourceId
+              delete data.entityID
+            }
             for (const key of Object.keys(data)) {
               this.formValues[key] = data[key]
             }

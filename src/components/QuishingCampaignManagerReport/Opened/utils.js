@@ -58,7 +58,6 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
     isEditable: false,
     filterableType: 'text'
   },
@@ -127,7 +126,7 @@ export const COLUMNS = {
     editable: false,
     label: 'Email Send Date',
     sortable: true,
-    fixed: false,
+    fixed: 'right',
     show: true,
     type: 'text',
     overrideWidth: true,
@@ -266,15 +265,27 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
-  SUBMITTED_TIME: {
-    property: 'submittedTime',
+  DATE_SCANNED: {
+    property: 'clickedTime',
     align: 'left',
-    label: labels.DateClicked,
+    label: `Date Scanned`,
     fixed: 'left',
     sortable: true,
     show: true,
     type: 'text',
     width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  SUBMITTED_TIME: {
+    property: 'submittedTime',
+    align: 'left',
+    label: `Date Submitted Data`,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
     isEditable: false,
     filterableType: 'date'
   },
@@ -358,7 +369,6 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 180,
     isEditable: false,
     filterableType: 'text'
   },
@@ -390,7 +400,7 @@ export const COLUMNS = {
     property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
-    fixed: false,
+    fixed: 'right',
     sortable: true,
     show: true,
     type: 'text',
@@ -620,7 +630,7 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Human Activity', value: '0' },
-      { text: 'Sandbox Activity', value: '1' }
+      { text: 'Bot Activity', value: '1' }
     ]
   }
 }
@@ -683,5 +693,5 @@ export const UNUSUAL_TYPES = {
 }
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
-  SYSTEM: 'Sandbox Activity'
+  SYSTEM: 'Bot Activity'
 }

@@ -15,7 +15,11 @@
         name="emailTemplates"
         id="emailTemplates-content"
       >
-        <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
+        <EmailTemplates
+          v-if="tab === 'emailTemplates'"
+          ref="refEmailTemplates"
+          :isAIAllyEnabled="aiAllySettings.psEmailTemplateGenerationAssistant"
+        />
       </el-tab-pane>
       <el-tab-pane
         v-if="getLandingPageTemplatesSearchPermissions"
@@ -23,7 +27,11 @@
         name="landingPage"
         id="landing-page-content"
       >
-        <LandingPageList v-if="tab === 'landingPage'" ref="refLandingPageList" />
+        <LandingPageList
+          v-if="tab === 'landingPage'"
+          ref="refLandingPageList"
+          :isAIAllyEnabled="aiAllySettings.landingPageTemplateGenerationAssistant"
+        />
       </el-tab-pane>
     </el-tabs>
   </KContainer>
@@ -35,6 +43,7 @@ import LandingPageList from '@/components/LandingPage/LandingPageList'
 import Scenarios from '@/components/PhishingScenarios/Scenarios'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
+import { getAIAllySettings } from '@/api/company'
 
 export default {
   name: 'PhishingSimulator',
@@ -46,7 +55,11 @@ export default {
   },
   data() {
     return {
-      tab: 'scenarios'
+      tab: 'scenarios',
+      aiAllySettings: {
+        psEmailTemplateGenerationAssistant: false,
+        landingPageTemplateGenerationAssistant: false
+      }
     }
   },
   computed: {
@@ -60,9 +73,18 @@ export default {
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
+    },
+    getAIAllySettings() {
+      getAIAllySettings().then((res) => {
+        this.aiAllySettings = res?.data?.data || {
+          psEmailTemplateGenerationAssistant: false,
+          landingPageTemplateGenerationAssistant: false
+        }
+      })
     }
   },
   created() {
+    this.getAIAllySettings()
     if (!this.getPhishingScenariosSearchPermissions && this.getEmailTemplatesSearchPermissions) {
       this.tab = 'emailTemplates'
     } else if (

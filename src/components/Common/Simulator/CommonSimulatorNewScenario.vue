@@ -8,6 +8,55 @@
     :showFooter="!isTemplateEditing"
   >
     <template #overlay-body>
+      <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewEmailTemplateModal"
+        v-if="isOpenEmailTemplateDrawer"
+        v-model="isOpenEmailTemplateDrawer"
+        class="k-navigation-drawer"
+        fixed
+        overlay-color="rgba(0, 0, 0, 0.17)"
+        overlay-opacity="1"
+        right
+        width="calc(100% - 72px)"
+        height="100%"
+      >
+        <NewEmailTemplates
+          v-if="isOpenEmailTemplateDrawer"
+          ref="newEmailTemplate"
+          is-a-i-ally-enabled
+          :status="isOpenEmailTemplateDrawer"
+          :should-remove-overflow="false"
+          :show-leaving-dialog="false"
+          :email-template-id="createdEmailTemplateResourceId"
+          :selected-method-text="getSelectedMethodText"
+          @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+        />
+      </VNavigationDrawer>
+      <VNavigationDrawer
+        v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
+        v-if="isOpenLandingPageDrawer"
+        v-model="isOpenLandingPageDrawer"
+        class="k-navigation-drawer"
+        fixed
+        overlay-color="rgba(0, 0, 0, 0.17)"
+        overlay-opacity="1"
+        right
+        width="calc(100% - 72px)"
+        height="100%"
+      >
+        <NewLandingPage
+          v-if="isOpenLandingPageDrawer"
+          ref="newLandingPage"
+          :status="isOpenLandingPageDrawer"
+          :is-a-i-ally-enabled="true"
+          :should-remove-overflow="false"
+          :show-leaving-dialog="false"
+          :landing-page-data="landingPageData"
+          :email-template-id="createdLandingPageResourceId"
+          :selected-method-text="getSelectedMethodText"
+          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
+        />
+      </VNavigationDrawer>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -162,6 +211,7 @@
                     @loading="isSubmitDisabled = $event"
                     @template-edit="handleTemplateEdit"
                     @edit-mode="handleEditModeChange"
+                    @on-create-email-template="toggleEmailTemplateDrawer"
                   />
                 </v-list-item-content>
               </v-list-item>
@@ -193,6 +243,7 @@
                     @loading="isSubmitDisabled = $event"
                     @template-edit="handleTemplateEdit"
                     @edit-mode="handleLandingPageEditModeChange"
+                    @on-create-landing-page-template="toggleLandingPageDrawer"
                 /></v-list-item-content>
               </v-list-item>
             </div>
@@ -253,6 +304,20 @@
                         <div class="d-flex flex-column" v-if="!!summaryData">
                           <div class="template-summary__title">
                             {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
+                            <VTooltip
+                              v-if="
+                                summaryData.emailTemplate &&
+                                summaryData.emailTemplate.isAssistedByAI
+                              "
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
+                                  >mdi-creation</VIcon
+                                >
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div
                             v-if="!isQuishingTypeIndividualPrintOut"
@@ -386,6 +451,19 @@
                                   summaryData.landingPageTemplate &&
                                   summaryData.landingPageTemplate.name
                                 }}
+                                <VTooltip
+                                  v-if="
+                                    summaryData.landingPageTemplate &&
+                                    (summaryData.landingPageTemplate.isAssistedByAI ||
+                                      summaryData.landingPageTemplate.isAssistedbyAI)
+                                  "
+                                  bottom
+                                >
+                                  <template #activator="{ on }">
+                                    <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                                  </template>
+                                  <span>This template was generated with AI</span>
+                                </VTooltip>
                               </div>
                               <div class="template-summary__sub-title mt-2">
                                 <b>{{ getURLText }}:</b>
@@ -449,6 +527,18 @@
                               summaryData.landingPageTemplate &&
                               summaryData.landingPageTemplate.name
                             }}
+                            <VTooltip
+                              v-if="
+                                summaryData.landingPageTemplate &&
+                                summaryData.landingPageTemplate.isAssistedByAI
+                              "
+                              bottom
+                            >
+                              <template #activator="{ on }">
+                                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+                              </template>
+                              <span>This template was generated with AI</span>
+                            </VTooltip>
                           </div>
                           <div class="template-summary__subtitle mt-2">
                             <b>{{ getLandingPageUrlLabel }}:</b>
@@ -557,7 +647,11 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
-import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import {
+  getLandingPageFormDetails,
+  getLandingPageList,
+  getLandingPageTemplatePreviewContent
+} from '@/api/landingPage'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
@@ -588,9 +682,14 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { mapGetters } from 'vuex'
+import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
+import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
+    NewEmailTemplates,
+    NewLandingPage,
     KSelect,
     InputPhishingMethod,
     ConfigureCompanyStepHeader,
@@ -637,9 +736,14 @@ export default {
   },
   data() {
     return {
+      landingPageData: null,
+      isOpenLandingPageDrawer: false,
+      isOpenEmailTemplateDrawer: false,
       isTemplateEditing: false,
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
+      createdEmailTemplateResourceId: '',
+      createdLandingPageResourceId: '',
       quishingTypeItems,
       SCENARIO_TYPES,
       footerButtonsIds: {
@@ -695,6 +799,14 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
+    getSelectedMethodText() {
+      let selectedMethod = this.getMethodText
+      if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
+      return selectedMethod
+    },
     getURLText() {
       return this.isQuishing ? labels.QuishingLink : labels.URL.toUpperCase()
     },
@@ -786,7 +898,7 @@ export default {
     },
     getLandingPageDifficulty() {
       return (
-        this.scenarioDetailsLookup.difficultyTypes.find(
+        this?.scenarioDetailsLookup?.difficultyTypes?.find(
           (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
         )?.text || ''
       )
@@ -908,7 +1020,7 @@ export default {
         : null
     },
     getLandingPageDifficultyColor() {
-      const difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
+      const difficultyType = this?.scenarioDetailsLookup?.difficultyTypes?.find(
         (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
       )?.text
       if (difficultyType === 'Easy') return '#217124'
@@ -917,7 +1029,7 @@ export default {
     },
     getDifficultyType() {
       return (
-        this.scenarioDetailsLookup['difficultyTypes'].find(
+        this.scenarioDetailsLookup['difficultyTypes']?.find(
           (item) => item.value === this.generalDifficultyTypeId
         )?.text || ''
       )
@@ -948,6 +1060,19 @@ export default {
     }
   },
   created() {
+    getLandingPageFormDetails().then((response) => {
+      const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+        return {
+          text: item.domain,
+          value: item.id.toString(),
+          extraDatas: [
+            { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+            { text: item.isStopBotActivity, value: item.isStopBotActivity }
+          ]
+        }
+      })
+      this.landingPageData = { ...response.data.data, domainRecords }
+    })
     if (this.isDuplicate) this.setFooterDuplicateIds()
     this.callForLanguages()
     if (this.isEdit) {
@@ -956,6 +1081,9 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isInitial = false
     }
+    if (!(this.isEdit || this.isDuplicate))
+      this.formValues.languageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
   methods: {
     getDifficultyColor,
@@ -973,6 +1101,56 @@ export default {
       this.categoryText =
         this.scenarioDetailsLookup?.categories?.find((item) => item.value === categoryId)?.text ||
         ''
+    },
+    handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
+      this.createdEmailTemplateResourceId = createdResourceId
+      if (document.querySelector('.k-navigation-drawer'))
+        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
+        this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
+          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
+        })
+      setTimeout(() => {
+        this.toggleEmailTemplateDrawer()
+      }, 250)
+    },
+    handleClickOutsideNewEmailTemplateModal() {
+      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
+        return
+      }
+      this.handleCloseNewEmailTemplateModal()
+    },
+    handleClickOutsideNewLandingPageTemplateModal() {
+      if (
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
+      ) {
+        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
+        return
+      }
+      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
+      this.handleCloseNewLandingPageTemplateModal()
+    },
+    handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
+      this.createdLandingPageResourceId = createdResourceId
+      if (document.querySelector('.k-navigation-drawer'))
+        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
+        this.$refs.refLandingPageTemplateListPreview
+          .getTemplates(true, createdResourceId)
+          .then(() => {
+            this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
+          })
+      setTimeout(() => {
+        this.toggleLandingPageDrawer()
+      }, 250)
+    },
+    toggleLandingPageDrawer() {
+      this.isOpenLandingPageDrawer = !this.isOpenLandingPageDrawer
+    },
+    toggleEmailTemplateDrawer() {
+      this.isOpenEmailTemplateDrawer = !this.isOpenEmailTemplateDrawer
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {

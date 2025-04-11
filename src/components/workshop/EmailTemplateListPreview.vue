@@ -58,7 +58,7 @@
       <div class="emailTemplatePreview__container-main">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
-            <div class="d-flex justify-space-between">
+            <div class="d-flex justify-space-between align-center mr-6">
               <div class="d-flex">
                 <div>
                   <VTextField
@@ -108,6 +108,18 @@
                   </v-select>
                 </div>
               </div>
+              <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreateEmailTemplateClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text">Create Email Template</span>
+                </v-btn>
+              </div>
             </div>
           </div>
           <multipane class="vertical-panes" layout="vertical">
@@ -132,8 +144,24 @@
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
-                    <div class="template-list--item template-list--item__header">
-                      {{ item.name }}
+                    <div
+                      class="template-list--item template-list--item__header"
+                      :id="`template-${index}`"
+                    >
+                      <span>{{ item.name }}</span>
+                      <VTooltip v-if="item.isAssistedByAI" bottom :attach="`#template-${index}`">
+                        <template #activator="{ on }">
+                          <VIcon
+                            v-on="on"
+                            class="ml-1"
+                            style="margin-top: -2px;"
+                            color="#2196F3"
+                            small
+                            >mdi-creation</VIcon
+                          >
+                        </template>
+                        <span>This template was generated with AI</span>
+                      </VTooltip>
                     </div>
                     <div
                       class="template-list--item template-list--item__sub-header"
@@ -301,6 +329,7 @@
                     :active-block-manager-components="activeBlockManagerComponents"
                     :name.sync="editData.name"
                     :from-address.sync="editData.fromAddress"
+                    :ccAddresses.sync="editData.ccAddresses"
                     :from-name.sync="editData.fromName"
                     :subject.sync="editData.subject"
                     :template.sync="editData.template"
@@ -309,6 +338,7 @@
                     :is-edit="true"
                     :is-phishing-template="isAttachmentBasedScenario"
                     :isNotificationTemplate="true"
+                    :isEmailTemplate="isPhishing"
                     :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                     :size="5"
                     fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
@@ -351,6 +381,12 @@
                       <div v-if="!isQuishingTypeIndividualPrintOut">
                         <span class="template-preview__text--title">From Email Address: </span>
                         <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                      </div>
+                      <div v-if="isPhishing">
+                        <span class="template-preview__text--title">CC: </span>
+                        <span class="template-preview__text--body">{{
+                          templateCCAddresses.join(', ')
+                        }}</span>
                       </div>
                       <div
                         v-if="phishingFile && phishingFile.length"
@@ -485,6 +521,7 @@ export default {
       templateSubject: null,
       totalNumberOfPages: 1,
       templateFromEmail: null,
+      templateCCAddresses: [],
       methods: SCENARIO_METHODS,
       difficulties: SCENARIO_DIFFICULTIES,
       bodyData: this.defaultBodyData || getDefaultEmailTemplatePayload(this.categoryResourceId),
@@ -500,6 +537,7 @@ export default {
       editData: {
         name: '',
         fromAddress: null,
+        ccAddresses: [],
         fromName: null,
         subject: null,
         template: null,
@@ -572,6 +610,9 @@ export default {
     this.getTemplates(true, this.emailTemplateResourceId)
   },
   methods: {
+    handleCreateEmailTemplateClick() {
+      this.$emit('on-create-email-template')
+    },
     handleShowRenameAttachmentModal() {
       this.isRenameAttachmentModalVisible = true
     },
@@ -623,6 +664,7 @@ export default {
       this.initialEditData = {
         name: this.selectedTemplateHeader,
         fromAddress: this.templateFromEmail,
+        ccAddresses: this.templateCCAddresses,
         fromName: this.templateFromName,
         subject: this.templateSubject,
         template: this.templateHTML,
@@ -721,6 +763,7 @@ export default {
         this.templateFromName = this.listData[templateIndex].fromName || ''
         this.templateSubject = this.listData[templateIndex].subject || ''
         this.templateFromEmail = this.listData[templateIndex].fromAddress || ''
+        this.templateCCAddresses = this.listData[templateIndex].ccAddresses || ''
         this.phishingFile = this.listData[templateIndex].phishingFileName
           ? [
               {
@@ -737,6 +780,7 @@ export default {
       this.templateFromName = newTemplate.fromName || ''
       this.templateSubject = newTemplate.subject || ''
       this.templateFromEmail = newTemplate.fromAddress || ''
+      this.templateCCAddresses = newTemplate.ccAddresses || ''
       this.phishingFile = newTemplate.phishingFileName
         ? [
             {
@@ -885,7 +929,7 @@ export default {
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT]
       else if (this.isQuishingTypeEmail)
         bodyData.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
-      this.apiFuncs
+      return this.apiFuncs
         .list(bodyData)
         .then((response) => {
           const { data } = response
@@ -926,6 +970,15 @@ export default {
           this.showLoader = false
           this.$emit('loading', false)
         })
+    },
+    setItemToFirstIndex(resourceId = '') {
+      const itemIndex = this.listData.findIndex((item) => item.resourceId === resourceId)
+      if (itemIndex === -1) return
+      this.listData = [
+        this.listData[itemIndex],
+        ...this.listData.slice(0, itemIndex),
+        ...this.listData.slice(itemIndex + 1)
+      ]
     },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
@@ -980,6 +1033,7 @@ export default {
           this.templateFromName = response?.data?.data?.fromName || ''
           this.templateSubject = response?.data?.data?.subject || ''
           this.templateFromEmail = response?.data?.data?.fromAddress || ''
+          this.templateCCAddresses = response?.data?.data?.ccAddresses || ''
           this.phishingFile = response?.data?.data?.phishingFileName
             ? [
                 {

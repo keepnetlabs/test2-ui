@@ -1,0 +1,142 @@
+export const ACTIVITY_TYPE_COLOR_MAP = {
+  Reported: '#43A047',
+  'Reported Email': '#43A047',
+  'Clicked Link': '#F56C6C',
+  'Submitted Data': '#F56C6C',
+  'Submitted MFA Code': '#F56C6C',
+  'Opened Attachment': '#F56C6C',
+  'Called Back': '#F56C6C',
+  'Entered Digits': '#F56C6C',
+  'Scanned QR Link': '#F56C6C',
+  'Vished (Dialed Number)': '#F56C6C',
+  'Opened Email But Not Clicked Training Link': '#F56C6C',
+  Answered: '#E6A23C',
+  'Training Completed': '#43A047',
+  'Clicked Training Link': '#43A047',
+  'Clicked Training': '#43A047',
+  'Email Opened': '#E6A23C',
+  'Opened Email': '#E6A23C',
+  'Training Not Completed': '#F56C6C',
+  'Exam Passed': '#43A047',
+  'Exam Failed': '#F56C6C',
+  'Downloaded Poster': '#43A047',
+  'Downloaded Infographic': '#43A047',
+  'Email Sent': '#1173C1',
+  'Call Sent': '#1173C1',
+  'SMS Sent': '#1173C1'
+}
+
+export const ACTIVITY_TYPES_FAIL_MAP = {
+  Reported: false,
+  'Reported Email': false,
+  'Clicked Link': true,
+  'Submitted Data': true,
+  'Submitted MFA Code': true,
+  'Opened Attachment': true,
+  'Called Back': true,
+  'Entered Digits': true,
+  'Scanned QR Link': true,
+  'Vished (Dialed Number)': true,
+  'Opened Email But Not Clicked Training Link': true,
+  Answered: false,
+  'Training Completed': false,
+  'Clicked Training Link': false,
+  'Clicked Training': false,
+  'Training Not Completed': true,
+  'Exam Passed': false,
+  'Exam Failed': true,
+  'Downloaded Poster': false,
+  'Downloaded Infographic': false,
+  'Email Sent': false,
+  'Email Opened': false,
+  'Opened Email': false,
+  'Call Sent': false,
+  'SMS Sent': false
+}
+
+export const ACTIVITY_TYPES_NEUTRAL_MAP = {
+  Reported: false,
+  'Reported Email': false,
+  'Clicked Link': false,
+  'Submitted Data': false,
+  'Submitted MFA Code': false,
+  'Opened Attachment': false,
+  'Called Back': false,
+  'Entered Digits': false,
+  'Scanned QR Link': false,
+  'Vished (Dialed Number)': false,
+  'Opened Email But Not Clicked Training Link': false,
+  Answered: false,
+  'Training Completed': false,
+  'Clicked Training Link': false,
+  'Clicked Training': false,
+  'Email Opened': false,
+  'Opened Email': false,
+  'Training Not Completed': false,
+  'Exam Passed': false,
+  'Exam Failed': false,
+  'Downloaded Poster': false,
+  'Downloaded Infographic': false,
+  'Email Sent': true,
+  'Call Sent': true,
+  'SMS Sent': true
+}
+export const ACTIVITY_TYPES_OPENED_MAP = {
+  'Email Opened': true,
+  'Opened Email': true
+}
+
+export const userActivityDetailsFilters = [
+  {
+    text: 'Activity Type',
+    icon: 'mdi-format-list-bulleted-type',
+    key: 'activityType',
+    show: true,
+    filterType: 'search',
+    items: [],
+    value: [],
+    activeValue: [],
+    operator: 'Include',
+    activeOperator: 'Include',
+    isFilterActive: false
+  },
+  {
+    text: 'Product',
+    icon: 'mdi-package-variant-closed',
+    key: 'product',
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: [],
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  },
+  {
+    text: 'Phishing Difficulty',
+    icon: 'mdi-signal-cellular-3',
+    key: 'difficulty',
+    show: true,
+    filterType: 'search',
+    operator: 'Include',
+    activeOperator: 'Include',
+    items: [],
+    value: [],
+    activeValue: [],
+    isFilterActive: false
+  }
+  // {
+  //   text: 'Category',
+  //   icon: 'mdi-shape',
+  //   key: 'category',
+  //   show: true,
+  //   filterType: 'search',
+  //   operator: 'Include',
+  //   activeOperator: 'Include',
+  //   items: [],
+  //   value: [],
+  //   activeValue: [],
+  //   isFilterActive: false
+  // }
+]

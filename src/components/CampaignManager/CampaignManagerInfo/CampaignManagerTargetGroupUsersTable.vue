@@ -33,10 +33,15 @@
       />
       <AlertBox
         v-if="canRenderNoPhoneNumberAlertBox"
-        class="mt-4"
         icon-color="#B83A3A"
         style="background-color: #f56c6c33;"
         text="There are 0 target users with phone numbers in the selected groups. MFA scenario(s) in the campaign won’t be able to launched."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
+      <AlertBox
+        v-if="canRenderAlertboxLanguage"
+        class="w-100"
+        :text="getPreferredLanguageText"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </div>
@@ -59,10 +64,15 @@
 <script>
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import { getTargetGroupCountDetail, searchTargetGroupUsers } from '@/api/targetUsers'
+import {
+  getTargetGroupCountDetail,
+  searchTargetGroupUsers,
+  getTargetGroupCountDetailExt
+} from '@/api/targetUsers'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
+import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
@@ -106,6 +116,29 @@ export default {
     addPhoneNumberColumn: {
       type: Boolean,
       default: false
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
+    },
+    targetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    scenarioResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    sendUserPreferredLanguage: {
+      type: String,
+      default: '0'
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: 0
+    },
+    categoryFilter: {
+      type: Object
     }
   },
   data() {
@@ -113,10 +146,19 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
       activeUserCount: 0,
+      preferredLanguages: [],
+      randomLanguages: [],
+      userCountDetailResponse: null,
+      isRenderDefaultLanguageAlertBoxFormat: false,
+      activeCompanyName: '',
       activeUsersWithPhoneNumberCount: 0,
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
+      userFromPreferredLanguage: 0,
+      userFromPreferredLanguagesText: 'e.g., French, German, Spanish, and 7 more',
+      userFromCompanyLanguageText: '',
+      userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
         ascending: 'ascending'
@@ -172,12 +214,63 @@ export default {
     canRenderNoPhoneNumberAlertBox() {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
+    canRenderAlertboxLanguage() {
+      return (
+        parseInt(this.sendUserPreferredLanguage) === 1 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
+    },
+    getPreferredLanguageText() {
+      const preferredLanguagesLength = this.preferredLanguages.length
+      let prefLanguagesText = this.preferredLanguages[0]
+      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
+      if (this.isRenderDefaultLanguageAlertBoxFormat) {
+        return `${this.getUserFromPreferredLanguage} user${
+          this.getUserFromPreferredLanguage > 1 ? 's' : ''
+        } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
+          this.getUserFromCompanyLanguage > 1 ? 's' : ''
+        } in the company language.`
+      }
+      if (preferredLanguagesLength === 0) {
+        return `User's preferred languages are not defined, so the company language (${companyLanguage}) will be used.`
+      }
+      if (preferredLanguagesLength > 1) {
+        if (preferredLanguagesLength > 3)
+          prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
+            preferredLanguagesLength - 3
+          } more`
+        prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
+      }
+      return `Selected scenarios don’t match users’ preferred language${
+        preferredLanguagesLength > 1 ? 's' : ''
+      } (${prefLanguagesText}), so the company language (${companyLanguage}) will be used.`
+    },
+    getUserFromPreferredLanguage() {
+      if (!this.userCountDetailResponse) return
+      const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
+    },
+    getUserFromCompanyLanguage() {
+      if (!this.userCountDetailResponse) return
+      const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
+    },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
         this.usersFromUnverifiedDomainsCount
       } active user${
         this.usersFromUnverifiedDomainsCount > 1 ? 's' : ''
-      } with unverified domains in this group. Please verify the domains in order to send emails.`
+      } with unverified domains in this group. Please verify the domains in order to send ${
+        this.isSmishing ? 'sms' : 'emails'
+      }.`
     },
     getPhoneNumberWarningText() {
       return `There ${this.activeUsersWithPhoneNumberCount > 1 ? 'are' : 'is'} ${
@@ -309,13 +402,31 @@ export default {
           this.tableData = data.results || []
         })
         .then(() => {
-          getTargetGroupCountDetail([this.resourceId])
+          const isCallingPreferred =
+            this.isPhishing && parseInt(this.sendUserPreferredLanguage) === 1
+          const method = isCallingPreferred
+            ? getTargetGroupCountDetailExt
+            : getTargetGroupCountDetail
+          const payload = isCallingPreferred
+            ? {
+                targetGroupResourceIds: [this.resourceId],
+                scenarioResourceIds: this.scenarioResourceIds || [],
+                sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+              }
+            : [this.resourceId]
+          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY && isCallingPreferred) {
+            payload.categoryFilter = {
+              Condition: this.categoryFilter.filter.Condition,
+              FilterGroups: this.categoryFilter.filter.FilterGroups
+            }
+          }
+          method(payload)
             .then((response) => {
               if (!Object.keys(response).length) return
               const {
                 data: { data }
               } = response
-
+              this.userCountDetailResponse = data
               const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
               const activeUsersWithPhoneNumberCount =
                 data
@@ -336,6 +447,46 @@ export default {
               this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
               this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
               this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
+              const activeData = data.find((row) => row.status === 'Active')
+              const yesCompanyPrefYesItem = activeData?.hasCompanyPreferredLanguage?.find(
+                (row) => row.status === 'Yes'
+              )
+              this.userFromCompanyLanguage = yesCompanyPrefYesItem?.count || 0
+              const yesUserPrefYesItem = activeData?.hasPreferredLanguage?.find(
+                (row) => row.status === 'Yes'
+              )
+              this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
+              const preferredLanguages = new Set()
+              const randomLanguages = new Set()
+              let isNoPreferredLanguage = false
+              let isYesRandomLanguage = false
+              data.map((row) => {
+                if (row.hasPreferredLanguage) {
+                  const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
+                  if (noPrefLanguages.length) {
+                    noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
+                      preferredLanguages.add(lang.status)
+                    })
+                  } else {
+                    isNoPreferredLanguage = true
+                  }
+                }
+                if (row.hasRandomLanguage) {
+                  const noRandomLanguages = row.hasRandomLanguage.filter((r) => r.status === 'Yes')
+                  if (noRandomLanguages.length) {
+                    noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
+                      randomLanguages.add(lang.status)
+                    })
+                  } else {
+                    isYesRandomLanguage = true
+                  }
+                }
+              })
+              this.preferredLanguages = Array.from(preferredLanguages)
+              this.randomLanguages = Array.from(randomLanguages)
+              this.activeCompanyName = activeData?.companyPreferredLanguage
+              this.isRenderDefaultLanguageAlertBoxFormat =
+                isNoPreferredLanguage && isYesRandomLanguage
               this.setLoading(false)
             })
             .catch(() => {

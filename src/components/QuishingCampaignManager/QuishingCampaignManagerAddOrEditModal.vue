@@ -125,6 +125,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               :phishing-type-id="3"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -280,7 +281,18 @@ export default {
       return `${text} Quishing Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3, 4].includes(this.step) ? labels.Next : this.getSaveText
+    },
+    getSaveText() {
+      const scheduleTypeId = this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData
+        .scheduleTypeId
+      if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        return labels.Save
+      }
+      if (this.scheduleInfoResponse?.isStarting) {
+        return labels.Launch
+      }
+      return labels.Schedule
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
@@ -676,6 +688,7 @@ export default {
               isCheckboxSelected,
               enrollmentReminder,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
@@ -689,6 +702,7 @@ export default {
               quishingScenarioResourceId: phishingScenarioResourceId,
               enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             })
           })

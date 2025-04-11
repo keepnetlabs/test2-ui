@@ -1,0 +1,382 @@
+#gamification-report {
+  overflow: hidden;
+}
+
+.gamification-report {
+  &__top-performers {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+  &__top-performers-header {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    color: #2196f3;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  &__top-performers-content {
+    padding: 16px;
+    padding-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  &__top-performers-content-empty {
+    padding: 16px;
+    padding-top: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 270px;
+
+    &-text {
+      font-size: 24px;
+      line-height: 31px;
+      color: #383b41;
+    }
+  }
+  &__top-performer-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+    border-radius: 8px;
+    padding: 16px;
+    padding-top: 24px;
+    cursor: pointer;
+
+    &-ribbon {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      translate: -50%;
+    }
+
+    &-name {
+      color: #383b41;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 24px;
+      margin-bottom: 4px;
+    }
+
+    &-email,
+    &-department {
+      color: #383b41b8;
+      font-size: 14px;
+      line-height: 19px;
+      margin-bottom: 4px;
+      min-height: 19px;
+    }
+
+    &-department--empty {
+      display: none;
+    }
+
+    &-score {
+      text-align: center;
+      border-radius: 100px;
+      border: 1px solid #e0e0e0;
+      width: 180px;
+      color: #757575;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  &__user-details-drawer-header {
+    z-index: 10;
+    border-top-left-radius: 8px;
+    background-image: url("../../assets/img/gamification-report-user-details-header-background.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 32px 48px 0px 48px;
+    height: 240px;
+    display: flex;
+    justify-content: space-between;
+
+    &__user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    &__user-name {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 24px;
+    }
+
+    &__user-email {
+      color: #ffffff;
+    }
+  }
+
+  &__user-details-drawer-card {
+    padding: 32px 48px;
+    z-index: 10;
+    background-color: #ffffff;
+
+    &-content {
+      background-image: url("../../assets/img/gamification-report-user-details-medal.svg");
+      background-color: #f1f8fe;
+      margin-top: -166px;
+      border: 2px solid #2196f3;
+      filter: drop-shadow(0px 4px 15px #00000014);
+      height: 194px;
+      border-radius: 12px;
+      padding: 24px;
+      display: grid;
+      gap: 24px;
+    }
+
+    &__overall-score {
+      padding: 16px 0px 0px 0px;
+      display: flex;
+      flex-direction: column;
+
+      &-text {
+        font-size: 14px;
+        line-height: 24px;
+        text-align: center;
+        color: #383b41;
+        font-weight: 600;
+      }
+
+      &-percentage {
+        font-weight: 700;
+        font-size: 64px;
+        height: 46px;
+        margin-top: -12px;
+        text-align: center;
+        color: #383b41;
+        margin-bottom: 24px;
+      }
+
+      &-points {
+        font-size: 18px;
+        text-align: center;
+        color: #383b41b8;
+        padding-top: 8px;
+      }
+    }
+
+    &__product {
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #b3d4fc;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 16px;
+      gap: 8px;
+
+      &-text {
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 16px;
+        color: #383b41b8;
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      &-percentage {
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 24px;
+        color: #383b41;
+      }
+    }
+  }
+
+  &__user-details-drawer-body {
+    padding: 0px 48px;
+
+    &-header {
+      z-index: 10;
+      padding-bottom: 8px;
+      background-color: #ffffff;
+      font-weight: 600;
+      font-size: 20px;
+    }
+  }
+
+  &__user-details-drawer-filters-container {
+    z-index: 10;
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 24px;
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__user-details-drawer-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    &-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+  }
+
+  &__user-details-drawer-timeline {
+    margin-top: 8px;
+  }
+
+  &__timeline-item {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    gap: 8px;
+    padding-top: 16px;
+    margin-left: -48px;
+
+    &--first {
+      border-top: none !important;
+    }
+
+    &-date-header {
+      .v-timeline-item__dot {
+        margin-bottom: -24px;
+      }
+      .v-timeline-item__inner-dot.primary {
+        background-color: #e0e0e0 !important;
+      }
+    }
+  }
+
+  &__timeline-item-activity-type {
+    font-weight: 600;
+    font-size: 16px;
+    margin-left: 48px;
+  }
+
+  &__timeline-item-date {
+    color: #383b41b8;
+    font-size: 14px;
+  }
+
+  &__timeline-item-middle-text {
+    color: #757575;
+    margin-left: 48px;
+  }
+
+  &__timeline-item-bold-text {
+    font-weight: 600;
+    font-size: 16px;
+    color: #383b41;
+  }
+
+  &__timeline-item-bottom-text {
+    font-weight: 600;
+    font-size: 12px;
+    color: #383b41b8;
+    text-transform: uppercase;
+    margin-left: 48px;
+  }
+
+  &__user-details-drawer-timeline-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 240px;
+
+    &-text {
+      font-size: 24px;
+      line-height: 31px;
+    }
+  }
+
+  &__user-details-drawer-load-more-button-container {
+    padding: 16px;
+  }
+}
+.v-timeline {
+  margin-top: -8px !important;
+  &-item {
+    padding-right: 16px !important;
+  }
+}
+.v-timeline-item__dot {
+  box-shadow: none !important;
+}
+.gamification-report-performance-details-table{
+  margin-top:16px;
+  table{
+    width:100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    table-layout:auto;
+    td,th{
+      border: 1px solid #E0E0E0;
+      padding: 16px;
+      text-align: left;
+    }
+    td{
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px;
+      color:#383B41;
+    }
+  }
+  thead tr {
+    background-color: #F2F2F2;
+    th {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 16px;
+      color: #383B41;
+    }
+  }
+  tbody tr:nth-child(even) {
+    background-color: #FAFAFA;
+  }
+}
+.gamification-report-performance-details-table-column{
+  &--number{
+    font-weight:600 !important;
+  }
+  &--link a{
+    color:#2196F3 !important;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+.gamification-report-performance-details-info-card{
+  border-radius: 8px;
+  background-color:#F1F8FE;
+  border:1px solid #1173C1;
+  padding:16px;
+  &__title{
+    color:#1173C1;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+  &__description{
+    color:#383B41;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
+}

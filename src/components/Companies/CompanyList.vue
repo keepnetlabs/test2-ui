@@ -49,6 +49,32 @@
       :forCompany="true"
       @changeModalStatus="changeGroupModalStatus"
     />
+    <AlertBox
+      v-if="canRenderAlertbox"
+      class="mb-6"
+      icon-name="mdi-information"
+      icon-color="#000"
+      style="background-color: #fafafa !important; border: 1px solid #e0e0e0;"
+      :slots="{ primaryAction: true, secondaryAction: true }"
+    >
+      <template>
+        <div class="d-flex gap-2">
+          <div>
+            <VIcon color="#000">mdi-information</VIcon>
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 18px; color: #383b41;">
+              {{ limitExceededCompanyCount }} companies have exceeded their user limits. Use the
+              filter to identify them.
+            </div>
+            <div style="color: #757575; font-size: 14px;">
+              Use the Filter Exceeding Limit button below to filter the table and review these
+              companies.
+            </div>
+          </div>
+        </div>
+      </template>
+    </AlertBox>
     <datatable
       v-bind="bindPropsIsSafari"
       id="companies-data-table"
@@ -74,6 +100,9 @@
       :axios-payload.sync="payload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :manage-column-filter-status-from-parent="
+        isTargetUserCountExceedLimit ? { status: isTargetUserCountExceedLimit } : null
+      "
       active-cluster=""
       @clusterChanged="clusterChanged"
       @delete="handleTableItemDelete"
@@ -161,21 +190,23 @@
         >
           {{ scope.row.companyName }}
         </span>
-        <template v-else-if="scope.column.property === 'numberOfUsers'">
-          <v-tooltip bottom v-if="isNumberOfUsersExceed(scope.row)">
-            <template #activator="{ on }">
+        <template v-else-if="scope.column.property === 'targetUserCount'">
+          <span v-if="isNumberOfUsersExceed(scope.row)" class="mr-2">
+            <span>{{ scope.row['targetUserCount'] }}</span>
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <VIcon v-on="on" color="#B6791D" style="margin-top: -2px;" small
+                  >mdi-information</VIcon
+                >
+              </template>
               <span
-                v-on="on"
-                :class="{ 'number-of-users-exceed': isNumberOfUsersExceed(scope.row) }"
-                >{{ ` ${scope.row['numberOfUsers']} ` }}</span
+                >This company exceeded its user limit by
+                {{ exceedNumberOfUsersCount(scope.row) }} users.</span
               >
-            </template>
-            <span>{{
-              `License limit is exceeded. Current target user count is ${scope.row['targetUserCount']}.`
-            }}</span>
-          </v-tooltip>
+            </VTooltip>
+          </span>
           <span v-else>
-            {{ scope.row['numberOfUsers'] }}
+            {{ scope.row['targetUserCount'] }}
           </span>
         </template>
       </template>
@@ -190,6 +221,48 @@
           @editAction="editAction"
           @close="closeExtend"
         />
+      </template>
+      <template #addUsers>
+        <VTooltip bottom>
+          <template #activator="{ on }">
+            <div v-on="on">
+              <VBtn
+                color="#757575"
+                text
+                plain
+                :style="{
+                  order: 1,
+                  marginRight: '4px',
+                  pointerEvents: isExceedingLimitFilterDisabled ? 'none' : 'auto'
+                }"
+                @click="handleExceedingFilterClick"
+              >
+                <span class="button-new__text button-new__text--secondary">{{
+                  getExceedingLimitFilterLabel
+                }}</span>
+              </VBtn>
+            </div>
+          </template>
+          <span>{{ getExceedingLimitFilterTooltip }}</span>
+        </VTooltip>
+        <VTooltip bottom opacity="1">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              v-on="{ ...tooltip }"
+              :disabled="tableOptions.addButton.disabled"
+              id="btn-add--target-users-people"
+              class="button-new"
+              style="margin-right: 16px; order: 1;"
+              rounded
+              color="#2196f3"
+              @click="addButton"
+            >
+              <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+              <span class="button-new__text">NEW</span>
+            </v-btn>
+          </template>
+          <span class="tooltip-span">Add Company</span>
+        </VTooltip>
       </template>
     </datatable>
   </div>
@@ -225,9 +298,11 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
+import AlertBox from '@/components/AlertBox.vue'
 export default {
   name: 'CompanyList',
   components: {
+    AlertBox,
     ConfigureNewCompanyModal,
     AppModal,
     CreateItemModal,
@@ -243,7 +318,9 @@ export default {
   data() {
     return {
       isDeleting: false,
+      isExceedingLimitFilterDisabled: false,
       loading: true,
+      canRenderAlertbox: false,
       tableData: [],
       isMultipleDelete: false,
       createdCompanyResourceIdForConfigureCompany: '',
@@ -274,6 +351,18 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
+            filterableType: 'text',
+            width: 180
+          },
+          {
+            property: PROPERTY_STORE.RESELLERNAME,
+            align: 'left',
+            editable: false,
+            label: 'Reseller Name',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
             filterableType: 'text',
             width: 180
           },
@@ -311,7 +400,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'number',
+            type: 'slot',
             width: 160,
             filterableType: 'number',
             emptyText: 0
@@ -323,7 +412,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'number',
             filterableType: 'text',
             width: 180,
             filterOptionProps: [
@@ -332,6 +421,19 @@ export default {
               { text: 'Not Equal', value: '!=' },
               { text: 'Between', value: 'between' }
             ]
+          },
+          {
+            property: PROPERTY_STORE.TAGS,
+            align: 'left',
+            editable: false,
+            label: 'Tags',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'smallBadge',
+            width: 150,
+            hasTooltip: true,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.LICENSEENDDATE,
@@ -419,7 +521,9 @@ export default {
       },
       payload: getDefaultAxiosPayload(),
       defaultPayload: getDefaultAxiosPayload(),
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      isTargetUserCountExceedLimit: false,
+      limitExceededCompanyCount: 0
     }
   },
   watch: {
@@ -435,7 +539,24 @@ export default {
       }
     }
   },
+  computed: {
+    getExceedingLimitFilterLabel() {
+      if (this.isTargetUserCountExceedLimit) return 'REMOVE FILTER'
+      return 'FILTER EXCEEDING LIMIT'
+    },
+    getExceedingLimitFilterTooltip() {
+      if (this.isExceedingLimitFilterDisabled)
+        return 'No companies exceeding their user limits, so the filter is disabled.'
+      if (this.isTargetUserCountExceedLimit) return 'Remove Filter'
+      return 'Filter exceeding limit'
+    }
+  },
   methods: {
+    handleExceedingFilterClick() {
+      this.isTargetUserCountExceedLimit = !this.isTargetUserCountExceedLimit
+      if (this.isTargetUserCountExceedLimit) this.canRenderAlertbox = false
+      this.getTableData()
+    },
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
         items: selectAll ? [] : items.map((item) => item.companyResourceId),
@@ -488,6 +609,9 @@ export default {
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
     },
+    exceedNumberOfUsersCount({ numberOfUsers, targetUserCount } = {}) {
+      return Number(targetUserCount) - Number(numberOfUsers)
+    },
     handleChangeIsSettingsOpen(val) {
       if (val) {
         this.isShowExtended = false
@@ -510,14 +634,14 @@ export default {
         .then((response) => {
           const res = response
           this.$set(
-            this.tableOptions.columns[1],
+            this.tableOptions.columns[2],
             'filterableItems',
             res
               .filter((item) => item.genericCodeTypeId === 2)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
           this.$set(
-            this.tableOptions.columns[2],
+            this.tableOptions.columns[3],
             'filterableItems',
             res
               .filter((item) => item.genericCodeTypeId === 3)
@@ -528,11 +652,21 @@ export default {
         .finally(() => this.getTableData())
     },
     getTableData(payload) {
-      const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
+      const _payload = {
+        ...this.payload,
+        ...payload,
+        isClustered: this.isClustered,
+        isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
+      }
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          const {
+            totalNumberOfRecords,
+            totalNumberOfPages,
+            pageNumber,
+            limitExceededCompanyCount
+          } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -540,6 +674,18 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
+          if (!this.tableData.length) {
+            this.limitExceededCompanyCount = 0
+            this.canRenderAlertbox = false
+            if (!this.isTargetUserCountExceedLimit) this.isExceedingLimitFilterDisabled = true
+          } else {
+            this.limitExceededCompanyCount = limitExceededCompanyCount || 0
+            this.isExceedingLimitFilterDisabled = this.limitExceededCompanyCount <= 0
+            if (this.limitExceededCompanyCount <= 0) this.canRenderAlertbox = false
+            if (this.limitExceededCompanyCount > 0 && !this.isTargetUserCountExceedLimit) {
+              this.canRenderAlertbox = true
+            }
+          }
         })
         .catch(() => {
           this.tableData = []
@@ -633,7 +779,8 @@ export default {
           isClustered: this.isClustered,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.payload.filter
+          filter: this.payload.filter,
+          isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
         }
         exportCompanies(payload)
           .then((response) => {

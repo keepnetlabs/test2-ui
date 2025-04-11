@@ -25,7 +25,7 @@
         searchType="opened"
         @on-close="toggleShowSandboxActivityDialog"
       />
-      <SandboxDetailDialogAlerts />
+      <SandboxDetailDialogAlerts :is-show-v4-rule="false" />
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
@@ -70,7 +70,6 @@
           <CampaignManagerReportActivityColumn
             v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
             :scope="scope"
-            :tooltip-text="getActivityTooltipText(scope.row)"
           />
         </template>
         <template #datatable-row-actions="{ scope }">
@@ -143,9 +142,7 @@ export default {
     }
   },
   data() {
-    const sandboxText = this.isShowSandboxFromParent
-      ? 'HIDE SANDBOX ACTIVITY'
-      : 'SHOW SANDBOX ACTIVITY'
+    const sandboxText = this.isShowSandboxFromParent ? 'HIDE BOT ACTIVITY' : 'SHOW BOT ACTIVITY'
     return {
       COLUMNS,
       ACTIVITY_TYPES,
@@ -219,7 +216,7 @@ export default {
         this.isShowSandboxFromParent
           ? [
               { text: 'Human Activity', value: '0' },
-              { text: 'Sandbox Activity', value: '1' }
+              { text: 'Bot Activity', value: '1' }
             ]
           : [{ text: 'Human Activity', value: '0' }]
       )
@@ -273,18 +270,11 @@ export default {
     },
     getRowActionText(row) {
       if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Mark as sandbox activity'
+        return 'Mark as bot activity'
       return this.tableOptions.rowActions[0].name
     },
     handleClose() {
       this.$emit('on-close')
-    },
-    getActivityTooltipText(row) {
-      if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Sandbox activity has been changed to human activity'
-      return row.sandboxType === 1 || row.sandoxType === 2
-        ? 'Sandbox Activity Rules: A1'
-        : 'Sandbox Activity Rules: A2'
     }
   }
 }

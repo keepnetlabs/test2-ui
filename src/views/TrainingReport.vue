@@ -18,6 +18,7 @@
           v-if="item.name === tab"
           :is="item.component"
           :id="id"
+          :custom-fields="customFields"
           :isLoading="isLoading"
           :training-name="getTrainingName"
           :form-details="formDetails"
@@ -46,11 +47,13 @@ import { mapActions } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import TrainingReportLearningPathContainer from '../components/AwarenessEducator/TrainingReport/TrainingReportLearningPathContainer/TrainingReportLearningPathContainer.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 export default {
   name: 'TrainingReport',
   components: { KContainer },
   data() {
     return {
+      customFields: [],
       trainingSummary: null,
       isLoading: false,
       tab: labels.Summary,
@@ -137,6 +140,7 @@ export default {
     }
   },
   created() {
+    this.callForCustomFields()
     this.callForFormDetails()
     this.callForSummary()
     this.callForLanguages()
@@ -145,59 +149,57 @@ export default {
     ...mapActions({
       callForLanguages: 'trainingLibraryHelpers/callForLanguages'
     }),
+    callForCustomFields() {
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        this.customFields = response?.data?.data
+      })
+    },
     callForSummary() {
       this.isLoading = true
       AwarenessEducatorService.getTrainingReportSummary(
         this.id,
         this.$route?.query?.trainingType || 0
-      )
-        .then((response) => {
-          this.trainingSummary = response?.data?.data
-          if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
-            this.tabItems[2].label = labels.OpenedPosterEmail
-            this.tabItems[3].label = labels.DownloadedPoster
-            this.tabItems.splice(4, 2)
-          } else if (
-            this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
-          ) {
-            this.tabItems[2].label = labels.OpenedInfographicEmail
-            this.tabItems[3].label = labels.DownloadedInfographic
-            this.tabItems.splice(4, 2)
-          } else if (
-            this.trainingSummary?.trainingTypeName ===
-              TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-            this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-          ) {
-            const newTabItems = []
+      ).then((response) => {
+        this.trainingSummary = response?.data?.data
+        if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+          this.tabItems[2].label = labels.OpenedPosterEmail
+          this.tabItems[3].label = labels.DownloadedPoster
+          this.tabItems.splice(4, 2)
+        } else if (
+          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+        ) {
+          this.tabItems[2].label = labels.OpenedInfographicEmail
+          this.tabItems[3].label = labels.DownloadedInfographic
+          this.tabItems.splice(4, 2)
+        } else if (
+          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        ) {
+          const newTabItems = []
+          newTabItems.push({
+            name: labels.Summary,
+            id: 'training-report-summary-content',
+            label: labels.LearningPathSummary,
+            component: TrainingReportSummary,
+            isVisible: true
+          })
+          this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
+          this.trainingSummary.steps.forEach((step, index) => {
             newTabItems.push({
-              name: labels.Summary,
-              id: 'training-report-summary-content',
-              label: labels.LearningPathSummary,
-              component: TrainingReportSummary,
+              name: `${index + 1}`,
+              id: `training-report-learning-path-${step.trainingName}-${index}`,
+              label: `Step ${index + 1}: ${step.trainingName}`,
+              component: TrainingReportLearningPathContainer,
+              activeStep: index,
               isVisible: true
             })
-            this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
-            this.trainingSummary.steps.forEach((step, index) => {
-              newTabItems.push({
-                name: `${index + 1}`,
-                id: `training-report-learning-path-${step.trainingName}-${index}`,
-                label: `Step ${index + 1}: ${step.trainingName}`,
-                component: TrainingReportLearningPathContainer,
-                activeStep: index,
-                isVisible: true
-              })
-            })
-            this.tabItems = newTabItems
-          }
-          this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
-          this.$store.dispatch(
-            'common/setActiveTrainingType',
-            this.trainingSummary?.trainingTypeName
-          )
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
+          })
+          this.tabItems = newTabItems
+        }
+        this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
+        this.$store.dispatch('common/setActiveTrainingType', this.trainingSummary?.trainingTypeName)
+        this.isLoading = false
+      })
     },
     callForFormDetails() {
       AwarenessEducatorService.getTrainingReportFormDetails().then((response) => {

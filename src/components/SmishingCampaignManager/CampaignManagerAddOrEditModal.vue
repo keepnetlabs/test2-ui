@@ -98,7 +98,7 @@
               ref="refCampaignManagerTargetAudience"
               last-column-name="phoneNumber"
               :default-values="getDefaultTargetAudienceSettings"
-              :is-vishing="true"
+              :is-vishing="false"
               :is-all-groups="!isEdit"
               :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
               :selected-target-groups.sync="selectedTargetGroups"
@@ -121,6 +121,7 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
               @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
@@ -271,7 +272,18 @@ export default {
       return `${text} Smishing Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3, 4].includes(this.step) ? labels.Next : this.getSaveText
+    },
+    getSaveText() {
+      const scheduleTypeId = this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData
+        .scheduleTypeId
+      if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        return labels.Save
+      }
+      if (this.scheduleInfoResponse?.isStarting) {
+        return labels.Launch
+      }
+      return labels.Schedule
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
@@ -310,7 +322,7 @@ export default {
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
         formData.duration = refCampaignManagerCampaignInfo.formData.duration
-        formData.senderPhoneNumber = refCampaignManagerDeliverySettings.formData.phoneNumber
+        formData.senderPhoneNumber = refCampaignManagerDeliverySettings.formData.phoneNumbers
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
@@ -398,8 +410,6 @@ export default {
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId,
-        phoneNumber: smsProvider.text,
-        smsProviderNumberResourceId: smsProvider.value,
         scheduledDate,
         scheduledDateTimeZoneId,
         scheduleTypeId: scheduleTypeId.toString(),
@@ -621,6 +631,7 @@ export default {
               isCheckboxSelected,
               enrollmentReminder,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
@@ -634,6 +645,7 @@ export default {
               phishingScenarioResourceId,
               enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
+              certificateConfigSendType,
               enrollmentSendTypeId
             })
           })
@@ -667,7 +679,7 @@ export default {
             sendRandomlyUsersCalculateTypeId: parseInt(
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
             ),
-            smsProviderNumberResourceId: deliverySettingsFormData.smsProviderNumberResourceId
+            smsProviderNumberResourceIds: deliverySettingsFormData.smsProviderNumberResourceIds
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

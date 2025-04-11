@@ -14,6 +14,34 @@
         :error-message="createErrorMessage"
         @on-close="createErrorMessage = ''"
       />
+      <CampaignManagerLanguageSupportDialog
+        v-if="isShowMissingLanguageSupportDialog"
+        :status="isShowMissingLanguageSupportDialog"
+        :target-group-resource-ids="targetGroupResourceIds"
+        :selected-target-groups="selectedTargetGroups"
+        :user-count-detail-response="userCountDetailResponse"
+        @on-close="toggleShowMissingLanguageSupportDialog"
+        @on-confirm="onConfirmLanguageSupportDialog"
+      />
+      <!--
+    <VNavigationDrawer
+      class="k-navigation-drawer"
+      temporary
+      v-model="isOpenPhishingDrawer"
+      fixed
+      right
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <CommonSimulatorNewScenario
+        v-if="isOpenPhishingDrawer"
+        ref="newScenarioModal"
+        :status="isOpenPhishingDrawer"
+        :scenarioDetailsLookup="scenarioDetailsLookup"
+        @changeNewScenarioModalStatus="isOpenPhishingDrawer = false"
+      />
+    </VNavigationDrawer>
+       <!-->
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -68,7 +96,15 @@
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
               :is-action-button-disabled.sync="isActionButtonDisabled"
+              :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
+              :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
+              :form-details="formDetails"
+              is-phishing
+              show-reply-tracking
+              :hyper-personalization="sendUserPreferredLanguage"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
+              @smartGroupSelected="handleSmartGroupSelected"
+              @hyperPersonalizationChange="handleHyperPersonalizationChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -90,6 +126,9 @@
               :initialCategoryFilter="initialCategoryFilter"
               :initialScenarioDistribution="initialScenarioDistribution"
               :initialTrainingForCategory="initialTrainingForCategory"
+              :is-preferred-language="
+                sendUserPreferredLanguage === 1 || sendUserPreferredLanguage === '1'
+              "
               @distributionChanged="handleDistributionChanged"
               @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
               @trainingForCategoryChanged="handleTrainingForCategoryChanged"
@@ -116,6 +155,12 @@
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
               :isMFAScenarioSelected="isMFAScenarioSelected"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :scenario-resource-ids="getSelectedScenariosResourceIds"
+              :is-phishing="true"
+              :send-user-preferred-language="sendUserPreferredLanguage"
+              :scenario-distribution="scenarioDistribution"
+              :category-filter="categoryFilter"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -132,6 +177,9 @@
               :user-target-audience-data="getUserTargetAudienceData"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               :is-edit="isEdit"
+              :isDuplicate="isDuplicate"
+              :phishing-type-id="1"
+              :is-frequency-disabled="isFrequencyDisabled"
               :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -181,7 +229,12 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent, getErrorMessage } from '@/utils/functions'
+import {
+  getTimeZoneForMoment,
+  isDifferent,
+  getErrorMessage,
+  scrollToComponent
+} from '@/utils/functions'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
   createCampaignManager,
@@ -192,7 +245,7 @@ import {
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import { getTargetGroupCountDetail } from '@/api/targetUsers'
+import { getTargetGroupCountDetailExt } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
@@ -201,6 +254,8 @@ import { SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignMana
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+import CampaignManagerLanguageSupportDialog from '@/components/CampaignManager/CampaignManagerLanguageSupportDialog.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -209,6 +264,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    CampaignManagerLanguageSupportDialog,
     CampaignManagerDeliverySettings,
     CampaignManagerTargetAudience,
     CustomError,
@@ -220,6 +276,7 @@ export default {
     DefaultErrorDialog,
     AppModal
   },
+  mixins: [useScenarioDetailsLookup],
   props: {
     status: {
       type: Boolean
@@ -240,6 +297,12 @@ export default {
   emits: EMITS,
   data() {
     return {
+      isShowMissingLanguageSupportDialog: false,
+      isOpenPhishingDrawer: false,
+      smartGroup: null,
+      initialClickedUserGroupResourceId: null,
+      clickedUserGroupResourceId: null,
+      sendUserPreferredLanguage: '0',
       isSecondNextClicked: false,
       SCENARIO_DISTRIBUTION,
       createErrorMessage: '',
@@ -268,6 +331,9 @@ export default {
     }
   },
   computed: {
+    isFrequencyDisabled() {
+      return this.sendUserPreferredLanguage.toString() === '1'
+    },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
         ? (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
@@ -308,7 +374,18 @@ export default {
       return `${text} Phishing Campaign`
     },
     getSaveButtonText() {
-      return [1, 2, 3, 4].includes(this.step) ? labels.Next : labels.Launch
+      return [1, 2, 3, 4].includes(this.step) ? labels.Next : this.getSaveText
+    },
+    getSaveText() {
+      const scheduleTypeId = this.$refs.refCampaignManagerDeliverySettings.inputScheduleFormData
+        .scheduleTypeId
+      if (scheduleTypeId === SCHEDULE_TYPES.SAVE_FOR_LATER) {
+        return labels.Save
+      }
+      if (this.scheduleInfoResponse?.isStarting) {
+        return labels.Launch
+      }
+      return labels.Schedule
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
@@ -352,6 +429,7 @@ export default {
         formData.sendOnlyActiveUsers = refCampaignManagerTargetAudience.formData.sendOnlyActiveUsers
         formData.sendRandomlyUsers = refCampaignManagerTargetAudience.formData.sendRandomlyUsers
         formData.name = refCampaignManagerCampaignInfo.formData.name
+        formData.emailReplySettings = refCampaignManagerCampaignInfo.formData.emailReplySettings
         formData.sendRandomlyUsersCount =
           refCampaignManagerTargetAudience.formData.sendRandomlyUsersCount
         formData.sendRandomlyUsersCalculateTypeId =
@@ -377,6 +455,8 @@ export default {
         formData.scheduleItems = this?.scheduleInfoResponse?.scenarioListViewModels || []
         formData.trainings = refCampaignManagerPhishingScenarios?.trainingTabModel
         formData.scenarioDistribution = this.scenarioDistribution
+        formData.smartGroup = this.smartGroup
+        formData.sendUserPreferredLanguage = this.sendUserPreferredLanguage
         if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
           formData.trainingForCategory = this.trainingForCategory
           formData.categoryFilter = this.categoryFilter
@@ -388,11 +468,21 @@ export default {
     getDefaultValuesOfCampaignInfo() {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
-      const { name, duration, excludeFromReports } = this.selectedRowFormData
+      const { name, duration, excludeFromReports, emailReplySettings } = this.selectedRowFormData
+      const [subdomain, domain] = emailReplySettings
+        ? emailReplySettings?.customReplyToAddress?.split('@') || ['', '']
+        : ['', '']
       return {
         name,
         duration,
-        excludeFromReports
+        excludeFromReports,
+        emailReplySettings: {
+          isEnabled: emailReplySettings?.isEnabled || false,
+          subDomain: subdomain || '',
+          domain: domain || '',
+          isSaveContentEnabled: emailReplySettings?.isSaveContentEnabled || false,
+          isOutOfOfficeEnabled: emailReplySettings?.isOutOfOfficeEnabled || false
+        }
       }
     },
     getDefaultValuesOfPhishingScenarios() {
@@ -476,6 +566,9 @@ export default {
         return refCampaignManagerTargetAudience?.formData || defaultObj
       }
       return defaultObj
+    },
+    getSelectedScenariosResourceIds() {
+      return this.selectedPhishingScenarios.map((pScenario) => pScenario.resourceId)
     }
   },
   watch: {
@@ -503,8 +596,25 @@ export default {
   },
   mounted() {
     this.initialFormValues = this.getFormValues()
+    this.callForScenarioDetails()
+    setTimeout(() => {
+      this.isOpenPhishingDrawer = true
+    }, 2000)
   },
   methods: {
+    toggleShowMissingLanguageSupportDialog() {
+      this.isShowMissingLanguageSupportDialog = !this.isShowMissingLanguageSupportDialog
+    },
+    onConfirmLanguageSupportDialog() {
+      this.step = 2
+      this.isShowMissingLanguageSupportDialog = !this.isShowMissingLanguageSupportDialog
+    },
+    handleSmartGroupSelected(group) {
+      this.smartGroup = group
+    },
+    handleHyperPersonalizationChanged(sendUserPreferredLanguage) {
+      this.sendUserPreferredLanguage = sendUserPreferredLanguage
+    },
     handleTotalPhishingScenariosCountChange(val) {
       this.totalPhishingScenariosCount = val
     },
@@ -525,7 +635,7 @@ export default {
         this.languageOptions =
           response?.map((language) => ({
             name: language.name,
-            text: language.description,
+            text: language.name,
             value: language.resourceId
           })) || []
       })
@@ -546,6 +656,7 @@ export default {
         this.initialScenarioDistribution =
           data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
         this.selectedRowFormData = data
+        this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
           resourceId: tGroup.value
@@ -564,6 +675,11 @@ export default {
           this.$refs.refCampaignManagerTargetAudience.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
             this.selectedTargetGroups
           )
+        }
+        if (response?.data?.data?.clickedUserGroupResourceId) {
+          this.clickedUserGroupResourceId = response?.data?.data?.clickedUserGroupResourceId || null
+          this.initialClickedUserGroupResourceId =
+            response?.data?.data?.clickedUserGroupResourceId || null
         }
       })
     },
@@ -606,11 +722,22 @@ export default {
           this.isSecondNextClicked = true
           const { refCampaignManagerPhishingScenarios } = this.$refs
           if (!this.getIsPhishingScenariosValid) return
-          //if languages empty set all languages
+          const el = this.$refs.refCampaignManagerPhishingScenarios.$el.querySelector(
+            '.error--text'
+          )
+          if (el) {
+            scrollToComponent(el)
+            return
+          }
           refCampaignManagerPhishingScenarios?.adjustTrainingModel(
             refCampaignManagerPhishingScenarios.selectedTemplateResourceId
           )
           this.changeStep()
+          if (
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup
+              ?.$refs?.refGroupUsersTable
+          )
+            this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupUsersTable?.callForData()
           return
         case 3:
           const { refCampaignManagerTargetAudience } = this.$refs
@@ -622,9 +749,30 @@ export default {
           if (totalTargetUserCount) {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = false
             refCampaignManagerTargetAudience.isTargetGroupsValid = true
-            this.userCountDetailResponse = await getTargetGroupCountDetail(
-              this.targetGroupResourceIds
-            )
+            const payload = {
+              targetGroupResourceIds: this.targetGroupResourceIds,
+              scenarioResourceIds: this.selectedPhishingScenarios.map(
+                (pScenario) => pScenario.resourceId
+              ),
+              sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+            }
+            if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
+              payload.categoryFilter = {
+                Condition: this.categoryFilter.filter.Condition,
+                FilterGroups: this.categoryFilter.filter.FilterGroups
+              }
+            }
+            this.userCountDetailResponse = await getTargetGroupCountDetailExt(payload)
+            if (parseInt(this.sendUserPreferredLanguage) === 1) {
+              const hasRandomLanguage = this.userCountDetailResponse?.data?.data?.some((data) => {
+                const randomLanguage = data?.hasRandomLanguage
+                return !!randomLanguage?.find((r) => r.status === 'Yes')?.count
+              })
+              if (hasRandomLanguage) {
+                this.setActionButtonDisability(false)
+                return this.toggleShowMissingLanguageSupportDialog()
+              }
+            }
             if (
               this.userCountDetailResponse?.data?.data &&
               this.userCountDetailResponse?.data?.data?.length
@@ -745,7 +893,9 @@ export default {
               isCheckboxSelected,
               enrollmentReminder,
               awardCertificate,
-              enrollmentSendTypeId
+              certificateConfigSendType,
+              enrollmentSendTypeId,
+              trainingRedirectPage
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
             const { sendReminderEvery } = enrollmentReminder
@@ -757,14 +907,28 @@ export default {
               phishingScenarioResourceId,
               enrollmentReminder: enrollmentReminderEveryValue ? enrollmentReminder : null,
               awardCertificate,
-              enrollmentSendTypeId
+              certificateConfigSendType,
+              enrollmentSendTypeId,
+              trainingRedirectPage
             })
           })
+          const emailReplySettings = {
+            ...campaignManagerFormData.emailReplySettings,
+            customReplyToAddress:
+              campaignManagerFormData.emailReplySettings.subDomain +
+              '@' +
+              campaignManagerFormData.emailReplySettings.domain,
+            isOutOfOfficeEnabled: false
+          }
+          delete emailReplySettings.subDomain
+          delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
+            sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
+            emailReplySettings,
             duration: campaignManagerFormData.duration,
             scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
@@ -796,7 +960,8 @@ export default {
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
-            categoryDistributionType: this.scenarioDistribution
+            categoryDistributionType: this.scenarioDistribution,
+            clickedUserGroupResourceId: this.clickedUserGroupResourceId
           }
           if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
             payload = {

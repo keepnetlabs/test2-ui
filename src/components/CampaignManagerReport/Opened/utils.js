@@ -51,7 +51,7 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Human Activity', value: '0' },
-      { text: 'Sandbox Activity', value: '1' }
+      { text: 'Bot Activity', value: '1' }
     ]
   },
   PHISHING_SCENARIO_NAME: {
@@ -65,6 +65,23 @@ export const COLUMNS = {
     width: 180,
     isEditable: false,
     filterableType: 'text'
+  },
+  REPLY_TYPE: {
+    property: PROPERTY_STORE.REPLY_TYPE,
+    align: 'left',
+    label: labels.ReplyType,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Manual Reply', value: '1' },
+      { text: 'Out of Office Reply', value: '2' }
+    ],
+    filterableCustomFieldName: 'replyTypeId'
   },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
@@ -136,6 +153,20 @@ export const COLUMNS = {
     width: 180,
     isEditable: false,
     filterableType: 'text'
+  },
+  PREFERREDLANGUAGE: {
+    property: 'preferredLanguage',
+    align: 'left',
+    label: labels.PreferredLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [],
+    filterableCustomFieldName: 'preferredLanguageId'
   },
   SCENARIO: {
     property: 'phishingScenarioName',
@@ -410,6 +441,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  REPLY_SENT: {
+    property: 'replySent',
+    align: 'left',
+    label: labels.ReplySent,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   LAST_SUBMISSION_CODE: {
     property: 'mfaLastSubmittedTime',
     align: 'left',
@@ -571,9 +614,10 @@ export function getStatusBadgeProps(status) {
 export const UNUSUAL_TYPES = {
   USER_AGENT: 0,
   IP: 1,
-  HONEYPOT: 2
+  HONEYPOT: 2,
+  USER_AGENT_MATCHED: 3
 }
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
-  SYSTEM: 'Sandbox Activity'
+  BOT: 'Bot Activity'
 }

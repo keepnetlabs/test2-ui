@@ -1,5 +1,10 @@
 <template>
   <div id="scenarios">
+    <CampaignManagerScenarioStatisticsModal
+      v-if="isShowScenarioStatistics"
+      :navigation-drawer-value="isShowScenarioStatistics"
+      @navigation-drawer-change="handleStatisticsModalStatusChange"
+    />
     <CommonSimulatorFastLaunch
       v-if="isShowFastLaunch"
       ref="fastLaunch"
@@ -76,6 +81,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
+      @on-show-scenario-statistics="isShowScenarioStatistics = true"
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -122,6 +128,33 @@
           />
         </RowActionsMenu>
       </template>
+      <template #addUsers>
+        <VTooltip bottom opacity="1">
+          <template #activator="{ on: tooltip }">
+            <VBtn
+              v-on="{ ...tooltip }"
+              id="btn-add--campaign-manager"
+              class="button-new"
+              style="margin-right: 10px;"
+              rounded
+              color="#2196f3"
+              @click="changeNewScenarioModalStatus(true)"
+            >
+              <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+              <span class="button-new__text">NEW</span>
+            </VBtn>
+          </template>
+          <span class="tooltip-span">{{ 'Add a Scenario' }}</span>
+        </VTooltip>
+        <VTooltip bottom>
+          <template #activator="{ on }">
+            <v-btn v-on="on" icon @click="toggleShowScenarioStatistics">
+              <VIcon color="#757575">mdi-chart-bar</VIcon>
+            </v-btn>
+          </template>
+          <span>Show Scenario Statistics</span>
+        </VTooltip>
+      </template>
     </data-table>
   </div>
 </template>
@@ -157,10 +190,11 @@ import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimu
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
-
+import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    CampaignManagerScenarioStatisticsModal,
     CommonSimulatorFastLaunch,
     CommonSimulatorNewScenario,
     CommonSimulatorPreviewDialog,
@@ -176,6 +210,7 @@ export default {
   data() {
     return {
       languageFilterOptions: [],
+      isShowScenarioStatistics: false,
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       selectedRow: null,
@@ -299,7 +334,7 @@ export default {
         this.$set(
           this.tableOptions.columns[4],
           'filterableItems',
-          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
+          this?.scenarioDetailsLookup?.difficultyTypes?.map((item) => {
             return { text: item.text, value: item.text }
           })
         )
@@ -331,6 +366,16 @@ export default {
           })
           .finally(() => (this.loading = false))
       }
+    },
+    handleStatisticsModalStatusChange(status) {
+      if (status) {
+        this.isShowScenarioStatistics = status
+        return
+      }
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      setTimeout(() => {
+        this.isShowScenarioStatistics = status
+      }, 250)
     },
     toggleShowPreviewDialog() {
       if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
@@ -431,6 +476,9 @@ export default {
       this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true
+    },
+    toggleShowScenarioStatistics() {
+      this.isShowScenarioStatistics = !this.isShowScenarioStatistics
     }
   }
 }

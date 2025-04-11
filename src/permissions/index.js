@@ -2100,6 +2100,13 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  GOOGLE_USER_PROVISION_PERMISSIONS: {
+    GET: {
+      url: `google-user-provisioning`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
   SCIM_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SCIM.ROOT_URL}`,
@@ -2138,6 +2145,13 @@ export default {
     },
     FIELDS: {
       url: `${ENUMS.SCIM.ROOT_URL}/fields`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  AI_ALLY_SETTINGS_PERMISSIONS: {
+    GET: {
+      url: `companies/ai`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     }
@@ -2729,6 +2743,18 @@ export default {
     EXCHANGE: {
       url:
         'callback-simulator/settings/exchange-number/{oldProviderNumberId}/{newProviderNumberId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  GAMIFICATION_REPORT_PERMISSIONS: {
+    SEARCH: {
+      url: `leaderboard/get-all`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TOP_PERFORMERS: {
+      url: `leaderboard/get-top-performers`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

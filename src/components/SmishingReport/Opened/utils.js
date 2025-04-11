@@ -38,6 +38,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  SENDER_PHONE_NUMBER: {
+    property: 'senderPhoneNumber',
+    align: 'right',
+    label: 'Sender Phone Number',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 250,
+    isEditable: false,
+    filterableType: 'text'
+  },
   ACTIVITY_TYPE: {
     property: PROPERTY_STORE.ACTIVITYTYPE,
     align: 'left',
@@ -51,7 +63,7 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Human Activity', value: '0' },
-      { text: 'Sandbox Activity', value: '1' }
+      { text: 'Bot Activity', value: '1' }
     ]
   },
   EMAIL: {
@@ -530,5 +542,5 @@ export const UNUSUAL_TYPES = {
 
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
-  SYSTEM: 'Sandbox Activity'
+  SYSTEM: 'Bot Activity'
 }

@@ -6,6 +6,7 @@
           :title="getTitle"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :is-dashboard-widget="isDashboardWidget"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
@@ -77,6 +78,10 @@ export default {
     dateFormat: {
       type: String,
       default: ''
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -106,7 +111,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                ctx.fillText(percentage, x + ctx.measureText(text).width - 8, y + 0.5)
+                ctx.fillText(percentage, x + ctx.measureText(text).width - 7, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
             })
@@ -146,6 +151,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -169,7 +175,9 @@ export default {
       )
       this.industryAverageObj = industryAverageObj
       const totalUserActions = data[0]?.widgetDatas.reduce((acc, item) => {
-        return acc + item.dataObject.totalReportedCount + item.dataObject.totalMetrics
+        const temporalAcc = item.dataObject.totalReportedCount + item.dataObject.totalMetrics
+        if (temporalAcc > acc) acc = temporalAcc
+        return acc
       }, 0)
       let maxTotalUserActions = totalUserActions
       const remainder = Math.floor(maxTotalUserActions / 50)
@@ -186,15 +194,18 @@ export default {
         obj.values.map((val) => {
           if (val.name === 'RiskScore') {
             phishingRiskScoreData.push({ ...generalObj, y: val.value })
+            if (val.value > maxY) {
+              maxY = val.value
+            }
           } else if (val.name === 'TotalMetrics') {
             phishingSimulationMetricsData.push({ ...generalObj, y: val.value })
           } else if (val.name === 'TotalReportedCount') {
             phishReportersData.push({ ...generalObj, y: val.value })
           } else if (val.name === 'IndustryAverage') {
             industryAverageData.push({ ...generalObj, y: val.value })
-          }
-          if (val.value > maxY) {
-            maxY = val.value
+            if (val.value > maxY) {
+              maxY = val.value
+            }
           }
         })
         return {
@@ -206,6 +217,16 @@ export default {
           }
         }
       })
+      const maxPhishingRiskScore = Math.max(
+        ...phishingRiskScoreData.map((obj) => obj.y),
+        ...industryAverageData.map((obj) => obj.y)
+      )
+      let maxYRemainder = Math.floor(maxY / 50)
+      if (!maxYRemainder) {
+        maxY = 100
+      } else {
+        maxY = maxYRemainder * 50 + 50
+      }
       this.chartData = {
         labels: xLabels,
         datasets: [
@@ -244,8 +265,8 @@ export default {
             type: 'line',
             yAxisID: 'A',
             data: phishingRiskScoreData,
-            backgroundColor: '#B6791D',
-            borderColor: '#B6791D',
+            backgroundColor: '#383B41',
+            borderColor: '#383B41',
             fill: false,
             pointRadius: 3,
             pointHoverRadius: 3,
@@ -253,12 +274,12 @@ export default {
             order: 2
           },
           {
-            label: 'Phishing Simulation Metrics',
+            label: 'Total Risky Actions',
             type: 'bar',
             yAxisID: 'B',
             data: phishingSimulationMetricsData,
-            backgroundColor: '#B83A3A',
-            borderColor: '#B83A3A',
+            backgroundColor: '#F56C6C',
+            borderColor: '#F56C6C',
             pointRadius: 3,
             borderWidth: 2,
             lineTension: 0,
@@ -283,7 +304,7 @@ export default {
                 display: true,
                 labelString: 'Phishing Risk Score',
                 fontFamily: 'Open-sans,sans-serif',
-                fontColor: '#B6791D'
+                fontColor: '#383B41'
               },
               offset: false,
               gridLines: {
@@ -300,7 +321,7 @@ export default {
                 labelOffset: 0,
                 beginAtZero: true,
                 padding: 12,
-                fontColor: '#B6791D',
+                fontColor: '#383B41',
                 fontFamily: 'Open-sans,sans-serif',
                 lineHeight: 1.58,
                 callback: function (value) {
@@ -313,7 +334,7 @@ export default {
               display: true,
               scaleLabel: {
                 display: true,
-                labelString: 'Total User Actions',
+                labelString: 'Total Actions',
                 fontColor: '#383B41'
               },
               gridLines: {
@@ -348,7 +369,14 @@ export default {
                 fontColor: 'rgba(56, 59, 65, 0.72)',
                 fontStyle: '600',
                 fontSize: 9,
-                fontFamily: 'Open-sans,sans-serif'
+                fontFamily: 'Open-sans,sans-serif',
+                callback(value) {
+                  let text = value
+                  if (xLabels.length > 9) {
+                    text = text.length >= 30 ? text.substring(0, 27) + '...' : text
+                  }
+                  return text
+                }
               }
             }
           ]
@@ -418,6 +446,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -511,6 +540,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
@@ -519,10 +549,34 @@ export default {
         plugins: {
           datalabels: {
             display: true,
-            align: 'end',
-            anchor: 'end',
-            offset: -2,
-            color: '#B6791D',
+            offset: 4,
+            align({ dataIndex, dataset }) {
+              const { data } = dataset
+              if (dataIndex === dataset.data.length - 1) return 'top'
+              if (dataIndex > 0) {
+                if (data[dataIndex].y < data[dataIndex - 1].y) {
+                  if (data[dataIndex - 1].y / data[dataIndex].y >= 2.01) {
+                    if (
+                      data[dataIndex + 1] &&
+                      data[dataIndex + 1].y > data[dataIndex].y &&
+                      data[dataIndex].y > 10
+                    ) {
+                      return 'bottom'
+                    }
+                  } else if (data[dataIndex + 1] && data[dataIndex + 1].y <= data[dataIndex].y) {
+                    return 'top'
+                  }
+                  if (maxPhishingRiskScore / data[dataIndex].y > 100) {
+                    return 'top'
+                  }
+                  if (data[dataIndex].y <= 10) return 'top'
+                  return 'bottom'
+                }
+              }
+              return 'end'
+            },
+            anchor: 'bottom',
+            color: '#383B41',
             formatter: function (value, context) {
               if (context.dataset.label.includes('Phishing Risk Score') && value.y > 0) {
                 return value.y + '%'
@@ -530,24 +584,15 @@ export default {
               return ''
             },
             font: {
-              size: 12,
+              size: 9,
               color: '#383B41',
-              weight: 'normal'
+              weight: '600'
             },
-            backgroundColor: function (context) {
-              /*
-              if (
-                context.dataset.label === 'Company Phishing Risk Score' &&
-                context.dataIndex === 1
-              ) {
-                return 'rgba(231,76,60,0.8)'
-              }
-              return 'rgba(0,0,0,0)'
-
-               */
+            backgroundColor: function () {
+              return 'transparent'
             },
             borderRadius: 4,
-            padding: 6
+            padding: 0
           }
         }
       }

@@ -35,6 +35,7 @@ import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLib
 const cancellableSummaryRequest = cancellableAxiosRequest(
   AwarenessEducatorService.getTrainingTypeCount
 )
+
 const cancellableDataRequest = cancellableAxiosRequest(AwarenessEducatorService.searchTraining)
 const trainingLibrary = {
   namespaced: true,
@@ -60,11 +61,11 @@ const trainingLibrary = {
     ],
     filterOptionsFilters: [
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
-      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
-      Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
       Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
@@ -360,11 +361,11 @@ const trainingLibrary = {
       state.serverSideProps.pageSize = oldPageSize
       state.filterOptionsFilters = [
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS),
-        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY),
+        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY),
-        Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.VENDOR),
         Object.assign({}, TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.MATERIAL_NAME),
@@ -379,16 +380,19 @@ const trainingLibrary = {
           f.activeValue = []
           f.operator = 'Include'
           f.activeOperator = 'Include'
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         } else if (f.filterType === 'select') {
           f.value = ''
           f.activeValue = ''
           f.operator = 'Contains'
           f.activeOperator = 'Contains'
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         } else {
           f.value = ''
           f.activeValue = ''
           f.operator = '='
           f.activeOperator = '='
+          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
         }
         f.isFilterActive = false
       })

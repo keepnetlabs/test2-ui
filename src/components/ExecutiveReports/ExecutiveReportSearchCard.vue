@@ -13,18 +13,34 @@
     <div v-if="showBodyDetail" class="executive-report-search-card__content mt-2">
       <div
         v-for="(chart, index) in card.widgets"
-        :key="chart.name"
-        class="executive-report-search-card__content-chart cursor-pointer"
+        :key="index"
+        class="executive-report-search-card__content-chart cursor-pointer position-relative"
         @click="handleAddChart(chart, card.widgets, index)"
       >
         <div>
           <img
-            class="executive-report-search-card__content-chart-image"
+            :class="[
+              'executive-report-search-card__content-chart-image',
+              chart.isAdded ? 'opacity-40' : ''
+            ]"
             :src="chart.imageUrl"
             :alt="chart.name"
           />
+          <div
+            v-if="chart.isAdded"
+            class="executive-report-search-card__content-chart-image--active"
+          >
+            ALREADY ADDED
+          </div>
         </div>
-        <div class="executive-report-search-card__content-chart-title">{{ chart.name }}</div>
+        <div
+          :class="[
+            'executive-report-search-card__content-chart-title',
+            chart.isAdded ? 'opacity-40' : ''
+          ]"
+        >
+          {{ chart.name }}
+        </div>
       </div>
     </div>
   </div>

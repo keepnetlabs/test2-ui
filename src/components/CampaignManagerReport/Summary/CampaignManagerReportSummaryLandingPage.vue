@@ -20,7 +20,13 @@
             <div class="campaign-manager-last-step__landing-page-template-body-header">
               <div class="campaign-manager-last-step__landing-page-template-body-header-left">
                 <div class="campaign-manager-last-step__email-template-body-header-left">
-                  {{ name || formData.name }}
+                  <span>{{ name || formData.name }}</span>
+                  <VTooltip v-if="isAssistedByAI || formData.isAssistedByAI" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" class="ml-1" color="#2196F3" small>mdi-creation</VIcon>
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip>
                 </div>
               </div>
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
@@ -57,7 +63,13 @@
           <div class="campaign-manager-last-step__landing-page-template-body-header">
             <div class="campaign-manager-last-step__landing-page-template-body-header-left">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ name || formData.name }}
+                <span>{{ name || formData.name }}</span>
+                <VTooltip v-if="isAssistedByAI || formData.isAssistedByAI" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" color="#2196F3" class="ml-1" small>mdi-creation</VIcon>
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
               </div>
             </div>
             <div class="campaign-manager-last-step__landing-page-template-body-header-right">
@@ -158,7 +170,8 @@ export default {
       name: '',
       urlTemplate: '',
       method: '',
-      difficulty: ''
+      difficulty: '',
+      isAssistedByAI: false
     }
   },
   computed: {
@@ -207,6 +220,7 @@ export default {
           this.urlTemplate = data?.urlTemplate || ''
           this.method = this.methods[data.methodTypeId - 1].text
           this.difficulty = this.difficulties[data.difficultyTypeId - 1].text
+          this.isAssistedByAI = data?.isAssistedByAI || data?.isAssistedbyAI
         })
         .finally(this.setLoading)
     },

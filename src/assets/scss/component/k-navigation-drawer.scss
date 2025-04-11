@@ -1,0 +1,22 @@
+.k-navigation-drawer {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  background: #fff;
+  box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1);
+  animation: drawerRight 0.25s ease-in-out;
+  transition: right 0.25s ease-in-out !important;
+  & + .k-stepper + .k-overlay__footer {
+    z-index: 3;
+  }
+}
+@keyframes drawerRight {
+  from {
+    right: 0;
+    left:100%
+  }
+  to {
+    left: 72px;
+    right:auto;
+  }
+}
+

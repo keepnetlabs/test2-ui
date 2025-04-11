@@ -104,7 +104,10 @@ export default {
   },
   computed: {
     isRenderStopAutoEnrollButton() {
-      return [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status)
+      return (
+        [ENROLLMENT_STATUSES.AUTO_ENROLL].includes(this.scope.row.status) ||
+        this.scope.row.isAutoEnrollmentActive
+      )
     },
     isRenderStopReminderButton() {
       if (
@@ -114,14 +117,7 @@ export default {
         ].includes(this.scope.row.type)
       )
         return false
-      if (
-        [ENROLLMENT_STATUSES.FINISHED, ENROLLMENT_STATUSES.STOPPED].includes(this.scope.row.status)
-      )
-        return false
       return this.scope?.row?.isReminderActive
-    },
-    isScheduled() {
-      return this.scope.row.status === ENROLLMENT_STATUSES.SCHEDULED
     },
     isScormProxy() {
       return this.scope.row.status === ENROLLMENT_STATUSES.SCORM_PROXY

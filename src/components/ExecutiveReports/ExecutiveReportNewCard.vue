@@ -51,6 +51,7 @@
             :valueFormat="parsedFormat"
             :picker-options="pickerOptions"
             :prefix-icon="'el-icon-date'"
+            @input="handleDateRangeInputChange"
           />
           <VBtn
             class="training-library-card__footer-btn"
@@ -268,6 +269,7 @@
                 :date-format="dateFormat"
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
+                @on-set-default-widget-data="setDefaultWidgetData"
               />
             </smart-widget>
           </k-smart-grid>
@@ -319,6 +321,11 @@ import ExecutiveReportsSimulationCoverage from '@/components/ExecutiveReports/Ex
 import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
 import ExecutiveReportPhishingAndQuickResponseTime from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingAndQuickResponseTime.vue'
 import ExecutiveReportsPhishingDwellTimeDistribution from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsPhishingDwellTimeDistribution.vue'
+import ExecutiveReportsTotalReportedSuspicious from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspicious.vue'
+import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsUsersTimeToFailure.vue'
+import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
+import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
+import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -370,6 +377,7 @@ export default {
       isReportSaved: false,
       savedReportResourceId: '',
       dateFormat: null,
+      dateRange: '',
       activatePreview: this.isPreview,
       forcePreview: false,
       editMode: !this.isPreview,
@@ -404,6 +412,7 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 0
             }
@@ -414,6 +423,8 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              start.setMonth(start.getMonth() + 1)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 1
             }
@@ -424,6 +435,8 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
+              start.setMonth(start.getMonth() + 1)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 2
             }
@@ -434,6 +447,8 @@ export default {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              start.setMonth(start.getMonth() + 1)
+              start.setDate(1)
               picker.$emit('pick', [start, end])
               this.formData.datePeriod = 3
             }
@@ -559,6 +574,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        RepeatOffendersUsersRateWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Simulation Repeat Offenders Rate',
+          key: 'RepeatOffendersUsersRateWidget',
+          isAllowed: true,
+          parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         HumanRiskScoreforHighestRiskUsersWidget: {
           x: 0,
           y: 0,
@@ -615,6 +651,48 @@ export default {
           i: createRandomCryptStringNumber(),
           title: 'Companies with Highest Risk Scores',
           key: 'HumanRiskScoreforHighestRiskCompaniesWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        ResponseTimesToPhishingActionsWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: "Users' Time to Failure",
+          key: 'ResponseTimesToPhishingActionsWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'stackedBar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TotalReportedSuspiciousEmailsAndPercentageWidget: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Total Reported Suspicious Emails and Percentage',
+          key: 'TotalReportedSuspiciousEmailsAndPercentageWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
           chartType: 'stackedBar',
@@ -762,7 +840,7 @@ export default {
     },
     getSaveButtonClasses() {
       let classes = ['training-library-new-btn']
-      if (!this.formData.name || !this.layout.length)
+      if (!this.formData.name || !this.layout.length || this.isActionButtonDisabled)
         classes.push('new-executive-report-button-disabled')
       return classes
     },
@@ -783,7 +861,8 @@ export default {
       return !this.isShowPreview
     },
     getDateRangeText() {
-      if (this.formData.executiveReportDateRange.length < 2) return
+      if (this.dateRange) return this.dateRange
+      if (this?.formData?.executiveReportDateRange?.length < 2) return
       const firstDateLeft = this.formData.executiveReportDateRange[0].split(' ')[0]
       const lastDateLeft = this.formData.executiveReportDateRange[1].split(' ')[0]
       return `${firstDateLeft} - ${lastDateLeft}`
@@ -866,7 +945,10 @@ export default {
             widget.widgetType === 'ExecutiveReportPhishingAndQuickResponseTime' ||
             widget.widgetType === 'TrainingCompletionWidget' ||
             widget.widgetType === 'SimulationCoverageWidget' ||
-            widget.widgetType === 'PhishingDwellTimeDistributionWidget'
+            widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
+            widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
+            widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget' ||
+            widget.widgetType === 'RepeatOffendersUsersRateWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -874,6 +956,8 @@ export default {
           }
         })
         this.layout = JSON.parse(data.widgetLayout)
+        this.$emit('on-layout-get', this.layout)
+        this.dateRange = data.dateRange
         if (this.isScheduledReport) {
           setTimeout(() => {
             this.handleDownloadClick()
@@ -1182,6 +1266,7 @@ export default {
       return newBreakpoint === 'xxs' ? 2 : 12
     },
     addWidget(widget) {
+      if (this.layout.find((item) => item.resourceId === widget.resourceId)) return false
       let newItem
       const widgetObj = {
         ...this.allWidgets[widget.widgetType],
@@ -1202,9 +1287,10 @@ export default {
         this.allWidgets[widget.widgetType].w = this.allWidgets[widget.widgetType].defaultW
       }
       newItem = widgetObj
-      newItem['y'] = this.newItemY
+      newItem['y'] = 0
       this.newItemY += newItem.h
-      this.layout.push(widgetObj)
+      this.layout.unshift(widgetObj)
+      return true
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
@@ -1240,10 +1326,20 @@ export default {
           if (item?.chartType?.toLowerCase()?.includes('bar'))
             return ExecutiveReportsSimulationCoverageBar
           return ExecutiveReportsSimulationCoverage
+        case 'TotalReportedSuspiciousEmailsAndPercentageWidget':
+          if (item?.chartType?.toLowerCase()?.includes('bar'))
+            return ExecutiveReportsTotalReportedSuspicious
+          else if (item?.chartType?.toLowerCase()?.includes('pie'))
+            return ExecutiveReportsTotalReportedSuspiciousPie
+          return ExecutiveReportsTotalReportedSuspiciousDoughnut
         case 'PhishingDwellTimeAndQuickestResponseTimeWidget':
           return ExecutiveReportPhishingAndQuickResponseTime
         case 'PhishingDwellTimeDistributionWidget':
           return ExecutiveReportsPhishingDwellTimeDistribution
+        case 'ResponseTimesToPhishingActionsWidget':
+          return ExecutiveReportsUsersTimeToFailure
+        case 'RepeatOffendersUsersRateWidget':
+          return ExecutiveReportAvgPhishingSimClickerRate
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
@@ -1267,6 +1363,19 @@ export default {
       const lastYear = new Date()
       lastYear.setFullYear(lastYear.getFullYear() - 1)
       return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
+    },
+    setDefaultWidgetData(key, data) {
+      this.defaultWidgetData[key] = data
+    },
+    handleDateRangeInputChange(dateRange) {
+      this.dateRange = dateRange
+      if (!dateRange) {
+        this.formData.executiveReportDateRange = [
+          this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          this.$moment(Date.now()).format(getTimeZoneForMoment())
+        ]
+        this.formData.datePeriod = 1
+      }
     }
   }
 }

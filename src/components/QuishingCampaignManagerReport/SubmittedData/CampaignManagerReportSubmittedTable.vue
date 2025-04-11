@@ -29,7 +29,33 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+    @on-selection-text-change="handleSelectionChange"
+  >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        v-if="!getQuishingTypePrintOut()"
+        :icon="tableOptions.rowActions[1].icon"
+        :id="tableOptions.rowActions[1].id"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -46,9 +72,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+
 export default {
   name: 'CampaignManagerReportSubmittedTable',
-  components: { DataTable },
+  components: { DataTable, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -65,7 +93,14 @@ export default {
       default: () => []
     }
   },
-  inject: ['getQuishingTypePrintOut'],
+  inject: {
+    getQuishingTypePrintOut: {
+      type: Function
+    },
+    campaignDurationExpired: {
+      type: Function
+    }
+  },
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
@@ -80,15 +115,18 @@ export default {
     ]
     if (isQuishingTypePrintout) {
       columns.push(COLUMNS.TIMES_SUBMISSION_PRINTOUT)
+      rowActions.push({
+        name: labels.Details,
+        id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
+        icon: '$custom-details',
+        action: 'on-detail',
+        disabled: !this.$store.getters[
+          'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
+        ]
+      })
     } else {
       columns.push(COLUMNS.TIMES_SUBMISSION)
       rowActions.push(
-        {
-          name: labels.Resend,
-          id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
-          icon: '$custom-resend',
-          action: 'on-resend'
-        },
         {
           name: labels.Details,
           id: 'btn-details--row-actions-campaign-manager-report-submitted-data',
@@ -97,6 +135,13 @@ export default {
           disabled: !this.$store.getters[
             'permissions/getQuishingCampaignReportsSubmittedDataDetailsPermissions'
           ]
+        },
+        {
+          name: labels.Resend,
+          id: 'btn-resend--row-actions-campaign-manager-report-submitted-data',
+          icon: '$custom-resend',
+          action: 'on-resend',
+          disabled: false
         }
       )
     }
@@ -153,6 +198,9 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       QuishingService.searchCampaignJobUserEmailSubmitted(

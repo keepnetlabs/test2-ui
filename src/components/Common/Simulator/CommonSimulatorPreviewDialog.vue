@@ -28,7 +28,17 @@
               </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <span class="template-preview__text--body"
+                  >{{ emailTemplateParams.name }}
+                  <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                    <template #activator="{ on }">
+                      <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
+                        >mdi-creation</VIcon
+                      >
+                    </template>
+                    <span>This template was generated with AI</span>
+                  </VTooltip>
+                </span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <span class="template-preview__text--title">From: </span>
@@ -38,6 +48,12 @@
                 <span class="template-preview__text--title">From Email Address: </span>
                 <span class="template-preview__text--body">{{
                   emailTemplateParams.fromAddress
+                }}</span>
+              </div>
+              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <span class="template-preview__text--title">CC: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.ccAddresses.join(', ')
                 }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
@@ -223,18 +239,21 @@ export default {
             template,
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             difficultyResourceId,
             phishingFileName,
             subject,
             type,
-            resourceId
+            resourceId,
+            isAssistedByAI = false
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
             resourceId,
             fromName,
             fromAddress,
+            ccAddresses,
             name,
             subject,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
@@ -243,7 +262,8 @@ export default {
                   name: phishingFileName
                 }
               : null,
-            type
+            type,
+            isAssistedByAI
           }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -255,11 +275,14 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            methodTypeId
+            methodTypeId,
+            isAssistedByAI: isLandingPageAi = false,
+            isAssistedbyAI: isLandingPageAi2 = false
           } = landingPageTemplate || []
 
           this.landingPageParams = {
             name: landingPageName,
+            isAssistedByAI: isLandingPageAi || isLandingPageAi2,
             description,
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',

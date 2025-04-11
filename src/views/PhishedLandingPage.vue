@@ -7,10 +7,10 @@
         </figure>
       </div>
       <h1 class="phished-landing-page__title">
-        Because you’ve been phished, you were directed to the training selected by the company admin
+        {{ informationMessage }}
       </h1>
       <p class="phished-landing-page__subtitle">
-        {{ subtitleText }}
+        {{ redirectMessage }}
       </p>
       <div class="phished-landing-page__buttons">
         <VBtn
@@ -18,7 +18,7 @@
           class="phished-landing-page__button"
           color="#2196f3"
           @click="handleStartTraining"
-          >Start Training
+          >{{ startButtonLabel }}
         </VBtn>
         <VBtn
           v-else
@@ -41,21 +41,22 @@ export default {
   data() {
     return {
       logo: require('../assets/img/no-logo.png'),
-      buttons: []
+      buttons: [],
+      informationMessage: '',
+      redirectMessage: '',
+      startButtonLabel: ''
     }
   },
   computed: {
     isMultiple() {
       return this.buttons.length > 1
-    },
-    subtitleText() {
-      return this.isMultiple
-        ? 'Please start the training by selecting the language and complete the training as soon as possible'
-        : 'Please start the training and complete the training as soon as possible'
     }
   },
   created() {
     this.callForData()
+  },
+  mounted() {
+    if (document.querySelector('html')) document.querySelector('html').style.overflowY = 'auto'
   },
   methods: {
     callForData() {
@@ -68,8 +69,21 @@ export default {
         const {
           data: { data = {} }
         } = response
-        const { enrollmentContents = [], mainLogoUrl = [] } = data
+        const {
+          enrollmentContents = [],
+          mainLogoUrl = [],
+          informationMessage = '',
+          redirectMessage = '',
+          startButtonLabel = ''
+        } = data
         this.logo = mainLogoUrl
+        this.informationMessage =
+          informationMessage ||
+          'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin'
+        this.redirectMessage =
+          redirectMessage ||
+          'Please start the training and complete the training as soon as possible'
+        this.startButtonLabel = startButtonLabel || 'Start Training'
         enrollmentContents.forEach((eContent) => {
           this.buttons.push({
             text: eContent.nativeLanguageName,

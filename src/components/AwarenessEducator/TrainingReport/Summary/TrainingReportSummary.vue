@@ -81,6 +81,7 @@
         is-add-training-type-key-to-payload
         :id="id"
         :is-loading="isLoading"
+        :custom-fields="customFields"
         :training-type="getTrainingType"
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
@@ -136,6 +137,10 @@ export default {
     formDetails: {
       type: Object,
       default: () => ({})
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -200,12 +205,21 @@ export default {
     },
     getTrainingInfoData() {
       const { totalTargetUserCount = 0 } = this?.trainingSummary?.reportDetail || {}
-      const { targetGroupCount = 0, autoEnrollDescription = 'No', languages = ['EN'] } = this
-        .trainingSummary || {
+      const {
+        targetGroupCount = 0,
+        autoEnrollDescription = 'No',
+        languages = ['EN'],
+        targetGroupNames = []
+      } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
-        languages: ['EN']
+        languages: ['EN'],
+        targetGroupNames: []
       }
       return {
+        'Target Groups': {
+          show: true,
+          value: targetGroupNames?.map?.((tg) => ({ name: tg })) || []
+        },
         'Target Users': {
           show: true,
           value: totalTargetUserCount
@@ -352,11 +366,11 @@ export default {
       } = reportDetail
       return {
         downloaded: {
-          userCount: totalUserClickedCount,
+          userCount: completedCount,
           userPercent:
             totalTargetUserCount === 0
               ? '0'
-              : ((totalUserClickedCount / totalTargetUserCount) * 100).toFixed()
+              : ((completedCount / totalTargetUserCount) * 100).toFixed()
         },
         openedEmail: {
           userCount: totalUserOpenedCount,

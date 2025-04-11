@@ -56,6 +56,20 @@
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                  <template #activator="{ on }">
+                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                      >mdi-creation</VIcon
+                    >
+                  </template>
+                  <span>This template was generated with AI</span>
+                </VTooltip>
+              </div>
+              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <span class="template-preview__text--title">CC: </span>
+                <span class="template-preview__text--body">{{
+                  emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--subject">
                 <span>Subject: </span>
@@ -278,7 +292,7 @@ export default {
       const templateKey = this.isQuishingTypeIndividualPrintOut
         ? 'quishingTemplate'
         : 'emailTemplate'
-      this.isAttachmentBasedScenario = phishingScenarioPreviewDto.methodTypeId.toString() === '3'
+      this.isAttachmentBasedScenario = phishingScenarioPreviewDto?.methodTypeId?.toString() === '3'
       let template = phishingScenarioPreviewDto?.[templateKey]?.template || ''
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -291,6 +305,7 @@ export default {
       this.emailTemplateParams = {
         resourceId: phishingScenarioPreviewDto?.[templateKey]?.resourceId || '',
         name: phishingScenarioPreviewDto?.[templateKey]?.name || '',
+        ccAddresses: phishingScenarioPreviewDto?.[templateKey]?.ccAddresses || [],
         fromName: phishingScenarioPreviewDto?.[templateKey]?.fromName || '',
         fromAddress: phishingScenarioPreviewDto?.[templateKey]?.fromAddress || '',
         subject: phishingScenarioPreviewDto?.[templateKey]?.subject || '',
@@ -299,7 +314,8 @@ export default {
               name: phishingScenarioPreviewDto?.[templateKey]?.phishingFileName
             }
           : null,
-        type: phishingScenarioPreviewDto?.[templateKey]?.type || ''
+        type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
+        isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
@@ -308,7 +324,10 @@ export default {
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
         name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
         description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
-        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || ''
+        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
+        isAssistedByAI:
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI
       }
       this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
       this.tab = 'email'

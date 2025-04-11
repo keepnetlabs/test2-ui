@@ -105,6 +105,11 @@ export default {
             regex: 'Enter a regular expression'
           },
           textFieldValidations: {
+            emailOrDomain: [
+              (v) => Validations.startsWithSpace(v),
+              (v) => Validations.required(v),
+              (v) => Validations.emailOrDomain(v)
+            ],
             email: [
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),

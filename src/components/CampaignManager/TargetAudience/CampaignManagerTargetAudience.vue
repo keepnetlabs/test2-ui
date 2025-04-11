@@ -20,6 +20,12 @@
       :isCallback="isCallback"
       :last-column-name="lastColumnName"
       :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
+      :scenario-resource-ids="scenarioResourceIds"
+      :is-phishing="isPhishing"
+      :target-group-resource-ids="targetGroupResourceIds"
+      :send-user-preferred-language="sendUserPreferredLanguage"
+      :scenario-distribution="scenarioDistribution"
+      :category-filter="categoryFilter"
       @handle-selection-change="handleTargetGroupSelectionChange"
     />
     <CustomError
@@ -32,7 +38,7 @@
       <FormGroup v-if="showCheckboxes" style="max-width: 640px;" :title="labels.LimitRecipients">
         <div>
           <VCheckbox
-            v-if="!isVishing && !isQuishingPrintOut"
+            v-if="!isVishing && !isQuishingPrintOut && getPhishingReporterSummaryPermissions"
             v-model="formData.sendOnlyActiveUsers"
             id="input--campaign-manager-advanced-settings-only-active-users"
             color="#2196f3"
@@ -94,10 +100,16 @@ import * as Validations from '@/utils/validations'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import AlertBox from '@/components/AlertBox'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerTargetAudience',
-  components: { AlertBox, KSelect, FormGroup, CustomError, CampaignManagerTargetGroups },
+  components: {
+    AlertBox,
+    KSelect,
+    FormGroup,
+    CustomError,
+    CampaignManagerTargetGroups
+  },
   props: {
     defaultValues: {
       type: Object,
@@ -162,6 +174,29 @@ export default {
     isQuishingPrintOut: {
       type: Boolean,
       default: false
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
+    },
+    targetGroupResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    scenarioResourceIds: {
+      type: Array,
+      default: () => []
+    },
+    sendUserPreferredLanguage: {
+      type: String,
+      default: '0'
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: 0
+    },
+    categoryFilter: {
+      type: Object
     }
   },
   data() {
@@ -187,6 +222,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions'
+    }),
     getTargetGroupErrorMessage() {
       return this.selectedTargetGroupsMapped.length
         ? this.getTargetGroupErrorText
@@ -255,7 +293,11 @@ export default {
           fourMinutesBeforeSeconds
         )}`
       }
-      if (!this.isVishing) {
+      if (
+        !this.isVishing &&
+        !this.isQuishingPrintOut &&
+        this.getPhishingReporterSummaryPermissions
+      ) {
         getPhishingReportSummary({
           startDate: dateObj.startDate,
           endDate: dateObj.endDate

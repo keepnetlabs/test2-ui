@@ -107,8 +107,10 @@ import {
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -131,6 +133,10 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -212,18 +218,30 @@ export default {
               })) || []
           },
           {
-            property: 'smtpName',
+            property: PROPERTY_STORE.EMAIL_DELIVERY,
             align: 'left',
             editable: false,
-            label: 'SMTP',
-            hideSort: true,
-            filterable: false,
-            sortable: false,
+            label: labels.EmailDelivery,
+            sortable: true,
             show: true,
             fixed: false,
+            width: 200,
             type: 'text',
-            width: 150
+            filterableType: 'text'
           }
+          // {
+          //   property: 'smtpName',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'SMTP',
+          //   hideSort: true,
+          //   filterable: false,
+          //   sortable: false,
+          //   show: true,
+          //   fixed: false,
+          //   type: 'text',
+          //   width: 150
+          // }
           /*
           {
             property: 'emailType',
@@ -328,11 +346,26 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return `Event history is only available for ${provider}`
+      return `Event history is only available for SMTP`
     }
   },
   created() {
     this.callForData()
+  },
+  watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'email'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    }
   },
   methods: {
     handleSearchChange(searchFilter = {}) {
@@ -379,7 +412,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

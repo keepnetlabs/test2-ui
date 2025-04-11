@@ -114,7 +114,7 @@
             </div>
             <AlertBox
               v-if="isDistributionEnabled"
-              class="bg-aqua-light mt-2"
+              class="bg-aqua-light mt-4"
               icon-color="#2196F3"
               icon-name="mdi-information"
               text="If the delivery time falls on a weekend, it will be sent on the following Monday."
@@ -502,7 +502,11 @@ export default {
             this.isDistributionEnabled = true
             this.formData.distributionDays = response?.data?.data?.distributionDays || 2
           }
-          if (this.selectedRow?.status === 'Auto-Enroll') this.isAutoEnroll = true
+          if (
+            this.selectedRow?.status === 'Auto-Enroll' ||
+            (!!enrollmentAutoEnroll && !enrollmentAutoEnroll?.stopTime)
+          )
+            this.isAutoEnroll = true
           this.formData.enrollmentReminder = enrollmentReminder
             ? enrollmentReminder
             : this.formData.enrollmentReminder
@@ -560,13 +564,13 @@ export default {
     handleEnrollmentTypeChange(val) {
       if (val === 3) {
         this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
         this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next...'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in...'
+        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
+        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
       }
     },
     handleSubmit() {

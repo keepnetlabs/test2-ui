@@ -30,7 +30,31 @@
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
     @on-activity="handleActivity"
+    @on-selection-text-change="handleSelectionChange"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
+        @on-click="handleOnResend(scope.row)"
+      />
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[1].icon"
+        :id="tableOptions.rowActions[1].id"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[1].disabled"
+        @on-click="handleOnDetail(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <CampaignManagerReportActivityColumn
         v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
@@ -56,10 +80,11 @@ import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CallbackService from '@/api/callback'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'CampaignManagerReportOpenedTable',
-  components: { DataTable, CampaignManagerReportActivityColumn },
+  components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
@@ -75,6 +100,11 @@ export default {
     isShowSandboxFromParent: {
       type: Boolean,
       default: true
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
@@ -107,7 +137,7 @@ export default {
         addButton: {
           show: true,
           icon: null,
-          label: 'HIDE SANDBOX ACTIVITY',
+          label: 'HIDE BOT ACTIVITY',
           action: 'on-activity',
           hideTooltip: true,
           type: 'outlined',
@@ -121,7 +151,8 @@ export default {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
             icon: '$custom-resend',
-            action: 'on-resend'
+            action: 'on-resend',
+            disabled: false
           },
           {
             name: labels.Details,
@@ -156,6 +187,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2

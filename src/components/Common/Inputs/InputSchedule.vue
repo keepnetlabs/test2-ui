@@ -137,6 +137,14 @@ export default {
     isSmishing: {
       type: Boolean,
       default: false
+    },
+    isEditOrDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isInidividualPrintOut: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -147,7 +155,9 @@ export default {
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
-      radioItems: [{ text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }]
+      radioItems: this.isInidividualPrintOut
+        ? []
+        : [{ text: 'Save for later', value: SCHEDULE_TYPES.SAVE_FOR_LATER }]
     }
   },
   computed: {
@@ -196,7 +206,7 @@ export default {
       }
     },
     'value.scheduledDateTimeZoneId'(val) {
-      if (val) {
+      if (val && !this.isEditOrDuplicate) {
         getTimeByTimeZone(val).then((res) => {
           if (res?.data?.data) {
             this.value.scheduledDate = res.data.data
@@ -240,7 +250,7 @@ export default {
       }
     },
     getSelectedTimeZone() {
-      if (this.$store?.getters['common/getSelectedTimeZone']) {
+      if (!this.isEditOrDuplicate && this.$store?.getters['common/getSelectedTimeZone']) {
         this.value.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
       } else {
         this.$store.dispatch('common/callForSettings')

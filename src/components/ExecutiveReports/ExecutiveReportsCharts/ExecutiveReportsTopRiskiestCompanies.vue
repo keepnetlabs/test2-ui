@@ -107,13 +107,22 @@ export default {
                 const fontFamily = 'Open Sans, sans-serif'
                 const padding = 18
                 const text = 'Critical Risk Level. Immediate training is needed.'
-                const x = Math.floor(maxData._model.x / 2.3)
+                const x = Math.floor(maxData._model.x / 2.4)
                 const y = maxData._model.y - padding + 2
-                ctx.fillStyle = '#383B41'
+                let xComparator = x
+                /*
+                if (window.innerWidth >= 1280 && window.innerWidth < 1440) {
+                  xComparator = x < 130 ? 130 : x
+                } else if (window.innerWidth >= 1440) {
+                  xComparator = x < 190 ? 190 : x
+                }
+
+                 */
+                ctx.fillStyle = '#000'
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText(text, x < 176 ? 176 : x, y)
+                ctx.fillText(text, xComparator, y)
               }
             }
           }
@@ -155,6 +164,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -255,6 +265,7 @@ export default {
             let position = this._chart.canvas.getBoundingClientRect()
 
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX / 2 + 'px'
@@ -306,6 +317,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,

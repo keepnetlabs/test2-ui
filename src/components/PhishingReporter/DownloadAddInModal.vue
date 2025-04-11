@@ -1,16 +1,27 @@
 <template>
-  <v-overlay :value="status" :z-index="9999" fixed class="download-add-in">
+  <v-overlay :value="status" :z-index="99" fixed class="download-add-in">
+    <UnlinkMicrosoftAccessDialog
+      v-if="isShowUnlinkDialog"
+      :status="isShowUnlinkDialog"
+      @close="toggleUnlinkDialog"
+    />
     <v-card
-      class="overlay__container"
       light
+      :class="[
+        'overlay__container',
+        isAccountConnected ? 'overlay__container-account-connected' : ''
+      ]"
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 700px !important;
-        max-width: 700px !important;
+        width: 820px !important;
+        max-width: 820px !important;
       "
     >
-      <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
+      <v-list-item
+        class="pl-0 pr-0 add-in-configuration__list-item"
+        style="border-bottom: 1px solid #f5f7fa; padding-bottom: 16px;"
+      >
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
         </div>
@@ -27,25 +38,62 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-        <div class="logos-buttons__container mt-10">
-          <div class="logos-buttons__first-row">
-            <div class="logo-and-button">
-              <div style="display: flex; align-items: center; height: 40px;">
-                <img src="../../assets/img/google-workspace.png" alt="g-suite-logo" />
-              </div>
-              <v-btn
+      <div class="mt-4">
+        <DownloadAddInListItem
+          :src="require('../../assets/img/google-workspace.svg')"
+          :is-loading="googleWorkSpaceSpinnerStatus"
+          description="JSON add-in for web-based Google Workspace emails"
+          @button-click="callForGenerateGoogleWorkSpaceAddIn"
+        />
+        <DownloadAddInListItem
+          :src="require('../../assets/img/outlook.svg')"
+          :is-loading="outlookSpinnerStatus"
+          description="MSI add-in for Windows Outlook Desktop"
+          @button-click="callForGenerateOutlookAddIn"
+        />
+        <DownloadAddInListItem
+          :src="require('../../assets/img/microsoft-365-logo.svg')"
+          :is-loading="o365SpinnerStatus"
+          class="flex-nowrap"
+          hide-border
+          title="Ribbon View"
+          description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
+        >
+          <template #buttons>
+            <div :style="{ minWidth: isAccountConnected ? '228px' : '294px', marginTop: '24px' }">
+              <VBtn
+                v-if="!isAccountConnected"
+                class="white--text btn-util btn-download-add-in"
+                style="margin-left: 5px !important; text-transform: capitalize;"
+                color="#2196f3"
+                rounded
+                @click="handleConnectAccount"
+              >
+                Connect Account
+              </VBtn>
+              <VBtn
+                v-else
+                text
+                color="#F56C6C"
+                style="text-transform: capitalize; font-weight: 600; font-size: 12px;"
+                @click="toggleUnlinkDialog(false)"
+              >
+                <v-icon left>mdi-link-off</v-icon>
+                <span>Unlink</span>
+              </VBtn>
+              <VBtn
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important;"
+                style="margin-left: 5px !important; text-transform: capitalize;"
                 color="#2196f3"
                 rounded
-                :loading="googleWorkSpaceSpinnerStatus"
-                @click="callForGenerateGoogleWorkSpaceAddIn"
+                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
+                :loading="o365SpinnerStatus"
+                @click="callForGenerateO365SpamAddIn"
               >
                 <v-icon left>mdi-download</v-icon>
                 Download
-                <template v-slot:loader>
+                <template #loader>
                   <img
                     src="../../assets/img/spinner.svg"
                     class="add-in-settings__spinner"
@@ -55,102 +103,43 @@
                     Generating...
                   </span>
                 </template>
-              </v-btn>
+              </VBtn>
             </div>
-            <div class="logo-and-button">
-              <div style="height: 40px;">
-                <img src="../../assets/img/outlook.svg" alt="outlook-logo" />
-              </div>
-              <v-btn
-                id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in ml-5"
-                style="margin-left: -6px;"
-                color="#2196f3"
-                rounded
-                :loading="outlookSpinnerStatus"
-                @click="callForGenerateOutlookAddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template v-slot:loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
-                </template>
-              </v-btn>
-            </div>
-            <div class="logo-and-button">
-              <div style="height: 35px;">
-                <img src="../../assets/img/microsoft-365-logo.svg" alt="microsoft-365-logo" />
-              </div>
-              <v-btn
-                id="btn-download-office--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in mr-n1"
-                color="#2196f3"
-                rounded
-                :loading="gmailSpinnerStatus"
-                @click="callForGenerateO365AddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template v-slot:loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
-                </template>
-              </v-btn>
-            </div>
-          </div>
-        </div>
-      </v-list-item>
-      <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
-        <div class="link__container"></div>
-      </v-list-item>
-
-      <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
-        <div class="link__header">Diagnostic Tool</div>
-      </v-list-item>
-      <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
-        <div class="link__sub-header">
-          Only for Outlook Desktop (Windows OS only)
-        </div>
-      </v-list-item>
-      <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
-        <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
-      </v-list-item>
-      <v-list-item class="px-0 add-in-configuration__list-item mt-5" style="margin-left: 30px;">
-        <v-btn
-          @click="callForGenerateDiagnosticTool"
-          id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
-          class="white--text btn-util btn-download-add-in ml-n1"
-          color="#2196f3"
-          :loading="diagnosticToolSpinnerStatus"
-          rounded
-        >
-          <v-icon left>mdi-download</v-icon>
-          Download
-          <template v-slot:loader>
-            <img
-              src="../../assets/img/spinner.svg"
-              class="add-in-settings__spinner"
-              alt="spinner"
-            />
-            <span style="font-size: 14px; text-transform: capitalize;">
-              Generating...
-            </span>
           </template>
-        </v-btn>
-      </v-list-item>
+        </DownloadAddInListItem>
+        <DownloadAddInListItem
+          :is-loading="gmailSpinnerStatus"
+          class="mt-n4"
+          title="Page View"
+          :description="`Users can report phishing directly from the main ribbon with a dedicated &quot;Report&quot; button.`"
+          @button-click="callForGenerateO365AddIn"
+        >
+          <AlertBox
+            v-if="isAccountConnected"
+            class="mt-4 w-100"
+            style="background-color: rgba(67, 160, 71, 0.15);"
+            icon-name="mdi-check-circle"
+            icon-color="#43A047"
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          >
+            <template #text>
+              <div class="ml-2" style="font-size: 14px; color: #383b41;">
+                <div class="fw-600">GRAPH Authorization Successful</div>
+                <div style="color: #000;">
+                  All Phishing Reporters in your domain can now use the Graph APIs.
+                </div>
+              </div>
+            </template>
+          </AlertBox>
+        </DownloadAddInListItem>
+        <DownloadAddInListItem
+          :is-loading="diagnosticToolSpinnerStatus"
+          hide-border
+          title="Diagnostic Tool"
+          description="Only for Outlook Desktop (Windows OS only)"
+          @button-click="callForGenerateDiagnosticTool"
+        />
+      </div>
       <v-list-item class="px-0 mt-6 add-in-configuration__list-item">
         <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
@@ -167,33 +156,44 @@
 </template>
 
 <script>
-import DiagnosticTool from './Settings/DiagnosticTool'
 import {
+  connectGraphAccount,
   downloadDiagnosticTool,
   downloadOutlookAddIn,
+  downloadSpamReport,
   generateDiagnosticTool,
   generateGoogleWorkSpaceAddIn,
   generateO365AddIn,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
+import DownloadAddInListItem from '@/components/PhishingReporter/DownloadAddInListItem.vue'
+import AlertBox from '@/components/AlertBox.vue'
+import UnlinkMicrosoftAccessDialog from '@/components/PhishingReporter/UnlinkMicrosoftAccessDialog.vue'
 export default {
   name: 'DownloadAddInModal',
   props: {
     status: {
       type: Boolean
+    },
+    formData: {
+      type: Object
     }
   },
   components: {
-    // Logos,
-    DiagnosticTool
+    UnlinkMicrosoftAccessDialog,
+    AlertBox,
+    DownloadAddInListItem
   },
   data() {
     return {
       outlookSpinnerStatus: false,
+      isAccountConnected: this.formData ? this.formData.isGraphAccountConnected : false,
+      isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
       downloadOutlookAddInTimeout: null,
       diagnosticToolAddInTimeout: null,
       gmailSpinnerStatus: false,
+      o365SpinnerStatus: false,
       googleWorkSpaceSpinnerStatus: false
     }
   },
@@ -234,6 +234,20 @@ export default {
         })
         .finally(() => {
           this.gmailSpinnerStatus = false
+        })
+    },
+    callForGenerateO365SpamAddIn() {
+      this.o365SpinnerStatus = true
+      downloadSpamReport()
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `MicrosoftPhishingReporterRibbon.xml`
+          link.click()
+        })
+        .finally(() => {
+          this.o365SpinnerStatus = false
         })
     },
     callForDownloadOutlookAddIn(resourceId) {
@@ -300,6 +314,23 @@ export default {
         clearTimeout(this.downloadOutlookAddInTimeout)
         this.downloadOutlookAddInTimeout = null
       }
+    },
+    toggleUnlinkDialog(forceUpdate = false) {
+      if (forceUpdate) {
+        this.formData.isGraphAccountConnected = false
+        this.isAccountConnected = false
+      }
+      this.isShowUnlinkDialog = !this.isShowUnlinkDialog
+    },
+    handleConnectAccount() {
+      connectGraphAccount().then((response) => {
+        const {
+          data: { data }
+        } = response
+        window.location.href = `https://login.microsoftonline.com/common/adminconsent?client_id=${
+          data.applicationId
+        }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
+      })
     }
   }
 }

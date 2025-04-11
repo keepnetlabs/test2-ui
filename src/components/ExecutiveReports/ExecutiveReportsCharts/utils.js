@@ -28,6 +28,72 @@ export const CHART_COLORS = {
     order: 3,
     pointHoverRadius: 3
   },
+  Malicious: {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Undetected: {
+    backgroundColor: '#757575',
+    borderColor: '#757575',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Phishing: {
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  Simulation: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  'Clicked Email Trends': {
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
+  'Not Reported (%)': {
+    backgroundColor: '#757575',
+    borderColor: '#757575',
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0,
+    fill: false,
+    stack: 1,
+    order: 3,
+    pointHoverRadius: 3
+  },
   'Quickest Response': {
     backgroundColor: '#00BCD4',
     borderColor: '#00BCD4',
@@ -101,32 +167,32 @@ export const CHART_COLORS = {
     lineTension: 0
   },
   'Simulated Users Coverage': {
-    backgroundColor: '#00BCD4',
-    borderColor: '#00BCD4',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   'In Progress': {
-    backgroundColor: '#F56C6C',
-    borderColor: '#F56C6C',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   Incomplete: {
-    backgroundColor: '#E6A23C',
-    borderColor: '#E6A23C',
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0
   },
   'Non-simulated Users': {
-    backgroundColor: '#FBF280',
-    borderColor: '#FBF280',
+    backgroundColor: '#F56C6C',
+    borderColor: '#F56C6C',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,
@@ -303,6 +369,38 @@ export const CHART_COLORS = {
   'Click Only Campaigns': {
     backgroundColor: '#F56C6C',
     borderColor: '#F56C6C',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.ClickOnly]: {
+    backgroundColor: '#43A047',
+    borderColor: '#43A047',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.DataSubmitted]: {
+    backgroundColor: '#FBF280',
+    borderColor: '#FBF280',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.MFA]: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+    fill: false,
+    pointRadius: 3,
+    borderWidth: 2,
+    lineTension: 0
+  },
+  [labels.Attachment]: {
+    backgroundColor: '#B3D4FC',
+    borderColor: '#B3D4FC',
     fill: false,
     pointRadius: 3,
     borderWidth: 2,

@@ -34,6 +34,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-details="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
@@ -111,7 +112,8 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -139,6 +141,10 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -256,17 +262,29 @@ export default {
               })) || []
           },
           {
-            property: 'smtpName',
+            property: PROPERTY_STORE.EMAIL_DELIVERY,
             align: 'left',
             editable: false,
-            label: 'SMTP',
+            label: labels.EmailDelivery,
             sortable: true,
             show: true,
             fixed: false,
+            width: 200,
             type: 'text',
-            width: 150,
             filterableType: 'text'
           }
+          // {
+          //   property: 'smtpName',
+          //   align: 'left',
+          //   editable: false,
+          //   label: 'SMTP',
+          //   sortable: true,
+          //   show: true,
+          //   fixed: false,
+          //   type: 'text',
+          //   width: 150,
+          //   filterableType: 'text'
+          // }
           /*
           {
             property: 'emailType',
@@ -379,13 +397,26 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return `Event history is only available for ${provider}`
+      return `Event history is only available for SMTP`
     }
   },
   created() {
     this.callForData()
   },
   watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val, false)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {
@@ -401,6 +432,19 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingSendingReportPoster
@@ -450,7 +494,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

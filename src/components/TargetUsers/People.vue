@@ -1,5 +1,14 @@
 <template>
   <div class="people">
+    <GamificationReportUserDetailsDrawer
+      v-if="isUserDetailsDrawerOpen"
+      :status="isUserDetailsDrawerOpen"
+      :selectedRow="selectedRow"
+      :formDetails="formDetails"
+      :datePayload="getDatePayload"
+      isTargetUser
+      @on-close="handleCloseDrawer"
+    />
     <default-error-dialog
       v-if="!!bulkDeleteErrorMessage"
       :status="!!bulkDeleteErrorMessage"
@@ -24,6 +33,7 @@
       :editData="selectedRow"
       :custom-fields="customFields"
       :company-license="companyLicense"
+      :language-items="languageFilterOptions"
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
     />
@@ -95,6 +105,41 @@
         >
       </template>
     </AlertBox>
+    <AlertBox
+      v-if="canRenderRepeatedOffendersAlertBox"
+      class="my-2 mb-6"
+      style="background-color: #fafafa; border: 1px solid #e0e0e0;"
+      icon-color="#000000"
+      icon-name="mdi-account-voice"
+      :slots="{ primaryAction: true, secondaryAction: false }"
+    >
+      <template #text>
+        <div class="d-flex flex-column">
+          <span style="color: #383b41; font-weight: 600; font-size: 18px;" class="ml-3 mb-1"
+            >{{ repeatedOffendersCount }} users repeatedly failed campaigns in last three
+            months</span
+          >
+          <span style="color: #757575; font-size: 14px; margin-left: -24px;"
+            >Identify users who repeatedly failed campaigns in the last three months for extra
+            training.</span
+          >
+        </div>
+      </template>
+      <template #primaryAction>
+        <VBtn
+          class="fw-600 no-box-shadow"
+          color="#2196f3"
+          rounded
+          outlined
+          @click="handleSeeRepeatOffenders"
+        >
+          See repeat offenders
+          <v-icon right dark>
+            mdi-account-multiple
+          </v-icon>
+        </VBtn>
+      </template>
+    </AlertBox>
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -131,6 +176,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @viewUserGroups="handleViewUserGroups"
+      @userTimeline="handleUserTimeline"
     >
       <template #selection-all-slot>
         <v-tooltip bottom opacity="1">
@@ -237,6 +283,20 @@
                         >
                       </v-list-item-content>
                     </v-list-item>
+                    <v-list-item @click="handleRedirectToSCIMSync">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-scim-sync"
+                          >SCIM Sync</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item @click="handleRedirectToGoogleSync">
+                      <v-list-item-content>
+                        <v-list-item-title id="item--target-user-empty-google-sync"
+                          >Google Sync</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-list-item-group>
                 </v-list>
               </div>
@@ -245,29 +305,37 @@
         </div>
       </template>
       <template #datatable-row-actions="{ scope }">
-        <TargetUserRowActionsEditButton
-          :scope="scope"
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
           :id="tableOptions.rowActions[0].id"
-          @on-click="handleEditTargetUsers"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleUserTimeline(scope.row)"
         />
         <RowActionsMenu>
-          <DefaultMenuRowAction
+          <TargetUserMenuActionsEditButton
             :scope="scope"
-            :id="tableOptions.rowActions[2].id"
-            :text="tableOptions.rowActions[2].name"
-            :icon="tableOptions.rowActions[2].icon"
-            @on-click="handleAddUserToGroup(scope.row)"
+            :id="tableOptions.rowActions[1].id"
+            @on-click="handleEditTargetUsers"
           />
           <DefaultMenuRowAction
             :scope="scope"
             :id="tableOptions.rowActions[3].id"
             :text="tableOptions.rowActions[3].name"
             :icon="tableOptions.rowActions[3].icon"
+            @on-click="handleAddUserToGroup(scope.row)"
+          />
+          <DefaultMenuRowAction
+            :scope="scope"
+            :id="tableOptions.rowActions[4].id"
+            :text="tableOptions.rowActions[4].name"
+            :icon="tableOptions.rowActions[4].icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton
             :scope="scope"
-            :id="tableOptions.rowActions[1].id"
+            :id="tableOptions.rowActions[2].id"
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -277,6 +345,7 @@
 </template>
 
 <script>
+import { getLeaderboardFormDetails } from '@/api/reports'
 import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUserModal from './AddUserModal'
@@ -286,7 +355,8 @@ import {
   deleteTargetUser,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
-  getTargetUsers
+  getTargetUsers,
+  searchTargetGroups
 } from '@/api/targetUsers'
 import {
   COMMON_CONSTANTS,
@@ -306,7 +376,7 @@ import {
   columnFilterCleared,
   createCustomFieldColumns
 } from '@/utils/helperFunctions'
-import TargetUserRowActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsEditButton'
+import TargetUserMenuActionsEditButton from '@/components/SmallComponents/RowActions/TargetUserMenuActionsEditButton'
 import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/RowActions/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 import { mapGetters } from 'vuex'
@@ -323,16 +393,20 @@ import TargetUserCreateGroupWithUserDialog from '@/components/TargetUsers/Target
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 import AlertBox from '@/components//AlertBox'
 import UnverifiedDomainsModal from '@/components/TargetUsers/UnverifiedDomainsModal'
-
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'People',
   components: {
+    GamificationReportUserDetailsDrawer,
     TargetUserLDAPImportModal,
     RowActionsMenu,
+    DefaultButtonRowAction,
     DefaultMenuRowAction,
     DefaultErrorDialog,
     TargetUserRowActionsDeleteButton,
-    TargetUserRowActionsEditButton,
+    TargetUserMenuActionsEditButton,
     TargetUsersViewTargetUserGroups,
     CustomFieldsModal,
     DeleteUserModal,
@@ -352,6 +426,9 @@ export default {
   emits: ['call-for-company-licenses'],
   data() {
     return {
+      languageFilterOptions: [],
+      formDetails: null,
+      isUserDetailsDrawerOpen: false,
       isUnverifiedDomainsLoading: true,
       unverifiedDomains: [],
       isUnverifiedDomainsModalVisible: false,
@@ -367,6 +444,9 @@ export default {
       selectedUserToViewGroups: null,
       payload: getDefaultAxiosPayload(),
       defaultRequestBody: getDefaultAxiosPayload(),
+      targetGroupsPayload: getDefaultAxiosPayload(),
+      repeatedOffendersCount: 0,
+      repeatedOffendersGroup: null,
       isWantToImportFile: false,
       isShowingTargetUserViewTargetGroups: false,
       tableData: [],
@@ -495,6 +575,20 @@ export default {
             dbName: 'Department'
           },
           {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: labels.PreferredLanguage,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 200,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'preferredLanguageId'
+          },
+          {
             property: PROPERTY_STORE.TIME_ZONE,
             align: 'left',
             editable: false,
@@ -533,6 +627,13 @@ export default {
           id: 'btn-add--target-users-people'
         },
         rowActions: [
+          {
+            name: 'User Activity Timeline',
+            icon: 'mdi-account-clock',
+            action: 'userTimeline',
+            id: 'btn-user-timeline--target-users-people-row-actions',
+            isNotShow: true
+          },
           {
             name: 'Edit this row',
             icon: 'mdi-pencil',
@@ -573,6 +674,11 @@ export default {
           id: 'btn-add-users-import-from-ldap--target-users-people',
           disabled:
             this.isLDAPDisabled || !this.$store.getters['permissions/getLDAPCreateConfigPermission']
+        },
+        { text: 'SCIM Sync', id: 'btn-scim-sync--target-users-people' },
+        {
+          text: 'Google Sync',
+          id: 'btn-google-sync--target-users-people'
         }
       ],
       serverSideProps: new ServerSideProps()
@@ -585,6 +691,13 @@ export default {
       getLDAPDetailPermission: 'permissions/getLDAPDetailPermission',
       getTimezones: 'common/getTimezones'
     }),
+    getDatePayload() {
+      return {
+        datePeriod: 4,
+        startDate: null,
+        endDate: null
+      }
+    },
     getSelectedRow() {
       if (this.selectedUserToAddToGroup.constructor.name === 'Array') {
         return this.selectedUserToAddToGroup
@@ -603,12 +716,10 @@ export default {
     },
     canRenderAlertbox() {
       return !this.isUnverifiedDomainsLoading && this.unverifiedDomains?.length > 0
+    },
+    canRenderRepeatedOffendersAlertBox() {
+      return this.repeatedOffendersCount > 0
     }
-  },
-  created() {
-    this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.callForGetTimeZones()
-    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
   },
   watch: {
     getTimezones: {
@@ -619,7 +730,73 @@ export default {
       }
     }
   },
+  created() {
+    this.callForLanguages()
+    this.callForFormDetails()
+    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.callForGetTimeZones()
+    this.callForTargetGroups()
+    if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured()
+  },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        this.$set(
+          this.tableOptions.defaultColumns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+      })
+    },
+    callForFormDetails() {
+      getLeaderboardFormDetails().then((res) => {
+        this.formDetails = res?.data?.data || []
+      })
+    },
+    handleUserTimeline(row) {
+      this.selectedRow = row
+      this.isUserDetailsDrawerOpen = true
+    },
+    handleCloseDrawer() {
+      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      setTimeout(() => {
+        this.selectedRow = null
+        this.isUserDetailsDrawerOpen = false
+      }, 250)
+    },
+    handleRedirectToSCIMSync() {
+      this.$router.push('/company/company-settings?tab=scim-settings&showModal=true')
+    },
+    handleRedirectToGoogleSync() {
+      this.$router.push('/company/company-settings?tab=google-user-provisioning')
+    },
+    handleSeeRepeatOffenders() {
+      if (this.repeatedOffendersGroup)
+        this.$router.push({
+          name: 'Target Group Users',
+          params: {
+            id: this.repeatedOffendersGroup.resourceId,
+            label: this.repeatedOffendersGroup.name,
+            isGroupEditable: this.repeatedOffendersGroup.isEditable
+          }
+        })
+    },
+    callForTargetGroups() {
+      searchTargetGroups(this.targetGroupsPayload, true).then((res) => {
+        const repeatedOffendersIndex = res?.data?.data?.results?.findIndex?.(
+          (group) => group.name === 'Repeat Offenders'
+        )
+        if (repeatedOffendersIndex !== -1) {
+          this.repeatedOffendersCount = res.data.data.results[repeatedOffendersIndex].userCount
+          this.repeatedOffendersGroup = { ...res.data.data.results[repeatedOffendersIndex] }
+        }
+      })
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
@@ -756,6 +933,12 @@ export default {
       if (timeZoneIndex !== -1) {
         this.payload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
       }
+      const preferredLanguageIndex = this.payload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'PreferredLanguage'
+      )
+      if (preferredLanguageIndex !== -1) {
+        this.payload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
+      }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
@@ -775,6 +958,12 @@ export default {
       }
       if (item === this.addUsersItems[2].text) {
         this.toggleImportLDAPModal()
+      }
+      if (item === this.addUsersItems[3].text) {
+        this.handleRedirectToSCIMSync()
+      }
+      if (item === this.addUsersItems[4].text) {
+        this.handleRedirectToGoogleSync()
       }
     },
     handleClickEmptyBtnClicked() {
@@ -877,14 +1066,6 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
-      // this.payload.filter.FilterGroups[1].FilterItems = [
-      //   ...this.payload.filter.FilterGroups[1].FilterItems.filter(
-      //     (item) =>
-      //       !this.customFields.some((cf) => {
-      //         return cf.name === item.FieldName
-      //       })
-      //   )
-      // ]
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data

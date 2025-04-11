@@ -81,6 +81,7 @@
         <TargetUserRowActionsRemoveFromGroupButton
           :id="tableOptions.rowActions[2].id"
           :scope="scope"
+          :isGroupEditable="$route.params.isGroupEditable"
           @on-remove="handleRemoveToGroup"
         />
       </RowActionsMenu>
@@ -100,6 +101,7 @@ import {
 import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
+  getTargetGroup,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers,
   searchTargetGroupUsers
@@ -117,6 +119,7 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import { getValue } from '@/utils/validations'
 import { mapGetters } from 'vuex'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -134,6 +137,9 @@ export default {
         btn: 'Add Users',
         icon: 'mdi-plus'
       })
+    },
+    groupName: {
+      type: String
     },
     excludeGroupUsers: {
       type: Boolean,
@@ -239,6 +245,20 @@ export default {
           dbName: 'department'
         },
         {
+          property: 'preferredLanguage',
+          align: 'left',
+          editable: false,
+          label: labels.PreferredLanguage,
+          sortable: true,
+          show: true,
+          type: 'text',
+          fixed: false,
+          width: 200,
+          filterableType: 'select',
+          filterableItems: [],
+          filterableCustomFieldName: 'preferredLanguageId'
+        },
+        {
           property: PROPERTY_STORE.TIME_ZONE,
           align: 'left',
           editable: false,
@@ -322,7 +342,8 @@ export default {
       tableData: [],
       customFields: [],
       selections: [],
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      languageFilterOptions: []
     }
   },
   computed: {
@@ -331,6 +352,52 @@ export default {
     })
   },
   watch: {
+    groupName: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val === 'Repeat Offenders') {
+          this.tableOptions.iEmpty = {
+            message: 'No repeat offenders found in the last 3 months'
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else if (val === 'New Hires') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else if (val === 'Non-simulated Users' || val === 'Non-Simulated Users') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else if (val === 'Untrained Users') {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded
+          }
+          this.tableOptions.addButton = {
+            show: false
+          }
+        } else {
+          this.tableOptions.iEmpty = {
+            message: labels.NoTargetGroupUserAdded,
+            btn: 'Add Users',
+            icon: 'mdi-plus'
+          }
+          this.tableOptions.addButton = {
+            show: this.hasAddButton,
+            action: 'addAction',
+            tooltip: 'Add Users'
+          }
+        }
+      }
+    },
     customFields() {
       this.addCustomFieldColumns()
     },
@@ -344,11 +411,39 @@ export default {
   },
   created() {
     this.callForGetTimeZones()
+    this.callForLanguages()
     if (this.resourceId) {
+      if (this.resourceId !== '7Tna1kvZXAgX') this.callForTargetGroup()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
   methods: {
+    callForTargetGroup() {
+      getTargetGroup(this.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        if (data?.isScimGroup || data?.isGoogleGroup) {
+          this.tableOptions.addButton = {
+            show: false
+          }
+        }
+      })
+    },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageFilterOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        this.$set(
+          this.defaultColumns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          this.languageFilterOptions
+        )
+      })
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
@@ -379,6 +474,12 @@ export default {
       )
       if (timeZoneIndex !== -1) {
         this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      }
+      const preferredLanguageIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (item) => item.FieldName === 'PreferredLanguage'
+      )
+      if (preferredLanguageIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(preferredLanguageIndex, 1)
       }
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()

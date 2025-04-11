@@ -339,7 +339,7 @@
       <StepperFooter
         max-step="5"
         :step.sync="step"
-        :saveButtonText="labels.Launch"
+        :saveButtonText="getSaveText"
         :disabled-statuses="{
           submitButton: isActionButtonDisabled
         }"
@@ -502,10 +502,24 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone',
       timeZones: 'common/getTimezones',
-      timezoneFormat: 'auth/getTimezoneFormat'
+      timezoneFormat: 'auth/getTimezoneFormat',
+      getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSaveText() {
+      if (this.formValues.scheduleType === '1') {
+        return labels.Launch
+      }
+      if (this.formValues.scheduleType === '2') {
+        return labels.Save
+      }
+      return labels.Schedule
+    },
     getTargetGroupItems() {
-      return this.userCountDetailResponse?.data?.data || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
+      return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
@@ -670,8 +684,7 @@ export default {
       immediate: true,
       handler(val) {
         if (val) {
-          this.selectedTimeZoneText =
-            this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
+          //this.selectedTimeZoneText = this.timeZones?.timeZoneList?.find((item) => item.id === val)?.displayName || ''
           getTimeByTimeZone(val).then((res) => {
             if (res?.data?.data) {
               this.formValues.scheduleDate = res.data.data
@@ -679,6 +692,16 @@ export default {
           })
         }
         this.checkTimezoneValid()
+      }
+    },
+    timeZones: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.selectedTimeZoneText = val.timeZoneList?.find(
+            (item) => item.id === this.getCurrentCompany?.timeZoneId
+          )?.displayName
+        }
       }
     }
   },
@@ -779,7 +802,7 @@ export default {
         this.axiosPayloadOfTargetGroups.selectTargetUserResourceIds = this.defaultSelectedTargetGroupResourceIds.join(
           ','
         )
-      searchTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
+      searchTargetGroups(this.axiosPayloadOfTargetGroups, true).then((response) => {
         if (this.initial) {
           this.responseOfTargetGroupsItems = response
         }

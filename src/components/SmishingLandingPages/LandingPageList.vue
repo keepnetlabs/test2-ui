@@ -103,6 +103,11 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template #datatable-custom-column="{ scope }">
+        <span v-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+          {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
@@ -297,6 +302,17 @@ export default {
             filterableType: 'text',
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
+          },
+          {
+            property: 'isInvisibleCaptchaEnabled',
+            align: 'left',
+            editable: false,
+            label: 'Stop Bot Activity',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'slot',
+            width: 175
           }
         ],
         rowActions: [
@@ -388,6 +404,19 @@ export default {
   methods: {
     deleteLandingPageTemplate: SmishingService.deleteLandingPageTemplate,
     bulkDeleteLandingPageTemplates: SmishingService.bulkDeleteLandingPageTemplates,
+    handleSearchChange(searchFilter = {}) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      const filterItemIndex = this.axiosPayload.filter.FilterGroups[1].FilterItems.findIndex(
+        (col) => col.FieldName === 'isInvisibleCaptchaEnabled'
+      )
+      if (filterItemIndex !== -1) {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems.splice(filterItemIndex, 1)
+      }
+      this.resetPageNumber()
+      this.callForData()
+    },
     callForData() {
       this.loading = true
       if (this.getSmishingLandingPageTemplatesSearchPermissions) {
@@ -530,7 +559,17 @@ export default {
           response.data.data.difficultyTypes.map((item) => item.text)
         )
         this?.$refs?.refLandingPageList?.reRenderFilters()
-        this.landingPageData = response.data.data
+        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
+          return {
+            text: item.domain,
+            value: item.id.toString(),
+            extraDatas: [
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              { text: item.isStopBotActivity, value: item.isStopBotActivity }
+            ]
+          }
+        })
+        this.landingPageData = { ...response.data.data, domainRecords }
       })
     }
   }

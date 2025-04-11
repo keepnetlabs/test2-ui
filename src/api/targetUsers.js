@@ -31,8 +31,11 @@ export function getTargetGroups(config = {}) {
   return testRequest.get(`/target-groups`, { ...config })
 }
 
-export function searchTargetGroups(payload) {
-  return testRequest.post('/target-groups/search', payload)
+export function searchTargetGroups(payload, systemGeneratedGroups = false) {
+  return testRequest.post('/target-groups/search', {
+    ...payload,
+    systemGeneratedGroups
+  })
 }
 export function searchAllTargetGroups(payload) {
   return testRequest.post('/target-groups/search/all', payload)
@@ -40,6 +43,9 @@ export function searchAllTargetGroups(payload) {
 
 export function getTargetGroupCountDetail(payload) {
   return testRequest.post(`/target-groups/targetgroupusercountdetail`, payload)
+}
+export function getTargetGroupCountDetailExt(payload) {
+  return testRequest.post(`/target-groups/targetgroupusercountdetailext`, payload)
 }
 
 export function createTargetGroup(payload) {
@@ -135,6 +141,9 @@ export function exportTargetGroups(payload = {}) {
   return testRequest.post('/target-groups/search/export', payload, {
     responseType: 'blob'
   })
+}
+export function getTargetGroup(id = '') {
+  return testRequest.get(`/target-groups/${id}`)
 }
 
 export function deleteTargetGroupUsers(id = '', payload = {}) {

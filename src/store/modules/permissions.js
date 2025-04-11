@@ -50,6 +50,7 @@ const {
   WHITE_LABEL_PERMISSIONS,
   PROXY_SETTINGS_PERMISSIONS,
   SAML_INTEGRATION_PERMISSIONS,
+  GOOGLE_USER_PROVISION_PERMISSIONS,
   SCIM_SETTINGS_PERMISSIONS,
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
@@ -66,6 +67,7 @@ const {
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
+  AI_ALLY_SETTINGS_PERMISSIONS, 
   DIRECT_EMAIL_CREATION_PERMISSIONS,
   ADVANCED_REPORTS_PERMISSIONS,
   EXECUTIVE_REPORTS_PERMISSIONS,
@@ -94,7 +96,8 @@ const {
   CALLBACK_CAMPAIGN_MANAGER_PARENT,
   CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
   CALLBACK_REPORT_PERMISSIONS,
-  CALLBACK_SETTINGS_PERMISSIONS
+  CALLBACK_SETTINGS_PERMISSIONS,
+  GAMIFICATION_REPORT_PERMISSIONS
 } = PERMISSIONS
 
 const defaultState = {
@@ -120,6 +123,7 @@ const defaultState = {
   quishingCampaignReportsPermissions: QUISHING_CAMPAIGN_REPORTS_PERMISSIONS,
   domainPermisisons: DOMAIN_PERMISSIONS,
   dnsPermissions: DNS_PERMISSIONS,
+  aiAllySettingsPermissions: AI_ALLY_SETTINGS_PERMISSIONS,
   incidentResponderOtherPermissions: INCIDENT_RESPONDER_OTHER_PERMISSIONS,
   investigationPermissions: INVESTIGATION_PERMISSIONS,
   integrationPermissions: INTEGRATION_PERMISSIONS,
@@ -136,6 +140,7 @@ const defaultState = {
   whiteLabelingPermissions: WHITE_LABEL_PERMISSIONS,
   proxySettingsPermissions: PROXY_SETTINGS_PERMISSIONS,
   samlIntegrationPermissions: SAML_INTEGRATION_PERMISSIONS,
+  googleUserProvisionPermissions: GOOGLE_USER_PROVISION_PERMISSIONS,
   scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
@@ -192,7 +197,8 @@ const defaultState = {
   callbackCampaignManagerParentPermissions: CALLBACK_CAMPAIGN_MANAGER_PARENT,
   callbackCampaignJobPermissions: CALLBACK_CAMPAIGN_JOB_PERMISSIONS,
   callbackReportPermissions: CALLBACK_REPORT_PERMISSIONS,
-  callbackSettingsPermissions: CALLBACK_SETTINGS_PERMISSIONS
+  callbackSettingsPermissions: CALLBACK_SETTINGS_PERMISSIONS,
+  gamificationReportPermissions: GAMIFICATION_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
@@ -997,7 +1003,6 @@ const store = {
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
       return (
-        getters?.getRestApiSearchPermissions ||
         getters?.getNotificationTemplatesSearchPermissions ||
         getters?.getWhiteLabelingGetPermissions ||
         getters?.getSMTPSettingsSearchPermissions ||
@@ -1065,6 +1070,9 @@ const store = {
     getNotificationTemplatesMakeDefaultPermissions(state) {
       return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
     },
+    getAIAllySettingsGetPermissions(state) {
+      return state?.aiAllySettingsPermissions?.GET?.hasPermission
+    },
     getRestApiSearchPermissions(state) {
       return state?.restApiPermissions?.SEARCH?.hasPermission
     },
@@ -1130,6 +1138,9 @@ const store = {
     },
     getSAMLIntegrationExportPermissions(state) {
       return state?.samlIntegrationPermissions?.EXPORT?.hasPermission
+    },
+    getGoogleUserProvisionGetPermissions(state) {
+      return state?.googleUserProvisionPermissions?.GET?.hasPermission
     },
     getSCIMSettingsSearchPermissions(state) {
       return state?.scimSettingsPermissions?.SEARCH?.hasPermission
@@ -1562,6 +1573,12 @@ const store = {
     },
     getCallbackSettingsExchangePermissions(state) {
       return state?.callbackSettingsPermissions?.EXCHANGE?.hasPermission
+    },
+    getGamificationReportSearchPermissions(state) {
+      return state?.gamificationReportPermissions?.SEARCH?.hasPermission
+    },
+    getGamificationReportTopPerformersPermissions(state) {
+      return state?.gamificationReportPermissions?.TOP_PERFORMERS?.hasPermission
     }
   },
   mutations: {
@@ -1603,9 +1620,11 @@ const store = {
         'smtpSettingsPermissions',
         'notificationTemplatesPermissions',
         'restApiPermissions',
+        'aiAllySettingsPermissions',
         'whiteLabelingPermissions',
         'proxySettingsPermissions',
         'samlIntegrationPermissions',
+        'googleUserProvisionPermissions',
         'scimSettingsPermissions',
         'siemIntegrationPermissions',
         'systemUsersPermissions',
@@ -1663,7 +1682,8 @@ const store = {
         'callbackCampaignManagerParentPermissions',
         'callbackCampaignJobPermissions',
         'callbackReportPermissions',
-        'callbackSettingsPermissions'
+        'callbackSettingsPermissions',
+        'gamificationReportPermissions'
       ]
       statePermissionKeys.forEach((key) => {
         const permissionObject = { ...state[key] }

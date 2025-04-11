@@ -7,6 +7,7 @@
       :payload="resendPayload"
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -51,6 +52,7 @@
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
       @on-resend="handleOnResend"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template v-if="canRenderExamStatusFilter" #addUsers>
         <v-menu
@@ -134,6 +136,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 export default {
   name: 'TrainingReportUsers',
   components: {
@@ -163,6 +166,10 @@ export default {
     isAddTrainingTypeKeyToPayload: {
       type: Boolean,
       default: false
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -281,6 +288,18 @@ export default {
           ]
         : []),
       {
+        property: 'firstCompletionDate',
+        align: 'left',
+        editable: false,
+        label: 'First Completion',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 180,
+        filterableType: 'date'
+      },
+      {
         property: 'lastInteractionDate',
         align: 'left',
         editable: false,
@@ -318,12 +337,13 @@ export default {
         label: 'Current Step',
         sortable: false,
         hideSort: true,
-        show: true,
+        show: false,
         type: 'text',
         width: 180
       })
     }
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -427,6 +447,19 @@ export default {
     }
   },
   watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val, false)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    },
     formDetails: {
       deep: true,
       immediate: true,
@@ -442,12 +475,16 @@ export default {
           )
           if (learningPathIndex === -1) return
           filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[
-              learningPathIndex
-            ]?.enumResults?.map((item) => ({
-              text: item.displayName || item.name,
-              value: item.name
-            })) || []
+            this?.formDetails?.targetUserEnrollmentStatusEnum?.[learningPathIndex]?.enumResults
+              ?.filter((item) => {
+                return !['OpenedEmail', 'ClickedLink', 'Downloaded'].includes(item.name)
+              })
+              ?.map((item) => {
+                return {
+                  text: item.displayName || item.name,
+                  value: item.name
+                }
+              }) || []
         }
         if (
           this.trainingSummary?.trainingDetails?.trainingTypeName ===
@@ -524,6 +561,19 @@ export default {
     if (!this.canRenderExamStatusFilter) this.callForData()
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportTrainingPosters
@@ -581,11 +631,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData =
-            results.map((row) => ({
-              ...row,
-              examStatus: row.examStatusName
-            })) || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields, examStatus: row.examStatus || row.examStatusName }
+          })
         })
         .finally(this.setLoading)
     },

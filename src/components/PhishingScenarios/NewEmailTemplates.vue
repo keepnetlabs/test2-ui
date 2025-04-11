@@ -1,5 +1,10 @@
 <template>
-  <app-modal :status="status" icon-name="mdi-email" :title="getTitle">
+  <app-modal
+    :status="status"
+    icon-name="mdi-email"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
+  >
     <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -47,6 +52,7 @@
                 </FormGroup>
                 <InputPhishingMethod
                   v-model.trim="formValues.categoryResourceId"
+                  :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                   :items="methodItems"
                 />
                 <form-group
@@ -124,7 +130,7 @@
                       onsubmit="return false"
                     >
                       <template #title>
-                        <div style="display: flex; justify-content: space-between;">
+                        <div class="d-flex align-baseline justify-space-between mb-3">
                           <label class="k-form-group__title">Email Template</label>
                           <v-tooltip bottom opacity="1">
                             <template v-slot:activator="{ on }">
@@ -152,21 +158,37 @@
                           />
                         </div>
                       </template>
-                      <email-template
+                      <EmailTemplate
                         ref="refEmailTemplate"
+                        :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
+                        :cc-addresses.sync="formValues.ccAddresses"
                         :from-name.sync="formValues.fromName"
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
+                        :ai-assistant.sync="formValues.aiAssistant"
+                        :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
+                        :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
+                        :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
+                        :language-type-resource-id.sync="formValues.languageTypeResourceId"
+                        :is-assisted-by-a-i-template.sync="isAssistedByAI"
+                        :isAIAllyEnabled="isAIAllyEnabled"
+                        :method-type-id="getMethodTypeId"
+                        :prompt.sync="formValues.prompt"
+                        :toneResourceId.sync="formValues.toneResourceId"
+                        :localizationResourceId.sync="formValues.localizationResourceId"
+                        :language-options="languageOptions"
+                        :selected-method="getSelectedMethod"
+                        :is-plain-text.sync="isPlainText"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -223,7 +245,8 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-
+import { mapGetters } from 'vuex'
+import { getEmailTemplateMethodItems } from './utils'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -252,9 +275,34 @@ export default {
     },
     emailTemplateId: {
       type: String
+    },
+    isAIAllyEnabled: {
+      type: Boolean
+    },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
+    },
+    showLeavingDialog: {
+      type: Boolean,
+      default: true
+    },
+    selectedMethodText: {
+      type: String,
+      default: ''
     }
   },
   data() {
+    let methodItems = JSON.parse(JSON.stringify(getEmailTemplateMethodItems()))
+    let categoryResourceId = 'WNZt0sCVCWB3'
+    if (this.selectedMethodText) {
+      if (this.selectedMethodText === 'MFA') {
+        methodItems = methodItems.filter((mItem) => mItem.name !== 'Attachment')
+      } else {
+        categoryResourceId = methodItems.find((mItem) => mItem.name === this.selectedMethodText)
+          ?.resourceId
+      }
+    }
     return {
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
@@ -263,6 +311,8 @@ export default {
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
       isAttachmentError: false,
+      isAssistedByAI: false,
+      isPlainText: false,
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
@@ -280,18 +330,25 @@ export default {
       formValues: {
         name: '',
         description: '',
-        categoryResourceId: 'WNZt0sCVCWB3',
+        categoryResourceId,
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
         fromAddress: null,
+        ccAddresses: [],
         fromName: null,
         subject: null,
         template: null,
+        aiAssistant: false,
         attachmentFiles: [],
         importedEmailAttachments: [],
         attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad'
+        languageTypeResourceId: '862249c19aad',
+        prompt: '',
+        toneResourceId: '',
+        localizationResourceId: ''
       },
+      aiAssistantRemainingRights: 0,
+      aiAssistantTotalRights: 0,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
@@ -301,35 +358,7 @@ export default {
         ]
       },
       editItemsDisabled: false,
-      methodItems: [
-        {
-          resourceId: 'WNZt0sCVCWB3',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Click Only',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'DYC0gugxJMjT',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Data Submission',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: '7dLrW2kdBTDs',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Attachment',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
+      methodItems,
       difficultyItems: [
         {
           resourceId: 'mT0CeYGgKsVb',
@@ -362,6 +391,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCurrentCompany: 'login/getCurrentCompany'
+    }),
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Email Template'
@@ -373,8 +405,18 @@ export default {
 
       return 'New Email Template'
     },
+    getSelectedMethod() {
+      return this.methodItems?.find(
+        (item) => item.resourceId === this.formValues.categoryResourceId
+      )?.name
+    },
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
+    },
+    getMethodTypeId() {
+      return this.methodItems?.find(
+        (item) => item.resourceId === this.formValues.categoryResourceId
+      )?.code
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
@@ -395,6 +437,9 @@ export default {
           attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
         }
         this.formValues.name = `${this.formValues.name}`
+        this.isAssistedByAI = this?.formValues?.isAssistedByAI
+        this.isPlainText = !this?.formValues?.isPlainText
+        this.$set(this.formValues, 'aiAssistant', this?.formValues?.isAssistedByAI || false)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
@@ -418,6 +463,11 @@ export default {
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
+    }
+    if (!(this.isEdit || this.isDuplicate)) {
+      const preferredLanguageTypeResourceId =
+        this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
+      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {
@@ -525,6 +575,7 @@ export default {
       if (!isChanged) {
         return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
@@ -549,7 +600,7 @@ export default {
       this.step -= 1
     },
     submit() {
-      if (this.isAttachmentBasedTemplate && this.formValues.attachmentFiles.length === 0) {
+      if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
         this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
         return
       }
@@ -561,13 +612,13 @@ export default {
         isMakeAvailableForValid = refMakeAvailableFor.isAvailableForValid
       }
       const isFormValid = this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
-      if (!isFormValid) {
+      if (!isFormValid || !this.formValues.languageTypeResourceId) {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
         this.isSubmitDisabled = false
         return
       }
-
+      this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       let payload = {
         ...this.formValues,
         isDuplicated: this.isDuplicate,
@@ -586,7 +637,9 @@ export default {
             : null,
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
+        isAssistedByAI: this.isAssistedByAI,
+        isPlainText: !this.isPlainText
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
@@ -599,8 +652,13 @@ export default {
           })
       } else {
         createPhishingEmailTemplate(payload)
-          .then(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+          .then((response) => {
+            this.$emit(
+              'changeNewEmailTemplateModalStatus',
+              false,
+              true,
+              response?.data?.data?.resourceId
+            )
           })
           .finally(() => {
             this.isSubmitDisabled = false

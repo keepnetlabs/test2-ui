@@ -651,7 +651,7 @@ export default {
           this.callbackTemplate.invalidDialingNotice = { ...callbackTemplate.steps[0] }
           this.callbackTemplate.callGreeting = { ...callbackTemplate.steps[1] }
           this.callbackTemplate.steps.splice(0, 2)
-          this.isTextToSpeechCompatible = callbackTemplate.voiceProviderTypeId === 2
+          this.isTextToSpeechCompatible = [2, 3].includes(callbackTemplate.voiceProviderTypeId)
           this.tab = 'email'
         })
       })

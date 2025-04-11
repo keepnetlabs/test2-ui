@@ -33,6 +33,7 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
+    @on-selection-text-change="handleSelectionChange"
   >
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
@@ -40,9 +41,19 @@
         :icon="tableOptions.rowActions[0].icon"
         :text="tableOptions.rowActions[0].name"
         :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || scope.row.status === 'In Queue'"
+        :disabled="
+          tableOptions.rowActions[0].disabled ||
+          scope.row.status === 'In Queue' ||
+          campaignDurationExpired()
+        "
         :checkIsOwnerProperty="false"
-        disabledTooltipText="Can not resend when the status is In Queue."
+        :disabledTooltipText="
+          scope.row.status === 'In Queue'
+            ? 'Can not resend when the status is In Queue.'
+            : campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
         @on-click="handleOnResend(scope.row)"
       />
       <DefaultButtonRowAction
@@ -144,6 +155,7 @@ import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerRep
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 import Badge from '@/components/Badge'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -172,6 +184,11 @@ export default {
       default: () => []
     }
   },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
+    }
+  },
   data() {
     return {
       COLUMNS,
@@ -194,6 +211,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_DELIVERY,
           COLUMNS.DATE_SENT,
@@ -300,7 +318,7 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return `Event history is only available for ${provider}`
+      return `Event history is only available for SMTP`
     }
   },
   watch: {
@@ -326,8 +344,25 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForLanguages()
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
+          'filterableItems',
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
+        )
+        this?.$refs?.refTable?.reRenderFilters()
+      })
+    },
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       searchCampaignJobUserSendingReport(this.axiosPayload, this.id, this.instanceGroup)

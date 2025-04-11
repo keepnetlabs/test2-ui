@@ -45,11 +45,18 @@
         ></switch-account>
       </v-dialog>
     </v-row>
-    <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
-      <div class="connection-lost-wrapper">
-        <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
-      </div>
-    </v-overlay>
+    <AppDialog v-if="!isDisconnected" :status="!isDisconnected" :z-index="99999">
+      <template #app-dialog-body>
+        <div class="connection-lost-wrapper">
+          <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
+        </div>
+      </template>
+      <template #app-dialog-footer>
+        <div class="connection-lost-button d-flex flex-row flex-wrap justify-end">
+          <v-btn text color="#2196f3" @click="onIUnderstandClick(true)">I UNDERSTAND</v-btn>
+        </div>
+      </template>
+    </AppDialog>
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
@@ -810,6 +817,19 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              v-if="getGamificationReportSearchPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
+              <v-list-item-content class="menu-item-content">
+                <app-router-link
+                  to="/reports/gamification-report"
+                  id="btn--link-navigator-menu-gamification-report"
+                  route-name="Gamification Report"
+                  :active-class-comparator="() => routerName === 'Gamification Report'"
+                />
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
           <v-list-group
             v-if="getCompanyLeftMenuPermissions"
@@ -1017,10 +1037,12 @@ import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
 import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
+import AppDialog from '@/components/AppDialog.vue'
 
 export default {
   name: 'Main',
   components: {
+    AppDialog,
     InitializeCompanyModal,
     AppRouterLink,
     LeavingDialog,
@@ -1179,7 +1201,8 @@ export default {
       getCallbackCampaignManagerLeftMenuPermissions:
         'permissions/getCallbackCampaignManagerLeftMenuPermissions',
       getCallbackScenarioLeftMenuPermissions: 'permissions/getCallbackScenarioLeftMenuPermissions',
-      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions'
+      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions',
+      getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions'
     }),
     getCompanyGroupName() {
       return this.routerName === 'Company Group Details'
@@ -1199,7 +1222,17 @@ export default {
       const { routerName } = this
       return [
         'menu-with-item menu-link-default',
-        routerName === 'Advanced Reports' || routerName === 'Advanced Report'
+        routerName === 'Advanced Reports' ||
+        routerName === 'Advanced Report' ||
+        routerName === 'Executive Reports' ||
+        routerName === 'Executive Report' ||
+        routerName === 'New Executive Report' ||
+        routerName === 'Preview Executive Report' ||
+        routerName === 'Edit Executive Report' ||
+        routerName === 'Duplicate Executive Report' ||
+        routerName === 'Scheduled Reports' ||
+        routerName === 'Scheduled Report' ||
+        routerName === 'Gamification Report'
           ? 'primary--text active-menu-parent'
           : 'un-selected-list-item'
       ]
@@ -1489,6 +1522,7 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
+        this.$store.dispatch('login/getCurrentCompany')
         this.callForSystemSummary()
         if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal()
         this.interval = setInterval(() => {
@@ -1602,6 +1636,7 @@ export default {
     changeDropdownItem(item) {
       if (item === 'logout') {
         this.logoutUser()
+        this.$store.dispatch('login/getWhiteLabelByUrl')
       }
       if (item === 'changePassword') {
         this.openPasswordChange = true

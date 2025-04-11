@@ -444,6 +444,10 @@ export default {
               payload?.dialogBoxSettings?.[i]?.simulationMailMessage || ''
             )
             formData.append(
+              `DialogBoxSettings[${i}].IsDeleteWithoutConfirmation`,
+              payload?.dialogBoxSettings?.[i]?.isDeleteWithoutConfirmation || false
+            )
+            formData.append(
               `DialogBoxSettings[${i}].IsDefault`,
               payload?.dialogBoxSettings?.[i]?.isDefault || false
             )

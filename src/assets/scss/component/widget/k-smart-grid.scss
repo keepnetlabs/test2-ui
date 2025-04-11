@@ -12,3 +12,32 @@
         }
     }
 }
+#available-widgets + .vue-grid-layout{
+  .executive-widget-container{
+    border:none !important;
+  }
+}
+
+.executive-report-avg-phishing-sim-clicker-msg{
+  position: absolute !important;
+  height: auto !important;
+  background-color: white !important;
+  left: 240px;
+  top: 40%;
+  padding: 12px 0 12px 12px;
+  transform:translateY(-40%);
+  border-left: 2px solid #E6A23C;
+  max-width:200px;
+  min-width:200px;
+
+  &-title{
+    font-weight: 600;
+  }
+  &-title,&-desc{
+    color: #383B41;
+    font-size: 12px;
+    font-style: normal;
+    line-height: 19px;
+  }
+
+}

@@ -1714,6 +1714,7 @@ export default {
       }
     },
     retryTestConnection(item) {
+      if (!item) return
       item.status = 'loading'
       this.loadingState.push('loading')
       const payload = {
@@ -1897,7 +1898,7 @@ export default {
       }
 
       if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
-        this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
+        this.formValues.apiUrl = 'https://www.virustotal.com/api/v3'
         this.resetApiKeysAndCredentials()
       } else if (name === INTEGRATION_TYPES.GOOGLEWEBRISK) {
         this.formValues.apiUrl = 'https://webrisk.googleapis.com/v1'

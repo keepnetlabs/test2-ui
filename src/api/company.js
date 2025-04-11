@@ -47,6 +47,11 @@ export function searchCompanyGroupsWithParents(payload) {
 export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
+export function expiryDateLimited(date) {
+  return testRequest.post('/companies/licenseexpirydate', {
+    licenseStartDate: date
+  })
+}
 
 function createCompanyPayload(payload) {
   const parsedStartDatePart = payload.LicenseStartDate?.split(' ')?.[0]
@@ -126,6 +131,9 @@ export function createEmailTemplate(payload = {}) {
 export function getEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}`)
 }
+export function getNotificationTemplatesDeliverySettings() {
+  return testRequest.get(`/companies/email-templates/email-delivery-setting-list`)
+}
 export function getDefaultEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}/default`)
 }
@@ -204,4 +212,12 @@ export function saveCompanyDataPrivacy(payload = {}) {
   return testRequest.put('/companies/privacymask', payload, {
     snackbar: COMMON_SNACKBAR
   })
+}
+export function saveAIAllySettings(payload = {}) {
+  return testRequest.post('/companies/ai', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export function getAIAllySettings() {
+  return testRequest.get('/companies/ai')
 }

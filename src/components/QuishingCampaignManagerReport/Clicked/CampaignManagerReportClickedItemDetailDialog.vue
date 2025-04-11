@@ -25,7 +25,7 @@
         searchType="clicked"
         @on-close="toggleShowSandboxActivityDialog"
       />
-      <SandboxDetailDialogAlerts />
+      <SandboxDetailDialogAlerts v-if="!isQuishingTypePrintout" />
       <DataTable
         :id="CONSTANTS.id"
         ref="refTable"
@@ -62,13 +62,12 @@
             :scope="scope"
           />
           <CampaignManagerReportIPColumn
-            v-if="col.property === COLUMNS.IP_SLOT_NON_FIXED.property"
+            v-if="!isQuishingTypePrintout && col.property === COLUMNS.IP_SLOT_NON_FIXED.property"
             :scope="scope"
           />
           <CampaignManagerReportActivityColumn
             v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
             :scope="scope"
-            :tooltip-text="getActivityTooltipText(scope.row)"
           />
         </template>
         <template #datatable-row-actions="{ scope }">
@@ -136,11 +135,31 @@ export default {
       default: true
     }
   },
+  inject: ['getQuishingTypePrintOut'],
   data() {
-    const sandboxText = this.isShowSandboxFromParent
-      ? 'HIDE SANDBOX ACTIVITY'
-      : 'SHOW SANDBOX ACTIVITY'
+    const isQuishingTypePrintout = this.getQuishingTypePrintOut()
+    let columns
+    if (isQuishingTypePrintout) {
+      columns = [
+        COLUMNS.DATE_SCANNED,
+        COLUMNS.USER_AGENT_SLOT,
+        COLUMNS.BROWSER,
+        COLUMNS.GEOLOCATION,
+        COLUMNS.IP
+      ]
+    } else {
+      columns = [
+        COLUMNS.DATE_SCANNED,
+        COLUMNS.USER_AGENT_SLOT,
+        COLUMNS.BROWSER,
+        COLUMNS.GEOLOCATION,
+        COLUMNS.IP_SLOT_NON_FIXED,
+        COLUMNS.ACTIVITY_TYPE
+      ]
+    }
+    const sandboxText = this.isShowSandboxFromParent ? 'HIDE BOT ACTIVITY' : 'SHOW BOT ACTIVITY'
     return {
+      isQuishingTypePrintout,
       COLUMNS,
       ACTIVITY_TYPES,
       isShowMarkAsHumanActivityDialog: false,
@@ -157,35 +176,32 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [
-          COLUMNS.DATE_CLICKED,
-          COLUMNS.USER_AGENT_SLOT,
-          COLUMNS.BROWSER,
-          COLUMNS.GEOLOCATION,
-          COLUMNS.IP_SLOT_NON_FIXED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
-        ],
-        addButton: {
-          show: true,
-          icon: null,
-          label: sandboxText,
-          action: 'on-activity',
-          tooltip: sandboxText,
-          hideTooltip: true,
-          type: 'outlined',
-          id: 'btn-select--hide-sandbox-activity'
-        },
+        columns,
+        addButton: isQuishingTypePrintout
+          ? { show: false }
+          : {
+              show: true,
+              icon: null,
+              label: sandboxText,
+              action: 'on-activity',
+              tooltip: sandboxText,
+              hideTooltip: true,
+              type: 'outlined',
+              id: 'btn-select--hide-sandbox-activity'
+            },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpenedDetail
         },
-        rowActions: [
-          {
-            name: 'Mark as human activity',
-            id: 'btn-mark-as--row-actions-campaign-manager-report-clicked',
-            icon: 'mdi-account-check',
-            action: 'on-mark-as'
-          }
-        ],
+        rowActions: isQuishingTypePrintout
+          ? []
+          : [
+              {
+                name: 'Mark as human activity',
+                id: 'btn-mark-as--row-actions-campaign-manager-report-clicked',
+                icon: 'mdi-account-check',
+                action: 'on-mark-as'
+              }
+            ],
         downloadButton: {
           show: false
         },
@@ -253,18 +269,11 @@ export default {
     },
     getRowActionText(row) {
       if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Mark as sandbox activity'
+        return 'Mark as bot activity'
       return this.tableOptions.rowActions[0].name
     },
     handleClose() {
       this.$emit('on-close')
-    },
-    getActivityTooltipText(row) {
-      if (row?.activityType === ACTIVITY_TYPES.HUMAN && row.isChangedActivity)
-        return 'Sandbox activity has been changed to human activity'
-      return row.sandboxType === 1 || row.sandoxType === 2
-        ? 'Sandbox Activity Rules: A1'
-        : 'Sandbox Activity Rules: A2'
     }
   }
 }

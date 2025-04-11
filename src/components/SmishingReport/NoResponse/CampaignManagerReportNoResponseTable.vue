@@ -28,7 +28,23 @@
     @downloadEvent="exportCampaignManagerReportNoResponseTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
+    @on-selection-text-change="handleSelectionChange"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :icon="tableOptions.rowActions[0].icon"
+        :id="tableOptions.rowActions[0].id"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+        :disabledTooltipText="
+          campaignDurationExpired()
+            ? 'You cannot resend this campaign because its lifetime has expired'
+            : 'Resend'
+        "
+        @on-click="handleOnResend(scope.row)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <CampaignManagerReportTimeZoneColumn
         v-if="col.property === COLUMNS.EMAIL_SEND_DATE.property"
@@ -55,10 +71,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 
 export default {
   name: 'CampaignManagerReportNoResponseTable',
-  components: { DataTable, CampaignManagerReportTimeZoneColumn },
+  components: { DataTable, CampaignManagerReportTimeZoneColumn, DefaultButtonRowAction },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
@@ -70,6 +87,11 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    }
+  },
+  inject: {
+    campaignDurationExpired: {
+      type: Function
     }
   },
   data() {
@@ -95,6 +117,7 @@ export default {
           COLUMNS.PHONENUMBER,
           COLUMNS.DEPARTMENT,
           COLUMNS.SMISHING_SCENARIO_NAME,
+          COLUMNS.SENDER_PHONE_NUMBER,
           COLUMNS.EMAIL_SEND_DATE
         ],
         addButton: {
@@ -111,7 +134,8 @@ export default {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-no-response',
             icon: '$custom-resend',
-            action: 'on-resend'
+            action: 'on-resend',
+            disabled: false
           }
         ]
       }
@@ -136,6 +160,9 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
+    },
     callForData() {
       this.setLoading(true)
       SmishingService.searchCampaignJobType(

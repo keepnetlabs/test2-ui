@@ -262,9 +262,8 @@
               :return-object="false"
               persistent-hint
               small-chips
-              hide-details
               :items="systemUsersItems"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[(v) => (!v?.length ? 'Required' : true)]"
               :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
             />
           </v-col>
@@ -298,9 +297,8 @@
               auto-select-first
               persistent-hint
               small-chips
-              hide-details
               :return-object="false"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[(v) => (!v?.length ? 'Required' : true)]"
               :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
               :slots="{ selection: true, item: false }"
             >
@@ -342,8 +340,7 @@
               item-text="name"
               outlined
               min-width-type="ultra"
-              nudge-width="40"
-              hide-details
+              :rules="[(v) => validations.required(v, 'Required')]"
             />
             <data-table-tooltip
               v-if="showOverFlowTooltip"
@@ -1275,7 +1272,7 @@ export default {
         this.targetGroupsAxiosPayload.pageNumber += 1
         if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
       }
-      searchTargetGroups(this.targetGroupsAxiosPayload)
+      searchTargetGroups(this.targetGroupsAxiosPayload, true)
         .then((response) => {
           this.setTargetGroups(response)
           this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
@@ -1288,7 +1285,7 @@ export default {
     },
     callForSearchTargetGroups(search = '') {
       if (!search) return
-      searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
+      searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search), true)
         .then(this.setTargetGroups)
         .finally(() => {
           this.isUserGroupsLoading = false

@@ -7,6 +7,7 @@
       :payload="resendPayload"
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
+      :resendItemCount="resendItemCount"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -54,6 +55,7 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     />
   </div>
 </template>
@@ -74,6 +76,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
 
 export default {
   name: 'TrainingReportClickedTrainingLink',
@@ -93,10 +96,15 @@ export default {
     },
     trainingSummary: {
       type: Object
+    },
+    customFields: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
+      resendItemCount: 0,
       isShowResendDialog: false,
       resendPayload: null,
       isResendActionButtonDisabled: false,
@@ -254,6 +262,19 @@ export default {
     }
   },
   watch: {
+    customFields: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const fields = createCustomFieldColumns(val, false)
+        const departmentIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === 'department'
+        )
+        if (departmentIndex) {
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        }
+      }
+    },
     isScormProxy: {
       immediate: true,
       handler(val) {
@@ -272,6 +293,19 @@ export default {
     this.callForData()
   },
   methods: {
+    handleSearchChange(searchFilter = {}) {
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+          (field) => !customFieldNames.includes(field.FieldName)
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
+    },
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
     getEmptyTableTextMessage() {
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportDownloadedPoster
@@ -317,7 +351,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = results.map((row) => {
+            let customFields = {}
+            row?.customFieldValues?.forEach?.((field) => {
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
         .finally(this.setLoading)
     },

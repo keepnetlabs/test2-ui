@@ -55,7 +55,8 @@ export default {
     return {
       languageItems: [],
       vishingSummary: {},
-      isLoading: false
+      isLoading: false,
+      interval: null
     }
   },
   computed: {
@@ -101,8 +102,13 @@ export default {
       }
     },
     getVishingInfoData() {
-      const { targetUserCount = 0, vishingTemplateDto = {} } = this.vishingSummary || {}
+      const { targetUserCount = 0, vishingTemplateDto = {}, targetGroupNames = [] } =
+        this.vishingSummary || {}
       return {
+        'Target Groups': {
+          show: true,
+          value: targetGroupNames?.map?.((tg) => ({ name: tg })) || []
+        },
         'Target Users': {
           show: true,
           value: targetUserCount
@@ -182,8 +188,14 @@ export default {
     }
   },
   created() {
-    this.callForData()
+    this.callForData(true)
+    this.interval = setInterval(() => {
+      this.callForData()
+    }, 15000)
     this.callForLanguages()
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
   },
   methods: {
     callForLanguages() {
@@ -191,17 +203,18 @@ export default {
         this.languageItems = response?.data?.data || []
       })
     },
-    callForData() {
+    callForData(isUseLoading = false) {
       if (!this.id) return
-      this.isLoading = true
-      getVishingReportSummary(this.id)
-        .then((res) => {
-          const { data: { data = {} } = {} } = res || {}
-          this.vishingSummary = data
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
+      if (isUseLoading) this.isLoading = true
+      getVishingReportSummary(this.id).then((res) => {
+        const { data: { data = {} } = {} } = res || {}
+        this.vishingSummary = data
+        if (isUseLoading) {
+          setTimeout(() => {
+            this.isLoading = false
+          }, 300)
+        }
+      })
     }
   }
 }

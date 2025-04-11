@@ -13,6 +13,11 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
   formData.append('name', payload.name)
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
+  formData.append('isAssistedByAI', payload.isAssistedByAI)
+  formData.append('isPlainText', payload.isPlainText)
+  formData.append('prompt', payload.prompt)
+  formData.append('toneResourceId', payload.toneResourceId)
+  formData.append('localizationResourceId', payload.localizationResourceId)
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
@@ -23,6 +28,11 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
       `availableForRequests[${[i]}].ResourceId`,
       payload.availableForRequests[i].resourceId
     )
+  }
+  if (!!payload?.ccAddresses) {
+    for (let i = 0; i < payload.ccAddresses.length; i++) {
+      formData.append(`ccAddresses[${[i]}]`, payload.ccAddresses[i])
+    }
   }
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
@@ -330,6 +340,28 @@ export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
     payload
   )
 }
+export function searchCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/${id}/${instanceGroup}`,
+    payload
+  )
+}
+export function searchCampaignJobUserRepliedDetails(payload = {}, id = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-replied/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserReplied(payload = {}, id = '', instanceGroup = '') {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/replied/search/export/${id}/${instanceGroup}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
 
 export function searchCampaignJobUserEmailSubmittedMfa(payload = {}, id = '', instanceGroup = '') {
   return testRequest.post(
@@ -525,6 +557,33 @@ export const updateSandboxActivity = (resourceId, payload) => {
   )
 }
 
+export const getCampaignScenarioStatistics = () => {
+  return testRequest.get('/phishing-simulator/phishing-scenario/scenario-statistics')
+}
+
 export const searchScenarioInfo = (payload) => {
   return testRequest.post(`/phishing-simulator/phishing-scenario/search/category-info`, payload)
+}
+
+export const generateAIEmailTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/email-templates/generate`, payload)
+}
+
+export const generateAILandingPageTemplate = (payload) => {
+  return testRequest.post(`/phishing-simulator/landing-page-template/generate`, payload)
+}
+export const getAIEmailTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/email-templates/ai-limit`)
+}
+export const getAILandingPageTemplateLimit = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template/ai-limit`)
+}
+export const getGeneratedAIEmailTemplate = () => {
+  return testRequest.get(`/phishing-simulator/email-templates`)
+}
+export const getAIGenerationOptions = () => {
+  return testRequest.get(`/phishing-simulator/email-templates/ai-generation-options`)
+}
+export const getGeneratedAILandingPageTemplate = () => {
+  return testRequest.get(`/phishing-simulator/landing-page-template`)
 }

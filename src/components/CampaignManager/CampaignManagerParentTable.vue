@@ -79,6 +79,18 @@
         </v-tooltip>
         <span v-else> {{ scope.row[col.property] }}</span>
       </template>
+      <template v-if="scope.column.property === 'categoryDistributionType'">
+        <span class="campaign-manager-parent-categoryDistributionType-column">
+          <VIcon
+            v-if="scope.row[col.property] === SCENARIO_DISTRIBUTION_TEXTS[3]"
+            color="#2196F3"
+            style="margin-top: -1px; margin-right: 2px;"
+            small
+            >mdi-creation</VIcon
+          >
+          <span>{{ scope.row[col.property] }}</span>
+        </span>
+      </template>
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
@@ -94,6 +106,25 @@
         @on-duplicate="handleDuplicate"
         @on-launch="handleLaunch"
       />
+    </template>
+    <template #addUsers>
+      <VTooltip bottom opacity="1">
+        <template v-slot:activator="{ on: tooltip }">
+          <VBtn
+            v-on="{ ...tooltip }"
+            id="btn-add--campaign-manager"
+            class="button-new"
+            style="margin-right: 10px;"
+            rounded
+            color="#2196f3"
+            @click="toggleAddCampaignManagerModal"
+          >
+            <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+            <span class="button-new__text">NEW</span>
+          </VBtn>
+        </template>
+        <span class="tooltip-span">{{ 'Add a Campaign' }}</span>
+      </VTooltip>
     </template>
   </DataTable>
 </template>

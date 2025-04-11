@@ -91,7 +91,7 @@
       <TrainingReportSummaryInfoCard
         v-bind="getCompletedTrainingData"
         background-color="#43A047"
-        :title="labels.CompletedTrainingPath"
+        :title="labels.CompletedLearningPath"
         :is-loading="isLoading"
         :icon-src="noResponseIcon"
       >
@@ -178,8 +178,8 @@ export default {
       return completedTraining ? completedTraining : {}
     },
     getDownloadedData() {
-      const { downloaded } = this.items
-      return downloaded ? downloaded : {}
+      const { completedTraining } = this.items
+      return completedTraining ? completedTraining : {}
     },
     getNoResponseData() {
       const { noResponse } = this.items

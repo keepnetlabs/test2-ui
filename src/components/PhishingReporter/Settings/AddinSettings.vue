@@ -197,7 +197,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnYesText"
                   initialPlaceholder="Enter confirm button label"
@@ -209,7 +214,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">No Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">No Button Label</label>
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnNoText"
                   initialPlaceholder="Enter a no button label"
@@ -221,7 +231,12 @@
                 />
               </div>
               <div v-if="false" class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnCancelText"
                   initialPlaceholder="Enter cancel button label"
@@ -233,7 +248,12 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                <div class="mt-n5">
+                  <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnOkText"
                   initialPlaceholder="Enter okay button label"
@@ -361,25 +381,66 @@
               <div class="add-in-settings__body-item mb-4">
                 <v-checkbox
                   color="#2196f3"
-                  label="Show confirmation message to delete email"
+                  label="Delete reported emails"
                   class="k-checkbox add-in-settings__list-item-checkbox"
                   id="input--phishing-reporter-is-delete-email-before-analysis"
                   v-model="setting.isDeleteEmailBeforeAnalysis"
                   :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
                 ></v-checkbox>
-                <InputDescription
-                  v-model.trim="setting.analysisEmailDeleteMessage"
-                  initialPlaceholder="Enter a confirmation message to delete email"
-                  entityName="confirmation message to delete email"
-                  id="input--phishing-reporter-analysis-email-delete-message"
-                  rows="2"
-                  height="80"
-                  :disabled="!setting.isDeleteEmailBeforeAnalysis"
-                  :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
-                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-                  :maxLength="256"
-                  :required="setting.isDeleteEmailBeforeAnalysis"
-                />
+                <div class="flex-grow-1">
+                  <KSelect
+                    v-model.trim="setting.isDeleteWithoutConfirmation"
+                    style="max-width: 200px;"
+                    itemText="text"
+                    itemValue="value"
+                    :items="deleteEmailOptions"
+                    outlined
+                    placeholder="Select delete reported emails option"
+                    :disabled="!showForm || !setting.isDeleteEmailBeforeAnalysis"
+                  ></KSelect>
+                  <InputDescription
+                    v-if="setting.isDeleteWithoutConfirmation === false"
+                    v-model.trim="setting.analysisEmailDeleteMessage"
+                    initialPlaceholder="Enter a confirmation message to delete email"
+                    entityName="confirmation message to delete email"
+                    id="input--phishing-reporter-analysis-email-delete-message"
+                    rows="2"
+                    height="80"
+                    :disabled="!setting.isDeleteEmailBeforeAnalysis"
+                    :initialRules="setting.isDeleteEmailBeforeAnalysis ? textAreaRules : []"
+                    :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                    :maxLength="256"
+                    :required="setting.isDeleteEmailBeforeAnalysis"
+                  />
+                  <AlertBox
+                    v-if="setting.isDeleteEmailBeforeAnalysis"
+                    class="bg-aqua-light"
+                    style="width: 362px;"
+                    icon-color="#2196F3"
+                    icon-name="mdi-information"
+                    text="Emails that are deleted may be moved to the trash folder due to Microsoft's policies."
+                    :slots="{ primaryAction: false, secondaryAction: false }"
+                  >
+                    <template #text>
+                      <div
+                        v-if="setting.isDeleteWithoutConfirmation"
+                        style="color: #383b41; font-size: 14px; margin-left: 8px;"
+                      >
+                        Emails that are deleted may be moved to the trash folder due to Microsoft's
+                        policies.
+                      </div>
+                      <div v-else style="color: #383b41; font-size: 14px; margin-left: 8px;">
+                        <ul>
+                          <li>
+                            Emails that are deleted may be moved to the trash folder due to
+                            Microsoft's policies.
+                          </li>
+                          <li>The 'With Confirmation' option is not available in Ribbon View.</li>
+                        </ul>
+                      </div>
+                    </template>
+                  </AlertBox>
+                </div>
               </div>
               <div class="add-in-settings__body-item">
                 <v-checkbox
@@ -502,12 +563,16 @@ import LanguageDeletionDialog from '@/components/PhishingReporter/Settings/Langu
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   defaultDialogBoxSettings,
+  deleteEmailOptions,
   checkDialogBoxSettings
 } from '@/components/PhishingReporter/Settings/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AlertBox from '@/components/AlertBox'
+
 export default {
   name: 'AddinSettings',
   components: {
+    AlertBox,
     KFileUpload,
     ReporterVersionModal,
     VersionHistoryModal,
@@ -555,6 +620,7 @@ export default {
     return {
       isValid: false,
       files: [],
+      deleteEmailOptions,
       labels,
       isFetchingDefaultSettingsForLanguage: false,
       isLanguageDeletionDialogVisible: false,

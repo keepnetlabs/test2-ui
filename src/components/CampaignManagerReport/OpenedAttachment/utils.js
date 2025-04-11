@@ -85,6 +85,20 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  PREFERREDLANGUAGE: {
+    property: 'preferredLanguage',
+    align: 'left',
+    label: labels.PreferredLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [],
+    filterableCustomFieldName: 'preferredLanguageId'
+  },
   SCENARIO: {
     property: 'phishingScenarioName',
     align: 'left',
@@ -383,7 +397,7 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: [
       { text: 'Human Activity', value: '0' },
-      { text: 'Sandbox Activity', value: '1' }
+      { text: 'Bot Activity', value: '1' }
     ]
   }
 }

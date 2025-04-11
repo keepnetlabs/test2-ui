@@ -745,6 +745,10 @@ export default {
     waitApi: {
       type: Boolean,
       default: false
+    },
+    extendedViewCallingApi: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -792,6 +796,7 @@ export default {
       const isDisableChecker = this.extendedViewDisableChanger
         ? this.extendedViewDisableChanger()
         : true
+      if (this.extendedViewCallingApi) return true
       return (
         JSON.stringify(this.copyOfEditedRows) === JSON.stringify(this.defaultValues) &&
         isDisableChecker
@@ -981,7 +986,7 @@ export default {
       }
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
       this.copyOfEditedRows.map((item) => {
-        item[props] = value.join(',')
+        this.$set(item, props, value.join(','))
       })
     },
     handleEditPopupDatePickerChange(value, props) {

@@ -108,15 +108,28 @@ export default {
                 const fontSize = 9
                 const fontFamily = 'Open Sans, sans-serif'
                 const padding = 18
-                const text = 'Critical Risk Level. Immediate training is needed.'
-                //ctx.measureText(text).width;
-                const x = Math.floor(maxData._model.x / 2.3)
+                let text = 'Critical Risk Level. Immediate training is needed.'
+
+                if (
+                  ctx.measureText(text).width - 32 > chart.chartArea.right - chart.chartArea.left &&
+                  window.innerWidth < 1490
+                ) {
+                  text = 'Critical Risk Level. Immediate training...'
+                }
+                //const width = ctx.measureText(text).width
+                const x = Math.floor(maxData._model.x / 2)
                 const y = maxData._model.y - padding + 2
+                let xComparator = x
+                if (window.innerWidth >= 1280 && window.innerWidth < 1440) {
+                  xComparator = x < 130 ? 130 : x
+                } else if (window.innerWidth >= 1440) {
+                  xComparator = x < 160 ? 160 : x
+                }
                 ctx.fillStyle = '#000'
-                ctx.textAlign = 'left'
+                ctx.textAlign = 'start'
                 ctx.textBaseline = 'bottom'
                 ctx.font = `${fontSize}px ${fontFamily}`
-                ctx.fillText(text, x < 176 ? 176 : x, y)
+                ctx.fillText(text, xComparator, y)
               }
             }
           }
@@ -159,6 +172,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -259,6 +273,7 @@ export default {
             let position = this._chart.canvas.getBoundingClientRect()
 
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX / 2 + 'px'
@@ -310,6 +325,7 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 12,
@@ -337,9 +353,7 @@ export default {
         return
       }
       const names = data[0].widgetDatas.map((obj) => {
-        const arr = [obj.dataObject.fullName, obj.dataObject.email]
-        if (obj.dataObject.department) arr.push(obj.dataObject.department)
-        return arr
+        return [obj.dataObject.fullName, obj.dataObject.email]
       })
       const dataSetsData = data[0].widgetDatas.map((obj) => {
         return {

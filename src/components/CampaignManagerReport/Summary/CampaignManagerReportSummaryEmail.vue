@@ -12,7 +12,15 @@
       <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
         <div class="campaign-manager-last-step__email-template-body-header">
           <div class="campaign-manager-last-step__email-template-body-header-left">
-            {{ name }}
+            <span>{{ name }}</span>
+            <VTooltip v-if="isAssistedByAI" bottom>
+              <template #activator="{ on }">
+                <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
+                  >mdi-creation</VIcon
+                >
+              </template>
+              <span>This template was generated with AI</span>
+            </VTooltip>
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
@@ -111,7 +119,8 @@ export default {
       method: '',
       name: '',
       fromName: '',
-      fromAddress: ''
+      fromAddress: '',
+      isAssistedByAI: false
     }
   },
   computed: {
@@ -154,6 +163,7 @@ export default {
             this.fromName = data.fromName
             this.fromAddress = data.fromAddress
             this.name = data.name
+            this.isAssistedByAI = data?.isAssistedByAI || false
           })
           .finally(() => {
             if (showLoader) this.setLoading()

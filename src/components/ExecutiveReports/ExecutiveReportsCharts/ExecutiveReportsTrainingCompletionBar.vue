@@ -6,6 +6,7 @@
           :title="card.title"
           :subtitle="card.parentKey"
           :edit-mode="editMode"
+          :is-dashboard-widget="isDashboardWidget"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
         />
@@ -13,9 +14,11 @@
           <template v-if="!isEmpty">
             <BarChart
               v-if="chartData.datasets"
-              :add-data-plugin="false"
+              :add-data-plugin="true"
               :chart-data="chartData"
               :chart-options="chartOptions"
+              :custom-plugin="customPlugins"
+              :add-custom-legend-label-height="12"
             />
           </template>
           <div
@@ -43,7 +46,6 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
@@ -74,6 +76,10 @@ export default {
     },
     defaultWidgetData: {
       type: [Object, Array]
+    },
+    isDashboardWidget: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -85,7 +91,34 @@ export default {
       },
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
-      chartData: {}
+      chartData: {},
+      customPlugins: [
+        {
+          afterDraw: (chart) => {
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
+            chart.legend.legendItems.forEach((legendItem, index) => {
+              const textParts = legendItem.textParts
+              if (textParts) {
+                let text = textParts[0]
+                let percentage = `(${textParts[1]})`
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                ctx.fillText(
+                  percentage,
+                  x + ctx.measureText(text).width - legendItem.customMarginLeft,
+                  y + 0.5
+                )
+                ctx.font = `${fontSize}px ${fontFamily}`
+              }
+            })
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -111,6 +144,7 @@ export default {
           const {
             data: { data }
           } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
           this.setChartData(data)
         })
         .finally(() => {
@@ -125,30 +159,15 @@ export default {
       }
       const { values } = data[0].widgetDatas[0]
       const completed = values.find((obj) => obj.name === 'Completed')?.value
+      const completedCount = values.find((obj) => obj.name === 'CompletedCount')?.value
       const inProgress = values.find((obj) => obj.name === 'InProgress')?.value
+      const inProgressCount = values.find((obj) => obj.name === 'InProgressCount')?.value
       const incomplete = values.find((obj) => obj.name === 'Incomplete')?.value
-      this.chartData = {
-        labels: ['Completed', 'In Progress', 'Incomplete'],
-        datasets: [
-          {
-            barThickness: 32,
-            label: 'Percentage of Users',
-            data: [completed, inProgress, incomplete],
-            backgroundColor: ['#43A047', '#F56C6C', '#E6A23C'],
-            borderWidth: 1,
-            order: 2
-          }
-        ]
-      }
+      const incompleteCount = values.find((obj) => obj.name === 'IncompleteCount')?.value
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 24
-          }
-        },
         scales: {
           xAxes: [
             {
@@ -202,7 +221,42 @@ export default {
           ]
         },
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          onClick: (e) => e.stopPropagation(),
+          labels: {
+            usePointStyle: true,
+            color: '#383B41',
+            font: 'Open-sans,sans-serif',
+            padding: 16,
+            fontSize: 12,
+            generateLabels: (chart = {}) => {
+              const { data } = chart
+              return [completedCount, inProgressCount, incompleteCount].map((d, index) => {
+                const label = data.labels[index]
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = label === 'Completed' ? 2 : 4
+                return {
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d + '   '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[data.labels[index]]
+                    ? CHART_COLORS[data.labels[index]].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: null,
+                  textParts,
+                  customMarginLeft: label === 'Completed' ? 4 : label === 'Incomplete' ? 2 : 0
+                }
+              })
+            }
+          }
         },
         tooltips: {
           enabled: false,
@@ -227,6 +281,7 @@ export default {
 
             let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
             tooltipEl.style.opacity = 1
+            tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             tooltipEl.style.left =
               position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
@@ -261,8 +316,8 @@ export default {
                   tooltipModel.dataPoints[0].label === 'Completed'
                     ? '#43A047'
                     : tooltipModel.dataPoints[0].label === 'Incomplete'
-                    ? '#E6A23C'
-                    : '#F56C6C'
+                    ? '#B83A3A'
+                    : '#2196F3'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -291,11 +346,40 @@ export default {
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
+              tooltipEl.style.display = 'none'
             })
           },
           xPadding: 16,
           yPadding: 16
+        },
+        plugins: {
+          datalabels: {
+            display: true,
+            align: 'end',
+            offset: -2,
+            anchor: 'end',
+            color: '#383B41',
+            clamp: true,
+            formatter: function (value) {
+              return value + '%'
+            },
+            borderRadius: 4,
+            padding: 6
+          }
         }
+      }
+      this.chartData = {
+        labels: ['Completed', 'In Progress', 'Incomplete'],
+        datasets: [
+          {
+            barThickness: 32,
+            label: 'Percentage of Users',
+            data: [completed, inProgress, incomplete],
+            backgroundColor: ['#43A047', '#2196F3', '#B83A3A'],
+            borderWidth: 1,
+            order: 2
+          }
+        ]
       }
       this.isEmpty = false
       this.isLoading = false
