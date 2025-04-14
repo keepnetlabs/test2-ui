@@ -67,7 +67,7 @@ const {
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
-  AI_ALLY_SETTINGS_PERMISSIONS, 
+  AI_ALLY_SETTINGS_PERMISSIONS,
   DIRECT_EMAIL_CREATION_PERMISSIONS,
   ADVANCED_REPORTS_PERMISSIONS,
   EXECUTIVE_REPORTS_PERMISSIONS,
@@ -1003,6 +1003,7 @@ const store = {
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
       return (
+        getters?.getRestApiSearchPermissions ||
         getters?.getNotificationTemplatesSearchPermissions ||
         getters?.getWhiteLabelingGetPermissions ||
         getters?.getSMTPSettingsSearchPermissions ||
@@ -1010,7 +1011,12 @@ const store = {
         getters?.getSAMLIntegrationSearchPermissions ||
         getters?.getSCIMSettingsSearchPermissions ||
         getters?.getSIEMIntegrationSearchPermissions ||
-        getters?.getDirectEmailCreationSearchPermissions
+        getters?.getDirectEmailCreationSearchPermissions ||
+        getters?.getAccountPrivacyPermission ||
+        getters?.getAIAllySettingsGetPermissions ||
+        getters?.getGoogleUserProvisionGetPermissions ||
+        getters?.getLDAPDetailPermission ||
+        getters?.getAllowListPermissionsSearch
       )
     },
     getSMTPSettingsSearchPermissions(state) {
