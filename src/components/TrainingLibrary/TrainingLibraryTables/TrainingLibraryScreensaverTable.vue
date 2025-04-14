@@ -158,6 +158,10 @@ export default {
   mounted() {
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
+    this.$refs.refTable.$refs.elTableRef.sort(
+      this.axiosPayload.orderBy,
+      this.axiosPayload.sortOrder ? 'ascending' : 'descending'
+    )
   },
   methods: {
     ...mapActions({

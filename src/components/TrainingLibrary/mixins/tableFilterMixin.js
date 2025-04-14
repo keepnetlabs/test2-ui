@@ -22,7 +22,6 @@ export default {
       setSortBy: 'trainingLibrary/setSortBy'
     }),
     columnFilterChanged(filter) {
-      console.log('filter', filter)
       const activeFilter = this.filters.find((item) => {
         const key = filter.FieldName === 'vendorName' ? 'vendor' : filter.FieldName
         return item.key.toLowerCase() === key.toLowerCase()
@@ -85,7 +84,6 @@ export default {
       if (this.$refs.refTable) this.$refs.refTable.reRenderFilters(filterValues)
     },
     sortChanged(sortedColumn) {
-      console.log('sortedColumn', sortedColumn)
       const isDate = sortedColumn.prop === 'createTime'
       let sortText
       if (isDate) {

@@ -607,12 +607,20 @@ const trainingLibrary = {
       commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
       commit('SET_TRAINING_TYPE', trainingType)
       commit('RESET_PAGINATION')
+      commit('SET_SORT_BY', 'Date Created - New to old')
+      commit('SET_SORT_BY_TO_PAYLOAD', {
+        ascending: true,
+        orderBy: 'createTime'
+      })
       dispatch('callForTableData')
       dispatch('callForSummary', { hideLoader: true })
     },
     setSortBy({ commit, dispatch }, { item, sort }) {
       commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
-      commit('SET_SORT_BY_TO_PAYLOAD', { ascending: sort.ascending, orderBy: item.orderBy })
+      commit('SET_SORT_BY_TO_PAYLOAD', {
+        ascending: sort.ascending,
+        orderBy: item.orderBy
+      })
       dispatch('callForTableData')
     },
     setDeleteDialog({ commit }, payload) {
@@ -639,7 +647,9 @@ const trainingLibrary = {
     setNewLearningPathModal({ commit, dispatch }, payload) {
       commit('SET_NEW_LEARNING_PATH_MODAL', payload)
       if (payload.status === false) {
-        dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, { root: true })
+        dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, {
+          root: true
+        })
       }
     },
     setNewPosterModal({ commit }, payload) {
@@ -677,7 +687,9 @@ const trainingLibrary = {
     },
     setFilterItemsShow({ commit, dispatch }, payload) {
       commit('SET_FILTER_ITEMS_SHOW', payload)
-      dispatch('learningPath/setLearningPathFilterItemsShow', payload, { root: true })
+      dispatch('learningPath/setLearningPathFilterItemsShow', payload, {
+        root: true
+      })
     },
     initDefaultTableFilters({ commit }) {
       commit('SET_DEFAULT_TABLE_FILTERS')
@@ -710,7 +722,9 @@ const trainingLibrary = {
       dispatch('callForTrainingLibrary')
     },
     resetAllModals({ commit, dispatch }) {
-      dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, { root: true })
+      dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, {
+        root: true
+      })
       commit('SET_NEW_LEARNING_PATH_MODAL', emptyNewLearningPathModalObj)
       commit('SET_NEW_INFOGRAPHIC_MODAL', emptyNewInfographicModalObj)
       commit('SET_NEW_TRAINING_MODAL', emptyNewTrainingModalObj)
