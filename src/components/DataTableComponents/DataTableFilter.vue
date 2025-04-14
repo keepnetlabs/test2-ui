@@ -123,7 +123,9 @@
           :key="getDateKey"
           @click="handleDateSelectClick"
         ></v-select>
-        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
+        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">
+          Between
+        </p>
         <InputDate
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
@@ -158,7 +160,9 @@
           :key="getDateKey"
           @click="handleDateSelectClick"
         ></v-select>
-        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
+        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">
+          Between
+        </p>
         <InputDate
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
@@ -312,7 +316,13 @@ export default {
     },
     filterableOptions: {
       default() {
-        return { exactDate: true, after: true, before: true, between: true, showSelect: true }
+        return {
+          exactDate: true,
+          after: true,
+          before: true,
+          between: true,
+          showSelect: true
+        }
       }
     },
     filterOptionProps: {
@@ -390,10 +400,18 @@ export default {
         { text: 'Less than or equal', value: '<=' }
       ],
       dateFilterItems: [
-        { text: 'Exact date', value: '=', show: this.filterableOptions.exactDate },
+        {
+          text: 'Exact date',
+          value: '=',
+          show: this.filterableOptions.exactDate
+        },
         { text: 'After', value: '>=', show: this.filterableOptions.after },
         { text: 'Before', value: '<=', show: this.filterableOptions.before },
-        { text: 'Between', value: 'between', show: this.filterableOptions.between }
+        {
+          text: 'Between',
+          value: 'between',
+          show: this.filterableOptions.between
+        }
       ],
       pickerOptions: {},
       convertedFilterableItems: []

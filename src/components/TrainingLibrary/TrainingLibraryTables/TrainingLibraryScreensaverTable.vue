@@ -24,6 +24,9 @@
     @server-side-size-changed="serverSideSizeChanged"
     @onEmptyBtnClicked="handleAddScreenSaver"
     @add-training="handleAddScreenSaver"
+    @columnFilterChanged="columnFilterChanged"
+    @columnFilterCleared="columnFilterCleared"
+    @sortChangedEvent="sortChanged"
   >
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryScreensaverRowActions
@@ -37,8 +40,6 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
@@ -49,12 +50,14 @@ import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
 export default {
   name: 'TrainingLibraryScreensaverTable',
   components: {
     TrainingLibraryScreensaverRowActions,
     DataTable
   },
+  mixins: [tableFilterMixin],
   data() {
     return {
       CONSTANTS: {
@@ -155,6 +158,10 @@ export default {
   mounted() {
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
+    this.$refs.refTable.$refs.elTableRef.sort(
+      this.axiosPayload.orderBy,
+      this.axiosPayload.sortOrder ? 'ascending' : 'descending'
+    )
   },
   methods: {
     ...mapActions({
