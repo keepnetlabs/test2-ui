@@ -293,7 +293,6 @@ export default {
       const trainingVendorColumn = this.tableOptions.columns.find(
         (column) => column.property === PROPERTY_STORE.VENDORNAME
       )
-      console.log('trainingVendorColumn', trainingVendorColumn)
       this.$set(trainingVendorColumn, 'filterableItems', val)
       this.$refs.refTable.reRenderFilters()
     }

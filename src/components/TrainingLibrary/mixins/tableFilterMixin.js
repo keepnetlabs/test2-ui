@@ -22,9 +22,11 @@ export default {
       setSortBy: 'trainingLibrary/setSortBy'
     }),
     columnFilterChanged(filter) {
-      const activeFilter = this.filters.find(
-        (item) => item.key.toLowerCase() === filter.FieldName.toLowerCase()
-      )
+      console.log('filter', filter)
+      const activeFilter = this.filters.find((item) => {
+        const key = filter.FieldName === 'vendorName' ? 'vendor' : filter.FieldName
+        return item.key.toLowerCase() === key.toLowerCase()
+      })
       this.$set(activeFilter, 'isFilterActive', true)
       let activeValue = filter.Value
       if (filter.Operator === 'Include') activeValue = filter.Value.split(',')
@@ -33,7 +35,10 @@ export default {
       this.setFilterToPayload(activeFilter)
     },
     columnFilterCleared(fieldName) {
-      const filter = this.filters.find((item) => item.key.toLowerCase() === fieldName.toLowerCase())
+      const filter = this.filters.find((item) => {
+        const key = fieldName === 'vendorName' ? 'vendor' : fieldName
+        return item.key.toLowerCase() === key.toLowerCase()
+      })
       this.$set(filter, 'isFilterActive', false)
       let filterValue, filterOperator
       if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
@@ -55,7 +60,8 @@ export default {
     addFilterToTable() {
       const filterValues = {}
       this.filters.forEach((filter) => {
-        const { activeOperator, activeValue, key } = filter
+        let { activeOperator, activeValue, key } = filter
+        if (key === 'vendor') key = 'vendorName'
         const assignedFilterObj = {
           fieldName: '',
           selectValue: '',
@@ -70,7 +76,7 @@ export default {
           assignedFilterObj.fieldName = key
           assignedFilterObj.selectValue = activeOperator
           assignedFilterObj.textValue = activeValue
-        } else if (activeOperator === '=') {
+        } else {
           assignedFilterObj.fieldName = key
           assignedFilterObj.textValue = activeValue
         }
@@ -79,9 +85,17 @@ export default {
       if (this.$refs.refTable) this.$refs.refTable.reRenderFilters(filterValues)
     },
     sortChanged(sortedColumn) {
+      console.log('sortedColumn', sortedColumn)
+      const isDate = sortedColumn.prop === 'createTime'
+      let sortText
+      if (isDate) {
+        sortText = sortedColumn.order === 'ascending' ? 'New to old' : 'Old to new'
+      } else {
+        sortText = sortedColumn.order === 'ascending' ? 'A to Z' : 'Z to A'
+      }
       const sort = {
         ascending: sortedColumn.order === 'ascending',
-        text: sortedColumn.order === 'ascending' ? 'A to Z' : 'Z to A'
+        text: sortText
       }
       const label = this.tableOptions.columns.find(
         (column) => column.property === sortedColumn.prop

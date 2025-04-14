@@ -293,7 +293,6 @@ const trainingLibrary = {
         state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType = 'Or'
         return
       }
-      console.log('filters', filters)
       const {
         filters: savedFilters = {},
         filterOptionsFilters = [],
