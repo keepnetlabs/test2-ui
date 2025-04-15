@@ -150,12 +150,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="5"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperButtonsIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -176,7 +171,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent, getErrorMessage } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/QuishingCampaignManager/QuishingCampaignManagerSummary'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -193,7 +188,6 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
-import { getErrorMessage } from '@/utils/functions'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -233,6 +227,12 @@ export default {
   emits: EMITS,
   data() {
     return {
+      stepperButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       createErrorMessage: '',
       SCENARIO_TYPES,
       isActionButtonDisabled: false,

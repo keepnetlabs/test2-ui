@@ -577,9 +577,7 @@ export default {
         if (this.selectedRow.status !== 'Scheduled') {
           delete payload['scheduleDate']
           delete payload['scheduledTimeZoneId']
-          if (!!payload?.enrollmentScheduler) {
-            payload.enrollmentScheduler = null
-          }
+          if (payload?.enrollmentScheduler) payload.enrollmentScheduler = null
         }
         if (!this.sendReminderEvery) payload.enrollmentReminder = null
         if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null

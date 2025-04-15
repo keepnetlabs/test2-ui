@@ -441,6 +441,7 @@ const trainingLibrary = {
             Value: payload.activeValue[1],
             Operator: '<='
           })
+          state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
           return
         }
         value = payload.activeValue.join(',')

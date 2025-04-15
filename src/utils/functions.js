@@ -531,7 +531,12 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
 }
 
 export function datePrettier(date) {
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }
   const newDate = new Date(date)
   return newDate.toLocaleDateString('en-US', options)
 }
@@ -773,7 +778,7 @@ export const getDifficultyBadgeColor = (text = '') => {
 
 export function createRandomCryptNumber() {
   const crypto = window.crypto || window.msCrypto
-  if (!crypto) return Math.random().toString(10)
+  if (!crypto) return Math.random().toFixed(10)
   const array = new Uint32Array(1)
   return crypto.getRandomValues(array)[0]
 }

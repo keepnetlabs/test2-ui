@@ -167,7 +167,6 @@ export default {
           message: labels.EmptyTrainingMaterial,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-all-types-table'
-          //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: false

@@ -170,7 +170,7 @@ export default {
       ]
       const params = [data[0].widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
-      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
+      const {  datasets } = createExecutiveReportChartData(...params)
 
       const industryAverageData = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0

@@ -22,15 +22,23 @@ export default {
       setSortBy: 'trainingLibrary/setSortBy'
     }),
     columnFilterChanged(filter) {
+      const isFilterArray = Array.isArray(filter)
       const activeFilter = this.filters.find((item) => {
-        const key = filter.FieldName === 'vendorName' ? 'vendor' : filter.FieldName
+        let key
+        if (isFilterArray) {
+          key = filter[0].FieldName
+        } else {
+          key = filter.FieldName === 'vendorName' ? 'vendor' : filter.FieldName
+        }
         return item.key.toLowerCase() === key.toLowerCase()
       })
       this.$set(activeFilter, 'isFilterActive', true)
-      let activeValue = filter.Value
+      let activeValue = isFilterArray
+        ? filter.map((item) => item.Value || item.value)
+        : filter.Value
       if (filter.Operator === 'Include') activeValue = filter.Value.split(',')
       this.$set(activeFilter, 'activeValue', activeValue)
-      this.$set(activeFilter, 'activeOperator', filter.Operator)
+      this.$set(activeFilter, 'activeOperator', isFilterArray ? 'between' : filter.Operator)
       this.setFilterToPayload(activeFilter)
     },
     columnFilterCleared(fieldName) {
@@ -71,7 +79,14 @@ export default {
             assignedFilterObj.fieldName = key
             assignedFilterObj.selectValue = activeValue.join(',')
           }
-        } else if (activeOperator === 'Contains') {
+        } else if (
+          activeOperator === 'Contains' ||
+          activeOperator === '=' ||
+          activeOperator === '!=' ||
+          activeOperator === '>=' ||
+          activeOperator === '<=' ||
+          activeOperator === 'between'
+        ) {
           assignedFilterObj.fieldName = key
           assignedFilterObj.selectValue = activeOperator
           assignedFilterObj.textValue = activeValue
@@ -79,6 +94,7 @@ export default {
           assignedFilterObj.fieldName = key
           assignedFilterObj.textValue = activeValue
         }
+
         filterValues[key] = assignedFilterObj
       })
       if (this.$refs.refTable) this.$refs.refTable.reRenderFilters(filterValues)
