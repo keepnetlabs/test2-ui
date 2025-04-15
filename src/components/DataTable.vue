@@ -263,7 +263,7 @@
                 <v-list class="pt-0">
                   <v-list-item>
                     <v-list-item-title>
-                      <label class="cluster-label">Cluster By</label>
+                      <span class="cluster-label">Cluster By</span>
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item

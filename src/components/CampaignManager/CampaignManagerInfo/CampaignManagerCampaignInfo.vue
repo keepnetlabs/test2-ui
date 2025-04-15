@@ -255,7 +255,7 @@ export default {
           if (smartGroupIndex !== -1) {
             this.$emit('smartGroupSelected', this.targetGroupList[smartGroupIndex])
           }
-        } else [this.$emit('smartGroupSelected', null)]
+        } else this.$emit('smartGroupSelected', null)
       }
     },
     initialClickedUserGroupResourceId: {

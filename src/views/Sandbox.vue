@@ -71,7 +71,6 @@
                 class="absolute-date-filter"
                 id="input--date-picker-select-main-div"
                 :style="filteredSelectValueDate === 'between' ? 'width: 400px' : ''"
-                tabindex="1"
                 @blur="changeBlurValue($event)"
               >
                 <v-select
@@ -104,7 +103,7 @@
                   @blur="changeBlurValue($event)"
                 />
 
-                <div class="filter__footer" tabindex="2" @blur="changeBlurValue($event)">
+                <div class="filter__footer" @blur="changeBlurValue($event)">
                   <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
                     Clear
                   </v-btn>

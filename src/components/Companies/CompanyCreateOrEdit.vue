@@ -173,7 +173,9 @@
                 </FormGroup>
                 <v-list-item>
                   <v-list-item-content :class="[getPreviewLogoUrl && 'mb-0']">
-                    <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
+                    <label for="input--company-logo" class="bottom-margin">{{
+                      labels.CompanyLogo
+                    }}</label>
                     <k-file-upload
                       hint="Upload png, jpg or jpeg. Suggested size: 180px * 60px. Max. file size 2MB"
                       id="input--company-logo"
@@ -250,7 +252,9 @@
               <v-form ref="refStep2Form" lazy-validation>
                 <v-list-item class="mt-6">
                   <v-list-item-content class="mb-2">
-                    <label class="bottom-margin">{{ labels.LicenceType }}</label>
+                    <label for="input--company--license-type" class="bottom-margin">{{
+                      labels.LicenceType
+                    }}</label>
                     <k-select
                       :items="licenceTypes"
                       v-model="formData.LicenseTypeResourceId"
@@ -287,9 +291,11 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="mb-4">
-                    <label class="bottom-margin">{{ labels.StartDate }}</label>
+                    <label for="input--company-license-start-date" class="bottom-margin">{{
+                      labels.StartDate
+                    }}</label>
                     <el-form>
-                      <el-form-item :error="startDateValidation">
+                      <el-form-item class="mb-2" :error="startDateValidation">
                         <InputDate
                           v-model="formData.LicenseStartDate"
                           id="input--company-license-start-date"
@@ -304,7 +310,9 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="mb-2">
-                    <label class="bottom-margin">{{ labels.ExpiryPeriod }}</label>
+                    <label for="input--company-expiry-period" class="bottom-margin">{{
+                      labels.ExpiryPeriod
+                    }}</label>
                     <div class="company__license-end-date__container">
                       <k-select
                         :items="expiryPeriods"
@@ -358,7 +366,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label>{{ labels.NumberOfUsers }}</label>
+                    <label for="input--company-numbers-limited">{{ labels.NumberOfUsers }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Number of end-users who will recieve emails and will be tracked
                     </v-list-item-title>
@@ -381,9 +389,14 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item v-if="isCallbackSelected" class="mt-6">
+                <v-list-item v-if="isCallbackSelected" class="mt-4">
                   <v-list-item-content class="mb-2">
-                    <label class="bottom-margin">Number Of Callback Phone Numbers</label>
+                    <label
+                      for="input--company--callback-number-booking-count"
+                      class="bottom-margin"
+                    >
+                      Number Of Callback Phone Numbers
+                    </label>
                     <v-list-item-title class="v-card-sub-header bottom-margin"
                       >Number of phone numbers that will be used in callback campaigns
                     </v-list-item-title>
@@ -396,8 +409,9 @@
                       <template #text>
                         <p class="mb-0 mb-n1">
                           There are only
-                          <strong>{{ callbackNumberItems.length }}</strong> available callback phone
-                          numbers in the system. If you would like to execute up to
+                          <strong>{{ callbackNumberItems.length }}</strong>
+                          available callback phone numbers in the system. If you would like to
+                          execute up to
                           <strong>12</strong> callback scenarios, then get in touch with your
                           support representative to add more callback phone numbers to the system.
                         </p>
@@ -430,7 +444,9 @@
               <v-form ref="refStep3Form" lazy-validation onSubmit="return false;">
                 <v-list-item class="mt-6">
                   <v-list-item-content>
-                    <label class="bottom-margin">Company Groups</label>
+                    <label for="input--company-group-groups" class="bottom-margin">
+                      Company Groups
+                    </label>
                     <k-select
                       v-infinite-scroll="{
                         target: '#input--company-group-groups .k-select__menu',
@@ -1170,7 +1186,9 @@ export default {
         this.companyGroupList.push(...companyGroupsThatCompanyBelongsTo)
       }
       if (this.comapnyGroups.some((group) => group.isOwner)) {
-        this.companyGroupList.push({ header: 'Groups That Created By The Company' })
+        this.companyGroupList.push({
+          header: 'Groups That Created By The Company'
+        })
         const companyGroupsThatCompanyCreated = this.comapnyGroups.filter((group) => group.isOwner)
         this.companyGroupList.push(...companyGroupsThatCompanyCreated)
       }

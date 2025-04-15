@@ -8,10 +8,15 @@
     <FormGroup :title="labels.ReplyTracking" :sub-title="labels.ReplyTrackingSub">
       <template #title>
         <div class="campaign-manager-reply-tracking__title">
-          <label class="k-form-group__title">
+          <label for="campaign-manager-reply-tracking__switch" class="k-form-group__title">
             {{ labels.ReplyTracking }}
           </label>
-          <VSwitch v-model="value.isEnabled" hide-details color="#2196f3" />
+          <VSwitch
+            id="campaign-manager-reply-tracking__switch"
+            v-model="value.isEnabled"
+            hide-details
+            color="#2196f3"
+          />
         </div>
       </template>
       <div

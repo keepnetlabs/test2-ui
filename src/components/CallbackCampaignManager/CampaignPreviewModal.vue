@@ -237,7 +237,10 @@ export default {
       this.isLoadingScenario = true
       CallbackService.getCallbackScenarioPreview(scenario.value)
         .then((res) => {
-          const { emailTemplate, callbackTemplate } = res?.data?.data
+          const { emailTemplate, callbackTemplate } = res?.data?.data || {
+            emailTemplate: {},
+            callbackTemplate: {}
+          }
           this.emailTemplate = emailTemplate?.template
           this.emailTemplateParams = {
             name: emailTemplate?.name || '',

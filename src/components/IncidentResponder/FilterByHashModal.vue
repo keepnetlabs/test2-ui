@@ -57,7 +57,7 @@
 import AppDialog from '@/components/AppDialog'
 import { maxLength, required } from '@/utils/validations'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'FilterByHashModal',
   components: {
@@ -76,7 +76,7 @@ export default {
   },
   data() {
     return {
-      componentKey: Math.random(),
+      componentKey: `key-${createRandomCryptStringNumber()}`,
       validations: {
         required,
         maxLength
@@ -85,10 +85,10 @@ export default {
   },
   watch: {
     status(val) {
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
     },
     'filterProps.filterBy'(val) {
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
       this.$emit('input', { hash: '', filterBy: val })
     }
   },
