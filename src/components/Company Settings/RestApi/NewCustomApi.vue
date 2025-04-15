@@ -149,7 +149,9 @@
               id="btn-add--rest-api-add-ip-address"
               :disabled="!formValues.hasIpAddressRestriction"
               class="ip-restriction__button mb-2"
-              :class="{ 'disabled-button': !formValues.hasIpAddressRestriction }"
+              :class="{
+                'disabled-button': !formValues.hasIpAddressRestriction
+              }"
               type="button"
               @click="formValues.allowedIpAddresses.push({ name: '', value: '' })"
             >
@@ -169,7 +171,7 @@
             v-model="formValues.roleResourceIdList"
             hide-details
             required
-            :rules="[(v) => Validations.required(v, labels.Required)]"
+            :rules="[(v) => validations.required(v, labels.Required)]"
           >
           </v-select>
         </form-group>
@@ -193,14 +195,8 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from '@/api/restApi'
-import {
-  scrollToComponent,
-  isDifferent,
-  copyToClipboard,
-  getDefaultAxiosPayload
-} from '@/utils/functions'
+import { scrollToComponent, isDifferent, copyToClipboard } from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
-import * as Validations from '@/utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import * as validations from '../../../utils/validations'
 import { getAvailableSystemUsersRole } from '@/api/systemUsers'
@@ -227,14 +223,13 @@ export default {
   emits: ['closeOverlayWithUpdate', 'closeOverlay'],
   data() {
     return {
-      validations: validations,
+      validations,
       isGenerateClientBtnDisabled: false,
       editedClientSecret: '',
       saveDisable: false,
       labels,
       initialFormValues: null,
       formValues: new RestApiModel(),
-      Validations,
       roleItems: [],
       systemUserFormData: null
     }

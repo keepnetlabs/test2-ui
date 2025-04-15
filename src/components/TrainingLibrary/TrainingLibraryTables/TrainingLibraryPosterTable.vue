@@ -88,7 +88,6 @@ export default {
           message: labels.EmptyPoster,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-poster-table'
-          //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: false
@@ -96,7 +95,6 @@ export default {
         downloadButton: {
           show: false
         },
-        //todo rowActions
         rowActions: ['', '', ''],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }

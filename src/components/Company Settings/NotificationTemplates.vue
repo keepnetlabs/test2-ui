@@ -122,7 +122,6 @@ import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'

@@ -145,7 +145,6 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data || {}
-        // TODO: Fetch distributionDelayTimeTypes
         this.distributionDelayTimeTypes = [
           {
             text: 'seconds',

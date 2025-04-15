@@ -1066,7 +1066,10 @@ export default {
           text: item.domain,
           value: item.id.toString(),
           extraDatas: [
-            { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+            {
+              text: item.urlSchemaType,
+              value: item.urlSchemaTypeId.toString()
+            },
             { text: item.isStopBotActivity, value: item.isStopBotActivity }
           ]
         }
@@ -1392,7 +1395,6 @@ export default {
             this.isSubmitDisabled = false
             this.isLandingPageTemplateInEditMode = false
             this.step -= 1
-            return
           }
         })
       } else {

@@ -1121,7 +1121,7 @@ export default {
       this.$nextTick(async () => {
         setTimeout(async () => {
           let page = document.querySelector('#executive-report-new-card-container')
-          const pdf = await html2PDF(page, {
+          await html2PDF(page, {
             html2canvas: {
               useCORS: true,
               scale: window.devicePixelRatio * 2 > 4 ? 4 : window.devicePixelRatio * 2,

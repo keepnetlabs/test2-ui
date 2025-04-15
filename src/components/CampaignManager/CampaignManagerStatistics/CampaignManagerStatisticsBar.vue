@@ -36,8 +36,6 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import labels from '@/model/constants/labels'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
   name: 'CampaignManagerStatisticsBar',

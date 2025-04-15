@@ -20,7 +20,8 @@
             :value="1"
           >
             <template #label>
-              Email failed to send {{ `(${items.emailErrorUserCount || 0})` }}</template
+              Email failed to send
+              {{ `(${items.emailErrorUserCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
@@ -35,17 +36,6 @@
               {{ `(${items.totalUserOpenedCount || 0})` }}</template
             >
           </v-checkbox>
-          <!-- <v-checkbox
-            v-model="types"
-            id="input--training-report-email-failed-to-send"
-            color="#2196f3"
-            :disabled="!items.totalUserClickedCount"
-            :value="3"
-          >
-            <template #label
-              >{{ getClickedOnlyLabel }} {{ `(${items.totalUserClickedCount || 0})` }}</template
-            >
-          </v-checkbox> -->
           <v-checkbox
             v-if="isTrainingTypeTraining"
             v-model="types"
@@ -149,12 +139,6 @@ export default {
         return 'infographic'
       return 'email'
     },
-    // getClickedOnlyLabel() {
-    //   if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'Downloaded poster'
-    //   else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-    //     return 'Downloaded infographic'
-    //   return 'Clicked training link'
-    // },
     isTrainingTypeTraining() {
       return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     }

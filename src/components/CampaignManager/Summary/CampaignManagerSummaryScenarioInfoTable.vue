@@ -141,7 +141,7 @@ export default {
     }
   },
   created() {
-    if (!!this.axiosPayload) this.callForData()
+    if (this.axiosPayload) this.callForData()
   },
   watch: {
     axiosPayload: {

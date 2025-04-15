@@ -33,7 +33,9 @@ export function deleteCompany(id) {
   })
 }
 export function deleteCompanyGroup(id) {
-  return testRequest.delete(`/company-groups/${id}`, { snackbar: COMMON_SNACKBAR })
+  return testRequest.delete(`/company-groups/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function getCompanyByID(id, loading = true) {
   return testRequest.get(`/companies/${id}`, { loading: loading })
@@ -45,7 +47,9 @@ export function searchCompanyGroupsWithParents(payload) {
   return testRequest.post(`/company-groups/search-with-parent`, payload)
 }
 export function createCompanyGroups(payload) {
-  return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post('/company-groups', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function expiryDateLimited(date) {
   return testRequest.post('/companies/licenseexpirydate', {
@@ -64,14 +68,15 @@ function createCompanyPayload(payload) {
   const formData = new FormData()
 
   for (const key in payload) {
-    if (Array.isArray(payload[key])) {
-      payload[key].forEach((x) => formData.append(key, x))
-    } else {
-      if (key === 'PreferredLanguageTypeResourceId') {
-        formData.append(key, payload[key] || '')
-      } else {
-        payload[key] && formData.append(key, payload[key])
-      }
+    const value = payload[key]
+    if (Array.isArray(value)) {
+      value.forEach((item) => formData.append(key, item))
+      continue
+    }
+    if (key === 'PreferredLanguageTypeResourceId') {
+      formData.append(key, value || '')
+    } else if (value) {
+      formData.append(key, value)
     }
   }
   return formData
@@ -95,7 +100,9 @@ export function updateInitializeCompany(payload) {
 }
 
 export function updateCompanyGroup(id, payload) {
-  return testRequest.put(`/company-groups/${id}`, payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.put(`/company-groups/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function addCompanyToCompanyGroup(resourceId = '', payload = {}) {

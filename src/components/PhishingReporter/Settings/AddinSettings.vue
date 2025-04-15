@@ -774,7 +774,6 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert'
           })
-          return
         })
         .finally(() => {
           this.isFetchingDefaultSettingsForLanguage = false

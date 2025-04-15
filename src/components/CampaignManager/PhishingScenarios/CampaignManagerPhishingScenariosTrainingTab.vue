@@ -360,7 +360,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguage'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { createRandomCryptStringNumber, getDefaultAxiosPayload } from '@/utils/functions'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import {
@@ -376,7 +375,7 @@ import { Fragment } from 'vue-frag'
 import CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal from './CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal.vue'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
-import { getSelectSearchPayload } from '@/utils/functions'
+import { getSelectSearchPayload, createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: {
@@ -515,7 +514,6 @@ export default {
       if (this.type === SCENARIO_TYPES.QUISHING) type = SCENARIO_TYPES.QUISHING
       else if (this.type === SCENARIO_TYPES.SMISHING) type = SCENARIO_TYPES.SMISHING
       else if (this.type === SCENARIO_TYPES.CALLBACK) {
-        type = SCENARIO_TYPES.CALLBACK
         return `The system sends the selected training to the target users who call the callback phone number, and enrollment is created`
       }
       return `The system sends the selected training to the target users who click on the ${type.toLowerCase()} link, and the enrollment is created`
