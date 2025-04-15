@@ -21,15 +21,21 @@
               <v-col sm="12" class="p-0">
                 <v-form ref="settingsRef">
                   <div class="mb-8">
-                    <label class="settings-modal-wrapper__label d-block">Timezone</label>
-                    <label class="settings-modal-wrapper__label--sub d-block mb-2"
+                    <label
+                      for="input--settings-modal-timezone"
+                      class="settings-modal-wrapper__label d-block"
+                      >Timezone</label
+                    >
+                    <label
+                      class="settings-modal-wrapper__label--sub d-block mb-2"
+                      for="input--settings-modal-timezone"
                       >Select your timezone</label
                     >
                     <k-select
                       type="autocomplete"
                       v-model.trim="formValues.timeZoneId"
                       :search-input.sync="timeZoneSearchVal"
-                      id="input--settings-modal"
+                      id="input--settings-modal-timezone"
                       :items="timeZoneList"
                       persistent-hint
                       dense
@@ -40,17 +46,21 @@
                     ></k-select>
                   </div>
                   <div class="mb-8">
-                    <label class="settings-modal-wrapper__label d-block mb-2">Date Format</label>
+                    <label
+                      for="input--settings-modal-date-format"
+                      class="settings-modal-wrapper__label d-block mb-2"
+                      >Date Format</label
+                    >
                     <v-radio-group
                       v-model="formValues.dateFormat"
-                      id="input--settings-modal-type"
+                      id="input--settings-modal-date-format"
                       :mandatory="true"
                       hide-details
                     >
                       <v-radio
                         v-for="item in dateFormatList"
                         :key="item"
-                        :id="`input--settings-modal-type-${item}`"
+                        :id="`input--settings-modal-date-format-${item}`"
                         :value="item"
                         :label="`${item} ${moment(new Date()).format(item)}`"
                         color="#2196f3"
@@ -58,17 +68,21 @@
                     </v-radio-group>
                   </div>
                   <div>
-                    <label class="settings-modal-wrapper__label d-block mb-2">Time Format</label>
+                    <label
+                      for="input--settings-modal-time-format"
+                      class="settings-modal-wrapper__label d-block mb-2"
+                      >Time Format</label
+                    >
                     <v-radio-group
                       v-model="formValues.timeFormat"
-                      id="input--settings-modal-type"
+                      id="input--settings-modal-time-format"
                       :mandatory="true"
                       hide-details
                     >
                       <v-radio
                         v-for="item in timeFormatList"
                         :key="item"
-                        id="input--settings-modal-type-12h"
+                        :id="`input--settings-modal-time-format-${item}`"
                         :value="item"
                         :label="`${item} ${item === '12h' ? '06:25 PM' : '18:25'}`"
                         color="#2196f3"

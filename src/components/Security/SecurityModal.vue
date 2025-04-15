@@ -66,6 +66,7 @@
                   <div>
                     <label
                       id="label--security-popup-current-password"
+                      for="input--security-popup-current-password"
                       class="new-password-wrapper__label d-block mb-2"
                       >Current Password</label
                     >
@@ -79,16 +80,17 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show1 ? '' : 'password'"
-                      @click:append="show1 = !show1"
                       autocomplete="new"
                       id="input--security-popup-current-password"
                       persistent-hint
+                      @click:append="show1 = !show1"
                     ></v-text-field>
                   </div>
                   <div>
                     <label
                       id="label--security-popup-new-password"
                       class="new-password-wrapper__label d-block mb-2"
+                      for="input--security-popup-new-password"
                       >New Password</label
                     >
                     <v-text-field
@@ -101,10 +103,10 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show2 ? '' : 'password'"
-                      @click:append="show2 = !show2"
                       autocomplete="password"
                       id="input--security-popup-new-password"
                       persistent-hint
+                      @click:append="show2 = !show2"
                     ></v-text-field>
                   </div>
                   <div class="pl-2 pr-2">
@@ -113,6 +115,7 @@
                   <div>
                     <label
                       id="label--security-popup-confirm-password"
+                      for="input--security-popup-re-new-password"
                       class="new-password-wrapper__label d-block mb-2"
                       >Confirm Password</label
                     >
@@ -124,12 +127,12 @@
                       data-sentry-mask
                       :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="showNewPassword ? '' : 'password'"
-                      @click:append="showNewPassword = !showNewPassword"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       autocomplete="new-password"
                       id="input--security-popup-re-new-password"
                       persistent-hint
+                      @click:append="showNewPassword = !showNewPassword"
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -146,19 +149,20 @@
                     <label
                       id="label--security-popup-mfa-code"
                       class="new-password-wrapper__label d-block mb-2"
+                      for="input--security-popup-mfa-code"
                       >Enter MFA code to disable your MFA status</label
                     >
                     <v-text-field
+                      v-model="mfaCode"
                       type="number"
                       id="input--security-popup-mfa-code"
-                      v-model="mfaCode"
                       placeholder="MFA Code"
                       class="reset-pass-textfield mt-3 max-width-228"
-                      :rules="[rules.required]"
                       outlined
                       hint="*Required"
                       persistent-hint
                       autocomplete="nope"
+                      :rules="[rules.required]"
                     ></v-text-field>
                   </div>
                 </v-form>

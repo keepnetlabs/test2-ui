@@ -74,7 +74,7 @@ export default {
       resendItemCount: 0,
       labels,
       isShowDetailDialog: false,
-      isShowSandboxFromParent: true,
+      isShowSandboxFromParent: false,
       selectedRow: null
     }
   },

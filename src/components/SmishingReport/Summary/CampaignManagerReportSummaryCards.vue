@@ -195,24 +195,19 @@ export default {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
     },
     getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
+      return this.items?.noResponse ?? {}
     },
     getOpenedData() {
-      const { openedEmail } = this.items
-      return openedEmail ? openedEmail : {}
+      return this.items?.openedEmail ?? {}
     },
     getSubmittedData() {
-      const { submitted } = this.items
-      return submitted ? submitted : {}
+      return this.items?.submitted ?? {}
     },
     getSubmittedMFAData() {
-      const { submittedMFA } = this.items
-      return submittedMFA ? submittedMFA : {}
+      return this.items?.submittedMFA ?? {}
     },
     getClickedData() {
-      const { clicked } = this.items
-      return clicked ? clicked : {}
+      return this.items?.clicked ?? {}
     }
   }
 }

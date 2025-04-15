@@ -19,7 +19,7 @@ import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 import learningPath from '@/store/modules/learningPath'
 import executiveReports from '@/store/modules/executiveReports'
 Vue.use(Vuex)
-let store = new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     common,
     login,

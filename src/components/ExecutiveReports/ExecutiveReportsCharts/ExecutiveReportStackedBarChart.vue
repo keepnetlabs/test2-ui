@@ -5,7 +5,6 @@
 <script>
 import BarChart from '@/components/Common/Charts/Bar.vue'
 import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
-import { getDataTableFieldLabel } from '@/utils/functions'
 import useTimeUnitLabel from '@/hooks/executive-reports/useTimeUnitLabel'
 
 export default {

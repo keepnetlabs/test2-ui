@@ -47,7 +47,9 @@
               @submit="(event) => event.preventDefault()"
             >
               <div>
-                <label class="mfa-setup__content--header p-0">MFA Code</label>
+                <label class="mfa-setup__content--header p-0" for="input--login-mfa-code"
+                  >MFA Code</label
+                >
                 <v-text-field
                   v-model.trim="mfaCode"
                   id="input--login-mfa-code"

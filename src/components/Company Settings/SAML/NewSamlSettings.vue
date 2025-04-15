@@ -293,7 +293,10 @@
             <v-checkbox v-model="formValues.isDefaultRole" class="saml-default-role__checkbox">
               <template #label>
                 <div class="saml-default-role">
-                  <label class="form-group-horizontal-content__label saml-default-role__label">
+                  <label
+                    for="input--saml-settings-system-user-role"
+                    class="form-group-horizontal-content__label saml-default-role__label"
+                  >
                     Default Role
                   </label>
                   <span class="saml-default-role__description">
@@ -529,7 +532,10 @@ export default {
         })
           .then((response) => {
             const { data } = response.data
-            this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+            this.roleItems = data.map((item) => ({
+              text: item.name,
+              value: item.resourceId
+            }))
             if (!this.isEdit && !this.selectedRow) {
               this.formValues.defaultRoleResourceId = data.find(
                 (role) => role.name === labels.CompanyAdmin

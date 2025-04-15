@@ -99,7 +99,7 @@ export default {
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   inject: {
@@ -137,7 +137,7 @@ export default {
         addButton: {
           show: true,
           icon: null,
-          label: 'HIDE BOT ACTIVITY',
+          label: 'SHOW BOT ACTIVITY',
           action: 'on-activity',
           hideTooltip: true,
           type: 'outlined',
@@ -192,7 +192,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
       CallbackService.getCampaignTabUsers(
         REPORT_TABS.OPENED,
         this.id,

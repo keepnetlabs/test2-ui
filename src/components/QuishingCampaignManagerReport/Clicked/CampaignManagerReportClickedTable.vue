@@ -85,7 +85,11 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 
 export default {
   name: 'CampaignManagerReportClickedTable',
-  components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
+  components: {
+    DataTable,
+    CampaignManagerReportActivityColumn,
+    DefaultButtonRowAction
+  },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
@@ -100,7 +104,7 @@ export default {
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   inject: {
@@ -188,7 +192,7 @@ export default {
           : {
               show: true,
               icon: null,
-              label: 'HIDE BOT ACTIVITY',
+              label: 'SHOW BOT ACTIVITY',
               action: 'on-activity',
               hideTooltip: true,
               type: 'outlined',
@@ -231,7 +235,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
       QuishingService.searchCampaignJobUserEmailClicked(
         this.axiosPayload,
         this.id,

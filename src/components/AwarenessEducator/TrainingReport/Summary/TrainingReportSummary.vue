@@ -360,7 +360,6 @@ export default {
       const { reportDetail = {}, completedCount = 0, inProgressCount } = this.trainingSummary || {}
       const {
         totalTargetUserCount = 0,
-        totalUserClickedCount = 0,
         totalUserOpenedCount = 0,
         noResponseCount = 0
       } = reportDetail

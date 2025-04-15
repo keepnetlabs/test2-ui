@@ -91,7 +91,7 @@
                 v-if="!!getLogoImage"
                 id="img--main-mini-logo"
                 class="menu-mini-img"
-                alt="mini-logo-image"
+                alt="mini-logo"
                 :src="getLogoImage"
               />
             </div>
@@ -128,7 +128,7 @@
                         <img
                           v-if="!!getLogoImage"
                           id="img--company-logo"
-                          alt="company-logo-image"
+                          alt="company-logo"
                           :src="getLogoImage"
                         />
                       </div>
@@ -232,7 +232,7 @@
               v-if="!!getMiniLogo"
               :src="getMiniLogo"
               class="menu-mini-img"
-              alt="menu-mini-logo-image"
+              alt="menu-mini-logo"
             />
           </div>
         </div>

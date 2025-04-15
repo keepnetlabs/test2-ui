@@ -36,9 +36,13 @@
 
       <v-list-item class="px-0 other-settings__list-item other-settings__list-item-container mt-n1">
         <v-list-item-content>
-          <label class="other-settings__list-item-header">Phishing Reporter API Settings</label>
+          <label
+            for="input--phishing-reporter-api-settings"
+            class="other-settings__list-item-header"
+            >Phishing Reporter API Settings</label
+          >
           <div class="other-settings__api-settings-container">
-            <label class="mt-n2">Site URL</label>
+            <label class="mt-n2" for="input--phishing-reporter-api-settings">Site URL</label>
             <v-text-field
               v-bind="getHintValues"
               v-model.trim="formValues.apiUrl"
@@ -53,7 +57,11 @@
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container mt-n3">
-            <label class="other-settings__list-item-header mt-n2">{{ labels.ApiKey }}</label>
+            <label
+              for="input--phishing-reporter-api-key"
+              class="other-settings__list-item-header mt-n2"
+              >{{ labels.ApiKey }}</label
+            >
             <v-text-field
               v-bind="getHintValues"
               v-model.trim="formValues.apiKey"
@@ -68,7 +76,11 @@
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container">
-            <label class="other-settings__list-item-header mt-n5">{{ labels.CompanyId }}</label>
+            <label
+              for="input--phishing-reporter-company-id"
+              class="other-settings__list-item-header mt-n5"
+              >{{ labels.CompanyId }}</label
+            >
             <v-text-field
               v-bind="getHintValues"
               v-model.trim="formValues.companyKey"
@@ -87,7 +99,11 @@
       </v-list-item>
       <v-list-item class="px-0 other-settings__list-item mt-n1">
         <v-list-item-content>
-          <label class="other-settings__list-item-header">Enterprise Vault</label>
+          <label
+            for="input--phishing-reporter-enterprise-vault"
+            class="other-settings__list-item-header"
+            >Enterprise Vault</label
+          >
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 other-settings__list-item other-settings__list-item-enter-prise">
@@ -124,7 +140,6 @@
           </template>
         </v-list-item-content>
       </v-list-item>
-
       <phishing-settings-footer
         v-if="showFooter"
         class-name="mt-4"

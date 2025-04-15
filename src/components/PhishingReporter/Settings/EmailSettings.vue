@@ -49,7 +49,11 @@
       </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header">CC</label>
+          <label
+            for="input--phishing-reporter-cc-email-address"
+            class="email-settings__list-item--header"
+            >CC</label
+          >
           <InputEmail
             v-model.trim="formValues.cc"
             id="input--phishing-reporter-cc-email-address"
@@ -64,7 +68,11 @@
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header">BCC</label>
+          <label
+            for="input--phishing-reporter-bcc-email-address"
+            class="email-settings__list-item--header"
+            >BCC</label
+          >
           <InputEmail
             v-model.trim="formValues.bcc"
             id="input--phishing-reporter-bcc-email-address"
@@ -95,7 +103,11 @@
       </FormGroup>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header">Email Message</label>
+          <label
+            for="input--phishing-reporter-recipient-email-message"
+            class="email-settings__list-item--header"
+            >Email Message</label
+          >
           <v-textarea
             v-model.trim="formValues.content"
             placeholder="Please investigate the attached email"
