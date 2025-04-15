@@ -492,10 +492,14 @@ export default {
             response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
           if (this.selectedRow?.status === 'Scheduled') {
-            this.formData.enrollmentScheduler = { ...enrollmentScheduler } || {
-              scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-              scheduledTimeZoneId: '',
-              useOwnTimeZone: false
+            if (enrollmentScheduler && typeof enrollmentScheduler === 'object') {
+              this.formData.enrollmentScheduler = { ...enrollmentScheduler }
+            } else {
+              this.formData.enrollmentScheduler = {
+                scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+                scheduledTimeZoneId: '',
+                useOwnTimeZone: false
+              }
             }
           }
           if (this.isLearningPath && !!response.data.data.distributionDays) {
@@ -562,16 +566,8 @@ export default {
       this.$emit(EMITS.ON_CLOSE, this.isAutoEnrollStopped || this.isReminderStopped)
     },
     handleEnrollmentTypeChange(val) {
-      if (val === 3) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      }
+      this.$set(this.enrollmentAutoEnrollTypeItems[2], 'text', 'next')
+      this.$set(this.enrollmentAutoEnrollTypeItems[3], 'text', 'in')
     },
     handleSubmit() {
       if (!this.isDateValid) return

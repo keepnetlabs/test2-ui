@@ -256,7 +256,10 @@
                           <InputEmail
                             v-model.trim="mailForResetPassword"
                             id="input--login-reset-password"
-                            :class="{ 'reset-pass-textfield': true, 'input-error': isErrorActive }"
+                            :class="{
+                              'reset-pass-textfield': true,
+                              'input-error': isErrorActive
+                            }"
                             style="padding: 0 !important;"
                             validate-on-blur
                             @click="resetPasswordError = false"
@@ -400,6 +403,7 @@
                           <div>
                             <label
                               id="label--login-confirm-password"
+                              for="input--login-confirm-password"
                               class="new-password-wrapper__label"
                               >Confirm Password</label
                             >

@@ -319,7 +319,7 @@ const trainingLibraryHelpers = {
         const types =
           response?.data?.data?.map((type) => ({
             text: type.displayName,
-            value: type.id
+            value: type.id.toString()
           })) || []
         const learningPathTrainingTypes = types.filter(
           (type) => !['Screensaver', 'Learning Path'].includes(type.text)

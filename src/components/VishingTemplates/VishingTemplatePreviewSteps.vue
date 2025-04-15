@@ -126,6 +126,7 @@
 <script>
 import AudioPlayer from '@/components/AudioPlayer'
 import { playTextToSpeech } from '@/api/vishing'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'VishingTemplatePreivewSteps',
   components: {
@@ -173,7 +174,7 @@ export default {
   },
   watch: {
     selectedStep() {
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
       this.retryCount = 5
     },
     getSelectedInputType: {
@@ -245,7 +246,7 @@ export default {
       if (!this.getSelectedStepObject?.inputText) return
       if (!this.retryCount) return
       this.retryCount--
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
       this.isFetchingTTSUrl = true
       const payload = {
         inputText: this.getSelectedStepObject?.inputText || '',

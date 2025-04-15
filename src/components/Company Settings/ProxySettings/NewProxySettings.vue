@@ -310,7 +310,7 @@ export default {
     },
     handleChangeServiceProvider(item = '') {
       if (item !== ':') {
-        const [serverAddress, serverPort] = item?.split(':')
+        const [serverAddress, serverPort] = item?.split(':') || []
         this.formValues.serverAddress = serverAddress
         this.formValues.serverPort = serverPort
       } else {

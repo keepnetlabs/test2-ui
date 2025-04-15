@@ -120,7 +120,7 @@
       <TrainingLibraryFilteringOptions />
     </div>
     <div>
-      <TrainingLibrarySorting />
+      <TrainingLibrarySorting v-if="!isListView" />
     </div>
   </div>
 </template>
@@ -153,7 +153,9 @@ export default {
   computed: {
     ...mapGetters({
       filters: 'trainingLibrary/getFilters',
-      renderKey: 'trainingLibrary/getFiltersRenderKey'
+      renderKey: 'trainingLibrary/getFiltersRenderKey',
+      filterRenderKey: 'trainingLibrary/getTableFilterRenderKey',
+      isListView: 'trainingLibrary/getIsListView'
     }),
     getTotalFilterLength() {
       return this.filters.filter((item) => item.show).length
@@ -172,6 +174,11 @@ export default {
   watch: {
     renderKey() {
       if (this.filters) this.activeFilter = this.filters[0]
+    },
+    filterRenderKey() {
+      const findedActiveFilter = this.filters.find((filter) => filter.key === this.activeFilter.key)
+      this.checkFilter(findedActiveFilter)
+      this.activeFilter = findedActiveFilter
     }
   },
   created() {
