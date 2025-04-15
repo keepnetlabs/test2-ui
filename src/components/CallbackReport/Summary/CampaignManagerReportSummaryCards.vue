@@ -116,20 +116,16 @@ export default {
       return 'campaign-manager-report-summary-info-card--submitted-mfa-data'
     },
     getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
+      return this.items?.noResponse ?? {}
     },
     getOpenedData() {
-      const { openedEmail } = this.items
-      return openedEmail ? openedEmail : {}
+      return this.items?.openedEmail ?? {}
     },
     getCalledBackData() {
-      const { calledBack } = this.items
-      return calledBack ? calledBack : {}
+      return this.items?.calledBack ?? {}
     },
     getEnteredDigitsData() {
-      const { enteredDigits } = this.items
-      return enteredDigits ? enteredDigits : {}
+      return this.items?.enteredDigits ?? {}
     }
   }
 }

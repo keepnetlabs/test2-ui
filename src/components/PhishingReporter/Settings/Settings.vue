@@ -207,17 +207,16 @@ export default {
       this.saveDisable = true
       let addinSettings = this?.$refs?.refAddinSettings?.getFormValues() || {}
       const emailSettings = this?.$refs?.refEmailSettings?.getFormValues() || {}
-      const otherSettings =
-        {
-          companyKey: localStorage.getItem('companyId'),
-          enableEnterpriseVault: false,
-          apiKey: APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
-          apiUrl:
-            APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api',
-          ...this?.$refs?.refOtherSettings?.getFormValues()
-        } || {}
+      const otherSettingsFormValues = this?.$refs?.refOtherSettings?.getFormValues() || {}
+      const otherSettings = {
+        companyKey: localStorage.getItem('companyId'),
+        enableEnterpriseVault: false,
+        apiKey: APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
+        apiUrl:
+          APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api',
+        ...otherSettingsFormValues
+      }
       const diagnosticTool = this?.$refs?.refDiagnosticTool?.getFormValues() || {}
-
       const newFormData = {
         ...this.formData,
         ...addinSettings,

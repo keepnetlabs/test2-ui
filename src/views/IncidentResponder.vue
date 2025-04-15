@@ -177,7 +177,7 @@
                     <div>
                       <img
                         src="../assets/img/spinner.png"
-                        alt="spinner-image"
+                        alt="spinner"
                         class="add-in-settings__spinner"
                       />
                     </div>
@@ -345,7 +345,7 @@
                     <div>
                       <img
                         src="../assets/img/spinner.png"
-                        alt="spinner-image"
+                        alt="spinner"
                         class="add-in-settings__spinner"
                       />
                     </div>
@@ -2119,7 +2119,11 @@ export default {
       }
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
-      this.confirmationPayload = { selectedRows, excludedResourceIdList, isSelectedAllEver }
+      this.confirmationPayload = {
+        selectedRows,
+        excludedResourceIdList,
+        isSelectedAllEver
+      }
       if (!(selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable))) {
         this.handleEditAfterConfirmation(this.confirmationPayload)
         return

@@ -135,7 +135,9 @@
         />
       </div>
       <div class="executive-report-customize-widget-preview">
-        <div class="executive-report-customize-widget-preview-title">{{ formData.title }}</div>
+        <div class="executive-report-customize-widget-preview-title">
+          {{ formData.title }}
+        </div>
         <div class="executive-report-customize-widget-preview-type">
           {{ selectedRow.parentKey }}
         </div>
@@ -406,15 +408,15 @@ export default {
     disabledStartPickerEndDates(val) {
       let selectedEndDate = new Date()
       if (this.formData.endDate) {
-        const [datePart, timePart] = this.formData?.endDate?.split(' ')
-        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        const [datePart, timePart] = this.formData?.endDate?.split(' ') || []
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
         let minutes, hours
         if (this.timeFormat && this.timeFormat === '12h') {
-          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         } else {
-          const [hoursPart, minutesPart] = timePart?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         }
@@ -431,15 +433,15 @@ export default {
     disableDataPickerEndDates(val) {
       let selectedStartDate = new Date()
       if (this.formData.startDate) {
-        const [datePart, timePart] = this.formData?.startDate?.split(' ')
-        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        const [datePart, timePart] = this.formData?.startDate?.split(' ') || []
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
         let minutes, hours
         if (this.timeFormat && this.timeFormat === '12h') {
-          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         } else {
-          const [hoursPart, minutesPart] = timePart?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         }

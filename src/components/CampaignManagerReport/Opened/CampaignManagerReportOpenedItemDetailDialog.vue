@@ -143,7 +143,7 @@ export default {
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {

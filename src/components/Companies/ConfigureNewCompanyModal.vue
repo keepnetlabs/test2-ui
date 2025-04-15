@@ -223,7 +223,7 @@ export default {
         })
         .catch((e) => {
           if (e && e.response && e.response.status === 404) {
-            const [title, message] = e.response?.data?.validationMessages
+            const [title, message] = e?.response?.data?.validationMessages || []
             refWhiteLabeling.whiteLabelingErrorMessage = message
             refWhiteLabeling.whiteLabelingErrorTitle = title
             refWhiteLabeling.acceptedDnsRecordSettingsDomain =

@@ -2,7 +2,12 @@
   <section
     :style="
       !insideURL
-        ? { padding: '8px', marginLeft: '-8px', overflowY: 'hidden', overflowX: 'auto' }
+        ? {
+            padding: '8px',
+            marginLeft: '-8px',
+            overflowY: 'hidden',
+            overflowX: 'auto'
+          }
         : ''
     "
   >
@@ -36,11 +41,7 @@
               color="#757575"
             />
           </div>
-          <div
-            v-if="insideURL && isLastItem"
-            class="email-details-inside-url__removal-white"
-            style=""
-          ></div>
+          <div v-if="insideURL && isLastItem" class="email-details-inside-url__removal-white"></div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div class="ed-title">
               <div class="d-flex" style="align-items: center;">

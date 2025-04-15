@@ -166,24 +166,19 @@ export default {
       return this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     },
     getOpenedData() {
-      const { openedEmail } = this.items
-      return openedEmail ? openedEmail : {}
+      return this.items?.openedEmail ?? {}
     },
     getInProgressData() {
-      const { inProgress } = this.items
-      return inProgress ? inProgress : {}
+      return this.items?.inProgress ?? {}
     },
     getCompletedTrainingData() {
-      const { completedTraining } = this.items
-      return completedTraining ? completedTraining : {}
+      return this.items?.completedTraining ?? {}
     },
     getDownloadedData() {
-      const { completedTraining } = this.items
-      return completedTraining ? completedTraining : {}
+      return this.items?.completedTraining ?? {}
     },
     getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
+      return this.items?.noResponse ?? {}
     }
   }
 }

@@ -3,8 +3,8 @@ export const createExecutiveReportChartData = (widgetData, comingDateFormat) => 
   const valueEnums = new Set()
   widgetData.forEach((dItem) => {
     const dateFormat = comingDateFormat || localStorage.getItem('selectedDateFormat')
-    const [datePart] = dItem?.date?.split(' ')
-    const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+    const [datePart] = dItem?.date?.split(' ') || []
+    const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
     let calculatedDate
     if (dateFormat === 'YYYY/MM/DD') {
       calculatedDate = new Date(firstPart, secondPart - 1, thirdPart)

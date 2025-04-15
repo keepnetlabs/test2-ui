@@ -838,12 +838,8 @@ const store = {
       return state?.incidentResponderListGroupPermissions?.MAIL_CONFIGURATIONS?.hasPermission
     },
     getCrossCompanyPermissions(state) {
-      const {
-        SUMMARY = {},
-        SEARCH_LOG = {},
-        SEARCH_STATS = {},
-        NOTIFY_RESULT = {}
-      } = state?.incidentResponderListGroupPermissions
+      const { SUMMARY = {}, SEARCH_LOG = {}, SEARCH_STATS = {}, NOTIFY_RESULT = {} } =
+        state?.incidentResponderListGroupPermissions || {}
       return [
         SUMMARY?.hasPermission,
         SEARCH_LOG?.hasPermission,
@@ -852,7 +848,8 @@ const store = {
       ].some((permission) => permission)
     },
     getCrossCompanyPagePermissions() {
-      const { SEARCH_LOG = {}, SEARCH_STATS = {} } = state?.incidentResponderListGroupPermissions
+      const { SEARCH_LOG = {}, SEARCH_STATS = {} } =
+        state?.incidentResponderListGroupPermissions || {}
       return {
         SEARCH_LOG,
         SEARCH_STATS
@@ -943,7 +940,7 @@ const store = {
       return state?.companyLeftMenuPermissions?.isOneOfThemPermitted
     },
     getTargetUsersLeftMenuPermissions(state) {
-      const { TARGET_USERS = {}, TARGET_GROUPS = {} } = state?.companyLeftMenuPermissions
+      const { TARGET_USERS = {}, TARGET_GROUPS = {} } = state?.companyLeftMenuPermissions || {}
       return TARGET_USERS?.hasPermission || TARGET_GROUPS?.hasPermission
     },
     getTargetUsersSearchPermissions(state) {
@@ -998,7 +995,7 @@ const store = {
       return state?.companyGroupsPermissions?.DELETE?.hasPermission
     },
     getCompaniesLeftMenuPermissions(state) {
-      const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions
+      const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions || {}
       return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
@@ -1201,7 +1198,7 @@ const store = {
       }
     },
     getSystemUserSearchPermission(state) {
-      const { SYSTEM_USERS = {}, ROLES = {} } = state?.companyLeftMenuPermissions
+      const { SYSTEM_USERS = {}, ROLES = {} } = state?.companyLeftMenuPermissions || {}
       return SYSTEM_USERS?.hasPermission || ROLES?.hasPermission
     },
     getSystemUsersSearchPermission(state) {
@@ -1235,11 +1232,11 @@ const store = {
       return state?.systemRolesPermissions?.EXPORT?.hasPermission
     },
     getAuditLogSearchPermission(state) {
-      const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions
+      const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions || {}
       return AUDIT_LOGS?.hasPermission
     },
     getJobLogsSearchPermission(state) {
-      const { JOB_LOGS = {} } = state?.companyLeftMenuPermissions
+      const { JOB_LOGS = {} } = state?.companyLeftMenuPermissions || {}
       return JOB_LOGS?.hasPermission
     },
     getIncidentResponderSummaryPermission(state) {
@@ -1303,7 +1300,7 @@ const store = {
       return state?.ldapPermissions?.SCHEDULE_SEARCH?.hasPermission
     },
     getLDAPFieldMappingPermissions(state) {
-      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions
+      const { FIELD_MAPPING_USERS, LDAP_FIELDS } = state?.ldapPermissions || {}
       return FIELD_MAPPING_USERS?.hasPermission && LDAP_FIELDS?.hasPermission
     },
     getLDAPCreateConfigPermission(state) {

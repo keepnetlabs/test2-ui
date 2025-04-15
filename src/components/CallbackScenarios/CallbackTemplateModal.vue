@@ -195,7 +195,9 @@
                             </v-btn>
                           </div>
                         </template>
-                        <span class="tooltip-span"> Only 5 steps can be added. </span>
+                        <span class="tooltip-span">
+                          Only 5 steps can be added.
+                        </span>
                       </v-tooltip>
                     </template>
                     <v-list>
@@ -273,7 +275,9 @@
                   >
                     <div class="callback-template-dialog-step__form-title">
                       <div class="callback-template-dialog-step__form-title-left">
-                        <label class="callback-template-dialog-step__form-label">Audio File</label>
+                        <div class="callback-template-dialog-step__form-label">
+                          Audio File
+                        </div>
                         <span class="callback-template-dialog-step__form-subtitle"
                           >Upload an audio file</span
                         >
@@ -659,7 +663,10 @@ export default {
     }
     if (this.isEdit || this.isDuplicate) {
       CallbackService.getCallbackTemplate(this.templateId).then((response) => {
-        this.formValues = { ...this.formValues, ...(response?.data?.data || {}) }
+        this.formValues = {
+          ...this.formValues,
+          ...(response?.data?.data || {})
+        }
         for (const step of this.formValues.steps) {
           step['isExpanded'] = false
         }

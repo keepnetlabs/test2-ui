@@ -170,7 +170,10 @@ const getTrainingUrl = (targetResourceId, enrollmentContentId) => {
   )
 }
 const getTrainingUrlForPreview = (trainingId, languageId) => {
-  return testRequest.post('/trainings/scorm/preview', { trainingId, languageId })
+  return testRequest.post('/trainings/scorm/preview', {
+    trainingId,
+    languageId
+  })
 }
 
 const getEnrollmentFormDetails = () => {
@@ -199,9 +202,8 @@ const lmsFinish = (payload) => {
 }
 
 const getTrainingReportSummary = (resourceId, trainingType = 0) => {
-  return testRequest.get(
-    `/training-reports/${resourceId}/summary?${`trainingType=${trainingType}`}`
-  )
+  const trainingTypeQuery = `trainingType=${trainingType}`
+  return testRequest.get(`/training-reports/${resourceId}/summary?${trainingTypeQuery}`)
 }
 
 const getScormProxyTrainingReportSummary = (resourceId) => {

@@ -147,7 +147,7 @@ export default {
             for (const element of elements) {
               let tempHeight = 0
               if (element) {
-                const { minHeight } = element?.style
+                const { minHeight } = element?.style || {}
                 if (minHeight) {
                   element.style.minHeight = minHeight.replace('vh', '') + '%'
                 }

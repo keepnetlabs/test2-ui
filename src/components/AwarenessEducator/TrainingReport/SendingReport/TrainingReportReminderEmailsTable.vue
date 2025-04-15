@@ -103,11 +103,11 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
+  TABLE_SETTINGS_KEYS,
+  PROPERTY_STORE
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
@@ -450,7 +450,9 @@ export default {
       this.isShowExtendedView = true
       AwarenessEducatorService.getTrainingReportReminderEmailDetails(this.id, row.userEmailId)
         .then((response) => {
-          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          const { data: { data = [] } = {} } = response || {
+            data: { data: [] }
+          }
           this.extendedViewValue = [data]
         })
         .catch(() => {

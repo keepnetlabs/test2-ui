@@ -123,7 +123,12 @@
             :disabled="!isInputsEditable || isInputLanguageDisabled"
             hide-details
           />
-          <span :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
+          <span
+            :style="
+              (!isInputsEditable || isInputLanguageDisabled) && {
+                opacity: '0.5'
+              }
+            "
             >Set reminder every</span
           >
           <VTextField
@@ -151,7 +156,11 @@
           />
           <span
             class="ml-2"
-            :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
+            :style="
+              (!isInputsEditable || isInputLanguageDisabled) && {
+                opacity: '0.5'
+              }
+            "
             >ends</span
           >
           <KSelect
@@ -181,7 +190,11 @@
           <span
             v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
             class="ml-2"
-            :style="(!isInputsEditable || isInputLanguageDisabled) && { opacity: '0.5' }"
+            :style="
+              (!isInputsEditable || isInputLanguageDisabled) && {
+                opacity: '0.5'
+              }
+            "
             >times</span
           >
           <InputDate
@@ -245,7 +258,7 @@
         <template #title>
           <div class="d-flex flex-row justify-content-between align-items-center">
             <div class="d-flex flex-column mr-10">
-              <label class="k-form-group__title">Edit Training Redirect Page</label>
+              <div class="k-form-group__title">Edit Training Redirect Page</div>
               <span class="v-list-item__subtitle k-form-group__sub-title"
                 >This is the page users see after receiving an email for their phishing
                 training.</span

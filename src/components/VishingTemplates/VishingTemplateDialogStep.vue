@@ -55,7 +55,7 @@
         <div v-if="value.inputType === 'FileUpload'">
           <div class="vishing-template-dialog-step__form-title">
             <div class="vishing-template-dialog-step__form-title-left">
-              <label class="vishing-template-dialog-step__form-label">Audio File</label>
+              <div class="vishing-template-dialog-step__form-label">Audio File</div>
               <span class="vishing-template-dialog-step__form-subtitle">Upload an audio file</span>
             </div>
             <!-- <div class="vishing-template-dialog-step__form--title-right">

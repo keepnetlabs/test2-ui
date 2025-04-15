@@ -359,7 +359,8 @@
                           style="z-index: 1;"
                           @click="editHtmlTemplate"
                         >
-                          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
+                          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon>
+                          Edit</v-btn
                         >
                       </div>
 
@@ -442,7 +443,7 @@
                               :indeterminate="checkHeaderSelected && !this.allHeader"
                               @change="headerValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">All Header</label>
+                            <div v-if="filterOpened">All Header</div>
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper mr-10">
@@ -889,7 +890,11 @@
                                   icon
                                   :class="{ 'disabled-chevron': url.isHidden }"
                                 >
-                                  <v-icon :class="{ 'chevron-down': attcChevron[ind] }" v-on="on"
+                                  <v-icon
+                                    :class="{
+                                      'chevron-down': attcChevron[ind]
+                                    }"
+                                    v-on="on"
                                     >mdi-chevron-down
                                   </v-icon>
                                 </v-btn>
@@ -1005,7 +1010,9 @@
                                   :id="`threat-sharing-post-incident-attachments-${ind}`"
                                   class="chevron-btn-menu"
                                   icon
-                                  :class="{ 'disabled-chevron': attachment.isHidden }"
+                                  :class="{
+                                    'disabled-chevron': attachment.isHidden
+                                  }"
                                 >
                                   <v-icon :class="{ 'chevron-down': urls[ind] }" v-on="on"
                                     >mdi-chevron-down

@@ -171,12 +171,8 @@ export default {
       this.setLoading(true)
       LDAPService.searchLDAPSchedule(this.axiosPayload)
         .then((response) => {
-          const {
-            totalNumberOfRecords,
-            totalNumberOfPages,
-            pageNumber,
-            results
-          } = response?.data?.data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber, results } =
+            response?.data?.data || {}
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
