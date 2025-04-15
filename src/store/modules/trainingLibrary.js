@@ -448,6 +448,7 @@ const trainingLibrary = {
       }
       if (fIndex !== -1) {
         filterItems[fIndex].Value = value
+        filterItems[fIndex].Operator = payload.activeOperator
       } else {
         filterItems.push({
           FieldName: payload.key,
