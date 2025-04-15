@@ -134,7 +134,9 @@
                     >
                       <template #title>
                         <div class="d-flex justify-space-between mb-2">
-                          <label class="k-form-group__title">Individual Printout Template</label>
+                          <div class="k-form-group__title">
+                            Individual Printout Template
+                          </div>
                         </div>
                       </template>
                       <email-template
@@ -176,7 +178,10 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :disabled-statuses="{
+          nextButton: isSubmitDisabled,
+          submitButton: isSubmitDisabled
+        }"
         :ids="footerButtonsIds"
         @on-cancel="changeNewIndividualPrintoutModalStatus"
         @on-back="backStep(-1)"
@@ -574,7 +579,10 @@ export default {
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
-          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
       })
     },
     getTagsComponent(item) {

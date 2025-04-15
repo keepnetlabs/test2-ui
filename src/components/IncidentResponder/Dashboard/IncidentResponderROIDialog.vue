@@ -14,7 +14,9 @@
       <v-form ref="form" lazy-validation>
         <v-list-item class="roi-modal__list-item">
           <v-list-item-content>
-            <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
+            <label class="roi-modal__label" for="input--incident-responder-roi-popup-saved-time">{{
+              labels.RoiSummarySavedTimeLabel
+            }}</label>
             <v-text-field
               v-mask="'###'"
               v-model="baseManHour"
@@ -31,7 +33,9 @@
         </v-list-item>
         <v-list-item class="roi-modal__list-item">
           <v-list-item-content>
-            <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
+            <label for="input--incident-responder-roi-popup-hourly-rate" class="roi-modal__label">{{
+              labels.RoiSummaryHourlyLabel
+            }}</label>
             <v-text-field
               v-mask="'###'"
               v-model="baseManHourCost"

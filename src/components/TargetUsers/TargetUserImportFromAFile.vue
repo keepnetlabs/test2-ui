@@ -141,7 +141,8 @@
                           rounded
                           :disabled="excelLoading"
                         >
-                          <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
+                          <v-icon class="close-icon">mdi-download</v-icon>
+                          Download Example Sheet
                           <v-icon
                             class="ml-2 loading-spin"
                             color="#2196f3"
@@ -170,7 +171,9 @@
                     <v-form ref="refMapForm" lazy-validation>
                       <v-list-item class="mt-6">
                         <v-list-item-content class="mb-2">
-                          <label class="bottom-margin">Select Group</label>
+                          <label for="input--target-user-groups-ldap" class="bottom-margin"
+                            >Select Group</label
+                          >
                           <KSelect
                             v-model="formData.groups"
                             ref="refTargetGroupSelect"
@@ -194,7 +197,11 @@
                             }"
                             :rules="[(v) => !!v || 'Required']"
                             :disabled="stepLock"
-                            :slots="{ selection: true, prependItem: true, item: true }"
+                            :slots="{
+                              selection: true,
+                              prependItem: true,
+                              item: true
+                            }"
                           >
                             <template #prependItem>
                               <v-list-item ripple @mousedown.prevent @click="handleCreateGroup">
@@ -309,7 +316,11 @@
                       :row-actions="tableOptions.rowActions"
                       :addButton="tableOptions.addButton"
                       :server-side-props="serverSideProps"
-                      :server-side-events="{ pagination: true, search: true, sort: true }"
+                      :server-side-events="{
+                        pagination: true,
+                        search: true,
+                        sort: true
+                      }"
                       :downloadButton="{
                         show: true
                       }"
@@ -1628,7 +1639,10 @@ export default {
           .getSelectedMultipleValues()
           .map((item) => item.resourceId)
         if (!selectedValues.length) return ''
-        payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
+        payload = {
+          ImportType: 'ImportSelected',
+          SelectedResourceIds: selectedValues
+        }
       } else if (label === labels.ImportAll) {
         payload = { ImportType: 'ImportAll' }
       } else if (label === 'onlyImportNewUsers') {

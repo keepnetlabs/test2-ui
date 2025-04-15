@@ -51,6 +51,5 @@ export const checkDialogBoxSettings = (settings) => {
     !settings.analysisEmailDeleteMessage
   )
     return false
-  if (settings.isSendSimulationMails && !settings.simulationMailMessage) return false
-  return true
+  return !(settings.isSendSimulationMails && !settings.simulationMailMessage)
 }

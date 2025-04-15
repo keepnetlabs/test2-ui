@@ -593,12 +593,7 @@
       <StepperFooter
         max-step="4"
         :step="activeStep"
-        :ids="{
-          cancelButton: 'btn-cancel--company-modal',
-          backButton: 'btn-back--company-modal',
-          nextButton: 'btn-next--company-modal',
-          saveButton: 'btn-save--company-modal'
-        }"
+        :ids="stepperButtonsIds"
         :disabled-statuses="{
           nextButton: isSecondStepDisabled,
           submitButton: saveDisable
@@ -688,6 +683,12 @@ export default {
       isExpiryDateLimited: false,
       startDateValidation: '',
       endDateValidation: '',
+      stepperButtonsIds: {
+        cancelButton: 'btn-cancel--company-modal',
+        backButton: 'btn-back--company-modal',
+        nextButton: 'btn-next--company-modal',
+        saveButton: 'btn-save--company-modal'
+      },
       saveDisable: false,
       totalNumberOfPagesOfCompanyGroups: 1,
       createdCompanyResourceId: null,
@@ -900,9 +901,8 @@ export default {
         if (!newVal) this.formData.LicenseEndDate = ''
         else {
           let endDate = ''
-          const [firstPart, secondPart, thirdPart] = this.formData?.LicenseStartDate?.split(
-            ' '
-          )?.[0]?.split('/')
+          const [firstPart, secondPart, thirdPart] =
+            this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/') || []
           if (this.dateFormat === 'YYYY/MM/DD') {
             endDate = new Date(parseInt(firstPart), parseInt(secondPart) + 2, parseInt(thirdPart))
           } else if (this.dateFormat === 'MM/DD/YYYY') {
@@ -1073,7 +1073,8 @@ export default {
     disabledEndDates(val) {
       let selectedStartDate = new Date()
       if (this.formData.LicenseStartDate) {
-        const [day, month, year] = this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/')
+        const [day, month, year] =
+          this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/') || []
         selectedStartDate = new Date(year, month - 1, day)
       }
       const selectedStartDateInMs = selectedStartDate.getTime() + 1000 * 60 * 60 * 24
@@ -1107,7 +1108,8 @@ export default {
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-          this.languageItems = [...res?.filter((item) => item.genericCodeTypeId === 21)]
+          const languageItems = res?.filter((item) => item.genericCodeTypeId === 21) || []
+          this.languageItems = [...languageItems]
           this.notificationTemplates = res
             .filter((item) => item.genericCodeTypeId === 5)
             .map((notificationTemplate, ind) => {
@@ -1233,14 +1235,10 @@ export default {
         this.formData.LicenseTypeName = this.licenceTypes.find((item) => {
           return item.resourceId === this.formData.LicenseTypeResourceId
         }).name
-        const [
-          startFirstPart,
-          startSecondPart,
-          startThirdPart
-        ] = this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/')
-        const [endFirstPart, endSecondPart, endThirdPart] = this.formData?.LicenseEndDate?.split(
-          ' '
-        )?.[0]?.split('/')
+        const [startFirstPart, startSecondPart, startThirdPart] =
+          this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/') || []
+        const [endFirstPart, endSecondPart, endThirdPart] =
+          this.formData?.LicenseEndDate?.split(' ')?.[0]?.split('/') || []
         let LicenseStartDate, LicenseEndDate
         if (this.dateFormat === 'YYYY/MM/DD') {
           LicenseStartDate = `${startFirstPart}-${startSecondPart}-${startThirdPart}`
@@ -1352,16 +1350,16 @@ export default {
       let end = new Date()
       let start = new Date()
       if (!!this.formData.LicenseStartDate) {
-        const [datePart, timePart] = this.formData?.LicenseStartDate?.split(' ')
-        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        const [datePart, timePart] = this.formData?.LicenseStartDate?.split(' ') || []
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
         let minutes, hours
         if (this.timeFormat && this.timeFormat === '12h') {
           // remove PM - AM part
-          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         } else {
-          const [hoursPart, minutesPart] = timePart?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         }

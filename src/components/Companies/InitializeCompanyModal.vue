@@ -250,10 +250,8 @@ export default {
       LookupLocalStorage.getMultiple([1, 2, 21]).then((res) => {
         this.countries = res.filter((item) => item.genericCodeTypeId === 1)
         this.industries = res.filter((item) => item.genericCodeTypeId === 2)
-        this.languages = [
-          { name: 'All Languages', resourceId: '' },
-          ...res?.filter((item) => item.genericCodeTypeId === 21)
-        ]
+        const languages = res?.filter((item) => item.genericCodeTypeId === 21) || []
+        this.languages = [{ name: 'All Languages', resourceId: '' }, ...languages]
       })
     },
     callForCompany() {

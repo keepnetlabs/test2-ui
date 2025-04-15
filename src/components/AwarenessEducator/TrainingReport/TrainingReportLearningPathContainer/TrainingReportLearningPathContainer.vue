@@ -48,12 +48,10 @@ import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/U
 import TrainingReportSendingReport from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReport'
 import KContainer from '@/components/KContainer/KContainer'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { mapActions } from 'vuex'
 import {
   TRAINING_LIBRARY_PAYLOAD_TYPES,
   TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 
 export default {
   name: 'TrainingReportLearningPathContainer',

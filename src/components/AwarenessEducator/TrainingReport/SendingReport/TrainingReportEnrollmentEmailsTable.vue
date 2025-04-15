@@ -105,7 +105,8 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
+  TABLE_SETTINGS_KEYS,
+  PROPERTY_STORE
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
@@ -113,7 +114,6 @@ import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
@@ -535,7 +535,9 @@ export default {
         row.targetUserResourceId
       )
         .then((response) => {
-          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          const { data: { data = [] } = {} } = response || {
+            data: { data: [] }
+          }
           this.extendedViewValue = [data]
         })
         .catch(() => {

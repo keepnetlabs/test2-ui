@@ -17,6 +17,7 @@
           <label
             id="label--email-details-download-modal-zip-password"
             class="add-in-settings__label"
+            for="input--email-details-zip-password"
             >Set a password for the .zip file</label
           >
           <v-text-field

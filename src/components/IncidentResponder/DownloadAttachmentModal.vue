@@ -8,7 +8,7 @@
     title-id="text--incident-responder-email-details-download-attachment-title"
     @changeStatus="$emit('changeDownloadModalStatus', false)"
   >
-    <template v-slot:app-dialog-body>
+    <template #app-dialog-body>
       <p id="text--incident-responder-email-details-download-attachment-subtitle">
         {{ labels.DownloadAttachmentSubtitle }}
       </p>
@@ -17,6 +17,7 @@
           <label
             id="label--email-details-download-modal-zip-password"
             class="add-in-settings__label"
+            for="input--email-details-zip-password"
             >Set a password for the .zip file</label
           >
           <v-text-field

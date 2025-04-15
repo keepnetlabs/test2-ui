@@ -153,7 +153,7 @@ export function email(value, message = 'Invalid email address') {
 
 export function controlEmailLength(value, message = '') {
   value = getValue(value)
-  const [leftSide = '', rightSide = ''] = value?.split('@')
+  const [leftSide = '', rightSide = ''] = value?.split('@') || []
   if (leftSide.length > 64 || rightSide.length > 256) {
     return message ? message : ''
   }

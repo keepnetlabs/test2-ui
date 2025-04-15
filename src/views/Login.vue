@@ -371,6 +371,7 @@
                             <label
                               id="label--login-new-password"
                               class="new-password-wrapper__label"
+                              for="input--login-new-password"
                               >New Password</label
                             >
                             <v-text-field

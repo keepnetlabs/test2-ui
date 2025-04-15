@@ -533,32 +533,25 @@ export default {
       return this.multipleType.length && this.multipleType[0] && this.multipleType[1]
     },
     getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
+      return this.items?.noResponse ?? {}
     },
     getOpenedData() {
-      const { openedEmail } = this.items
-      return openedEmail ? openedEmail : {}
+      return this.items?.openedEmail ?? {}
     },
     getOpenedAttachmentData() {
-      const { attachmentOpenedEmail } = this.items
-      return attachmentOpenedEmail ? attachmentOpenedEmail : {}
+      return this.items?.attachmentOpenedEmail ?? {}
     },
     getSubmittedData() {
-      const { submittedEmail } = this.items
-      return submittedEmail ? submittedEmail : {}
+      return this.items?.submittedEmail ?? {}
     },
     getClickedData() {
-      const { clickedEmail } = this.items
-      return clickedEmail ? clickedEmail : {}
+      return this.items?.clickedEmail ?? {}
     },
     getPhishingReporterData() {
-      const { phishingReporter } = this.items
-      return phishingReporter ? phishingReporter : {}
+      return this.items?.phishingReporter ?? {}
     },
     getMfaData() {
-      const { mfa } = this.items
-      return mfa ? mfa : {}
+      return this.items?.mfa ?? {}
     }
   }
 }
