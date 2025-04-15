@@ -131,7 +131,7 @@
                     >
                       <template #title>
                         <div class="d-flex align-baseline justify-space-between mb-3">
-                          <label class="k-form-group__title">Email Template</label>
+                          <div class="k-form-group__title">Email Template</div>
                           <v-tooltip bottom opacity="1">
                             <template v-slot:activator="{ on }">
                               <v-btn

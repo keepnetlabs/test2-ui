@@ -168,6 +168,7 @@
 import AudioPlayer from '@/components/AudioPlayer'
 import AlertBox from '@/components/AlertBox'
 import CallbackService from '@/api/callback'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 export default {
   name: 'CallbackTemplatePreviewSteps',
   components: {
@@ -216,7 +217,7 @@ export default {
   },
   watch: {
     selectedStep() {
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
     },
     getSelectedInputType: {
       deep: true,
@@ -290,7 +291,7 @@ export default {
       if (!this.getSelectedStepObject?.inputText) return
       if (!this.retryCount) return
       this.retryCount--
-      this.componentKey = Math.random()
+      this.componentKey = `key-${createRandomCryptStringNumber()}`
       this.isFetchingTTSUrl = true
       const payload = {
         inputText: this.getSelectedStepObject?.inputText || '',

@@ -5,7 +5,9 @@
         <v-btn small icon @click="onToggleExpansion">
           <v-icon>{{ value.isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
         </v-btn>
-        <span class="callback-template-dialog-step__header-text"> {{ getTitle }} </span>
+        <span class="callback-template-dialog-step__header-text">
+          {{ getTitle }}
+        </span>
       </div>
       <div class="callback-template-dialog-step__header-right">
         <KButtonCheckbox
@@ -77,7 +79,9 @@
         <div v-if="value.inputType === 'FileUpload'">
           <div class="callback-template-dialog-step__form-title">
             <div class="callback-template-dialog-step__form-title-left">
-              <label class="callback-template-dialog-step__form-label">Audio File</label>
+              <div class="callback-template-dialog-step__form-label">
+                Audio File
+              </div>
               <span class="callback-template-dialog-step__form-subtitle">Upload an audio file</span>
             </div>
           </div>
@@ -412,7 +416,11 @@ export default {
           content: null
         })
       } else {
-        this.$emit('input', { ...this.value, inputType: value, inputText: null })
+        this.$emit('input', {
+          ...this.value,
+          inputType: value,
+          inputText: null
+        })
       }
     }
   }

@@ -275,11 +275,14 @@ export default {
               campaignStatus.push(row['totalAttachmentOpenedCount'])
             }
 
-            if (row.method === 'Data Submission' || row.method === 'MFA') {
+            if (row.method === 'Data Submission') {
               campaignStatus.push(row['totalClickedCount'])
               campaignStatus.push(row['totalOpenedCount'])
               campaignStatus.push(row['totalSubmittedCount'])
             } else if (row.method === 'MFA') {
+              campaignStatus.push(row['totalClickedCount'])
+              campaignStatus.push(row['totalOpenedCount'])
+              campaignStatus.push(row['totalSubmittedCount'])
               campaignStatus.push(row['totalSubmittedMFACount'])
             }
             return {

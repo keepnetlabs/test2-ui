@@ -492,7 +492,9 @@
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <p class="v-list-item__archived--title pt-4 pb-2">Folders</p>
+                        <p class="v-list-item__archived--title pt-4 pb-2">
+                          Folders
+                        </p>
                         <v-list-item
                           id="btn--investigation-details-inbox"
                           link
@@ -1082,7 +1084,9 @@
                       "
                     >
                       <slot name="empty-table-inline-sort">
-                        <h2>Sorry, that search and filter criteria has no results.</h2>
+                        <h2>
+                          Sorry, that search and filter criteria has no results.
+                        </h2>
                         <p>Please try adjusting your search or filter</p>
                       </slot>
                     </div>
@@ -1530,10 +1534,11 @@ export default {
       this.serverSidePropsForTargetUsers.pageNumber = 1
     },
     handleSearchChangeForTargetUsers(searchFilter = {}) {
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems =
-        Object.keys(searchFilter).length > 0
-          ? [...searchFilter?.filter?.FilterGroups?.[0]?.FilterItems]
-          : []
+      const hasSearchFilter = Object.keys(searchFilter).length > 0
+      const filterItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = hasSearchFilter
+        ? [...filterItems]
+        : []
       this.resetPageNumberForTargetUsers()
       this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
@@ -1558,10 +1563,11 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      this.investigationListBodyData.filter.FilterGroups[1].FilterItems =
-        Object.keys(searchFilter).length > 0
-          ? [...searchFilter?.filter?.FilterGroups?.[0]?.FilterItems]
-          : []
+      const hasSearchFilter = Object.keys(searchFilter).length > 0
+      const filterItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
+      this.investigationListBodyData.filter.FilterGroups[1].FilterItems = hasSearchFilter
+        ? [...filterItems]
+        : []
       this.resetPageNumber()
       this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
