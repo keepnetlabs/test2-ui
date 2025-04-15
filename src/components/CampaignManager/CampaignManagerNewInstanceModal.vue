@@ -61,7 +61,7 @@
             id="input--campaign-manager-advanced-settings-exclude-from-reports"
             color="#2196f3"
           >
-            <template #label> Exclude this campaign’s statistics from all generic reports</template>
+            <template #label> Exclude this campaign's statistics from all generic reports</template>
           </v-checkbox>
         </div>
       </FormGroup>
@@ -183,10 +183,7 @@ export default {
       if (this.selectedRow?.method === 'Multiple Method') {
         const methodsArray = JSON.parse(this.selectedRow.methodDetail)
         const mfaIndex = methodsArray.findIndex((methodObj) => methodObj.method === 'MFA')
-        if (mfaIndex !== -1) {
-          return true
-        }
-        return false
+        return mfaIndex !== -1
       }
       return false
     },

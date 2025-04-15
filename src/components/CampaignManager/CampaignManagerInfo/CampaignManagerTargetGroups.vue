@@ -214,9 +214,8 @@ export default {
       this.highlightedRow = row
     },
     addRowClassName({ row = {} }) {
-      if (this.lastColumnName === 'phoneNumber') {
-        return !!row.phoneNumber ? '' : 'k-table-row--disabled'
-      }
+      if (this.lastColumnName === 'phoneNumber')
+        return !row.phoneNumber ? 'k-table-row--disabled' : ''
       return ''
     }
   }

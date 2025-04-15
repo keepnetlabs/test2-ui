@@ -399,7 +399,7 @@ export default {
               this.listData[this.selectedPreviousIndex].selected = true
             }
             if (!isInitial) return
-            if (!!templateResourceId) {
+            if (templateResourceId) {
               const index = this.listData.findIndex(
                 (item) => item.resourceId === templateResourceId
               )

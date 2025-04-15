@@ -45,22 +45,22 @@
     <div class="filter__body-container">
       <template v-if="filterableType === 'text'">
         <v-select
+          v-model="filteredSelectValue"
           :items="getTextFilterItems"
           dense
           height="40"
           outlined
           :menu-props="{ offsetY: true }"
           required
-          v-model="filteredSelectValue"
         ></v-select>
         <v-text-field
-          placeholder="Enter Value"
+          v-if="filteredSelectValue !== 'between'"
+          v-model="filterValue"
           class="filter__text"
+          placeholder="Enter Value"
           outlined
           dense
-          v-model="filterValue"
           height="40"
-          v-if="filteredSelectValue !== 'between'"
         ></v-text-field>
         <div class="d-flex" v-if="filteredSelectValue === 'between'">
           <v-text-field
@@ -88,33 +88,33 @@
       </template>
       <template v-if="filterableType === 'numeric'">
         <v-select
+          v-model="filteredSelectValueNum"
           :items="numericFilterItems"
           dense
           height="40"
           outlined
           required
           :menu-props="{ offsetY: true }"
-          v-model="filteredSelectValueNum"
         ></v-select>
         <v-text-field
+          v-model="filterValue"
           placeholder="Enter Value"
           class="filter__text"
           outlined
           dense
-          v-model="filterValue"
           height="40"
         ></v-text-field>
       </template>
       <template v-if="filterableType === 'date'">
         <v-select
           v-if="filterableOptions.showSelect"
+          v-model="filteredSelectValueDate"
           class="data-table-filter__date-picker-select"
           :items="dateFilterItems"
           dense
           height="40"
           outlined
           required
-          v-model="filteredSelectValueDate"
           :menu-props="{
             offsetY: true,
             contentClass: 'data-table-filter__date-picker-select-menu'
@@ -138,23 +138,23 @@
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateRangeValue"
+          :key="`${getDateKey}2`"
           ref="refPicker2"
           type="datetimerange"
           style="margin-bottom: 14px;"
           @change="handleChangeBetweenDatepicker"
-          :key="`${getDateKey}2`"
         />
       </template>
       <template v-if="filterableType === 'dateOnly'">
         <v-select
           v-if="filterableOptions.showSelect"
+          v-model="filteredSelectValueDate"
           :items="dateFilterItems"
           ref="refPickerDateOnly"
           dense
           height="40"
           outlined
           required
-          v-model="filteredSelectValueDate"
           :menu-props="{ offsetY: true }"
           placeholder="Select an option"
           :key="getDateKey"
@@ -182,8 +182,8 @@
           style="margin-bottom: 14px;"
           :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
           :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
-          @change="handleChangeBetweenDatepicker"
           :key="`${getDateKey}2`"
+          @change="handleChangeBetweenDatepicker"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -211,29 +211,29 @@
       </template>
       <template v-if="filterableType === 'number' || filterableType === 'negativeNumber'">
         <v-select
+          v-model="filteredSelectValueNumber"
           :items="numberFilterItems"
           dense
           height="40"
           outlined
           required
           :menu-props="{ offsetY: true }"
-          v-model="filteredSelectValueNumber"
         ></v-select>
         <v-text-field
           v-if="filterableType === 'number'"
+          v-model="filterValue"
           placeholder="Enter Value"
           class="filter__text"
           outlined
           dense
-          v-model="filterValue"
           height="40"
           type="number"
           onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
         ></v-text-field>
         <v-text-field
           v-else-if="filterableType === 'negativeNumber'"
-          ref="refInputNumber"
           v-model="filterValue"
+          ref="refInputNumber"
           placeholder="Enter Value"
           class="filter__text"
           outlined
@@ -349,7 +349,7 @@ export default {
       filteredSelectValueDate:
         this.filterableType === 'date'
           ? this.value.selectValue || this.defaultDate
-            ? 'between'
+            ? this.value.selectValue
             : '<='
           : '<=',
       filteredDateValue:
