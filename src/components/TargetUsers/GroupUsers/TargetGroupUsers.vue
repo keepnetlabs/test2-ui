@@ -225,6 +225,13 @@ export default {
     },
     handleAddToAnExistingGroup(row = {}) {
       this.handleSelectedRow(row)
+      this.bulkImportPayload = {
+        targetUserResourceIds: [row.resourceId],
+        selectAll: false,
+        excludedResourceIdList: [],
+        filter: this?.payload?.filter,
+        selectedRowCount: 1
+      }
       this.toggleShowAddToAnExistingGroupModal()
     },
     handleRemoveUsers() {
@@ -254,12 +261,12 @@ export default {
         targetUserResourceIds: [selectedRow.resourceId],
         selectAll: false,
         excludedResourceIdList: [],
-        filter: this.payload.filter,
+        filter: this?.payload?.filter,
         selectedRowCount: 1
       }
       this.toggleShowingTargetUserCreateGroupWithUser()
     },
-    handleConfirmCreateUserWithGroup(groupName = '') {
+    handleConfirmCreateUserWithGroup() {
       this.selectedUserToCreateGroupWith = null
       this.toggleShowingTargetUserCreateGroupWithUser()
     },
@@ -270,7 +277,7 @@ export default {
           targetUserResourceIds: [],
           selectAll: false,
           excludedResourceIdList: [],
-          filter: this.payload.filter,
+          filter: this?.payload?.filter,
           selectedRowCount: 0
         }
       }
