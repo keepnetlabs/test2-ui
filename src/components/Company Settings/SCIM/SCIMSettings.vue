@@ -79,7 +79,7 @@ export default {
     '$route.query': {
       deep: true,
       handler(val) {
-        if (!!val?.showModal) {
+        if (val?.showModal) {
           this.toggleAddOrEditModal()
           this.$router.replace('/company/company-settings')
         }

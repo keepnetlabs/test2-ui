@@ -170,7 +170,10 @@ export default {
     },
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      return timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
     },
     canRenderUserTimeZoneSwitch() {
       return this.isPhishing || this.isSmishing
@@ -186,7 +189,7 @@ export default {
     },
     getScheduledTime() {
       let scheduledTime = ''
-      if (!!this.value.scheduledDate) {
+      if (this.value.scheduledDate) {
         const spaceIndex = this.value.scheduledDate.indexOf(' ')
         if (spaceIndex !== -1) {
           scheduledTime = this.value.scheduledDate.slice(spaceIndex)

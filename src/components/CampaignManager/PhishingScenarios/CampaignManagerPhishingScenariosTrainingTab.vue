@@ -476,6 +476,15 @@ export default {
   },
   watch: {
     value(val) {
+      if (val?.trainingId && val?.trainingName) {
+        const trainingItem = this?.trainingItems?.find((item) => item.value === val.trainingId)
+        if (!trainingItem) {
+          this.trainingItems.push({
+            text: val.trainingName,
+            value: val.trainingId
+          })
+        }
+      }
       this.inputContentLanguageKey = createRandomCryptStringNumber()
     },
     isMultipleLanguagesSelected(val) {
@@ -603,10 +612,15 @@ export default {
     },
     setTrainings(response) {
       const newTrainings =
-        response?.data?.data?.results?.map?.((result) => ({
-          text: result.trainingName,
-          value: result.trainingId
-        })) || []
+        response?.data?.data?.results
+          ?.filter?.((result) => {
+            if (!this.value) return true
+            return result.trainingId !== this.value.trainingId
+          })
+          ?.map?.((result) => ({
+            text: result.trainingName,
+            value: result.trainingId
+          })) || []
       this.trainingItems = [...this.trainingItems, ...newTrainings]
     },
     handlePreview() {

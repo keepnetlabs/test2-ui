@@ -157,7 +157,9 @@
                   </div>
                   <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                    <div v-if="!item.tags || !item.tags.length">
+                      {{ '\xa0' }}
+                    </div>
                     <div class="d-flex align-center">
                       <div class="template-list--item__narrator mr-2">
                         <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
@@ -235,20 +237,6 @@
                       :voiceResourceId="getVoiceResourceId"
                     />
                   </ElTabPane>
-                  <!-- <ElTabPane
-                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
-                    :label="labels.Training"
-                    name="training"
-                    id="campaign-manager-info--training-content"
-                  >
-                    <CampaignManagerPhishingScenariosTrainingTab
-                      ref="trainingTab"
-                      v-model="trainingTabModel[selectedTemplateResourceId]"
-                      :type="SCENARIO_TYPES.CALLBACK"
-                      :is-edit="isEdit"
-                      @on-preview="handleTrainingPreviewButtonClick"
-                    />
-                  </ElTabPane> -->
                 </ElTabs>
               </div>
             </template>
@@ -272,9 +260,6 @@
 </template>
 
 <script>
-const EMITS = {
-  ON_ITEM_CHANGE: 'on-item-change'
-}
 import CallbackService from '@/api/callback'
 import AppDialog from '@/components/AppDialog.vue'
 import labels from '@/model/constants/labels'
@@ -287,7 +272,7 @@ import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFoot
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 export default {
   name: 'CampaignManagerCallbackScenarios',
@@ -346,7 +331,11 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
+                {
+                  FieldName: 'LanguageTypeResourceId',
+                  Operator: 'Contains',
+                  Value: ''
+                },
                 {
                   Value: '',
                   FieldName: 'voice',
@@ -580,10 +569,13 @@ export default {
     }
   },
   methods: {
+    getItemDifficultyClass,
     getItemClasses(itemResourceId = '') {
       return [
         'template-list',
-        { 'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId },
+        {
+          'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId
+        },
         {
           'template-list--selected': this.value.find((item) => item.resourceId === itemResourceId)
         }
@@ -597,13 +589,6 @@ export default {
         return '\xa0'
       }
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
       CallbackService.getCallbackScenario(resourceId).then((response) => {
@@ -648,8 +633,12 @@ export default {
             language: this.languageItems[languageIndex].language,
             voice: this.languageItems[languageIndex].name
           }
-          this.callbackTemplate.invalidDialingNotice = { ...callbackTemplate.steps[0] }
-          this.callbackTemplate.callGreeting = { ...callbackTemplate.steps[1] }
+          this.callbackTemplate.invalidDialingNotice = {
+            ...callbackTemplate.steps[0]
+          }
+          this.callbackTemplate.callGreeting = {
+            ...callbackTemplate.steps[1]
+          }
           this.callbackTemplate.steps.splice(0, 2)
           this.isTextToSpeechCompatible = [2, 3].includes(callbackTemplate.voiceProviderTypeId)
           this.tab = 'email'
@@ -731,7 +720,11 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: '' },
+                {
+                  FieldName: 'LanguageTypeResourceId',
+                  Operator: 'Contains',
+                  Value: ''
+                },
                 {
                   Value: '',
                   FieldName: 'voice',

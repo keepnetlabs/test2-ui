@@ -47,12 +47,10 @@ export default {
   },
   computed: {
     getInProgressData() {
-      const { inProgress } = this.items
-      return inProgress ? inProgress : {}
+      return this?.items?.inProgress ?? {}
     },
     getCompletedTrainingData() {
-      const { completedTraining } = this.items
-      return completedTraining ? completedTraining : {}
+      return this?.items?.completedTraining ?? {}
     }
   }
 }

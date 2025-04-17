@@ -284,3 +284,10 @@ export const getDifficultyColor = (difficulty) => {
 
   return '#217124'
 }
+
+export function getItemDifficultyClass(difficulty = '') {
+  if (difficulty === 'Easy') return 'difficulty-easy'
+  else if (difficulty === 'Medium') return 'difficulty-medium'
+  else if (difficulty === 'Hard') return 'difficulty-hard'
+  return ''
+}
