@@ -248,21 +248,7 @@ export default {
       this.isMultipleDelete = true
       this.toggleShowDeleteDialog()
     },
-    handleOnMultipleDelete() {
-      /*
-      this.setDeleteDialogActionButtonDisabled(true)
-      bulkDeleteCampaignReports(this.multipleSystemUserPayload)
-        .then(() => {
-          this.$refs.campaignManagerParentTable.$refs.refTable.resetSelectableParams()
-          this.$refs.campaignManagerParentTable.callForData()
-          this.toggleShowDeleteDialog()
-        })
-        .finally(() => {
-          this.setDeleteDialogActionButtonDisabled(false)
-        })
-
-       */
-    },
+    handleOnMultipleDelete() {},
     handleOnRecordButtonClick(row) {
       this.selectedParentItem = row
       if (this.$refs.campaignManagerItemTable) {

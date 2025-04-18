@@ -1391,7 +1391,7 @@ export default {
               this.listData[this.selectedPreviousIndex].selected = true
             }
             if (!isInitial) return
-            if (!!landingPageTemplateResourceId) {
+            if (landingPageTemplateResourceId) {
               const index = this.listData.findIndex(
                 (item) => item.resourceId === landingPageTemplateResourceId
               )

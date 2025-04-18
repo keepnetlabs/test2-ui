@@ -45,7 +45,10 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import {
+  CHART_COLORS,
+  monthNamesLong
+} from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import labels from '../../../model/constants/labels'
 
 export default {
@@ -153,20 +156,6 @@ export default {
         })
     },
     setChartData(data) {
-      const monthNamesLong = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const params = [data[0].widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       const { valueEnums, datasets } = createExecutiveReportChartData(...params)
@@ -178,18 +167,18 @@ export default {
       valueEnums.sort((a, b) => (b > a ? 1 : -1))
       for (let itemType of valueEnums) {
         const typedItems = datasets.filter((item) => item.result === itemType)
-        const chartColorType =
-          itemType === 'Users Who Clicked And Reported (%)'
-            ? 'Clicked Email Trends'
-            : itemType === 'Users Who Did Not Click And Reported (%)'
-            ? 'Not Clicked (%)'
-            : 'Not Reported (%)'
-        const index =
-          itemType === 'Users Who Did Not Click And Reported (%)'
-            ? 0
-            : itemType === 'Users Who Did Not Reported (%)'
-            ? 2
-            : 1
+        let chartColorType = 'Not Reported (%)'
+        if (itemType === 'Users Who Clicked And Reported (%)') {
+          chartColorType = 'Clicked Email Trends'
+        } else if (itemType === 'Users Who Did Not Click And Reported (%)') {
+          chartColorType = 'Not Clicked (%)'
+        }
+        let index = 1
+        if (itemType === 'Users Who Did Not Click And Reported (%)') {
+          index = 0
+        } else if (itemType === 'Users Who Did Not Reported (%)') {
+          index = 2
+        }
         newDatasets[index] = {
           type: 'bar',
           barThickness: 32,
@@ -303,15 +292,21 @@ export default {
                 const average = Math.round(
                   item.data.reduce((total, current) => total + current.y, 0) / item.data.length
                 )
-                const label =
-                  item.label === 'Users Who Clicked And Reported (%)'
-                    ? 'Users Who Clicked And Reported'
-                    : item.label === 'Users Who Did Not Click And Reported (%)'
-                    ? 'Users Who Did Not Click And Reported'
-                    : 'Users Who Did Not Reported'
+                let label = 'Users Who Did Not Reported'
+                if (item.label === 'Users Who Clicked And Reported (%)') {
+                  label = 'Users Who Clicked And Reported'
+                } else if (item.label === 'Users Who Did Not Click And Reported (%)') {
+                  label = 'Users Who Did Not Click And Reported'
+                }
                 const percentage = average.toString().includes('.') ? average.toFixed(2) : average
                 const customSpacer =
                   label !== labels.UserWhoDidNotClickAndReported ? '        ' : '     '
+                let customMarginLeft = 6
+                if (label === labels.UserWhoClickedAndReported) {
+                  customMarginLeft = 8
+                } else if (label === labels.UserWhoDidNotClickAndReported) {
+                  customMarginLeft = 16
+                }
                 return {
                   text: Array.from(label + label + customSpacer)
                     .fill('')
@@ -320,12 +315,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts: [label, `(${percentage}%)`],
-                  customMarginLeft:
-                    label === labels.UserWhoDidNotClickAndReported
-                      ? 16
-                      : label === labels.UserWhoClickedAndReported
-                      ? 8
-                      : 6
+                  customMarginLeft
                 }
               })
             },
@@ -387,20 +377,6 @@ export default {
             tooltipFooter.style.padding = '16px'
             tooltipFooter.style.maxWidth = '280px'
             tooltipFooter.style.fontWeight = 'normal'
-            const monthNamesLong = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December'
-            ]
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
@@ -411,16 +387,13 @@ export default {
                 monthNamesLong[xValue.getMonth()]
               }/${xValue.getFullYear()}</th>`
               tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
-              this._chart.data.datasets.forEach((dataset, i) => {
-                let datasetLabel =
-                  dataset.label === 'Users Who Clicked And Reported (%)'
-                    ? 'Users Who Clicked And Reported'
-                    : dataset.label === 'Users Who Did Not Click And Reported (%)'
-                    ? 'Users Who Did Not Click And Reported'
-                    : 'Users Who Did Not Reported'
+              this._chart.data.datasets.forEach((dataset) => {
+                let datasetLabel = 'Users Who Did Not Reported'
+                if (dataset.label === 'Users Who Clicked And Reported (%)') {
+                  datasetLabel = 'Users Who Clicked And Reported'
+                } else if (dataset.label === 'Users Who Did Not Click And Reported (%)') {
+                  datasetLabel = 'Users Who Did Not Click And Reported'
+                }
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'
                 let tr = document.createElement('tr')
@@ -432,13 +405,9 @@ export default {
                 <td style="font-weight:600">${dataValue.y}%</td>
             `
                 if (
-                  dataset.label ===
+                  dataset.label !==
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
-                  selectedValue = dataValue
-                  selectedLabel = dataset.label
-                  selectedBackgroundColor = backgroundColor
-                } else {
                   tr.style.fontWeight = 'normal'
                 }
 

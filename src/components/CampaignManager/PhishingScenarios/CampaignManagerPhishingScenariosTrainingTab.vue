@@ -9,7 +9,7 @@
     />
     <div>
       <AlertBox
-        v-if="!isInputsEditable"
+        v-if="!isInputsEditable || isEdit"
         class="mb-4 mr-4 ml-3 bg-aqua-light"
         icon-color="#2196F3"
         icon-name="mdi-information"
@@ -43,7 +43,7 @@
           placeholder="Select training"
           :menu-props="{ contentClass: 'input--company-group-add-members' }"
           :items="trainingItems"
-          :disabled="!isInputsEditable"
+          :disabled="!isInputsEditable || isEdit"
           :no-data-text="isTrainingLoading ? 'Loading...' : 'No training available'"
           @input="handleTrainingItemSelect"
           @click:clear="handleTrainingItemSelect(null)"
@@ -57,7 +57,7 @@
           class="ml-3 mt-6"
           :is-add-default-value="false"
           :training-id="getTrainingId"
-          :disabled="isInputLanguageDisabled"
+          :disabled="isInputLanguageDisabled || isEdit"
           @on-api-call-finished="handleApiCallFinished"
         />
         <VBtn
@@ -94,7 +94,7 @@
               ? attachmentScenarioEnrollmentItems
               : enrollmentItemsTrainingTab
           "
-          :disabled="!isInputsEditable || isInputLanguageDisabled"
+          :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
           :rules="[(v) => !!v || 'Required']"
           :return-object="false"
           :slots="{ item: true, selection: false }"
@@ -120,17 +120,10 @@
             v-model="value.enrollmentReminder.sendReminderEvery"
             id="input--campaign-manager-advanced-settings-randomly-selected"
             color="#2196f3"
-            :disabled="!isInputsEditable || isInputLanguageDisabled"
+            :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
             hide-details
           />
-          <span
-            :style="
-              (!isInputsEditable || isInputLanguageDisabled) && {
-                opacity: '0.5'
-              }
-            "
-            >Set reminder every</span
-          >
+          <span :style="getDisabledLabelStyle">Set reminder every</span>
           <VTextField
             v-model="value.enrollmentReminder.periodCount"
             v-mask="'#######'"
@@ -139,7 +132,7 @@
             outlined
             class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
             style="max-width: 64px;"
-            :disabled="!value.enrollmentReminder.sendReminderEvery"
+            :disabled="!value.enrollmentReminder.sendReminderEvery || isEdit"
             :rules="rules.number"
           />
           <KSelect
@@ -152,17 +145,9 @@
             placeholder="Select a item"
             style="max-width: 120px;"
             :items="getPeriodTypeItems"
-            :disabled="!value.enrollmentReminder.sendReminderEvery"
+            :disabled="!value.enrollmentReminder.sendReminderEvery || isEdit"
           />
-          <span
-            class="ml-2"
-            :style="
-              (!isInputsEditable || isInputLanguageDisabled) && {
-                opacity: '0.5'
-              }
-            "
-            >ends</span
-          >
+          <span class="ml-2" :style="getDisabledLabelStyle">ends</span>
           <KSelect
             v-model.trim="value.enrollmentReminder.endType"
             id="input--edit-enrollment-reminder-end-type"
@@ -173,7 +158,7 @@
             placeholder="Select a item"
             style="max-width: 282px; min-width: 282px;"
             :items="endTypeItems"
-            :disabled="!value.enrollmentReminder.sendReminderEvery"
+            :disabled="!value.enrollmentReminder.sendReminderEvery || isEdit"
           />
           <VTextField
             v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
@@ -184,17 +169,13 @@
             outlined
             class="ml-2 absolute-text-input-error"
             style="max-width: 64px;"
-            :disabled="!value.enrollmentReminder.sendReminderEvery"
+            :disabled="!value.enrollmentReminder.sendReminderEvery || isEdit"
             :rules="rules.number"
           />
           <span
             v-if="value.enrollmentReminder.endType === 'AfterOccurrences'"
             class="ml-2"
-            :style="
-              (!isInputsEditable || isInputLanguageDisabled) && {
-                opacity: '0.5'
-              }
-            "
+            :style="getDisabledLabelStyle"
             >times</span
           >
           <InputDate
@@ -207,7 +188,7 @@
             format="dd/MM/yyyy"
             style="width: 100%; max-width: 180px;"
             :picker-options="datePickerOptions"
-            :disabled="!value.enrollmentReminder.sendReminderEvery"
+            :disabled="!value.enrollmentReminder.sendReminderEvery || isEdit"
           />
         </div>
         <AlertBox
@@ -237,7 +218,7 @@
             hide-details
             color="#2196f3"
             label="Award certificate when a user completes the training"
-            :disabled="!isInputsEditable || isInputLanguageDisabled"
+            :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
           >
           </v-checkbox>
           <KSelect
@@ -250,7 +231,7 @@
             position="top"
             style="max-width: 200px;"
             :items="certificateTypeItems"
-            :disabled="!value.awardCertificate"
+            :disabled="!value.awardCertificate || isEdit"
           />
         </div>
       </FormGroup>
@@ -502,6 +483,12 @@ export default {
     }
   },
   computed: {
+    getDisabledLabelStyle() {
+      const style = {}
+      if (!this.isInputsEditable || this.isInputLanguageDisabled || this.isEdit)
+        style.opacity = '0.5'
+      return style
+    },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
     },
@@ -545,6 +532,8 @@ export default {
         default:
           break
       }
+      if (this.isEdit)
+        return `Once a ${scenarioText} campaign has started, it is not allowed to add or change the training material associated with its scenario.`
       return `A ${scenarioText} scenario should be selected in order to be able to choose a training`
     },
     isInputsEditable() {

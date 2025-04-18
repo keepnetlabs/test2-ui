@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import labels from '@/model/constants/labels'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {

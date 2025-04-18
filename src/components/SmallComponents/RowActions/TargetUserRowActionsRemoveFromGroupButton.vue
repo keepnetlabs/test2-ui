@@ -36,9 +36,6 @@ export default {
       getTargetGroupsDeleteUsersPermissions: 'permissions/getTargetGroupsDeleteUsersPermissions'
     }),
     getTooltipMessage() {
-      // const { row } = this.scope
-      // if (!row.isEditable)
-      //   return `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
       return !this.getDisabledStatusOfAction ? 'Remove from group' : 'No Permission'
     },
     getDisabledStatusOfAction() {

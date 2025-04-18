@@ -34,7 +34,8 @@
               {{ selectedRow.firstName }} {{ selectedRow.lastName }}
             </span>
             <span class="gamification-report__user-details-drawer-header__user-email">
-              {{ selectedRow.email }} {{ !!selectedRow.department ? ' - ' : '' }}
+              {{ selectedRow.email }}
+              {{ !!selectedRow.department ? ' - ' : '' }}
               {{ selectedRow.department }}
             </span>
           </div>
@@ -47,7 +48,9 @@
         <div class="gamification-report__user-details-drawer-card">
           <div
             class="gamification-report__user-details-drawer-card-content"
-            :style="{ gridTemplateColumns: `repeat(${productScores.length + 1}, 1fr)` }"
+            :style="{
+              gridTemplateColumns: `repeat(${productScores.length + 1}, 1fr)`
+            }"
           >
             <ThreeListItemLoading
               v-if="isPerformanceRatesLoading"
@@ -93,18 +96,6 @@
           <div class="gamification-report__user-details-drawer-filters-container">
             <div class="gamification-report__user-details-drawer-filters">
               <div class="gamification-report__user-details-drawer-filters-left">
-                <!-- <VTextField
-                  :value="search"
-                  style="max-width: 300px;"
-                  id="input--search-training-library"
-                  class="training-library-list-view-first-card-header__search"
-                  ref="searchInput"
-                  outlined
-                  prepend-inner-icon="mdi-magnify"
-                  hide-details
-                  placeholder="Search"
-                  @input="handleSearch"
-                /> -->
                 <VMenu
                   :value="menu"
                   ref="refMenu"
@@ -306,7 +297,9 @@
                     <div class="d-flex justify-space-between align-items-center">
                       <span
                         class="gamification-report__timeline-item-activity-type"
-                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        :style="{
+                          color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType]
+                        }"
                         >{{ item.ActionType }}</span
                       >
                       <span class="gamification-report__timeline-item-date">{{
@@ -339,7 +332,9 @@
                     <div class="d-flex justify-space-between align-items-center">
                       <span
                         class="gamification-report__timeline-item-activity-type"
-                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        :style="{
+                          color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType]
+                        }"
                         >{{ item.ActionType }}</span
                       >
                       <span class="gamification-report__timeline-item-date">{{
@@ -371,7 +366,8 @@
                       <span class="gamification-report__timeline-item-bold-text">{{
                         isProductAwareness(item) ? item.categoryDescription : item.difficultyType
                       }}</span>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }} has been sent to
+                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}
+                      has been sent to
                       <span> {{ selectedRow.firstName }} {{ selectedRow.lastName }}. </span>
                     </span>
                     <div>
@@ -394,7 +390,9 @@
                     <div class="d-flex justify-space-between align-items-center">
                       <span
                         class="gamification-report__timeline-item-activity-type"
-                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        :style="{
+                          color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType]
+                        }"
                         >{{ item.ActionType }}</span
                       >
                       <span class="gamification-report__timeline-item-date">{{
@@ -428,7 +426,9 @@
                     <div class="d-flex justify-space-between align-items-center">
                       <span
                         class="gamification-report__timeline-item-activity-type"
-                        :style="{ color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] }"
+                        :style="{
+                          color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType]
+                        }"
                         >{{ item.ActionType }}</span
                       >
                       <span class="gamification-report__timeline-item-date">{{
@@ -568,7 +568,10 @@
                 outlined
                 text
                 style="border: none;"
-                :style="{ 'background-color': hover ? '#F2F2F2' : '#FFFFFF', marginBottom: '16px' }"
+                :style="{
+                  'background-color': hover ? '#F2F2F2' : '#FFFFFF',
+                  marginBottom: '16px'
+                }"
                 @click="handleLoadMore"
               >
                 <span style="color: #2196f3; font-weight: 600;">LOAD MORE</span>
@@ -687,7 +690,10 @@ export default {
     },
     timezones() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      return timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
     },
     isLoadMoreVisible() {
       return this.serverSideProps.pageNumber < this.serverSideProps.totalNumberOfPages

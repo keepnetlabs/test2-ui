@@ -120,8 +120,6 @@ export default {
         })
     },
     setChartData(widgetDatas) {
-      const params = [widgetDatas]
-      if (this.dateFormat) params.push(this.dateFormat)
       if (!widgetDatas.length) {
         this.isEmpty = true
         return

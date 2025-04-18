@@ -33,8 +33,7 @@ service.interceptors.response.use(
     response?.config?.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
-    //if there is snackbar obj
-    if (snackbar && snackbar.show) {
+    if (snackbar?.show) {
       store.dispatch('common/createSnackBar', {
         message: response.data.message,
         icon: snackbar.icon,
