@@ -1,6 +1,5 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-
 export const COLUMNS = {
   FIRST_NAME: {
     property: PROPERTY_STORE.FIRSTNAME,
@@ -484,63 +483,57 @@ export const COLUMNS = {
     filterableType: 'text'
   }
 }
-
 export function getStatusBadgeProps(status) {
   if (status === 'Not Delivered') {
     return {
       color: '#757575',
       text: 'Not Delivered'
     }
-  }
-
-  if (status === 'InQueue' || status === 'In Queue') {
+  } if (status === 'InQueue' || status === 'In Queue') {
     return {
       color: '#1173C1',
       text: 'In Queue'
     }
-  }
-
-  if (status === 'Error') {
+  } if (status === 'Error') {
     return {
       color: '#B83A3A',
       text: 'Error'
     }
-  }
-
-  if (status === 'Cancelled' || status === 'Canceled') {
+  } if (status === 'Cancelled' || status === 'Canceled') {
     return {
       color: '#B6791D',
       text: 'Cancelled'
     }
-  }
-
-  if (status === 'Successful') {
+  } if (status === 'Successful') {
     return {
       color: '#217124',
       text: 'Successful'
     }
-  }
-
-  if (status === 'Delivered') {
+  } if (status === 'Delivered') {
     return {
       color: '#217124',
       text: 'Delivered'
     }
-  }
-
-  if (status === 'Processing') {
+  } if (status === 'Processing') {
     return {
       color: '#1173C1',
       text: 'Processing'
     }
   }
 }
-
 export const UNUSUAL_TYPES = {
   UNUSUAL_IP: 1
 }
-
 export const ACTIVITY_TYPES = {
   HUMAN: 'Human Activity',
   SYSTEM: 'Bot Activity'
+}
+export function getDifficultyColor(difficulty) {
+  if (difficulty === 'Easy') {
+    return '#217124'
+  } if (difficulty === 'Medium') {
+    return '#2196F3'
+  } if (difficulty === 'Hard') {
+    return '#F56C6C'
+  } return '#217124'
 }
