@@ -9,7 +9,6 @@
     />
   </div>
 </template>
-
 <script>
 import EnrollmentsSubTabs from '@/components/AwarenessEducator/Enrollments/EnrollmentsSubTabs.vue'
 import { mapGetters } from 'vuex'
