@@ -54,9 +54,7 @@
                 </div>
                 <div>
                   <v-select
-                    v-model="
-                      bodyData.filter.FilterGroups[0].FilterItems[1].value
-                    "
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     :items="languageOptions"
                     placeholder="Language"
                     item-disabled="disabled"
@@ -65,19 +63,14 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                    "
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="getTemplatesForSearch"
                   >
                   </v-select>
                 </div>
                 <div style="max-width: 140px;">
                   <KSelect
-                    v-model="
-                      bodyData.filter.FilterGroups[0].FilterItems[2].value
-                    "
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
                     :items="scenarioDetailsLookup.difficultyTypes"
                     placeholder="Difficulty"
                     item-disabled="disabled"
@@ -87,10 +80,7 @@
                     persistent-hint
                     hide-details
                     class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                    "
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="getTemplatesForSearch"
                   />
                 </div>
@@ -115,19 +105,13 @@
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
-                    <div
-                      class="template-list--item template-list--item__header"
-                    >
+                    <div class="template-list--item template-list--item__header">
                       {{ item.name }}
                     </div>
-                    <div
-                      class="template-list--item template-list--item__sub-header"
-                    >
+                    <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}
                       <span class="template-list--item__sub-header--span">
-                        <span style="font-size: 20px; vertical-align: sub;"
-                          >&#8226;</span
-                        >
+                        <span style="font-size: 20px; vertical-align: sub;">&#8226;</span>
                         by</span
                       >
                       {{ item['createdBy'] }}
@@ -146,16 +130,12 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div
-                  class="template-list--item d-flex justify-space-between align-center mt-2"
-                >
+                <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   <div class="template-list--item__narrator">
                     <v-icon :size="16" color="#757575">mdi-web</v-icon>
-                    <span class="template-list--item__language">{{
-                      item.languageTypeName
-                    }}</span>
+                    <span class="template-list--item__language">{{ item.languageTypeName }}</span>
                   </div>
                 </div>
               </div>
@@ -186,10 +166,7 @@
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane pt-4" :style="{ flexGrow: 1 }">
-              <ElTabs
-                v-if="landingPageTemplates.length > 1 || isMethodMfa"
-                v-model="selectedTab"
-              >
+              <ElTabs v-if="landingPageTemplates.length > 1 || isMethodMfa" v-model="selectedTab">
                 <ElTabPane
                   v-for="(template, index) in landingPageTemplates"
                   :key="index"
@@ -210,25 +187,14 @@
                         </VIcon>
                       </VBtn>
                     </div>
-                    <div
-                      class="template-preview__text pl-2"
-                      v-if="!!template.content"
-                    >
+                    <div class="template-preview__text pl-2" v-if="!!template.content">
                       <div>
-                        <span class="template-preview__text--title"
-                          >Template Name:
-                        </span>
-                        <span class="template-preview__text--body">{{
-                          templateName
-                        }}</span>
+                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--body">{{ templateName }}</span>
                       </div>
                       <div>
-                        <span class="template-preview__text--title"
-                          >Phishing URL:
-                        </span>
-                        <span class="template-preview__text--body">{{
-                          templateURL
-                        }}</span>
+                        <span class="template-preview__text--title">Phishing URL: </span>
+                        <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
                     </div>
                     <hr class="mt-2" v-if="!!template.content" />
@@ -295,25 +261,14 @@
                       </VIcon>
                     </VBtn>
                   </div>
-                  <div
-                    class="template-preview__text pl-2"
-                    v-if="!!getSingleTemplateDetails"
-                  >
+                  <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                     <div>
-                      <span class="template-preview__text--title"
-                        >Template Name:
-                      </span>
-                      <span class="template-preview__text--body">{{
-                        templateName
-                      }}</span>
+                      <span class="template-preview__text--title">Template Name: </span>
+                      <span class="template-preview__text--body">{{ templateName }}</span>
                     </div>
                     <div>
-                      <span class="template-preview__text--title"
-                        >Phishing URL:
-                      </span>
-                      <span class="template-preview__text--body">{{
-                        templateURL
-                      }}</span>
+                      <span class="template-preview__text--title">Phishing URL: </span>
+                      <span class="template-preview__text--body">{{ templateURL }}</span>
                     </div>
                   </div>
                   <hr class="mt-2" v-if="!!getSingleTemplateDetails" />

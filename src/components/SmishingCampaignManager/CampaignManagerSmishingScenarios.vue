@@ -12,10 +12,7 @@
       @changeStatus="toggleTemplateDialog"
     >
       <template #app-dialog-body>
-        <KEmailPreview
-          v-if="!!getTemplatePreviewContent"
-          :html="getTemplatePreviewContent"
-        />
+        <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
       </template>
       <template #app-dialog-footer>
         <AppDialogFooterWithClose @on-close="toggleTemplateDialog" />
@@ -28,10 +25,7 @@
       @on-close="toggleShowTrainingDialog"
     />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
-      <div
-        class="emailTemplatePreview__container-main"
-        :style="getContainerStyle"
-      >
+      <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
             <div class="d-flex justify-space-between">
@@ -63,10 +57,7 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                    "
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="isShowSelectedScenarios = false"
                   />
                 </div>
@@ -80,10 +71,7 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                    "
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
                     :items="languages"
                     @change="isShowSelectedScenarios = false"
                   />
@@ -99,10 +87,7 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                    "
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="isShowSelectedScenarios = false"
                   />
                 </div>
@@ -147,9 +132,7 @@
                         @change="setSelectedTemplate(item, $event)"
                       />
                       <div class="d-flex flex-column wrapWord">
-                        <div
-                          class="template-list--item template-list--item__header"
-                        >
+                        <div class="template-list--item template-list--item__header">
                           {{ item.name }}
                         </div>
                         <div
@@ -158,9 +141,7 @@
                         >
                           {{ item.method }}
                           &#8226;
-                          <span class="template-list--item__sub-header--span"
-                            >by</span
-                          >
+                          <span class="template-list--item__sub-header--span">by</span>
                           {{ item['createdBy'] }}
                         </div>
                       </div>
@@ -176,20 +157,14 @@
                   <div class="template-list--item">
                     {{ getItemDescription(item) }}
                   </div>
-                  <div
-                    class="template-list--item d-flex justify-space-between align-center mt-2"
-                  >
+                  <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
                     <div v-if="!item.tags || !item.tags.length">
                       {{ '\xa0' }}
                     </div>
                     <div class="d-flex align-center">
-                      <v-icon :size="16" color="#757575" class="mr-1"
-                        >mdi-web</v-icon
-                      >
-                      <span class="template-list--item__language">{{
-                        item.languageTypeName
-                      }}</span>
+                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
+                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
                     </div>
                   </div>
                 </div>
@@ -203,10 +178,7 @@
                     label="Text Message"
                   >
                     <div class="template-preview pt-0">
-                      <div
-                        class="template-preview__text pl-2"
-                        v-if="!!textTemplate"
-                      >
+                      <div class="template-preview__text pl-2" v-if="!!textTemplate">
                         <div>
                           <span>{{ textTemplateParams.textMessage }}</span>
                         </div>
@@ -243,22 +215,15 @@
                           </v-icon>
                         </v-btn>
                       </div>
-                      <div
-                        class="template-preview__text pl-2"
-                        v-if="!!getSingleTemplateDetails"
-                      >
+                      <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
-                          <span class="template-preview__text--title"
-                            >Name:
-                          </span>
+                          <span class="template-preview__text--title">Name: </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.name
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title"
-                            >Phishing URL:
-                          </span>
+                          <span class="template-preview__text--title">Phishing URL: </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.urlTemplate
                           }}</span>
@@ -272,9 +237,7 @@
                     </div>
                   </ElTabPane>
                   <ElTabPane
-                    v-if="
-                      !isAttachmentBasedScenario && getTrainingSearchPermission
-                    "
+                    v-if="!isAttachmentBasedScenario && getTrainingSearchPermission"
                     :label="labels.Training"
                     name="training"
                     id="campaign-manager-info--training-content"
@@ -294,18 +257,10 @@
             <div class="custom-empty-table-message" v-else>
               <div class="empty-inline">
                 <slot name="empty-table-inline">
-                  <h2
-                    :id="`text--empty-message-${Math.random()
-                      .toString()
-                      .substring(2)}`"
-                  >
+                  <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
                     {{ getTableEmptyTextMessage }}
                   </h2>
-                  <p
-                    :id="`text--empty-sub-message-${Math.random()
-                      .toString()
-                      .substring(2)}`"
-                  >
+                  <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
                     {{ getTableEmptySubMessage }}
                   </p>
                 </slot>

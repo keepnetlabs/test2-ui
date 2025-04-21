@@ -108,7 +108,9 @@ export default {
       return this.phoneNumbers
     },
     getSelectedPhoneNumbers() {
-      return this.getPhoneNumberItems.filter(pn => this.value.includes(pn[this.itemValue])).map(pn => pn[this.itemText])
+      return this.getPhoneNumberItems
+        .filter((pn) => this.value.includes(pn[this.itemValue]))
+        .map((pn) => pn[this.itemText])
     }
   },
   mounted() {

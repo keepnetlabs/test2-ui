@@ -13,18 +13,23 @@
         <template v-for="(pn, index) in phoneNumbers">
           <div :key="pn">
             <div class="campaign-manager-sender-phone-number">
-              <span class="campaign-manager-sender-phone-number__number">{{ getPhoneNumberFormatted(pn) }}</span>
-              <span class="campaign-manager-sender-phone-number__country">{{ getPhoneNumberCountry(pn) }}</span>
+              <span class="campaign-manager-sender-phone-number__number">{{
+                getPhoneNumberFormatted(pn)
+              }}</span>
+              <span class="campaign-manager-sender-phone-number__country">{{
+                getPhoneNumberCountry(pn)
+              }}</span>
             </div>
-            <hr v-if="index !== phoneNumbers.length - 1" class="campaign-manager-sender-phone-number__divider" />
+            <hr
+              v-if="index !== phoneNumbers.length - 1"
+              class="campaign-manager-sender-phone-number__divider"
+            />
           </div>
         </template>
       </div>
     </template>
     <template #app-dialog-footer>
-      <AppDialogFooterWithClose
-        @on-close="closeModal"
-      />
+      <AppDialogFooterWithClose @on-close="closeModal" />
     </template>
   </AppDialog>
 </template>
