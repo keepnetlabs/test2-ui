@@ -7,6 +7,7 @@
       @changeNewUserGroupStatus="handleCloseTargetGroupModal"
       @handleSave="handleConfirmTargetGroupModal"
     />
+
     <v-form ref="refForm">
       <FormGroup :title="labels.CampaignName" has-hint>
         <InputEntityName
@@ -52,12 +53,12 @@
         <KSelect
           v-infinite-scroll="{
             target: '#input--target-group-groups .k-select__menu',
-            callback: callForTargetGroups
+            callback: callForTargetGroups,
           }"
           ref="refTargetGroupSelect"
           v-select-search-handler="{
             callback: searchTargetGroups,
-            isLoadingKey: 'isTargetGroupsLoading'
+            isLoadingKey: 'isTargetGroupsLoading',
           }"
           type="autocomplete"
           :value="clickedUserGroupResourceId"
@@ -80,7 +81,7 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>
-                  <span style="font-weight: 600;">Create new group</span>
+                  <span style="font-weight: 600">Create new group</span>
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -91,28 +92,7 @@
         v-if="showReplyTracking"
         v-model="formData.emailReplySettings"
       />
-      <FormGroup
-        v-if="showDuration"
-        has-hint
-        :title="labels.TrackingDuration"
-        :sub-title="labels.TrackingDurationSub"
-      >
-        <v-text-field
-          v-mask="'###'"
-          :value="formData.duration"
-          ref="refDurationTextField"
-          id="input--campaign-manager-days"
-          class="input-duration"
-          outlined
-          persistent-hint
-          hint="*Required"
-          :rules="rules.days"
-          @input="handleDurationChange"
-        ></v-text-field>
-        <span style="position: absolute; top: 87px; left: 56px; font-size: 13px; color: #000;"
-          >Days</span
-        >
-      </FormGroup>
+      <InputDuration v-if="showDuration" v-model="formData.duration" />
       <FormGroup v-if="showMarkAsTest" :title="labels.MarkAsTest">
         <div>
           <v-checkbox
@@ -120,7 +100,9 @@
             id="input--campaign-manager-campaign-settings-exclude-from-reports"
             color="#2196f3"
           >
-            <template #label>Exclude this campaign’s statistics from all generic reports</template>
+            <template #label
+              >Exclude this campaign’s statistics from all generic reports</template
+            >
           </v-checkbox>
         </div>
       </FormGroup>
@@ -129,77 +111,77 @@
 </template>
 
 <script>
-import labels from '@/model/constants/labels'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import * as validations from '@/utils/validations'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import labels from "@/model/constants/labels";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import * as validations from "@/utils/validations";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName";
 import {
   scrollToComponent,
   getDefaultAxiosPayload,
-  getSelectSearchPayload
-} from '@/utils/functions'
-import { searchTargetGroups, createTargetGroup } from '@/api/targetUsers'
-import { Fragment } from 'vue-frag'
-import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InfiniteScroll from '@/directives/infinite-scroll'
-import SelectSearchHandler from '@/directives/select-search-handler'
-import CampaignManagerReplyTracking from '@/components/CampaignManager/CampaignManagerReplyTracking'
+  getSelectSearchPayload,
+} from "@/utils/functions";
+import { searchTargetGroups, createTargetGroup } from "@/api/targetUsers";
+import { Fragment } from "vue-frag";
+import CreateNewUserGroupModal from "@/components/TargetUsers/CreateNewUserGroupModal";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import InfiniteScroll from "@/directives/infinite-scroll";
+import SelectSearchHandler from "@/directives/select-search-handler";
+import CampaignManagerReplyTracking from "@/components/CampaignManager/CampaignManagerReplyTracking";
 export default {
-  name: 'CampaignManagerCampaignInfo',
+  name: "CampaignManagerCampaignInfo",
   components: {
     CampaignManagerReplyTracking,
     FormGroup,
     InputEntityName,
     CreateNewUserGroupModal,
     KSelect,
-    Fragment
+    Fragment,
   },
   props: {
     defaultValues: {
-      type: Object
+      type: Object,
     },
     isEdit: {
-      type: Boolean
+      type: Boolean,
     },
     showDuration: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showMarkAsTest: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isCallback: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isPhishing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     clickedUserGroupResourceId: {
-      type: String
+      type: String,
     },
     initialClickedUserGroupResourceId: {
-      type: String
+      type: String,
     },
     showReplyTracking: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hyperPersonalization: {
       type: String,
-      default: ''
+      default: "",
     },
     formDetails: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   directives: {
-    'infinite-scroll': InfiniteScroll,
-    'select-search-handler': SelectSearchHandler
+    "infinite-scroll": InfiniteScroll,
+    "select-search-handler": SelectSearchHandler,
   },
   data() {
     return {
@@ -208,190 +190,189 @@ export default {
       isTargetGroupsLoading: false,
       targetGroupPayload: getDefaultAxiosPayload({
         pageSize: 100,
-        selectTargetUserResourceIds: ''
+        selectTargetUserResourceIds: "",
       }),
       targetGroupList: [],
       targetGroups: [],
       labels,
       formData: {
-        name: '',
-        duration: 365,
+        name: "",
+        duration: 30,
         excludeFromReports: false,
         emailReplySettings: {
           isEnabled: false,
-          subDomain: '',
-          domain: '',
+          subDomain: "",
+          domain: "",
           isSaveContentEnabled: false,
-          isOutOfOfficeEnabled: false
-        }
+          isOutOfOfficeEnabled: false,
+        },
       },
       rules: {
         name: [
           (v) => validations.required(v, labels.Required),
-          (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-          (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName))
+          (v) => validations.startsWith(v, labels.CannotStartWithSpace, " "),
+          (v) =>
+            validations.maxLength(
+              v,
+              256,
+              labels.getMaxLengthMessage(labels.CampaignName)
+            ),
         ],
         select: [
           (v) => !!v.length || labels.Required,
-          (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
+          (v) => validations.startsWith(v, labels.CannotStartWithSpace, " "),
         ],
-        days: [
-          (v) => validations.required(v, labels.Required),
-          (v) => validations.startsWith(v, 'Cannot start with 0', '0')
-        ]
-      }
-    }
+      },
+    };
   },
   watch: {
     clickedUserGroupResourceId: {
       deep: true,
       immediate: true,
       handler(val) {
-        this.$emit('update:clickedUserGroupResourceId', val)
+        this.$emit("update:clickedUserGroupResourceId", val);
         if (val) {
           const smartGroupIndex = this.targetGroupList.findIndex(
             (group) => group.resourceId === val
-          )
+          );
           if (smartGroupIndex !== -1) {
-            this.$emit('smartGroupSelected', this.targetGroupList[smartGroupIndex])
+            this.$emit("smartGroupSelected", this.targetGroupList[smartGroupIndex]);
           }
-        } else this.$emit('smartGroupSelected', null)
-      }
+        } else this.$emit("smartGroupSelected", null);
+      },
     },
     initialClickedUserGroupResourceId: {
       deep: true,
       immediate: true,
       handler(val) {
         if (val) {
-          this.targetGroupPayload.selectTargetUserResourceIds = val
-          this.callForTargetGroups()
+          this.targetGroupPayload.selectTargetUserResourceIds = val;
+          this.callForTargetGroups();
         }
-      }
+      },
     },
     isCallback: {
       immediate: true,
       handler(val) {
         if (val) {
           this.rules.days.push((v) =>
-            validations.numberRangeRule(v, 1, 30, 'Duration can be minimum 1, maximum 30 days')
-          )
+            validations.numberRangeRule(
+              v,
+              1,
+              30,
+              "Duration can be minimum 1, maximum 30 days"
+            )
+          );
         }
-      }
+      },
     },
     defaultValues: {
       deep: true,
       immediate: true,
       handler(val) {
-        if (!val) return
+        if (!val) return;
         for (const key of Object.keys(val)) {
-          this.formData[key] = val[key]
+          this.formData[key] = val[key];
         }
-      }
-    }
+      },
+    },
   },
   computed: {
     noTargetGroupText() {
-      return this.isTargetGroupsLoading ? 'Loading...' : 'No target group available'
+      return this.isTargetGroupsLoading ? "Loading..." : "No target group available";
     },
     getHyperPersonalizationItems() {
       return this?.formDetails?.sendUserPreferredLanguageTypes?.map((item) => {
         return {
           text: this.getItemTitle(item.value),
           description: item.text,
-          value: item.value
-        }
-      })
-    }
+          value: item.value,
+        };
+      });
+    },
   },
   created() {
-    const initialFormValues = JSON.parse(JSON.stringify(this.formData))
-    this.$emit('initialFormValues', initialFormValues)
-    this.callForTargetGroups()
+    const initialFormValues = JSON.parse(JSON.stringify(this.formData));
+    this.$emit("initialFormValues", initialFormValues);
+    this.callForTargetGroups();
   },
   methods: {
     getItemTitle(value) {
-      if (value === '0') return 'Send in a manually selected language'
-      return "Send in the target users' preferred language"
+      if (value === "0") return "Send in a manually selected language";
+      return "Send in the target users' preferred language";
     },
     handleCreateGroup() {
-      this.isTargetGroupModalVisible = true
+      this.isTargetGroupModalVisible = true;
       if (this.$refs?.refTargetGroupSelect?.$refs?.refComponent)
-        this.$refs.refTargetGroupSelect.$refs.refComponent.isMenuActive = false
+        this.$refs.refTargetGroupSelect.$refs.refComponent.isMenuActive = false;
     },
     handleCloseTargetGroupModal() {
-      this.isTargetGroupModalVisible = false
+      this.isTargetGroupModalVisible = false;
     },
     handleConfirmTargetGroupModal(group) {
-      this.$emit('smartGroupSelected', group)
-      this.isCreateTargetGroupButtonDisabled = true
+      this.$emit("smartGroupSelected", group);
+      this.isCreateTargetGroupButtonDisabled = true;
       createTargetGroup(group)
         .then((response) => {
-          this.isTargetGroupModalVisible = false
+          this.isTargetGroupModalVisible = false;
           this.targetGroupList.unshift({
             name: group.name,
-            resourceId: response.data.data.resourceId
-          })
-          this.clickedUserGroupResourceId = response.data.data.resourceId
+            resourceId: response.data.data.resourceId,
+          });
+          this.clickedUserGroupResourceId = response.data.data.resourceId;
         })
-        .finally(() => (this.isCreateTargetGroupButtonDisabled = false))
+        .finally(() => (this.isCreateTargetGroupButtonDisabled = false));
     },
     setTargetGroups(response) {
-      const { data: { data = [] } = [] } = response
-      this.targetGroups = [...this.targetGroups, ...data.results]
+      const { data: { data = [] } = [] } = response;
+      this.targetGroups = [...this.targetGroups, ...data.results];
       this.targetGroupList = this.targetGroups.map((tg) => ({
         name: tg.name,
-        resourceId: tg.resourceId
-      }))
+        resourceId: tg.resourceId,
+      }));
     },
     callForTargetGroups(addPage) {
       if (addPage) {
-        this.targetGroupPayload.pageNumber += 1
-        if (this.targetGroupPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
+        this.targetGroupPayload.pageNumber += 1;
+        if (this.targetGroupPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups)
+          return;
       }
-      this.isTargetGroupsLoading = true
+      this.isTargetGroupsLoading = true;
       searchTargetGroups(this.targetGroupPayload)
         .then(this.setTargetGroups)
         .then((data) => {
-          this.totalNumberOfPagesOfTargetGroups = data?.data?.totalNumberOfPages || 1
+          this.totalNumberOfPagesOfTargetGroups = data?.data?.totalNumberOfPages || 1;
         })
         .finally(() => {
-          this.isTargetGroupsLoading = false
-        })
+          this.isTargetGroupsLoading = false;
+        });
     },
-    searchTargetGroups(search = '') {
+    searchTargetGroups(search = "") {
       if (search) {
         searchTargetGroups(getSelectSearchPayload(this.targetGroupPayload, search))
           .then(this.setTargetGroups)
           .finally(() => {
-            this.isTargetGroupsLoading = false
-          })
+            this.isTargetGroupsLoading = false;
+          });
       } else {
-        this.callForTargetGroups()
+        this.callForTargetGroups();
       }
     },
     setInitialName(value) {
-      this.formData.name = value
-      const initialFormValues = JSON.parse(JSON.stringify(this.formData))
-      this.$emit('initialFormValues', initialFormValues)
-    },
-    handleDurationChange(val) {
-      if (!val || /^\d{1,3}$/.test(val)) {
-        this.formData.duration = val
-      } else {
-        this.$refs.refDurationTextField.initialValue = this.formData.duration
-        this.$refs.refDurationTextField.lazyValue = this.formData.duration
-      }
+      this.formData.name = value;
+      const initialFormValues = JSON.parse(JSON.stringify(this.formData));
+      this.$emit("initialFormValues", initialFormValues);
     },
     validateForm() {
-      let isValid = this.$refs.refForm.validate()
+      let isValid = this.$refs.refForm.validate();
       if (!isValid) {
         this.$nextTick(() => {
-          const el = this.$refs.refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+          const el = this.$refs.refForm.$el.querySelector(".error--text");
+          scrollToComponent(el);
+        });
       }
-      return isValid
-    }
-  }
-}
+      return isValid;
+    },
+  },
+};
 </script>
