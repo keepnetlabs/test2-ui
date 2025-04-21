@@ -1296,7 +1296,7 @@ export default {
       this.layout.splice(index, 1)
       this.$emit('on-delete', item)
     },
-    getComponent(componentString, name, item) {
+    getComponent(componentString, _, item) {
       switch (componentString) {
         case 'PhishingRiskScoreAcrossIndustriesWidget':
           return ExecutiveReportsRiskScoreTrendAcrossIndustries

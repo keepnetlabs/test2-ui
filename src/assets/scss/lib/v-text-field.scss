@@ -52,12 +52,21 @@
     &__slot textarea{
       margin-top:11px;
     }
-    .v-select__selection{
+    .v-select__selection,.v-select__slot input{
       font-size: 13px;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.72) !important;
     }
-
+    .v-select__selections{
+      .v-chip--select{
+        opacity: 1;
+      }
+      .v-chip--disabled{
+        .v-chip__close{
+            opacity: 0.5;
+        }
+      }
+    }
 
     &--outlined legend {
       display: none;

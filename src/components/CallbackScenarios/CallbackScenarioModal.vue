@@ -534,11 +534,12 @@ export default {
     },
     getSelectedMethod() {
       if (!this.formValues?.methodTypeId) return ''
-      return this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA'
-        ? this.selectedEmailTemplate.categoryName === 'Click Only'
+      if (this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA') {
+        return this.selectedEmailTemplate.categoryName === 'Click Only'
           ? 'Click-Only'
           : this.selectedEmailTemplate.categoryName
-        : this.methods[Number(this.formValues?.methodTypeId) - 1].text
+      }
+      return this.methods[Number(this.formValues?.methodTypeId) - 1].text
     },
     getModalTitle() {
       if (!this.isEdit) return 'New Callback Scenario'

@@ -177,7 +177,9 @@ const whitelabel = {
           }
         }
         if (summary?.data?.countryCode) {
-          context.commit('SET_DATA', { countryCode: summary?.data?.countryCode })
+          context.commit('SET_DATA', {
+            countryCode: summary?.data?.countryCode
+          })
         }
         if (company?.data?.countryName) {
           context.commit('SET_COUNTRY_NAME', company.data.countryName)
@@ -187,7 +189,7 @@ const whitelabel = {
     resetState(context = {}) {
       context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
     },
-    setState(context = {}, payload) {
+    setState(context, payload) {
       context.commit('SET_DATA', payload)
     },
     toggleShowExceedDialog(context) {

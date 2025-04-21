@@ -94,10 +94,8 @@ export default {
           const dataset = chart.data.datasets[0]
           const meta = chart.getDatasetMeta(0)
           const maxIndexes = []
-          let maxX = -Infinity
           for (let i = 0; i < dataset.data.length; i++) {
             if (dataset.data[i].x > 60) {
-              maxX = dataset.data[i].x
               maxIndexes.push(i)
             }
           }

@@ -139,7 +139,7 @@ export default {
       this.dataContainerWithSearchItems = newItems
     },
     handleIpAddressesAdd() {
-      if (!!this.ipAddressSearch) {
+      if (this.ipAddressSearch) {
         this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
         this.resetIpAddresses()
       }

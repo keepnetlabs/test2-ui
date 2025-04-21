@@ -178,7 +178,7 @@ export default {
     getActiveAndInactiveUserCountText() {
       let text = ''
       if (this.isVishing) {
-        if (!!this.activeUsersWithPhoneNumberCount) {
+        if (this.activeUsersWithPhoneNumberCount) {
           text += `${this.activeUsersWithPhoneNumberCount} active`
         }
       } else {
@@ -187,11 +187,11 @@ export default {
         }
       }
 
-      if (text !== '' && !!this.inactiveUserCount) {
+      if (text !== '' && this.inactiveUserCount) {
         text += ', '
       }
 
-      if (!!this.inactiveUserCount) {
+      if (this.inactiveUserCount) {
         text += `${this.inactiveUserCount} inactive`
       }
 
