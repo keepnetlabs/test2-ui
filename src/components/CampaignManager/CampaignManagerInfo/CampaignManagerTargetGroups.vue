@@ -4,9 +4,10 @@
     :class="[
       'campaign-manager-target-groups',
       { 'campaign-manager-target-groups--empty': isTargetGroupEmpty }
-    ]"
-  >
-    <div class="campaign-manager-target-groups-card" :style="getContainerStyle">
+    ]">
+    <div
+      class="campaign-manager-target-groups-card"
+      :style="getContainerStyle">
       <div class="campaign-manager-target-groups-card__header">
         <v-text-field
           v-model.trim="search"
@@ -16,18 +17,18 @@
           hide-details
           placeholder="Search"
           outlined
-          prepend-inner-icon="mdi-magnify"
-        />
+          prepend-inner-icon="mdi-magnify"/>
       </div>
       <div class="campaign-manager-target-groups-card__content">
-        <Multipane class="vertical-panes" layout="vertical">
+        <Multipane
+          class="vertical-panes"
+          layout="vertical">
           <div
             class="pane"
             :style="{
               width: isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus() ? '100%' : '60%',
               minWidth: '50%'
-            }"
-          >
+            }">
             <CampaignManagerTargetGroupsTable
               ref="refGroupTable"
               :empty.sync="isTargetGroupEmpty"
@@ -40,8 +41,7 @@
               :isCallback="isCallback"
               :default-selected-target-group-resource-ids="defaultSelectedTargetGroupResourceIds"
               @on-highlighted-row-change="handleHiglightedRowChange"
-              @handle-selection-change="$emit('handle-selection-change', $event)"
-            />
+              @handle-selection-change="$emit('handle-selection-change', $event)"/>
           </div>
           <MultipaneResizer></MultipaneResizer>
           <div
@@ -50,8 +50,7 @@
             :style="{
               width: '40%',
               minWidth: '25%'
-            }"
-          >
+            }">
             <CampaignManagerTargetGroupUsersTable
               ref="refGroupUsersTable"
               class="ml-4"
@@ -71,153 +70,150 @@
               :target-group-resource-ids="targetGroupResourceIds"
               :send-user-preferred-language="sendUserPreferredLanguage"
               :scenario-distribution="scenarioDistribution"
-              :category-filter="categoryFilter"
-            />
+              :category-filter="categoryFilter"/>
           </div>
         </Multipane>
       </div>
     </div>
   </div>
 </template>
-
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
-import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
-import useDebounce from '@/hooks/useDebounce'
-
-export default {
-  name: 'CampaignManagerTargetGroups',
-  components: {
-    CampaignManagerTargetGroupUsersTable,
-    CampaignManagerTargetGroupsTable,
-    Multipane,
-    MultipaneResizer
-  },
-  mixins: [useDebounce],
-  props: {
-    defaultSelectedTargetGroupResourceIds: {
-      type: Array,
-      default: () => []
+  import { Multipane, MultipaneResizer } from 'vue-multipane'
+  import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
+  import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
+  import useDebounce from '@/hooks/useDebounce'
+  export default {
+    name: 'CampaignManagerTargetGroups',
+    components: {
+      CampaignManagerTargetGroupUsersTable,
+      CampaignManagerTargetGroupsTable,
+      Multipane,
+      MultipaneResizer
     },
-    responseOfTargetGroupsItems: {
-      type: Object
-    },
-    isValid: {
-      type: Boolean
-    },
-    isAllGroups: {
-      type: Boolean,
-      default: false
-    },
-    isShowCompanyColumn: {
-      type: Boolean,
-      default: true
-    },
-    lastColumnName: {
-      type: String,
-      default: 'email'
-    },
-    isVishing: {
-      type: Boolean,
-      default: false
-    },
-    isCallApiWhenCreated: {
-      type: Boolean,
-      default: false
-    },
-    isSmishing: {
-      type: Boolean,
-      default: false
-    },
-    isCallback: {
-      type: Boolean,
-      default: false
-    },
-    isAwareness: {
-      type: Boolean,
-      default: false
-    },
-    isMFAScenarioSelected: {
-      type: Boolean,
-      default: false
-    },
-    addPhoneNumberColumn: {
-      type: Boolean,
-      default: false
-    },
-    isPhishing: {
-      type: Boolean,
-      default: false
-    },
-    targetGroupResourceIds: {
-      type: Array,
-      default: () => []
-    },
-    scenarioResourceIds: {
-      type: Array,
-      default: () => []
-    },
-    sendUserPreferredLanguage: {
-      type: String,
-      default: '0'
-    },
-    scenarioDistribution: {
-      type: Number,
-      default: 0
-    },
-    categoryFilter: {
-      type: Object
-    }
-  },
-  data() {
-    return {
-      search: '',
-      highlightedRow: {},
-      isTargetGroupEmpty: false,
-      isTargetGroupLoading: true,
-      timeout: null
-    }
-  },
-  computed: {
-    getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important' } : {}
-    }
-  },
-  watch: {
-    search(val) {
-      this.debounce(() => {
-        this.$refs.refGroupTable.searchChangedFilter(
-          [
-            { FieldName: 'Name', Operator: 'Contains', Value: val },
-            { FieldName: 'Priority', Operator: 'Contains', Value: val },
-            { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
-            { FieldName: 'CompanyName', Operator: 'Contains', Value: val }
-          ],
-          val
-        )
-      }, 500)
-    }
-  },
-  methods: {
-    getTargetGroupUsersTableRenderStatus() {
-      const { refGroupTable } = this.$refs
-      let renderStatus = true
-      if (refGroupTable) {
-        renderStatus = refGroupTable.tableData.length
-          ? true
-          : !refGroupTable?.$refs?.refTable?.isColumnFilterActive
+    mixins: [useDebounce],
+    props: {
+      defaultSelectedTargetGroupResourceIds: {
+        type: Array,
+        default: () => []
+      },
+      responseOfTargetGroupsItems: {
+        type: Object
+      },
+      isValid: {
+        type: Boolean
+      },
+      isAllGroups: {
+        type: Boolean,
+        default: false
+      },
+      isShowCompanyColumn: {
+        type: Boolean,
+        default: true
+      },
+      lastColumnName: {
+        type: String,
+        default: 'email'
+      },
+      isVishing: {
+        type: Boolean,
+        default: false
+      },
+      isCallApiWhenCreated: {
+        type: Boolean,
+        default: false
+      },
+      isSmishing: {
+        type: Boolean,
+        default: false
+      },
+      isCallback: {
+        type: Boolean,
+        default: false
+      },
+      isAwareness: {
+        type: Boolean,
+        default: false
+      },
+      isMFAScenarioSelected: {
+        type: Boolean,
+        default: false
+      },
+      addPhoneNumberColumn: {
+        type: Boolean,
+        default: false
+      },
+      isPhishing: {
+        type: Boolean,
+        default: false
+      },
+      targetGroupResourceIds: {
+        type: Array,
+        default: () => []
+      },
+      scenarioResourceIds: {
+        type: Array,
+        default: () => []
+      },
+      sendUserPreferredLanguage: {
+        type: String,
+        default: '0'
+      },
+      scenarioDistribution: {
+        type: Number,
+        default: 0
+      },
+      categoryFilter: {
+        type: Object
       }
-      return renderStatus
     },
-    handleHiglightedRowChange(row) {
-      this.highlightedRow = row
+    data() {
+      return {
+        search: '',
+        highlightedRow: {},
+        isTargetGroupEmpty: false,
+        isTargetGroupLoading: true,
+        timeout: null
+      }
     },
-    addRowClassName({ row = {} }) {
-      if (this.lastColumnName === 'phoneNumber')
-        return !row.phoneNumber ? 'k-table-row--disabled' : ''
-      return ''
+    computed: {
+      getContainerStyle() {
+        return !this.isValid ? { border: '1px solid #ff5252 !important' } : {}
+      }
+    },
+    watch: {
+      search(val) {
+        this.debounce(() => {
+          this.$refs.refGroupTable.searchChangedFilter(
+            [
+              { FieldName: 'Name', Operator: 'Contains', Value: val },
+              { FieldName: 'Priority', Operator: 'Contains', Value: val },
+              { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
+              { FieldName: 'CompanyName', Operator: 'Contains', Value: val }
+            ],
+            val
+          )
+        }, 500)
+      }
+    },
+    methods: {
+      getTargetGroupUsersTableRenderStatus() {
+        const { refGroupTable } = this.$refs
+        let renderStatus = true
+        if (refGroupTable) {
+          renderStatus = refGroupTable.tableData.length
+            ? true
+            : !refGroupTable?.$refs?.refTable?.isColumnFilterActive
+        }
+        return renderStatus
+      },
+      handleHiglightedRowChange(row) {
+        this.highlightedRow = row
+      },
+      addRowClassName({ row = {} }) {
+        if (this.lastColumnName === 'phoneNumber')
+          return !row.phoneNumber ? 'k-table-row--disabled' : ''
+        return ''
+      }
     }
   }
-}
 </script>

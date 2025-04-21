@@ -14,4 +14,7 @@
   .v-messages__message{
     white-space: nowrap;
   }
+  &-days-text{
+    position: absolute; top: 87px; left: 56px; font-size: 13px; color: #000;
+  }
 }
