@@ -88,6 +88,7 @@
           @on-download="handleDownloadPackage"
           @on-view-report="handleRouteToReport"
         />
+
         <EnrollmentsLearningPathTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.LEARNING_PATH"
           :ref="`refTable${template.name}`"
@@ -110,6 +111,7 @@
           @on-download="handleDownloadPackage"
           @on-view-report="handleRouteToReport"
         />
+
         <EnrollmentsTrainingTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.TRAINING"
           :ref="`refTable${template.name}`"
@@ -132,6 +134,7 @@
           @on-download="handleDownloadPackage"
           @on-view-report="handleRouteToReport"
         />
+
         <EnrollmentsPosterTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.POSTER"
           :ref="`refTable${template.name}`"
@@ -154,6 +157,7 @@
           @on-download="handleDownloadPackage"
           @on-view-report="handleRouteToReport"
         />
+
         <EnrollmentsInfographicTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.INFOGRAPHIC"
           :ref="`refTable${template.name}`"
@@ -180,7 +184,6 @@
     </ElTabs>
   </div>
 </template>
-
 <script>
 import {
   TRAINING_LIBRARY_PAYLOAD_TYPES,
@@ -285,6 +288,7 @@ export default {
         ? AwarenessEducatorService.searchTrash
         : AwarenessEducatorService.searchEnrollments
     },
+
     getEditEnrollmentsModalTitle() {
       if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Edit Poster Enrollment'
@@ -316,17 +320,18 @@ export default {
         if (this.$refs?.[`refTable${this.tab}`]?.refTable) {
           this.$refs[`refTable${this.tab}`].refTable.callForData()
         }
+
       if (this.isShowDeletePermanentlyDialog) this.selectedRow = null
       this.isShowDeletePermanentlyDialog = !this.isShowDeletePermanentlyDialog
     },
     toggleShowDeleteEnrollmentsDialog(forceUpdate = false) {
       if (forceUpdate) {
-        //this.$refs[`refTable${this.tab}`][0].$refs.refTable.unSelectRow(this.selectedRow)
         this.$refs[`refTable${this.tab}`][0].callForData()
       }
       if (this.isShowDeleteEnrollmentsDialog) this.selectedRow = null
       this.isShowDeleteEnrollmentsDialog = !this.isShowDeleteEnrollmentsDialog
     },
+
     toggleShowStopEnrollmentDialog(forceUpdate = false) {
       if (forceUpdate) this.$refs[`refTable${this.tab}`][0].callForData()
       if (this.isShowStopEnrollmentDialog) this.selectedRow = null
@@ -359,7 +364,10 @@ export default {
     },
     handlePreviewRowClick(row) {
       AwarenessEducatorService.getEnrollment(row.enrollmentId).then((response) => {
-        this.selectedRow = { ...row, trainingId: response?.data?.data?.trainingId }
+        this.selectedRow = {
+          ...row,
+          trainingId: response?.data?.data?.trainingId
+        }
         if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
           this.setTrainingPreviewDialog({
             status: true,
