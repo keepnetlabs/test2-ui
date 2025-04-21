@@ -191,7 +191,7 @@
           {{ scope.row.companyName }}
         </span>
         <template v-else-if="scope.column.property === 'targetUserCount'">
-          <span v-if="isNumberOfUsersExceed(scope.row)" class="mr-2">
+          <span v-if="isNumberOfUsersExceed(scope.row)">
             <span>{{ scope.row['targetUserCount'] }}</span>
             <VTooltip bottom>
               <template #activator="{ on }">
