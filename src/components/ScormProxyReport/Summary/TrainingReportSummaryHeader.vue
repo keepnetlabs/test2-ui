@@ -18,16 +18,6 @@
       </div>
     </div>
     <div class="training-report-summary-header__right">
-      <!-- <v-btn
-        class="training-report-summary-header__btn-download-report"
-        rounded
-        outlined
-        color="#2196f3"
-        :disabled="isDownloadReportDisabled"
-        @click="handleDownloadReport"
-        >{{ labels.DownloadReport }}</v-btn
-      >
-      -->
       <v-btn
         v-if="!isLoading && !isScormProxy"
         class="training-report-summary-header__btn-resend-campaign ml-2"

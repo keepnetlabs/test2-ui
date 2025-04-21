@@ -236,8 +236,6 @@ export default {
         return
       }
       const { values } = data[0].widgetDatas[0]
-      const repeatOffendersCount = values.find((value) => value.name === 'CountRepeatOffender')
-        ?.value
       const repeatOffendersPercentage = values.find(
         (value) => value.name === 'RepeatOffenderPercentage'
       )?.value

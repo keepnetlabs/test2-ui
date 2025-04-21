@@ -12,7 +12,11 @@
       @changeStatus="isTemplateDetails = false"
     >
       <template #app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" :key="templateHTML" />
+        <KEmailPreview
+          v-if="!!templateHTML"
+          :html="templateHTML"
+          :key="templateHTML"
+        />
       </template>
       <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -78,7 +82,9 @@
                 </div>
                 <div style="max-width: 140px;">
                   <KSelect
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
+                    v-model="
+                      bodyData.filter.FilterGroups[0].FilterItems[1].value
+                    "
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
@@ -86,14 +92,19 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                    "
                     :items="difficulties"
                     @change="getTemplatesForSearch"
                   />
                 </div>
                 <div style="max-width: 140px;">
                   <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
+                    v-model="
+                      bodyData.filter.FilterGroups[0].FilterItems[2].value
+                    "
                     :items="languages"
                     placeholder="Language"
                     item-disabled="disabled"
@@ -102,7 +113,10 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                    "
                     @change="getTemplatesForSearch"
                   >
                   </v-select>
@@ -117,7 +131,9 @@
                   @click="handleCreateEmailTemplateClick"
                 >
                   <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
-                  <span class="emailTemplatePreview__edit-button-text">Create Email Template</span>
+                  <span class="emailTemplatePreview__edit-button-text"
+                    >Create Email Template</span
+                  >
                 </v-btn>
               </div>
             </div>
@@ -149,7 +165,11 @@
                       :id="`template-${index}`"
                     >
                       <span>{{ item.name }}</span>
-                      <VTooltip v-if="item.isAssistedByAI" bottom :attach="`#template-${index}`">
+                      <VTooltip
+                        v-if="item.isAssistedByAI"
+                        bottom
+                        :attach="`#template-${index}`"
+                      >
                         <template #activator="{ on }">
                           <VIcon
                             v-on="on"
@@ -171,7 +191,9 @@
                         {{ item['categoryName'] }}
                       </template>
                       <span class="template-list--item__sub-header--span"
-                        ><span v-if="!isCallback" style="font-size: 20px; vertical-align: sub;"
+                        ><span
+                          v-if="!isCallback"
+                          style="font-size: 20px; vertical-align: sub;"
                           >&bull;</span
                         >
                         by</span
@@ -192,13 +214,19 @@
                 <div class="template-list--item">
                   {{ getItemDescription(item) }}
                 </div>
-                <div class="template-list--item d-flex justify-space-between align-center mt-2">
+                <div
+                  class="template-list--item d-flex justify-space-between align-center mt-2"
+                >
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
                   <div class="d-flex align-center">
                     <div class="template-list--item__narrator mr-2">
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
+                      <v-icon :size="16" color="#757575" class="mr-1"
+                        >mdi-web</v-icon
+                      >
+                      <span class="template-list--item__language">{{
+                        item.languageTypeName
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -218,7 +246,10 @@
               </div>
               <div
                 v-else-if="
-                  !loadingTemplates && !loadingTemplatePreview && !search && !listData.length
+                  !loadingTemplates &&
+                  !loadingTemplatePreview &&
+                  !search &&
+                  !listData.length
                 "
                 class="pl-5 pt-5"
               >
@@ -238,14 +269,17 @@
                 "
                 class="pl-5 pt-5"
               >
-                Go to Quishing Simulator > Quishing Scenarios > Quishing Templates to create a new
-                individual printout template
+                Go to Quishing Simulator > Quishing Scenarios > Quishing
+                Templates to create a new individual printout template
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
             <div class="pane" :style="{ flexGrow: 1, position: 'relative' }">
               <template v-if="listData.length">
-                <div v-if="isPhishing" class="emailTemplatePreview__buttons-container">
+                <div
+                  v-if="isPhishing"
+                  class="emailTemplatePreview__buttons-container"
+                >
                   <template v-if="!isEditMode">
                     <v-btn
                       class="emailTemplatePreview__edit-button"
@@ -278,7 +312,9 @@
                       :disabled="isSaving"
                       @click="handleExitEditing"
                     >
-                      <span class="emailTemplatePreview__exit-editing-text">Exit Editing</span>
+                      <span class="emailTemplatePreview__exit-editing-text"
+                        >Exit Editing</span
+                      >
                     </v-btn>
                     <div>
                       <v-btn
@@ -289,9 +325,14 @@
                         :disabled="isSaving"
                         @click="handleSaveAsNew"
                       >
-                        <span class="emailTemplatePreview__save-as-new-text">Save As New</span>
+                        <span class="emailTemplatePreview__save-as-new-text"
+                          >Save As New</span
+                        >
                       </v-btn>
-                      <VTooltip :disabled="emailTemplateData.createdBy !== 'System'" bottom>
+                      <VTooltip
+                        :disabled="emailTemplateData.createdBy !== 'System'"
+                        bottom
+                      >
                         <template #activator="{ on }">
                           <v-btn
                             v-on="on"
@@ -299,15 +340,21 @@
                             class="emailTemplatePreview__save-changes-button mr-4"
                             color="#2196F3"
                             rounded
-                            :disabled="isSaving || emailTemplateData.createdBy === 'System'"
+                            :disabled="
+                              isSaving ||
+                              emailTemplateData.createdBy === 'System'
+                            "
                             @click="handleSaveChanges"
                           >
-                            <span class="emailTemplatePreview__save-changes-text"
+                            <span
+                              class="emailTemplatePreview__save-changes-text"
                               >Save Changes</span
                             >
                           </v-btn>
                         </template>
-                        <span>You are not authorized to edit this template</span>
+                        <span
+                          >You are not authorized to edit this template</span
+                        >
                       </VTooltip>
                       <v-btn
                         v-if="!!templateHTML"
@@ -326,7 +373,9 @@
                   <EmailTemplate
                     ref="refEmailTemplate"
                     :show-name-field="true"
-                    :active-block-manager-components="activeBlockManagerComponents"
+                    :active-block-manager-components="
+                      activeBlockManagerComponents
+                    "
                     :name.sync="editData.name"
                     :from-address.sync="editData.fromAddress"
                     :ccAddresses.sync="editData.ccAddresses"
@@ -339,7 +388,16 @@
                     :is-phishing-template="isAttachmentBasedScenario"
                     :isNotificationTemplate="true"
                     :isEmailTemplate="isPhishing"
-                    :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                    :extensions="[
+                      'doc',
+                      'docx',
+                      'html',
+                      'htm',
+                      'xls',
+                      'xlsx',
+                      'ppt',
+                      'pptx'
+                    ]"
                     :size="5"
                     fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                     :isHorizontalFormGroups="true"
@@ -363,24 +421,41 @@
                         <v-icon color="#2196f3" small> mdi-eye </v-icon>
                       </v-btn>
                     </div>
-                    <div class="template-preview__text pl-2" v-if="!!templateHTML">
+                    <div
+                      class="template-preview__text pl-2"
+                      v-if="!!templateHTML"
+                    >
                       <div>
-                        <span class="template-preview__text--title">Template Name: </span>
+                        <span class="template-preview__text--title"
+                          >Template Name:
+                        </span>
                         <span class="template-preview__text--body">{{
                           selectedTemplateHeader
                         }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">Subject: </span>
-                        <span class="template-preview__text--body">{{ templateSubject }}</span>
+                        <span class="template-preview__text--title"
+                          >Subject:
+                        </span>
+                        <span class="template-preview__text--body">{{
+                          templateSubject
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Name: </span>
-                        <span class="template-preview__text--body">{{ templateFromName }}</span>
+                        <span class="template-preview__text--title"
+                          >From Name:
+                        </span>
+                        <span class="template-preview__text--body">{{
+                          templateFromName
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Email Address: </span>
-                        <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                        <span class="template-preview__text--title"
+                          >From Email Address:
+                        </span>
+                        <span class="template-preview__text--body">{{
+                          templateFromEmail
+                        }}</span>
                       </div>
                       <div v-if="isPhishing">
                         <span class="template-preview__text--title">CC: </span>
@@ -393,7 +468,9 @@
                         class="attachment-wrapper d-flex align-center"
                         style="position: relative;"
                       >
-                        <span class="template-preview__text--title mr-2">Attach File: </span>
+                        <span class="template-preview__text--title mr-2"
+                          >Attach File:
+                        </span>
                         <div class="attachment blue-attach mb-0">
                           <AttachmentsPreview
                             :deletable="false"
@@ -443,7 +520,7 @@ import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_TYPES,getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { isDifferent } from '@/utils/functions'
@@ -610,6 +687,7 @@ export default {
     this.getTemplates(true, this.emailTemplateResourceId)
   },
   methods: {
+    getItemDifficultyClass,
     handleCreateEmailTemplateClick() {
       this.$emit('on-create-email-template')
     },
@@ -855,13 +933,6 @@ export default {
       }
 
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSearch() {
       this.debounce(() => {

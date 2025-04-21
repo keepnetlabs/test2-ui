@@ -212,7 +212,9 @@
                           rounded
                           @click="handleEdit"
                         >
-                          <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
+                          <v-icon left color="#2196f3" medium>
+                            mdi-pencil
+                          </v-icon>
                           <span class="landingPagePreview__edit-button-text"
                             >Edit Landing Page</span
                           >
@@ -326,7 +328,10 @@
                               :readonly="isInvisibleCaptchaDisabled"
                               :style="
                                 isInvisibleCaptchaDisabled
-                                  ? { opacity: 0.38, cursor: 'default !important' }
+                                  ? {
+                                      opacity: 0.38,
+                                      cursor: 'default !important'
+                                    }
                                   : ''
                               "
                             >
@@ -362,7 +367,11 @@
                               <template #label>
                                 <div
                                   style="display: flex;"
-                                  :style="editData.landingPages.length > 1 && { width: '68px' }"
+                                  :style="
+                                    editData.landingPages.length > 1 && {
+                                      width: '68px'
+                                    }
+                                  "
                                 >
                                   <span class="landing-page-tab__label">
                                     {{ `Page ${index + 1}` }}
@@ -562,7 +571,9 @@
                         rounded
                         @click="handleEdit"
                       >
-                        <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
+                        <v-icon left color="#2196f3" medium>
+                          mdi-pencil
+                        </v-icon>
                         <span class="landingPagePreview__edit-button-text">Edit Landing Page</span>
                       </v-btn>
                       <VBtn
@@ -669,7 +680,10 @@
                             :readonly="isInvisibleCaptchaDisabled"
                             :style="
                               isInvisibleCaptchaDisabled
-                                ? { opacity: 0.38, cursor: 'default !important' }
+                                ? {
+                                    opacity: 0.38,
+                                    cursor: 'default !important'
+                                  }
                                 : ''
                             "
                           >
@@ -705,7 +719,11 @@
                             <template #label>
                               <div
                                 style="display: flex;"
-                                :style="editData.landingPages.length > 1 && { width: '68px' }"
+                                :style="
+                                  editData.landingPages.length > 1 && {
+                                    width: '68px'
+                                  }
+                                "
                               >
                                 <span class="landing-page-tab__label">
                                   {{ `Page ${index + 1}` }}
@@ -881,7 +899,7 @@ import InputCallerPhoneNumber from '../Common/Inputs/InputCallerPhoneNumber'
 import FormGroup from '../SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
@@ -1054,6 +1072,7 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    getItemDifficultyClass,
     handleCreateLandingPageTemplateClick() {
       this.$emit('on-create-landing-page-template')
     },
@@ -1138,7 +1157,10 @@ export default {
             text: item.domain,
             value: item.id.toString(),
             extraDatas: [
-              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              {
+                text: item.urlSchemaType,
+                value: item.urlSchemaTypeId.toString()
+              },
               { text: item.isStopBotActivity, value: item.isStopBotActivity }
             ]
           }
@@ -1241,7 +1263,10 @@ export default {
         (template) => template.resourceId === resourceId
       )
       if (templateIndex !== -1) {
-        this.listData[templateIndex] = { ...this.listData[templateIndex], ...newTemplate }
+        this.listData[templateIndex] = {
+          ...this.listData[templateIndex],
+          ...newTemplate
+        }
         this.landingPageTemplateData = { ...this.listData[templateIndex] }
         this.templateURL = newTemplate.urlTemplate || ''
         this.templateName = newTemplate.name
@@ -1282,13 +1307,6 @@ export default {
       }
 
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSearch() {
       this.debounce(() => {

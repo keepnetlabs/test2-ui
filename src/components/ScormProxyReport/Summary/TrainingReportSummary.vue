@@ -253,8 +253,6 @@ export default {
   },
   created() {
     this.callForLanguages()
-    // this.callForEnrollmentEmail()
-    // this.callForCertificate()
   },
   beforeDestroy() {
     clearInterval(this.interval)

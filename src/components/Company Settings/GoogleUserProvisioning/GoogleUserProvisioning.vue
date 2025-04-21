@@ -58,10 +58,7 @@
             title="2. Select Sync Source"
             sub-title="Specify where to search for users to sync"
             class="mb-4"
-            :style="{
-              opacity: isSynced ? '56%' : '100%',
-              pointerEvents: isSynced ? 'none' : 'all'
-            }"
+            :style="syncControlStyle"
           >
             <VRadioGroup
               v-model="formValues.provisioningConfig.source"
@@ -81,10 +78,7 @@
             :title="getSelectGroupsTitle"
             :sub-title="getSelectGroupsSubTitle"
             class="mb-2"
-            :style="{
-              opacity: isSynced ? '56%' : '100%',
-              pointerEvents: isSynced ? 'none' : 'all'
-            }"
+            :style="syncControlStyle"
           >
             <KSelect
               v-if="formValues.provisioningConfig.source === SYNC_SOURCE_TYPES.GROUP"
@@ -259,12 +253,7 @@
               </template>
             </KSelect>
           </FormGroup>
-          <div
-            :style="{
-              opacity: isSynced ? '56%' : '100%',
-              pointerEvents: isSynced ? 'none' : 'all'
-            }"
-          >
+          <div :style="syncControlStyle">
             <FormGroup
               style="max-width: unset;"
               title="4. Select Sync Method"
@@ -484,6 +473,12 @@ export default {
     isSynced() {
       return !!this.formValues.enableProvisioning && !!this.formValues.provisioningResourceId
     },
+    syncControlStyle() {
+      return {
+        opacity: this.isSynced ? '56%' : '100%',
+        pointerEvents: this.isSynced ? 'none' : 'all'
+      }
+    },
     getMatchingGroupOptions() {
       if (this.formValues.provisioningConfig.source === SYNC_SOURCE_TYPES.GROUP) {
         if (this.isAllGroupsSelected) {
@@ -585,7 +580,10 @@ export default {
   },
   methods: {
     handleManipulateItems(items = []) {
-      return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))
+      return items.map(({ name, resourceId }) => ({
+        text: name,
+        value: resourceId
+      }))
     },
     resetForm() {
       this.formValues = { ...defaultFormValues }
@@ -736,14 +734,8 @@ export default {
     },
     handleOrganizationItemDisabled(item) {
       if (this.isAllOrganizationsSelected) {
-        if (item.name === 'All Organizational Units') {
-          return false
-        } else {
-          return true
-        }
-      } else {
-        return false
-      }
+        return item.name !== 'All Organizational Units'
+      } else return false
     },
     isGroupSelected(id) {
       return this.isAllGroupsSelected || this.formValues.provisioningConfig.selected.includes(id)

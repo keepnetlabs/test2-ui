@@ -182,7 +182,7 @@ export default {
           text += `${this.activeUsersWithPhoneNumberCount} active`
         }
       } else {
-        if (!!this.activeUserCount) {
+        if (this.activeUserCount) {
           text += `${this.activeUserCount} active`
         }
       }

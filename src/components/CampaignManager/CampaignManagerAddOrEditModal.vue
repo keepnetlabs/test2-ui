@@ -203,12 +203,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="5"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -297,6 +292,12 @@ export default {
   emits: EMITS,
   data() {
     return {
+      stepperIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       isShowMissingLanguageSupportDialog: false,
       isOpenPhishingDrawer: false,
       smartGroup: null,
@@ -597,9 +598,6 @@ export default {
   mounted() {
     this.initialFormValues = this.getFormValues()
     this.callForScenarioDetails()
-    setTimeout(() => {
-      this.isOpenPhishingDrawer = true
-    }, 2000)
   },
   methods: {
     toggleShowMissingLanguageSupportDialog() {

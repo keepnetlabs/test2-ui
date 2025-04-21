@@ -450,10 +450,6 @@ export default {
       })
     },
     handleChangeEmailDelivery(delivery = {}) {
-      // this.buttonKey = createRandomCryptStringNumber()
-      // this.isTestMailSend = false
-      // this.isShowSmtpInputError = false
-      // this.testEmailErrorMessage = ''
       if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
         this.formValues.smtpSettingResourceId = delivery.resourceId
         this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP

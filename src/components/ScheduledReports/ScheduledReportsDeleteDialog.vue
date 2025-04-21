@@ -26,7 +26,7 @@
 <script>
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter.vue'
 import AppDialog from '@/components/AppDialog.vue'
-import { deleteExecutiveReport, deleteReportScheduling } from '@/api/reports'
+import { deleteReportScheduling } from '@/api/reports'
 
 export default {
   name: 'ScheduledReportsDeleteDialog',

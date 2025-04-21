@@ -110,14 +110,6 @@ export default {
                 const x = Math.floor(maxData._model.x / 2.4)
                 const y = maxData._model.y - padding + 2
                 let xComparator = x
-                /*
-                if (window.innerWidth >= 1280 && window.innerWidth < 1440) {
-                  xComparator = x < 130 ? 130 : x
-                } else if (window.innerWidth >= 1440) {
-                  xComparator = x < 190 ? 190 : x
-                }
-
-                 */
                 ctx.fillStyle = '#000'
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'bottom'
