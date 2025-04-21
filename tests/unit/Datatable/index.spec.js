@@ -198,7 +198,9 @@ describe('Datatable test cases suite', () => {
   })
 
   it('Selection case', async () => {
-    const { wrapper } = new DataTableWrapper(localVue, store, { selectable: true })
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      selectable: true
+    })
     //adding data
     await wrapper.setProps({
       table: [
@@ -229,7 +231,9 @@ describe('Datatable test cases suite', () => {
     ])
   })
   it('Multi selection case selection that lower than table length', async () => {
-    const { wrapper } = new DataTableWrapper(localVue, store, { selectable: true })
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      selectable: true
+    })
     //adding data
     await wrapper.setProps({
       table: [
@@ -259,7 +263,9 @@ describe('Datatable test cases suite', () => {
     expect(selectionRow.text()).toContain(`1 item(s) selected`)
   })
   it('Multi selection case all selection', async () => {
-    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      selectable: true
+    })
     const { wrapper } = datatableWrapper
     //adding data
     await wrapper.setProps({
@@ -284,7 +290,9 @@ describe('Datatable test cases suite', () => {
     expect(selectionRow.text()).toContain(`All selected`)
   })
   it('Multi selection case removing selection', async () => {
-    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      selectable: true
+    })
     const { wrapper } = datatableWrapper
     //adding data
     await wrapper.setProps({
@@ -312,7 +320,9 @@ describe('Datatable test cases suite', () => {
   })
 
   it('Checking tooltip', async () => {
-    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      selectable: true
+    })
     const { wrapper } = datatableWrapper
     //adding data
     await wrapper.setProps({
@@ -883,17 +893,12 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
-    //checking is it DataTableService component
     expect(wrapper.findComponent({ name: 'DataTableService' }).exists()).toBeTruthy()
-    //checking first dom element
     expect(firstRow.find('img[alt="outlook"').exists()).toBe(true)
-    //checking second row element
     const secondRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(2)')
     expect(secondRow.find('img[alt="o365"').exists()).toBe(true)
-    //checking third row element
     const thirdRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(3)')
     expect(thirdRow.find('img[alt="gsuite"').exists()).toBe(true)
-    //checking fourth row element
     const fourthRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(4)')
     expect(fourthRow.find('img[alt="exchange"').exists()).toBe(true)
   })

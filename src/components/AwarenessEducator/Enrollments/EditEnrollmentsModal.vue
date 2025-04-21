@@ -511,13 +511,10 @@ export default {
             (!!enrollmentAutoEnroll && !enrollmentAutoEnroll?.stopTime)
           )
             this.isAutoEnroll = true
-          this.formData.enrollmentReminder = enrollmentReminder
-            ? enrollmentReminder
-            : this.formData.enrollmentReminder
+          this.formData.enrollmentReminder = enrollmentReminder ?? this.formData.enrollmentReminder
           delete response?.data?.data?.enrollmentReminder
-          this.formData.enrollmentAutoEnroll = enrollmentAutoEnroll
-            ? enrollmentAutoEnroll
-            : this.formData.enrollmentAutoEnroll
+          this.formData.enrollmentAutoEnroll =
+            enrollmentAutoEnroll ?? this.formData.enrollmentAutoEnroll
           delete response?.data?.data?.enrollmentAutoEnroll
           this.formData = { ...this.formData, ...response?.data?.data }
           this.isReminderStopped = !!enrollmentReminder?.stopTime

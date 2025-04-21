@@ -419,8 +419,16 @@ export default {
                   FieldName: 'CategoryResourceId',
                   Operator: 'Include'
                 },
-                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' },
-                { value: '', FieldName: 'LanguageTypeResourceId', Operator: 'Include' }
+                {
+                  value: '',
+                  FieldName: 'DifficultyResourceId',
+                  Operator: 'Include'
+                },
+                {
+                  value: '',
+                  FieldName: 'LanguageTypeResourceId',
+                  Operator: 'Include'
+                }
               ]
             },
             {
@@ -428,7 +436,11 @@ export default {
               FilterItems: [
                 { FieldName: 'Name', Operator: 'Contains', value: '' },
                 { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
-                { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
+                {
+                  FieldName: 'DifficultyName',
+                  Operator: 'Contains',
+                  value: ''
+                },
                 { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
                 { FieldName: 'Tags', Operator: 'Contains', value: '' },
                 { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
@@ -522,11 +534,12 @@ export default {
     },
     getSelectedMethod() {
       if (!this.formValues?.methodTypeId) return ''
-      return this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA'
-        ? this.selectedEmailTemplate.categoryName === 'Click Only'
+      if (this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA') {
+        return this.selectedEmailTemplate.categoryName === 'Click Only'
           ? 'Click-Only'
           : this.selectedEmailTemplate.categoryName
-        : this.methods[Number(this.formValues?.methodTypeId) - 1].text
+      }
+      return this.methods[Number(this.formValues?.methodTypeId) - 1].text
     },
     getModalTitle() {
       if (!this.isEdit) return 'New Callback Scenario'
@@ -546,13 +559,6 @@ export default {
         )?.text || ''
       )
     }
-    // getMethodText() {
-    //   return (
-    //     this.scenarioDetailsLookup?.methodTypes?.find(
-    //       (item) => item.value === this.formValues.methodTypeId
-    //     )?.text || ''
-    //   )
-    // }
   },
   watch: {
     'formValues.methodTypeId'(val, oldVal) {
@@ -735,7 +741,9 @@ export default {
       }
       if (currentStep === 3) {
         if (!this.formValues.callbackTemplateResourceId) return
-        this.summaryData.callbackTemplate = { template: this.selectedCallbackTemplate }
+        this.summaryData.callbackTemplate = {
+          template: this.selectedCallbackTemplate
+        }
         this.step += 1
       }
     },

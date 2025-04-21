@@ -1369,7 +1369,6 @@ export default {
             this.isSubmitDisabled = false
             this.isEmailTemplateInEditMode = false
             this.step -= 1
-            return
           }
         })
       } else if (

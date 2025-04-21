@@ -40,7 +40,10 @@
                     clearable
                     outlined
                     persistent-hint
-                    style="padding-right: 4px !important; max-width: 200px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      max-width: 200px !important;
+                    "
                     :items="scenarioTypeItems"
                   />
                 </div>
@@ -84,7 +87,9 @@
                 >
                   <div class="d-flex justify-space-between mb-2">
                     <div class="d-flex flex-column wrapWord">
-                      <div class="template-list--item template-list--item__header">
+                      <div
+                        class="template-list--item template-list--item__header"
+                      >
                         {{ item.name }}
                       </div>
                       <div
@@ -93,7 +98,9 @@
                       >
                         {{ item.methodType }}
                         &#8226;
-                        <span class="template-list--item__sub-header--span">by</span>
+                        <span class="template-list--item__sub-header--span"
+                          >by</span
+                        >
                         {{ item['createdBy'] }}
                       </div>
                     </div>
@@ -103,7 +110,8 @@
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
-                      started on {{ item.createTime }} &#8226; ended on {{ item.lastLaunch }}
+                      started on {{ item.createTime }} &#8226; ended on
+                      {{ item.lastLaunch }}
                     </div>
                   </div>
 
@@ -111,7 +119,10 @@
                     <ShowMoreTags :default-badges="item.tags" />
                   </div>
                   <div class="template-list--item mt-2">
-                    <ShowMoreTags :default-badges="item.failedPercentageTag" badgeColor="#757575" />
+                    <ShowMoreTags
+                      :default-badges="item.failedPercentageTag"
+                      badgeColor="#757575"
+                    />
                   </div>
                 </div>
               </div>
@@ -129,7 +140,11 @@
                     :label="template.name"
                   />
                 </ElTabs>
-                <ElTabs v-model="tab" class="k-sub-tab" @tab-click="handleTabChange">
+                <ElTabs
+                  v-model="tab"
+                  class="k-sub-tab"
+                  @tab-click="handleTabChange"
+                >
                   <ElTabPane
                     :label="labels.CampaignResults"
                     name="campaign-results"
@@ -167,7 +182,8 @@
                         style="margin-right: 16px; flex-direction: row;"
                       >
                         <v-icon color="#000000">mdi-account-multiple</v-icon>
-                        <span class="campaign-manager-target-user-groups-header__text"
+                        <span
+                          class="campaign-manager-target-user-groups-header__text"
                           >Total {{ totalCampaignUsers }} users from
                           {{ totalCampaignGroups }} groups</span
                         >
@@ -185,29 +201,44 @@
                       <Pie :data="pieData" :chart-options="chartOptions" />
                     </div>
                   </ElTabPane>
-                  <ElTabPane name="email" :label="labels.JustEmail" id="send-training-email-page">
+                  <ElTabPane
+                    name="email"
+                    :label="labels.JustEmail"
+                    id="send-training-email-page"
+                  >
                     <div class="template-preview mt-n1 pt-0">
-                      <div class="template-preview__text pl-2" v-if="!!emailTemplate">
+                      <div
+                        class="template-preview__text pl-2"
+                        v-if="!!emailTemplate"
+                      >
                         <div>
-                          <span class="template-preview__text--title">Name: </span>
+                          <span class="template-preview__text--title"
+                            >Name:
+                          </span>
                           <span class="template-preview__text--body">{{
                             emailTemplateParams.name
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Subject: </span>
+                          <span class="template-preview__text--title"
+                            >Subject:
+                          </span>
                           <span class="template-preview__text--body">{{
                             emailTemplateParams.subject
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">From Name: </span>
+                          <span class="template-preview__text--title"
+                            >From Name:
+                          </span>
                           <span class="template-preview__text--body">{{
                             emailTemplateParams.fromName
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">From Email Address: </span>
+                          <span class="template-preview__text--title"
+                            >From Email Address:
+                          </span>
                           <span class="template-preview__text--body">{{
                             emailTemplateParams.fromAddress
                           }}</span>
@@ -227,7 +258,10 @@
                     name="landing-page"
                     id="send-training-landing-page"
                   >
-                    <ElTabs v-if="isLandingPageTabsVisible" v-model="selectedLandingPageTab">
+                    <ElTabs
+                      v-if="isLandingPageTabsVisible"
+                      v-model="selectedLandingPageTab"
+                    >
                       <ElTabPane
                         v-for="(template, index) in landingPageTemplates"
                         :key="index"
@@ -235,35 +269,52 @@
                         :name="`${index + 1}`"
                       >
                         <div class="template-preview mt-n1 pt-0">
-                          <div v-if="!!template.content" class="template-preview__text pl-2">
+                          <div
+                            v-if="!!template.content"
+                            class="template-preview__text pl-2"
+                          >
                             <div>
-                              <span class="template-preview__text--title">Name: </span>
+                              <span class="template-preview__text--title"
+                                >Name:
+                              </span>
                               <span class="template-preview__text--body">{{
                                 landingPageParams.name
                               }}</span>
                             </div>
                             <div>
-                              <span class="template-preview__text--title">Phishing URL: </span>
+                              <span class="template-preview__text--title"
+                                >Phishing URL:
+                              </span>
                               <span class="template-preview__text--body">{{
                                 landingPageParams.urlTemplate
                               }}</span>
                             </div>
                           </div>
                           <hr class="mt-2" v-if="!!template.content" />
-                          <KEmailPreview v-if="!!template.content" :html="template.content" />
+                          <KEmailPreview
+                            v-if="!!template.content"
+                            :html="template.content"
+                          />
                         </div>
                       </ElTabPane>
                     </ElTabs>
                     <div v-else class="template-preview mt-n1 pt-0">
-                      <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
+                      <div
+                        class="template-preview__text pl-2"
+                        v-if="!!getSingleTemplateDetails"
+                      >
                         <div>
-                          <span class="template-preview__text--title">Name: </span>
+                          <span class="template-preview__text--title"
+                            >Name:
+                          </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.name
                           }}</span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Phishing URL: </span>
+                          <span class="template-preview__text--title"
+                            >Phishing URL:
+                          </span>
                           <span class="template-preview__text--body">{{
                             landingPageParams.urlTemplate
                           }}</span>
@@ -286,10 +337,18 @@
             >
               <div class="empty-inline">
                 <slot name="empty-table-inline">
-                  <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
+                  <h2
+                    :id="`text--empty-message-${Math.random()
+                      .toString()
+                      .substring(2)}`"
+                  >
                     {{ getTableEmptyTextMessage }}
                   </h2>
-                  <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
+                  <p
+                    :id="`text--empty-sub-message-${Math.random()
+                      .toString()
+                      .substring(2)}`"
+                  >
                     {{ getTableEmptySubMessage }}
                   </p>
                 </slot>
@@ -459,7 +518,11 @@ export default {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'languageShortCode'
       )
-      const obj = { Value: val || '', FieldName: 'languageShortCode', Operator: 'Include' }
+      const obj = {
+        Value: val || '',
+        FieldName: 'languageShortCode',
+        Operator: 'Include'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -711,10 +774,9 @@ export default {
               ],
               showTooltipLine: true
             }
-          } else {
-            if (this.campaignMethod === 'Data Submission') {
-              this.chartOptions = {
-                ...chartOptions,
+          } else if (this.campaignMethod === 'Data Submission') {
+            this.chartOptions = {
+              ...chartOptions,
                 backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#F56C6C'],
                 labels: [
                   labels.NoResponse,

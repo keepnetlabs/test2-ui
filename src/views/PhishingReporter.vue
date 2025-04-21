@@ -109,7 +109,9 @@
         <v-menu bottom offset-y min-width="133">
           <template v-slot:activator="{ on }">
             <div v-on="on" class="phishing-reporter__header-container-panel-right-col">
-              <div class="phishing-reporter__header-container-panel-text">{{ selectedDate }}</div>
+              <div class="phishing-reporter__header-container-panel-text">
+                {{ selectedDate }}
+              </div>
               <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
             </div>
           </template>
@@ -450,7 +452,6 @@ export default {
               formData: null
             }
             this.tab = 'phishing-reporter-settings'
-            return
           } else if (response.status === 200) {
             this.tabComponent = {
               name: Settings,

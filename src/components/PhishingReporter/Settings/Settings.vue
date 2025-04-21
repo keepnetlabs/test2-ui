@@ -167,13 +167,7 @@ export default {
   },
   created() {
     const { query = {} } = this.$route
-    const {
-      tenant = '',
-      state = '',
-      error = '',
-      error_description = '',
-      error_subcode = ''
-    } = query
+    const { tenant = '', error = '', error_description = '', error_subcode = '' } = query
     this.isMicrosoftEmailCreationInitial = !tenant
     const errorSubCodeMessage =
       error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''

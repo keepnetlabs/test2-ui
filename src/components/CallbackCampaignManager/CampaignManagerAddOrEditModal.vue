@@ -81,8 +81,9 @@
             >
               <template #text>
                 <p class="mb-0 mb-n1">
-                  You have <strong>{{ getAvailableNumberCount }}</strong> available phone numbers
-                  for Callback Simulator. Therefore you can select up to
+                  You have
+                  <strong>{{ getAvailableNumberCount }}</strong> available phone numbers for
+                  Callback Simulator. Therefore you can select up to
                   <strong>{{ getAvailableNumberCount }}</strong> Callback Scenarios.
                 </p>
               </template>
@@ -158,12 +159,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="5"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperButtonsIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -245,6 +241,12 @@ export default {
   data() {
     return {
       SCENARIO_TYPES,
+      stepperButtonsIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,

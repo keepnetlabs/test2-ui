@@ -780,10 +780,7 @@ export default {
         })
     },
     handleTabChange(activeTab) {
-      if (activeTab === 'addNewLangauge') {
-        return false
-      }
-      return true
+      return activeTab !== 'addNewLangauge'
     },
     handleCloseLanguageDeletionDialog() {
       this.selectedLanguageToDelete = ''

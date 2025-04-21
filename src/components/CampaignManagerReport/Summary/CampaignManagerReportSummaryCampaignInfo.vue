@@ -107,7 +107,12 @@ import CommonReportViewTargetGroupsModal from '@/components/Common/Report/Common
 import { Fragment } from 'vue-frag'
 export default {
   name: 'CampaignManagerReportSummaryCampaignInfo',
-  components: { Badge, CampaignManagerSummaryCard, CommonReportViewTargetGroupsModal, Fragment },
+  components: {
+    Badge,
+    CampaignManagerSummaryCard,
+    CommonReportViewTargetGroupsModal,
+    Fragment
+  },
   props: {
     items: {
       type: Object
@@ -155,14 +160,14 @@ export default {
   },
   methods: {
     handleRedirectToSmartGroup() {
-      if (!!this.helperData?.smartGroupInfo?.resourceId)
-        this.$router.push({
-          name: 'Target Group Users',
-          params: {
-            id: this.helperData?.smartGroupInfo?.resourceId,
-            label: this.helperData?.smartGroupInfo?.name
-          }
-        })
+      if (!this.helperData?.smartGroupInfo?.resourceId) return
+      this.$router.push({
+        name: 'Target Group Users',
+        params: {
+          id: this.helperData?.smartGroupInfo?.resourceId,
+          label: this.helperData?.smartGroupInfo?.name
+        }
+      })
     },
     handleViewTargetGroupsClick() {
       this.isTargetGroupsModalVisible = true

@@ -119,7 +119,6 @@ import { Fragment } from 'vue-frag'
 import DataTable from '@/components/DataTable'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -127,7 +126,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import LeaderboardTopPerformerCard from '@/components/GamificationReport/LeaderboardTopPerformerCard'
-import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
+import { getTimeZone, getTimeZoneForMoment, getDefaultAxiosPayload } from '@/utils/functions'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { mapGetters } from 'vuex'
@@ -181,7 +180,6 @@ export default {
               start.setDate(1)
               picker.$emit('pick', [start, end])
               this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.LastMonth
-              // this.formData.datePeriod = 0
             }
           },
           {
@@ -194,7 +192,6 @@ export default {
               start.setDate(1)
               picker.$emit('pick', [start, end])
               this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.Last3Months
-              // this.formData.datePeriod = 1
             }
           },
           {
@@ -207,7 +204,6 @@ export default {
               start.setDate(1)
               picker.$emit('pick', [start, end])
               this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.Last6Months
-              // this.formData.datePeriod = 2
             }
           },
           {
@@ -220,7 +216,6 @@ export default {
               start.setDate(1)
               picker.$emit('pick', [start, end])
               this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.LastYear
-              // this.formData.datePeriod = 3
             }
           },
           {
@@ -232,7 +227,6 @@ export default {
               const lastDayOfYear = new Date(year, today.getMonth(), today.getDate())
               picker.$emit('pick', [firstDayOfYear, lastDayOfYear])
               this.axiosPayload.datePeriod = DATE_PERIOD_ENUMS.ThisYear
-              // this.formData.datePeriod = 4
             }
           }
         ],
@@ -264,7 +258,6 @@ export default {
             id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-details',
             action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
         ],
         columns: [
@@ -431,7 +424,10 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData =
-            results?.map?.((row) => ({ ...row, performance: `${row.performance}%` })) || []
+            results?.map?.((row) => ({
+              ...row,
+              performance: `${row.performance}%`
+            })) || []
         })
         .finally(this.setLoading)
     },

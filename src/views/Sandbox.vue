@@ -572,7 +572,7 @@ export default {
       if (e.currentPlacement !== 'bottom-start') this.menuOpen = !!e.relatedTarget
     },
     changeDateValueSelect(isConstant) {
-      if (!!isConstant) {
+      if (isConstant) {
         this.filteredDateValue = null
         this.filteredDateValueRange = []
       }

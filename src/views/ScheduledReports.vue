@@ -122,11 +122,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { COLUMNS } from '@/components/AwarenessEducator/utils'
 import labels from '@/model/constants/labels'
-import {
-  exportReportScheduling,
-  searchReportScheduling,
-  setSchedulingReportStatus
-} from '@/api/reports'
+import { exportReportScheduling, searchReportScheduling } from '@/api/reports'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu.vue'
 import ScheduledReportsDeleteDialog from '@/components/ScheduledReports/ScheduledReportsDeleteDialog.vue'

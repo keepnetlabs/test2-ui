@@ -327,7 +327,7 @@ export default {
         outlookVersion
       } = row
       let text = ''
-      const osVersionText = osVersion ? osVersion : 'Unknown'
+      const osVersionText = osVersion || 'Unknown'
       const textOS = `OS version: ${osVersionText}`
       const textHKLM = `HKLM: ${hklmLoadBehaviorValue || 'N/A'}\n`
       const textHKCU = `HKCU: ${osAccountLoadBehaviorValue || 'N/A'}\n`

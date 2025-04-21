@@ -245,7 +245,9 @@ export default {
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)
       })
-      const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
+      const { duration = '0' } = this.campaignSummary?.settings || {
+        duration: '0'
+      }
       return {
         'Target Groups': this?.targetGroups || [],
         'Hyper-Personalization':
@@ -383,7 +385,7 @@ export default {
         noResponseEmail,
         notDelivered,
         attachmentOpenedEmail,
-        reportedEmail,
+        ,
         mfa
       ] = this.getChartData
       return this.getChartData.length
