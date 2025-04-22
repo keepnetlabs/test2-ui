@@ -9,4 +9,7 @@ export default class ShowMore {
       vuetify
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

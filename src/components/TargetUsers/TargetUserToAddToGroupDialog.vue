@@ -170,7 +170,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        this.confirmButtonDisabled = val.length === 0 ? true : false
+        this.confirmButtonDisabled = val.length === 0
       }
     }
   },

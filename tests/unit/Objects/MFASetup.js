@@ -35,4 +35,7 @@ export default class MFASetup {
       }
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

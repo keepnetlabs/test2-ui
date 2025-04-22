@@ -778,7 +778,7 @@ export const getDifficultyBadgeColor = (text = '') => {
 
 export function createRandomCryptNumber() {
   const crypto = window.crypto || window.msCrypto
-  if (!crypto) return Math.random().toFixed(10)
+  if (!crypto) return parseFloat(Math.random().toFixed(10))
   const array = new Uint32Array(1)
   return crypto.getRandomValues(array)[0]
 }

@@ -462,7 +462,13 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip'
 export default {
-  components: { DataTableTooltip, AppDialogFooter, KSelect, AppDialog, Investigate },
+  components: {
+    DataTableTooltip,
+    AppDialogFooter,
+    KSelect,
+    AppDialog,
+    Investigate
+  },
   name: 'ActionItem',
   props: {
     id: Number,
@@ -1308,10 +1314,8 @@ export default {
         if (!isKeywordInArray) {
           this.act.investigateFilters.splice(5, 0, 'Keyword')
         }
-      } else {
-        if (isKeywordInArray) {
-          this.act.investigateFilters.splice(5, 1)
-        }
+      } else if (isKeywordInArray) {
+        this.act.investigateFilters.splice(5, 1)
       }
     },
     editedActions(val) {

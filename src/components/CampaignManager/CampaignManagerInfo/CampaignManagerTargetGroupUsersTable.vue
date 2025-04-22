@@ -181,10 +181,8 @@ export default {
         if (this.activeUsersWithPhoneNumberCount) {
           text += `${this.activeUsersWithPhoneNumberCount} active`
         }
-      } else {
-        if (this.activeUserCount) {
-          text += `${this.activeUserCount} active`
-        }
+      } else if (this.activeUserCount) {
+        text += `${this.activeUserCount} active`
       }
 
       if (text !== '' && this.inactiveUserCount) {
@@ -241,7 +239,7 @@ export default {
           prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
             preferredLanguagesLength - 3
           } more`
-        prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
+        else prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
       }
       return `Selected scenarios don’t match users’ preferred language${
         preferredLanguagesLength > 1 ? 's' : ''

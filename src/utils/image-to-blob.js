@@ -52,7 +52,7 @@ export default function imageToBlob(img, options, callback) {
     src = img
   }
 
-  if (/^data:/.test(src) && !options.convert) {
+  if (src?.startsWith('data:') && !options.convert) {
     // check to see if its a data uri
     callback(null, dataURItoBlob(src)) // script to datauri conversion
     return

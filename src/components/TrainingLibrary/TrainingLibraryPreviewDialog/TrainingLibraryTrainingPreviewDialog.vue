@@ -41,7 +41,6 @@ import TrainingLibraryTrainingPreview from '@/components/TrainingLibrary/Trainin
 import { emptyTrainingPreviewDialogObj } from '@/components/TrainingLibrary/utils'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
-import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryTrainingPreviewDialog',
   components: {

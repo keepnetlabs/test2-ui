@@ -1,6 +1,4 @@
-import labels from '@/model/constants/labels'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
-
 export const downloadButtonOptions = ['Download Current Page', 'Download All']
 export const TRAINING_LIBRARY_MAIN_TABS = {
   ALL_MATERIALS: 'All Materials',

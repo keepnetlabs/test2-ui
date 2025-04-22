@@ -261,12 +261,12 @@ export const labels = {
   TestEmail: 'Test Email',
   TestEmailSub: 'Send an email to test configuration',
   DirectEmailCreationTitle: 'Direct Email Creation (DEC)',
-  EmptyDirectEmailCreation: 'You do not have any direct email creation configuration, yet',
+  EmptyDirectEmailCreation: 'You do not have any Direct Email Creation (DEC) configuration, yet',
   CreateNow: 'Create Now',
   Domains: 'Domains',
   DomainsSub: 'You can select multiple domains to use with this configuration',
   DirectEmailCreationSubTitle:
-    'Manage direct email creation configurations to send emails to target users with API permissions.',
+    'Manage Direct Email Creation (DEC) configurations to send emails to target users with API permissions.',
   ErrorDuplicateFilterFrom: 'For the “and” option, the email filter could only have one value.',
   ErrorDuplicateFilterIp: 'For the “and” option, the IP address filter could only have one value.',
   EmptyFilterMultipleError:
@@ -994,9 +994,9 @@ export const labels = {
   NewMicrosoft365Configuration: 'New Microsoft 365 Configuration',
   EditMicrosoft365Configuration: 'Edit Microsoft 365 Configuration',
   NewMicrosoft365ConfigurationSubtitle:
-    'Create a new Microsoft 365 configuration for direct email creation(DEC).',
+    'Create a new Microsoft 365 configuration for Direct Email Creation (DEC)',
   EditMicrosoft365ConfigurationSubtitle:
-    'Edit Microsoft 365 configuration for direct email creation(DEC).',
+    'Edit Microsoft 365 configuration for Direct Email Creation (DEC)',
   CancelUserImportSubtitle: 'Operation will be abondened',
   CancelUserImportBody: 'You will lose all progress and users will not be imported',
   EmptyCustomApiMessage: 'You do not have any Rest API',

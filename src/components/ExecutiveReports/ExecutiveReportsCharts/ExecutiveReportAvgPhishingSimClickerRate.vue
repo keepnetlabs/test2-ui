@@ -171,7 +171,10 @@ export default {
             )
             ctx.fillStyle = '#B83A3A'
             const redDataLength = redData.toString().length
-            const comparatorLength = redDataLength === 1 ? -7 : redDataLength === 2 ? 0 : 8
+            let comparatorLength = 0
+            if (redDataLength === 1) comparatorLength = -7
+            else if (redDataLength === 2) comparatorLength = 0
+            else comparatorLength = 8
             const comparatorTextLength = redData <= 2 ? -1 : 2
             ctx.fillText(
               `${redData}%`,

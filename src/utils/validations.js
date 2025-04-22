@@ -9,13 +9,11 @@ export function getValue(value) {
 }
 
 export function maxLength(value, length, message) {
-  //length patlamasın diye.
   value = getValue(value)
   return value.length <= length || message
 }
 
 export function minLength(value, length, message) {
-  //length patlamasın diye.
   value = getValue(value)
   return value.length >= length || message
 }
@@ -272,7 +270,7 @@ export function subdomainBlacklist(value) {
     value.toLowerCase().includes(domain.toLowerCase())
   )
   if (subdomainIndex !== -1) {
-    return `“${blacklist[subdomainIndex]}” is a banned word for a subdomain`
+    return `"${blacklist[subdomainIndex]}" is a banned word for a subdomain`
   }
   return true
 }
@@ -301,8 +299,31 @@ export function isGsm7(
 
 export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
   return (
-    /^(ldaps?:\/\/)?([0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[0-9]{1,5})?$/i.test(
+    /^(ldaps?:\/\/)?([\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[\d]{1,5})?$/i.test(
       value
     ) || message
   )
+}
+export function isEmailChip(v) {
+  if (v.length > 0) {
+    let booReturn = true
+    for (let i = 0; i < v.length; i++) {
+      const chip = document.getElementsByClassName('v-chip--select')[i]
+      if (!chip) continue
+      if (!email(v[i], '')) {
+        booReturn = false
+        chip.style.borderColor = '#ff5252'
+        chip.style.color = '#ff5252'
+        if (v.length === 1) {
+          return v[i] + ' email address is not valid'
+        }
+      } else {
+        chip.style.borderColor = ''
+        chip.style.color = 'rgba(0, 0, 0, 0.87)'
+      }
+    }
+    return booReturn || 'One of the email addresses is not valid'
+  } else {
+    return true
+  }
 }

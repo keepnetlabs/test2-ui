@@ -168,8 +168,8 @@ export default {
     },
     getBodySubtitle() {
       return this.isEdit
-        ? `Edit Google Workspace configuration for direct email creation (DEC).`
-        : `Create a new Google Workspace configuration for direct email creation (DEC).`
+        ? `Edit Google Workspace configuration for Direct Email Creation (DEC).`
+        : `Create a new Google Workspace configuration for Direct Email Creation (DEC).`
     }
   },
   created() {

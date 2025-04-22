@@ -241,7 +241,7 @@ export default {
           industryResourceId: this.selectedCategory.resourceId,
           isTermsAndConditionsAccepted: this.acceptCheckbox
         }
-        if (!!this.resourceId) {
+        if (this.resourceId) {
           updateCommunity(this.resourceId, payload)
             .then(() => {
               this.isSubmitted = true
@@ -290,7 +290,7 @@ export default {
     getBusinessCategories() {
       listBusinessCategories().then((response) => {
         this.categories = response.data.data
-        if (!!this.resourceId) {
+        if (this.resourceId) {
           this.name = this.communityItem.communityName
           this.description = this.communityItem.communityDescription
           this.privacyStatusId = this.communityItem.privacyStatusId.toString()

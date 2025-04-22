@@ -5,7 +5,9 @@
         <v-btn small icon @click="onToggleExpansion">
           <v-icon>{{ value.isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
         </v-btn>
-        <span class="vishing-template-dialog-step__header-text"> {{ getTitle }} </span>
+        <span class="vishing-template-dialog-step__header-text">
+          {{ getTitle }}
+        </span>
       </div>
       <div class="vishing-template-dialog-step__header-right">
         <KButtonCheckbox
@@ -55,16 +57,11 @@
         <div v-if="value.inputType === 'FileUpload'">
           <div class="vishing-template-dialog-step__form-title">
             <div class="vishing-template-dialog-step__form-title-left">
-              <div class="vishing-template-dialog-step__form-label">Audio File</div>
+              <div class="vishing-template-dialog-step__form-label">
+                Audio File
+              </div>
               <span class="vishing-template-dialog-step__form-subtitle">Upload an audio file</span>
             </div>
-            <!-- <div class="vishing-template-dialog-step__form--title-right">
-              <AudioPlayer
-                v-if="(value.inputType === 'FileUpload' && getFileSrc)"
-                isPreview
-                :src="getFileSrc"
-              />
-            </div> -->
           </div>
           <KFileUpload
             hint="*Required (Only MP3 files. Max. file size 1MB)"
@@ -318,7 +315,10 @@ export default {
     },
     onPauseDurationChange(val) {
       if (!val || /\d{1,2}$/.test(val)) {
-        this.$emit('input', { ...this.value, duration: val.length ? parseInt(val) : null })
+        this.$emit('input', {
+          ...this.value,
+          duration: val.length ? parseInt(val) : null
+        })
       }
     },
     onTextToSpeechChange(val) {
@@ -326,7 +326,10 @@ export default {
     },
     onDigitCountChange(val) {
       if (!val || /\d{1,2}$/.test(val)) {
-        this.$emit('input', { ...this.value, inputDigit: val.length ? parseInt(val) : null })
+        this.$emit('input', {
+          ...this.value,
+          inputDigit: val.length ? parseInt(val) : null
+        })
       }
     },
     onVishingStepChange(val) {
