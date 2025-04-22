@@ -287,28 +287,7 @@ export default {
       isActionButtonDisabled: false,
       rules: {
         frequency: [(v) => v >= 0 || labels.Required],
-        email: (v) => {
-          if (v.length > 0) {
-            let booReturn = true
-            for (let i = 0; i < v.length; i++) {
-              const chip = document.getElementsByClassName('v-chip--select')[i]
-              if (!Validations.email(v[i], '')) {
-                booReturn = false
-                chip.style.borderColor = '#ff5252'
-                chip.style.color = '#ff5252'
-                if (v.length === 1) {
-                  return v[i] + ' email address is not valid'
-                }
-              } else {
-                chip.style.borderColor = ''
-                chip.style.color = 'rgba(0, 0, 0, 0.87)'
-              }
-            }
-            return booReturn ? booReturn : 'One of the email addresses is not valid'
-          } else {
-            return true
-          }
-        },
+        email: Validations.isEmailChip,
         required: (v) => v.length > 0 || labels.Required
       },
       parsedFormat: getTimeZone(false),
@@ -342,7 +321,10 @@ export default {
     },
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      return timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
     },
     getTime() {
       if (!this.formData.schedule) return ''

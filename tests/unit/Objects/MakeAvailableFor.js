@@ -19,4 +19,7 @@ export default class MakeAvailableFor {
       })
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

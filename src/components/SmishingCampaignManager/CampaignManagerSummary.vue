@@ -19,19 +19,15 @@
       :status="isSenderPhoneNumbersModalVisible"
       :phoneNumbers="formData.senderPhoneNumber"
       @on-close="handleCloseSenderPhoneNumbersModal"
-     />
+    />
     <div class="campaign-manager-last-step__header" :style="getHeaderStyle">
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
         :title="labels.CampaignInfo"
         :items="getCampaignInfoItems"
       />
-      <CampaignManagerSummaryCard
-        icon="mdi-cog"
-        :title="labels.Settings"
-        :items="getSettingsItems"
-      >
-        <template  #body="{ items }">
+      <CampaignManagerSummaryCard icon="mdi-cog" :title="labels.Settings" :items="getSettingsItems">
+        <template #body="{ items }">
           <div class="campaign-manager-summary-card__body">
             <div class="campaign-manager-summary-card__body-container">
               <div
@@ -39,20 +35,23 @@
                 :key="key"
                 class="campaign-manager-summary-card__body-item"
               >
-                  <div class="campaign-manager-summary-card__body-item-key">
-                    {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+                <div class="campaign-manager-summary-card__body-item-key">
+                  {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+                </div>
+                <div
+                  v-if="key === 'Sender Phone Numbers'"
+                  class="campaign-manager-summary-card__body-item-value"
+                >
+                  <div class="d-flex align-center">
+                    <span style="color: #2196f3; font-weight: 600;">Multiple phone numbers</span>
+                    <v-btn class="ml-1" icon @click="handleSenderPhoneNumbersClick">
+                      <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
+                    </v-btn>
                   </div>
-                  <div v-if="key === 'Sender Phone Numbers'" class="campaign-manager-summary-card__body-item-value">
-                    <div class="d-flex align-center">
-                      <span style="color: #2196F3; font-weight: 600;">Multiple phone numbers</span>
-                      <v-btn class="ml-1" icon @click="handleSenderPhoneNumbersClick">
-                        <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
-                      </v-btn>
-                    </div>
-                  </div>
-                  <div v-else class="campaign-manager-summary-card__body-item-value">
-                    {{ val }}
-                  </div>
+                </div>
+                <div v-else class="campaign-manager-summary-card__body-item-value">
+                  {{ val }}
+                </div>
               </div>
             </div>
           </div>
@@ -237,7 +236,7 @@ export default {
     CampaignManagerSummaryLandingPage,
     AlertBox,
     CampaignManagerSenderPhoneNumbersModal
-},
+  },
   props: {
     formData: {
       type: Object
@@ -287,7 +286,10 @@ export default {
       return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
     },
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     isRenderTrainingCard() {
@@ -497,19 +499,25 @@ export default {
       }, 0)
     },
     getSettingsItems() {
-      const { selectedSchedule, duration, senderPhoneNumber, useTargetUserTimeZone, frequency } = this.formData
+      const {
+        selectedSchedule,
+        duration,
+        senderPhoneNumber,
+        useTargetUserTimeZone,
+        frequency
+      } = this.formData
       let startingText = selectedSchedule
       if (selectedSchedule !== 'Later' && useTargetUserTimeZone) {
         startingText = `${selectedSchedule} - Target users’ time zones`
       }
 
       if (senderPhoneNumber?.length === 1) {
-      return {
-        Starting: startingText,
-        Duration: duration,
-        'Sender Phone Number': senderPhoneNumber[0],
-        Frequency: frequency
-      }
+        return {
+          Starting: startingText,
+          Duration: duration,
+          'Sender Phone Number': senderPhoneNumber[0],
+          Frequency: frequency
+        }
       }
       return {
         Starting: startingText,

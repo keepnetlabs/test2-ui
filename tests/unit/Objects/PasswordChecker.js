@@ -7,4 +7,7 @@ export default class PasswordChecker {
       ...propsData
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }
