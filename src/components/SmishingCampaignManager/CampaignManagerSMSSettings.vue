@@ -65,7 +65,7 @@
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import SmishingService from '@/api/smishing'
-import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
+import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import InputPhoneNumberComboBox from '@/components/Common/Inputs/InputPhoneNumberComboBox'
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'

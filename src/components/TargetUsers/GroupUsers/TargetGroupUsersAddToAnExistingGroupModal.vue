@@ -197,10 +197,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     handleRowIsSelectable(row) {
-      if (row?.isScimGroup) {
-        return false
-      }
-      return true
+      return !row?.isScimGroup
     },
     closeOverlay() {
       this.$emit('closeOverlay')

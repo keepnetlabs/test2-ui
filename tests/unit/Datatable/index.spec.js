@@ -160,7 +160,6 @@ describe('Datatable test cases suite', () => {
   it('Datatable filtering options', async () => {
     //mounting table
     const { wrapper } = new DataTableWrapper(localVue, store)
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -201,7 +200,6 @@ describe('Datatable test cases suite', () => {
     const { wrapper } = new DataTableWrapper(localVue, store, {
       selectable: true
     })
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -234,7 +232,6 @@ describe('Datatable test cases suite', () => {
     const { wrapper } = new DataTableWrapper(localVue, store, {
       selectable: true
     })
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -267,7 +264,6 @@ describe('Datatable test cases suite', () => {
       selectable: true
     })
     const { wrapper } = datatableWrapper
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -294,7 +290,6 @@ describe('Datatable test cases suite', () => {
       selectable: true
     })
     const { wrapper } = datatableWrapper
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -324,7 +319,6 @@ describe('Datatable test cases suite', () => {
       selectable: true
     })
     const { wrapper } = datatableWrapper
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -374,7 +368,6 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -432,7 +425,6 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //adding data
     await wrapper.setProps({
       table: [
         {
@@ -523,7 +515,6 @@ describe('Datatable test cases suite', () => {
       isServerSideSelection: true,
       serverSideProps: new ServerSideProps()
     })
-    //setting total number of records
     wrapper.vm.serverSideProps.totalNumberOfRecords = 2
     await wrapper.setProps({
       table: [
@@ -575,7 +566,6 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    //changing width value
     wrapper.vm.columns[0].width = 250
     //waiting dom updates
     await wrapper.vm.$nextTick()

@@ -9,4 +9,7 @@ export default class DataContainerWithSearch {
       vuetify
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

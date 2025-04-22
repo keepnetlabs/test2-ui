@@ -301,7 +301,10 @@ export default {
       let styleManager = this.editor.StyleManager
       let fontProperty = styleManager.getProperty('typography', 'font-family')
       if (fontProperty?.attributes) {
-        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'Sans-serif' })
+        fontProperty.attributes.options.push({
+          value: 'sans-serif',
+          name: 'Sans-serif'
+        })
       }
       styleManager.render()
     },
@@ -777,7 +780,6 @@ export default {
           } else {
             const commentElement = getCommentElement()
             if (commentElement) {
-              //if(document.querySelector('.gjs-sm-property__width .gjs-field-integer input')?.value)return
               let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
               if (width < 65) {
                 width += 12
@@ -1034,7 +1036,9 @@ export default {
           fetch(url)
             .then((res) => res.blob())
             .then((blob) => {
-              const file = new File([blob], images.data[0].name, { type: blob.type })
+              const file = new File([blob], images.data[0].name, {
+                type: blob.type
+              })
               const formData = new FormData()
               formData.append('Files', file)
               uploadFiles(formData)

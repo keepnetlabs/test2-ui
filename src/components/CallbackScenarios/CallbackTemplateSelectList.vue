@@ -301,10 +301,8 @@ export default {
             selected: item.resourceId === this.templateResourceId
           }))
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },
@@ -341,7 +339,10 @@ export default {
               this.template = null
             } else {
               this.listData = response.data.data.results.map((item) => {
-                return { ...item, selected: item.resourceId === this.templateResourceId }
+                return {
+                  ...item,
+                  selected: item.resourceId === this.templateResourceId
+                }
               })
             }
           })

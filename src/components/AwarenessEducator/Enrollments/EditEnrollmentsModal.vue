@@ -446,7 +446,7 @@ export default {
     },
     isDateValid() {
       return (
-        !(this.selectedRow?.status === 'Scheduled') ||
+        this.selectedRow?.status !== 'Scheduled' ||
         (this.selectedRow?.status === 'Scheduled' &&
           !!this.formData?.enrollmentScheduler?.scheduledDate)
       )
@@ -567,31 +567,29 @@ export default {
       this.$set(this.enrollmentAutoEnrollTypeItems[3], 'text', 'in')
     },
     handleSubmit() {
-      if (!this.isDateValid) return
-      if (this.$refs.refForm.validate()) {
-        this.loading = true
-        const payload = JSON.parse(JSON.stringify(this.formData))
-        if (this.selectedRow.status !== 'Scheduled') {
-          delete payload['scheduleDate']
-          delete payload['scheduledTimeZoneId']
-          if (payload?.enrollmentScheduler) payload.enrollmentScheduler = null
-        }
-        if (!this.sendReminderEvery) payload.enrollmentReminder = null
-        if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
-        if (!this.isLearningPath) delete payload.distributionDays
-        if (this.isDistributionEnabled && !!payload?.distributionDays) {
-          payload.distributionDays = parseInt(payload.distributionDays)
-        } else {
-          payload.distributionDays = null
-        }
-        AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
-          .then(() => {
-            this.$emit(EMITS.ON_CLOSE, true)
-          })
-          .finally(() => {
-            this.loading = false
-          })
+      if (!this.isDateValid || !this?.$refs?.refForm?.validate()) return
+      this.loading = true
+      const payload = JSON.parse(JSON.stringify(this.formData))
+      if (this.selectedRow.status !== 'Scheduled') {
+        delete payload['scheduleDate']
+        delete payload['scheduledTimeZoneId']
+        if (payload?.enrollmentScheduler) payload.enrollmentScheduler = null
       }
+      if (!this.sendReminderEvery) payload.enrollmentReminder = null
+      if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+      if (!this.isLearningPath) delete payload.distributionDays
+      if (this.isDistributionEnabled && !!payload?.distributionDays) {
+        payload.distributionDays = parseInt(payload.distributionDays)
+      } else {
+        payload.distributionDays = null
+      }
+      AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
+        .then(() => {
+          this.$emit(EMITS.ON_CLOSE, true)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }

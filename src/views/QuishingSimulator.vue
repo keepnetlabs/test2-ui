@@ -67,36 +67,30 @@ export default {
       this.tab = 'landingPage'
     }
   },
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave(_, _2, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
-    if (refScenarios && refScenarios.isShowNewScenarioModal) {
+    if (refScenarios?.isShowNewScenarioModal) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
-    } else if (refScenarios && refScenarios.isShowFastLaunchDialog) {
+    } else if (refScenarios?.isShowFastLaunchDialog) {
       if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
     } else if (
-      refEmailTemplates &&
-      refEmailTemplates.$refs.newEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+      refEmailTemplates?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal
     ) {
       refEmailTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refEmailTemplates && refEmailTemplates.isShowNewEmailTemplateModal) {
+    } else if (refEmailTemplates?.isShowNewEmailTemplateModal) {
       if (typeof refEmailTemplates.checkIfCanCloseNewEmailTemplate === 'function')
         refEmailTemplates.checkIfCanCloseNewEmailTemplate()
       next(false)
     } else if (
-      refLandingPageList &&
-      refLandingPageList.$refs.newLandingPage &&
-      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate &&
-      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate.showGrapesModal
+      refLandingPageList?.$refs?.newLandingPage?.$refs?.refEmailTemplate?.showGrapesModal
     ) {
       refLandingPageList.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refLandingPageList && refLandingPageList.isShowNewLandingPageTemplateModal) {
+    } else if (refLandingPageList?.isShowNewLandingPageTemplateModal) {
       refLandingPageList.checkIfCanCloseNewLandingPage()
       next(false)
     } else {

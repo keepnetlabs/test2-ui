@@ -50,15 +50,15 @@ export default {
   computed: {
     getAnsweredData() {
       const { answered } = this.items
-      return answered ? answered : { userCount: 6, userPercent: 40 }
+      return answered ?? { userCount: 0, userPercent: 0 }
     },
     getVishedData() {
       const { vished } = this.items
-      return vished ? vished : { userCount: 1, userPercent: 7 }
+      return vished ?? { userCount: 0, userPercent: 0 }
     },
     getNoResponseData() {
       const { noResponse } = this.items
-      return noResponse ? noResponse : { userCount: 2, userPercent: 13 }
+      return noResponse ?? { userCount: 0, userPercent: 0 }
     }
   }
 }
