@@ -6,7 +6,7 @@ export default class QueryHelperForTable {
     this.query = { ...route.query }
   }
   isRouteQuery() {
-    return this.route.query && this.route.query.page && this.route.query.size
+    return this?.route?.query?.page && this?.route?.query?.size
   }
 
   setDefaultValues() {

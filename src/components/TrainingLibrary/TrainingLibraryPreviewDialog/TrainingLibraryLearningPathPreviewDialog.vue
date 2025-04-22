@@ -39,7 +39,6 @@ import { emptyLearningPathPreviewDialogObj } from '@/components/TrainingLibrary/
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 import TrainingLibraryLearningPathPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreview.vue'
-import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingLibraryLearningPathPreviewDialog',
   components: {

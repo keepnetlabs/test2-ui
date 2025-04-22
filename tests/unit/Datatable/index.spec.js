@@ -481,7 +481,7 @@ describe('Datatable test cases suite', () => {
       groupable: true
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -566,7 +566,7 @@ describe('Datatable test cases suite', () => {
       selectable: true
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -587,7 +587,7 @@ describe('Datatable test cases suite', () => {
       loading: false
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -619,7 +619,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -655,7 +655,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -698,7 +698,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -736,7 +736,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -770,7 +770,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -804,7 +804,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -842,7 +842,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -875,7 +875,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -918,7 +918,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -950,7 +950,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -982,7 +982,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -1015,7 +1015,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -1134,7 +1134,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {
@@ -1169,7 +1169,7 @@ describe('Datatable test cases suite', () => {
       }
     })
     const { wrapper } = datatableWrapper
-    //setting data
+
     await wrapper.setProps({
       table: [
         {

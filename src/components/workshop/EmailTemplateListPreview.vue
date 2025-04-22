@@ -437,7 +437,8 @@ import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/At
 import {
   getDefaultEmailTemplatePayload,
   SCENARIO_DIFFICULTIES,
-  SCENARIO_METHODS
+  SCENARIO_METHODS,
+  MERGED_TEXTS
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -445,7 +446,6 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { isDifferent } from '@/utils/functions'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
@@ -758,7 +758,10 @@ export default {
         (template) => template.resourceId === resourceId
       )
       if (templateIndex !== -1) {
-        this.listData[templateIndex] = { ...this.listData[templateIndex], ...newTemplate }
+        this.listData[templateIndex] = {
+          ...this.listData[templateIndex],
+          ...newTemplate
+        }
         this.selectedTemplateHeader = this.listData[templateIndex].name || ''
         this.templateHTML = this.listData[templateIndex].template
         this.templateFromName = this.listData[templateIndex].fromName || ''
@@ -807,8 +810,7 @@ export default {
       if (!this.editData.fromAddress || Validations.email(this.editData.fromAddress) !== true)
         return false
       if (!this.editData.template) return false
-      if (this.isAttachmentBasedScenario && !this.editData.phishingFile) return false
-      return true
+      return !(this.isAttachmentBasedScenario && !this.editData.phishingFile)
     },
     setAttachmentFile(file) {
       if (Array.isArray(file) && file.length === 0) return
@@ -945,7 +947,7 @@ export default {
               this.listData[this.selectedPreviousIndex].selected = true
             }
             if (!isInitial) return
-            if (!!emailTemplateResourceId) {
+            if (emailTemplateResourceId) {
               const index = this.listData.findIndex(
                 (item) => item.resourceId === emailTemplateResourceId
               )

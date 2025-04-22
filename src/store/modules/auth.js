@@ -83,23 +83,17 @@ const auth = {
           permissions: tokenData.Permission
         }
         commit('SET_CURRENTUSER', payload)
-        if (
-          payload.currentUserData &&
-          payload.currentUserData.role &&
-          payload.currentUserData.role.name !== 'CompanyAdmin'
-        ) {
-          dispatch('dashboard/selectCompany', payload.currentUserData, { root: true })
+        if (payload.currentUserData?.role?.name !== 'CompanyAdmin') {
+          dispatch('dashboard/selectCompany', payload.currentUserData, {
+            root: true
+          })
         }
       } else {
         let currentUserData = setGlobalUserData(tokenData)
         localStorage.setItem('userData', JSON.stringify(currentUserData))
         localStorage.setItem('selectedCompanyName', currentUserData.name)
         localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
-        if (
-          currentUserData &&
-          currentUserData.role &&
-          currentUserData.role.name !== 'CompanyAdmin'
-        ) {
+        if (currentUserData?.role?.name !== 'CompanyAdmin') {
           dispatch('dashboard/selectCompany', currentUserData, { root: true })
         }
 

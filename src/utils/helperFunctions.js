@@ -38,7 +38,7 @@ export function getAvailableForValues(data) {
       resourceId = null
     }
     return {
-      resourceId: resourceId ? resourceId : id,
+      resourceId: resourceId || id,
       type
     }
   })
