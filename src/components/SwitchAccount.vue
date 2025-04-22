@@ -271,8 +271,6 @@ export default {
       this.searchCompanyIcon = 'mdi-menu-up'
       this.isMenuOpen = true
       this.changeMenuStatus('visible')
-      //this.searchedCompanyText = ''
-      //this.orderedAccounts = this.defaultOrderedItems
     },
     handleOnSelectedAccount(item) {
       this.selectedAccount = item
@@ -289,7 +287,6 @@ export default {
       this.isMenuOpen = false
       this.changeMenuStatus()
       this.isOpenAllMenuItems = false
-      //this.searchedCompanyText = this.selectedAccount.label
       if (this.$refs && this.$refs.refSearchTextField && this.$refs.refSearchTextField) {
         const el = this.$refs.refSearchTextField.$el
         el && el.querySelector('input').blur()

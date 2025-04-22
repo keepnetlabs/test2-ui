@@ -127,7 +127,7 @@ export default {
       this.selectedEmailTemplate = selectedEmailTemplate
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
-    toggleDeleteDialog(row = null, forceUpdate) {
+    toggleDeleteDialog(row = null, forceUpdate = false) {
       this.isMultipleDelete = false
       if (forceUpdate) this.$refs.refTable.callForData()
       this.selectedEmailTemplate = row

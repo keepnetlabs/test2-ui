@@ -41,4 +41,7 @@ export default class MFALogin {
       }
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

@@ -27,4 +27,7 @@ export default class MFAWelcome {
       }
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

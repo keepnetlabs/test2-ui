@@ -105,8 +105,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import { addTrainingItems } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_COLUMNS, addTrainingItems } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
 import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'

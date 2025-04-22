@@ -53,4 +53,7 @@ export default class MFACantLogin {
       }
     })
   }
+  getWrapper() {
+    return this.wrapper
+  }
 }

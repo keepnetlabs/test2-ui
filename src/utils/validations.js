@@ -270,7 +270,7 @@ export function subdomainBlacklist(value) {
     value.toLowerCase().includes(domain.toLowerCase())
   )
   if (subdomainIndex !== -1) {
-    return `“${blacklist[subdomainIndex]}” is a banned word for a subdomain`
+    return `"${blacklist[subdomainIndex]}" is a banned word for a subdomain`
   }
   return true
 }
@@ -299,7 +299,7 @@ export function isGsm7(
 
 export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
   return (
-    /^(ldaps?:\/\/)?([0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[0-9]{1,5})?$/i.test(
+    /^(ldaps?:\/\/)?([\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[\d]{1,5})?$/i.test(
       value
     ) || message
   )

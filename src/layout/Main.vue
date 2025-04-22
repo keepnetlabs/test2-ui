@@ -749,23 +749,6 @@
                 <v-list-item-title>Reports</v-list-item-title>
               </v-list-item-content>
             </template>
-            <!--
-            <v-list-item
-              v-if="getCampaignReportsSearchPermissions"
-              style="padding-left: 0 !important; margin-left: -5px;"
-            >
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/reports/campaign-reports"
-                  id="btn--link-navigator-menu-campaign-reports"
-                  route-name="Campaign Reports"
-                  :active-class-comparator="
-                    () => routerName === 'Campaign Reports' || routerName === 'Campaign Report'
-                  "
-                />
-              </v-list-item-content>
-            </v-list-item>
-            -->
             <v-list-item
               v-if="getAdvancedReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"

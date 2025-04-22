@@ -26,7 +26,7 @@ export const getAxiosPayloadOfManuallyTable = (hideFilter, viewUsersTableFilterP
           ]
         }
       })
-  if (viewUsersTableFilterParams && viewUsersTableFilterParams?.items) {
+  if (viewUsersTableFilterParams?.items) {
     const index = Number(viewUsersTableFilterParams?.operator)
     axiosPayload.filter.FilterGroups[index].FilterItems = [
       ...axiosPayload.filter.FilterGroups[index].FilterItems,
