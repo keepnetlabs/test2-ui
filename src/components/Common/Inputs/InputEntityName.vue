@@ -60,6 +60,10 @@ export default {
     type: {
       type: String,
       default: 'text'
+    },
+    maxLength: {
+      type: Number,
+      default: 200
     }
   },
   data() {
@@ -86,7 +90,11 @@ export default {
   },
   mounted() {
     this.rules.unshift((v) =>
-      Validations.maxLength(v, 256, labels.getMaxLengthMessage(this.entityName, 256))
+      Validations.maxLength(
+        v,
+        this.maxLength,
+        labels.getMaxLengthMessage(this.entityName, this.maxLength)
+      )
     )
 
     this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`

@@ -39,6 +39,7 @@
                       entityName="template name"
                       initialPlaceholder="Enter a name"
                       :disabled="editItemsDisabled"
+                      :max-length="256"
                     />
                   </form-group>
                   <form-group title="Description" sub-title="Describe the template briefly">
