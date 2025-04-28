@@ -882,7 +882,9 @@ import AppDialog from '../AppDialog'
 import {
   getLandingPageList,
   getLandingPageTemplatePreviewContent,
-  getLandingPageFormDetails
+  getLandingPageFormDetails,
+  createLandingPage,
+  updateLandingPage
 } from '@/api/landingPage'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
@@ -906,7 +908,6 @@ import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { isDifferent } from '@/utils/functions'
-import { createLandingPage, updateLandingPage } from '@/api/landingPage'
 export default {
   name: 'LandingPageListPreview',
   mixins: [useDebounce],

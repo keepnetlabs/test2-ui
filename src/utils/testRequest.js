@@ -12,9 +12,7 @@ const testService = axios.create({
 
 testService.interceptors.request.use(
   (config) => {
-    config &&
-      config.loading &&
-      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    config?.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${
         config.overrideToken ? config.customToken : AuthenticationService.getToken()
