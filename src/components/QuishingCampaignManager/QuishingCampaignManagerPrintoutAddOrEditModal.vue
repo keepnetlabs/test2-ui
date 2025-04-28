@@ -115,12 +115,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="4"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -190,6 +185,12 @@ export default {
   data() {
     return {
       SCENARIO_TYPES,
+      stepperIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
       labels,

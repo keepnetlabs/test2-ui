@@ -12,9 +12,7 @@ const uploadRequest = axios.create({
 
 uploadRequest.interceptors.request.use(
   (config) => {
-    config &&
-      config.loading &&
-      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    config?.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY

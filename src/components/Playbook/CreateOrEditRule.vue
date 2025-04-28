@@ -147,12 +147,7 @@
       <StepperFooter
         max-step="3"
         :step="activeStep"
-        :ids="{
-          cancelButton: 'btn-cancel--playbook-rules-modal',
-          backButton: 'btn-back--playbook-rules-modal',
-          nextButton: 'btn-next--playbook-rules-modal',
-          saveButton: 'btn-next--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperIds"
         :disabled-statuses="{
           nextButton: false,
           submitButton: saveDisable
@@ -220,6 +215,12 @@ export default {
           ]
         },
         actions: []
+      },
+      stepperIds: {
+        cancelButton: 'btn-cancel--playbook-rules-modal',
+        backButton: 'btn-back--playbook-rules-modal',
+        nextButton: 'btn-next--playbook-rules-modal',
+        saveButton: 'btn-next--add-or-edit-company-manager-modal'
       },
       saveDisable: false,
       labels,
@@ -728,10 +729,8 @@ export default {
             this?.$refs?.refActionItem?.addAction('analyze')
           }
           this.$refs.refActionItem.analyzeCheckbox = true
-        } else {
-          if (this.playbookActionAnalyzers.length > 0) {
-            this?.$refs?.refActionItem?.addAction('analyze')
-          }
+        } else if (this.playbookActionAnalyzers.length > 0) {
+          this?.$refs?.refActionItem?.addAction('analyze')
         }
         if (
           data.playbookActionStatus &&

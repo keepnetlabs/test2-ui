@@ -47,7 +47,7 @@
       <FormGroup
         v-if="isPhishing"
         title="Smart Grouping"
-        sub-title="Users who failed the campaign are automatically added to the selected target group."
+        sub-title="Users who clicked the campaign are automatically added to the selected target group."
       >
         <KSelect
           v-infinite-scroll="{

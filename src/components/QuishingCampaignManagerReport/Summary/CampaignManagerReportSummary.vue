@@ -331,7 +331,7 @@ export default {
         noResponseEmail,
         notDelivered,
         attachmentOpenedEmail,
-        reportedEmail,
+        ,
         mfa
       ] = this.getChartData
       return this.getChartData.length

@@ -1663,7 +1663,7 @@ export default {
           ? response['data'].data.apiKeys
           : [{ value: '', status: null, resourceId: null }]
         if (this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL) {
-          if (!!response?.data?.data?.detectionThreshold?.toString()) {
+          if (response?.data?.data?.detectionThreshold?.toString()) {
             response.data.data.detectionThreshold = response?.data?.data?.detectionThreshold?.toString()
           } else {
             response.data.data.detectionThreshold = '1'

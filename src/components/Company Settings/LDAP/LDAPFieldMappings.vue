@@ -35,7 +35,12 @@ import { defaultFieldMappings } from './utils'
 import { mapGetters } from 'vuex'
 export default {
   name: 'LDAPFieldMappings',
-  components: { ConfigureCompanyStepHeader, SaveChangesButton, DatatableLoading, MapTable },
+  components: {
+    ConfigureCompanyStepHeader,
+    SaveChangesButton,
+    DatatableLoading,
+    MapTable
+  },
   mixins: [useLoading],
   props: {
     fieldMappings: {
@@ -178,13 +183,11 @@ export default {
             this.fieldMappings.splice(findedFieldMappingIndex, 1)
           }
         } else this.fieldMappings[findedFieldMappingIndex].ldapFieldResourceId = item.resourceId
-      } else {
-        if (item.name !== 'None Selected') {
-          this.fieldMappings.push({
-            customFieldResourceId: item.header.customFieldResourceId,
-            ldapFieldResourceId: item.resourceId
-          })
-        }
+      } else if (item.name !== 'None Selected') {
+        this.fieldMappings.push({
+          customFieldResourceId: item.header.customFieldResourceId,
+          ldapFieldResourceId: item.resourceId
+        })
       }
       this.setLoading(true)
       this.callForData().finally(this.setLoading)

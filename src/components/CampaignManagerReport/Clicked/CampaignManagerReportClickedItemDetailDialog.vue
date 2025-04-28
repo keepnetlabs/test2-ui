@@ -158,7 +158,10 @@ export default {
         id: 'campaign-manager-clicked-detail-item-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime', pageSize: 5 }),
+      axiosPayload: getDefaultAxiosPayload({
+        orderBy: 'ClickedTime',
+        pageSize: 5
+      }),
       isLoading: false,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -169,7 +172,7 @@ export default {
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP_SLOT_NON_FIXED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,

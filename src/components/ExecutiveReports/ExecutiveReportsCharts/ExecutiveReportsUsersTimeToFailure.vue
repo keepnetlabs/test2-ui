@@ -180,9 +180,7 @@ export default {
       const industryAvgDataSubmitData = []
       let maxX = data[0].widgetDatas.reduce((acc, curr) => {
         const currentMax = curr.values.reduce((innerAcc, innerCurr) => {
-          if (innerCurr.name === 'Clicked') {
-            return innerAcc + innerCurr.value
-          } else if (innerCurr.name === 'SubmittedData') {
+          if (innerCurr.name === 'Clicked' || innerCurr.name === 'SubmittedData') {
             return innerAcc + innerCurr.value
           }
           return innerAcc
@@ -235,9 +233,15 @@ export default {
         const yLabelIndex = yLabels.findIndex((v) => v === parseInt(item.dataObject.ActionRange))
         item.values.forEach((inner) => {
           if (inner.name === 'Clicked') {
-            clickedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+            clickedData[yLabelIndex] = {
+              x: inner.value,
+              y: yLabels[yLabelIndex]
+            }
           } else if (inner.name === 'SubmittedData') {
-            submittedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+            submittedData[yLabelIndex] = {
+              x: inner.value,
+              y: yLabels[yLabelIndex]
+            }
           }
         })
       })

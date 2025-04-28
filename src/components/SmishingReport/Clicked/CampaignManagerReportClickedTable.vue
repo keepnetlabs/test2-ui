@@ -146,7 +146,7 @@ export default {
           COLUMNS.SENDER_PHONE_NUMBER,
           COLUMNS.LAST_CLICKED,
           COLUMNS.TIMES_CLICKED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,
