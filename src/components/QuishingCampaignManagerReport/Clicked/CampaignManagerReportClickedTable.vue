@@ -183,7 +183,7 @@ export default {
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_SCANNED,
           COLUMNS.TIMES_SCANNED,
-          isQuishingTypePrintout ? null : Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          isQuishingTypePrintout ? null : { ...COLUMNS.ACTIVITY_TYPE }
         ].filter(Boolean),
         addButton: isQuishingTypePrintout
           ? {

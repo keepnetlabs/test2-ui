@@ -469,12 +469,12 @@ export default {
     },
     callForDefaultSmtpSetting() {
       if (this.isEdit) return
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? getDefaultCompanySmtpSetting
-          : this.type === SCENARIO_TYPES.CALLBACK
-          ? CallbackService.getDefaultCompanySmtpSetting
-          : QuishingService.getDefaultCompanySmtpSetting
+      let apiFunc = QuishingService.getDefaultCompanySmtpSetting
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        apiFunc = getDefaultCompanySmtpSetting
+      } else if (this.type === SCENARIO_TYPES.CALLBACK) {
+        apiFunc = CallbackService.getDefaultCompanySmtpSetting
+      }
       apiFunc().then((response) => {
         const {
           data: { data }

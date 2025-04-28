@@ -84,7 +84,11 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 
 export default {
   name: 'CampaignManagerReportOpenedTable',
-  components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
+  components: {
+    DataTable,
+    CampaignManagerReportActivityColumn,
+    DefaultButtonRowAction
+  },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
@@ -132,7 +136,7 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.LAST_OPENED,
           COLUMNS.TIMES_OPENED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,

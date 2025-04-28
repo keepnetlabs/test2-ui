@@ -150,7 +150,7 @@ export default {
         }
       )
     }
-    columns.push(Object.assign({}, COLUMNS.ACTIVITY_TYPE))
+    columns.push({ ...COLUMNS.ACTIVITY_TYPE })
     return {
       COLUMNS,
       CONSTANTS: {

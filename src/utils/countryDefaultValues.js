@@ -1449,7 +1449,7 @@ export default [
     phoneNumberCode: '+971'
   },
   {
-    name: 'United Kingdom',
+    name: 'United Kingdom of Great Britain and Northern Ireland',
     timeFormat: '24h',
     dateFormat: 'dd/MM/yyyy',
     timezone: 'GMT Standard Time',
