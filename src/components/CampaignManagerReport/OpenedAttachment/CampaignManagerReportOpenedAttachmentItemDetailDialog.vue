@@ -172,7 +172,7 @@ export default {
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP_SLOT,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,

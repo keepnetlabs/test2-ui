@@ -366,10 +366,8 @@ export default {
       }
       if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Disabled') {
         text = 'Add-in is installed but disabled\n'
-        text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
-        text += `Disabled time: ${
-          addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
-        }\n`
+        text += `Cause: ${addInDisabledReason || 'Unknown'}\n`
+        text += `Disabled time: ${addInDisabledLastDisabledTime || 'Unknown'}\n`
         text += textHKLM
         text += textHKCU
         text += textBootTime

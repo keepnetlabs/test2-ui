@@ -152,7 +152,7 @@ export default {
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.LAST_OPENED,
           COLUMNS.TIMES_OPENED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,

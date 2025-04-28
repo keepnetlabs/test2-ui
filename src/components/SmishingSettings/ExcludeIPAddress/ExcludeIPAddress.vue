@@ -107,7 +107,7 @@ export default {
   },
   watch: {
     ipAddressSearch(val) {
-      if (!!val) {
+      if (val) {
         this.rules = this.ipRules
       } else {
         this.rules = []

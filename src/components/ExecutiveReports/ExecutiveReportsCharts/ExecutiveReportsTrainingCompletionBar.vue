@@ -312,12 +312,9 @@ export default {
               this._chart.data.datasets.forEach((dataset) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Completed'
-                    ? '#43A047'
-                    : tooltipModel.dataPoints[0].label === 'Incomplete'
-                    ? '#B83A3A'
-                    : '#2196F3'
+                let backgroundColor = '#2196F3'
+                if (datasetLabel === 'Completed') backgroundColor = '#43A047'
+                else if (datasetLabel === 'Incomplete') backgroundColor = '#B83A3A'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -334,7 +331,6 @@ export default {
                 } else {
                   tr.style.fontWeight = 'normal'
                 }
-
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
                 tr.style.paddingBottom = '6px'

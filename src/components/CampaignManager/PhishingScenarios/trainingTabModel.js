@@ -32,4 +32,12 @@ export default class TrainingTabModel {
     this.enrollmentReminder = enrollmentReminder
     this.trainingRedirectPage = trainingRedirectPage
   }
+  static getTrainingRedirectPage() {
+    return {
+      informationMessage:
+        'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin',
+      redirectMessage: 'Please start the training and complete the training as soon as possible',
+      startButtonLabel: 'Start Training'
+    }
+  }
 }

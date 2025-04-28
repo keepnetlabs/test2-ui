@@ -69,10 +69,8 @@ export function columnFilterChanged(filter = {}, axiosPayload = {}) {
           items.push(x)
         }
       })
-    } else {
-      if (x.FieldName !== filter.FieldName) {
-        items.push(x)
-      }
+    } else if (x.FieldName !== filter.FieldName) {
+      items.push(x)
     }
   })
 
