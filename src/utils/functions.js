@@ -470,7 +470,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
       ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
   }
 
-  if (els && els.length) {
+  if (els?.length) {
     for (let i = 0, l = els.length; i < l; i++) {
       let el = els[i]
       el.setAttribute('target', '_blank')
