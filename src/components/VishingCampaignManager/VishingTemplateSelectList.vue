@@ -301,10 +301,8 @@ export default {
             selected: item.resourceId === this.templateResourceId
           }))
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },

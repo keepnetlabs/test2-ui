@@ -271,7 +271,6 @@ export default {
         name,
         duration,
         excludeFromReports,
-        scheduleTypeId,
         scheduledDate,
         scheduledDateTimeZoneId
       } = this.selectedRowFormData

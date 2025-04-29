@@ -1,114 +1,28 @@
 export function getStatusBadgeProps(status) {
-  const trimmedStatus = status?.replace(/\s/, '')
-  if (trimmedStatus === 'NotResponded') {
-    return {
-      color: '#B6791D',
-      text: 'Not Responded'
-    }
-  }
-
-  if (trimmedStatus === 'OpenedEmail') {
-    return {
-      color: '#0198AC',
-      text: 'Opened Email'
-    }
-  }
-
-  if (trimmedStatus === 'ClickedLink') {
-    return {
-      color: '#1173C1',
-      text: 'Clicked Link'
-    }
-  }
-
-  if (trimmedStatus === 'InProgress') {
-    return {
-      color: '#1173C1',
-      text: 'In Progress'
-    }
-  }
-
-  if (trimmedStatus === 'Completed') {
-    return {
-      color: '#217124',
-      text: 'Completed'
-    }
-  }
-  if (trimmedStatus === 'Passed') {
-    return {
-      color: '#217124',
-      text: 'Passed'
-    }
-  }
-  if (trimmedStatus === 'Success') {
-    return {
-      color: '#217124',
-      text: 'Success'
-    }
-  }
-
-  if (trimmedStatus === 'InQueue') {
-    return {
-      color: '#1173C1',
-      text: 'In Queue'
-    }
-  }
-
-  if (trimmedStatus === 'SendingError' || trimmedStatus === 'Error') {
-    return {
-      color: '#F56C6C',
-      text: 'Sending Error',
-      outline: false
-    }
-  }
-
-  if (trimmedStatus === 'Cancelled') {
-    return {
-      color: '#B6791D',
-      text: 'Cancelled',
-      outline: false
-    }
-  }
-  if (trimmedStatus === 'Failed') {
-    return {
-      color: '#B83A3A',
-      text: 'Failed',
-      outline: true
-    }
-  }
-
-  if (trimmedStatus === 'Excluded') {
-    return {
+  const statusMap = {
+    NotResponded: { color: '#B6791D', text: 'Not Responded' },
+    OpenedEmail: { color: '#0198AC', text: 'Opened Email' },
+    ClickedLink: { color: '#1173C1', text: 'Clicked Link' },
+    InProgress: { color: '#1173C1', text: 'In Progress' },
+    Completed: { color: '#217124', text: 'Completed' },
+    Passed: { color: '#217124', text: 'Passed' },
+    Success: { color: '#217124', text: 'Success' },
+    InQueue: { color: '#1173C1', text: 'In Queue' },
+    SendingError: { color: '#F56C6C', text: 'Sending Error', outline: false },
+    Error: { color: '#F56C6C', text: 'Sending Error', outline: false },
+    Cancelled: { color: '#B6791D', text: 'Cancelled', outline: false },
+    Failed: { color: '#B83A3A', text: 'Failed', outline: true },
+    Excluded: {
       color: '#E0E0E0',
       text: 'Excluded',
       outline: false,
       textBlack: true
-    }
+    },
+    Processing: { color: '#1173C1', text: 'Processing', outline: true },
+    NotDelivered: { color: '#757575', text: 'Not Delivered', outline: true },
+    Incomplete: { color: '#757575', text: 'Incomplete', outline: true },
+    NotCompleted: { color: '#B83A3A', text: 'Not Completed' }
   }
-  if (trimmedStatus === 'Processing') {
-    return {
-      color: '#1173C1',
-      text: 'Processing',
-      outline: true
-    }
-  }
-  if (trimmedStatus === 'NotDelivered') {
-    return {
-      color: '#757575',
-      text: 'Not Delivered',
-      outline: true
-    }
-  }
-  if (trimmedStatus === 'Incomplete') {
-    return {
-      color: '#757575',
-      text: 'Incomplete',
-      outline: true
-    }
-  }
-  if (trimmedStatus === 'NotCompleted')
-    return {
-      color: '#B83A3A',
-      text: 'Not Completed'
-    }
+  const trimmedStatus = status?.replace(/\s/g, '')
+  return statusMap[trimmedStatus] || null
 }

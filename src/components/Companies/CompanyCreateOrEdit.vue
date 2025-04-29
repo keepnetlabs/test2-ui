@@ -1283,14 +1283,13 @@ export default {
     },
     handleLicenseTypeChange(resourceId = '') {
       const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
-      this.formData.LicenseModuleResourceIdArray = !!selectedLicenceType?.licenseModules
-        ? selectedLicenceType.licenseModules.reduce((acc, item) => {
-            if (item.isAvailable) {
-              acc.push(item.resourceId)
-            }
-            return acc
-          }, [])
-        : []
+      this.formData.LicenseModuleResourceIdArray =
+        selectedLicenceType?.licenseModules?.reduce((acc, item) => {
+          if (item.isAvailable) {
+            acc.push(item.resourceId)
+          }
+          return acc
+        }, []) || []
     },
     nextStep() {
       let isFormValid = true
@@ -1349,7 +1348,7 @@ export default {
     expiryPeriodChange() {
       let end = new Date()
       let start = new Date()
-      if (!!this.formData.LicenseStartDate) {
+      if (this.formData.LicenseStartDate) {
         const [datePart, timePart] = this.formData?.LicenseStartDate?.split(' ') || []
         const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
         let minutes, hours

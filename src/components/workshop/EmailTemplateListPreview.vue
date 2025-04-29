@@ -598,10 +598,8 @@ export default {
           }))
           this.templateHTML = this.activeTemplateHTML || this.templateHTML
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },

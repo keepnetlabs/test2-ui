@@ -253,6 +253,7 @@
   }
 
   .template-preview {
+    height: 100%;
     &__header {
       background-color: #f2f2f2;
       height: 64px;
@@ -275,6 +276,7 @@
     }
 
     &__steps {
+      height: 100%;
       background-color: #ffffff !important;
       border-radius: 0px !important;
       border: none !important;
@@ -302,12 +304,6 @@
     &:last-child {
       border-bottom-right-radius: 24px;
     }
-  }
-  .template-preview {
-    height: 100%;
-  }
-  .template-preview__steps {
-    height: 100%;
   }
   .callback-template-preview-steps {
     height: 100%;

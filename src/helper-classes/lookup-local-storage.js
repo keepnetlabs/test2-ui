@@ -46,10 +46,8 @@ export default class LookupLocalStorage {
         if (key.length > 1) {
           delete store[key]
         }
-      } else {
-        if (key.length === 1) {
-          delete store[key]
-        }
+      } else if (key.length === 1) {
+        delete store[key]
       }
     })
     localStorage.setItem(ENUMS.LOCAL_STORAGE_KEY, JSON.stringify(store))

@@ -556,11 +556,9 @@ export default {
         if (this.formValues.distributionOverDays > 1) {
           return 'days'
         } else return 'day'
-      } else {
-        if (this.formValues.distributionOverDays > 1) {
-          return 'weeks'
-        } else return 'week'
-      }
+      } else if (this.formValues.distributionOverDays > 1) {
+        return 'weeks'
+      } else return 'week'
     },
     getTitle() {
       if (!this.isEdit) return 'New Vishing Campaign'

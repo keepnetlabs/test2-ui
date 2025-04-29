@@ -86,12 +86,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="3"
-        :ids="{
-          cancelButton: 'btn-cancel--send-training-modal',
-          backButton: 'btn-back--send-training-modal',
-          nextButton: 'btn-next--send-training-modal',
-          saveButton: 'btn-save--send-training-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -166,6 +161,12 @@ export default {
     return {
       phoneNumbers: [],
       phoneNumberItems: [],
+      stepperIds: {
+        cancelButton: 'btn-cancel--send-training-modal',
+        backButton: 'btn-back--send-training-modal',
+        nextButton: 'btn-next--send-training-modal',
+        saveButton: 'btn-save--send-training-modal'
+      },
       labels,
       isActionButtonDisabled: false,
       createErrorMessage: '',
@@ -208,55 +209,54 @@ export default {
     },
     getTrainingSummaryFormData() {
       let formData = {}
-      if (this.step === 3) {
-        const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-        const languages = refSendTrainingSettings.formData.languageIds
-          .map(
-            (lang) =>
-              refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
-                (item) => item.value === lang
-              ).text
-          )
-          ?.join(', ')
-        formData.trainingInfo = {
-          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
-          'Content Type': this?.selectedRow?.type,
-          Languages: languages
-        }
-        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
-        formData.userCountDetailResponse = this.userCountDetailResponse
-        const isProxy = refSendTrainingSettings?.formData?.isProxy
-        formData.settings = {
-          'Training Delivery for Your LMS': isProxy ? 'ON' : 'OFF',
-          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
-          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Sender Phone Number':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
-          Schedule:
-            refSendTrainingSettings.formData.scheduleTypeId === '1'
-              ? 'Now'
-              : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
-          'SMS Text':
-            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
-        }
-        if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
-          delete formData.settings['Sender Phone Number']
-          delete formData.settings['SMS Text']
-        }
-        if (isProxy) {
-          delete formData.settings['Auto-enroll']
-          delete formData.settings['Schedule']
-        }
-
-        formData.certificateData = refSendTrainingSettings.formData.awardCertificate
-          ? this.certificateData
-          : null
-        formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
-        formData.enrollmentData = this.enrollmentData
-        formData.trainingData = this.trainingPreviewData
-        formData.isProxy = isProxy
+      if (this.step !== 3) return formData
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      const languages = refSendTrainingSettings.formData.languageIds
+        .map(
+          (lang) =>
+            refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
+              (item) => item.value === lang
+            ).text
+        )
+        ?.join(', ')
+      formData.trainingInfo = {
+        'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
+        'Content Type': this?.selectedRow?.type,
+        Languages: languages
       }
+      formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+      formData.userCountDetailResponse = this.userCountDetailResponse
+      const isProxy = refSendTrainingSettings?.formData?.isProxy
+      formData.settings = {
+        'Training Delivery for Your LMS': isProxy ? 'ON' : 'OFF',
+        'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+        Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+        'Sender Phone Number':
+          refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
+        Schedule:
+          refSendTrainingSettings.formData.scheduleTypeId === '1'
+            ? 'Now'
+            : refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate,
+        'SMS Text':
+          refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate
+      }
+      if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
+        delete formData.settings['Sender Phone Number']
+        delete formData.settings['SMS Text']
+      }
+      if (isProxy) {
+        delete formData.settings['Auto-enroll']
+        delete formData.settings['Schedule']
+      }
+
+      formData.certificateData = refSendTrainingSettings.formData.awardCertificate
+        ? this.certificateData
+        : null
+      formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
+      formData.enrollmentData = this.enrollmentData
+      formData.trainingData = this.trainingPreviewData
+      formData.isProxy = isProxy
       return formData
     }
   },
