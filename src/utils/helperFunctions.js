@@ -38,7 +38,7 @@ export function getAvailableForValues(data) {
       resourceId = null
     }
     return {
-      resourceId: resourceId ? resourceId : id,
+      resourceId: resourceId || id,
       type
     }
   })
@@ -69,10 +69,8 @@ export function columnFilterChanged(filter = {}, axiosPayload = {}) {
           items.push(x)
         }
       })
-    } else {
-      if (x.FieldName !== filter.FieldName) {
-        items.push(x)
-      }
+    } else if (x.FieldName !== filter.FieldName) {
+      items.push(x)
     }
   })
 

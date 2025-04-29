@@ -9,11 +9,7 @@
       v-bind="isAvailableForProps"
       ref="refTreeSelect"
       id="input--make-available-for"
-      :class="[
-        'k-treeselect',
-        'make-available-for',
-        { 'k-treeselect--error': !isAvailableForValid }
-      ]"
+      :class="getTreeSelectClasses"
       async
       :value="value"
       :options="treeSelectOptions"
@@ -41,7 +37,9 @@
       <transition appear name="bounce">
         <div class="v-messages theme--light error--text" role="alert">
           <div class="v-messages__wrapper">
-            <div class="v-messages__message" style="padding-left: 10px;">Required</div>
+            <div class="v-messages__message" style="padding-left: 10px;">
+              Required
+            </div>
           </div>
         </div>
       </transition>
@@ -117,6 +115,13 @@ export default {
     }
   },
   computed: {
+    getTreeSelectClasses() {
+      return [
+        'k-treeselect',
+        'make-available-for',
+        { 'k-treeselect--error': !this.isAvailableForValid }
+      ]
+    },
     showMakeAvailableFor() {
       return this.getRole !== labels.CompanyAdmin
     },
@@ -310,15 +315,18 @@ export default {
           oldVal.some((item) => item.type === 'MyCompanyOnly') &&
           newVal.some((item) => item.type === 'AllCompanies')
         ) {
-          emittedVal = [this.treeSelectOptions?.[1]] || []
+          const selectedOption = this.treeSelectOptions?.[1]
+          emittedVal = selectedOption ? [selectedOption] : []
         } else if (newVal.length > 1) {
-          emittedVal = [this.treeSelectOptions?.[0]] || []
+          const selectedOption = this.treeSelectOptions?.[0]
+          emittedVal = selectedOption ? [selectedOption] : []
         }
         this.treeSelectionStatus = true
         this.setTreeSelectOptions(this.treeSelectionStatus)
       } else if (newVal.some((item) => item.type === 'AllCompanies')) {
         if (newVal.length > 1) {
-          emittedVal = [this.treeSelectOptions[1]]
+          const selectedOption = this.treeSelectOptions?.[1]
+          emittedVal = selectedOption ? [selectedOption] : []
         }
         this.treeSelectionStatus = true
         this.setTreeSelectOptions(this.treeSelectionStatus)
@@ -328,7 +336,6 @@ export default {
         this.treeSelectionStatus = false
         this.setTreeSelectOptions(this.treeSelectionStatus)
       }
-
       if (emittedVal && emittedVal[0]) {
         this.$emit('input', emittedVal)
         if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {

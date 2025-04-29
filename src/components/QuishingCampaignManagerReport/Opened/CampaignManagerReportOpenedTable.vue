@@ -1,69 +1,79 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    selectable
-    filterable
-    options
-    is-server-side-selection
-    is-server-side
-    :loading="isLoading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    :select-event="tableOptions.selectEvent"
-    :axios-payload.sync="axiosPayload"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
-    @refreshAction="callForData"
-    @on-resend="handleOnResend"
-    @on-detail="handleOnDetail"
-    @on-activity="handleActivity"
-    @on-selection-text-change="handleSelectionChange"
-  >
-    <template #datatable-row-actions="{ scope }">
-      <DefaultButtonRowAction
-        v-if="!getQuishingTypePrintOut()"
-        :icon="tableOptions.rowActions[1].icon"
-        :id="tableOptions.rowActions[1].id"
-        :text="tableOptions.rowActions[1].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
-        :disabledTooltipText="
-          campaignDurationExpired()
-            ? 'You cannot resend this campaign because its lifetime has expired'
-            : 'Resend'
-        "
-        @on-click="handleOnResend(scope.row)"
+  <div>
+    <div>
+      <CampaignManagerReportBotActivityAlertBox
+        v-if="!isLoading"
+        :bot-activity-count="botActivityCount"
+        :is-show-sandbox="isShowSandbox"
+        @on-activity-change="handleActivity"
       />
-      <DefaultButtonRowAction
-        v-if="!getQuishingTypePrintOut()"
-        :icon="tableOptions.rowActions[0].icon"
-        :id="tableOptions.rowActions[0].id"
-        :text="tableOptions.rowActions[0].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled"
-        @on-click="handleOnDetail(scope.row)"
-      />
-    </template>
-    <template #datatable-custom-column="{ scope, col }">
-      <CampaignManagerReportActivityColumn
-        v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
-        :scope="scope"
-      />
-    </template>
-  </DataTable>
+    </div>
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      selectable
+      filterable
+      options
+      is-server-side-selection
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportCampaignManagerReportOpenedTable"
+      @refreshAction="callForData"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+      @on-activity="handleActivity"
+      @on-selection-text-change="handleSelectionChange"
+    >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          v-if="!getQuishingTypePrintOut()"
+          :icon="tableOptions.rowActions[1].icon"
+          :id="tableOptions.rowActions[1].id"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled || campaignDurationExpired()"
+          :disabledTooltipText="
+            campaignDurationExpired()
+              ? 'You cannot resend this campaign because its lifetime has expired'
+              : 'Resend'
+          "
+          @on-click="handleOnResend(scope.row)"
+        />
+        <DefaultButtonRowAction
+          v-if="!getQuishingTypePrintOut()"
+          :icon="tableOptions.rowActions[0].icon"
+          :id="tableOptions.rowActions[0].id"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled"
+          @on-click="handleOnDetail(scope.row)"
+        />
+      </template>
+      <template #datatable-custom-column="{ scope, col }">
+        <CampaignManagerReportActivityColumn
+          v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+          :scope="scope"
+        />
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -83,10 +93,15 @@ import QuishingService from '@/api/quishing'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-
+import CampaignManagerReportBotActivityAlertBox from '@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue'
 export default {
   name: 'CampaignManagerReportOpenedTable',
-  components: { DataTable, CampaignManagerReportActivityColumn, DefaultButtonRowAction },
+  components: {
+    DataTable,
+    CampaignManagerReportActivityColumn,
+    DefaultButtonRowAction,
+    CampaignManagerReportBotActivityAlertBox
+  },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
     id: {
@@ -101,7 +116,7 @@ export default {
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   inject: {
@@ -146,7 +161,7 @@ export default {
         }
       )
     }
-    columns.push(Object.assign({}, COLUMNS.ACTIVITY_TYPE))
+    columns.push({ ...COLUMNS.ACTIVITY_TYPE })
     return {
       COLUMNS,
       CONSTANTS: {
@@ -167,9 +182,9 @@ export default {
         },
         columns,
         addButton: {
-          show: true,
+          show: false,
           icon: null,
-          label: 'HIDE BOT ACTIVITY',
+          label: 'SHOW BOT ACTIVITY',
           action: 'on-activity',
           hideTooltip: true,
           type: 'outlined',
@@ -209,7 +224,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 2
+      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
       QuishingService.searchCampaignJobUserEmailOpened(
         this.axiosPayload,
         this.id,
@@ -218,7 +233,13 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              data: {
+                results,
+                totalNumberOfRecords,
+                totalNumberOfPages,
+                pageNumber,
+                totalSandBoxActivityCount
+              }
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -231,6 +252,11 @@ export default {
             })
             return { ...row, ...customFields }
           })
+          if (this.isShowSandbox) {
+            this.botActivityCount = totalNumberOfRecords
+          } else {
+            this.botActivityCount = totalSandBoxActivityCount
+          }
         })
         .finally(this.setLoading)
     },

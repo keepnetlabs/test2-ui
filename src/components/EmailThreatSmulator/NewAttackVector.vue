@@ -234,7 +234,7 @@ export default {
             this.formValues.categoryResourceId = categoryList.find(
               (x) => x.resourceId == details.categoryResourceId
             ).resourceId
-            details.isActive = details.status == 'Enabled' ? true : false
+            details.isActive = details.status == 'Enabled'
             this.formValues = details
           })
         }

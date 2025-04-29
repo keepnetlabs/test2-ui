@@ -1,15 +1,7 @@
 <template>
   <div>
-    <div
-      :class="[
-        'mail-configuration-select-sources__item-container',
-        {
-          'mail-configuration-select-sources__item-container--first': isFirst,
-          'mail-configuration-select-sources__item-container--disabled': isDisabled
-        }
-      ]"
-    >
-      <v-checkbox
+    <div :class="getClasses">
+      <VCheckbox
         hide-details
         color="#2196f3"
         class="mt-n1"
@@ -50,6 +42,17 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    }
+  },
+  computed: {
+    getClasses() {
+      return [
+        'mail-configuration-select-sources__item-container',
+        {
+          'mail-configuration-select-sources__item-container--first': this.isFirst,
+          'mail-configuration-select-sources__item-container--disabled': this.isDisabled
+        }
+      ]
     }
   }
 }

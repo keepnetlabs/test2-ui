@@ -275,7 +275,7 @@ export default {
       this.checkSchemaTypes(value)
       this.changeDisabledLabel()
     },
-    checkSchemaTypes(value) {
+    checkSchemaTypes(value, isEdit = false) {
       this.$nextTick(() => {
         const domainRecord = this.domainRecords.find((item) => item.value === value)
         this.urlSchemaTypesModified = this.urlSchemaTypesModified.map((schema) => {
@@ -291,6 +291,7 @@ export default {
           domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value,
           'urlSchemaTypeId'
         )
+        if (this.isEdit) return
         this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
         this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
       })

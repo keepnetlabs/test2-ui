@@ -211,42 +211,33 @@ export default {
       if (this.targetUserCheckboxSelectionError) {
         return 'At least one of the options must be selected'
       }
-
       if (!this.getTotalTargetUserCount) {
         return 'At least one target user must be selected'
       }
-
       return ''
     },
     getTotalTargetUserCount() {
       let total = 0
-
       if (this.selectedCampaign) {
         if (this.formData.userWhoOpenedEmail) {
           total += this.selectedCampaign.scenarioStats.openedEmail
         }
-
         if (this.formData.userWhoClickedEmail) {
           total += this.selectedCampaign.scenarioStats.clickedEmail
         }
-
         if (this.formData.userWhoSubmittedData) {
           total += this.selectedCampaign.scenarioStats.submittedEmail
         }
-
         if (this.formData.userWhoSubmittedMFACode) {
           total += this.selectedCampaign.scenarioStats.mfa
         }
-
         if (this.formData.userWhoDownloadedAttachment) {
           total += this.selectedCampaign.scenarioStats.attachmentOpenedEmail
         }
-
         if (this.formData.userWhoReportedAsSuspicious) {
           total += this.selectedCampaign.scenarioStats.reportedEmail
         }
       }
-
       return total
     }
   },

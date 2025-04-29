@@ -60,9 +60,6 @@ export default {
   },
   computed: {
     getResendText() {
-      // if (this.payload?.selectAll) {
-      //   return `You are about to re-send this campaign to all users. Are you sure?`
-      // }
       if (this.resendItemCount) {
         return `You are about to re-send this campaign to ${this.resendItemCount} user${
           this.resendItemCount > 1 ? 's' : ''
@@ -73,7 +70,6 @@ export default {
           this.payload.items.length > 1 ? 's' : ''
         } you’ve selected. Are you sure?`
       }
-
       return `You are about to re-send this campaign to the users you selected. Are you sure?`
     }
   },

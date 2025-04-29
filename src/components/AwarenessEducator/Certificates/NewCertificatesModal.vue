@@ -47,7 +47,7 @@
           :is-edit="!!selectedItem"
           :activeBlockManagerComponents="activeBlockManagerComponents"
           :template.sync="formData.template"
-          @handleEditHtmlTemplate="formData.template = $event"
+          @handleEditHtmlTemplate="handleEditHtmlTemplate"
         />
       </v-form>
     </template>
@@ -157,6 +157,9 @@ export default {
     }
   },
   methods: {
+    handleEditHtmlTemplate(template) {
+      this.formData.template = template
+    },
     getDefaultCertificateTemplate() {
       this.loading = true
       AwarenessEducatorService.getDefaultCertificateTemplate()

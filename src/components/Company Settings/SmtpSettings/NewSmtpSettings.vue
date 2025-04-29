@@ -414,7 +414,8 @@ export default {
         password: this.formValues.password,
         resourceId: this.resourceId,
         useAuthentication: Number(this.formValues.useAuthentication),
-        useSsl: Number(this.formValues.useSSL)
+        useSsl: Number(this.formValues.useSSL),
+        customHeader: this.formValues.customHeader
       }
       testConnectionWhenSmtpCreated(payload)
         .then(() => {
@@ -452,7 +453,7 @@ export default {
     },
     handleChangeServiceProvider(item = '') {
       if (item !== ':') {
-        const [serverAddress, serverPort] = item?.split(':')
+        const [serverAddress, serverPort] = item?.split(':') || []
         this.formValues.serverAddress = serverAddress
         this.formValues.serverPort = serverPort
       } else {

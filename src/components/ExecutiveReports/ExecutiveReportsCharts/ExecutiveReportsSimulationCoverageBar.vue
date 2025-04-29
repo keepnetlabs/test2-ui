@@ -358,9 +358,6 @@ export default {
               const xValue = tooltipModel.dataPoints[0].xLabel
               titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
               tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset) => {
                 let datasetLabel = 'Number of Users'
                 let dataValue =
@@ -382,9 +379,6 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
                 }

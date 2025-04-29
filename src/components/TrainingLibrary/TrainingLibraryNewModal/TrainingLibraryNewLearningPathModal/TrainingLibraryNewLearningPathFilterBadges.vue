@@ -1,6 +1,5 @@
 <template>
   <div v-if="isRenderFilters">
-    <!-- <div style="flex-shrink: 0;">Filter Type: {{ filterType }}</div> -->
     <div class="training-library-filters-badges mt-0">
       <div class="training-library-filters-badges__left-side">
         <div class="training-library-filters-badges__container">

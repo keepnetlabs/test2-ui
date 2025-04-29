@@ -91,7 +91,7 @@
                 v-if="!!getLogoImage"
                 id="img--main-mini-logo"
                 class="menu-mini-img"
-                alt="mini-logo-image"
+                alt="mini-logo"
                 :src="getLogoImage"
               />
             </div>
@@ -128,7 +128,7 @@
                         <img
                           v-if="!!getLogoImage"
                           id="img--company-logo"
-                          alt="company-logo-image"
+                          alt="company-logo"
                           :src="getLogoImage"
                         />
                       </div>
@@ -232,7 +232,7 @@
               v-if="!!getMiniLogo"
               :src="getMiniLogo"
               class="menu-mini-img"
-              alt="menu-mini-logo-image"
+              alt="menu-mini-logo"
             />
           </div>
         </div>
@@ -749,23 +749,6 @@
                 <v-list-item-title>Reports</v-list-item-title>
               </v-list-item-content>
             </template>
-            <!--
-            <v-list-item
-              v-if="getCampaignReportsSearchPermissions"
-              style="padding-left: 0 !important; margin-left: -5px;"
-            >
-              <v-list-item-content class="menu-item-content">
-                <app-router-link
-                  to="/reports/campaign-reports"
-                  id="btn--link-navigator-menu-campaign-reports"
-                  route-name="Campaign Reports"
-                  :active-class-comparator="
-                    () => routerName === 'Campaign Reports' || routerName === 'Campaign Report'
-                  "
-                />
-              </v-list-item-content>
-            </v-list-item>
-            -->
             <v-list-item
               v-if="getAdvancedReportsSearchPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"

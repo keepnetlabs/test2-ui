@@ -102,7 +102,10 @@ export default {
   computed: {
     scheduledTimeItems() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      return timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
     },
     isDueDateDisabled() {
       return !(this.value.startDate && this.value.startDateTimezoneId)
@@ -156,15 +159,15 @@ export default {
     disableDuePickerEndDates(val) {
       let selectedStartDate = new Date()
       if (this.value.startDate) {
-        const [datePart, timePart] = this.value?.startDate?.split(' ')
-        const [firstPart, secondPart, thirdPart] = datePart?.split('/')
+        const [datePart, timePart] = this.value?.startDate?.split(' ') || []
+        const [firstPart, secondPart, thirdPart] = datePart?.split('/') || []
         let minutes, hours
         if (this.timeFormat && this.timeFormat === '12h') {
-          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(' ')?.[0]?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         } else {
-          const [hoursPart, minutesPart] = timePart?.split(':')
+          const [hoursPart, minutesPart] = timePart?.split(':') || []
           minutes = minutesPart
           hours = hoursPart
         }

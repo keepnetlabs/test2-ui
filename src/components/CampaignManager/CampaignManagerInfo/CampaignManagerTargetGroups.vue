@@ -79,13 +79,11 @@
     </div>
   </div>
 </template>
-
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
 import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
 import useDebounce from '@/hooks/useDebounce'
-
 export default {
   name: 'CampaignManagerTargetGroups',
   components: {
@@ -214,9 +212,8 @@ export default {
       this.highlightedRow = row
     },
     addRowClassName({ row = {} }) {
-      if (this.lastColumnName === 'phoneNumber') {
-        return !!row.phoneNumber ? '' : 'k-table-row--disabled'
-      }
+      if (this.lastColumnName === 'phoneNumber')
+        return !row.phoneNumber ? 'k-table-row--disabled' : ''
       return ''
     }
   }

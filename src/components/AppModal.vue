@@ -137,7 +137,7 @@ export default {
   },
   computed: {
     getFooterClass() {
-      if (!!this.footerClass) {
+      if (this.footerClass) {
         return `k-overlay__footer ${this.footerClass}`
       }
       return `k-overlay__footer`

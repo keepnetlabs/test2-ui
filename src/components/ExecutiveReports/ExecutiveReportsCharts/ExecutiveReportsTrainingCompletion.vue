@@ -206,12 +206,9 @@ export default {
               tableRoot.appendChild(titleRow)
               const addTr = (label, val, addPaddingBottom = true) => {
                 let tr = document.createElement('tr')
-                let backgroundColor =
-                  valArr[0] === 'Completed'
-                    ? '#43A047'
-                    : valArr[0] === 'In Progress'
-                    ? '#2196F3'
-                    : '#B83A3A'
+                let backgroundColor = '#B83A3A'
+                if (valArr[0] === 'Completed') backgroundColor = '#43A047'
+                else if (valArr[0] === 'In Progress') backgroundColor = '#2196F3'
                 tr.innerHTML = `
                 <td style="font-weight:600;font-size:12px;"><span style="background-color:${backgroundColor}; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>${label}:&nbsp;
                 </td>
@@ -282,6 +279,9 @@ export default {
                     ? [splittedLabel[0], d]
                     : [splittedLabel[0] + ' ' + splittedLabel[1], d]
                 const comparatorVal = label === 'Completed' ? 2 : 4
+                let customMarginLeft = 0
+                if (label === 'Completed') customMarginLeft = 4
+                else if (label === 'Incomplete') customMarginLeft = 2
                 return {
                   text: Array.from(
                     label + label + label.substring(0, label.length / comparatorVal) + d + '   '
@@ -294,7 +294,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: index,
                   textParts,
-                  customMarginLeft: label === 'Completed' ? 4 : label === 'Incomplete' ? 2 : 0
+                  customMarginLeft
                 }
               })
             }
@@ -326,11 +326,12 @@ export default {
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
         if (!CHART_COLORS[data]) return
-        if (data === labels.Incomplete && incomplete) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.InProgress && inProgress) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.Completed && completed) {
+        const shouldAddColor = {
+          [labels.Incomplete]: incomplete,
+          [labels.InProgress]: inProgress,
+          [labels.Completed]: completed
+        }[data]
+        if (shouldAddColor) {
           backgroundColor.push(CHART_COLORS[data].backgroundColor)
         }
       })

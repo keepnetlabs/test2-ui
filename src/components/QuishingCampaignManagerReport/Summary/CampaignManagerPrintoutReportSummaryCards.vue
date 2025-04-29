@@ -164,20 +164,16 @@ export default {
       return this.multipleType.length && this.multipleType[1] && this.multipleType[3]
     },
     getNoResponseData() {
-      const { noResponse } = this.items
-      return noResponse ? noResponse : {}
+      return this.items?.noResponse ?? {}
     },
     getOpenedData() {
-      const { openedEmail } = this.items
-      return openedEmail ? openedEmail : {}
+      return this.items?.openedEmail ?? {}
     },
     getSubmittedData() {
-      const { submittedEmail } = this.items
-      return submittedEmail ? submittedEmail : {}
+      return this.items?.submittedEmail ?? {}
     },
     getMfaData() {
-      const { mfa } = this.items
-      return mfa ? mfa : {}
+      return this.items?.mfa ?? {}
     }
   }
 }

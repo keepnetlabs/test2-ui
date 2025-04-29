@@ -61,8 +61,6 @@ import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
-
 export default {
   name: 'ExecutiveReportAvgPhishingSimClickerRate',
   components: {
@@ -173,7 +171,9 @@ export default {
             )
             ctx.fillStyle = '#B83A3A'
             const redDataLength = redData.toString().length
-            const comparatorLength = redDataLength === 1 ? -7 : redDataLength === 2 ? 0 : 8
+            let comparatorLength = 8
+            if (redDataLength === 1) comparatorLength = -7
+            else if (redDataLength === 2) comparatorLength = 0
             const comparatorTextLength = redData <= 2 ? -1 : 2
             ctx.fillText(
               `${redData}%`,
@@ -238,8 +238,6 @@ export default {
         return
       }
       const { values } = data[0].widgetDatas[0]
-      const repeatOffendersCount = values.find((value) => value.name === 'CountRepeatOffender')
-        ?.value
       const repeatOffendersPercentage = values.find(
         (value) => value.name === 'RepeatOffenderPercentage'
       )?.value

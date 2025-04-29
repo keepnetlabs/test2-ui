@@ -345,7 +345,10 @@ export default {
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     isRenderTrainingCard() {

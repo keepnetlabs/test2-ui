@@ -163,10 +163,10 @@ export default {
         })
     },
     setChartData(data) {
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
-      } else if (data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0) {
+      if (
+        !data?.[0]?.widgetDatas?.length ||
+        data?.[0]?.widgetDatas?.filter((obj) => obj.values[0].value).length === 0
+      ) {
         this.isEmpty = true
         return
       }
@@ -298,6 +298,9 @@ export default {
                       ? [splittedLabel[0], d]
                       : [splittedLabel[0] + ' ' + splittedLabel[1], d]
                   const comparatorVal = 4
+                  let customMarginLeft = 1
+                  if (label === 'Undetected') customMarginLeft = 5
+                  else if (label === 'Simulation') customMarginLeft = 3
                   return {
                     text: Array.from(
                       label + label + label.substring(0, label.length / comparatorVal) + d + '  '
@@ -310,7 +313,7 @@ export default {
                     lineWidth: 0,
                     datasetIndex: index,
                     textParts,
-                    customMarginLeft: label === 'Undetected' ? 5 : label === 'Simulation' ? 3 : 1
+                    customMarginLeft
                   }
                 }
               )

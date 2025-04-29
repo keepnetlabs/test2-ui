@@ -71,7 +71,7 @@ export default {
       labels,
       selectedRow: {},
       isShowDetailDialog: false,
-      isShowSandboxFromParent: true
+      isShowSandboxFromParent: false
     }
   },
   methods: {

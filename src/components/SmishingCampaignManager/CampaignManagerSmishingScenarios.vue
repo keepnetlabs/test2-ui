@@ -159,7 +159,9 @@
                   </div>
                   <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                    <div v-if="!item.tags || !item.tags.length">
+                      {{ '\xa0' }}
+                    </div>
                     <div class="d-flex align-center">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
                       <span class="template-list--item__language">{{ item.languageTypeName }}</span>
@@ -291,7 +293,7 @@ import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignMa
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 
 export default {
@@ -481,7 +483,11 @@ export default {
           { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
           { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
-          { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
+          {
+            FieldName: 'LanguageTypeResourceId',
+            Operator: 'Contains',
+            Value: val
+          }
         ]
         this.callForPhishingScenarios()
         this.isShowSelectedScenarios = false
@@ -548,10 +554,13 @@ export default {
     }
   },
   methods: {
+    getItemDifficultyClass,
     getItemClasses(itemResourceId = '') {
       return [
         'template-list',
-        { 'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId },
+        {
+          'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId
+        },
         {
           'template-list--selected': this.value.find((item) => item.resourceId === itemResourceId)
         }
@@ -565,13 +574,6 @@ export default {
         return '\xa0'
       }
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '') {
       SmishingService.getSmishingScenario(resourceId).then((response) => {

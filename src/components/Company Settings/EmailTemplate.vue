@@ -37,7 +37,9 @@
       <div class="email-template__ai-assistant-header">
         <div class="email-template__ai-assistant-left">
           <div class="mr-4">
-            <VIcon style="font-size: 32px;" color="#00559B"> mdi-creation </VIcon>
+            <VIcon style="font-size: 32px;" color="#00559B">
+              mdi-creation
+            </VIcon>
           </div>
           <div>
             <div class="email-template__ai-assistant-left-title">AI Ally</div>
@@ -63,7 +65,9 @@
               :ripple="false"
               @click="$emit('update:aiAssistant', true)"
             >
-              <VIcon class="cursor-pointer mr-1" color="#fff"> mdi-creation </VIcon>
+              <VIcon class="cursor-pointer mr-1" color="#fff">
+                mdi-creation
+              </VIcon>
               USE AI ALLY
             </VBtn>
           </div>
@@ -295,7 +299,8 @@
                   >mdi-chevron-right</VIcon
                 >
                 <span class="email-template__ai-assistant-footer-left-text"
-                  >Generated {{ templateType === 'landing' ? 'landing page' : 'email' }}
+                  >Generated
+                  {{ templateType === 'landing' ? 'landing page' : 'email' }}
                   {{ activeGeneratedTemplateIndex + 1 }} of {{ generatedTemplates.length }}</span
                 >
               </div>
@@ -712,29 +717,7 @@ export default {
           500
         ),
       ccEmailRules: {
-        email: (v) => {
-          if (v.length > 0) {
-            let booReturn = true
-            for (let i = 0; i < v.length; i++) {
-              const chip = document.getElementsByClassName('v-chip--select')[i]
-              if (!chip) continue
-              if (!Validations.email(v[i], '')) {
-                booReturn = false
-                chip.style.borderColor = '#ff5252'
-                chip.style.color = '#ff5252'
-                if (v.length === 1) {
-                  return v[i] + ' email address is not valid'
-                }
-              } else {
-                chip.style.borderColor = ''
-                chip.style.color = 'rgba(0, 0, 0, 0.87)'
-              }
-            }
-            return booReturn ? booReturn : 'One of the email addresses is not valid'
-          } else {
-            return true
-          }
-        }
+        email: Validations.isEmailChip
       },
       mergeTags: [
         {
@@ -1055,8 +1038,7 @@ export default {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     handleValueComparator(a, b) {
       if (a === b) return true
-      if (a === this.usaResourceId && this.usaStateResourceIds.includes(b)) return true
-      return false
+      return a === this.usaResourceId && this.usaStateResourceIds.includes(b)
     },
     getAIGenerationOptions() {
       getAIGenerationOptions().then((res) => {
@@ -1086,9 +1068,11 @@ export default {
     },
     handleGenerateEmail() {
       this.isEmailGenerating = true
-      document
-        ?.querySelector('#email-template-content')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+      document?.querySelector('#email-template-content')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      })
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,
@@ -1187,7 +1171,10 @@ export default {
       }, 1000)
     },
     handleFileDelete(index) {
-      this.$emit('handleAttachmentRemove', { item: this.attachments[index], index })
+      this.$emit('handleAttachmentRemove', {
+        item: this.attachments[index],
+        index
+      })
     },
     onFileChanged(file) {
       this.$emit('setAttachmentFile', file)

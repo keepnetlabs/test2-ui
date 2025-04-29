@@ -303,7 +303,7 @@
         id="input--campaign-manager-advanced-settings-randomly-selected"
         hide-details
         color="#2196f3"
-        label="Exclude this campaign’s statistics from all generic reports"
+        label="Exclude this campaign's statistics from all generic reports"
       >
       </v-checkbox>
     </FormGroup>
@@ -330,7 +330,6 @@ import {
   enrollmentAutoEnrollTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
-
 export default {
   name: 'SendTrainingSettings',
   components: {
@@ -519,17 +518,9 @@ export default {
         this.$store.dispatch('common/callForSettings')
       }
     },
-    handleEnrollmentTypeChange(val) {
-      if (val === 3) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      }
+    handleEnrollmentTypeChange() {
+      this.$set(this.enrollmentAutoEnrollTypeItems[2], 'text', 'next')
+      this.$set(this.enrollmentAutoEnrollTypeItems[3], 'text', 'in')
     },
     validateForm() {
       return this.$refs.refForm.validate()

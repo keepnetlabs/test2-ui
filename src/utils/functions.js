@@ -132,26 +132,28 @@ export function getDataTableFieldLabel(field = '') {
       upperCaseCount++
     }
   }
-  if (field === 'beinganalyzed') return 'Being Analyzed'
-  if (field === 'inprogress') return 'In Progress'
-  if (field === 'falsepositive') return 'False Positive'
-  if (field === 'nonmalicious') return 'Clean'
-  if (field === 'veryhigh') return 'Very High'
-  if (field === 'verylow') return 'Very Low'
-  if (field === 'completedwitherror') return 'Completed with error'
-  if (field === 'itemnotfound') return 'Item not found'
-  if (field === 'Running') return 'Running'
-  if (field === 'Not Running') return 'Not Running'
-  if (field === 'n/a') return 'N/A'
-  if (field === 'notinstalled') return 'Not Installed'
-  if (field === 'waitingresponse') return 'Waiting Response'
-  if (field === 'unknown') return 'N/A'
-  if (field === 'Easy') return 'Easy'
-  if (field === 'Medium') return 'Medium'
-  if (field === 'Hard') return 'Hard'
-  if (field === 'not in use') return 'Not In Use'
-  if (field === 'in use') return 'In Use'
-  return defField
+  const fieldMap = {
+    beinganalyzed: 'Being Analyzed',
+    inprogress: 'In Progress',
+    falsepositive: 'False Positive',
+    nonmalicious: 'Clean',
+    veryhigh: 'Very High',
+    verylow: 'Very Low',
+    completedwitherror: 'Completed with error',
+    itemnotfound: 'Item not found',
+    Running: 'Running',
+    'Not Running': 'Not Running',
+    'n/a': 'N/A',
+    notinstalled: 'Not Installed',
+    waitingresponse: 'Waiting Response',
+    unknown: 'N/A',
+    Easy: 'Easy',
+    Medium: 'Medium',
+    Hard: 'Hard',
+    'not in use': 'Not In Use',
+    'in use': 'In Use'
+  }
+  return fieldMap[field] || defField
 }
 
 export function isOwnerOrMember(membershipStatusId) {
@@ -184,9 +186,9 @@ export function setGlobalUserData(userData) {
       logoPath: userData.user_company_logopath,
       businessCategoryId: userData.user_company_industry_resourceid,
       resellerId: userData.user_company_parentcompany_resourceid,
-      timeZone: userData && userData.user_dateformat,
+      timeZone: userData?.user_dateformat,
       isDemo: false,
-      timeFormat: userData && userData.user_timeformat
+      timeFormat: userData?.user_timeformat
     },
     role: {
       name: userData?.role?.toString?.() || ''
@@ -470,7 +472,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
       ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
   }
 
-  if (els && els.length) {
+  if (els?.length) {
     for (let i = 0, l = els.length; i < l; i++) {
       let el = els[i]
       el.setAttribute('target', '_blank')
@@ -511,7 +513,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
     }
   }
   let hiddenEls = document.getElementsByClassName(url.url)
-  if (hiddenEls && hiddenEls.length) {
+  if (hiddenEls?.length) {
     for (let i = 0, l = hiddenEls.length; i < l; i++) {
       let hiddenEl = hiddenEls[i]
       hiddenEl.setAttribute('target', '_blank')
@@ -531,7 +533,12 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
 }
 
 export function datePrettier(date) {
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }
   const newDate = new Date(date)
   return newDate.toLocaleDateString('en-US', options)
 }
@@ -753,9 +760,7 @@ export function formatSeconds(seconds = 0) {
 }
 export const getErrorMessage = (error) => {
   return (
-    (error?.response?.data &&
-      error?.response?.data?.validationMessages &&
-      error?.response?.data?.validationMessages?.length &&
+    (error?.response?.data?.validationMessages?.length &&
       error?.response?.data?.validationMessages[0]) ||
     error?.response?.data?.message ||
     error?.response?.data?.Message ||
@@ -773,7 +778,7 @@ export const getDifficultyBadgeColor = (text = '') => {
 
 export function createRandomCryptNumber() {
   const crypto = window.crypto || window.msCrypto
-  if (!crypto) return Math.random().toString(10)
+  if (!crypto) return parseFloat(Math.random().toFixed(10))
   const array = new Uint32Array(1)
   return crypto.getRandomValues(array)[0]
 }

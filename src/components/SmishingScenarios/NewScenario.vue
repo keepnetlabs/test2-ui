@@ -113,9 +113,9 @@
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the scenario">
                   <InputTag
+                    v-model="formValues.tags"
                     ref="refTags"
                     id="input--action-tags-new-scenario"
-                    v-model="formValues.tags"
                     :items="[]"
                     class="hide-caret"
                   />
@@ -209,20 +209,7 @@
               </v-list-item>
               <v-list-item>
                 <v-list-item-content>
-                  <div
-                    :style="
-                      isMethodMfa
-                        ? {
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr',
-                            columnGap: '16px',
-                            maxWidth: 'calc(100% - 96px)'
-                          }
-                        : {
-                            maxWidth: 'calc(100% - 96px)'
-                          }
-                    "
-                  >
+                  <div :style="getSummaryContainerStyle">
                     <CampaignManagerSummaryCard
                       icon="mdi-information"
                       :title="labels.ScenarioInfo"
@@ -259,9 +246,8 @@
                             {{ getSummaryTextMessage }}
                           </div>
                         </div>
-                        <div class="d-flex" v-if="!!textMessageTemplate">
+                        <div v-if="!!textMessageTemplate" class="d-flex">
                           <v-chip
-                            v-if="!!textMessageTemplate"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -279,6 +265,7 @@
                             }}
                           </v-chip>
                           <v-chip
+                            v-if="!!textMessageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -286,7 +273,6 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            v-if="!!textMessageTemplate"
                           >
                             {{
                               methods.find(
@@ -430,9 +416,8 @@
                             <b>URL:</b> {{ landingPageTemplate.urlTemplate }}
                           </div>
                         </div>
-                        <div class="d-flex" v-if="!!landingPageTemplate">
+                        <div v-if="!!landingPageTemplate" class="d-flex">
                           <v-chip
-                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p mr-2"
                             style="
                               color: white;
@@ -451,7 +436,6 @@
                             }}
                           </v-chip>
                           <v-chip
-                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               border-radius: 6px;
@@ -467,7 +451,6 @@
                             }}
                           </v-chip>
                           <v-chip
-                            v-if="!!landingPageTemplate"
                             class="template-list--item template-list--item__chip p"
                             style="
                               color: white;
@@ -547,7 +530,7 @@ import TextMessageTemplateSelectList from '@/components/SmishingScenarios/TextMe
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { mapGetters } from 'vuex'
-
+import { getDifficultyColor } from '@/components/SmishingReport/Opened/utils'
 export default {
   name: 'NewScenario',
   components: {
@@ -642,7 +625,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.TemplateName, 200))
         ]
       },
       mfaData: {
@@ -656,6 +639,7 @@ export default {
     }
   },
   methods: {
+    getDifficultyColor,
     getMethodTypeDescription(method = '') {
       if (method === 'Click-Only') return 'See who fails for phishing links'
       return method === 'Data Submission' ? 'Gather information from users' : 'Send a smishing MFA'
@@ -712,21 +696,6 @@ export default {
           this.$emit('changeNewScenarioModalStatus', false)
         }
       })
-    },
-    getDifficultyColor(difficulty) {
-      if (difficulty === 'Easy') {
-        return '#217124'
-      }
-
-      if (difficulty === 'Medium') {
-        return '#2196F3'
-      }
-
-      if (difficulty === 'Hard') {
-        return '#F56C6C'
-      }
-
-      return '#217124'
     },
     nextStep() {
       const currentStep = JSON.parse(JSON.stringify(this.step))
@@ -827,6 +796,18 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSummaryContainerStyle() {
+      return this.isMethodMfa
+        ? {
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            columnGap: '16px',
+            maxWidth: 'calc(100% - 96px)'
+          }
+        : {
+            maxWidth: 'calc(100% - 96px)'
+          }
+    },
     getScenarioInfoItems() {
       return {
         Name: this.formValues.name,
@@ -872,11 +853,9 @@ export default {
       ) {
         return this.isAttachmentBased
       }
-
       if (this.formValues?.methodTypeId) {
         return this.formValues?.methodTypeId === '3'
       }
-
       return false
     },
     getModalTitle() {

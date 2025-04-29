@@ -47,6 +47,7 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import { monthNamesLong } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportsImpactOfPhishingAwarenessTraining',
   components: {
@@ -154,23 +155,9 @@ export default {
         this.isEmpty = true
         return
       }
-      const monthNamesLong = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const params = [data[0].widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
-      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
+      const { datasets } = createExecutiveReportChartData(...params)
 
       const industryAverageData = data[0].widgetDatas.map((wData) => {
         return wData.values.find((v) => v.name === 'IndustryAverage')?.value || 0
@@ -206,7 +193,10 @@ export default {
             data: [
               { x: firstTimestampPrevMonth, y: industryAverageData[0] },
               ...industryAverageDataset,
-              { x: lastTimestampNextMonth, y: industryAverageData[industryAverageData.length - 1] }
+              {
+                x: lastTimestampNextMonth,
+                y: industryAverageData[industryAverageData.length - 1]
+              }
             ],
             borderColor: '#007bff',
             backgroundColor: '#1173C1',
@@ -391,9 +381,6 @@ export default {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index].y
@@ -423,9 +410,6 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
                 }

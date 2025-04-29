@@ -98,12 +98,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="3"
-        :ids="{
-          cancelButton: 'btn-cancel--send-training-modal',
-          backButton: 'btn-back--send-training-modal',
-          nextButton: 'btn-next--send-training-modal',
-          saveButton: 'btn-save--send-training-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -135,7 +130,7 @@ import { mapActions, mapGetters } from 'vuex'
 import TrainingLibrarySendTrainingSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSettings.vue'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import TrainingLibrarySendTrainingSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSummary.vue'
-import { emptyTrainingSendModalObj } from '@/components/TrainingLibrary/utils'
+import { emptyTrainingSendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
 import {
   endTypeItems,
   awardCertificateTypes,
@@ -168,6 +163,12 @@ export default {
       phoneNumbers: [],
       phoneNumberItems: [],
       labels,
+      stepperIds: {
+        cancelButton: 'btn-cancel--send-training-modal',
+        backButton: 'btn-back--send-training-modal',
+        nextButton: 'btn-next--send-training-modal',
+        saveButton: 'btn-save--send-training-modal'
+      },
       isActionButtonDisabled: false,
       createErrorMessage: '',
       step: 1,
@@ -308,13 +309,12 @@ export default {
             periodTypeItems?.find?.(
               (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
             )?.text || ''
-          formData.settings['Auto-enroll'] = `Automatically enroll new users ${
-            autoEnrollType === 'next'
-              ? 'on the next ' + autoEnrollDayOfWeek
-              : autoEnrollType === 'in'
-              ? 'in ' + enrollmentAutoEnroll.periodCount + ' ' + autoEnrollPeriodType
-              : autoEnrollType
-          }`
+          formData.settings['Auto-enroll'] = getAutoEnrollText(
+            autoEnrollType,
+            autoEnrollDayOfWeek,
+            enrollmentAutoEnroll,
+            autoEnrollPeriodType
+          )
         } else formData.settings['Auto-enroll'] = 'No'
         if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
           delete formData.settings['Sender Phone Number']

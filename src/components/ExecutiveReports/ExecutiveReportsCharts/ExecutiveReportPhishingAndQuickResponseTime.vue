@@ -120,8 +120,6 @@ export default {
         })
     },
     setChartData(widgetDatas) {
-      const params = [widgetDatas]
-      if (this.dateFormat) params.push(this.dateFormat)
       if (!widgetDatas.length) {
         this.isEmpty = true
         return
@@ -315,9 +313,6 @@ export default {
               let dataPoint = this._chart.data.datasets[0].data[dataIndex]
               titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${dataPoint.x}</th>`
               tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
@@ -336,9 +331,6 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
                 }

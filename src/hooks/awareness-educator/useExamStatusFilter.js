@@ -50,7 +50,7 @@ export default {
     axiosPayload: {
       deep: true,
       handler(val) {
-        if (!!val.showByExamStatus) {
+        if (val.showByExamStatus) {
           this.selectedExamStatusFilter = val.showByExamStatus
         }
       }

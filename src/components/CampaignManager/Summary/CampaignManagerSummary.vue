@@ -488,7 +488,7 @@ export default {
       return `${this.getUserFromPreferredLanguage} user${
         this.getUserFromPreferredLanguage > 1 ? 's' : ''
       } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
-        this.getUserFromPreferredLanguage > 1 ? 's' : ''
+        this.getUserFromCompanyLanguage > 1 ? 's' : ''
       } in the company language.`
     },
     isRenderTrainingCard() {
@@ -655,7 +655,7 @@ export default {
           name: formData.name,
           'Hyper-Personalization':
             parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
-          'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
+          'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
           'Tracking Duration': formData.duration,
@@ -673,7 +673,7 @@ export default {
         name: formData.name,
         'Hyper-Personalization':
           parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
-        'Smart Grouping': !!formData.smartGroup ? formData.smartGroup.name : 'Disabled',
+        'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),
         'Tracking Duration': formData.duration,
@@ -778,7 +778,10 @@ export default {
           }
         } else {
           this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
-          this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+          this.callForScenarioDetail({
+            name: this.selectedScenarioResourceId,
+            index: 0
+          })
         }
       },
       deep: true,

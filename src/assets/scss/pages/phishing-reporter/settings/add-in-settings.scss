@@ -122,6 +122,11 @@
           align-self: flex-start !important;
         }
       }
+      &-subheader{
+        color:rgba(56, 59, 65, 0.72);
+        font-size: 9px;
+        font-weight: 400;
+      }
 
       &-checkbox {
         z-index: 6;
@@ -168,7 +173,7 @@
         gap: 24px;
 
         > *:first-child {
-          flex-basis: 35%;
+          flex-basis: 36%;
         }
 
         .v-text-field.v-text-field--enclosed .v-text-field__details {
@@ -189,22 +194,18 @@
       }
 
       &-container {
-        max-width: 700px !important;
-
-        &-content {
-            max-width: 650px !important;
-        }
+        max-width: 720px !important;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 24px !important;
+          &-content {
+            max-width: 670px !important;
+          }
       }
     }
 
     &__languages-tabs {
         max-width: 650px !important;
-    }
-
-    &__body-container {
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 24px !important;
     }
 
     &__dialog-box-settings-header {

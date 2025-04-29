@@ -131,7 +131,7 @@ export default {
           }
           return {
             ...item,
-            statusName: !!item.statusName ? item.statusName : 'Running'
+            statusName: item.statusName || 'Running'
           }
         })
         if (this.value.length) {

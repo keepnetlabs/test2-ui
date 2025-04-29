@@ -13,9 +13,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    config &&
-      config.loading &&
-      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    config?.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
@@ -33,8 +31,7 @@ service.interceptors.response.use(
     response?.config?.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
-    //if there is snackbar obj
-    if (snackbar && snackbar.show) {
+    if (snackbar?.show) {
       store.dispatch('common/createSnackBar', {
         message: response.data.message,
         icon: snackbar.icon,

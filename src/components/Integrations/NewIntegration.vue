@@ -659,7 +659,9 @@
           </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayVirusTotalOrAnyRun }]">
             <v-list-item-content>
-              <v-list-item-title class="new-integration__label"> Tags </v-list-item-title>
+              <v-list-item-title class="new-integration__label">
+                Tags
+              </v-list-item-title>
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
                 Use enter key to use tags
               </v-list-item-subtitle>
@@ -775,7 +777,9 @@
 
           <v-list-item class="px-0">
             <v-list-item-content>
-              <label class="new-integration__label">URLs</label>
+              <label class="new-integration__label" for="input--integration-is-send-url"
+                >URLs</label
+              >
               <div class="mt-1">
                 <v-checkbox
                   v-model="formValues.isSendUrl"
@@ -1659,7 +1663,7 @@ export default {
           ? response['data'].data.apiKeys
           : [{ value: '', status: null, resourceId: null }]
         if (this.selectedIntegrationType.name === INTEGRATION_TYPES.VIRUSTOTAL) {
-          if (!!response?.data?.data?.detectionThreshold?.toString()) {
+          if (response?.data?.data?.detectionThreshold?.toString()) {
             response.data.data.detectionThreshold = response?.data?.data?.detectionThreshold?.toString()
           } else {
             response.data.data.detectionThreshold = '1'

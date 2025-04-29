@@ -236,7 +236,10 @@ export default {
   },
   computed: {
     getTargetGroupItems() {
-      const activeItems = this.formData?.userCountDetailResponse?.data?.data?.filter?.(row => row.status === 'Active') || []
+      const activeItems =
+        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
+          (row) => row.status === 'Active'
+        ) || []
       return activeItems
     },
     isRenderTrainingCard() {

@@ -12,9 +12,7 @@ const testService = axios.create({
 
 testService.interceptors.request.use(
   (config) => {
-    config &&
-      config.loading &&
-      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    config?.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${
         config.overrideToken ? config.customToken : AuthenticationService.getToken()
@@ -39,8 +37,7 @@ testService.interceptors.response.use(
     response?.config?.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
-    //if there is snackbar obj
-    if (snackbar && snackbar.show) {
+    if (snackbar?.show) {
       store.dispatch('common/createSnackBar', {
         message: response.data.message,
         icon: snackbar.icon,

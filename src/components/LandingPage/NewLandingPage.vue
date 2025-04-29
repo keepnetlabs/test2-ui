@@ -154,6 +154,7 @@
                       :extension-types="getExtensionTypes"
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
+                      :is-edit="isEdit"
                       @invisible-captcha="isInvisibleCaptchaDisabled = $event"
                       @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
@@ -270,7 +271,7 @@
                             attach="#landing-page-tab-content"
                             :z-index="10000"
                           >
-                            <template v-slot:activator="{ on: menu }">
+                            <template #activator="{ on: menu }">
                               <v-btn v-on="menu" text color="#2196f3">
                                 <v-icon class="mr-2" size="18" color="#2196f3"
                                   >mdi-plus-circle-outline</v-icon
@@ -421,14 +422,14 @@ export default {
       isAssistedByAI: false,
       aiAssistant: false,
       formValues: {
+        isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
           subDomain: '',
           domainRecordId: '',
           pathTypeId: '',
           extensionTypeId: '',
-          parameterTypeId: '',
-          isInvisibleCaptchaEnabled: false
+          parameterTypeId: ''
         },
         name: null,
         description: null,
@@ -443,7 +444,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.TemplateName, 200))
         ]
       },
       editItemsDisabled: false,
@@ -734,7 +735,7 @@ export default {
         this.editedLandingPages = JSON.parse(JSON.stringify(data.landingPages))
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
+        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId, true)
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`

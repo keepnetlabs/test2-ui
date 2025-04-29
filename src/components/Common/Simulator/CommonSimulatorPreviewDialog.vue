@@ -95,7 +95,9 @@
                 v-if="isQuishingTypeIndividualPrintOut"
                 class="d-flex justify-space-between align-center"
               >
-                <div class="text-primary-color fs-4">Example Individual Printout</div>
+                <div class="text-primary-color fs-4">
+                  Example Individual Printout
+                </div>
                 <VBtn
                   id="btn-preview-indiviual-printout"
                   class="white--text btn-util btn-download-add-in"
@@ -156,7 +158,7 @@ import AppDialog from '@/components/AppDialog.vue'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'

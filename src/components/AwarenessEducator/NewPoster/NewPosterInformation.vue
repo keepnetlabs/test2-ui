@@ -148,15 +148,12 @@ export default {
       if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length > 0) {
         return this.getPreviewOfCoverImage[0]
       }
-
       if (Array.isArray(this.getPreviewOfCoverImage) && this.getPreviewOfCoverImage.length === 0) {
         return null
       }
-
       if (typeof this.getPreviewOfCoverImage === 'string') {
         return this.getPreviewOfCoverImage
       }
-
       return URL.createObjectURL(this.getPreviewOfCoverImage)
     }
   },

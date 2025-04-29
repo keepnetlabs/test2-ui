@@ -4,8 +4,9 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 export default {
   data() {
     return {
-      isShowSandbox: true,
-      tableActionLabel: 'HIDE BOT ACTIVITY'
+      isShowSandbox: false,
+      tableActionLabel: 'SHOW BOT ACTIVITY',
+      botActivityCount: 0
     }
   },
   watch: {

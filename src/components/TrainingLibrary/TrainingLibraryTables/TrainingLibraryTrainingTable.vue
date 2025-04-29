@@ -24,6 +24,9 @@
     @server-side-size-changed="serverSideSizeChanged"
     @onEmptyBtnClicked="handleAddTraining"
     @add-training="handleAddTraining"
+    @columnFilterChanged="columnFilterChanged"
+    @columnFilterCleared="columnFilterCleared"
+    @sortChangedEvent="sortChanged"
   >
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryTrainingRowActions
@@ -37,8 +40,6 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
@@ -49,12 +50,14 @@ import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
 export default {
   name: 'TrainingLibraryTrainingTable',
   components: {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
+  mixins: [tableFilterMixin],
   data() {
     return {
       CONSTANTS: {
@@ -85,7 +88,6 @@ export default {
           message: labels.EmptyTraining,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-training-table'
-          //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: false
@@ -93,7 +95,6 @@ export default {
         downloadButton: {
           show: false
         },
-        //todo rowActions
         rowActions: ['', '', ''],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
@@ -154,6 +155,10 @@ export default {
   mounted() {
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
+    this.$refs.refTable.$refs.elTableRef.sort(
+      this.axiosPayload.orderBy,
+      this.axiosPayload.sortOrder ? 'ascending' : 'descending'
+    )
   },
   methods: {
     ...mapActions({

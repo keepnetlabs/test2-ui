@@ -422,7 +422,6 @@ export default {
       }
     },
     changeNewScenarioModalStatus(status, restart) {
-      // TODO: check template and landing page count and show warning modals accordingly
       this.modalStatus = status
       this.scenarioId = null
       this.isEdit = false

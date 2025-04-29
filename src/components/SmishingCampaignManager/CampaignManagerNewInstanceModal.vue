@@ -178,10 +178,7 @@ export default {
       if (this.selectedRow?.method === 'Multiple Method') {
         const methodsArray = JSON.parse(this.selectedRow.methodDetail)
         const mfaIndex = methodsArray.findIndex((methodObj) => methodObj.method === 'MFA')
-        if (mfaIndex !== -1) {
-          return true
-        }
-        return false
+        return mfaIndex !== -1
       }
       return false
     },

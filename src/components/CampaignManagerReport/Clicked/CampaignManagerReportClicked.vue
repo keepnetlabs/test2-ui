@@ -69,7 +69,7 @@ export default {
     return {
       resendItemCount: 0,
       labels,
-      isShowSandboxFromParent: true,
+      isShowSandboxFromParent: false,
       selectedRow: {},
       isShowDetailDialog: false
     }

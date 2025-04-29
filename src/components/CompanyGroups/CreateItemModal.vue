@@ -3,10 +3,8 @@
     v-if="isShow"
     :status="true"
     icon="mdi-account-multiple-plus"
-    :title="isEdit ? 'Edit Company Group' : 'Create New Company Group'"
-    :subtitle="
-      isEdit ? 'Edit a name to your group and save' : 'Give a name to your new group and save'
-    "
+    :title="getTitle"
+    :subtitle="getSubtitle"
     title-id="text--create-company-group-popup-title"
     subtitle-id="text--create-company-group-popup-subtitle"
     customSize="800"
@@ -20,7 +18,9 @@
       >
         <v-list-item class="px-0">
           <v-list-item-content :class="!isEdit ? 'pt-0' : 'py-0 mb-n3'">
-            <label class="create-company-group__label">Company Group Name</label>
+            <label for="input--company-group-name" class="create-company-group__label"
+              >Company Group Name</label
+            >
             <InputEntityName
               v-model.trim="groupName"
               id="input--company-group-name"
@@ -31,7 +31,9 @@
         </v-list-item>
         <v-list-item v-if="!isEdit" class="p-0">
           <v-list-item-content class="py-0" style="overflow: visible;">
-            <label class="create-company-group__label mb-0">Add Members</label>
+            <label for="input--company-group-add-members" class="create-company-group__label mb-0"
+              >Add Members</label
+            >
             <v-list-item-title
               class="v-card-sub-header bottom-margin create-company-group__label--sub"
             >
@@ -50,7 +52,10 @@
               }"
               v-model.trim="selectedCompanies"
               id="input--company-group-add-members"
-              :menu-props="{ contentClass: 'input--company-group-add-members', auto: true }"
+              :menu-props="{
+                contentClass: 'input--company-group-add-members',
+                auto: true
+              }"
               :items="companies"
               :return-object="true"
               auto-select-first
@@ -76,20 +81,20 @@
       <div class="delete-user__footer">
         <v-btn
           id="btn-cancel--company-save-company-groups-popup"
-          @click="changeStatus(false)"
           color="#f56c6c"
           class="delete-user__footer-button"
           text
+          @click="changeStatus(false)"
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
           id="btn-save--company-save-company-groups-popup"
-          @click="save"
           color="#2196f3"
           class="delete-user__footer-button"
           style="padding: 0;"
           text
           :disabled="saveDisable"
+          @click="save"
           >{{ labels.Save }}</v-btn
         >
       </div>
@@ -187,6 +192,16 @@ export default {
       ]
     }
   },
+  computed: {
+    getTitle() {
+      return this.isEdit ? 'Edit Company Group' : 'Create New Company Group'
+    },
+    getSubtitle() {
+      return this.isEdit
+        ? 'Edit a name to your group and save'
+        : 'Give a name to your new group and save'
+    }
+  },
   created() {
     this.getCompanies()
     if (this.selectedRow) {
@@ -263,7 +278,10 @@ export default {
           Object.entries(this.selectedCompanies).forEach((x) => {
             resourceIDs.push(x[1].companyResourceId)
           })
-        const payload = { name: this.groupName, companyResourceIdArray: resourceIDs }
+        const payload = {
+          name: this.groupName,
+          companyResourceIdArray: resourceIDs
+        }
 
         if (!this.isEdit || this.forCompany) {
           createCompanyGroups(payload)
@@ -282,14 +300,6 @@ export default {
             .finally(() => (this.saveDisable = false))
         }
       }
-    },
-    debounce(fn, delay) {
-      if (this.timeout) {
-        clearTimeout(this.timeout)
-      }
-      this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
     }
   }
 }

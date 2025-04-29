@@ -200,7 +200,9 @@ export default {
       this?.phishingScenarios?.forEach((scenario) => {
         languages.add(scenario.scenarioInfo.languageShortCode)
       })
-      const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
+      const { duration = '0' } = this.campaignSummary?.settings || {
+        duration: '0'
+      }
       return {
         'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
@@ -247,7 +249,7 @@ export default {
       let senderPhoneNumbers = []
       if (Array.isArray(settings?.smsProviderNumbers)) {
         senderPhoneNumbers.push(
-          ...settings?.smsProviderNumbers.map(
+          ...settings?.smsProviderNumbers?.map(
             (pn) => new PhoneNumber(pn?.toString() || '')?.g?.number?.international
           )
         )
@@ -322,12 +324,9 @@ export default {
         ? this.campaignSummary
         : defaultScenarioStatsObject
       const {
-        attachmentOpenedSms = 0,
         clickedSms = 0,
         noResponseSms = 0,
         notDelivered = 0,
-        openedSms = 0,
-        reportedSms = 0,
         submittedSms = 0,
         mfaSubmittedSms = 0
       } = scenarioStats

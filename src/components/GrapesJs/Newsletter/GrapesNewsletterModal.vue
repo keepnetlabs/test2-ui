@@ -301,7 +301,10 @@ export default {
       let styleManager = this.editor.StyleManager
       let fontProperty = styleManager.getProperty('typography', 'font-family')
       if (fontProperty?.attributes) {
-        fontProperty.attributes.options.push({ value: 'sans-serif', name: 'Sans-serif' })
+        fontProperty.attributes.options.push({
+          value: 'sans-serif',
+          name: 'Sans-serif'
+        })
       }
       styleManager.render()
     },
@@ -576,7 +579,7 @@ export default {
           let arrangedComment =
             '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->'
           arrangedComment = arrangedComment.replace(
-            /href="([^\'\"]+)?"/g,
+            /href="([^'"]+)?"/g,
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
           )
           arrangedComment = arrangedComment.replace(
@@ -770,14 +773,13 @@ export default {
             const commentElement = getCommentElement()
             if (commentElement) {
               commentElement.attributes.content = commentElement.attributes.content.replace(
-                /href="([^\'\"]+)?"/g,
+                /href="([^'"]+)?"/g,
                 `href="${updatedComponent?.changed?.attributes?.href}"`
               )
             }
           } else {
             const commentElement = getCommentElement()
             if (commentElement) {
-              //if(document.querySelector('.gjs-sm-property__width .gjs-field-integer input')?.value)return
               let width = updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
               if (width < 65) {
                 width += 12
@@ -841,7 +843,7 @@ export default {
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
       this.setPanels()
-      if (!!this.htmlData) {
+      if (this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
       setBlocksCategories(blockManager.getAll())
@@ -1034,7 +1036,9 @@ export default {
           fetch(url)
             .then((res) => res.blob())
             .then((blob) => {
-              const file = new File([blob], images.data[0].name, { type: blob.type })
+              const file = new File([blob], images.data[0].name, {
+                type: blob.type
+              })
               const formData = new FormData()
               formData.append('Files', file)
               uploadFiles(formData)

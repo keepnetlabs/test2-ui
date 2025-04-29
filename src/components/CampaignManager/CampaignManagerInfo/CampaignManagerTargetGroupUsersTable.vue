@@ -146,12 +146,18 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       totalUserCount: 0,
       activeUserCount: 0,
+      preferredLanguages: [],
+      randomLanguages: [],
+      userCountDetailResponse: null,
+      isRenderDefaultLanguageAlertBoxFormat: false,
+      activeCompanyName: '',
       activeUsersWithPhoneNumberCount: 0,
       activeUsersWithoutPhoneNumberCount: 0,
       inactiveUserCount: 0,
       usersFromUnverifiedDomainsCount: 0,
       userFromPreferredLanguage: 0,
       userFromPreferredLanguagesText: 'e.g., French, German, Spanish, and 7 more',
+      userFromCompanyLanguageText: '',
       userFromCompanyLanguage: 0,
       CONSTANTS: {
         id: 'campaign-manager-target-group-users-data-table',
@@ -172,20 +178,18 @@ export default {
     getActiveAndInactiveUserCountText() {
       let text = ''
       if (this.isVishing) {
-        if (!!this.activeUsersWithPhoneNumberCount) {
+        if (this.activeUsersWithPhoneNumberCount) {
           text += `${this.activeUsersWithPhoneNumberCount} active`
         }
-      } else {
-        if (!!this.activeUserCount) {
-          text += `${this.activeUserCount} active`
-        }
+      } else if (this.activeUserCount) {
+        text += `${this.activeUserCount} active`
       }
 
-      if (text !== '' && !!this.inactiveUserCount) {
+      if (text !== '' && this.inactiveUserCount) {
         text += ', '
       }
 
-      if (!!this.inactiveUserCount) {
+      if (this.inactiveUserCount) {
         text += `${this.inactiveUserCount} inactive`
       }
 
@@ -217,12 +221,45 @@ export default {
       )
     },
     getPreferredLanguageText() {
-      //return `Selected scenarios don’t match users’ preferred languages (${this.userFromPreferredLanguagesText}), so the company language (${this.$store.getters['login/getCurrentCompany']?.name}) will be used.`
-      return `${this.userFromPreferredLanguage} user${
-        this.userFromPreferredLanguage > 1 ? 's' : ''
-      } get the scenario in their preferred language; ${this.userFromCompanyLanguage} other${
-        this.userFromCompanyLanguage > 1 ? 's' : ''
-      } in the company language.`
+      const preferredLanguagesLength = this.preferredLanguages.length
+      let prefLanguagesText = this.preferredLanguages[0]
+      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
+      if (this.isRenderDefaultLanguageAlertBoxFormat) {
+        return `${this.getUserFromPreferredLanguage} user${
+          this.getUserFromPreferredLanguage > 1 ? 's' : ''
+        } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
+          this.getUserFromCompanyLanguage > 1 ? 's' : ''
+        } in the company language.`
+      }
+      if (preferredLanguagesLength === 0) {
+        return `User's preferred languages are not defined, so the company language (${companyLanguage}) will be used.`
+      }
+      if (preferredLanguagesLength > 1) {
+        if (preferredLanguagesLength > 3)
+          prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
+            preferredLanguagesLength - 3
+          } more`
+        else prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
+      }
+      return `Selected scenarios don’t match users’ preferred language${
+        preferredLanguagesLength > 1 ? 's' : ''
+      } (${prefLanguagesText}), so the company language (${companyLanguage}) will be used.`
+    },
+    getUserFromPreferredLanguage() {
+      if (!this.userCountDetailResponse) return
+      const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
+    },
+    getUserFromCompanyLanguage() {
+      if (!this.userCountDetailResponse) return
+      const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
+      return activeData.reduce((acc, row) => {
+        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
+        return acc + yesStatusItem?.count || 0
+      }, 0)
     },
     getUnverifiedDomainsText() {
       return `There ${this.usersFromUnverifiedDomainsCount > 1 ? 'are' : 'is'} ${
@@ -387,7 +424,7 @@ export default {
               const {
                 data: { data }
               } = response
-
+              this.userCountDetailResponse = data
               const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
               const activeUsersWithPhoneNumberCount =
                 data
@@ -417,6 +454,37 @@ export default {
                 (row) => row.status === 'Yes'
               )
               this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
+              const preferredLanguages = new Set()
+              const randomLanguages = new Set()
+              let isNoPreferredLanguage = false
+              let isYesRandomLanguage = false
+              data.map((row) => {
+                if (row.hasPreferredLanguage) {
+                  const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
+                  if (noPrefLanguages.length) {
+                    noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
+                      preferredLanguages.add(lang.status)
+                    })
+                  } else {
+                    isNoPreferredLanguage = true
+                  }
+                }
+                if (row.hasRandomLanguage) {
+                  const noRandomLanguages = row.hasRandomLanguage.filter((r) => r.status === 'Yes')
+                  if (noRandomLanguages.length) {
+                    noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
+                      randomLanguages.add(lang.status)
+                    })
+                  } else {
+                    isYesRandomLanguage = true
+                  }
+                }
+              })
+              this.preferredLanguages = Array.from(preferredLanguages)
+              this.randomLanguages = Array.from(randomLanguages)
+              this.activeCompanyName = activeData?.companyPreferredLanguage
+              this.isRenderDefaultLanguageAlertBoxFormat =
+                isNoPreferredLanguage && isYesRandomLanguage
               this.setLoading(false)
             })
             .catch(() => {

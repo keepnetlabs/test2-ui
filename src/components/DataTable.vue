@@ -263,7 +263,7 @@
                 <v-list class="pt-0">
                   <v-list-item>
                     <v-list-item-title>
-                      <label class="cluster-label">Cluster By</label>
+                      <span class="cluster-label">Cluster By</span>
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item
@@ -835,7 +835,9 @@
               <div class="empty-table" v-if="!loading">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
-                    <h2>Sorry, that search and filter criteria has no results.</h2>
+                    <h2>
+                      Sorry, that search and filter criteria has no results.
+                    </h2>
                     <p>Please try adjusting your search or filter</p>
                   </slot>
                 </div>

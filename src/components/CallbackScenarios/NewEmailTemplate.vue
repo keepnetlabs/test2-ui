@@ -39,6 +39,7 @@
                       entityName="template name"
                       initialPlaceholder="Enter a name"
                       :disabled="editItemsDisabled"
+                      :max-length="256"
                     />
                   </form-group>
                   <form-group title="Description" sub-title="Describe the template briefly">
@@ -127,7 +128,9 @@
                       >
                         <template #title>
                           <div style="display: flex; justify-content: space-between;">
-                            <label class="k-form-group__title">Email Template</label>
+                            <div class="k-form-group__title">
+                              Email Template
+                            </div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-btn

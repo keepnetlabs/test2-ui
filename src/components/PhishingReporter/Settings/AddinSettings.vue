@@ -34,7 +34,9 @@
     <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
-          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Name }}</label>
+          <label for="input--phishing-reporter-settings-add-in-name" class="add-in-settings__label"
+            >{{ labels.AddIn }} {{ labels.Name }}</label
+          >
           <InputEntityName
             v-model.trim="formValues.addInName"
             id="input--phishing-reporter-settings-add-in-name"
@@ -49,7 +51,9 @@
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
-          <label class="add-in-settings__label">{{ labels.Brand }} {{ labels.Name }}</label>
+          <label for="input--phishing-reporter-settings-brand-name" class="add-in-settings__label"
+            >{{ labels.Brand }} {{ labels.Name }}</label
+          >
           <InputEntityName
             v-model.trim="formValues.brandName"
             id="input--phishing-reporter-settings-brand-name"
@@ -64,8 +68,12 @@
 
       <v-list-item class="px-0 add-in-settings__list-item add-in-settings__file-upload">
         <v-list-item-content>
-          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Logo }}</label>
-          <div class="add-in-settings__subtitle mb-2">Recommended size is 60x60px</div>
+          <label for="input--phishing-reporter-settings-logo" class="add-in-settings__label"
+            >{{ labels.AddIn }} {{ labels.Logo }}</label
+          >
+          <div class="add-in-settings__subtitle mb-2">
+            Recommended size is 60x60px
+          </div>
 
           <k-file-upload
             id="input--phishing-reporter-settings-logo"
@@ -94,7 +102,9 @@
       <div class="add-in-settings__body-container mt-6">
         <div class="add-in-settings__dialog-box-settings-header">
           <div class="add-in-settings__dialog-box-settings-header__label-container">
-            <label class="add-in-settings__label"
+            <label
+              for="input--phishing-reporter-settings-default-language"
+              class="add-in-settings__label"
               >{{ labels.DialogBox }} {{ labels.Settings }}</label
             >
             <span class="add-in-settings__subtitle"
@@ -105,6 +115,7 @@
             v-if="showForm"
             v-model.trim="defaultLanguage"
             class="add-in-settings__default-language-select mt-3"
+            id="input--phishing-reporter-settings-default-language"
             style="max-width: 200px;"
             :items="getDefaultLanguageOptions"
             outlined
@@ -117,6 +128,7 @@
             v-else
             v-model.trim="defaultLanguage"
             class="mt-3"
+            id="input--phishing-reporter-settings-default-language"
             style="max-width: 200px;"
             :items="getDefaultLanguageOptions"
             outlined
@@ -183,7 +195,9 @@
             ></v-skeleton-loader>
             <div v-else class="add-in-settings__dialog-box-settings__inner-container">
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header"
+                <label
+                  for="input--phishing-reporter-message-box-title"
+                  class="add-in-settings__list-item-header"
                   >{{ labels.DialogBox }} {{ labels.Heading }}</label
                 >
                 <InputEntityName
@@ -197,7 +211,16 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+                <div class="mt-n5">
+                  <label
+                    for="input--phishing-reporter-message-button-yes-text"
+                    class="add-in-settings__list-item-header"
+                    >Confirm Button Label</label
+                  >
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnYesText"
                   initialPlaceholder="Enter confirm button label"
@@ -209,7 +232,16 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">No Button Label</label>
+                <div class="mt-n5">
+                  <label
+                    for="input--phishing-reporter-message-button-no-text"
+                    class="add-in-settings__list-item-header"
+                    >No Button Label</label
+                  >
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnNoText"
                   initialPlaceholder="Enter a no button label"
@@ -221,7 +253,16 @@
                 />
               </div>
               <div v-if="false" class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+                <div class="mt-n5">
+                  <label
+                    for="input--phishing-reporter-message-button-cancel-text"
+                    class="add-in-settings__list-item-header"
+                    >Cancel Button Label</label
+                  >
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnCancelText"
                   initialPlaceholder="Enter cancel button label"
@@ -233,7 +274,16 @@
                 />
               </div>
               <div class="add-in-settings__body-item mb-4">
-                <label class="add-in-settings__list-item-header">Okay Button Label</label>
+                <div class="mt-n5">
+                  <label
+                    for="input--phishing-reporter-message-button-ok-text"
+                    class="add-in-settings__list-item-header"
+                    >Okay Button Label</label
+                  >
+                  <div v-if="false" class="add-in-settings__list-item-subheader">
+                    Edits to this field will not apply in the M365 add-in.
+                  </div>
+                </div>
                 <InputEntityName
                   v-model.trim="setting.msgBoxBtnOkText"
                   initialPlaceholder="Enter okay button label"
@@ -246,6 +296,7 @@
               </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
+                  for="input--phishing-reporter-analysis-thank-you-message"
                   class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
                   >Instant Report Message</label
                 >
@@ -264,6 +315,7 @@
               </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
+                  for="input--phishing-reporter-no-internet-connection-message"
                   class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
                   >Connection error message</label
                 >
@@ -282,6 +334,7 @@
               </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
+                  for="input--phishing-reporter-email-sending-error-message"
                   class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
                   >Sending error message</label
                 >
@@ -300,6 +353,7 @@
               </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
+                  for="input--phishing-reporter-email-selection-error-message"
                   class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
                   >No email selected message</label
                 >
@@ -318,6 +372,7 @@
               </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
+                  for="input--phishing-reporter-bad-format-email-message"
                   class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
                   >Bad format email message</label
                 >
@@ -415,7 +470,9 @@
                             Emails that are deleted may be moved to the trash folder due to
                             Microsoft's policies.
                           </li>
-                          <li>The 'With Confirmation' option is not available in Ribbon View.</li>
+                          <li>
+                            The 'With Confirmation' option is not available in Ribbon View.
+                          </li>
                         </ul>
                       </div>
                     </template>
@@ -466,7 +523,9 @@
                     :disabled="isFetchingDefaultSettingsForLanguage"
                   >
                     <v-icon class="mr-2" size="18" color="#2196f3">mdi-plus</v-icon>
-                    <span class="landing-page-tab__label"> Add New Language </span>
+                    <span class="landing-page-tab__label">
+                      Add New Language
+                    </span>
                   </v-btn>
                 </template>
                 <div>
@@ -498,8 +557,10 @@
 
       <v-list-item class="mt-6 px-0 add-in-settings__list-item mt-2">
         <v-list-item-content>
-          <label class="add-in-settings__label">Warning Label</label>
-          <label class="add-in-settings__subtitle"
+          <label class="add-in-settings__label" for="input--phishing-reporter-warning-label"
+            >Warning Label</label
+          >
+          <label class="add-in-settings__subtitle" for="input--phishing-reporter-warning-label"
             >Appears on email header when suspicious email is opened</label
           >
           <InputEntityName
@@ -713,17 +774,13 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert'
           })
-          return
         })
         .finally(() => {
           this.isFetchingDefaultSettingsForLanguage = false
         })
     },
     handleTabChange(activeTab) {
-      if (activeTab === 'addNewLangauge') {
-        return false
-      }
-      return true
+      return activeTab !== 'addNewLangauge'
     },
     handleCloseLanguageDeletionDialog() {
       this.selectedLanguageToDelete = ''

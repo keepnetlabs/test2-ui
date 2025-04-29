@@ -54,12 +54,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="2"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-training-modal',
-          backButton: 'btn-back--add-or-edit-training-modal',
-          nextButton: 'btn-next--add-or-edit-training-modal',
-          saveButton: 'btn-save--add-or-edit-training-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -73,7 +68,6 @@
     </template>
   </AppModal>
 </template>
-
 <script>
 import AppModal from '@/components/AppModal'
 import { EMITS } from '@/components/AwarenessEducator/utils'
@@ -83,7 +77,6 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import NewTrainingCourseInformation from '@/components/AwarenessEducator/NewTraining/NewTrainingCourseInformation'
 import NewTrainingTrainingContent from '@/components/AwarenessEducator/NewTraining/NewTrainingTrainingContent'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-
 export default {
   name: 'NewTrainingModal',
   components: {
@@ -110,6 +103,12 @@ export default {
   data() {
     return {
       labels,
+      stepperIds: {
+        cancelButton: 'btn-cancel--add-or-edit-training-modal',
+        backButton: 'btn-back--add-or-edit-training-modal',
+        nextButton: 'btn-next--add-or-edit-training-modal',
+        saveButton: 'btn-save--add-or-edit-training-modal'
+      },
       isActionButtonDisabled: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || ''
@@ -168,52 +167,50 @@ export default {
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
         }
-        if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
-          if (this.trainingId) {
+        if (!refTrainingCourseInformation.validateForm()) return
+        if (this.isEdit) return this.step++
+        if (this.trainingId) {
+          if (refTrainingContent) {
+            this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
+              (content) => content.file && content.languageId
+            )
+          }
+          return this.step++
+        }
+        const { formData } = refTrainingCourseInformation
+        const {
+          name,
+          description,
+          category,
+          targetAudience,
+          tagNames,
+          availableForRequests
+        } = formData
+        this.isActionButtonDisabled = true
+        AwarenessEducatorService.createDraftTraining({
+          name,
+          description,
+          category,
+          targetAudience,
+          tagNames,
+          availableForRequests
+        })
+          .then((response) => {
+            this.trainingId = response?.data?.data?.resourceId || ''
+            this.step++
+          })
+          .finally(() => {
             if (refTrainingContent) {
               this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                 (content) => content.file && content.languageId
               )
+            } else {
+              this.isActionButtonDisabled = false
             }
-            return this.step++
-          }
-          const { formData } = refTrainingCourseInformation
-          const {
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests
-          } = formData
-          this.isActionButtonDisabled = true
-          AwarenessEducatorService.createDraftTraining({
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests
+            if (this.step === 1) {
+              this.isActionButtonDisabled = false
+            }
           })
-            .then((response) => {
-              this.trainingId = response?.data?.data?.resourceId || ''
-              this.step++
-            })
-            .finally(() => {
-              //checking disability of save button
-              if (refTrainingContent) {
-                this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
-                  (content) => content.file && content.languageId
-                )
-              } else {
-                this.isActionButtonDisabled = false
-              }
-              if (this.step === 1) {
-                this.isActionButtonDisabled = false
-              }
-            })
-        }
       } else {
         if (this.step === 2 && flag === -1) {
           this.isActionButtonDisabled = false

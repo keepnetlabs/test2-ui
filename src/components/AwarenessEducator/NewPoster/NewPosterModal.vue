@@ -54,12 +54,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="2"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-training-modal',
-          backButton: 'btn-back--add-or-edit-training-modal',
-          nextButton: 'btn-next--add-or-edit-training-modal',
-          saveButton: 'btn-save--add-or-edit-training-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -84,7 +79,6 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import NewPosterInformation from '@/components/AwarenessEducator/NewPoster/NewPosterInformation.vue'
 import NewPosterPosterContent from '@/components/AwarenessEducator/NewPoster/NewPosterPosterContent.vue'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-
 export default {
   name: 'NewPosterModal',
   components: {
@@ -111,6 +105,12 @@ export default {
   data() {
     return {
       labels,
+      stepperIds: {
+        cancelButton: 'btn-cancel--add-or-edit-training-modal',
+        backButton: 'btn-back--add-or-edit-training-modal',
+        nextButton: 'btn-next--add-or-edit-training-modal',
+        saveButton: 'btn-save--add-or-edit-training-modal'
+      },
       isActionButtonDisabled: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || ''
@@ -169,56 +169,59 @@ export default {
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
         }
-        if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
-          if (this.trainingId) {
+        if (!refTrainingCourseInformation.validateForm()) return
+        if (this.isEdit) return this.step++
+        if (this.trainingId) {
+          if (refTrainingContent) {
+            this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
+              (content) => content.file && content.languageId
+            )
+          }
+          return this.step++
+        }
+        const { formData } = refTrainingCourseInformation
+        const {
+          name,
+          description,
+          category,
+          targetAudience,
+          tagNames,
+          availableForRequests,
+          compliances,
+          behaviours
+        } = formData
+        this.isActionButtonDisabled = true
+        AwarenessEducatorService.createDraftTraining({
+          name,
+          description,
+          category,
+          targetAudience,
+          tagNames,
+          availableForRequests,
+          compliances: compliances.map((compliance) => ({
+            complianceId: compliance
+          })),
+          behaviours: behaviours.map((behaviour) => ({
+            behaviourId: behaviour
+          })),
+          type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+        })
+          .then((response) => {
+            this.trainingId = response?.data?.data?.resourceId || ''
+            this.step++
+          })
+          .finally(() => {
             if (refTrainingContent) {
               this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                 (content) => content.file && content.languageId
               )
+            } else {
+              this.isActionButtonDisabled = false
             }
-            return this.step++
-          }
-          const { formData } = refTrainingCourseInformation
-          const {
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests,
-            compliances,
-            behaviours
-          } = formData
-          this.isActionButtonDisabled = true
-          AwarenessEducatorService.createDraftTraining({
-            name,
-            description,
-            category,
-            targetAudience,
-            tagNames,
-            availableForRequests,
-            compliances: compliances.map((compliance) => ({ complianceId: compliance })),
-            behaviours: behaviours.map((behaviour) => ({ behaviourId: behaviour })),
-            type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+            if (this.step === 1) {
+              this.isActionButtonDisabled = false
+            }
           })
-            .then((response) => {
-              this.trainingId = response?.data?.data?.resourceId || ''
-              this.step++
-            })
-            .finally(() => {
-              if (refTrainingContent) {
-                this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
-                  (content) => content.file && content.languageId
-                )
-              } else {
-                this.isActionButtonDisabled = false
-              }
-              if (this.step === 1) {
-                this.isActionButtonDisabled = false
-              }
-            })
-        }
       } else {
         if (this.step === 2 && flag === -1) {
           this.isActionButtonDisabled = false

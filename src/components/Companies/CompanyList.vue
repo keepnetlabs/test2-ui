@@ -191,7 +191,7 @@
           {{ scope.row.companyName }}
         </span>
         <template v-else-if="scope.column.property === 'targetUserCount'">
-          <span v-if="isNumberOfUsersExceed(scope.row)" class="mr-2">
+          <span v-if="isNumberOfUsersExceed(scope.row)">
             <span>{{ scope.row['targetUserCount'] }}</span>
             <VTooltip bottom>
               <template #activator="{ on }">
@@ -230,11 +230,7 @@
                 color="#757575"
                 text
                 plain
-                :style="{
-                  order: 1,
-                  marginRight: '4px',
-                  pointerEvents: isExceedingLimitFilterDisabled ? 'none' : 'auto'
-                }"
+                :style="getExceedingLimitFilterButtonStyle"
                 @click="handleExceedingFilterClick"
               >
                 <span class="button-new__text button-new__text--secondary">{{
@@ -540,6 +536,13 @@ export default {
     }
   },
   computed: {
+    getExceedingLimitFilterButtonStyle() {
+      return {
+        order: 1,
+        marginRight: '4px',
+        pointerEvents: this.isExceedingLimitFilterDisabled ? 'none' : 'auto'
+      }
+    },
     getExceedingLimitFilterLabel() {
       if (this.isTargetUserCountExceedLimit) return 'REMOVE FILTER'
       return 'FILTER EXCEEDING LIMIT'

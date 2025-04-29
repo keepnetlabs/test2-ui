@@ -47,7 +47,6 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -57,7 +56,6 @@ import { useLoading } from '@/hooks/useLoading'
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/SmishingReport/Users/utils'
 import CampaignManagerReportHeader from '@/components/SmishingReport/CampaignManagerReportHeader'
-import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { useSmishingResend } from '@/hooks/useSmishingResend'
 
@@ -170,46 +168,8 @@ export default {
     getStatusBadgeProps(status) {
       return getStatusBadgeProps(status)
     },
-    callForData() {
-      // TODO: add user endpoint
-      //   this.setLoading(true)
-      //   AwarenessEducatorService.searchTrainingReportUsers(this.axiosPayload, this.id)
-      //     .then((response) => {
-      //       const {
-      //         data: {
-      //           data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-      //         }
-      //       } = response
-      //       this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-      //       this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-      //       this.serverSideProps.pageNumber = pageNumber
-      //       this.tableData = results || []
-      //     })
-      //     .finally(this.setLoading)
-    },
-    exportTrainingReportUsersTable(downloadTypes) {
-      // TODO: add export endpoint
-      //   downloadTypes.exportTypes.forEach((item) => {
-      //     let payload = {
-      //       pageNumber: downloadTypes.pageNumber,
-      //       pageSize: downloadTypes.pageSize,
-      //       orderBy: this.axiosPayload.orderBy,
-      //       ascending: this.axiosPayload.ascending,
-      //       reportAllPages: downloadTypes.reportAllPages,
-      //       exportType: item === 'XLS' ? 'Excel' : item,
-      //       filter: this.axiosPayload.filter
-      //     }
-      //     AwarenessEducatorService.exportTrainingReportUsers(payload, this.id).then((response) => {
-      //       const { data } = response
-      //       const link = document.createElement('a')
-      //       link.href = window.URL.createObjectURL(data)
-      //       link.download = `Training-Users.${
-      //         item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-      //       }`
-      //       link.click()
-      //     })
-      //   })
-    }
+    callForData() {},
+    exportTrainingReportUsersTable() {}
   }
 }
 </script>

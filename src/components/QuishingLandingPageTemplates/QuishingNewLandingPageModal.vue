@@ -150,6 +150,7 @@
                       :extension-types="getExtensionTypes"
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
+                      :is-edit="isEdit"
                       @invisible-captcha="isInvisibleCaptchaDisabled = $event"
                       @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
@@ -386,14 +387,14 @@ export default {
       availableForRequests: [],
       initialFormValues: {},
       formValues: {
+        isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
           subDomain: '',
           domainRecordId: '',
           pathTypeId: '',
           extensionTypeId: '',
-          parameterTypeId: '',
-          isInvisibleCaptchaEnabled: false
+          parameterTypeId: ''
         },
         name: null,
         description: null,
@@ -408,7 +409,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.TemplateName, 200))
         ]
       },
       editItemsDisabled: false
@@ -450,7 +451,7 @@ export default {
         delete data.subDomain
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId)
+        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId, true)
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`

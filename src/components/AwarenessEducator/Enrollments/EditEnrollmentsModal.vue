@@ -446,7 +446,7 @@ export default {
     },
     isDateValid() {
       return (
-        !(this.selectedRow?.status === 'Scheduled') ||
+        this.selectedRow?.status !== 'Scheduled' ||
         (this.selectedRow?.status === 'Scheduled' &&
           !!this.formData?.enrollmentScheduler?.scheduledDate)
       )
@@ -492,10 +492,14 @@ export default {
             response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
           if (this.selectedRow?.status === 'Scheduled') {
-            this.formData.enrollmentScheduler = { ...enrollmentScheduler } || {
-              scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
-              scheduledTimeZoneId: '',
-              useOwnTimeZone: false
+            if (enrollmentScheduler && typeof enrollmentScheduler === 'object') {
+              this.formData.enrollmentScheduler = { ...enrollmentScheduler }
+            } else {
+              this.formData.enrollmentScheduler = {
+                scheduledDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
+                scheduledTimeZoneId: '',
+                useOwnTimeZone: false
+              }
             }
           }
           if (this.isLearningPath && !!response.data.data.distributionDays) {
@@ -507,13 +511,10 @@ export default {
             (!!enrollmentAutoEnroll && !enrollmentAutoEnroll?.stopTime)
           )
             this.isAutoEnroll = true
-          this.formData.enrollmentReminder = enrollmentReminder
-            ? enrollmentReminder
-            : this.formData.enrollmentReminder
+          this.formData.enrollmentReminder = enrollmentReminder ?? this.formData.enrollmentReminder
           delete response?.data?.data?.enrollmentReminder
-          this.formData.enrollmentAutoEnroll = enrollmentAutoEnroll
-            ? enrollmentAutoEnroll
-            : this.formData.enrollmentAutoEnroll
+          this.formData.enrollmentAutoEnroll =
+            enrollmentAutoEnroll ?? this.formData.enrollmentAutoEnroll
           delete response?.data?.data?.enrollmentAutoEnroll
           this.formData = { ...this.formData, ...response?.data?.data }
           this.isReminderStopped = !!enrollmentReminder?.stopTime
@@ -562,45 +563,33 @@ export default {
       this.$emit(EMITS.ON_CLOSE, this.isAutoEnrollStopped || this.isReminderStopped)
     },
     handleEnrollmentTypeChange(val) {
-      if (val === 3) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else if (val === 4) {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      } else {
-        this.enrollmentAutoEnrollTypeItems[2].text = 'next'
-        this.enrollmentAutoEnrollTypeItems[3].text = 'in'
-      }
+      this.$set(this.enrollmentAutoEnrollTypeItems[2], 'text', 'next')
+      this.$set(this.enrollmentAutoEnrollTypeItems[3], 'text', 'in')
     },
     handleSubmit() {
-      if (!this.isDateValid) return
-      if (this.$refs.refForm.validate()) {
-        this.loading = true
-        const payload = JSON.parse(JSON.stringify(this.formData))
-        if (this.selectedRow.status !== 'Scheduled') {
-          delete payload['scheduleDate']
-          delete payload['scheduledTimeZoneId']
-          if (!!payload?.enrollmentScheduler) {
-            payload.enrollmentScheduler = null
-          }
-        }
-        if (!this.sendReminderEvery) payload.enrollmentReminder = null
-        if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
-        if (!this.isLearningPath) delete payload.distributionDays
-        if (this.isDistributionEnabled && !!payload?.distributionDays) {
-          payload.distributionDays = parseInt(payload.distributionDays)
-        } else {
-          payload.distributionDays = null
-        }
-        AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
-          .then(() => {
-            this.$emit(EMITS.ON_CLOSE, true)
-          })
-          .finally(() => {
-            this.loading = false
-          })
+      if (!this.isDateValid || !this?.$refs?.refForm?.validate()) return
+      this.loading = true
+      const payload = JSON.parse(JSON.stringify(this.formData))
+      if (this.selectedRow.status !== 'Scheduled') {
+        delete payload['scheduleDate']
+        delete payload['scheduledTimeZoneId']
+        if (payload?.enrollmentScheduler) payload.enrollmentScheduler = null
       }
+      if (!this.sendReminderEvery) payload.enrollmentReminder = null
+      if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
+      if (!this.isLearningPath) delete payload.distributionDays
+      if (this.isDistributionEnabled && !!payload?.distributionDays) {
+        payload.distributionDays = parseInt(payload.distributionDays)
+      } else {
+        payload.distributionDays = null
+      }
+      AwarenessEducatorService.updateEnrollment(payload, this.selectedRow.enrollmentId)
+        .then(() => {
+          this.$emit(EMITS.ON_CLOSE, true)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }

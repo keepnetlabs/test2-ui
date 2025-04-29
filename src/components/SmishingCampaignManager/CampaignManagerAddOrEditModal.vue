@@ -144,12 +144,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="5"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperButtonIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -170,7 +165,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { getTimeZoneForMoment, isDifferent } from '@/utils/functions'
+import { getTimeZoneForMoment, isDifferent, getErrorMessage } from '@/utils/functions'
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -182,7 +177,6 @@ import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAu
 import { SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import CampaignManagerSMSSettings from '@/components/SmishingCampaignManager/CampaignManagerSMSSettings'
 import { getSendCallOnDays } from '@/components/VishingCampaignManager/utils'
-import { getErrorMessage } from '@/utils/functions'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 
 const EMITS = {
@@ -224,6 +218,12 @@ export default {
   emits: EMITS,
   data() {
     return {
+      stepperButtonIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       createErrorMessage: '',
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
@@ -391,7 +391,6 @@ export default {
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
         sendRandomlyUsersCalculateTypeId,
-        smsProvider,
         scheduleTypeId,
         scheduledDate,
         scheduledDateTimeZoneId,

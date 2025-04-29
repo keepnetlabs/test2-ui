@@ -240,6 +240,9 @@ export default {
                     ? [splittedLabel[0], d]
                     : [splittedLabel[0] + ' ' + splittedLabel[1], d]
                 const comparatorVal = label === 'Completed' ? 2 : 4
+                let customMarginLeft = 0
+                if (label === 'Completed') customMarginLeft = 4
+                else if (label === 'Incomplete') customMarginLeft = 2
                 return {
                   text: Array.from(
                     label + label + label.substring(0, label.length / comparatorVal) + d + '   '
@@ -252,7 +255,7 @@ export default {
                   lineWidth: 0,
                   datasetIndex: null,
                   textParts,
-                  customMarginLeft: label === 'Completed' ? 4 : label === 'Incomplete' ? 2 : 0
+                  customMarginLeft
                 }
               })
             }
@@ -306,18 +309,12 @@ export default {
               const xValue = tooltipModel.dataPoints[0].xLabel
               titleRow.innerHTML = `<th style="text-align: left; display: block; padding-bottom: 8px; font-weight: bold;">${xValue}</th>`
               tableRoot.appendChild(titleRow)
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
-                let backgroundColor =
-                  tooltipModel.dataPoints[0].label === 'Completed'
-                    ? '#43A047'
-                    : tooltipModel.dataPoints[0].label === 'Incomplete'
-                    ? '#B83A3A'
-                    : '#2196F3'
+                let backgroundColor = '#2196F3'
+                if (datasetLabel === 'Completed') backgroundColor = '#43A047'
+                else if (datasetLabel === 'Incomplete') backgroundColor = '#B83A3A'
                 let tr = document.createElement('tr')
                 tr.innerHTML = `
                 <td>
@@ -331,13 +328,9 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
                 }
-
                 tr.style.display = 'flex'
                 tr.style.justifyContent = 'space-between'
                 tr.style.paddingBottom = '6px'

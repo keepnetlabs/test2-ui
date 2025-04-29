@@ -9,13 +9,11 @@ export function getValue(value) {
 }
 
 export function maxLength(value, length, message) {
-  //length patlamasın diye.
   value = getValue(value)
   return value.length <= length || message
 }
 
 export function minLength(value, length, message) {
-  //length patlamasın diye.
   value = getValue(value)
   return value.length >= length || message
 }
@@ -153,10 +151,8 @@ export function email(value, message = 'Invalid email address') {
 
 export function controlEmailLength(value, message = '') {
   value = getValue(value)
-  const [leftSide = '', rightSide = ''] = value?.split('@')
-  if (leftSide.length > 64 || rightSide.length > 256) {
-    return message ? message : ''
-  }
+  const [leftSide = '', rightSide = ''] = value?.split('@') || []
+  if (leftSide.length > 64 || rightSide.length > 256) return message || ''
   return true
 }
 export function extension(value, message) {
@@ -242,12 +238,12 @@ export function isFileExtensionSpecialCharacter(value, message) {
 
 export function isDomainUrl(value, message = 'Invalid URL') {
   return (
-    /^((urn):|(|(file|gopher|news|nntp|telnet|http|ftp|https|ftps|sftp):\/\/)|(www\.))+(([a-z0-9\._-]+\.(com|cloud|app|cl|edu|ro|gov|aero|asia|arpa|cat|coop|int|io|jobs|mobi|museum|mx|me|travel|tv|pro|mil|tw|net|org|biz|info|name|museum|ru|ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cl|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|ro|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|top|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ru|ve|vg|vi|vn|vu|wf|ws|us|ca|uk|co|uk|tr|fr|gb|life|isbank)(\.(ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cl|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|ro|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|top|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ru|ve|vg|vi|vn|vu|wf|ws|life|isbank)|))|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}))(\/[a-zıIiİuUüÜA-ZıIiİuUüÜ0-9\&\;\?\=%_\.\/\-~-]*)?$/i.test(
+    /^((urn):|(|(file|gopher|news|nntp|telnet|http|ftp|https|ftps|sftp):\/\/)|(www\.))+(([a-z0-9\._-]+\.(com|tech|cloud|app|cl|edu|ro|gov|aero|asia|arpa|cat|coop|int|io|jobs|mobi|museum|mx|me|travel|tv|pro|mil|tw|net|org|biz|info|name|museum|ru|ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cl|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|ro|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|top|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ru|ve|vg|vi|vn|vu|wf|ws|us|ca|uk|co|uk|tr|fr|gb|life|isbank)(\.(ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cl|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|ro|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|top|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ru|ve|vg|vi|vn|vu|wf|ws|life|isbank)|))|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}))(\/[a-zıIiİuUüÜA-ZıIiİuUüÜ0-9\&\;\?\=%_\.\/\-~-]*)?$/i.test(
       value
     ) || message
   )
 }
-export function numberRangeRule(value, min = 0, max = 999, message) {
+export function numberRangeRule(value, min = 0, max = 999, message = '') {
   if (value == '' && value == null) return false
   if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
   return message || `Enter a number between ${min} and ${max}`
@@ -274,7 +270,7 @@ export function subdomainBlacklist(value) {
     value.toLowerCase().includes(domain.toLowerCase())
   )
   if (subdomainIndex !== -1) {
-    return `“${blacklist[subdomainIndex]}” is a banned word for a subdomain`
+    return `"${blacklist[subdomainIndex]}" is a banned word for a subdomain`
   }
   return true
 }
@@ -303,8 +299,31 @@ export function isGsm7(
 
 export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
   return (
-    /^(ldaps?:\/\/)?([0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[0-9]{1,5})?$/i.test(
+    /^(ldaps?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[a-zA-Z][a-zA-Z0-9._-]+)(:\d{1,5})?$/i.test(
       value
     ) || message
   )
+}
+export function isEmailChip(v) {
+  if (v.length > 0) {
+    let booReturn = true
+    for (let i = 0; i < v.length; i++) {
+      const chip = document.getElementsByClassName('v-chip--select')[i]
+      if (!chip) continue
+      if (!email(v[i], '')) {
+        booReturn = false
+        chip.style.borderColor = '#ff5252'
+        chip.style.color = '#ff5252'
+        if (v.length === 1) {
+          return v[i] + ' email address is not valid'
+        }
+      } else {
+        chip.style.borderColor = ''
+        chip.style.color = 'rgba(0, 0, 0, 0.87)'
+      }
+    }
+    return booReturn || 'One of the email addresses is not valid'
+  } else {
+    return true
+  }
 }

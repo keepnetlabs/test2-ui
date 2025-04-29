@@ -47,7 +47,7 @@
       <FormGroup
         v-if="isPhishing"
         title="Smart Grouping"
-        sub-title="Users who failed the campaign are automatically added to the selected target group."
+        sub-title="Users who clicked the campaign are automatically added to the selected target group."
       >
         <KSelect
           v-infinite-scroll="{
@@ -91,28 +91,7 @@
         v-if="showReplyTracking"
         v-model="formData.emailReplySettings"
       />
-      <FormGroup
-        v-if="showDuration"
-        has-hint
-        :title="labels.TrackingDuration"
-        :sub-title="labels.TrackingDurationSub"
-      >
-        <v-text-field
-          v-mask="'###'"
-          :value="formData.duration"
-          ref="refDurationTextField"
-          id="input--campaign-manager-days"
-          class="input-duration"
-          outlined
-          persistent-hint
-          hint="*Required"
-          :rules="rules.days"
-          @input="handleDurationChange"
-        ></v-text-field>
-        <span style="position: absolute; top: 87px; left: 56px; font-size: 13px; color: #000;"
-          >Days</span
-        >
-      </FormGroup>
+      <InputDuration v-if="showDuration" v-model="formData.duration" :is-callback="isCallback" />
       <FormGroup v-if="showMarkAsTest" :title="labels.MarkAsTest">
         <div>
           <v-checkbox
@@ -127,7 +106,6 @@
     </v-form>
   </Fragment>
 </template>
-
 <script>
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -145,6 +123,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import CampaignManagerReplyTracking from '@/components/CampaignManager/CampaignManagerReplyTracking'
+import InputDuration from '@/components/Common/Inputs/InputDuration'
 export default {
   name: 'CampaignManagerCampaignInfo',
   components: {
@@ -153,7 +132,8 @@ export default {
     InputEntityName,
     CreateNewUserGroupModal,
     KSelect,
-    Fragment
+    Fragment,
+    InputDuration
   },
   props: {
     defaultValues: {
@@ -215,7 +195,7 @@ export default {
       labels,
       formData: {
         name: '',
-        duration: 365,
+        duration: 30,
         excludeFromReports: false,
         emailReplySettings: {
           isEnabled: false,
@@ -234,10 +214,6 @@ export default {
         select: [
           (v) => !!v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
-        ],
-        days: [
-          (v) => validations.required(v, labels.Required),
-          (v) => validations.startsWith(v, 'Cannot start with 0', '0')
         ]
       }
     }
@@ -255,7 +231,7 @@ export default {
           if (smartGroupIndex !== -1) {
             this.$emit('smartGroupSelected', this.targetGroupList[smartGroupIndex])
           }
-        } else [this.$emit('smartGroupSelected', null)]
+        } else this.$emit('smartGroupSelected', null)
       }
     },
     initialClickedUserGroupResourceId: {
@@ -265,16 +241,6 @@ export default {
         if (val) {
           this.targetGroupPayload.selectTargetUserResourceIds = val
           this.callForTargetGroups()
-        }
-      }
-    },
-    isCallback: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.rules.days.push((v) =>
-            validations.numberRangeRule(v, 1, 30, 'Duration can be minimum 1, maximum 30 days')
-          )
         }
       }
     },
@@ -331,7 +297,7 @@ export default {
             name: group.name,
             resourceId: response.data.data.resourceId
           })
-          this.clickedUserGroupResourceId = response.data.data.resourceId
+          this.$emit('update:clickedUserGroupResourceId', response.data.data.resourceId)
         })
         .finally(() => (this.isCreateTargetGroupButtonDisabled = false))
     },
@@ -373,14 +339,6 @@ export default {
       this.formData.name = value
       const initialFormValues = JSON.parse(JSON.stringify(this.formData))
       this.$emit('initialFormValues', initialFormValues)
-    },
-    handleDurationChange(val) {
-      if (!val || /^\d{1,3}$/.test(val)) {
-        this.formData.duration = val
-      } else {
-        this.$refs.refDurationTextField.initialValue = this.formData.duration
-        this.$refs.refDurationTextField.lazyValue = this.formData.duration
-      }
     },
     validateForm() {
       let isValid = this.$refs.refForm.validate()

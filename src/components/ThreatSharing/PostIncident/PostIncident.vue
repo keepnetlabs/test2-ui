@@ -359,7 +359,8 @@
                           style="z-index: 1;"
                           @click="editHtmlTemplate"
                         >
-                          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
+                          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon>
+                          Edit</v-btn
                         >
                       </div>
 
@@ -442,7 +443,9 @@
                               :indeterminate="checkHeaderSelected && !this.allHeader"
                               @change="headerValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">All Header</label>
+                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-header"
+                              >All Header</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper mr-10">
@@ -465,7 +468,11 @@
                               on-icon="mdi-eye-off"
                               @change="subjectValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">Subject</label>
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-subject-hidden"
+                              >Subject</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div v-if="!uploadRespond.isSubjectFlagged" class="img-wrapper">
@@ -534,12 +541,14 @@
                             <v-checkbox
                               v-model="uploadRespond.isFromHidden"
                               id="input--threat-sharing-incident-is-from-hidden"
-                              @change="fromValChange"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="fromValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">From</label>
+                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-from-hidden"
+                              >From</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div v-if="!uploadRespond.isFromFlagged" class="img-wrapper">
@@ -605,12 +614,14 @@
                             <v-checkbox
                               v-model="uploadRespond.isToHidden"
                               id="input--threat-sharing-incident-is-to-hidden"
-                              @change="toValChange"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="toValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">To</label>
+                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-to-hidden"
+                              >To</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper toFlagged">
@@ -675,12 +686,17 @@
                             <v-checkbox
                               v-model="uploadRespond.isCcHidden"
                               id="input--threat-sharing-incident-is-cc-hidden"
-                              @change="ccValChange"
+                              for="input--threat-sharing-incident-is-cc-hidden"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
+                              @change="ccValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">CC</label>
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-cc-hidden"
+                              >CC</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper ccFlagged">
@@ -750,7 +766,11 @@
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
                             ></v-checkbox>
-                            <label v-if="filterOpened">BCC</label>
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-bcc-hidden"
+                              >BCC</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper bccFlagged">
@@ -831,7 +851,11 @@
                               hide-details
                               @change="allUrlsValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">All Links</label>
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-all-links"
+                              >All Links</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper mr-10">
@@ -851,7 +875,7 @@
                           <div class="d-flex">
                             <v-checkbox
                               v-model="url.isHidden"
-                              id="input--threat-sharing-incident-is-url-hidden"
+                              :id="`input--threat-sharing-incident-is-url-hidden-${ind}`"
                               hide-details
                               off-icon="mdi-eye"
                               on-icon="mdi-eye-off"
@@ -863,6 +887,7 @@
                                   v-if="filterOpened"
                                   v-on="on"
                                   class="investigation-filters__area--filter--label"
+                                  :for="`input--threat-sharing-incident-is-url-hidden-${ind}`"
                                   >{{ url.name || url.url }}
                                   <span class="url-badge">{{ url.orderNumber }}</span></label
                                 >
@@ -889,7 +914,11 @@
                                   icon
                                   :class="{ 'disabled-chevron': url.isHidden }"
                                 >
-                                  <v-icon :class="{ 'chevron-down': attcChevron[ind] }" v-on="on"
+                                  <v-icon
+                                    :class="{
+                                      'chevron-down': attcChevron[ind]
+                                    }"
+                                    v-on="on"
                                     >mdi-chevron-down
                                   </v-icon>
                                 </v-btn>
@@ -948,7 +977,11 @@
                               hide-details
                               @change="allAttachmentsValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened">All Attachments</label>
+                            <label
+                              v-if="filterOpened"
+                              :for="`input--threat-sharing-incident-is-all-attachments`"
+                              >All Attachments</label
+                            >
                           </div>
                           <div class="d-flex">
                             <div class="img-wrapper mr-10">
@@ -960,8 +993,8 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-space-between investigation-filters__area--filter"
                           v-for="(attachment, ind) of uploadRespond.attachments"
+                          class="d-flex justify-space-between investigation-filters__area--filter"
                           :key="ind + attachment.name"
                         >
                           <div class="d-flex">
@@ -978,6 +1011,7 @@
                                 <label
                                   v-on="on"
                                   v-if="filterOpened"
+                                  :for="`input--attachment-is-hidden-${ind}`"
                                   class="investigation-filters__area--filter--label"
                                   >{{ attachment.name }}</label
                                 >
@@ -1005,7 +1039,9 @@
                                   :id="`threat-sharing-post-incident-attachments-${ind}`"
                                   class="chevron-btn-menu"
                                   icon
-                                  :class="{ 'disabled-chevron': attachment.isHidden }"
+                                  :class="{
+                                    'disabled-chevron': attachment.isHidden
+                                  }"
                                 >
                                   <v-icon :class="{ 'chevron-down': urls[ind] }" v-on="on"
                                     >mdi-chevron-down
@@ -1489,7 +1525,7 @@ export default {
         let els = document
           .getElementById('last-preview-body-shadow-root-for-preview')
           ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
-        if (els && els.length) {
+        if (els?.length) {
           for (let i = 0, l = els.length; i < l; i++) {
             let el = els[i]
             el.style.pointerEvents = 'auto'
@@ -1550,7 +1586,7 @@ export default {
       let els = document
         .getElementById(rootId || 'last-preview-body-shadow-root')
         ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
-      if (els && els.length) {
+      if (els?.length) {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
           el.style.pointerEvents = 'auto'

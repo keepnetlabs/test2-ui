@@ -19,28 +19,10 @@
         :status="isShowMissingLanguageSupportDialog"
         :target-group-resource-ids="targetGroupResourceIds"
         :selected-target-groups="selectedTargetGroups"
+        :user-count-detail-response="userCountDetailResponse"
         @on-close="toggleShowMissingLanguageSupportDialog"
         @on-confirm="onConfirmLanguageSupportDialog"
       />
-      <!--
-    <VNavigationDrawer
-      class="k-navigation-drawer"
-      temporary
-      v-model="isOpenPhishingDrawer"
-      fixed
-      right
-      width="calc(100% - 72px)"
-      height="100%"
-    >
-      <CommonSimulatorNewScenario
-        v-if="isOpenPhishingDrawer"
-        ref="newScenarioModal"
-        :status="isOpenPhishingDrawer"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        @changeNewScenarioModalStatus="isOpenPhishingDrawer = false"
-      />
-    </VNavigationDrawer>
-       <!-->
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -202,12 +184,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="5"
-        :ids="{
-          cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
-          backButton: 'btn-back--add-or-edit-company-manager-modal',
-          nextButton: 'btn-next--add-or-edit-company-manager-modal',
-          saveButton: 'btn-save--add-or-edit-company-manager-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -296,6 +273,12 @@ export default {
   emits: EMITS,
   data() {
     return {
+      stepperIds: {
+        cancelButton: 'btn-cancel--add-or-edit-company-manager-modal',
+        backButton: 'btn-back--add-or-edit-company-manager-modal',
+        nextButton: 'btn-next--add-or-edit-company-manager-modal',
+        saveButton: 'btn-save--add-or-edit-company-manager-modal'
+      },
       isShowMissingLanguageSupportDialog: false,
       isOpenPhishingDrawer: false,
       smartGroup: null,
@@ -596,9 +579,6 @@ export default {
   mounted() {
     this.initialFormValues = this.getFormValues()
     this.callForScenarioDetails()
-    setTimeout(() => {
-      this.isOpenPhishingDrawer = true
-    }, 2000)
   },
   methods: {
     toggleShowMissingLanguageSupportDialog() {
@@ -763,7 +743,7 @@ export default {
             }
             this.userCountDetailResponse = await getTargetGroupCountDetailExt(payload)
             if (parseInt(this.sendUserPreferredLanguage) === 1) {
-              const hasRandomLanguage = this.userCountDetailResponse?.data?.data.some((data) => {
+              const hasRandomLanguage = this.userCountDetailResponse?.data?.data?.some((data) => {
                 const randomLanguage = data?.hasRandomLanguage
                 return !!randomLanguage?.find((r) => r.status === 'Yes')?.count
               })

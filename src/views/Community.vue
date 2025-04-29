@@ -105,27 +105,24 @@ export default {
   watch: {
     $route(to, from) {
       this.$nextTick(() => {
-        if (to.name === from.name) {
-          if (!this.getThreatSharingEditCommunityPermission) {
-            this.$router.push('/threat-sharing')
-          }
-          if (!this.getThreatSharingGetIncidentsPermission) {
-            this.tab = 1
-            this.getMembers()
-          }
-          if (to.query.postId) {
-            this.$refs.refIncidents.incidentList = []
-            this.$refs.refIncidents.getSharedPost()
-          } else {
-            if (this.routerCount < 2) {
-              this.tab = 0
-              this.getIncidents()
-              this.routerCount = this.routerCount + 1
-              setTimeout(() => {
-                this.routerCount = 0
-              }, 250)
-            }
-          }
+        if (to.name !== from.name) return
+        if (!this.getThreatSharingEditCommunityPermission) {
+          this.$router.push('/threat-sharing')
+        }
+        if (!this.getThreatSharingGetIncidentsPermission) {
+          this.tab = 1
+          this.getMembers()
+        }
+        if (to.query.postId) {
+          this.$refs.refIncidents.incidentList = []
+          this.$refs.refIncidents.getSharedPost()
+        } else if (this.routerCount < 2) {
+          this.tab = 0
+          this.getIncidents()
+          this.routerCount = this.routerCount + 1
+          setTimeout(() => {
+            this.routerCount = 0
+          }, 250)
         }
       })
     }

@@ -153,7 +153,12 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 export default {
   name: 'DirectEmailCreationTable',
-  components: { DefaultButtonRowAction, DataTable, DefaultMenuRowAction, RowActionsMenu },
+  components: {
+    DefaultButtonRowAction,
+    DataTable,
+    DefaultMenuRowAction,
+    RowActionsMenu
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
     return {
@@ -181,7 +186,7 @@ export default {
         },
         columns: [COLUMNS.NAME, COLUMNS.PLATFORM, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
         iEmpty: {
-          message: `You do not have any direct email creation configuration, yet`,
+          message: `You do not have any Direct Email Creation (DEC) configuration, yet`,
           subMes: `Click the New button to start creating a new configuration`,
           icon: 'mdi-plus',
           id: 'btn-empty--direct-email-creation-list',

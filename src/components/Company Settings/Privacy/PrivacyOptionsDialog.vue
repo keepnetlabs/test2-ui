@@ -39,7 +39,6 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import LDAPService from '@/api/ldap'
 export default {
   name: 'PrivacyOptionsDialog',
   components: { AppDialogFooter, AppDialog },

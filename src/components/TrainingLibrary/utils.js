@@ -13,54 +13,54 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     label: labels.ScreenSaverName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   INFOGRAPHIC_NAME: {
     property: PROPERTY_STORE.INFOGRAPHIC_NAME,
     align: 'left',
     label: labels.InfoGraphicName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   POSTER_NAME: {
     property: PROPERTY_STORE.POSTER_NAME,
     align: 'left',
     label: labels.PosterName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   TRAINING_NAME: {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
     label: labels.TrainingName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
-    width: 200
+    width: 200,
+    filterableType: 'text'
   },
   MATERIAL_NAME: {
     property: PROPERTY_STORE.MATERIAL_NAME,
     align: 'left',
     label: labels.MaterialName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 200
   },
   LEARNING_PATH_NAME: {
@@ -68,10 +68,10 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     label: labels.LearningPathName,
     fixed: 'left',
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 200
   },
   TYPE: {
@@ -79,21 +79,23 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Type,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
-    width: 160
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
   },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,
     align: 'left',
     editable: false,
     label: labels.Category,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 200
   },
   TARGET_AUDIENCE: {
@@ -101,10 +103,11 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Role,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 200
   },
   LANGUAGES: {
@@ -112,11 +115,12 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Languages,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     width: 160,
     type: 'smallBadge',
+    filterableType: 'select',
+    filterableItems: [],
     hasTooltip: true
   },
   CREATED_BY: {
@@ -124,10 +128,10 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.CreatedBy,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'text',
     width: 160
   },
   COMPLIANCE: {
@@ -135,10 +139,11 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Compliance,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'smallBadge',
+    filterableType: 'select',
+    filterableItems: [],
     width: 160
   },
   TAGS: {
@@ -146,10 +151,10 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Tags,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'smallBadge',
+    filterableType: 'text',
     width: 160
   },
   VENDOR: {
@@ -157,10 +162,11 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.Vendor,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     show: true,
     type: 'text',
+    filterableType: 'select',
+    filterableItems: [],
     width: 160
   },
   DATE_CREATED: {
@@ -168,10 +174,10 @@ export const TRAINING_LIBRARY_COLUMNS = {
     align: 'left',
     editable: false,
     label: labels.DateCreated,
-    sortable: false,
-    hideSort: true,
+    sortable: true,
     overrideWidth: true,
     show: false,
+    filterableType: 'date',
     type: 'text',
     width: 160
   }
@@ -358,4 +364,21 @@ export function isInavailable(
     return false
   }
   return true
+}
+
+export function getAutoEnrollText(
+  autoEnrollType,
+  autoEnrollDayOfWeek,
+  enrollmentAutoEnroll,
+  autoEnrollPeriodType
+) {
+  let autoEnrollText = ''
+  if (autoEnrollType === 'next') {
+    autoEnrollText = `on the next ${autoEnrollDayOfWeek}`
+  } else if (autoEnrollType === 'in') {
+    autoEnrollText = `in ${enrollmentAutoEnroll.periodCount} ${autoEnrollPeriodType}`
+  } else {
+    autoEnrollText = autoEnrollType
+  }
+  return `Automatically enroll new users ${autoEnrollText}`
 }

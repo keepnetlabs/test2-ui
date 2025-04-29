@@ -89,15 +89,15 @@
                 value="3"
               ></v-radio>
             </v-radio-group>
-            <label v-if="privacyStatusId === '1'" class="edit-privacy-bottom-label"
-              >Anyone can find the community and see posted threats</label
-            >
-            <label v-else-if="privacyStatusId === '2'" class="edit-privacy-bottom-label"
-              >Only members can see posted threats and community is listed</label
-            >
-            <label v-else class="edit-privacy-bottom-label"
-              >Only members can see posted threats and the group in communities list</label
-            >
+            <div v-if="privacyStatusId === '1'" class="edit-privacy-bottom-label pt-0">
+              Anyone can find the community and see posted threats
+            </div>
+            <div v-else-if="privacyStatusId === '2'" class="edit-privacy-bottom-label pt-0">
+              Only members can see posted threats and community is listed
+            </div>
+            <div v-else class="edit-privacy-bottom-label pt-0">
+              Only members can see posted threats and the group in communities list
+            </div>
           </div>
         </FormGroup>
         <v-list-item class="p-0">
@@ -241,7 +241,7 @@ export default {
           industryResourceId: this.selectedCategory.resourceId,
           isTermsAndConditionsAccepted: this.acceptCheckbox
         }
-        if (!!this.resourceId) {
+        if (this.resourceId) {
           updateCommunity(this.resourceId, payload)
             .then(() => {
               this.isSubmitted = true
@@ -290,7 +290,7 @@ export default {
     getBusinessCategories() {
       listBusinessCategories().then((response) => {
         this.categories = response.data.data
-        if (!!this.resourceId) {
+        if (this.resourceId) {
           this.name = this.communityItem.communityName
           this.description = this.communityItem.communityDescription
           this.privacyStatusId = this.communityItem.privacyStatusId.toString()

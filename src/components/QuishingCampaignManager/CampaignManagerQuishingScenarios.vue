@@ -149,7 +149,9 @@
                   </div>
                   <div class="template-list--item d-flex justify-space-between align-center mt-2">
                     <ShowMoreTags :default-badges="item.tags" />
-                    <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
+                    <div v-if="!item.tags || !item.tags.length">
+                      {{ '\xa0' }}
+                    </div>
                     <div class="d-flex align-center">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
                       <span class="template-list--item__language">{{ item.languageTypeName }}</span>
@@ -248,7 +250,9 @@
                           outlined
                           @click="handleClickPreview"
                         >
-                          <v-icon color="#2196f3" medium> mdi-fullscreen </v-icon>
+                          <v-icon color="#2196f3" medium>
+                            mdi-fullscreen
+                          </v-icon>
                         </v-btn>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
@@ -333,7 +337,7 @@ import CampaignManagerPhishingScenariosPreviewDialog from '@/components/Campaign
 import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import AwarenessEducatorService from '@/api/awarenessEducator'
@@ -531,7 +535,11 @@ export default {
           { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
           { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
-          { FieldName: 'LanguageTypeResourceId', Operator: 'Contains', Value: val }
+          {
+            FieldName: 'LanguageTypeResourceId',
+            Operator: 'Contains',
+            Value: val
+          }
         ]
         this.callForPhishingScenarios()
         this.isShowSelectedScenarios = false
@@ -597,6 +605,7 @@ export default {
     if (this.getTrainingSearchPermission) this.callForEnrollmentFormDetails()
   },
   methods: {
+    getItemDifficultyClass,
     callForEnrollmentFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
         const { enumNameValuePairs = {} } = response?.data?.data || {}
@@ -606,7 +615,9 @@ export default {
     getItemClasses(itemResourceId = '') {
       return [
         'template-list',
-        { 'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId },
+        {
+          'bg-phishing-gray': this.selectedTemplateResourceId === itemResourceId
+        },
         {
           'template-list--selected': this.value.find((item) => item.resourceId === itemResourceId)
         }
@@ -620,13 +631,6 @@ export default {
         return '\xa0'
       }
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSelectedPhishingScenario(resourceId = '', item = {}) {
       this.adjustTrainingModel(resourceId)

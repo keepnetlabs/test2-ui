@@ -226,7 +226,9 @@
         has-hint
       >
         <div class="white-labeling__footer-links-item">
-          <span class="white-labeling__footer-links-span"> Privacy Policy </span>
+          <span class="white-labeling__footer-links-span">
+            Privacy Policy
+          </span>
           <input-url
             id="input--whitelabeling-footer-privacy-policy"
             placeholder="Enter URL"
@@ -235,7 +237,9 @@
           />
         </div>
         <div class="white-labeling__footer-links-item">
-          <span class="white-labeling__footer-links-span"> Terms and Conditions </span>
+          <span class="white-labeling__footer-links-span">
+            Terms and Conditions
+          </span>
           <input-url
             id="input--whitelabeling-footer-terms-and-conditions"
             placeholder="Enter URL"
@@ -495,7 +499,7 @@ export default {
         return labels.InvalidURL
       }
       return value
-        ? /[(w{3}.)?A-Z0-9@:%_\+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_\+.~#?&/=]*)/gi.test(value) ||
+        ? /[(w{3}.)?A-Z0-9@:%_+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_+.~#?&/=]*)/gi.test(value) ||
             labels.InvalidURL
         : true
     },
@@ -551,7 +555,6 @@ export default {
             })
             .catch((e) => {
               if (e && e.response && e.response.status === 404) {
-                const [title, message] = e.response?.data?.validationMessages
                 this.whiteLabelingErrorTitle = 'CNAME record does not exist'
                 this.whiteLabelingErrorMessage = `A CNAME record pointing to “${this.formValues?.pointingUrl}” was not found in your DNS for the ”${this.formValues?.mainDomainUrl}” domain. Create a CNAME record pointing to ‘’${this.formValues?.pointingUrl}’ in your DNS for the ”${this.formValues?.mainDomainUrl}” domain.`
                 this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl

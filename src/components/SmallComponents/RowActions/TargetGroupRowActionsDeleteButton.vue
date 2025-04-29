@@ -45,10 +45,12 @@ export default {
       }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      if (!row.isEditable)
+      if (!row.isEditable) {
+        if (row.isGoogleGroup) return `Google synced groups cannot be deleted`
         return `${indent}(${
           indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
         }) synced groups cannot be deleted`
+      }
       return !this.getDisabledStatusOfAction ? 'Delete' : 'No Permission'
     },
     getDisabledStatusOfAction() {

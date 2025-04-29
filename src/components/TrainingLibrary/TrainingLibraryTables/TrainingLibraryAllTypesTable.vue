@@ -5,7 +5,6 @@
     selectable
     is-server-side
     row-key="trainingId"
-    :filterable="false"
     :options="false"
     :loading="isLoading"
     :table="tableData"
@@ -22,6 +21,9 @@
     :axios-payload.sync="axiosPayload"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
+    @columnFilterChanged="columnFilterChanged"
+    @columnFilterCleared="columnFilterCleared"
+    @sortChangedEvent="sortChanged"
   >
     <template #empty-table-inline>
       <div class="empty-inline">
@@ -103,8 +105,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import { addTrainingItems } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_COLUMNS, addTrainingItems } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
 import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryLearningPathRowActions.vue'
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
@@ -117,6 +118,7 @@ import {
   TRAINING_LIBRARY_TYPES
 } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import useAddTrainingLibraryContent from '@/hooks/useAddTrainingLibraryContent'
+import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
 
 export default {
   name: 'TrainingLibraryAllTypesTable',
@@ -128,7 +130,7 @@ export default {
     TrainingLibraryTrainingRowActions,
     DataTable
   },
-  mixins: [useAddTrainingLibraryContent],
+  mixins: [useAddTrainingLibraryContent, tableFilterMixin],
   data() {
     return {
       TRAINING_LIBRARY_PAYLOAD_TYPES,
@@ -164,7 +166,6 @@ export default {
           message: labels.EmptyTrainingMaterial,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-all-types-table'
-          //todo disabled: !this.$store.getters['permissions/getCreateTrainingPermission']
         },
         addButton: {
           show: false
@@ -186,7 +187,13 @@ export default {
       tableData: 'trainingLibrary/getTableData',
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',
-      isLoading: 'trainingLibrary/getIsLoading'
+      isLoading: 'trainingLibrary/getIsLoading',
+      getTrainingTypes: 'trainingLibraryHelpers/getTrainingTypes',
+      getCategories: 'trainingLibraryHelpers/getCategories',
+      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
+      getLanguages: 'trainingLibraryHelpers/getLanguages',
+      getCompliances: 'trainingLibraryHelpers/getCompliances',
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
@@ -240,11 +247,61 @@ export default {
           })
         }
       }
+    },
+    getTrainingTypes(val) {
+      const typeColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.TYPE
+      )
+      this.$set(typeColumn, 'filterableItems', val)
+      this.$refs.refTable.reRenderFilters()
+    },
+    getCategories(val) {
+      const categoryColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.CATEGORY
+      )
+      this.$set(categoryColumn, 'filterableItems', val)
+      this.$refs.refTable.reRenderFilters()
+    },
+    getTargetAudiences(val) {
+      const targetAudienceColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.TARGET_AUDIENCE
+      )
+      this.$set(targetAudienceColumn, 'filterableItems', val)
+      this.$refs.refTable.reRenderFilters()
+    },
+    getLanguages(val) {
+      const languageColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.LANGUAGES
+      )
+      this.$set(
+        languageColumn,
+        'filterableItems',
+        val?.map((l) => ({ text: l.name, value: l.code }))
+      )
+      this.$refs.refTable.reRenderFilters()
+    },
+    getCompliances(val) {
+      const compliancesColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.COMPLIANCE
+      )
+      this.$set(compliancesColumn, 'filterableItems', val)
+      this.$refs.refTable.reRenderFilters()
+    },
+    getTrainingVendors(val) {
+      const trainingVendorColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.VENDORNAME
+      )
+      this.$set(trainingVendorColumn, 'filterableItems', val)
+      this.$refs.refTable.reRenderFilters()
     }
   },
   mounted() {
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
+    this.$refs.refTable.$refs.elTableRef.sort(
+      this.axiosPayload.orderBy,
+      this.axiosPayload.sortOrder ? 'ascending' : 'descending'
+    )
   },
   methods: {
     ...mapActions({

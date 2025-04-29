@@ -141,7 +141,8 @@
                           rounded
                           :disabled="excelLoading"
                         >
-                          <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
+                          <v-icon class="close-icon">mdi-download</v-icon>
+                          Download Example Sheet
                           <v-icon
                             class="ml-2 loading-spin"
                             color="#2196f3"
@@ -170,7 +171,9 @@
                     <v-form ref="refMapForm" lazy-validation>
                       <v-list-item class="mt-6">
                         <v-list-item-content class="mb-2">
-                          <label class="bottom-margin">Select Group</label>
+                          <label for="input--target-user-groups-ldap" class="bottom-margin"
+                            >Select Group</label
+                          >
                           <KSelect
                             v-model="formData.groups"
                             ref="refTargetGroupSelect"
@@ -182,6 +185,7 @@
                             multiple
                             item-text="name"
                             item-value="resourceId"
+                            item-disabled="disabled"
                             autocomplete="disabled"
                             placeholder="- All Users -"
                             no-data-text="No user group available"
@@ -193,7 +197,11 @@
                             }"
                             :rules="[(v) => !!v || 'Required']"
                             :disabled="stepLock"
-                            :slots="{ selection: true, prependItem: true }"
+                            :slots="{
+                              selection: true,
+                              prependItem: true,
+                              item: true
+                            }"
                           >
                             <template #prependItem>
                               <v-list-item ripple @mousedown.prevent @click="handleCreateGroup">
@@ -209,12 +217,12 @@
                                 </v-list-item-content>
                               </v-list-item>
                             </template>
-                            <template v-slot:selection="data" v-if="groups.length > 0">
+                            <template #selection="data" v-if="groups.length > 0">
                               <v-chip
                                 :key="JSON.stringify(data.item)"
                                 v-bind="data.attrs"
-                                :input-value="data.selected"
                                 small
+                                :input-value="data.selected"
                               >
                                 {{ data.item.name }}
                                 <v-icon
@@ -224,6 +232,40 @@
                                   >mdi-close-circle</v-icon
                                 >
                               </v-chip>
+                            </template>
+                            <template #item="{ item,parent,attrs,on }">
+                              <VListItem>
+                                <VListItemAction v-on="on">
+                                  <VSimpleCheckbox
+                                    v-on="on"
+                                    :value="attrs.inputValue"
+                                    color="#2196f3"
+                                    :disabled="item.disabled"
+                                  />
+                                </VListItemAction>
+                                <VListItemContent
+                                  v-on="on"
+                                  :class="item.disabled ? 'cursor-default' : 'cursor-pointer'"
+                                >
+                                  <VListItemTitle>
+                                    <VTooltip v-if="item.disabled" bottom>
+                                      <template #activator="{on}">
+                                        <span v-on="on" style="color: rgba(0, 0, 0, 0.38);">
+                                          {{ item.name }}
+                                        </span>
+                                      </template>
+                                      <span>{{
+                                        `${
+                                          item.isScimGroup ? 'SCIM' : 'Google'
+                                        } synced group cannot be selected`
+                                      }}</span>
+                                    </VTooltip>
+                                    <span v-else>
+                                      {{ item.name }}
+                                    </span>
+                                  </VListItemTitle>
+                                </VListItemContent>
+                              </VListItem>
                             </template>
                           </KSelect>
                         </v-list-item-content>
@@ -274,7 +316,11 @@
                       :row-actions="tableOptions.rowActions"
                       :addButton="tableOptions.addButton"
                       :server-side-props="serverSideProps"
-                      :server-side-events="{ pagination: true, search: true, sort: true }"
+                      :server-side-events="{
+                        pagination: true,
+                        search: true,
+                        sort: true
+                      }"
                       :downloadButton="{
                         show: true
                       }"
@@ -932,7 +978,7 @@ export default {
                 {
                   FieldName: 'Status',
                   Operator: 'Include',
-                  Value: 'New,Exists,Error'
+                  Value: 'New,Exists,Error,SCIM'
                 }
               ],
               FilterGroups: []
@@ -1073,7 +1119,7 @@ export default {
       this.isShowInvalid = !this.isShowInvalid
       this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
-      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error,SCIM'
       this.step3Loading = true
       this.getDatatableList()
     },
@@ -1110,7 +1156,15 @@ export default {
     },
     getTargetUsers() {
       getTargetGroups().then((response) => {
-        this.groups = response.data.data
+        const {
+          data: { data }
+        } = response
+        this.groups = data?.map((group) => {
+          return {
+            ...group,
+            disabled: group?.isScimGroup || group?.isGoogleGroup
+          }
+        })
       })
     },
     cancelButtonClick() {
@@ -1564,7 +1618,7 @@ export default {
                 {
                   FieldName: 'Status',
                   Operator: 'Include',
-                  Value: 'New,Exists,Error'
+                  Value: 'New,Exists,Error,SCIM'
                 }
               ],
               FilterGroups: []
@@ -1585,7 +1639,10 @@ export default {
           .getSelectedMultipleValues()
           .map((item) => item.resourceId)
         if (!selectedValues.length) return ''
-        payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
+        payload = {
+          ImportType: 'ImportSelected',
+          SelectedResourceIds: selectedValues
+        }
       } else if (label === labels.ImportAll) {
         payload = { ImportType: 'ImportAll' }
       } else if (label === 'onlyImportNewUsers') {

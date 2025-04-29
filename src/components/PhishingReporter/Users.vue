@@ -327,7 +327,8 @@ export default {
         outlookVersion
       } = row
       let text = ''
-      const textOS = `OS version: ${osVersion ? osVersion : 'Unknown'}`
+      const osVersionText = osVersion || 'Unknown'
+      const textOS = `OS version: ${osVersionText}`
       const textHKLM = `HKLM: ${hklmLoadBehaviorValue || 'N/A'}\n`
       const textHKCU = `HKCU: ${osAccountLoadBehaviorValue || 'N/A'}\n`
       const bootTimeLeftExpression = `${bootTime} ms`
@@ -365,10 +366,8 @@ export default {
       }
       if (row[PROPERTY_STORE.ADDINSTATUSNAME] === 'Disabled') {
         text = 'Add-in is installed but disabled\n'
-        text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
-        text += `Disabled time: ${
-          addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
-        }\n`
+        text += `Cause: ${addInDisabledReason || 'Unknown'}\n`
+        text += `Disabled time: ${addInDisabledLastDisabledTime || 'Unknown'}\n`
         text += textHKLM
         text += textHKCU
         text += textBootTime

@@ -180,9 +180,7 @@ export default {
       const industryAvgDataSubmitData = []
       let maxX = data[0].widgetDatas.reduce((acc, curr) => {
         const currentMax = curr.values.reduce((innerAcc, innerCurr) => {
-          if (innerCurr.name === 'Clicked') {
-            return innerAcc + innerCurr.value
-          } else if (innerCurr.name === 'SubmittedData') {
+          if (innerCurr.name === 'Clicked' || innerCurr.name === 'SubmittedData') {
             return innerAcc + innerCurr.value
           }
           return innerAcc
@@ -211,13 +209,13 @@ export default {
         yLabels.splice(newIndex, 0, item.value)
       }
       data[0].widgetDatas[0].values.forEach((item) => {
-        if (item.name === 'AverageClickTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'industryAverageClickTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'AverageDataSubmitTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'industryAverageDataSubmitTime') {
+        const shouldAddYLabel = new Set([
+          'AverageClickTime',
+          'industryAverageClickTime',
+          'AverageDataSubmitTime',
+          'industryAverageDataSubmitTime'
+        ])
+        if (shouldAddYLabel.has(item.name)) {
           addYLabelItem(item)
         }
       })
@@ -235,9 +233,15 @@ export default {
         const yLabelIndex = yLabels.findIndex((v) => v === parseInt(item.dataObject.ActionRange))
         item.values.forEach((inner) => {
           if (inner.name === 'Clicked') {
-            clickedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+            clickedData[yLabelIndex] = {
+              x: inner.value,
+              y: yLabels[yLabelIndex]
+            }
           } else if (inner.name === 'SubmittedData') {
-            submittedData[yLabelIndex] = { x: inner.value, y: yLabels[yLabelIndex] }
+            submittedData[yLabelIndex] = {
+              x: inner.value,
+              y: yLabels[yLabelIndex]
+            }
           }
         })
       })

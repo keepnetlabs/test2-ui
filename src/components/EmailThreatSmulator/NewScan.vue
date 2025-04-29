@@ -121,7 +121,7 @@
                     title="Manual"
                     sub-title="You must open manually every email that you received from <br/>
                      noreply@emailthreatsimulator.com and click 'Report as failed'.
-                     <br/>(We don’t recommend this option)"
+                     <br/>(We don't recommend this option)"
                   >
                   </form-group>
                   <form-group
@@ -141,9 +141,12 @@
                     />
                     <div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Application (Client) ID</label>
+                        <label for="input--email-threat-simulator-application-client-id"
+                          >Application (Client) ID</label
+                        >
                         <InputEntityName
                           v-model="emailSettingsValues.clientId"
+                          id="input--email-threat-simulator-application-client-id"
                           entityName="clientId"
                           initialPlaceholder="Enter Client Id"
                           class="ml-2"
@@ -151,9 +154,12 @@
                         />
                       </div>
                       <div v-if="emailSettingsValues.scanType == 'OAUTH'" class="label-left-form">
-                        <label>Directory (Tenant) ID&nbsp;</label>
+                        <label for="input--email-threat-simulator-directory-tenant-id"
+                          >Directory (Tenant) ID&nbsp;</label
+                        >
                         <InputEntityName
                           v-model="emailSettingsValues.tenantId"
+                          id="input--email-threat-simulator-directory-tenant-id"
                           entityName="tenantId"
                           initialPlaceholder="Enter Directory (Tenant) ID"
                           class="ml-2"
@@ -171,10 +177,11 @@
                       v-if="emailSettingsValues.owa && emailSettingsValues.scanType === 'Automate'"
                       class="label-left-form"
                     >
-                      <label>OWA URL</label>
+                      <label for="input--email-threat-simulator-owa-url">OWA URL</label>
                       <InputEntityName
                         v-model="emailSettingsValues.owaUrl"
                         entityName="owaUrl"
+                        id="input--email-threat-simulator-owa-url"
                         initialPlaceholder="Enter OWA URL"
                         class="ml-2"
                         :initialRules="baseRules"
@@ -184,10 +191,11 @@
                       v-if="emailSettingsValues.owa && emailSettingsValues.scanType === 'Automate'"
                       class="label-left-form"
                     >
-                      <label>Username</label>
+                      <label for="input--email-threat-simulator-username">Username</label>
                       <InputEntityName
                         v-model="emailSettingsValues.username"
                         entityName="username"
+                        id="input--email-threat-simulator-username"
                         initialPlaceholder="Enter Username"
                         class="ml-2"
                         :initialRules="baseRules"
@@ -241,15 +249,16 @@
                     class="mt-8"
                   >
                     <div class="label-left-form">
-                      <label class="little">Sending Limit</label>
+                      <label for="input--email-threat-simulator-sending-limit" class="little"
+                        >Sending Limit</label
+                      >
                       <InputNumber
                         v-model="scanAndDeliveryValues.sendingLimit"
+                        id="input--email-threat-simulator-sending-limit"
                         entityName="sendingLimit"
                         initialPlaceholder="Enter Sending Limit"
                         :required="false"
-                        :disabled="
-                          scanAndDeliveryValues.sendingLoopType.loopType === 'SMTP' ? false : true
-                        "
+                        :disabled="scanAndDeliveryValues.sendingLoopType.loopType !== 'SMTP'"
                       />
                     </div>
                     <v-radio-group
@@ -356,7 +365,7 @@
                       (“EULA”) is a binding legal agreement between (a) the entity for which you are
                       an authorised representative (“You”, Your”, “End User” or “Licensee”), and (b)
                       Keepnet Labs Limited, a United Kingdom corporation (“Keepnet” or “KNL”), that
-                      governs the use of Keepnet’s email defence software, appliances, and other
+                      governs the use of Keepnet's email defence software, appliances, and other
                       products and solutions, (collectively, the “Product”), maintenance and support
                       services, professional services packages and training.
                       <br /><br />
@@ -464,7 +473,7 @@
                       prior to the conclusion of the Initial Term or Successive Term, as the case
                       may be. End User may terminate this EULA in the event KNL materially breaches
                       this Agreement and fails to cure such breach within thirty (30) days of
-                      receiving notice thereof. KNL may terminate End User’s license in the event
+                      receiving notice thereof. KNL may terminate End User's license in the event
                       End User materially breaches the terms of this Agreement and End User fails to
                       cure such breach within thirty (30) days of receiving notice thereof. Upon
                       such termination, End User shall promptly return or destroy all copies of the
@@ -473,7 +482,7 @@
                       <br /><br />
 
                       8. CONSENT TO USE OF DATA. End User agrees that KNL and its affiliates or
-                      suppliers may collect and use statistics on End User’s use of the Product in
+                      suppliers may collect and use statistics on End User's use of the Product in
                       performing backup operations and technical information End User provides,
                       solely in relation to support services related to
                       <br />
@@ -556,10 +565,10 @@
                       USE OF (OR INABILITY TO USE) THE PRODUCT, HOWEVER CAUSED, AND WHETHER ARISING
                       UNDER A THEORY OF CONTRACT, TORT OR ANY OTHER LEGAL THEORY, EVEN IF KNL OR END
                       USER WAS ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; (B) IN NO EVENT WILL
-                      KNL’S TOTAL LIABILITY TO END USER RELATING TO THIS AGREEMENT OR THE USE (OR
+                      KNL'S TOTAL LIABILITY TO END USER RELATING TO THIS AGREEMENT OR THE USE (OR
                       INABILITY TO USE) THE PRODUCT EXCEED THE LARGER OF THE SUM OF ONE MILLION
                       DOLLARS ($1,000,000.00) OR THE CUMULATIVE AMOUNT PAID BY END USER UNDER THIS
-                      AGREEMENT; AND (C) IN NO EVENT WILL END USER’S TOTAL LIABILITY TO KNL RELATING
+                      AGREEMENT; AND (C) IN NO EVENT WILL END USER'S TOTAL LIABILITY TO KNL RELATING
                       TO THIS AGREEMENT EXCEED THE TOTAL AMOUNT PAID BY END USER UNDER THIS
                       AGREEMENT. SOME STATES OR JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR
                       LIMITATION OF INCIDENTAL, CONSEQUENTIAL OR SPECIAL DAMAGES, SO THE ABOVE
@@ -575,25 +584,25 @@
                       12. INDEMNIFICATION. End-User agrees to indemnify and hold KNLand its
                       officers, directors, employees, agents, representatives and licensors harmless
                       from any claim or demand (including but not limited to reasonable legal fees)
-                      made by a third party due to or arising out of or related to End User’s
-                      violation of the terms and conditions of this Agreement, End User’s violation
-                      of any laws, regulations or third party rights or End User’s gross negligence
+                      made by a third party due to or arising out of or related to End User's
+                      violation of the terms and conditions of this Agreement, End User's violation
+                      of any laws, regulations or third party rights or End User's gross negligence
                       or willful misconduct. KNL agrees to indemnify, defend and hold End User and
-                      its Affiliates harmless,at KNL’s expense, from any claims, demands, actions,
+                      its Affiliates harmless,at KNL's expense, from any claims, demands, actions,
                       suits, damages, losses, liabilities, costs or expenses of any nature,
-                      including, without limitation, reasonable attorneys’ fees, incurred by End
+                      including, without limitation, reasonable attorneys' fees, incurred by End
                       User or its affiliate(s) as a result of any breach of this Agreement by KNL or
                       any of the representations or warranties contained in this Agreement. In the
                       event of an infringement claim, KNL shall have no obligation pursuant to this
                       section 12 to the extent the claim is caused by the modification of the
-                      product by End User or its agents, without KNL’s prior written consent, that
+                      product by End User or its agents, without KNL's prior written consent, that
                       causes it to deviate from the Documentation, or to the extent the infringement
                       is caused by the use of other than the most current version of the Product if
                       the current version would be non-infringing, has been made available in a
                       timely manner to End User at no additional charge,and End User has had
                       sufficient time to install, execute and operate such current version without
                       impacting its business operations. If the unmodified Product becomes, or in
-                      KNL’s opinion is likely to become, the subject of a claim of infringement or
+                      KNL's opinion is likely to become, the subject of a claim of infringement or
                       misappropriation, KNL shall, at its option and expense, promptly either: (i)
                       modify or replace the Product to be non-infringing while giving equivalent
                       performance and functionality, or (ii) obtain for End User the right to
@@ -676,7 +685,7 @@
                       <br /><br />
 
                       MSSP and Resellers accept their rights/responsibilities to their own Customers
-                      and such Customers’ End Users. MSSP and Resellers have to get approval for any
+                      and such Customers' End Users. MSSP and Resellers have to get approval for any
                       kind of agreements like EULA, Consent from Data Subject, Informing of Data
                       Subject, Privacy Policy, etc. in terms of the GDPR in Europe, and any type of
                       other local or global legal requirements from customers/end-users.

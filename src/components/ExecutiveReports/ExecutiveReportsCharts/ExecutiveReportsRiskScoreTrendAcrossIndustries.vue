@@ -44,7 +44,10 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import {
+  CHART_COLORS,
+  monthNamesLong
+} from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
 export default {
   name: 'ExecutiveReportsRiskScoreTrendAcrossIndustries',
@@ -122,20 +125,6 @@ export default {
         })
     },
     setChartData(widgetDatas) {
-      const monthNamesLong = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const params = [widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       const { valueEnums, datasets } = createExecutiveReportChartData(...params)
@@ -318,10 +307,6 @@ export default {
                 monthNamesLong[xValue.getMonth()]
               }/${xValue.getFullYear()}</th>`
               tableRoot.appendChild(titleRow)
-
-              let selectedBackgroundColor = ''
-              let selectedLabel = ''
-              let selectedValue = ''
               this._chart.data.datasets.forEach((dataset, i) => {
                 let datasetLabel = dataset.label
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
@@ -340,9 +325,6 @@ export default {
                   this._chart.data.datasets[tooltipModel.dataPoints[0].datasetIndex].label
                 ) {
                   tr.style.fontWeight = '600'
-                  selectedValue = dataValue
-                  selectedLabel = datasetLabel
-                  selectedBackgroundColor = backgroundColor
                 } else {
                   tr.style.fontWeight = 'normal'
                 }

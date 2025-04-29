@@ -143,7 +143,7 @@ export default {
     },
     isShowSandboxFromParent: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
@@ -162,7 +162,10 @@ export default {
         ascending: 'ascending'
       },
       serverSideProps: new ServerSideProps(),
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime', pageSize: 5 }),
+      axiosPayload: getDefaultAxiosPayload({
+        orderBy: 'OpenedTime',
+        pageSize: 5
+      }),
       tableOptions: {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
@@ -171,7 +174,7 @@ export default {
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
           COLUMNS.IP_SLOT_NON_FIXED,
-          Object.assign({}, COLUMNS.ACTIVITY_TYPE)
+          { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
           show: true,

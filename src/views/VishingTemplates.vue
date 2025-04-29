@@ -122,7 +122,6 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import KContainer from '@/components/KContainer/KContainer'
 import VishingTemplatePreview from '@/components/VishingTemplates/VishingTemplatePreview'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import {
   getStoreValue,
@@ -135,8 +134,7 @@ import labels from '@/model/constants/labels'
 import {
   exportVishingTemplates,
   getVishingTemplates,
-  getVishingTemplateLanguages,
-  deleteVishingTemplate
+  getVishingTemplateLanguages
 } from '@/api/vishing'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DeleteVishingTemplateDialog from '@/components/VishingTemplates/DeleteVishingTemplateDialog'

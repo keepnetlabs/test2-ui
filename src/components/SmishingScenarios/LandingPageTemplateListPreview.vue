@@ -304,6 +304,7 @@ import InputCallerPhoneNumber from '../Common/Inputs/InputCallerPhoneNumber'
 import FormGroup from '../SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 
 export default {
   name: 'LandingPageListPreview',
@@ -444,10 +445,8 @@ export default {
             selected: item.resourceId === this.landingPageTemplateResourceId
           }))
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },
@@ -455,6 +454,7 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    getItemDifficultyClass,
     getItemDescription(item = {}) {
       if (!item?.description) {
         return '\xa0'
@@ -465,13 +465,6 @@ export default {
       }
 
       return item?.description || '\xa0'
-    },
-    getItemDifficultyClass(difficulty = '') {
-      return difficulty === 'Easy'
-        ? 'difficulty-easy'
-        : difficulty === 'Medium'
-        ? 'difficulty-medium'
-        : 'difficulty-hard'
     },
     callForSearch() {
       this.debounce(() => {
@@ -565,7 +558,7 @@ export default {
               this.listData[this.selectedPreviousIndex].selected = true
             }
             if (!isInitial) return
-            if (!!landingPageTemplateResourceId) {
+            if (landingPageTemplateResourceId) {
               const index = this.listData.findIndex(
                 (item) => item.resourceId === landingPageTemplateResourceId
               )
@@ -625,7 +618,10 @@ export default {
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.landingPageTemplates = response?.data?.data?.landingPages || []
-          this.$emit('selectedLandingPageChange', { ...item, ...response.data.data })
+          this.$emit('selectedLandingPageChange', {
+            ...item,
+            ...response.data.data
+          })
         })
         .finally(() => {
           this.loadingTemplatePreview = false

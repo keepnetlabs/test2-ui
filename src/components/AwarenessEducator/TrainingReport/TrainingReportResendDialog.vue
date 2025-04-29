@@ -67,9 +67,6 @@ export default {
   },
   computed: {
     getResendText() {
-      // if (this.payload?.selectAll) {
-      //   return `You are about to re-send this ${this.bodyTrainingType} to all users. Are you sure?`
-      // }
       if (this.resendItemCount) {
         return `You are about to re-send this ${this.bodyTrainingType} to ${
           this.resendItemCount

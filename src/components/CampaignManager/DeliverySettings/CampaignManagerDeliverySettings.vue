@@ -395,12 +395,12 @@ export default {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
     callForEmailDeliveries() {
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? getEmailDeliveries
-          : this.type === SCENARIO_TYPES.CALLBACK
-          ? CallbackService.getEmailDeliverySettings
-          : QuishingService.getEmailDeliveries
+      let apiFunc = getEmailDeliveries
+      if (this.type === SCENARIO_TYPES.CALLBACK) {
+        apiFunc = CallbackService.getEmailDeliverySettings
+      } else if (this.type === SCENARIO_TYPES.QUISHING) {
+        apiFunc = QuishingService.getEmailDeliveries
+      }
       apiFunc().then((res) => {
         const {
           data: { data: { results = [] } = {} }
@@ -468,12 +468,12 @@ export default {
     },
     callForDefaultSmtpSetting() {
       if (this.isEdit) return
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? getDefaultCompanySmtpSetting
-          : this.type === SCENARIO_TYPES.CALLBACK
-          ? CallbackService.getDefaultCompanySmtpSetting
-          : QuishingService.getDefaultCompanySmtpSetting
+      let apiFunc = QuishingService.getDefaultCompanySmtpSetting
+      if (this.type === SCENARIO_TYPES.PHISHING) {
+        apiFunc = getDefaultCompanySmtpSetting
+      } else if (this.type === SCENARIO_TYPES.CALLBACK) {
+        apiFunc = CallbackService.getDefaultCompanySmtpSetting
+      }
       apiFunc().then((response) => {
         const {
           data: { data }
@@ -511,12 +511,12 @@ export default {
           distributionEndTime: this.inputDistributionFormData.distributionEndTime
         }
         if (payload.distributionDelayEvery) {
-          const apiFunc =
-            this.type === SCENARIO_TYPES.PHISHING
-              ? calculateSendingInfo
-              : this.type === SCENARIO_TYPES.CALLBACK
-              ? CallbackService.calculateSendingInfo
-              : QuishingService.calculateSendingInfo
+          let apiFunc = calculateSendingInfo
+          if (this.type === SCENARIO_TYPES.CALLBACK) {
+            apiFunc = CallbackService.calculateSendingInfo
+          } else if (this.type === SCENARIO_TYPES.QUISHING) {
+            apiFunc = QuishingService.calculateSendingInfo
+          }
           apiFunc(payload).then((response) => {
             const {
               data: { data }

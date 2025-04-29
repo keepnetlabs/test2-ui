@@ -1,22 +1,27 @@
 <template>
   <v-form ref="refForm">
-    <FormGroup has-hint class="mt-6" title="Sender Phone Number" sub-title="Select the SMS sender phone number">
+    <FormGroup
+      has-hint
+      class="mt-6"
+      title="Sender Phone Number"
+      sub-title="Select the SMS sender phone number"
+    >
       <AlertBox
-              class="bg-aqua-light my-2"
-              icon-color="#2196F3"
-              icon-name="mdi-information"
-              text="When you select multiple numbers, messages will be sent from a randomly chosen number during delivery."
-              :slots="{ primaryAction: false, secondaryAction: false }"
-            />
-    <InputPhoneNumberComboBox
-      is-smishing
-      itemText="phoneNumber"
-      itemValue="resourceId"
-      :defaultPhoneNumbers="phoneNumberItems"
-      :value="formData.smsProviderNumberResourceIds"
-      :rules="[(v) => !!v.length || 'Required']"
-      @input="handlePhoneNumberChange"
-    />
+        class="bg-aqua-light my-2"
+        icon-color="#2196F3"
+        icon-name="mdi-information"
+        text="When you select multiple numbers, messages will be sent from a randomly chosen number during delivery."
+        :slots="{ primaryAction: false, secondaryAction: false }"
+      />
+      <InputPhoneNumberComboBox
+        is-smishing
+        itemText="phoneNumber"
+        itemValue="resourceId"
+        :defaultPhoneNumbers="phoneNumberItems"
+        :value="formData.smsProviderNumberResourceIds"
+        :rules="[(v) => !!v.length || 'Required']"
+        @input="handlePhoneNumberChange"
+      />
     </FormGroup>
     <FormGroup :title="labels.Frequency" :sub-title="labels.FrequencySub" has-hint>
       <KSelect
@@ -33,9 +38,13 @@
         :disabled="isEdit"
       />
     </FormGroup>
-    <InputSchedule v-model="inputScheduleFormData"
-    :isEditOrDuplicate="isEdit || isDuplicate"
-     ref="inputSchedule" class="mb-6" isSmishing />
+    <InputSchedule
+      v-model="inputScheduleFormData"
+      :isEditOrDuplicate="isEdit || isDuplicate"
+      ref="inputSchedule"
+      class="mb-6"
+      isSmishing
+    />
     <InputDistribution
       v-model="inputDistributionFormData"
       :type="DISTRIBUTION_TYPES.SMISHING"
@@ -56,9 +65,9 @@
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import SmishingService from '@/api/smishing'
-import { createRandomCryptStringNumber, getTimeZone, scrollToComponent } from '@/utils/functions'
+import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
-import InputPhoneNumberComboBox from "@/components/Common/Inputs/InputPhoneNumberComboBox"
+import InputPhoneNumberComboBox from '@/components/Common/Inputs/InputPhoneNumberComboBox'
 import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
@@ -302,7 +311,9 @@ export default {
   },
   methods: {
     handlePhoneNumberChange(phoneNumberResourceIds) {
-      this.formData.phoneNumbers = this.phoneNumberItems.filter(pn => phoneNumberResourceIds.includes(pn.resourceId)).map(pn => pn.phoneNumber)
+      this.formData.phoneNumbers = this.phoneNumberItems
+        .filter((pn) => phoneNumberResourceIds.includes(pn.resourceId))
+        .map((pn) => pn.phoneNumber)
       this.formData.smsProviderNumberResourceIds = phoneNumberResourceIds
     },
     callForPhoneNumbers() {
