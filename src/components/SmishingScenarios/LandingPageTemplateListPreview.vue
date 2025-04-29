@@ -445,10 +445,8 @@ export default {
             selected: item.resourceId === this.landingPageTemplateResourceId
           }))
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },
@@ -620,7 +618,10 @@ export default {
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.landingPageTemplates = response?.data?.data?.landingPages || []
-          this.$emit('selectedLandingPageChange', { ...item, ...response.data.data })
+          this.$emit('selectedLandingPageChange', {
+            ...item,
+            ...response.data.data
+          })
         })
         .finally(() => {
           this.loadingTemplatePreview = false

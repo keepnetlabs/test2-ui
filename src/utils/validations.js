@@ -299,7 +299,7 @@ export function isGsm7(
 
 export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
   return (
-    /^(ldaps?:\/\/)?([\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}[.][\d]{1,3}|[a-zA-Z][a-zA-Z0-9._-]{1,})(:[\d]{1,5})?$/i.test(
+    /^(ldaps?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[a-zA-Z][a-zA-Z0-9._-]+)(:\d{1,5})?$/i.test(
       value
     ) || message
   )

@@ -208,7 +208,7 @@ export default {
     regexExtensions() {
       const arr = [...this.extensions]
       const extString = arr.join('|')
-      return new RegExp('\.(' + extString + ')$', 'i')
+      return new RegExp('.(' + extString + ')$', 'i')
     }
   },
   methods: {

@@ -23,25 +23,6 @@
         @on-close="toggleShowMissingLanguageSupportDialog"
         @on-confirm="onConfirmLanguageSupportDialog"
       />
-      <!--
-    <VNavigationDrawer
-      class="k-navigation-drawer"
-      temporary
-      v-model="isOpenPhishingDrawer"
-      fixed
-      right
-      width="calc(100% - 72px)"
-      height="100%"
-    >
-      <CommonSimulatorNewScenario
-        v-if="isOpenPhishingDrawer"
-        ref="newScenarioModal"
-        :status="isOpenPhishingDrawer"
-        :scenarioDetailsLookup="scenarioDetailsLookup"
-        @changeNewScenarioModalStatus="isOpenPhishingDrawer = false"
-      />
-    </VNavigationDrawer>
-       <!-->
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step

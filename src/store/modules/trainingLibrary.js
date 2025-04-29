@@ -160,7 +160,7 @@ const trainingLibrary = {
     SET_RENDERED_COLUMNS(state) {
       state.renderedColumns = state.tableColumns
         .filter((item) => item && item.show)
-        .map((i) => i && i.property)
+        .map((i) => i?.property)
     },
     SET_TABLE_SETTINGS_CHANGE(state) {
       localStorage.setItem(

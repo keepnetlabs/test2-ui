@@ -488,33 +488,25 @@ export default {
             this.formValues.provisioningConfig.selected.includes(item.id)
           )
         }
+      } else if (this.isAllOrganizationsSelected) {
+        return this.organizationOptions.slice(1)
       } else {
-        if (this.isAllOrganizationsSelected) {
-          return this.organizationOptions.slice(1)
-        } else {
-          return this.organizationOptions.filter((item) =>
-            this.formValues.provisioningConfig.selected.includes(item.id)
-          )
-        }
+        return this.organizationOptions.filter((item) =>
+          this.formValues.provisioningConfig.selected.includes(item.id)
+        )
       }
     },
     isAllGroupsSelected() {
-      if (
+      return (
         this.formValues?.provisioningConfig?.source === SYNC_SOURCE_TYPES.GROUP &&
         this.formValues?.provisioningConfig?.selected?.includes?.('All_EeMkZ7dF')
-      ) {
-        return true
-      }
-      return false
+      )
     },
     isAllOrganizationsSelected() {
-      if (
+      return (
         this.formValues?.provisioningConfig?.source === SYNC_SOURCE_TYPES.ORGANIZATION &&
         this.formValues?.provisioningConfig?.selected?.includes?.('All_wiOrAv9C')
-      ) {
-        return true
-      }
-      return false
+      )
     },
     getAllGroupsIcon() {
       if (this.isAllGroupsSelected) return 'mdi-checkbox-marked'
@@ -723,11 +715,7 @@ export default {
     },
     handleGroupItemDisabled(item) {
       if (this.isAllGroupsSelected) {
-        if (item.name === 'All Groups') {
-          return false
-        } else {
-          return true
-        }
+        return item.name !== 'All Groups'
       } else {
         return false
       }

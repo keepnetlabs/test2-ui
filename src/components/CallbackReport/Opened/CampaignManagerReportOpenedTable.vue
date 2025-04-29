@@ -1,67 +1,77 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    selectable
-    filterable
-    options
-    is-server-side-selection
-    is-server-side
-    :loading="isLoading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    :select-event="tableOptions.selectEvent"
-    :axios-payload.sync="axiosPayload"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
-    @refreshAction="callForData"
-    @on-resend="handleOnResend"
-    @on-detail="handleOnDetail"
-    @on-activity="handleActivity"
-    @on-selection-text-change="handleSelectionChange"
-  >
-    <template #datatable-row-actions="{ scope }">
-      <DefaultButtonRowAction
-        :icon="tableOptions.rowActions[0].icon"
-        :id="tableOptions.rowActions[0].id"
-        :text="tableOptions.rowActions[0].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
-        :disabledTooltipText="
-          campaignDurationExpired()
-            ? 'You cannot resend this campaign because its lifetime has expired'
-            : 'Resend'
-        "
-        @on-click="handleOnResend(scope.row)"
+  <div>
+    <div>
+      <CampaignManagerReportBotActivityAlertBox
+        v-if="!isLoading"
+        :bot-activity-count="botActivityCount"
+        :is-show-sandbox="isShowSandbox"
+        @on-activity-change="handleActivity"
       />
-      <DefaultButtonRowAction
-        :icon="tableOptions.rowActions[1].icon"
-        :id="tableOptions.rowActions[1].id"
-        :text="tableOptions.rowActions[1].name"
-        :scope="scope"
-        :disabled="tableOptions.rowActions[1].disabled"
-        @on-click="handleOnDetail(scope.row)"
-      />
-    </template>
-    <template #datatable-custom-column="{ scope, col }">
-      <CampaignManagerReportActivityColumn
-        v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
-        :scope="scope"
-      />
-    </template>
-  </DataTable>
+    </div>
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      selectable
+      filterable
+      options
+      is-server-side-selection
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportCampaignManagerReportOpenedTable"
+      @refreshAction="callForData"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+      @on-activity="handleActivity"
+      @on-selection-text-change="handleSelectionChange"
+    >
+      <template #datatable-row-actions="{ scope }">
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[0].icon"
+          :id="tableOptions.rowActions[0].id"
+          :text="tableOptions.rowActions[0].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+          :disabledTooltipText="
+            campaignDurationExpired()
+              ? 'You cannot resend this campaign because its lifetime has expired'
+              : 'Resend'
+          "
+          @on-click="handleOnResend(scope.row)"
+        />
+        <DefaultButtonRowAction
+          :icon="tableOptions.rowActions[1].icon"
+          :id="tableOptions.rowActions[1].id"
+          :text="tableOptions.rowActions[1].name"
+          :scope="scope"
+          :disabled="tableOptions.rowActions[1].disabled"
+          @on-click="handleOnDetail(scope.row)"
+        />
+      </template>
+      <template #datatable-custom-column="{ scope, col }">
+        <CampaignManagerReportActivityColumn
+          v-if="col.property === COLUMNS.ACTIVITY_TYPE.property"
+          :scope="scope"
+        />
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -81,13 +91,14 @@ import CallbackService from '@/api/callback'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-
+import CampaignManagerReportBotActivityAlertBox from '@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue'
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: {
     DataTable,
     CampaignManagerReportActivityColumn,
-    DefaultButtonRowAction
+    DefaultButtonRowAction,
+    CampaignManagerReportBotActivityAlertBox
   },
   mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
   props: {
@@ -139,7 +150,7 @@ export default {
           { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
-          show: true,
+          show: false,
           icon: null,
           label: 'SHOW BOT ACTIVITY',
           action: 'on-activity',
@@ -206,7 +217,13 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              data: {
+                results,
+                totalNumberOfRecords,
+                totalNumberOfPages,
+                pageNumber,
+                totalSandBoxActivityCount
+              }
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -219,6 +236,11 @@ export default {
             })
             return { ...row, ...customFields }
           })
+          if (this.isShowSandbox) {
+            this.botActivityCount = totalNumberOfRecords
+          } else {
+            this.botActivityCount = totalSandBoxActivityCount
+          }
         })
         .finally(this.setLoading)
     },
