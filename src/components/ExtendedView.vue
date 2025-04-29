@@ -157,7 +157,10 @@
                     tag="span"
                     :key="item.resourceId"
                     v-else
-                    :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
+                    :to="{
+                      name: 'Playbook',
+                      params: { playbookId: item.resourceId }
+                    }"
                     v-for="item in copyOfEditedRows[0].matchingPlaybooks"
                     class="incident-responder-parent__link"
                     >{{ item.name }}</router-link
@@ -848,7 +851,7 @@ export default {
         : false
     },
     getMultipleComboValue(prop) {
-      return prop ? prop : []
+      return prop || []
     },
     handleMultipleComboEdit(item, key, value) {
       item.map((i) => {

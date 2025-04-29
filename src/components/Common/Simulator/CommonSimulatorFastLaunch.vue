@@ -65,12 +65,7 @@
     <template #overlay-footer>
       <StepperFooter
         max-step="2"
-        :ids="{
-          cancelButton: 'btn-cancel--scenarios-fast-launch-modal',
-          backButton: 'btn-back--scenarios-fast-launch-modal',
-          nextButton: 'btn-next--scenarios-fast-launch-modal',
-          saveButton: 'btn-save--scenarios-fast-launch-modal'
-        }"
+        :ids="stepperIds"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
@@ -135,6 +130,12 @@ export default {
     return {
       labels,
       step: 1,
+      stepperIds: {
+        cancelButton: 'btn-cancel--scenarios-fast-launch-modal',
+        backButton: 'btn-back--scenarios-fast-launch-modal',
+        nextButton: 'btn-next--scenarios-fast-launch-modal',
+        saveButton: 'btn-save--scenarios-fast-launch-modal'
+      },
       isActionButtonDisabled: false,
       formDetails: {},
       smtpSettingResourceId: '',
@@ -382,10 +383,8 @@ export default {
             refCampaignManagerTargetAudience.isShowTargetGroupUsersError = true
             refCampaignManagerTargetAudience.isTargetGroupsValid = false
           }
-        } else {
-          if (!refFastLaunch?.selectedTargetGroupsMapped.length) {
-            refCampaignManagerTargetAudience.isTargetGroupsValid = false
-          }
+        } else if (!refFastLaunch?.selectedTargetGroupsMapped.length) {
+          refCampaignManagerTargetAudience.isTargetGroupsValid = false
         }
       } else if (this.step === 2) {
         this.setActionButtonDisability(true)

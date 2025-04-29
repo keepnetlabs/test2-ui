@@ -103,7 +103,8 @@
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
-                      started on {{ item.createTime }} &#8226; ended on {{ item.lastLaunch }}
+                      started on {{ item.createTime }} &#8226; ended on
+                      {{ item.lastLaunch }}
                     </div>
                   </div>
 
@@ -457,7 +458,11 @@ export default {
       const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
         (item) => item.FieldName === 'languageShortCode'
       )
-      const obj = { Value: val || '', FieldName: 'languageShortCode', Operator: 'Include' }
+      const obj = {
+        Value: val || '',
+        FieldName: 'languageShortCode',
+        Operator: 'Include'
+      }
       if (index > -1) {
         this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
       } else {
@@ -709,34 +714,32 @@ export default {
               ],
               showTooltipLine: true
             }
+          } else if (this.campaignMethod === 'Data Submission') {
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#F56C6C'],
+              labels: [
+                labels.NoResponse,
+                labels.OpenedEmail,
+                labels.ReportedAsSuspicious,
+                labels.ClickedThePhishingLink,
+                labels.SubmittedData,
+                labels.EmailFailedToSend
+              ],
+              showTooltipLine: true
+            }
           } else {
-            if (this.campaignMethod === 'Data Submission') {
-              this.chartOptions = {
-                ...chartOptions,
-                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#B83A3A', '#F56C6C'],
-                labels: [
-                  labels.NoResponse,
-                  labels.OpenedEmail,
-                  labels.ReportedAsSuspicious,
-                  labels.ClickedThePhishingLink,
-                  labels.SubmittedData,
-                  labels.EmailFailedToSend
-                ],
-                showTooltipLine: true
-              }
-            } else {
-              this.chartOptions = {
-                ...chartOptions,
-                backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#F56C6C'],
-                labels: [
-                  labels.NoResponse,
-                  labels.OpenedEmail,
-                  labels.ReportedAsSuspicious,
-                  labels.ClickedThePhishingLink,
-                  labels.EmailFailedToSend
-                ],
-                showTooltipLine: true
-              }
+            this.chartOptions = {
+              ...chartOptions,
+              backgroundColor: ['#217124', '#E6A23C', '#43A047', '#B6791D', '#F56C6C'],
+              labels: [
+                labels.NoResponse,
+                labels.OpenedEmail,
+                labels.ReportedAsSuspicious,
+                labels.ClickedThePhishingLink,
+                labels.EmailFailedToSend
+              ],
+              showTooltipLine: true
             }
           }
           const {

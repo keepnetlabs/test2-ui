@@ -209,13 +209,13 @@ export default {
         yLabels.splice(newIndex, 0, item.value)
       }
       data[0].widgetDatas[0].values.forEach((item) => {
-        if (item.name === 'AverageClickTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'industryAverageClickTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'AverageDataSubmitTime') {
-          addYLabelItem(item)
-        } else if (item.name === 'industryAverageDataSubmitTime') {
+        const shouldAddYLabel = new Set([
+          'AverageClickTime',
+          'industryAverageClickTime',
+          'AverageDataSubmitTime',
+          'industryAverageDataSubmitTime'
+        ])
+        if (shouldAddYLabel.has(item.name)) {
           addYLabelItem(item)
         }
       })

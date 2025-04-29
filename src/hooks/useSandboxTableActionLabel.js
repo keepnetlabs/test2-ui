@@ -5,7 +5,8 @@ export default {
   data() {
     return {
       isShowSandbox: false,
-      tableActionLabel: 'SHOW BOT ACTIVITY'
+      tableActionLabel: 'SHOW BOT ACTIVITY',
+      botActivityCount: 0
     }
   },
   watch: {

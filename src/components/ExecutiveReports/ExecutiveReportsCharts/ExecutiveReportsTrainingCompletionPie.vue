@@ -309,11 +309,12 @@ export default {
       }
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
-        if (data === labels.Completed && completed) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.InProgress && inProgress) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.Incomplete && incomplete) {
+        const shouldAddColor = {
+          [labels.Incomplete]: incomplete,
+          [labels.InProgress]: inProgress,
+          [labels.Completed]: completed
+        }[data]
+        if (shouldAddColor) {
           backgroundColor.push(CHART_COLORS[data].backgroundColor)
         }
       })

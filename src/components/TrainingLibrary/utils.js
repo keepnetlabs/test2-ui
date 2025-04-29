@@ -365,3 +365,20 @@ export function isInavailable(
   }
   return true
 }
+
+export function getAutoEnrollText(
+  autoEnrollType,
+  autoEnrollDayOfWeek,
+  enrollmentAutoEnroll,
+  autoEnrollPeriodType
+) {
+  let autoEnrollText = ''
+  if (autoEnrollType === 'next') {
+    autoEnrollText = `on the next ${autoEnrollDayOfWeek}`
+  } else if (autoEnrollType === 'in') {
+    autoEnrollText = `in ${enrollmentAutoEnroll.periodCount} ${autoEnrollPeriodType}`
+  } else {
+    autoEnrollText = autoEnrollType
+  }
+  return `Automatically enroll new users ${autoEnrollText}`
+}
