@@ -30,7 +30,7 @@
     @searchChangedEvent="handleSearchChange"
     @downloadEvent="exportData"
     @refreshAction="callForData"
-  ></DataTable>
+  />
 </template>
 
 <script>
@@ -72,7 +72,6 @@ export default {
         columns: [
           {
             property: 'email',
-            //align: 'left',
             editable: false,
             label: 'Breached Account',
             fixed: true,
@@ -84,7 +83,6 @@ export default {
           },
           {
             property: 'hashtype',
-            //align: 'left',
             editable: false,
             label: 'Password Type',
             fixed: false,
@@ -96,7 +94,6 @@ export default {
           },
           {
             property: 'source',
-            //align: 'left',
             editable: false,
             label: 'Source',
             fixed: false,
@@ -108,7 +105,6 @@ export default {
           },
           {
             property: 'leakdate',
-            //align: 'left',
             editable: false,
             label: 'Leak Date',
             fixed: false,

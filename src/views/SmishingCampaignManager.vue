@@ -12,8 +12,8 @@
       @on-submit="handleOnSubmit"
     />
     <CampaignManagerNewInstanceModal
-      ref="refCampaignNewInstance"
       v-if="isShowNewInstanceModal"
+      ref="refCampaignNewInstance"
       :status="isShowNewInstanceModal"
       :resourceId="instanceResourceId"
       :form-details="formDetails"
