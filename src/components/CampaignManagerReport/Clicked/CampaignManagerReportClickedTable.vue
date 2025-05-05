@@ -2,7 +2,7 @@
   <div>
     <div>
       <CampaignManagerReportBotActivityAlertBox
-        v-if="!isLoading"
+        v-if="!isLoading && botActivityCount > 0"
         :bot-activity-count="botActivityCount"
         :is-show-sandbox="isShowSandbox"
         @on-activity-change="handleActivity"
