@@ -252,11 +252,7 @@ export default {
             })
             return { ...row, ...customFields }
           })
-          if (this.isShowSandbox) {
-            this.botActivityCount = totalNumberOfRecords
-          } else {
-            this.botActivityCount = totalSandBoxActivityCount
-          }
+          this.botActivityCount = totalSandBoxActivityCount || 0
         })
         .finally(this.setLoading)
     },
