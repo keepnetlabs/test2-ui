@@ -276,6 +276,17 @@ div.gjs-field-arrows{
 .webchat__send-box__main .webchat__upload-button{
   display: none !important;
 }
+.webchat__text-content__markdown{
+  .webchat__render-markdown{
+    ol,ul{
+      padding-left: 16px !important;
+      margin-top:4px !important;
+      li:not(:last-child){
+        margin-bottom:4px !important;
+      }
+    }
+  }
+}
 .gjs-mdl-dialog{
   max-width: 1200px !important;
 }
