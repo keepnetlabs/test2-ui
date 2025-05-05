@@ -1,32 +1,33 @@
 <template>
   <KContainer id="campaign-manager-report">
-    <el-tabs v-model="tab">
-      <el-tab-pane
-        v-for="item in tabItems"
-        v-if="item.isVisible"
-        :key="item.name"
-        :id="item.id"
-        :name="item.name"
-        :label="item.label"
-        :disabled="isLoading"
-      >
-        <span slot="label">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-          <template v-else> {{ item.label }} </template>
-        </span>
-        <component
-          v-if="item.name === tab"
-          :is="item.component"
-          :id="id"
-          :custom-fields="customFields"
-          :instance-group="instanceGroup"
-          :phishing-scenario-name="getPhishingScenarioName"
-          :form-details="formDetails"
-          :api-response="apiResponse"
-          :languageItems="languageItems"
-        />
-      </el-tab-pane>
-    </el-tabs>
+    <ElTabs v-model="tab">
+      <template v-for="item in tabItems">
+        <ElTabPane
+          v-if="item.isVisible"
+          :key="item.name"
+          :id="item.id"
+          :name="item.name"
+          :label="item.label"
+          :disabled="isLoading"
+        >
+          <span slot="label">
+            <VSkeletonLoader v-if="isLoading" :loading="isLoading" type="chip" />
+            <template v-else> {{ item.label }} </template>
+          </span>
+          <component
+            v-if="item.name === tab"
+            :is="item.component"
+            :id="id"
+            :custom-fields="customFields"
+            :instance-group="instanceGroup"
+            :phishing-scenario-name="getPhishingScenarioName"
+            :form-details="formDetails"
+            :api-response="apiResponse"
+            :languageItems="languageItems"
+          />
+        </ElTabPane>
+      </template>
+    </ElTabs>
   </KContainer>
 </template>
 
@@ -67,13 +68,6 @@ export default {
           component: CampaignManagerReportSummary,
           isVisible: this.$store.getters['permissions/getCallbackReportSummaryPermissions']
         },
-        // {
-        //   name: labels.Users,
-        //   id: 'smishing-report-users-content',
-        //   label: labels.Users,
-        //   component: SmishingReportUsers,
-        //   isVisible: this.$store.getters['permissions/getCallbackReportSummaryPermissions']
-        // },
         {
           name: labels.Opened,
           id: 'callback-report-opened-content',

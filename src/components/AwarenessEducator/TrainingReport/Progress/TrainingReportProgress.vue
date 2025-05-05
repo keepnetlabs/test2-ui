@@ -56,7 +56,7 @@
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="training-report-progress__progress-column">
           <v-btn style="display: none;" />
-          <Badge v-bind="getStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
+          <Badge v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
         </div>
       </template>
     </DataTable>
@@ -80,6 +80,7 @@ import TrainingReportProgressDetails from '@/components/AwarenessEducator/Traini
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import { getTrainingReportProgressStatusBadgeProps } from './utils'
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
@@ -257,14 +258,12 @@ export default {
             id: 'btn-interactions--row-actions-training-report-progress',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-progress',
             icon: '$custom-details',
             action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
         ]
       },
@@ -303,6 +302,7 @@ export default {
     }
   },
   methods: {
+    getTrainingReportProgressStatusBadgeProps,
     handleSelectionChange(selectionCount) {
       this.resendItemCount = selectionCount
     },
@@ -339,25 +339,6 @@ export default {
           this.isResendActionButtonDisabled = false
           this.isShowResendDialog = false
         })
-    },
-    getStatusBadgeProps(progress) {
-      if (progress === 'Not Completed')
-        return {
-          color: '#B83A3A',
-          text: 'Not Completed'
-        }
-
-      if (progress === 'In Progress')
-        return {
-          color: '#B6791D',
-          text: 'In Progress'
-        }
-
-      if (progress === 'Completed')
-        return {
-          color: '#217124',
-          text: 'Completed'
-        }
     },
     callForData() {
       this.setLoading(true)
@@ -413,7 +394,6 @@ export default {
       this.selectedRow = row
       this.toggleIsShowDetailsModal()
     },
-    confirmResend() {},
     toggleIsShowResendDialog() {
       if (this.isShowResendDialog) {
         this.selectedRow = null

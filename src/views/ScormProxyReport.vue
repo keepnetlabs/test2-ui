@@ -1,8 +1,8 @@
 <template>
   <KContainer id="training-report">
-    <el-tabs v-model="tab">
+    <ElTabs v-model="tab">
       <template v-for="item in tabItems">
-        <el-tab-pane
+        <ElTabPane
           v-if="item.isVisible"
           :key="item.name"
           :id="item.id"
@@ -11,7 +11,7 @@
           :disabled="isLoading"
         >
           <span slot="label">
-            <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+            <VSkeletonLoader v-if="isLoading" :loading="isLoading" type="chip" />
             <template v-else> {{ item.label }} </template>
           </span>
           <component
@@ -25,9 +25,9 @@
             :scormTrainingSummary="scormTrainingSummary"
             :isScormProxy="isScormProxy"
           />
-        </el-tab-pane>
+        </ElTabPane>
       </template>
-    </el-tabs>
+    </ElTabs>
   </KContainer>
 </template>
 
@@ -59,7 +59,6 @@ export default {
           id: 'training-report-summary-content',
           label: labels.Summary,
           component: TrainingReportSummary,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
           isVisible: true
         },
         {
@@ -67,7 +66,6 @@ export default {
           id: 'training-report-users-content',
           label: labels.Users,
           component: TrainingReportUsers,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
           isVisible: true
         },
         {
@@ -75,7 +73,6 @@ export default {
           id: 'training-report-opened-content',
           label: labels.OpenedTrainingEmail,
           component: TrainingReportOpenedTrainingEmail,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
           isVisible: true
         },
         {
@@ -83,7 +80,6 @@ export default {
           id: 'training-report-clicked-content',
           label: labels.ClickedTrainingLink,
           component: TrainingReportClickedTrainingLink,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
           isVisible: true
         },
         {
@@ -91,7 +87,6 @@ export default {
           id: 'training-report-progress-content',
           label: labels.Progress,
           component: TrainingReportProgress,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsNoResponsePermissions']
           isVisible: true
         },
         {
@@ -99,9 +94,6 @@ export default {
           id: 'training-report-exam-results-content',
           label: labels.ExamResults,
           component: TrainingReportExamResults,
-          // isVisible: this.$store.getters[
-          //   'permissions/getCampaignReportsPhishingReporterPermissions'
-          // ],
           isVisible: true
         },
         {
@@ -109,7 +101,6 @@ export default {
           id: 'training-report-no-response-content',
           label: labels.NoResponse,
           component: TrainingReportNoResponse,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
           isVisible: true
         },
         {
@@ -117,7 +108,6 @@ export default {
           id: 'training-report-sending-report-content',
           label: labels.SendingReport,
           component: TrainingReportSendingReport,
-          // isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
           isVisible: true
         }
       ],

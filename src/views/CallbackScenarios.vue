@@ -103,31 +103,22 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refTemplates, refEmailTemplates } = this.$refs
-
-    if (refScenarios && refScenarios.modalStatus) {
+    if (refScenarios?.modalStatus) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
-    } else if (refScenarios && refScenarios.isShowFastLaunch) {
+    } else if (refScenarios?.isShowFastLaunch) {
       if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
-    } else if (
-      refTemplates &&
-      refTemplates.$refs.newEmailTemplate &&
-      refTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
-      refTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
-    ) {
+    } else if (refTemplates?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
       refTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refTemplates && refTemplates.modalStatus) {
+    } else if (refTemplates?.modalStatus) {
       if (typeof refTemplates.checkIfCanCloseCallbackTemplateModal === 'function')
         refTemplates.checkIfCanCloseCallbackTemplateModal()
       next(false)
     } else if (
-      refEmailTemplates &&
-      refEmailTemplates.$refs.newEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+      refEmailTemplates?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal
     ) {
       refEmailTemplates.checkIfCanCloseGrapesJSModal()
       next(false)

@@ -20,15 +20,16 @@
           @click="handleStartTraining"
           >{{ startButtonLabel }}
         </VBtn>
-        <VBtn
-          v-else
-          v-for="button in buttons"
-          :key="button.language"
-          class="phished-landing-page__button"
-          color="#2196f3"
-          @click="handleStartTrainingByLanguage(button)"
-          >{{ button.text }}
-        </VBtn>
+        <template v-else>
+          <VBtn
+            v-for="button in buttons"
+            :key="button.language"
+            class="phished-landing-page__button"
+            color="#2196f3"
+            @click="handleStartTrainingByLanguage(button)"
+            >{{ button.text }}
+          </VBtn>
+        </template>
       </div>
     </div>
   </div>
