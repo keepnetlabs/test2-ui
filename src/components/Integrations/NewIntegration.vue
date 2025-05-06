@@ -1610,7 +1610,7 @@ export default {
     },
     handleApiKeyChange() {
       if (!this.formValues.apiUrl) return true
-      if (!!this.formValues.apiKeys) {
+      if (this.formValues.apiKeys.length) {
         this.formValues.apiKeys.map((item) => {
           this.isTestConnectionDisabled = false
           if (!item.value.length) {

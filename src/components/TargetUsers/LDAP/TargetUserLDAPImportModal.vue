@@ -153,7 +153,10 @@ export default {
       step1Step: 0,
       step2Step: 0,
       isStep2Loading: false,
-      serverSideSelectionParams: { isSelectedAllEver: false, excludedResourceIdList: [] },
+      serverSideSelectionParams: {
+        isSelectedAllEver: false,
+        excludedResourceIdList: []
+      },
       usersQueryFilter: getDefaultFilter()
     }
   },
@@ -237,13 +240,12 @@ export default {
         return this.step2Step === 0
           ? this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
           : getDefaultAxiosPayload().filter
-      } else {
-        if (this.step2Step === 1) return this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
-        else
-          return this.step2Step === 2
-            ? getDefaultAxiosPayload().filter
-            : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
-      }
+      } else if (this.step2Step === 1) {
+        return this?.$refs?.refStep2?.$refs?.refQuery?.getPayloadFilter()
+      } else
+        return this.step2Step === 2
+          ? getDefaultAxiosPayload().filter
+          : this?.$refs?.refStep2?.$refs?.refManually?.$refs?.refTable?.axiosPayload?.filter
     },
     submit(importType) {
       this.isSubmitDisabled = true

@@ -181,7 +181,9 @@ export default {
   ],
   data() {
     return {
-      axiosPayload: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
+      axiosPayload: getDefaultAxiosPayload({
+        excludeGroupUsers: this.excludeGroupUsers
+      }),
       defaultRequestBody: getDefaultAxiosPayload({
         excludeGroupUsers: this.excludeGroupUsers
       }),
@@ -363,21 +365,12 @@ export default {
           this.tableOptions.addButton = {
             show: false
           }
-        } else if (val === 'New Hires') {
-          this.tableOptions.iEmpty = {
-            message: labels.NoTargetGroupUserAdded
-          }
-          this.tableOptions.addButton = {
-            show: false
-          }
-        } else if (val === 'Non-simulated Users' || val === 'Non-Simulated Users') {
-          this.tableOptions.iEmpty = {
-            message: labels.NoTargetGroupUserAdded
-          }
-          this.tableOptions.addButton = {
-            show: false
-          }
-        } else if (val === 'Untrained Users') {
+        } else if (
+          val === 'Untrained Users' ||
+          val === 'New Hires' ||
+          val === 'Non-simulated Users' ||
+          val === 'Non-Simulated Users'
+        ) {
           this.tableOptions.iEmpty = {
             message: labels.NoTargetGroupUserAdded
           }

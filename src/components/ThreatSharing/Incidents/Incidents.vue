@@ -276,12 +276,10 @@ export default {
           if (!this.isLoadState) {
             this.getIncidentList('', '', true)
           }
-        } else {
-          if (!this.isLoadState) {
-            this.debounce(() => {
-              this.getIncidentList('', '', true)
-            }, 750)
-          }
+        } else if (!this.isLoadState) {
+          this.debounce(() => {
+            this.getIncidentList('', '', true)
+          }, 750)
         }
       }
     },
@@ -462,22 +460,20 @@ export default {
                   })
               }
             })
-        } else {
-          if (!this.isLoadState || this.isTableReload) {
-            getIncidentList(payload)
-              .then((response) => {
-                if (isSearch) this.page = 1
-                this.incidentList = response.data.data.results
-                this.incidentList = this.incidentList.map((item) => {
-                  return { ...item, isToggle: false }
-                })
-                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-                this.totalNumberOfPages = response.data.data.totalNumberOfPages
+        } else if (!this.isLoadState || this.isTableReload) {
+          getIncidentList(payload)
+            .then((response) => {
+              if (isSearch) this.page = 1
+              this.incidentList = response.data.data.results
+              this.incidentList = this.incidentList.map((item) => {
+                return { ...item, isToggle: false }
               })
-              .finally(() => {
-                this.incidentLoading = false
-              })
-          }
+              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+              this.totalNumberOfPages = response.data.data.totalNumberOfPages
+            })
+            .finally(() => {
+              this.incidentLoading = false
+            })
         }
       }
     }
