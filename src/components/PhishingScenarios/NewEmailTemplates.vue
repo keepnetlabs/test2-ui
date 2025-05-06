@@ -111,10 +111,14 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <FormGroup
                       class-name="mt-8"
+                      style="max-width: 753px;"
                       title="Languages Settings"
                       sub-title="Choose a language for automatic localization; 178 languages are supported."
                     >
-                      <InputLanguagesSettings v-model="selectedLanguages" />
+                      <InputLanguagesSettings
+                        v-model="selectedLanguages"
+                        @input="handleSelectedLanguagesChange"
+                      />
                     </FormGroup>
                     <form-group
                       title="Email Template"
@@ -165,13 +169,13 @@
                         :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
-                        :from-address.sync="formValues.fromAddress"
-                        :cc-addresses.sync="formValues.ccAddresses"
-                        :from-name.sync="formValues.fromName"
+                        :from-address.sync="getSelectedLanguagePayload.fromAddress"
+                        :cc-addresses.sync="getSelectedLanguagePayload.ccAddresses"
+                        :from-name.sync="getSelectedLanguagePayload.fromName"
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
-                        :subject.sync="formValues.subject"
-                        :template.sync="formValues.template"
+                        :subject.sync="getSelectedLanguagePayload.subject"
+                        :template.sync="getSelectedLanguagePayload.template"
                         :ai-assistant.sync="formValues.aiAssistant"
                         :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
                         :ai-assistant-total-right="aiAssistantTotalRights"
@@ -181,20 +185,24 @@
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
-                        :language-type-resource-id.sync="formValues.languageTypeResourceId"
+                        :language-type-resource-id.sync="
+                          getSelectedLanguagePayload.languageTypeResourceId
+                        "
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :isAIAllyEnabled="isAIAllyEnabled"
                         :method-type-id="getMethodTypeId"
-                        :prompt.sync="formValues.prompt"
-                        :toneResourceId.sync="formValues.toneResourceId"
-                        :localizationResourceId.sync="formValues.localizationResourceId"
+                        :prompt.sync="getSelectedLanguagePayload.prompt"
+                        :toneResourceId.sync="getSelectedLanguagePayload.toneResourceId"
+                        :localizationResourceId.sync="
+                          getSelectedLanguagePayload.localizationResourceId
+                        "
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
                         :is-plain-text.sync="isPlainText"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
-                        @handleEditHtmlTemplate="formValues.template = $event"
+                        @handleEditHtmlTemplate="getSelectedLanguagePayload.template = $event"
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
@@ -327,28 +335,6 @@ export default {
       languageOptions: [],
       selectedLanguages: [],
       activeLanguage: '',
-      treeSelectLanguageOptions: [
-        {
-          id: 'PreferredLanguages',
-          label: 'Preferred Languages',
-          children: [
-            {
-              id: 'English',
-              label: 'English'
-            }
-          ]
-        },
-        {
-          id: 'AllLanguages',
-          label: 'All Languages',
-          children: [
-            {
-              id: 'Turkish',
-              label: 'Turkish'
-            }
-          ]
-        }
-      ],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -378,6 +364,7 @@ export default {
         toneResourceId: '',
         localizationResourceId: ''
       },
+      languagesPayload: [],
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
       commonRules: {
@@ -425,6 +412,12 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSelectedLanguagePayload() {
+      return (
+        this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) ||
+        {}
+      )
+    },
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Email Template'
@@ -508,13 +501,29 @@ export default {
             }
           ]
         }
+        this.languagesPayload.push({
+          languageTypeResourceId: this.formValues.languageTypeResourceId,
+          subject: this.formValues.subject,
+          fromName: this.formValues.fromName,
+          fromAddress: this.formValues.fromAddress,
+          ccAddresses: this.formValues.ccAddresses || [],
+          template: this.formValues.template,
+          prompt: this.formValues.prompt,
+          toneResourceId: this.formValues.toneResourceId,
+          localizationResourceId: this.formValues.localizationResourceId
+        })
+        this.activeLanguage = this.formValues.languageTypeResourceId
+        //TODO
+        this.selectedLanguages.push({
+          text: 'English (UK)',
+          value: this.activeLanguage
+        })
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
-      const preferredLanguageTypeResourceId =
+      this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
-      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
     }
   },
   methods: {
@@ -611,6 +620,25 @@ export default {
       }
       this.isPhishingFileModified = true
       this.isAddedNewPhishingFile = true
+    },
+    handleSelectedLanguagesChange(languages) {
+      this.languagesPayload = languages.map((language) => {
+        const item = this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === language.value
+        )
+        if (item) return item
+        return {
+          languageTypeResourceId: language.value,
+          subject: '',
+          fromName: '',
+          fromAddress: '',
+          ccAddresses: [],
+          template: this.initialFormValues.template,
+          prompt: '',
+          toneResourceId: '',
+          localizationResourceId: ''
+        }
+      })
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true

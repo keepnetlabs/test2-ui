@@ -17,7 +17,7 @@
           <template>
             <InputLanguagePreview
               persistent-hint
-              hint="This template is available in 35 languages."
+              :hint="`This template is available in ${emailTemplateParams.length || 0} languages.`"
               @input="handleLanguageChange"
             />
             <div>

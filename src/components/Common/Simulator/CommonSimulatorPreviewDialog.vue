@@ -49,7 +49,7 @@
                   v-model="languagePreview"
                   persistent-hint
                   class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  hint="This template is available in 35 languages."
+                  :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
                   :items="selectedTemplateLanguages"
                   :hide-details="false"
                   @input="handleEmailTemplatePreviewLanguageChange"
@@ -61,12 +61,6 @@
                 </span>
                 <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.subject
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title fw-600 text-primary-color">From: </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.fromName
                 }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">

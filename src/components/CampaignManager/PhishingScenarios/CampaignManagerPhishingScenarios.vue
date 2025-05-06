@@ -401,7 +401,7 @@
                             v-model="languagePreview"
                             persistent-hint
                             class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                            hint="This template is available in 35 languages."
+                            :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
                             :items="selectedTemplateLanguages"
                             :hide-details="false"
                             @input="handleEmailTemplatePreviewLanguageChange"
@@ -413,12 +413,6 @@
                             }}</span>
                           </div>
                           <div class="mb-2">
-                            <span class="fw-600 text-primary-color">From: </span>
-                            <span class="fw-400 text-primary-color">{{
-                              emailTemplateParams && emailTemplateParams.fromAddress
-                            }}</span>
-                          </div>
-                          <div class="mb-2">
                             <span class="fw-600 text-primary-color">From Name: </span>
                             <span class="fw-400 text-primary-color">{{
                               emailTemplateParams && emailTemplateParams.fromName
@@ -427,7 +421,7 @@
                           <div class="mb-2">
                             <span class="fw-600 text-primary-color">From Email Address:</span>
                             <span class="fw-400 text-primary-color">{{
-                              emailTemplateParams && emailTemplateParams.fromEmailAddress
+                              emailTemplateParams && emailTemplateParams.fromAddress
                             }}</span>
                           </div>
                           <div>

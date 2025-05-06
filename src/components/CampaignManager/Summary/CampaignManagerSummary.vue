@@ -263,7 +263,7 @@
                 v-model="languagePreview"
                 persistent-hint
                 class="max-w-554"
-                hint="This template is available in 35 languages."
+                :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
                 :items="selectedTemplateLanguages"
                 @input="handleEmailTemplatePreviewLanguageChange"
               />
@@ -271,12 +271,6 @@
                 <span class="fw-600 text-primary-color">Subject: </span>
                 <span class="fw-400 text-primary-color">{{
                   emailTemplateParams && emailTemplateParams.subject
-                }}</span>
-              </div>
-              <div class="mb-2">
-                <span class="fw-600 text-primary-color">From: </span>
-                <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.fromAddress
                 }}</span>
               </div>
               <div class="mb-2">
@@ -288,7 +282,7 @@
               <div class="mb-2">
                 <span class="fw-600 text-primary-color">From Email Address:</span>
                 <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.fromEmailAddress
+                  emailTemplateParams && emailTemplateParams.fromAddress
                 }}</span>
               </div>
               <div>

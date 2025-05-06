@@ -402,7 +402,7 @@
                               v-model="languagePreview"
                               persistent-hint
                               class="max-w-554"
-                              hint="This template is available in 35 languages."
+                              :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
                               :items="selectedTemplateLanguages"
                               @input="handleEmailTemplatePreviewLanguageChange"
                             />
@@ -814,6 +814,7 @@ export default {
       Validations,
       initialFormValues: {},
       quishingType: '',
+      selectedTemplateLanguages: [],
       categoryText: '',
       formValues: {
         name: '',
@@ -848,9 +849,6 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
-    selectedTemplateLanguages() {
-      return []
-    },
     getSelectedMethodText() {
       let selectedMethod = this.getMethodText
       if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
