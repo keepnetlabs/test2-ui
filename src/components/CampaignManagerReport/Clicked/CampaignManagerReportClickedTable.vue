@@ -2,7 +2,7 @@
   <div>
     <div>
       <CampaignManagerReportBotActivityAlertBox
-        v-if="!isLoading"
+        v-if="!isLoading && botActivityCount > 0"
         :bot-activity-count="botActivityCount"
         :is-show-sandbox="isShowSandbox"
         @on-activity-change="handleActivity"
@@ -264,11 +264,7 @@ export default {
             })
             return { ...row, ...customFields }
           })
-          if (this.isShowSandbox) {
-            this.botActivityCount = totalNumberOfRecords
-          } else {
-            this.botActivityCount = totalSandBoxActivityCount
-          }
+          this.botActivityCount = totalSandBoxActivityCount || 0
         })
         .finally(this.setLoading)
     },
