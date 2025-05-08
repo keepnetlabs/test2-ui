@@ -16,6 +16,7 @@
         <div class="template-preview__text" v-if="!!templateHTML">
           <template>
             <InputLanguagePreview
+              class="max-w-554"
               persistent-hint
               :hint="`This template is available in ${emailTemplateParams.length || 0} languages.`"
               @input="handleLanguageChange"

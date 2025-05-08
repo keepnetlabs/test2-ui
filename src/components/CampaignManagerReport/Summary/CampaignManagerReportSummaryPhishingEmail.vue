@@ -54,6 +54,7 @@
             v-model="languagePreview"
             style="max-width: 554px; min-width: 554px;"
             persistent-hint
+            class="max-w-554"
             :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
             :items="selectedTemplateLanguages"
             @input="handleEmailTemplatePreviewLanguageChange"
