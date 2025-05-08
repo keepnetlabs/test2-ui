@@ -53,35 +53,41 @@
           <InputLanguagePreview
             v-model="languagePreview"
             style="max-width: 554px; min-width: 554px;"
-            hide-details
+            persistent-hint
+            :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
             :items="selectedTemplateLanguages"
-            :disabled="selectedTemplateLanguages.length === 0"
             @input="handleEmailTemplatePreviewLanguageChange"
           />
         </div>
-        <div class="template-preview__text--title mt-4">
-          <span class="fw-600 text-primary-color">Subject: </span>
-          <span class="fw-400 text-primary-color">{{ subject }}</span>
+        <div class="template-preview__text--title">
+          <span class="fw-600 text-primary-color fs-medium">Subject: </span>
+          <span class="fw-400 text-primary-color fs-medium">{{ subject }}</span>
         </div>
         <div>
-          <span class="template-preview__text--title fw-600 text-primary-color">From Name: </span>
-          <span class="template-preview__text--body fw-400 text-primary-color">{{ fromName }}</span>
+          <span class="template-preview__text--title fw-600 text-primary-color fs-medium"
+            >From Name:
+          </span>
+          <span class="template-preview__text--body fw-400 text-primary-color fs-medium">{{
+            fromName
+          }}</span>
         </div>
         <div>
-          <span class="template-preview__text--title fw-600 text-primary-color"
+          <span class="template-preview__text--title fw-600 text-primary-color fs-medium"
             >From Address:
           </span>
-          <span class="template-preview__text--body fw-400 text-primary-color">{{
+          <span class="template-preview__text--body fw-400 text-primary-color fs-medium">{{
             fromAddress
           }}</span>
         </div>
         <div v-if="ccAddresses.length > 0">
-          <span class="template-preview__text--title fw-600 text-primary-color">CC: </span>
-          <span class="template-preview__text--body fw-400 text-primary-color">{{
+          <span class="template-preview__text--title fw-600 text-primary-color fs-medium"
+            >CC:
+          </span>
+          <span class="template-preview__text--body fw-400 text-primary-color fs-medium">{{
             ccAddresses.join(', ')
           }}</span>
         </div>
-        <div v-if="formData.attachment" class="attachment-wrapper mt-2" style="position: relative;">
+        <div v-if="formData.attachment" class="attachment-wrapper mt-2 position-relative">
           <div class="attachment blue-attach mb-0">
             <AttachmentsPreview
               :deletable="false"
@@ -90,7 +96,7 @@
             />
           </div>
         </div>
-        <div class="campaign-manager-last-step__email-template-body-preview">
+        <div class="campaign-manager-last-step__email-template-body-preview mt-6">
           <DatatableLoading v-if="isLoading" :loading="isLoading" />
           <KEmailPreview v-else :html="emailTemplate" is-extra-height />
         </div>

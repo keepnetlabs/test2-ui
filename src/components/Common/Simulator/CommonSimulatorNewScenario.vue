@@ -114,6 +114,7 @@
                 </FormGroup>
                 <FormGroup
                   v-if="isPhishing"
+                  has-hint
                   title="Category"
                   sub-title="Select the phishing category for this scenario"
                 >
@@ -158,6 +159,7 @@
                   :items="getMethodTypes"
                 />
                 <FormGroup
+                  v-if="!isPhishing"
                   has-hint
                   title="Language"
                   sub-title="Select the language you are writing this webpage template in"
@@ -407,33 +409,29 @@
                               @input="handleEmailTemplatePreviewLanguageChange"
                             />
                             <div class="mb-2">
-                              <span class="fw-600 text-primary-color">Subject: </span>
-                              <span class="fw-400 text-primary-color">{{
+                              <span class="fw-600 text-primary-color fs-medium">Subject: </span>
+                              <span class="fw-400 text-primary-color fs-medium">{{
                                 summaryData.emailTemplate && summaryData.emailTemplate.subject
                               }}</span>
                             </div>
                             <div class="mb-2">
-                              <span class="fw-600 text-primary-color">From: </span>
-                              <span class="fw-400 text-primary-color">{{
-                                summaryData.emailTemplate && summaryData.emailTemplate.fromAddress
-                              }}</span>
-                            </div>
-                            <div class="mb-2">
-                              <span class="fw-600 text-primary-color">From Name: </span>
-                              <span class="fw-400 text-primary-color">{{
+                              <span class="fw-600 text-primary-color fs-medium">From Name: </span>
+                              <span class="fw-400 text-primary-color fs-medium">{{
                                 summaryData.emailTemplate && summaryData.emailTemplate.fromName
                               }}</span>
                             </div>
                             <div class="mb-2">
-                              <span class="fw-600 text-primary-color">From Email Address:</span>
-                              <span class="fw-400 text-primary-color">{{
+                              <span class="fw-600 text-primary-color fs-medium"
+                                >From Email Address:
+                              </span>
+                              <span class="fw-400 text-primary-color fs-medium">{{
                                 summaryData.emailTemplate &&
                                 summaryData.emailTemplate.fromEmailAddress
                               }}</span>
                             </div>
                             <div>
-                              <span class="fw-600 text-primary-color">CC:</span>
-                              <span class="fw-400 text-primary-color">{{
+                              <span class="fw-600 text-primary-color fs-medium">CC: </span>
+                              <span class="fw-400 text-primary-color fs-medium">{{
                                 summaryData.emailTemplate && summaryData.emailTemplate.cc
                               }}</span>
                             </div>
@@ -1463,6 +1461,8 @@ export default {
       if (!this.isPhishing) {
         delete payload.categoryId
         delete payload.category
+      } else {
+        delete payload.languageTypeResourceId
       }
       if (this.isQuishing) {
         payload.templateType = this.quishingType

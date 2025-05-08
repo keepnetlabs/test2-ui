@@ -26,6 +26,17 @@
                   emailTemplateParams.type || 'Email'
                 }}</span>
               </div>
+              <div v-if="isPhishing">
+                <InputLanguagePreview
+                  v-model="languagePreview"
+                  persistent-hint
+                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                  :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                  :items="selectedTemplateLanguages"
+                  :hide-details="false"
+                  @input="handleEmailTemplatePreviewLanguageChange"
+                />
+              </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body"
@@ -40,39 +51,14 @@
                   </VTooltip>
                 </span>
               </div>
-              <div
-                v-if="isPhishing"
-                style="background: #e0e0e0; height: 1px; max-width: 554px;"
-              ></div>
-              <div v-if="isPhishing">
-                <InputLanguagePreview
-                  v-model="languagePreview"
-                  persistent-hint
-                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
-                  :items="selectedTemplateLanguages"
-                  :hide-details="false"
-                  @input="handleEmailTemplatePreviewLanguageChange"
-                />
-              </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title mt-n2 fw-600 text-primary-color"
-                  >Subject:
-                </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.subject
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title fw-600 text-primary-color"
-                  >From Name:
-                </span>
+                <span class="template-preview__text--title text-primary-color">From Name: </span>
                 <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.fromName
                 }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title fw-600 text-primary-color"
+                <span class="template-preview__text--title text-primary-color"
                   >From Email Address:
                 </span>
                 <span class="template-preview__text--body fw-400 text-primary-color">{{
@@ -80,9 +66,17 @@
                 }}</span>
               </div>
               <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title fw-600 text-primary-color">CC: </span>
+                <span class="template-preview__text--title text-primary-color">CC: </span>
                 <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
+              </div>
+              <div v-if="!isQuishingTypeIndividualPrintOut">
+                <span class="template-preview__text--title mt-n2 text-primary-color fw-600"
+                  >Subject:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.subject
                 }}</span>
               </div>
               <div
