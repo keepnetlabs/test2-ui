@@ -450,15 +450,13 @@ export default {
     selectedLanguages(val) {
       if (!val.length) {
         this.activeLanguage = ''
-      } else {
-        if (this.activeLanguage) {
-          const isInSelected = val.find((item) => item.value === this.activeLanguage)
-          if (!isInSelected) {
-            this.activeLanguage = val[0].value
-          }
-        } else {
+      } else if (this.activeLanguage) {
+        const isInSelected = val.find((item) => item.value === this.activeLanguage)
+        if (!isInSelected) {
           this.activeLanguage = val[0].value
         }
+      } else {
+        this.activeLanguage = val[0].value
       }
     }
   },
@@ -513,7 +511,6 @@ export default {
           localizationResourceId: this.formValues.localizationResourceId
         })
         this.activeLanguage = this.formValues.languageTypeResourceId
-        //TODO
         this.selectedLanguages.push({
           text: 'English (UK)',
           value: this.activeLanguage

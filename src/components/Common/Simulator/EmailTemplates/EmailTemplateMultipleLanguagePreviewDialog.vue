@@ -88,7 +88,6 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import QuishingService from '@/api/quishing'
 import InputLanguagePreview from '../../Inputs/InputLanguagePreview.vue'
 
 export default {

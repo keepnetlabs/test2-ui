@@ -8,5 +8,8 @@ class SystemUserModel {
     this.roleResourceIdList = []
     this.statusId = 1
   }
+  getFullName() {
+    return `${this.firstName} ${this.lastName}`
+  }
 }
 export default SystemUserModel

@@ -239,9 +239,7 @@ export default {
   watch: {
     isShowAllCompany(val) {
       if (val) this.handleSearchCompanyFocus()
-      else {
-        if (this.searchedCompanyText.length < 3) this.handleSearchCompanyFocusOut()
-      }
+      else if (this.searchedCompanyText.length < 3) this.handleSearchCompanyFocusOut()
     }
   },
   created() {

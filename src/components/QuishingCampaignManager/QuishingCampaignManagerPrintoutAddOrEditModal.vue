@@ -382,12 +382,13 @@ export default {
     },
     async handleSubmit() {
       switch (this.step) {
-        case 1:
+        case 1: {
           const { refCampaignManagerCampaignInfo } = this.$refs
           if (!refCampaignManagerCampaignInfo.validateForm()) return
           this.changeStep()
           return
-        case 2:
+        }
+        case 2: {
           const {
             refCampaignManagerPhishingScenarios,
             refCampaignManagerCampaignInfo: { inputScheduleFormData }
@@ -415,7 +416,8 @@ export default {
           }
           this.changeStep()
           return
-        case 3:
+        }
+        case 3: {
           const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
           const totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
@@ -449,7 +451,8 @@ export default {
           }
           this.setActionButtonDisability(false)
           return
-        case 4:
+        }
+        case 4: {
           let {
             refCampaignManagerCampaignInfo: {
               formData: campaignManagerFormData,
@@ -524,6 +527,7 @@ export default {
               .finally(this.setActionButtonDisability)
           }
           return
+        }
         default:
           break
       }

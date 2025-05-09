@@ -420,14 +420,15 @@
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
         v-if="isPhishingTemplate && !onlyGrapes"
+        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
       >
         <label
           :class="[
             'mr-4',
             isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
           ]"
+          for="input--email-template-upload"
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
         >
