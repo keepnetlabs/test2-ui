@@ -11,7 +11,7 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <ElTabs v-if="isTypeTrainingOrInfographic" v-model="tab" class="k-sub-tab">
+    <ElTabs v-if="isTypeTraining" v-model="tab" class="k-sub-tab">
       <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
@@ -135,12 +135,8 @@ export default {
         return labels.Infographic.toLowerCase()
       return labels.Training.toLowerCase()
     },
-    isTypeTrainingOrInfographic() {
-      return (
-        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ||
-        (this.isLearningPath &&
-          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-      )
+    isTypeTraining() {
+      return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
     },
     isTypePoster() {
       return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
