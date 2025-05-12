@@ -187,10 +187,7 @@
                       <VListItem
                         v-for="state in data.item.states"
                         :key="state.resourceId"
-                        :class="{
-                          'training-library-filtering-options-parent-list-item': true,
-                          'v-list-item--active': localizationResourceId === state.resourceId
-                        }"
+                        :class="getListItemClass(state)"
                         @click="handleStateChange(state)"
                       >
                         <VListItemTitle
@@ -316,8 +313,8 @@
       </transition>
     </div>
     <div
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
       v-if="!onlyGrapes && showNameField"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
     >
       <FormGroup
         title="Template Name:"
@@ -942,6 +939,12 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    getListItemClass(state) {
+      return {
+        'training-library-filtering-options-parent-list-item': true,
+        'v-list-item--active': this.localizationResourceId === state.resourceId
+      }
+    },
     handleValueComparator(a, b) {
       if (a === b) return true
       return a === this.usaResourceId && this.usaStateResourceIds.includes(b)
@@ -1093,6 +1096,7 @@ export default {
     },
     setDefaultTemplate() {
       this.$emit('update:template', this.defaultTemplate)
+      this.$emit('handleInitialTemplate', this.defaultTemplate)
     },
     toggleShowGrapesModal(isSubmitted = false) {
       if (!this.showGrapesModal) {

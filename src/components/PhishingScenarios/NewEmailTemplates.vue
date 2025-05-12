@@ -624,6 +624,7 @@ export default {
           (item) => item.languageTypeResourceId === language.value
         )
         if (item) return item
+        console.log('this.initialFormValues.template', this.initialFormValues.template)
         return {
           languageTypeResourceId: language.value,
           subject: '',
@@ -711,8 +712,10 @@ export default {
           this.availableForRequests
         ),
         isAssistedByAI: this.isAssistedByAI,
-        isPlainText: !this.isPlainText
+        isPlainText: !this.isPlainText,
+        languages: this.languagesPayload
       }
+      console.log('this.languagesPayload', this.languagesPayload)
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
