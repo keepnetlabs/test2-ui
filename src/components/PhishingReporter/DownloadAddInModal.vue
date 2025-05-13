@@ -54,28 +54,41 @@
         <DownloadAddInListItem
           :src="require('../../assets/img/microsoft-365-logo.svg')"
           :is-loading="o365SpinnerStatus"
-          class="flex-nowrap"
+          class="flex-nowrap align-start"
+          title-class="download-add-in__list-item-margin-title"
           hide-border
           title="Ribbon View"
           description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
         >
           <template #buttons>
-            <div :style="{ minWidth: isAccountConnected ? '228px' : '294px', marginTop: '24px' }">
-              <VBtn
-                v-if="!isAccountConnected"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                @click="handleConnectAccount"
-              >
-                Connect Account
-              </VBtn>
+            <div class="d-flex justify-end align-end flex-column gap-6">
+              <VTooltip v-if="!isAccountConnected" bottom>
+                <template #activator="{ on }">
+                  <VBtn
+                    v-on="on"
+                    class="white--text btn-util btn-download-add-in text-capitalize"
+                    color="#2196f3"
+                    rounded
+                    @click="handleConnectAccount"
+                  >
+                    Connect Account
+                  </VBtn>
+                </template>
+                <span>
+                  Connect your account to enable download.
+                </span>
+              </VTooltip>
               <VBtn
                 v-else
                 text
+                rounded
                 color="#F56C6C"
-                style="text-transform: capitalize; font-weight: 600; font-size: 12px;"
+                style="
+                  text-transform: capitalize;
+                  font-weight: 600;
+                  font-size: 12px;
+                  border: 1px solid #f56c6c;
+                "
                 @click="toggleUnlinkDialog(false)"
               >
                 <v-icon left>mdi-link-off</v-icon>
@@ -112,6 +125,7 @@
           class="mt-n4"
           title="Page View"
           :description="`Users can report phishing directly from the main ribbon with a dedicated &quot;Report&quot; button.`"
+          :is-button-disabled="!isAccountConnected"
           @button-click="callForGenerateO365AddIn"
         >
           <AlertBox
