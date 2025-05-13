@@ -13,7 +13,14 @@
         :append-icon="appendIcon"
         @focus="handleSearchInputFocus"
       />
-      <VBtn class="fw-600" rounded outlined color="#2196f3">
+      <VBtn
+        class="fw-600"
+        rounded
+        outlined
+        color="#2196f3"
+        :style="getGenerateWithAIButtonStyle"
+        @click="handleGenerateWithAI"
+      >
         <v-icon
           style="font-size: 20px; margin-top: 1px;"
           :style="{
@@ -23,7 +30,7 @@
           }"
           >mdi-creation</v-icon
         >
-        <span class="button-new__text" :style="getGenerateWithAIButtonStyle">Generate with AI</span>
+        <span class="button-new__text">Generate with AI</span>
       </VBtn>
     </div>
     <div v-show="!loading" class="switch-account__container input-language-settings__container">
@@ -81,6 +88,10 @@ export default {
   props: {
     value: {
       type: Array
+    },
+    isGenerateWithAIDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -135,11 +146,12 @@ export default {
       if (this.isGenerateButtonDisabled) {
         style.opacity = '0.5'
         style.pointerEvents = 'none'
+        style.cursor = 'default'
       }
       return style
     },
     isGenerateButtonDisabled() {
-      return !this.value.length
+      return !this.value.length || this.isGenerateWithAIDisabled
     }
   },
   watch: {
@@ -187,6 +199,9 @@ export default {
           this.menuMaxHeight = '300px'
         }
       }
+    },
+    handleGenerateWithAI() {
+      this.$emit('on-generate-with-ai')
     }
   }
 }

@@ -117,7 +117,9 @@
                     >
                       <InputLanguagesSettings
                         v-model="selectedLanguages"
+                        :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                         @input="handleSelectedLanguagesChange"
+                        @on-generate-with-ai="handleGenerateWithAI"
                       />
                     </FormGroup>
                     <form-group
@@ -202,7 +204,7 @@
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
-                        @handleEditHtmlTemplate="getSelectedLanguagePayload.template = $event"
+                        @handleEditHtmlTemplate="handleEditHtmlTemplate"
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
@@ -258,7 +260,7 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
-import { getEmailTemplateMethodItems } from './utils'
+import { getEmailTemplateMethodItems, EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 export default {
@@ -325,7 +327,9 @@ export default {
         nextButton: 'btn-next--add-or-edit-email-templates-modal',
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
+      editedLanguages: [],
       isAttachmentError: false,
+      isGenerateWithAIDisabled: false,
       isAssistedByAI: false,
       isPlainText: false,
       isPhishingFileModified: false,
@@ -515,6 +519,7 @@ export default {
           text: 'English (UK)',
           value: this.activeLanguage
         })
+        this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
@@ -524,6 +529,9 @@ export default {
     }
   },
   methods: {
+    handleEditHtmlTemplate(value) {
+      this.getSelectedLanguagePayload.template = value
+    },
     setFooterButtonIds() {
       if (!this.isDuplicate) return
       this.footerButtonsIds = {
@@ -715,9 +723,24 @@ export default {
         isPlainText: !this.isPlainText,
         languages: this.languagesPayload
       }
-      console.log('this.languagesPayload', this.languagesPayload)
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
+        this.editedLanguages.forEach((item) => {
+          const payloadLanguage = payload.languages.find(
+            (language) => language.languageTypeResourceId === item.languageTypeResourceId
+          )
+          if (payloadLanguage) {
+            const isEqual = JSON.stringify(item) === JSON.stringify(payloadLanguage)
+            item.detailActionType = isEqual
+              ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO
+              : EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          } else {
+            payload.languages.push({
+              ...item,
+              detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE
+            })
+          }
+        })
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
@@ -764,6 +787,10 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
+    },
+    handleGenerateWithAI() {
+      this.isGenerateWithAIDisabled = true
+      this.$refs.refEmailTemplate.isEmailGenerating = true
     }
   }
 }
