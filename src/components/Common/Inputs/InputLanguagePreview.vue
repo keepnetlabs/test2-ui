@@ -1,5 +1,6 @@
 <template>
   <KSelect
+    ref="refSelect"
     type="autocomplete"
     :value="value"
     class="input-languages-email-template-preview-select"
@@ -18,13 +19,12 @@
 
 <script>
 import KSelect from './KSelect.vue'
-
 export default {
   name: 'InputLanguagePreview',
   components: { KSelect },
   props: {
     value: {
-      type: String || Number
+      type: [String, Number]
     },
     disabled: {
       type: Boolean

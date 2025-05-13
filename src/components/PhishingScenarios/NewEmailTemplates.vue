@@ -131,11 +131,13 @@
                         <div class="d-flex align-baseline justify-space-between mb-3">
                           <div>
                             <InputLanguagePreview
-                              v-model="activeLanguage"
+                              :value="activeLanguage"
+                              ref="refInputLanguagePreview"
                               style="max-width: 554px; min-width: 554px;"
                               hide-details
                               :items="selectedLanguages"
                               :disabled="selectedLanguages.length === 0"
+                              @input="handleActiveLanguageChange"
                             />
                           </div>
                           <div>
@@ -791,6 +793,17 @@ export default {
     handleGenerateWithAI() {
       this.isGenerateWithAIDisabled = true
       this.$refs.refEmailTemplate.isEmailGenerating = true
+    },
+    handleActiveLanguageChange(value) {
+      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.initialValue = this.activeLanguage
+      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.lazyValue = this.activeLanguage
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          console.log('value', value)
+          this.activeLanguage = value
+        }
+      })
     }
   }
 }
