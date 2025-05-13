@@ -8,7 +8,7 @@
     <div>
       <img v-if="src" :src="src" :alt="alt" />
       <slot name="logo-bottom-content"></slot>
-      <div class="download-add-in__list-item-title" v-if="title">
+      <div v-if="title" :class="['download-add-in__list-item-title', titleClass]">
         {{ title }}
       </div>
       <div class="download-add-in__list-item-desc">
@@ -76,6 +76,10 @@ export default {
     isButtonDisabled: {
       type: Boolean,
       default: false
+    },
+    titleClass: {
+      type: String,
+      default: ''
     }
   },
   computed: {

@@ -54,46 +54,50 @@
         <DownloadAddInListItem
           :src="require('../../assets/img/microsoft-365-logo.svg')"
           :is-loading="o365SpinnerStatus"
-          class="flex-nowrap"
+          class="flex-nowrap align-start"
+          title-class="download-add-in__list-item-margin-title"
           hide-border
           title="Ribbon View"
           description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
         >
-          <template #logo-bottom-content>
-            <VBtn
-              v-if="!isAccountConnected"
-              class="white--text btn-util btn-download-add-in d-block mt-2 mb-4"
-              style="text-transform: capitalize;"
-              color="#2196f3"
-              rounded
-              @click="handleConnectAccount"
-            >
-              Connect Account
-            </VBtn>
-            <VBtn
-              v-else
-              class="d-block mt-2 mb-4"
-              text
-              rounded
-              color="#F56C6C"
-              style="
-                text-transform: capitalize;
-                font-weight: 600;
-                font-size: 12px;
-                border: 1px solid #f56c6c;
-              "
-              @click="toggleUnlinkDialog(false)"
-            >
-              <v-icon left>mdi-link-off</v-icon>
-              <span>Unlink</span>
-            </VBtn>
-          </template>
           <template #buttons>
-            <div>
+            <div class="d-flex justify-end align-end flex-column gap-6">
+              <VTooltip v-if="!isAccountConnected" bottom>
+                <template #activator="{ on }">
+                  <VBtn
+                    v-on="on"
+                    class="white--text btn-util btn-download-add-in text-capitalize"
+                    color="#2196f3"
+                    rounded
+                    @click="handleConnectAccount"
+                  >
+                    Connect Account
+                  </VBtn>
+                </template>
+                <span>
+                  Connect your account to enable download.
+                </span>
+              </VTooltip>
+              <VBtn
+                v-else
+                text
+                rounded
+                color="#F56C6C"
+                style="
+                  text-transform: capitalize;
+                  font-weight: 600;
+                  font-size: 12px;
+                  border: 1px solid #f56c6c;
+                "
+                @click="toggleUnlinkDialog(false)"
+              >
+                <v-icon left>mdi-link-off</v-icon>
+                <span>Unlink</span>
+              </VBtn>
               <VBtn
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize; margin-top: 100px;"
+                style="margin-left: 5px !important; text-transform: capitalize;"
                 color="#2196f3"
                 rounded
                 :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
