@@ -59,32 +59,41 @@
           title="Ribbon View"
           description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
         >
+          <template #logo-bottom-content>
+            <VBtn
+              v-if="!isAccountConnected"
+              class="white--text btn-util btn-download-add-in d-block mt-2 mb-4"
+              style="text-transform: capitalize;"
+              color="#2196f3"
+              rounded
+              @click="handleConnectAccount"
+            >
+              Connect Account
+            </VBtn>
+            <VBtn
+              v-else
+              class="d-block mt-2 mb-4"
+              text
+              rounded
+              color="#F56C6C"
+              style="
+                text-transform: capitalize;
+                font-weight: 600;
+                font-size: 12px;
+                border: 1px solid #f56c6c;
+              "
+              @click="toggleUnlinkDialog(false)"
+            >
+              <v-icon left>mdi-link-off</v-icon>
+              <span>Unlink</span>
+            </VBtn>
+          </template>
           <template #buttons>
-            <div :style="{ minWidth: isAccountConnected ? '228px' : '294px', marginTop: '24px' }">
-              <VBtn
-                v-if="!isAccountConnected"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                @click="handleConnectAccount"
-              >
-                Connect Account
-              </VBtn>
-              <VBtn
-                v-else
-                text
-                color="#F56C6C"
-                style="text-transform: capitalize; font-weight: 600; font-size: 12px;"
-                @click="toggleUnlinkDialog(false)"
-              >
-                <v-icon left>mdi-link-off</v-icon>
-                <span>Unlink</span>
-              </VBtn>
+            <div>
               <VBtn
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
+                style="margin-left: 5px !important; text-transform: capitalize; margin-top: 100px;"
                 color="#2196f3"
                 rounded
                 :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
@@ -112,6 +121,7 @@
           class="mt-n4"
           title="Page View"
           :description="`Users can report phishing directly from the main ribbon with a dedicated &quot;Report&quot; button.`"
+          :is-button-disabled="!isAccountConnected"
           @button-click="callForGenerateO365AddIn"
         >
           <AlertBox

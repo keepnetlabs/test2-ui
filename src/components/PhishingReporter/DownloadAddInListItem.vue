@@ -7,7 +7,10 @@
   >
     <div>
       <img v-if="src" :src="src" :alt="alt" />
-      <div class="download-add-in__list-item-title" v-if="title">{{ title }}</div>
+      <slot name="logo-bottom-content"></slot>
+      <div class="download-add-in__list-item-title" v-if="title">
+        {{ title }}
+      </div>
       <div class="download-add-in__list-item-desc">
         <slot name="description">
           {{ description }}
@@ -19,7 +22,7 @@
         <v-btn
           id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
           class="white--text btn-util btn-download-add-in"
-          style="margin-left: 5px !important; text-transform: capitalize;"
+          :style="getButtonStyle"
           color="#2196f3"
           rounded
           :loading="isLoading"
@@ -69,6 +72,23 @@ export default {
     hideBorder: {
       type: Boolean,
       default: false
+    },
+    isButtonDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    getButtonStyle() {
+      const style = {
+        marginLeft: '5px !important',
+        textTransform: 'capitalize'
+      }
+      if (this.isButtonDisabled) {
+        style.opacity = 0.5
+        style.pointerEvents = 'none'
+      }
+      return style
     }
   },
   methods: {
