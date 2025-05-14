@@ -402,8 +402,8 @@
                         />
                       </div>
                       <div
-                        :class="isPhishing ? 'mt-n2' : ''"
                         v-if="!isQuishingTypeIndividualPrintOut"
+                        :class="isPhishing ? 'mt-n2' : ''"
                       >
                         <span class="template-preview__text--title fw-600 text-primary-color"
                           >Subject:

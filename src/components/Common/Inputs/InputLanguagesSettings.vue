@@ -21,14 +21,9 @@
         :style="getGenerateWithAIButtonStyle"
         @click="handleGenerateWithAI"
       >
-        <v-icon
-          style="font-size: 20px; margin-top: 1px;"
-          :style="{
-            fontSize: '20px',
-            marginTop: '1px',
-            opacity: isGenerateButtonDisabled ? '0.5' : '1'
-          }"
-          >mdi-creation</v-icon
+        <VIcon
+          :style="getGenerateWithAIButtonIconStyle"
+          >mdi-creation</VIcon
         >
         <span class="button-new__text">Generate with AI</span>
       </VBtn>
@@ -92,6 +87,10 @@ export default {
     isGenerateWithAIDisabled: {
       type: Boolean,
       default: false
+    },
+    languageItems: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -102,29 +101,17 @@ export default {
       loading: false,
       menuMaxHeight: '300px',
       searchValue: '',
-      items: [
-        {
-          value: 1,
-          text: 'Preferred Languages',
-          children: [
-            { value: '280faa1981b6', text: 'English (United Kingdom)' },
-            { value: 3, text: 'English (United States)' },
-            { value: 4, text: 'German' }
-          ]
-        },
-        {
-          value: 5,
-          text: 'All Languages',
-          children: [
-            { value: 6, text: 'French' },
-            { value: 7, text: 'Spanish' },
-            { value: 8, text: 'Italian' }
-          ]
-        }
-      ]
+      items: this.languageItems
     }
   },
   computed: {
+    getGenerateWithAIButtonIconStyle() {
+      return {
+        fontSize: '20px',
+        marginTop: '1px',
+        opacity: this.isGenerateButtonDisabled ? '0.5' : '1'
+      }
+    },
     getTextFieldValue() {
       const length = this.value.length
       return `Language${length > 1 ? 's' : ''} (${length})`

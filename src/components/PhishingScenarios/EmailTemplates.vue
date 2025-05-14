@@ -8,6 +8,7 @@
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
       :isAIAllyEnabled="isAIAllyEnabled"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
@@ -176,6 +177,10 @@ export default {
   props: {
     isAIAllyEnabled: {
       type: Boolean
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {

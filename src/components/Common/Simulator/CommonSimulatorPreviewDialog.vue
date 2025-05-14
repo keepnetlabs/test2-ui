@@ -185,6 +185,7 @@ export default {
       isMethodMfa: false,
       languagePreview: '',
       selectedTemplateLanguages: [],
+      languages: [],
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
@@ -288,6 +289,7 @@ export default {
             type,
             isAssistedByAI
           }
+          this.languages = emailTemplate.languages
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplate = template
@@ -348,7 +350,11 @@ export default {
           this.isIndividualPrintoutButtonDisabled = false
         })
     },
-    handleEmailTemplatePreviewLanguageChange() {}
+    handleEmailTemplatePreviewLanguageChange() {
+      this.emailTemplateParams = this.languages.find(
+        (item) => item.resourceId === this.languagePreview
+      )
+    }
   }
 }
 </script>

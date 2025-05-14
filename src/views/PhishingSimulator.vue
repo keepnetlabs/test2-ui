@@ -7,7 +7,11 @@
         name="scenarios"
         id="emailTemplates-scenarios"
       >
-        <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
+        <Scenarios
+          v-if="tab === 'scenarios'"
+          ref="refScenarios"
+          @on-scenario-details-lookup="scenarioDetailsLookup = $event"
+        />
       </el-tab-pane>
       <el-tab-pane
         v-if="getEmailTemplatesSearchPermissions"
@@ -18,6 +22,7 @@
         <EmailTemplates
           v-if="tab === 'emailTemplates'"
           ref="refEmailTemplates"
+          :scenario-details-lookup="scenarioDetailsLookup"
           :isAIAllyEnabled="aiAllySettings.psEmailTemplateGenerationAssistant"
         />
       </el-tab-pane>
@@ -56,6 +61,7 @@ export default {
   data() {
     return {
       tab: 'scenarios',
+      scenarioDetailsLookup: null,
       aiAllySettings: {
         psEmailTemplateGenerationAssistant: false,
         landingPageTemplateGenerationAssistant: false

@@ -9,15 +9,13 @@ const getPhishingFileType = (payload) => {
   return payload?.phishingFileName?.split('.')?.[1] || null
 }
 const createCommonFormDataForPhishingTemplate = (payload) => {
+  console.log('payload', payload)
   const formData = new FormData()
-  formData.append('name', payload.name)
-  formData.append('description', payload.description)
-  formData.append('categoryResourceId', payload.categoryResourceId)
-  formData.append('isAssistedByAI', payload.isAssistedByAI)
-  formData.append('isPlainText', payload.isPlainText)
-  formData.append('prompt', payload.prompt)
-  formData.append('toneResourceId', payload.toneResourceId)
-  formData.append('localizationResourceId', payload.localizationResourceId)
+  formData.append('name', payload.name || '')
+  formData.append('description', payload.description || '')
+  formData.append('categoryResourceId', payload.categoryResourceId || '')
+  formData.append('isAssistedByAI', payload.isAssistedByAI || '')
+  formData.append('isPlainText', payload.isPlainText || '')
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
@@ -34,11 +32,21 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
       formData.append(`ccAddresses[${[i]}]`, payload.ccAddresses[i])
     }
   }
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  formData.append('fromAddress', payload.languages[0].fromAddress || '')
+  formData.append('fromName', payload.languages[0].fromName || '')
+  formData.append('subject', payload.languages[0].subject || '')
+  formData.append('template', payload.languages[0].template || '')
+  formData.append('languageTypeResourceId', payload.languages[0].languageTypeResourceId || '')
+  formData.append('prompt', payload.languages[0].prompt || '')
+  formData.append('toneResourceId', payload.languages[0].toneResourceId || '')
+  formData.append('localizationResourceId', payload.languages[0].localizationResourceId || '')
+  if (payload.languages?.length > 1) {
+    for (let i = 1; i < payload.languages.length; i++) {
+      for (const [key, value] of Object.entries(payload.languages[i])) {
+        formData.append(`languages[${[i]}].${key}`, value)
+      }
+    }
+  }
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = getPhishingFileType(payload)
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])

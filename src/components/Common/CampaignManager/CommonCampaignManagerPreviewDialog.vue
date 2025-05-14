@@ -215,6 +215,7 @@ export default {
   data() {
     return {
       isAttachmentBasedScenario: false,
+      languages: [],
       emailTemplate: null,
       landingPageTemplates: [],
       emailTemplateParams: {},
@@ -338,6 +339,7 @@ export default {
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
+      this.languages = phishingScenarioPreviewDto?.[templateKey]?.languages || []
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       this.landingPageParams = {
@@ -402,7 +404,11 @@ export default {
           this.trainingParams.languages = this.trainingParams.languages.join(', ')
       })
     },
-    handleEmailTemplatePreviewLanguageChange() {}
+    handleEmailTemplatePreviewLanguageChange() {
+      this.emailTemplateParams.languages = this.languages.find(
+        (item) => item.resourceId === this.languagePreview
+      )
+    }
   }
 }
 </script>

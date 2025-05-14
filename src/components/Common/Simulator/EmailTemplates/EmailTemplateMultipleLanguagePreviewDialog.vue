@@ -43,7 +43,7 @@
                 <span>This template was generated with AI</span>
               </VTooltip>
             </div>
-            <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+            <div v-if="emailTemplateParams.ccAddresses.length > 0">
               <span class="template-preview__text--title">CC: </span>
               <span class="template-preview__text--body">{{
                 emailTemplateParams.ccAddresses.join(', ')
@@ -87,7 +87,6 @@ import labels from '@/model/constants/labels'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import InputLanguagePreview from '../../Inputs/InputLanguagePreview.vue'
 
 export default {
@@ -136,9 +135,6 @@ export default {
     }
   },
   computed: {
-    isPhishing() {
-      return this.type === SCENARIO_TYPES.PHISHING
-    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -174,8 +170,10 @@ export default {
             name,
             difficultyResourceId,
             phishingFileName,
-            subject
+            subject,
+            languages
           } = data
+          this.languages = languages
           this.emailTemplateParams = {
             fromName,
             fromAddress,
@@ -190,8 +188,6 @@ export default {
               : null,
             isAssistedByAI: data.isAssistedByAI
           }
-          if (this.type === SCENARIO_TYPES.QUISHING)
-            data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.templateHTML = data.template
         })
         .finally(() => {
@@ -204,7 +200,9 @@ export default {
       this.$emit('on-close')
     },
     handleLanguageChange(val) {
-      console.log('val', val)
+      this.emailTemplateParams=this.languages.find(
+        (item) => item.resourceId === val
+      )
     }
   }
 }

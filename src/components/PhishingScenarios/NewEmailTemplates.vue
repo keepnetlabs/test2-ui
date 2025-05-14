@@ -118,6 +118,7 @@
                       <InputLanguagesSettings
                         v-model="selectedLanguages"
                         :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                        :language-items="languageItems"
                         @input="handleSelectedLanguagesChange"
                         @on-generate-with-ai="handleGenerateWithAI"
                       />
@@ -309,6 +310,10 @@ export default {
     selectedMethodText: {
       type: String,
       default: ''
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -330,6 +335,7 @@ export default {
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
       editedLanguages: [],
+      languageItems: [],
       isAttachmentError: false,
       isGenerateWithAIDisabled: false,
       isAssistedByAI: false,
@@ -356,19 +362,10 @@ export default {
         categoryResourceId,
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
-        fromAddress: null,
-        ccAddresses: [],
-        fromName: null,
-        subject: null,
-        template: null,
         aiAssistant: false,
         attachmentFiles: [],
         importedEmailAttachments: [],
-        attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad',
-        prompt: '',
-        toneResourceId: '',
-        localizationResourceId: ''
+        attachmentFilesFromApi: []
       },
       languagesPayload: [],
       aiAssistantRemainingRights: 0,
@@ -467,6 +464,7 @@ export default {
     }
   },
   created() {
+    this.setLanguageItems()
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
@@ -517,10 +515,6 @@ export default {
           localizationResourceId: this.formValues.localizationResourceId
         })
         this.activeLanguage = this.formValues.languageTypeResourceId
-        this.selectedLanguages.push({
-          text: 'English (UK)',
-          value: this.activeLanguage
-        })
         this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
@@ -531,6 +525,36 @@ export default {
     }
   },
   methods: {
+    setLanguageItems() {
+      console.log('this.scenarioDetailsLookup', this.scenarioDetailsLookup)
+      const languageTypes = this.scenarioDetailsLookup.languageTypes
+      const preferredLanguageTypes = this.scenarioDetailsLookup.preferredLanguageTypes
+      const companyLanguageTypeResourceId = this.scenarioDetailsLookup.langResourceId
+      const languageItems = []
+      /*
+      languageItems.push({
+        value: 1,
+        text: 'Preferred Languages',
+        children: preferredLanguageTypes
+      })
+        */
+      languageItems.push({
+        value: 5,
+        text: 'All Languages',
+        children: languageTypes
+      })
+      this.languageItems = languageItems
+      if (!this.isEdit) {
+        const findedLanguage = languageTypes.find(
+          (item) => item.resourceId === companyLanguageTypeResourceId
+        )
+        console.log('findedLanguage', findedLanguage)
+        this.selectedLanguages.push({
+          text: findedLanguage.text,
+          value: companyLanguageTypeResourceId
+        })
+      }
+    },
     handleEditHtmlTemplate(value) {
       this.getSelectedLanguagePayload.template = value
     },
