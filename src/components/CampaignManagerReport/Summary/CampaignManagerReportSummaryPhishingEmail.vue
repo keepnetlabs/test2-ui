@@ -37,7 +37,13 @@
               :text="getBadgeText(method)"
               :outline="false"
             />
-            <EmailTemplateListPreviewLanguages :languageShortCode="formData.languageShortCode" />
+            <EmailTemplateListPreviewLanguages
+              :languageShortCode="
+                typeof formData.languageShortCode === 'string'
+                  ? [formData.languageShortCode]
+                  : formData.languageShortCode
+              "
+            />
           </div>
         </div>
       </div>
