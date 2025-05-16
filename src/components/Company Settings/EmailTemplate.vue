@@ -115,7 +115,7 @@
                   label="Language"
                   :items="languageOptions"
                   :menu-props="{ offsetY: true }"
-                  :disabled="isEmailGenerating"
+                  disabled
                   @input="$emit('update:languageTypeResourceId', $event)"
                 />
                 <KSelect
@@ -408,6 +408,7 @@
           type="combobox"
           :items="[]"
           :class="{
+            'email-template__cc-select': true,
             'email-template__cc-select-selected': ccAddresses && ccAddresses.length > 0
           }"
           placeholder="Enter an email address"
