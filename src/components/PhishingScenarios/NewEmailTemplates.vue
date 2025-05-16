@@ -556,6 +556,9 @@ export default {
         this.activeLanguage = this.formValues.languageTypeResourceId
         this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
@@ -820,6 +823,19 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
+        const preferredLanguagePayload = this.getPreferredLanguagePayload()
+        payload.languages = this.languagesPayload.map((item) => {
+          return {
+            ...item,
+            fromName: item.fromName || preferredLanguagePayload.fromName,
+            fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
+            subject: item.subject || preferredLanguagePayload.subject,
+            template: item.template || preferredLanguagePayload.template,
+            ccAddresses: item.ccAddresses.length
+              ? item.ccAddresses
+              : preferredLanguagePayload.ccAddresses
+          }
+        })
         createPhishingEmailTemplate(payload)
           .then((response) => {
             this.$emit(
@@ -834,7 +850,18 @@ export default {
           })
       }
     },
-
+    getPreferredLanguagePayload() {
+      let preferredLanguagePayload = this.languagesPayload.find(
+        (item) =>
+          item.languageTypeResourceId === this.scenarioDetailsLookup.companyLanguageTypeResourceId
+      )
+      if (preferredLanguagePayload?.fromName && preferredLanguagePayload?.fromAddress)
+        return preferredLanguagePayload
+      preferredLanguagePayload = this.languagesPayload.find(
+        (item) => item?.fromName && item?.fromAddress
+      )
+      return preferredLanguagePayload || this.languagesPayload[0]
+    },
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
@@ -881,9 +908,12 @@ export default {
         subject
       }).then((response) => {
         console.log('response 1', response)
-        getEmailTemplateTranslation().then((response) => {
-          console.log('response 2', response)
-        })
+        this.askForEmailTemplateTranslation()
+      })
+    },
+    askForEmailTemplateTranslation() {
+      getEmailTemplateTranslation().then((response) => {
+        console.log('response 2', response)
       })
     },
     handleActiveLanguageChange(value) {

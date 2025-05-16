@@ -602,7 +602,7 @@ export const getGeneratedAILandingPageTemplate = () => {
   return testRequest.get(`/phishing-simulator/landing-page-template`)
 }
 export const generateEmailTemplateTranslation = (payload) => {
-  return testRequest.post(`/phishing-simulator/email-templates/generate-translation`, payload)
+  return testRequest.post(`/phishing-simulator/email-templates/translate`, payload)
 }
 export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)

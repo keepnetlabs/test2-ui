@@ -834,6 +834,7 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate, category = '' } = data
+          console.log('emailTemplate', emailTemplate)
           let {
             template,
             fromName,
