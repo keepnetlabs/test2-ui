@@ -12,7 +12,7 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:reporterEmail="{ row, value, rowIndex }">
+            <template v-slot:reporterEmail="{ value, rowIndex }">
               <span
                 v-if="value"
                 class="k-widget-list__item"
@@ -22,7 +22,7 @@
                 {{ value }}
               </span>
             </template>
-            <template v-slot:reliabilityPoint="{ row, value, rowIndex }">
+            <template v-slot:reliabilityPoint="{ value, rowIndex }">
               <span
                 v-if="value"
                 class="k-widget-list__item"
