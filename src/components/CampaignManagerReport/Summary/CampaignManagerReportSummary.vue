@@ -493,14 +493,35 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.category || 'Remote Working'
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
+      const { emailTemplateInfo = {}, scenarioInfo = {},emailTemplateInfos = {} } = this.getActiveScenario || {
         emailTemplateInfo: {}
       }
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
       const { resourceId, phishingFileName } = emailTemplateInfo || {}
-
+      if (Object.keys(emailTemplateInfos)?.length) {
+        return {
+          resourceId,
+          languageShortCode: emailTemplateInfos?.map((item) => item.languageShortCode),
+          attachment: phishingFileName
+            ? {
+                name: phishingFileName
+              }
+            : null,
+            campaignResourceId: this.id,
+            instanceGroup: this.instanceGroup,
+            languages: emailTemplateInfos?.map((item) => ({
+              languageTypeResourceId: item.languageTypeResourceId,
+              languageShortCode: item.languageShortCode,
+              fromName: item.fromName,
+              fromAddress: item.fromAddress,
+              subject: item.subject,
+              ccAddresses: item.ccAddresses,
+              template: item.template
+            }))
+        }
+      }
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,

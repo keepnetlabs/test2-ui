@@ -233,7 +233,8 @@ export default {
       isMethodMfa: false,
       isIndividualPrintoutButtonDisabled: false,
       isTrainingScenario: false,
-      selectedLanguages: []
+      selectedLanguages: [],
+      phishingEmailTemplates: []
     }
   },
   computed: {
@@ -344,13 +345,34 @@ export default {
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
-      this.selectedTemplateLanguages.push({
-        text: phishingScenarioPreviewDto?.[templateKey]?.languageTypeName,
-        value: phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
-      })
-      this.languagePreview = phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
-
-      this.languages = phishingScenarioPreviewDto?.[templateKey]?.languages || []
+      if (this.isPhishing) {
+        this.selectedTemplateLanguages.push({
+          text: phishingScenarioPreviewDto?.[templateKey]?.languageTypeName,
+          value: phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
+        })
+        this.languagePreview = this.selectedTemplateLanguages[0].value
+        this.phishingEmailTemplates.push({
+          ...this.emailTemplateParams,
+          template: phishingScenarioPreviewDto?.[templateKey]?.template,
+          languageTypeResourceId: this.languagePreview
+        })
+        if (phishingScenarioPreviewDto?.[templateKey]?.languages?.length) {
+          phishingScenarioPreviewDto?.[templateKey]?.languages?.forEach((item) => {
+            this.phishingEmailTemplates.push({
+              template: item.template,
+              fromName: item.fromName,
+              fromAddress: item.fromAddress,
+              subject: item.subject,
+              ccAddresses: item.ccAddresses,
+              languageTypeResourceId: item.languageTypeResourceId
+            })
+            this.selectedTemplateLanguages.push({
+              text: item.languageTypeName,
+              value: item.languageTypeResourceId
+            })
+          })
+        }
+      }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       this.landingPageParams = {
@@ -416,9 +438,18 @@ export default {
       })
     },
     handleEmailTemplatePreviewLanguageChange() {
-      this.emailTemplateParams.languages = this.languages.find(
-        (item) => item.resourceId === this.languagePreview
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === this.languagePreview
       )
+      if (!findedTemplate) return
+      this.emailTemplateParams = {
+        ...this.emailTemplateParams,
+        ccAddresses: findedTemplate.ccAddresses,
+        fromName: findedTemplate.fromName,
+        fromAddress: findedTemplate.fromAddress,
+        subject: findedTemplate.subject
+      }
+      this.emailTemplate = findedTemplate.template
     }
   }
 }
