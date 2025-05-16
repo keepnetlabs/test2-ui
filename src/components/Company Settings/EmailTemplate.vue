@@ -497,7 +497,7 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader :title="getLoaderTitle" />
+      <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
     </div>
     <div v-else id="email-template-content">
       <v-btn
@@ -547,6 +547,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
+import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapActions, mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -634,7 +635,8 @@ export default {
     'localizationResourceId',
     'languageOptions',
     'selectedMethod',
-    'isPlainText'
+    'isPlainText',
+    'isGenerateWithAi'
   ],
   data() {
     return {
@@ -850,9 +852,16 @@ export default {
         : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
     },
     getLoaderTitle() {
+      if (this.isGenerateWithAi)
+        return 'The email template is being localized by AI for the selected languages.'
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
+    },
+    getLoaderDescription() {
+      if (this.isGenerateWithAi)
+        return 'This process may take some time depending on the number of localizations. Please stay on the page.'
+      return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
@@ -977,11 +986,7 @@ export default {
     },
     handleGenerateEmail() {
       this.isEmailGenerating = true
-      document?.querySelector('#email-template-content')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center'
-      })
+      scrollToEmailTemplateContent()
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,

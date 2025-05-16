@@ -11,6 +11,7 @@
         autocomplete="off"
         placeholder="Search languages to manage"
         :append-icon="appendIcon"
+        :disabled="isGenerateWithAIDisabled"
         @focus="handleSearchInputFocus"
       />
       <VBtn

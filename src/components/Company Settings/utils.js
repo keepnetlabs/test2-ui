@@ -162,3 +162,10 @@ export const MERGED_TEXTS_MAP = {
   '{File_Name}': fileName,
   '{ENROLLMENT_NAME}': enrollmentName
 }
+export const scrollToEmailTemplateContent = () => {
+  document?.querySelector('#email-template-content')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'end',
+    inline: 'end'
+  })
+}
