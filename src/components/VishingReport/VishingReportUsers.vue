@@ -256,7 +256,6 @@ export default {
   },
   methods: {
     callForData() {
-      // this.tableData = [{}]
       this.isLoading = true
       getVishingReportUsers(this.axiosPayload, this.id)
         .then((response) => {

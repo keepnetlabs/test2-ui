@@ -1060,10 +1060,8 @@ export default {
             selected: item.resourceId === this.landingPageTemplateResourceId
           }))
         }
-      } else {
-        if (newVal !== oldVal) {
-          this.callForSearch()
-        }
+      } else if (newVal !== oldVal) {
+        this.callForSearch()
       }
     }
   },

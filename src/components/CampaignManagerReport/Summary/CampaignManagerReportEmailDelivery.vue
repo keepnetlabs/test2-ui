@@ -13,7 +13,13 @@
         class="campaign-manager-summary-card__body-item-value"
         style="display: flex; align-items: center;"
       >
-        <span :style="isNotDelivered && { borderRight: '1px solid #e0e0e0' }"
+        <span
+          :style="
+            isNotDelivered && {
+              borderRight: '1px solid #e0e0e0',
+              paddingRight: '8px'
+            }
+          "
           >{{ getDeliveryValue }}
         </span>
         <template v-if="isNotDelivered">

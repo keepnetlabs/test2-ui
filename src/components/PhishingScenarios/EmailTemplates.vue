@@ -8,6 +8,7 @@
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
       :isAIAllyEnabled="isAIAllyEnabled"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
@@ -30,7 +31,7 @@
       @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
-    <CommonSimulatorEmailTemplatePreviewDialog
+    <EmailTemplateMultipleLanguagePreviewDialog
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selected-row="selectedEmailTemplate"
@@ -155,16 +156,15 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
-// import { deleteEmailTemplate } from '@/api/company'
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '../Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    EmailTemplateMultipleLanguagePreviewDialog,
     CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
-    CommonSimulatorEmailTemplatePreviewDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
@@ -177,6 +177,10 @@ export default {
   props: {
     isAIAllyEnabled: {
       type: Boolean
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -245,10 +249,10 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'smallBadge',
             fixed: false,
             width: 175,
             filterableType: 'select',

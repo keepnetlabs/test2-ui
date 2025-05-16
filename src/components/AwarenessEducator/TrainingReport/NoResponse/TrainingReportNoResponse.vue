@@ -341,7 +341,6 @@ export default {
         )
       })
     },
-    confirmResend() {},
     toggleIsShowResendDialog() {
       if (this.isShowResendDialog) {
         this.selectedRow = null

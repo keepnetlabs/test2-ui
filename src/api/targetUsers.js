@@ -7,7 +7,9 @@ export function getTargetUsers(payload) {
 }
 
 export function deleteTargetUser(resourceId) {
-  return testRequest.delete(`/target-users/${resourceId}`, { snackbar: COMMON_SNACKBAR })
+  return testRequest.delete(`/target-users/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function bulkDeleteTargetUsers(payload) {
@@ -24,7 +26,9 @@ export function updateTargetUser(payload) {
 }
 
 export function createTargetUser(payload) {
-  return testRequest.post('/target-users', payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post('/target-users', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getTargetGroups(config = {}) {
@@ -49,7 +53,9 @@ export function getTargetGroupCountDetailExt(payload) {
 }
 
 export function createTargetGroup(payload) {
-  return testRequest.post('/target-groups', payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post('/target-groups', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function updateTargetGroup(payload) {
@@ -57,9 +63,14 @@ export function updateTargetGroup(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+export function getTargetGroup(resourceId) {
+  return testRequest.get(`/target-groups/${resourceId}`)
+}
 
 export function deleteTargetGroup(resourceId) {
-  return testRequest.delete(`/target-groups/${resourceId}`, { snackbar: COMMON_SNACKBAR })
+  return testRequest.delete(`/target-groups/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getTargetUserCustomFieldsByCompanyId() {
@@ -67,7 +78,9 @@ export function getTargetUserCustomFieldsByCompanyId() {
 }
 
 export function bulkUpdateOfCustomFields(payload) {
-  return testRequest.post('/custom-fields/bulk-update', payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.post('/custom-fields/bulk-update', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function createTargetUserCustomField(payload) {
@@ -123,7 +136,9 @@ export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = tru
 }
 
 export function bulkImportTargetUsersToGroups(payload = {}) {
-  return testRequest.put(`/target-groups/users`, payload, { snackbar: COMMON_SNACKBAR })
+  return testRequest.put(`/target-groups/users`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function exportTargetGroupUsers(id = '', payload = {}) {
@@ -141,9 +156,6 @@ export function exportTargetGroups(payload = {}) {
   return testRequest.post('/target-groups/search/export', payload, {
     responseType: 'blob'
   })
-}
-export function getTargetGroup(id = '') {
-  return testRequest.get(`/target-groups/${id}`)
 }
 
 export function deleteTargetGroupUsers(id = '', payload = {}) {

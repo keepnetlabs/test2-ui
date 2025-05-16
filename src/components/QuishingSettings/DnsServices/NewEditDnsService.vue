@@ -74,10 +74,7 @@
     </template>
     <template v-slot:overlay-footer>
       <AppModalFooter
-        :ids="{
-          saveButton: 'btn-save--dns-configurations-modal',
-          cancelButton: 'btn-cancel--dns-configurations-modal'
-        }"
+        :ids="footerButtonIds"
         :action-button-disabled="saveButtonDisabled"
         @on-cancel="cancelDns"
         @on-save="submit"
@@ -127,6 +124,10 @@ export default {
     return {
       isValidate: null,
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
+      footerButtonIds: {
+        saveButton: 'btn-save--dns-configurations-modal',
+        cancelButton: 'btn-cancel--dns-configurations-modal'
+      },
       availableForRequests: [],
       isSuccessfullyTested: false,
       testedFormValues: {},
@@ -209,32 +210,28 @@ export default {
         this.saveButtonDisabled = false
         const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
-      } else {
-        if (isSave) {
-          const { refMakeAvailableFor } = this.$refs
-          let payload = {
-            ...this.formValues,
-            availableForRequests: refMakeAvailableFor.getAvailableForValues(
-              this.availableForRequests
-            )
-          }
-          if (this.isEdit && !this.isDuplicate) {
-            QuishingService.updateDnsService(payload, this.resourceId)
-              .then(() => {
-                this.$emit('changeStatus', false, true)
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
-          } else {
-            QuishingService.createDnsService(payload)
-              .then(() => {
-                this.$emit('changeStatus', false, true)
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
-          }
+      } else if (isSave) {
+        const { refMakeAvailableFor } = this.$refs
+        let payload = {
+          ...this.formValues,
+          availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
+        }
+        if (this.isEdit && !this.isDuplicate) {
+          QuishingService.updateDnsService(payload, this.resourceId)
+            .then(() => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
+        } else {
+          QuishingService.createDnsService(payload)
+            .then(() => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
         }
       }
     },

@@ -1,7 +1,7 @@
 <template>
   <div :class="`d-flex download-buttons flex-row flex-wrap justify-${justify}`">
     <v-btn
-      type="but"
+      type="button"
       text
       :color="getCancelButtonColor"
       :id="cancelButtonId"

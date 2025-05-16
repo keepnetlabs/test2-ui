@@ -11,8 +11,12 @@ export default {
       return getScenarioDataDetails().then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {
           methodTypes: [],
-          difficultyTypes: []
+          difficultyTypes: [],
+          languageTypes: [],
+          preferredLanguageTypes: [],
+          companyLanguageTypeResourceId: ''
         }
+        this.$emit('on-scenario-details-lookup', this.scenarioDetailsLookup)
         return response
       })
     }

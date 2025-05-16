@@ -1,33 +1,34 @@
 <template>
   <KContainer id="training-report">
-    <el-tabs v-model="tab" @tab-click="handleTabClick">
-      <el-tab-pane
-        v-for="item in tabItems"
-        v-if="item.isVisible"
-        :key="item.name"
-        :id="item.id"
-        :name="item.name"
-        :label="item.label"
-        :disabled="isLoading"
-      >
-        <span slot="label">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-          <template v-else> {{ item.label }} </template>
-        </span>
-        <component
-          v-if="item.name === tab"
-          :is="item.component"
-          :id="id"
-          :custom-fields="customFields"
-          :isLoading="isLoading"
-          :training-name="getTrainingName"
-          :form-details="formDetails"
-          :trainingSummary="trainingSummary"
-          :isScormProxy="isScormProxy"
-          :active-step="item.activeStep"
-        />
-      </el-tab-pane>
-    </el-tabs>
+    <ElTabs v-model="tab" @tab-click="handleTabClick">
+      <template v-for="item in tabItems">
+        <ElTabPane
+          v-if="item.isVisible"
+          :key="item.name"
+          :id="item.id"
+          :name="item.name"
+          :label="item.label"
+          :disabled="isLoading"
+        >
+          <span slot="label">
+            <VSkeletonLoader v-if="isLoading" :loading="isLoading" type="chip" />
+            <template v-else> {{ item.label }} </template>
+          </span>
+          <component
+            v-if="item.name === tab"
+            :is="item.component"
+            :id="id"
+            :custom-fields="customFields"
+            :isLoading="isLoading"
+            :training-name="getTrainingName"
+            :form-details="formDetails"
+            :trainingSummary="trainingSummary"
+            :isScormProxy="isScormProxy"
+            :active-step="item.activeStep"
+          />
+        </ElTabPane>
+      </template>
+    </ElTabs>
   </KContainer>
 </template>
 

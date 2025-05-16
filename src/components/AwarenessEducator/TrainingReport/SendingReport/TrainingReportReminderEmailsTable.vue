@@ -79,15 +79,7 @@
       </div>
       <div
         v-if="!getEvents.length && !extendedViewOptions.isErrorState"
-        style="
-          background-color: #f5f7fa;
-          padding: 8px;
-          border-radius: 8px;
-          font-weight: normal;
-          font-size: 12px;
-          line-height: 18px;
-          color: #383b41;
-        "
+        class="training-report-no-event-message"
       >
         {{ getNoEventMessage }}
       </div>

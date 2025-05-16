@@ -125,11 +125,7 @@
                 title="Steps"
                 sub-title="Define your vishing template step by step"
               >
-                <div
-                  :class="{
-                    'vishing-template__steps': true
-                  }"
-                >
+                <div class="vishing-template__steps">
                   <draggable
                     v-bind="dragOptions"
                     v-model="formValues.steps"

@@ -145,6 +145,14 @@
     margin-top:16px !important;
   }
 }
+.phishing-campaign-tab-container{
+  .el-tabs__active-bar.is-top{
+    min-width: 74px;
+  }
+  .el-tabs__content{
+    margin-top:16px !important;
+  }
+}
 .quishing-scenario-tab-container{
   .template-preview__icon{
     top:-4px !important;
@@ -185,4 +193,9 @@
   color: #FFFFFF !important;
   pointer-events: auto;
   cursor: auto;
+}
+.campaign-manager-phishing-scenario-input-language{
+  .v-text-field__details{
+    display:block !important;
+  }
 }

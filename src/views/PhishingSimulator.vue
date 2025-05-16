@@ -7,7 +7,11 @@
         name="scenarios"
         id="emailTemplates-scenarios"
       >
-        <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
+        <Scenarios
+          v-if="tab === 'scenarios'"
+          ref="refScenarios"
+          @on-scenario-details-lookup="scenarioDetailsLookup = $event"
+        />
       </el-tab-pane>
       <el-tab-pane
         v-if="getEmailTemplatesSearchPermissions"
@@ -18,6 +22,7 @@
         <EmailTemplates
           v-if="tab === 'emailTemplates'"
           ref="refEmailTemplates"
+          :scenario-details-lookup="scenarioDetailsLookup"
           :isAIAllyEnabled="aiAllySettings.psEmailTemplateGenerationAssistant"
         />
       </el-tab-pane>
@@ -56,6 +61,7 @@ export default {
   data() {
     return {
       tab: 'scenarios',
+      scenarioDetailsLookup: null,
       aiAllySettings: {
         psEmailTemplateGenerationAssistant: false,
         landingPageTemplateGenerationAssistant: false
@@ -97,33 +103,27 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
-    if (refScenarios && refScenarios.modalStatus) {
+    if (refScenarios?.modalStatus) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
-    } else if (refScenarios && refScenarios.isShowFastLaunch) {
+    } else if (refScenarios?.isShowFastLaunch) {
       if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
     } else if (
-      refEmailTemplates &&
-      refEmailTemplates.$refs.newEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
-      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+      refEmailTemplates?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal
     ) {
       refEmailTemplates.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refEmailTemplates && refEmailTemplates.modalStatus) {
+    } else if (refEmailTemplates?.modalStatus) {
       refEmailTemplates.checkIfCanCloseNewEmailTemplate()
       next(false)
     } else if (
-      refLandingPageList &&
-      refLandingPageList.$refs.newLandingPage &&
-      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate &&
-      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate.showGrapesModal
+      refLandingPageList?.$refs?.newLandingPage?.$refs?.refEmailTemplate?.showGrapesModal
     ) {
       refLandingPageList.checkIfCanCloseGrapesJSModal()
       next(false)
-    } else if (refLandingPageList && refLandingPageList.modalStatus) {
+    } else if (refLandingPageList?.modalStatus) {
       refLandingPageList.checkIfCanCloseNewLandingPage()
       next(false)
     } else {

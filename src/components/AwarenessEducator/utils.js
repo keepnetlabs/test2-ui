@@ -467,3 +467,17 @@ export const COLUMNS = {
     filterableType: 'date'
   }
 }
+export const DISTRIBUTION_DELAY_TIME_TYPES = [
+  {
+    text: 'seconds',
+    value: '1'
+  },
+  {
+    text: 'minutes',
+    value: '2'
+  },
+  {
+    text: 'hours',
+    value: '3'
+  }
+]

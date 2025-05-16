@@ -273,14 +273,12 @@ export default {
             id: 'btn-interactions--row-actions-training-report-exam-results',
             icon: '$custom-resend',
             action: 'on-resend'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           },
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-training-report-exam-results',
             icon: '$custom-details',
             action: 'on-details'
-            // disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           }
         ]
       },
@@ -353,19 +351,6 @@ export default {
           this.isShowResendDialog = false
         })
     },
-    getStatusBadgeProps(status) {
-      if (status === 'Failed')
-        return {
-          color: '#B83A3A',
-          text: 'Failed'
-        }
-
-      if (status === 'Success')
-        return {
-          color: '#217124',
-          text: 'Success'
-        }
-    },
     callForData() {
       this.setLoading(true)
       AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)
@@ -416,7 +401,6 @@ export default {
       this.selectedRow = row
       this.toggleIsShowDetailsModal()
     },
-    confirmResend() {},
     toggleIsShowResendDialog() {
       this.isShowResendDialog = !this.isShowResendDialog
     },

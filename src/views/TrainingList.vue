@@ -77,7 +77,7 @@ import NewTrainingModal from '@/components/AwarenessEducator/NewTraining/NewTrai
 import SendTrainingModal from '@/components/AwarenessEducator/SendTraining/SendTrainingModal'
 import useAwarenessHelperCalls from '@/hooks/awareness-educator/useAwarenessHelperCalls'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
+import { TRAINING_TYPES, DISTRIBUTION_DELAY_TIME_TYPES } from '@/components/AwarenessEducator/utils'
 import PosterPreviewDialog from '@/components/AwarenessEducator/Poster/PosterPreviewDialog.vue'
 import labels from '@/model/constants/labels'
 import NewPosterModal from '@/components/AwarenessEducator/NewPoster/NewPosterModal.vue'
@@ -145,20 +145,7 @@ export default {
           trainingEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {}
         } = response?.data?.data || {}
-        this.distributionDelayTimeTypes = [
-          {
-            text: 'seconds',
-            value: '1'
-          },
-          {
-            text: 'minutes',
-            value: '2'
-          },
-          {
-            text: 'hours',
-            value: '3'
-          }
-        ]
+        this.distributionDelayTimeTypes = DISTRIBUTION_DELAY_TIME_TYPES
         this.enumTypes = enumNameValuePairs
         this.certificateEmailNotificationTemplateTypeResourceId = certificateEmailNotificationTemplateTypeResourceId
         this.reminderEmailNotificationTemplateTypeResourceId = reminderEmailNotificationTemplateTypeResourceId

@@ -271,10 +271,7 @@ export default {
       return this.phishingCampaign?.name || 'Campaign Name'
     },
     getCampaignDescription() {
-      return (
-        this.phishingCampaign?.description ||
-        'Erat nec pellentesque non amet amet ultrices at ut. Tempus, sit accumsan cras mauris arcu hendrerit. '
-      )
+      return this.phishingCampaign?.description || ''
     },
     getCriteria() {
       return (

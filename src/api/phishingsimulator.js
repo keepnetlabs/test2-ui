@@ -8,16 +8,13 @@ const getPhishingFileType = (payload) => {
   }
   return payload?.phishingFileName?.split('.')?.[1] || null
 }
-const createCommonFormDataForPhishingTemplate = (payload) => {
+const createCommonFormDataForPhishingTemplate = (payload, isEdit = false) => {
   const formData = new FormData()
-  formData.append('name', payload.name)
-  formData.append('description', payload.description)
-  formData.append('categoryResourceId', payload.categoryResourceId)
-  formData.append('isAssistedByAI', payload.isAssistedByAI)
-  formData.append('isPlainText', payload.isPlainText)
-  formData.append('prompt', payload.prompt)
-  formData.append('toneResourceId', payload.toneResourceId)
-  formData.append('localizationResourceId', payload.localizationResourceId)
+  formData.append('name', payload.name || '')
+  formData.append('description', payload.description || '')
+  formData.append('categoryResourceId', payload.categoryResourceId || '')
+  formData.append('isAssistedByAI', payload.isAssistedByAI || '')
+  formData.append('isPlainText', payload.isPlainText || '')
   for (let i = 0; i < payload?.tags?.length; i++) {
     formData.append(`tags[${[i]}]`, payload.tags[i])
   }
@@ -29,16 +26,33 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
       payload.availableForRequests[i].resourceId
     )
   }
-  if (payload?.ccAddresses?.length) {
-    for (let i = 0; i < payload.ccAddresses.length; i++) {
-      formData.append(`ccAddresses[${[i]}]`, payload.ccAddresses[i])
+  if (payload?.languages[0]?.ccAddresses?.length) {
+    for (let i = 0; i < payload.languages[0].ccAddresses.length; i++) {
+      formData.append(`ccAddresses[${[i]}]`, payload.languages[0].ccAddresses[i])
     }
   }
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  formData.append('fromAddress', payload.languages[0].fromAddress || '')
+  formData.append('fromName', payload.languages[0].fromName || '')
+  formData.append('subject', payload.languages[0].subject || '')
+  formData.append('template', payload.languages[0].template || '')
+  formData.append('languageTypeResourceId', payload.languages[0].languageTypeResourceId || '')
+  formData.append('prompt', payload.languages[0].prompt || '')
+  formData.append('toneResourceId', payload.languages[0].toneResourceId || '')
+  formData.append('localizationResourceId', payload.languages[0].localizationResourceId || '')
+  if (isEdit) formData.append('detailActionType', payload.languages[0].detailActionType.toString())
+  if (payload.languages?.length > 1) {
+    for (let i = 1; i < payload.languages.length; i++) {
+      for (const [key, value] of Object.entries(payload.languages[i])) {
+        if (key === 'ccAddresses') {
+          for (let j = 0; j < value.length; j++) {
+            formData.append(`languages[${[i - 1]}].${key}[${[j]}]`, value[j])
+          }
+        } else {
+          formData.append(`languages[${[i - 1]}].${key}`, value || '')
+        }
+      }
+    }
+  }
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = getPhishingFileType(payload)
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
@@ -54,7 +68,7 @@ const createCommonFormDataForPhishingTemplate = (payload) => {
 }
 
 export function updatePhishingEmailTemplate(payload = {}, id = '') {
-  const formData = createCommonFormDataForPhishingTemplate(payload)
+  const formData = createCommonFormDataForPhishingTemplate(payload, true)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
@@ -586,4 +600,10 @@ export const getAIGenerationOptions = () => {
 }
 export const getGeneratedAILandingPageTemplate = () => {
   return testRequest.get(`/phishing-simulator/landing-page-template`)
+}
+export const generateEmailTemplateTranslation = (payload) => {
+  return testRequest.post(`/phishing-simulator/email-templates/translate`, payload)
+}
+export const getEmailTemplateTranslation = (payload) => {
+  return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
 }

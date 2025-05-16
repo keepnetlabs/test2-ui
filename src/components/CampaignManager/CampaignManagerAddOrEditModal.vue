@@ -615,6 +615,7 @@ export default {
           response?.map((language) => ({
             name: language.name,
             text: language.name,
+            description: language.description,
             value: language.resourceId
           })) || []
       })
@@ -692,12 +693,13 @@ export default {
     },
     async handleSubmit() {
       switch (this.step) {
-        case 1:
+        case 1: {
           const { refCampaignManagerCampaignInfo } = this.$refs
           if (!refCampaignManagerCampaignInfo.validateForm()) return
           this.changeStep()
           return
-        case 2:
+        }
+        case 2: {
           this.isSecondNextClicked = true
           const { refCampaignManagerPhishingScenarios } = this.$refs
           if (!this.getIsPhishingScenariosValid) return
@@ -718,7 +720,8 @@ export default {
           )
             this.$refs?.refCampaignManagerTargetAudience?.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupUsersTable?.callForData()
           return
-        case 3:
+        }
+        case 3: {
           const { refCampaignManagerTargetAudience } = this.$refs
           this.setActionButtonDisability(true)
           const totalTargetUserCount = this.selectedTargetGroupsMapped.reduce((acc, item) => {
@@ -773,7 +776,8 @@ export default {
           }
           this.setActionButtonDisability(false)
           return
-        case 4:
+        }
+        case 4: {
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.emailDelivery?.type) return
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
@@ -830,7 +834,8 @@ export default {
           }
           this.setActionButtonDisability(false)
           return
-        case 5:
+        }
+        case 5: {
           let {
             refCampaignManagerSummary,
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
@@ -979,6 +984,7 @@ export default {
               .finally(this.setActionButtonDisability)
           }
           return
+        }
         default:
           break
       }
