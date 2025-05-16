@@ -345,6 +345,8 @@
           id="input--notification-template-subject"
           initialPlaceholder="Enter email subject"
           entityName="email subject"
+          label="Subject"
+          persistent-placeholder
           :value="subject"
           :disabled="editItemsDisabled"
           :initialRules="getSubjectRules"
@@ -363,6 +365,8 @@
           id="input--notification-template-sender-name"
           initialPlaceholder="Enter sender name"
           entityName="sender name"
+          label="From Name"
+          persistent-placeholder
           :value="fromName"
           :disabled="editItemsDisabled"
           :initialRules="senderNameRules"
@@ -378,7 +382,9 @@
         :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
       >
         <InputEmail
+          label="From Email"
           id="input--notification-template-from-email"
+          persistent-placeholder
           :disabled="editItemsDisabled"
           :value="fromAddress"
           @input="$emit('update:fromAddress', $event)"
@@ -400,6 +406,9 @@
           id="input--threat-sharing-incident-share-email"
           type="combobox"
           :items="[]"
+          :class="{
+            'email-template__cc-select-selected':ccAddresses && ccAddresses.length > 0
+          }"
           placeholder="Enter an email address"
           multiple
           dense
@@ -407,12 +416,14 @@
           autocomplete="disabled"
           small-chips
           outlined
-          class="pop-up-card__invite-member"
-          :persistentHint="true"
+          persistent-hint
+          persistent-placeholder
+          label="CC"
           hint="Press enter to separate email addresses"
           :rules="[ccEmailRules.email]"
           @input="$emit('update:ccAddresses', $event)"
-        ></KSelect>
+        >
+        </KSelect>
       </FormGroup>
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">

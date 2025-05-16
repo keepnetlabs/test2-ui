@@ -91,3 +91,17 @@
 .input-languages-email-template-preview-select .v-select__selection.v-select__selection--comma{
   margin-top:7px;
 }
+.email-template-languages-settings-form-group{
+  max-width: 753px !important;
+  .k-form-group__sub-title{
+  max-width: 554px;
+  }
+}
+.email-template-languages-settings-template-preview-container .k-form-group__title{
+  display: none;
+}
+.email-template__cc-select-selected{
+  .v-select__selections{
+    padding-left:8px !important;
+  }
+}
