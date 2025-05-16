@@ -834,7 +834,6 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate, category = '' } = data
-          console.log('emailTemplate', emailTemplate)
           let {
             template,
             fromName,
@@ -862,7 +861,8 @@ export default {
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
             template,
-            isAssistedByAI
+            isAssistedByAI,
+            cc: emailTemplate?.ccAddresses.join(',')
           }
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
@@ -880,7 +880,7 @@ export default {
               template,
               languageTypeResourceId: languageOfEmailTemplate,
               languageTypeName: emailTemplate?.languageTypeName,
-              ccAddresses: emailTemplate?.ccAddresses,
+              ccAddresses: this.emailTemplateParams.cc,
               languageShortCode: this.languageOptions.find(
                 (language) => language.value === this.emailTemplateParams.languageTypeResourceId
               )?.description
@@ -902,7 +902,7 @@ export default {
                   template: item.template,
                   languageTypeResourceId: item.languageTypeResourceId,
                   languageTypeName: item.languageTypeName,
-                  ccAddresses: item.ccAddresses,
+                  ccAddresses: item.ccAddresses.join(','),
                   languageShortCode: this.languageOptions.find(
                     (language) => language.value === item.languageTypeResourceId
                   )?.description

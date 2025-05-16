@@ -133,7 +133,7 @@ export default {
       return style
     },
     isGenerateButtonDisabled() {
-      return !this.value.length || this.isGenerateWithAIDisabled
+      return this.value.length <= 1 || this.isGenerateWithAIDisabled
     }
   },
   watch: {

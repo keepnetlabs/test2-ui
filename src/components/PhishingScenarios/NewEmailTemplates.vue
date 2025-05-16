@@ -891,30 +891,49 @@ export default {
       this.$refs.refEmailTemplate.isEmailGenerating = true
       let template = this.getSelectedLanguagePayload.template
       let subject = this.getSelectedLanguagePayload.subject
-      const preferredLanguagePayload = this.languagesPayload.find(
-        (item) =>
-          item.languageTypeResourceId === this.scenarioDetailsLookup.companyLanguageTypeResourceId
-      )
-      if (preferredLanguagePayload) {
-        template = preferredLanguagePayload.template
-        subject = preferredLanguagePayload.subject
-      }
       generateEmailTemplateTranslation({
-        languages: this.selectedLanguages.map((item) => ({
-          languageResourceId: item.value,
-          languageName: item.text
-        })),
+        languages: this.selectedLanguages
+          .filter((item) => item.value !== this.activeLanguage)
+          .map((item) => ({
+            languageResourceId: item.value,
+            languageName: item.text
+          })),
         template,
         subject
       }).then((response) => {
-        console.log('response 1', response)
+        if (!response?.data?.data?.isSuccess) return
         this.askForEmailTemplateTranslation()
       })
     },
-    askForEmailTemplateTranslation() {
-      getEmailTemplateTranslation().then((response) => {
-        console.log('response 2', response)
-      })
+    askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId) {
+      if (count >= maxCount) {
+        this.isGenerateWithAIDisabled = false
+        this.$refs.refEmailTemplate.isEmailGenerating = false
+        clearTimeout(timeoutId)
+        return
+      }
+      if (timeoutId) clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        getEmailTemplateTranslation()
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            data.forEach((item) => {
+              const languagePayload = this.languagesPayload.find(
+                (language) => language.languageTypeResourceId === item.languageResourceId
+              )
+              if (!languagePayload) return
+              languagePayload.template = item.template
+              languagePayload.subject = item.subject || languagePayload.subject
+            })
+            this.isGenerateWithAIDisabled = false
+            this.$refs.refEmailTemplate.isEmailGenerating = false
+          })
+          .catch(() => {
+            this.askForEmailTemplateTranslation(count + 1, maxCount, timeoutId)
+          })
+      }, 5000)
     },
     handleActiveLanguageChange(value) {
       if (

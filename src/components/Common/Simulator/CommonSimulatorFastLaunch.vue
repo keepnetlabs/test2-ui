@@ -215,6 +215,7 @@ export default {
       this.languageOptions =
         response?.map((language) => ({
           text: language.description,
+          description: language.description,
           value: language.resourceId
         })) || []
     })

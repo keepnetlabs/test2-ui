@@ -227,7 +227,6 @@ export default {
               languageTypeResourceId: data.languageTypeResourceId
             })
             this.languagePreview = data.languageTypeResourceId
-            console.log('data', data)
             if (!data?.languages?.length) return
             data.languages.forEach((item) => {
               this.selectedTemplateLanguages.push({
