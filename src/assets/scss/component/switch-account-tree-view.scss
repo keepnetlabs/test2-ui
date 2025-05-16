@@ -100,8 +100,19 @@
 .email-template-languages-settings-template-preview-container .k-form-group__title{
   display: none;
 }
+.email-template__cc-select{
+  .v-label--active + .v-select__selections input{
+    padding-top:8px !important;
+  }
+  .v-label.v-label--active.theme--light.primary--text + .v-select__selections input{
+    padding-top:16px !important;
+  }
+}
 .email-template__cc-select-selected{
   .v-select__selections{
     padding-left:8px !important;
+  }
+  div[role="combobox"]{
+    max-height: 40px !important;
   }
 }
