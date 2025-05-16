@@ -145,7 +145,7 @@
                               style="max-width: 554px; min-width: 554px;"
                               hide-details
                               :items="selectedLanguages"
-                              :disabled="selectedLanguages.length === 0"
+                              :disabled="selectedLanguages.length === 0 || isGenerateWithAIDisabled"
                               @input="handleActiveLanguageChange"
                             />
                           </div>
@@ -212,6 +212,7 @@
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
                         :is-plain-text.sync="isPlainText"
+                        :is-generate-with-ai.sync="isGenerateWithAi"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
@@ -277,6 +278,7 @@ import { mapGetters } from 'vuex'
 import { getEmailTemplateMethodItems, EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
+import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 
 export default {
   name: 'NewEmailTemplates',
@@ -351,6 +353,7 @@ export default {
       languageItems: [],
       isAttachmentError: false,
       isGenerateWithAIDisabled: false,
+      isGenerateWithAi: false,
       isAssistedByAI: false,
       isPlainText: false,
       isPhishingFileModified: false,
@@ -473,6 +476,9 @@ export default {
         const isInSelected = val.find((item) => item.value === this.activeLanguage)
         if (!isInSelected) {
           this.activeLanguage = val[0].value
+          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+            JSON.stringify(this.getSelectedLanguagePayload)
+          )
         }
       } else {
         this.activeLanguage = val[0].value
@@ -887,10 +893,13 @@ export default {
       }, {})
     },
     handleGenerateWithAI() {
+      this.isGenerateWithAi = true
       this.isGenerateWithAIDisabled = true
       this.$refs.refEmailTemplate.isEmailGenerating = true
       let template = this.getSelectedLanguagePayload.template
       let subject = this.getSelectedLanguagePayload.subject
+      this.isSubmitDisabled = true
+      scrollToEmailTemplateContent()
       generateEmailTemplateTranslation({
         languages: this.selectedLanguages
           .filter((item) => item.value !== this.activeLanguage)
@@ -901,15 +910,16 @@ export default {
         template,
         subject
       }).then((response) => {
-        if (!response?.data?.data?.isSuccess) return
+        if (!response?.data?.data?.isSuccess) {
+          this.resetGenerateWithAIDisabled()
+          return
+        }
         this.askForEmailTemplateTranslation()
       })
     },
     askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId) {
       if (count >= maxCount) {
-        this.isGenerateWithAIDisabled = false
-        this.$refs.refEmailTemplate.isEmailGenerating = false
-        clearTimeout(timeoutId)
+        this.resetGenerateWithAIDisabled(timeoutId)
         return
       }
       if (timeoutId) clearTimeout(timeoutId)
@@ -926,14 +936,39 @@ export default {
               if (!languagePayload) return
               languagePayload.template = item.template
               languagePayload.subject = item.subject || languagePayload.subject
+              this.$nextTick(() => {
+                const modalContent = document.querySelector('.k-overlay__container')
+                if (modalContent) {
+                  modalContent.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                    inline: 'start'
+                  })
+                  const selectedElement = document.querySelector(
+                    '.input-languages-email-template-preview-select'
+                  )
+                  if (selectedElement.classList.contains('executive-widget-container--active'))
+                    selectedElement.classList.remove('executive-widget-container--active')
+                  setTimeout(
+                    () => selectedElement.classList.add('executive-widget-container--active'),
+                    500
+                  )
+                }
+              })
             })
-            this.isGenerateWithAIDisabled = false
-            this.$refs.refEmailTemplate.isEmailGenerating = false
+            this.resetGenerateWithAIDisabled(timeoutId)
           })
           .catch(() => {
             this.askForEmailTemplateTranslation(count + 1, maxCount, timeoutId)
           })
       }, 5000)
+    },
+    resetGenerateWithAIDisabled(timeoutId) {
+      this.isGenerateWithAi = false
+      this.isGenerateWithAIDisabled = false
+      this.$refs.refEmailTemplate.isEmailGenerating = false
+      this.isSubmitDisabled = false
+      clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {
       if (
