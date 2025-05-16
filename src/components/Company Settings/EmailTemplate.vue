@@ -384,6 +384,7 @@
         <InputEmail
           label="From Email"
           id="input--notification-template-from-email"
+          placeholder="Enter sender email address"
           persistent-placeholder
           :disabled="editItemsDisabled"
           :value="fromAddress"
@@ -407,7 +408,7 @@
           type="combobox"
           :items="[]"
           :class="{
-            'email-template__cc-select-selected':ccAddresses && ccAddresses.length > 0
+            'email-template__cc-select-selected': ccAddresses && ccAddresses.length > 0
           }"
           placeholder="Enter an email address"
           multiple
