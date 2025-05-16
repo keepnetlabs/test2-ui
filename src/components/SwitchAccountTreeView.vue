@@ -128,10 +128,8 @@ export default {
           const diff = Math.round(maxBottom - innerHeight) + 8
           const newMaxHeight = 300 - diff
           this.menuMaxHeight = `${newMaxHeight}px`
-        } else {
-          if (resize) {
-            this.menuMaxHeight = '300px'
-          }
+        } else if (resize) {
+          this.menuMaxHeight = '300px'
         }
       }
     }

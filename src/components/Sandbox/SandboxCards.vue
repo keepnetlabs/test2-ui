@@ -113,8 +113,7 @@
     </CardLoading>
     <CardLoading
       :loading="incidentLoading"
-      class="dashboard-cards__skeleton-loading"
-      :class="[incidentLoading && 'dashboard-cards-loading']"
+      :class="['dashboard-cards__skeleton-loading', incidentLoading && 'dashboard-cards-loading']"
     >
       <template #skeleton-content>
         <div id="card--incident-responder-roi-summary" class="dashboard-cards roi-summary">

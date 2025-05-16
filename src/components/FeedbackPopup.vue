@@ -24,7 +24,8 @@
       </v-list-item>
       <div class="feedback-popup__text-area">
         <v-form ref="feedbackForm">
-          <v-textarea
+          <VTextarea
+            v-model="feedbackMessage"
             ref="refTextArea"
             id="input--feedback-message"
             filled
@@ -33,7 +34,6 @@
             rows="4"
             row-height="30"
             shaped
-            v-model="feedbackMessage"
             no-resize
             required
             class="feedback-popup__text-area-text"
@@ -43,7 +43,7 @@
                 (!!v && v.length >= 5 && v.length <= 1000) ||
                 'Minimum 5 characters - Maximum 1000 character'
             ]"
-          ></v-textarea>
+          />
         </v-form>
       </div>
       <div class="feedback-button k-dialog__footer-max-height" :style="getScrollingStyle">
@@ -51,7 +51,7 @@
           id="btn-cancel--feedback-popup"
           class="feedback-button--cancel"
           text
-          v-on:click="onCancelClicked"
+          @click="onCancelClicked"
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
@@ -59,7 +59,7 @@
           class="feedback-button--success"
           text
           :disabled="saveDisable"
-          v-on:click="onFeedbackSend"
+          @click="onFeedbackSend"
           >SEND</v-btn
         >
       </div>
@@ -71,6 +71,7 @@
 import { mapActions } from 'vuex'
 import { sendFeedback } from '@/api/dashboard'
 import labels from '@/model/constants/labels'
+import { VTextarea } from 'vuetify/lib'
 
 export default {
   name: 'FeedbackPopup',

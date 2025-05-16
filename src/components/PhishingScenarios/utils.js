@@ -182,7 +182,11 @@ export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
               FieldName: 'CategoryResourceId',
               Operator: 'Include'
             },
-            { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' },
+            {
+              value: '',
+              FieldName: 'DifficultyResourceId',
+              Operator: 'Include'
+            },
             {
               value: '',
               FieldName: 'LanguageTypeResourceId',
@@ -278,3 +282,9 @@ export const getEmailTemplateMethodItems = () => [
     orderNumber: 3
   }
 ]
+
+export const EMAIL_TEMPLATE_DETAIL_ACTION_TYPES = {
+  DELETE: 2,
+  EDIT: 1,
+  NO_CHANGE: 0
+}

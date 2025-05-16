@@ -153,10 +153,10 @@ export default {
         })
     },
     setChartData(data) {
-      if (!data[0].widgetDatas.length) {
-        this.isEmpty = true
-        return
-      } else if (data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0) {
+      if (
+        !data[0].widgetDatas.length ||
+        data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0
+      ) {
         this.isEmpty = true
         return
       }
@@ -330,16 +330,17 @@ export default {
           }
         }
       }
+      const colorMap = {
+        [labels.Undetected]: undetectedPercentage,
+        [labels.Malicious]: maliciousPercentage,
+        [labels.Phishing]: phishingPercentage,
+        [labels.Simulation]: simulationPercentage
+      }
+
       let backgroundColor = []
       this.valueEnums.forEach((data) => {
         if (!CHART_COLORS[data]) return
-        if (data === labels.Undetected && undetectedPercentage) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.Malicious && maliciousPercentage) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.Phishing && phishingPercentage) {
-          backgroundColor.push(CHART_COLORS[data].backgroundColor)
-        } else if (data === labels.Simulation && simulationPercentage) {
+        if (colorMap[data]) {
           backgroundColor.push(CHART_COLORS[data].backgroundColor)
         }
       })

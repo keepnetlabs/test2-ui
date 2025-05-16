@@ -1,31 +1,32 @@
 <template>
   <KContainer id="campaign-manager-report">
-    <el-tabs v-model="tab">
-      <el-tab-pane
-        v-for="item in tabItems"
-        v-if="item.isVisible"
-        :key="item.name"
-        :id="item.id"
-        :name="item.name"
-        :label="item.label"
-        :disabled="isLoading"
-      >
-        <span slot="label">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-          <template v-else> {{ item.label }} </template>
-        </span>
-        <component
-          v-if="item.name === tab"
-          :is="item.component"
-          :id="id"
-          :custom-fields="customFields"
-          :instance-group="instanceGroup"
-          :phishing-scenario-name="getPhishingScenarioName"
-          :form-details="formDetails"
-          :api-response="apiResponse"
-        />
-      </el-tab-pane>
-    </el-tabs>
+    <ElTabs v-model="tab">
+      <template v-for="item in tabItems">
+        <ElTabPane
+          v-if="item.isVisible"
+          :key="item.name"
+          :id="item.id"
+          :name="item.name"
+          :label="item.label"
+          :disabled="isLoading"
+        >
+          <span slot="label">
+            <VSkeletonLoader v-if="isLoading" :loading="isLoading" type="chip" />
+            <template v-else> {{ item.label }} </template>
+          </span>
+          <component
+            v-if="item.name === tab"
+            :is="item.component"
+            :id="id"
+            :custom-fields="customFields"
+            :instance-group="instanceGroup"
+            :phishing-scenario-name="getPhishingScenarioName"
+            :form-details="formDetails"
+            :api-response="apiResponse"
+          />
+        </ElTabPane>
+      </template>
+    </ElTabs>
   </KContainer>
 </template>
 

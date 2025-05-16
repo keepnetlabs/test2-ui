@@ -558,12 +558,13 @@ export default {
     },
     async handleSubmit() {
       switch (this.step) {
-        case 1:
+        case 1: {
           const { refCampaignManagerCampaignInfo } = this.$refs
           if (!refCampaignManagerCampaignInfo.validateForm()) return
           this.changeStep()
           return
-        case 2:
+        }
+        case 2: {
           this.isPhishingScenariosValid = !!this.selectedPhishingScenarios.length
           if (!this.isPhishingScenariosValid) return
           if (this.selectedPhishingScenarios.length > this.availableNumbers) {
@@ -576,7 +577,8 @@ export default {
           }
           this.changeStep()
           return
-        case 3:
+        }
+        case 3: {
           this.setActionButtonDisability(true)
           const { refCampaignManagerTargetAudience } = this.$refs
           if (!this.targetGroupResourceIds.length) {
@@ -623,7 +625,8 @@ export default {
           if (refCampaignManagerTargetAudience?.$refs?.refForm?.validate()) this.changeStep()
           this.setActionButtonDisability(false)
           return
-        case 4:
+        }
+        case 4: {
           const { refCampaignManagerDeliverySettings } = this.$refs
           if (!refCampaignManagerDeliverySettings?.validateForm()) return
           try {
@@ -647,7 +650,8 @@ export default {
             this.setActionButtonDisability(false)
           }
           return
-        case 5:
+        }
+        case 5: {
           let {
             refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
             refCampaignManagerTargetAudience: { formData: targetAudienceFormData },
@@ -718,6 +722,7 @@ export default {
             })
             .finally(this.setActionButtonDisability)
           return
+        }
         default:
           break
       }

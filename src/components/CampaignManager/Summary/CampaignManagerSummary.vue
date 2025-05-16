@@ -39,7 +39,7 @@
         :items="getSettingsItems"
       />
       <CampaignManagerSummaryCard
-        v-if="Object.keys(getOtherSettingsItems).length"
+        v-if="canRenderOtherSettingsCard"
         class="campaign-manager-last-step__other-settings"
         icon="mdi-memory"
         hide-label
@@ -195,18 +195,21 @@
                   :text="getBadgeText(landingPageParams.method || emailTemplateParams.method)"
                   :outline="false"
                 />
-                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+                <EmailTemplateListPreviewLanguages
+                  v-if="emailTemplateParams && isPhishing"
+                  :languageShortCode="
+                    typeof emailTemplateParams.languageShortCode === 'string'
+                      ? [emailTemplateParams.languageShortCode]
+                      : emailTemplateParams.languageShortCode
+                  "
+                />
+                <Badge v-else size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                   <template #content>
-                    <v-icon>mdi-web</v-icon>{{ emailTemplateParams.languageShortCode }}
+                    <v-icon>mdi-web</v-icon>
+                    {{ emailTemplateParams.languageShortCode }}
                   </template>
                 </Badge>
               </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              From: {{ emailTemplateParams.fromName }}
-              <span>&#60;</span>
-              {{ emailTemplateParams.fromAddress }}
-              <span>&#62;</span>
             </div>
             <div
               v-if="!!getPhishingFile"
@@ -262,8 +265,46 @@
           <div
             v-if="isShowEmailTemplate"
             class="campaign-manager-last-step__email-template-body-preview-container"
+            style="background: #fafafa;"
           >
-            <div class="campaign-manager-last-step__email-template-body-preview">
+            <div class="mb-3">
+              <InputLanguagePreview
+                v-model="languagePreview"
+                persistent-hint
+                class="max-w-554"
+                :hint="getEmailTemplatePreviewLanguageHint"
+                :items="selectedTemplateLanguages"
+                @input="handleEmailTemplatePreviewLanguageChange"
+              />
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">Subject: </span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.subject
+                }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">From Name: </span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.fromName
+                }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="fw-600 text-primary-color">From Email Address:</span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.fromAddress
+                }}</span>
+              </div>
+              <div>
+                <span class="fw-600 text-primary-color">CC:</span>
+                <span class="fw-400 text-primary-color">{{
+                  emailTemplateParams && emailTemplateParams.cc
+                }}</span>
+              </div>
+            </div>
+            <div
+              class="campaign-manager-last-step__email-template-body-preview"
+              style="background: #fafafa; padding: 0;"
+            >
               <KEmailPreview
                 v-if="!!emailTemplateParams.template"
                 ref="refPreview"
@@ -323,9 +364,12 @@ import {
   SEND_RANDOMLY_USERS_CALCULATE_TYPES
 } from '@/components/CampaignManager/utils'
 import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
+import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
+import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
 export default {
   name: 'CampaignManagerSummary',
   components: {
+    InputLanguagePreview,
     CampaignManagerReportSummaryTraining,
     CampaignManagerSummaryScenarioInfoTable,
     KEmailPreview,
@@ -336,7 +380,8 @@ export default {
     CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryCategory,
     AlertBox,
-    CampaignManagerScheduleDialog
+    CampaignManagerScheduleDialog,
+    EmailTemplateListPreviewLanguages
   },
   props: {
     formData: {
@@ -373,6 +418,8 @@ export default {
       trainingLanguages: [],
       selectedTrainingLanguages: [],
       labels,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false,
@@ -386,7 +433,8 @@ export default {
       methods,
       isShowScheduleDialog: false,
       trainingParams: null,
-      selectedTraining: null
+      selectedTraining: null,
+      phishingEmailTemplates: []
     }
   },
   computed: {
@@ -394,6 +442,14 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
+    canRenderOtherSettingsCard() {
+      return Object.keys(this.getOtherSettingsItems).length
+    },
     getScenarioInfoTableFilterPayload() {
       return this?.formData?.categoryFilter || null
     },
@@ -724,6 +780,9 @@ export default {
             : ' users'
         }`
       return data
+    },
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
     }
   },
   watch: {
@@ -759,15 +818,18 @@ export default {
       const resourceId = event?.name || ''
       if (!resourceId) return
       const training = this?.formData?.trainings?.[resourceId]
-      if (training && training.trainingId) {
+      if (training?.trainingId) {
         this.selectedTraining = training
         this.callForTrainingDetail(training.trainingId)
       } else this.trainingParams = null
+      if (this.isPhishing) {
+        this.phishingEmailTemplates = []
+        this.selectedTemplateLanguages = []
+      }
       this.isScenarioDetailLoading = true
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
-          : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+      const apiFunc = this.isPhishing
+        ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
+        : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
       apiFunc(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
@@ -799,11 +861,58 @@ export default {
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
             template,
-            isAssistedByAI
+            isAssistedByAI,
+            cc: emailTemplate?.ccAddresses.join(',')
           }
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
           )?.text
+          if (this.isPhishing) {
+            this.selectedTemplateLanguages.push({
+              text: emailTemplate?.languageTypeName,
+              value: emailTemplate?.languageTypeResourceId
+            })
+            this.languagePreview = this.selectedTemplateLanguages[0].value
+            this.phishingEmailTemplates.push({
+              fromName,
+              fromAddress,
+              subject,
+              template,
+              languageTypeResourceId: languageOfEmailTemplate,
+              languageTypeName: emailTemplate?.languageTypeName,
+              ccAddresses: this.emailTemplateParams.cc,
+              languageShortCode: this.languageOptions.find(
+                (language) => language.value === this.emailTemplateParams.languageTypeResourceId
+              )?.description
+            })
+            if (emailTemplate?.languages?.length) {
+              emailTemplate?.languages?.forEach((item) => {
+                this.selectedTemplateLanguages.push({
+                  text: item.languageTypeName,
+                  value: item.languageTypeResourceId
+                })
+              })
+            }
+            this.phishingEmailTemplates.push(
+              ...emailTemplate?.languages.map((item) => {
+                return {
+                  fromName: item.fromName,
+                  fromAddress: item.fromAddress,
+                  subject: item.subject,
+                  template: item.template,
+                  languageTypeResourceId: item.languageTypeResourceId,
+                  languageTypeName: item.languageTypeName,
+                  ccAddresses: item.ccAddresses.join(','),
+                  languageShortCode: this.languageOptions.find(
+                    (language) => language.value === item.languageTypeResourceId
+                  )?.description
+                }
+              })
+            )
+            this.emailTemplateParams.languageShortCode = [
+              ...this.phishingEmailTemplates.map((item) => item.languageShortCode)
+            ]
+          }
           const {
             name: landingPageName = '',
             description,
@@ -827,7 +936,7 @@ export default {
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
-          )?.text
+          )?.[this.isPhishing ? 'description' : 'text']
           this.category = category
         })
         .finally(() => (this.isScenarioDetailLoading = false))
@@ -865,6 +974,21 @@ export default {
     },
     toggleScheduleDialog() {
       this.isShowScheduleDialog = !this.isShowScheduleDialog
+    },
+    handleEmailTemplatePreviewLanguageChange(val) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === val
+      )
+      if (findedTemplate) {
+        this.emailTemplateParams = {
+          ...this.emailTemplateParams,
+          cc: findedTemplate.ccAddresses,
+          fromName: findedTemplate.fromName,
+          fromAddress: findedTemplate.fromAddress,
+          subject: findedTemplate.subject,
+          template: findedTemplate.template
+        }
+      }
     }
   }
 }

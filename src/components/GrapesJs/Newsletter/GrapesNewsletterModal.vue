@@ -832,8 +832,7 @@ export default {
         if (component?.ccid?.includes('outlook-button-href-id')) {
           const editor = this.editor
           const outlookSpanItems = editor.DomComponents.getWrapper().find('.outlook-button-span-id')
-          for (let i = 0; i < outlookSpanItems.length; i++) {
-            const element = outlookSpanItems[i]
+          for (const element of outlookSpanItems) {
             if (!element?.toHTML?.()?.includes('outlook-button-href-id')) element.remove()
           }
         }

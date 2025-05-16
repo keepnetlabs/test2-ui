@@ -59,13 +59,7 @@
                     <v-list-item-subtitle>
                       <v-progress-linear
                         v-if="!process.isFinished && process.targetCount !== 0"
-                        :color="
-                          process.existError
-                            ? 'red'
-                            : process.isFinished
-                            ? 'success lighten-1'
-                            : 'primary'
-                        "
+                        :color="getProcessColor(process)"
                         :value="process.progress"
                         height="25"
                         rounded
@@ -169,6 +163,14 @@ export default {
           ? 'success'
           : 'info'
       }
+    },
+    getProcessColor(process) {
+      if (process.existError) {
+        return 'red'
+      } else if (process.isFinished) {
+        return 'success lighten-1'
+      }
+      return 'primary'
     }
   },
   created() {

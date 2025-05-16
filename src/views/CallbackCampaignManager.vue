@@ -142,7 +142,7 @@ import NoScenarioModal from '@/components/CallbackCampaignManager/NoScenarioModa
 import NoTargetUserGroupModal from '@/components/CallbackCampaignManager/NoTargetUserGroupModal'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import CallbackScenarioModal from '@/components/CallbackScenarios/CallbackScenarioModal'
-
+import { callbackScenariosDifficultyTypes } from '@/components/CallbackScenarios/utils'
 export default {
   name: 'CallbackCampaignManager',
   components: {
@@ -191,20 +191,7 @@ export default {
       languages: [],
       availableNumbers: 0,
       scenarioDetailsLookup: {
-        difficultyTypes: [
-          {
-            text: 'Easy',
-            value: 1
-          },
-          {
-            text: 'Medium',
-            value: 2
-          },
-          {
-            text: 'Hard',
-            value: 3
-          }
-        ]
+        difficultyTypes: callbackScenariosDifficultyTypes
       }
     }
   },
