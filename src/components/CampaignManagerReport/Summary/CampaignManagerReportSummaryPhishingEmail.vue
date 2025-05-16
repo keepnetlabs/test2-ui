@@ -37,11 +37,7 @@
               :text="getBadgeText(method)"
               :outline="false"
             />
-            <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-              <template #content>
-                <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
-              </template>
-            </Badge>
+            <EmailTemplateListPreviewLanguages :languageShortCode="formData.languageShortCode" />
           </div>
         </div>
       </div>
@@ -117,6 +113,8 @@ import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsim
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import { getDifficultyBadgeColor } from '@/utils/functions'
 import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
 
 export default {
   name: 'CampaignManagerReportSummaryPhishingEmail',
@@ -126,7 +124,8 @@ export default {
     DatatableLoading,
     KEmailPreview,
     Badge,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
+    EmailTemplateListPreviewLanguages
   },
   mixins: [useLoading],
   props: {
@@ -160,7 +159,8 @@ export default {
       languagePreview: '',
       selectedTemplateLanguages: [],
       phishingEmailTemplates: [],
-      ccAddresses: []
+      ccAddresses: [],
+      languageOptions: []
     }
   },
   computed: {
@@ -182,6 +182,9 @@ export default {
     'formData.resourceId'() {
       this.callForTemplate(false)
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   methods: {
     callForTemplate(showLoader = true) {
@@ -213,9 +216,30 @@ export default {
             this.name = data.name
             this.ccAddresses = data?.ccAddresses || []
             this.isAssistedByAI = data?.isAssistedByAI || false
+            if(this?.formData?.languages?.length){
+              this.formData.languages.forEach((item) => {
+                const findedLanguage = this.languageOptions.find((lItem) => lItem.code === item.languageShortCode)
+                this.selectedTemplateLanguages.push({
+                  value: findedLanguage?.value,
+                  text: findedLanguage?.text
+                })
+                this.phishingEmailTemplates.push({
+                  fromName: item.fromName,
+                  fromAddress: item.fromAddress,
+                  subject: item.subject,
+                  template: item.template,
+                  ccAddresses: item.ccAddresses,
+                  languageTypeName: findedLanguage?.text,
+                  languageTypeResourceId: findedLanguage?.value
+                })
+            })
+              this.languagePreview = this.selectedTemplateLanguages[0]?.value
+              return
+            }
             this.selectedTemplateLanguages.push({
               value: data.languageTypeResourceId,
-              text: data.languageTypeName
+              text: this.languageOptions.find((item) => item.value === data.languageTypeResourceId)
+                ?.text
             })
             this.phishingEmailTemplates.push({
               fromName: this.fromName,
@@ -227,22 +251,7 @@ export default {
               languageTypeResourceId: data.languageTypeResourceId
             })
             this.languagePreview = data.languageTypeResourceId
-            if (!data?.languages?.length) return
-            data.languages.forEach((item) => {
-              this.selectedTemplateLanguages.push({
-                value: item.languageTypeResourceId,
-                text: item.languageTypeName
-              })
-              this.phishingEmailTemplates.push({
-                fromName: item.fromName,
-                fromAddress: item.fromAddress,
-                subject: item.subject,
-                template: item.template,
-                ccAddresses: item.ccAddresses,
-                languageTypeName: item.languageTypeName,
-                languageTypeResourceId: item.languageTypeResourceId
-              })
-            })
+
           })
           .finally(() => {
             if (showLoader) this.setLoading()
@@ -264,6 +273,16 @@ export default {
       this.subject = findedTemplate.subject
       this.emailTemplate = findedTemplate.template
       this.ccAddresses = findedTemplate.ccAddresses
+    },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId,
+            code: language.description
+          })) || []
+      })
     }
   }
 }
