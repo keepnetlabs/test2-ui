@@ -29,6 +29,7 @@
           :show-leaving-dialog="false"
           :email-template-id="createdEmailTemplateResourceId"
           :selected-method-text="getSelectedMethodText"
+          :scenario-details-lookup="scenarioDetailsLookup"
           @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
         />
       </VNavigationDrawer>
@@ -371,7 +372,7 @@
                             {{ getSummaryMethod }}
                           </v-chip>
                           <v-chip
-                            v-if="!!summaryData"
+                            v-if="!!summaryData && !isPhishing"
                             class="template-list--item template-list--item__chip"
                             style="
                               background-color: #757575;
@@ -389,6 +390,14 @@
                               summaryData.emailTemplate.languageShortCode
                             }}
                           </v-chip>
+                          <EmailTemplateListPreviewLanguages
+                            v-if="summaryData.emailTemplate && isPhishing"
+                            :languageShortCode="
+                              typeof summaryData.emailTemplate.languageShortCode === 'string'
+                                ? [summaryData.emailTemplate.languageShortCode]
+                                : summaryData.emailTemplate.languageShortCode
+                            "
+                          />
                         </div>
                       </div>
                     </div>
@@ -404,7 +413,7 @@
                               v-model="languagePreview"
                               persistent-hint
                               class="max-w-554"
-                              :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                              :hint="getEmailTemplatePreviewLanguageHint"
                               :items="selectedTemplateLanguages"
                               @input="handleEmailTemplatePreviewLanguageChange"
                             />
@@ -432,7 +441,9 @@
                             <div>
                               <span class="fw-600 text-primary-color fs-medium">CC: </span>
                               <span class="fw-400 text-primary-color fs-medium">{{
-                                summaryData.emailTemplate && summaryData.emailTemplate.cc
+                                summaryData.emailTemplate &&
+                                summaryData.emailTemplate.cc &&
+                                summaryData.emailTemplate.cc.join(',')
                               }}</span>
                             </div>
                           </div>
@@ -727,6 +738,7 @@ import { mapGetters } from 'vuex'
 import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
+import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
@@ -748,7 +760,8 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    AttachmentsPreview
+    AttachmentsPreview,
+    EmailTemplateListPreviewLanguages
   },
   props: {
     status: {
@@ -840,13 +853,19 @@ export default {
       },
       emailTemplateResourceId: null,
       landingPageTemplateResourceId: null,
-      selectedEmailTemplate: null
+      selectedEmailTemplate: null,
+      phishingEmailTemplates: []
     }
   },
   computed: {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     getSelectedMethodText() {
       let selectedMethod = this.getMethodText
       if (selectedMethod.startsWith('Click')) selectedMethod = 'Click Only'
@@ -1322,12 +1341,14 @@ export default {
       if (currentStep === 2 && this.isAttachmentBasedScenario) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
           this.isSubmitDisabled = true
+          if (this.isPhishing) {
+            this.phishingEmailTemplates = []
+            this.selectedTemplateLanguages = []
+            this.summaryData.emailTemplate.languageShortCode = []
+          }
           this.getEmailTemplateApiFuncs
             .content(this.emailTemplateResourceId)
             .then((response) => {
-              const languageShortCode = this.languageOptions.find(
-                (language) => language.value === response?.data?.data?.languageTypeResourceId
-              )?.description
               const emailTemplateData = {
                 ...response.data.data,
                 languageShortCode
@@ -1344,6 +1365,7 @@ export default {
                 )
               }
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
+              this.setPhishingEmailTemplates(response?.data?.data)
               this.step += 1
             })
             .finally(() => {
@@ -1362,6 +1384,12 @@ export default {
               : QuishingService.getSummaryOfScenario
           let params = [this.emailTemplateResourceId, this.landingPageTemplateResourceId]
           if (this.isQuishing) params.push(this.quishingType.toLowerCase())
+          if (this.isPhishing) {
+            this.phishingEmailTemplates = []
+            this.selectedTemplateLanguages = []
+            if (this.summaryData.emailTemplate)
+              this.summaryData.emailTemplate.languageShortCode = []
+          }
           apiFunc(...params)
             .then((response) => {
               const {
@@ -1386,6 +1414,7 @@ export default {
               )
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
+              this.setPhishingEmailTemplates(data)
               this.step += 1
             })
             .finally(() => {
@@ -1499,7 +1528,63 @@ export default {
       this.landingPageTemplateResourceId = null
       this.emailTemplateResourceId = null
     },
-    handleEmailTemplatePreviewLanguageChange(value) {}
+    setPhishingEmailTemplates(data) {
+      if (!this.isPhishing) return
+      this.selectedTemplateLanguages.push({
+        text: data.emailTemplate.languageTypeName,
+        value: data.emailTemplate.languageTypeResourceId
+      })
+      this.languagePreview = this.selectedTemplateLanguages[0].value
+      if (!data?.emailTemplate?.languages?.length) return
+      this.phishingEmailTemplates.push({
+        fromName: data.emailTemplate.fromName,
+        subject: data.emailTemplate.subject,
+        fromEmailAddress: data.emailTemplate.fromAddress,
+        cc: data.emailTemplate.ccAddresses,
+        template: data.emailTemplate.template,
+        language: data.emailTemplate.languageTypeName,
+        languageType: data.emailTemplate.languageTypeResourceId,
+        languageShortCode: data.emailTemplate.languageShortCode
+      })
+      data.emailTemplate.languages.forEach((item) => {
+        this.phishingEmailTemplates.push({
+          fromName: item.fromName,
+          subject: item.subject,
+          fromEmailAddress: item.fromAddress,
+          cc: item.ccAddresses,
+          template: item.template,
+          language: item.languageTypeName,
+          languageType: item.languageTypeResourceId,
+          languageShortCode: this.languageOptions.find(
+            (language) => language.value === item.languageTypeResourceId
+          )?.description
+        })
+        this.selectedTemplateLanguages.push({
+          text: item.languageTypeName,
+          value: item.languageTypeResourceId
+        })
+      })
+      this.summaryData.emailTemplate.languageShortCode = [
+        ...this.phishingEmailTemplates.map((item) => item.languageShortCode)
+      ]
+      this.handleEmailTemplatePreviewLanguageChange(this.languagePreview)
+    },
+    handleEmailTemplatePreviewLanguageChange(value) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (template) => template.languageType === value
+      )
+      if (!findedTemplate) return
+      this.summaryData.emailTemplate = {
+        ...this.summaryData.emailTemplate,
+        template: findedTemplate.template,
+        languageTypeResourceId: value,
+        languageTypeName: findedTemplate.language,
+        fromName: findedTemplate.fromName,
+        fromEmailAddress: findedTemplate.fromEmailAddress,
+        subject: findedTemplate.subject,
+        cc: findedTemplate.cc
+      }
+    }
   }
 }
 </script>

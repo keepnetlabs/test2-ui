@@ -249,7 +249,7 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
             type: 'smallBadge',

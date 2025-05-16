@@ -31,7 +31,7 @@
                   v-model="languagePreview"
                   persistent-hint
                   class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                  :hint="getEmailTemplatePreviewLanguageHint"
                   :items="selectedTemplateLanguages"
                   :hide-details="false"
                   @input="handleEmailTemplatePreviewLanguageChange"
@@ -185,7 +185,7 @@ export default {
       isMethodMfa: false,
       languagePreview: '',
       selectedTemplateLanguages: [],
-      languages: [],
+      phishingEmailTemplates: [],
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
@@ -198,6 +198,11 @@ export default {
     }
   },
   computed: {
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     getFirstTabLabel() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.JustEmail
@@ -270,7 +275,9 @@ export default {
             subject,
             type,
             resourceId,
-            isAssistedByAI = false
+            isAssistedByAI = false,
+            languageTypeResourceId,
+            languageTypeName
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
@@ -287,9 +294,43 @@ export default {
                 }
               : null,
             type,
-            isAssistedByAI
+            isAssistedByAI,
+            languageTypeResourceId,
+            languageTypeName
           }
-          this.languages = emailTemplate.languages
+          if (this.isPhishing) {
+            this.phishingEmailTemplates.push({
+              fromName,
+              fromAddress,
+              subject,
+              template,
+              languageTypeResourceId,
+              languageTypeName,
+              ccAddresses
+            })
+            this.selectedTemplateLanguages.push({
+              value: languageTypeResourceId,
+              text: languageTypeName
+            })
+            this.languagePreview = languageTypeResourceId
+            if (emailTemplate?.languages?.length) {
+              emailTemplate?.languages?.forEach((item) => {
+                this.phishingEmailTemplates.push({
+                  ccAddresses: item.ccAddresses,
+                  fromName: item.fromName,
+                  fromAddress: item.fromAddress,
+                  subject: item.subject,
+                  template: item.template,
+                  languageTypeResourceId: item.languageTypeResourceId,
+                  languageTypeName: item.languageTypeName
+                })
+                this.selectedTemplateLanguages.push({
+                  value: item.languageTypeResourceId,
+                  text: item.languageTypeName
+                })
+              })
+            }
+          }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplate = template
@@ -351,9 +392,19 @@ export default {
         })
     },
     handleEmailTemplatePreviewLanguageChange() {
-      this.emailTemplateParams = this.languages.find(
-        (item) => item.resourceId === this.languagePreview
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === this.languagePreview
       )
+      if (!findedTemplate) return
+      this.emailTemplateParams = {
+        ...this.emailTemplateParams,
+        ccAddresses: findedTemplate.ccAddresses,
+        fromName: findedTemplate.fromName,
+        fromAddress: findedTemplate.fromAddress,
+        subject: findedTemplate.subject,
+        template: findedTemplate.template
+      }
+      this.emailTemplate = findedTemplate.template
     }
   }
 }

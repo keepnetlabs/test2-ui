@@ -279,6 +279,20 @@
           margin-right: 4px;
         }
       }
+      &__language{
+        color:rgba(56, 59, 65, 0.72);
+        font-size: 12px;
+        font-weight: 600;
+        line-height:16px;
+        &-separator{
+          color:transparent;
+          width: 2px;
+          display: inline-block;
+          border-radius: 4px;
+          margin-right: 4px;
+          background-color: #E0E0E0;
+        }
+      }
     }
   }
 

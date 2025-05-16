@@ -361,7 +361,8 @@
                     <div v-if="!item.tags || !item.tags.length">
                       {{ '\xa0' }}
                     </div>
-                    <div class="d-flex align-center">
+                    <EmailTemplateListLeftSideLanguages v-if="isPhishing" :item="item" />
+                    <div v-else class="d-flex align-center">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
                       <span class="template-list--item__language">{{ item.languageTypeName }}</span>
                     </div>
@@ -401,7 +402,7 @@
                             v-model="languagePreview"
                             persistent-hint
                             class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                            :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                            :hint="getEmailTemplatePreviewLanguageHint"
                             :items="selectedTemplateLanguages"
                             :hide-details="false"
                             @input="handleEmailTemplatePreviewLanguageChange"
@@ -583,7 +584,7 @@ import {
   SCENARIO_DISTRIBUTION
 } from '@/components/CampaignManager/utils'
 import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
-
+import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -597,7 +598,8 @@ export default {
     KSelect,
     Multipane,
     MultipaneResizer,
-    AttachmentsPreview
+    AttachmentsPreview,
+    EmailTemplateListLeftSideLanguages
   },
   mixins: [useDebounce],
   props: {
@@ -690,13 +692,19 @@ export default {
       languagePreview: [],
       selectedTemplateLanguages: [],
       isShowCategoryTrainingDialog: false,
-      enumTypes: {}
+      enumTypes: {},
+      phishingEmailTemplates: []
     }
   },
   computed: {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     isDistributionManually() {
       return this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
     },
@@ -766,19 +774,17 @@ export default {
       return `Only show selected scenarios (${this.value.length})`
     },
     getTableEmptyTextMessage() {
-      const message =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? 'You do not have any Phishing Scenarios'
-          : 'You do not have any Quishing Scenarios'
+      const message = this.isPhishing
+        ? 'You do not have any Phishing Scenarios'
+        : 'You do not have any Quishing Scenarios'
       return this.isFilterOrSearchActive
         ? 'Sorry, that search and filter criteria has no results.'
         : message
     },
     getTableEmptySubMessage() {
-      const message =
-        this.type === SCENARIO_TYPES.PHISHING
-          ? 'Go to Phishing Simulator > Phishing Scenarios to create a new scenario'
-          : 'Go to Quishing Simulator > Quishing Scenarios to create a new scenario'
+      const message = this.isPhishing
+        ? 'Go to Phishing Simulator > Phishing Scenarios to create a new scenario'
+        : 'Go to Quishing Simulator > Quishing Scenarios to create a new scenario'
       return this.isFilterOrSearchActive ? message : 'Please try adjusting your search or filter'
     },
     isFilterOrSearchActive() {
@@ -803,6 +809,9 @@ export default {
     },
     getSingleTemplateDetails() {
       return this.landingPageTemplates?.[0]?.content || ''
+    },
+    isPhishing() {
+      return this.type === SCENARIO_TYPES.PHISHING
     }
   },
   watch: {
@@ -1150,8 +1159,11 @@ export default {
     },
     callForSelectedPhishingScenario(resourceId = '', item = {}) {
       this.adjustTrainingModel(resourceId)
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING ? getScenario : QuishingService.getScenario
+      if (this.isPhishing) {
+        this.phishingEmailTemplates = []
+        this.selectedTemplateLanguages = []
+      }
+      const apiFunc = this.isPhishing ? getScenario : QuishingService.getScenario
       apiFunc(resourceId).then((response) => {
         const {
           data: { data }
@@ -1161,10 +1173,9 @@ export default {
         this.isAttachmentBasedScenario =
           data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT
         this.selectedTemplateResourceId = resourceId
-        const previewFunc =
-          this.type === SCENARIO_TYPES.PHISHING
-            ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
-            : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
+        const previewFunc = this.isPhishing
+          ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
+          : QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
         const params = [resourceId]
         if (
           item.quishingType.toLowerCase() ===
@@ -1192,7 +1203,8 @@ export default {
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
             subject,
-            ccAddresses
+            ccAddresses,
+            languageTypeName
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -1206,7 +1218,45 @@ export default {
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
+            languageTypeName,
             phishingFileName
+          }
+          if (this.isPhishing) {
+            this.selectedTemplateLanguages.push({
+              value: languageOfEmailTemplate,
+              text: languageTypeName
+            })
+            this.phishingEmailTemplates.push({
+              fromName: fromName,
+              fromAddress: fromAddress,
+              subject: subject,
+              template: template,
+              ccAddresses: ccAddresses,
+              languageTypeName: languageTypeName,
+              languageTypeResourceId: languageOfEmailTemplate
+            })
+            this.languagePreview = languageOfEmailTemplate
+            if (emailTemplate?.languages?.length) {
+              emailTemplate?.languages?.forEach((item) => {
+                this.selectedTemplateLanguages.push({
+                  value: item.languageTypeResourceId,
+                  text: item.languageTypeName
+                })
+              })
+              this.phishingEmailTemplates.push(
+                ...emailTemplate?.languages.map((item) => {
+                  return {
+                    fromName: item.fromName,
+                    fromAddress: item.fromAddress,
+                    subject: item.subject,
+                    template: item.template,
+                    ccAddresses: item.ccAddresses,
+                    languageTypeName: item.languageTypeName,
+                    languageTypeResourceId: item.languageTypeResourceId
+                  }
+                })
+              )
+            }
           }
           this.emailTemplate = template
           const {
@@ -1267,8 +1317,7 @@ export default {
           this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
         }
       }
-      const apiFunc =
-        this.type === SCENARIO_TYPES.PHISHING ? getScenariosList : QuishingService.searchScenarios
+      const apiFunc = this.isPhishing ? getScenariosList : QuishingService.searchScenarios
       if (this.type === SCENARIO_TYPES.QUISHING) {
         this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
       }
@@ -1347,7 +1396,18 @@ export default {
     toggleShowCategoryTrainingDialog() {
       this.isShowCategoryTrainingDialog = !this.isShowCategoryTrainingDialog
     },
-    handleEmailTemplatePreviewLanguageChange() {}
+    handleEmailTemplatePreviewLanguageChange(val) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === val
+      )
+      if (!findedTemplate) return
+      this.emailTemplateParams.fromName = findedTemplate.fromName
+      this.emailTemplateParams.fromAddress = findedTemplate.fromAddress
+      this.emailTemplateParams.subject = findedTemplate.subject
+      this.emailTemplateParams.template = findedTemplate.template
+      this.emailTemplate = findedTemplate.template
+      this.emailTemplateParams.ccAddresses = findedTemplate.ccAddresses
+    }
   }
 }
 </script>

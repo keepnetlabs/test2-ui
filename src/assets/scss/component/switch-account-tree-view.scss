@@ -35,7 +35,7 @@
     margin-left: 0;
   }
   .v-treeview-node__children{
-    margin-left: -24px;
+    margin-left: -44px;
   }
   .v-treeview-node__label{
     overflow: visible;
@@ -46,6 +46,29 @@
   .mdi-checkbox-marked.v-treeview-node__checkbox{
     color: #2196F3 !important;
     caret-color: #2196F3 !important;
+  }
+  .v-treeview-node__root{
+    padding-left: 0;
+    .v-treeview-node__checkbox {
+      display: none;
+      padding-left: 0;
+    }
+    .v-treeview-node__label{
+      color: #383b41;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+  .v-treeview-node__children .v-treeview-node__root{
+    .v-treeview-node__checkbox {
+      display: initial;
+    }
+    .v-treeview-node__label{
+      color: #383b41;
+      font-weight: 400;
+      font-size: 14px;
+
+    }
   }
 }
 .input-language-settings__footer{

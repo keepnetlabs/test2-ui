@@ -96,6 +96,14 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <div class="email-settings">
+              <EditLanguagesLeavingDialog
+                v-if="showEditLanguagesLeavingDialog"
+                :status="showEditLanguagesLeavingDialog"
+                :before-save-language="beforeSaveLanguage"
+                @on-close="handleCloseEditLanguagesLeavingDialog"
+                @on-discard="handleDiscardEditLanguagesLeavingDialog"
+                @on-confirm="handleConfirmEditLanguagesLeavingDialog"
+              />
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="new-email-template__title">
@@ -113,7 +121,7 @@
                       class-name="mt-8"
                       style="max-width: 753px;"
                       title="Languages Settings"
-                      sub-title="Choose a language for automatic localization; 178 languages are supported."
+                      sub-title="You can select multiple languages to generate AI-assisted email localization. A maximum of 10 languages can be added per template."
                     >
                       <InputLanguagesSettings
                         v-model="selectedLanguages"
@@ -249,11 +257,14 @@ import {
   createPhishingEmailTemplate,
   getEmailTemplatePreviewContent,
   getMergedTextForPhishing,
-  updatePhishingEmailTemplate
+  updatePhishingEmailTemplate,
+  generateEmailTemplateTranslation,
+  getEmailTemplateTranslation
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
+import EditLanguagesLeavingDialog from '@/components/PhishingScenarios/EditLanguagesLeavingDialog.vue'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
@@ -266,9 +277,11 @@ import { mapGetters } from 'vuex'
 import { getEmailTemplateMethodItems, EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
+
 export default {
   name: 'NewEmailTemplates',
   components: {
+    EditLanguagesLeavingDialog,
     InputLanguagePreview,
     InputLanguagesSettings,
     InputPhishingMethod,
@@ -343,6 +356,7 @@ export default {
       isPhishingFileModified: false,
       isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
+      showEditLanguagesLeavingDialog: false,
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
@@ -408,7 +422,9 @@ export default {
           description: null,
           orderNumber: 3
         }
-      ]
+      ],
+      selectedLanguagePayloadItemBeforeSave: null,
+      beforeSaveLanguage: ''
     }
   },
   computed: {
@@ -514,6 +530,29 @@ export default {
           toneResourceId: this.formValues.toneResourceId,
           localizationResourceId: this.formValues.localizationResourceId
         })
+        this.selectedLanguages.push({
+          text: this.formValues.languageTypeName,
+          value: this.formValues.languageTypeResourceId
+        })
+        if (response?.data?.data?.languages.length) {
+          response?.data?.data?.languages.forEach((item) => {
+            this.selectedLanguages.push({
+              text: item.languageTypeName,
+              value: item.languageTypeResourceId
+            })
+            this.languagesPayload.push({
+              languageTypeResourceId: item.languageTypeResourceId,
+              subject: item.subject,
+              fromName: item.fromName,
+              fromAddress: item.fromAddress,
+              ccAddresses: item.ccAddresses || [],
+              template: item.template,
+              prompt: item.prompt,
+              toneResourceId: item.toneResourceId,
+              localizationResourceId: item.localizationResourceId
+            })
+          })
+        }
         this.activeLanguage = this.formValues.languageTypeResourceId
         this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -526,34 +565,39 @@ export default {
   },
   methods: {
     setLanguageItems() {
-      console.log('this.scenarioDetailsLookup', this.scenarioDetailsLookup)
       const languageTypes = this.scenarioDetailsLookup.languageTypes
       const preferredLanguageTypes = this.scenarioDetailsLookup.preferredLanguageTypes
-      const companyLanguageTypeResourceId = this.scenarioDetailsLookup.langResourceId
+      const companyLanguageTypeResourceId = this.scenarioDetailsLookup.companyLanguageTypeResourceId
       const languageItems = []
-      /*
       languageItems.push({
         value: 1,
         text: 'Preferred Languages',
         children: preferredLanguageTypes
       })
-        */
       languageItems.push({
         value: 5,
         text: 'All Languages',
-        children: languageTypes
+        children: languageTypes.filter(
+          (item) => !preferredLanguageTypes.find((pItem) => pItem.value === item.value)
+        )
       })
       this.languageItems = languageItems
-      if (!this.isEdit) {
-        const findedLanguage = languageTypes.find(
-          (item) => item.resourceId === companyLanguageTypeResourceId
+      if (this.isEdit) return
+      const findedLanguage = languageTypes.find(
+        (item) => item.value === companyLanguageTypeResourceId
+      )
+      if (!findedLanguage) return
+      this.selectedLanguages.push({
+        text: findedLanguage.text,
+        value: companyLanguageTypeResourceId
+      })
+      this.$nextTick(() => {
+        this.handleSelectedLanguagesChange(this.selectedLanguages)
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
         )
-        console.log('findedLanguage', findedLanguage)
-        this.selectedLanguages.push({
-          text: findedLanguage.text,
-          value: companyLanguageTypeResourceId
-        })
-      }
+        this.$refs?.refEmailTemplateContent?.resetValidation()
+      })
     },
     handleEditHtmlTemplate(value) {
       this.getSelectedLanguagePayload.template = value
@@ -587,10 +631,12 @@ export default {
             data: { data }
           } = response
           let { from, fromName, subject, attachments, body } = data
-          this.formValues.fromAddress = from
-          this.formValues.template = body
-          this.formValues.subject = subject
-          this.formValues.fromName = fromName
+          this.languagesPayload.forEach((item) => {
+            item.template = body
+            item.subject = subject
+            item.fromName = fromName
+            item.fromAddress = from
+          })
           if (attachments) {
             attachments = attachments.map((item) => ({
               ...item,
@@ -658,7 +704,6 @@ export default {
           (item) => item.languageTypeResourceId === language.value
         )
         if (item) return item
-        console.log('this.initialFormValues.template', this.initialFormValues.template)
         return {
           languageTypeResourceId: language.value,
           subject: '',
@@ -757,8 +802,8 @@ export default {
           )
           if (payloadLanguage) {
             const isEqual = JSON.stringify(item) === JSON.stringify(payloadLanguage)
-            item.detailActionType = isEqual
-              ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO
+            payloadLanguage.detailActionType = isEqual
+              ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO_CHANGE
               : EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
           } else {
             payload.languages.push({
@@ -817,17 +862,70 @@ export default {
     handleGenerateWithAI() {
       this.isGenerateWithAIDisabled = true
       this.$refs.refEmailTemplate.isEmailGenerating = true
+      let template = this.getSelectedLanguagePayload.template
+      let subject = this.getSelectedLanguagePayload.subject
+      const preferredLanguagePayload = this.languagesPayload.find(
+        (item) =>
+          item.languageTypeResourceId === this.scenarioDetailsLookup.companyLanguageTypeResourceId
+      )
+      if (preferredLanguagePayload) {
+        template = preferredLanguagePayload.template
+        subject = preferredLanguagePayload.subject
+      }
+      generateEmailTemplateTranslation({
+        languages: this.selectedLanguages.map((item) => ({
+          languageResourceId: item.value,
+          languageName: item.text
+        })),
+        template,
+        subject
+      }).then((response) => {
+        console.log('response 1', response)
+        getEmailTemplateTranslation().then((response) => {
+          console.log('response 2', response)
+        })
+      })
     },
     handleActiveLanguageChange(value) {
+      if (
+        JSON.stringify(this.selectedLanguagePayloadItemBeforeSave) ===
+        JSON.stringify(this.getSelectedLanguagePayload)
+      ) {
+        this.activeLanguage = value
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        return
+      }
       this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.initialValue = this.activeLanguage
       this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.lazyValue = this.activeLanguage
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
-        show: true,
-        callback: () => {
-          console.log('value', value)
-          this.activeLanguage = value
-        }
-      })
+      this.showEditLanguagesLeavingDialog = true
+      this.beforeSaveLanguage = value
+    },
+    handleCloseEditLanguagesLeavingDialog() {
+      this.showEditLanguagesLeavingDialog = false
+    },
+    handleDiscardEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      this.showEditLanguagesLeavingDialog = false
+      let selectedTemplateIndex = this.languagesPayload.findIndex(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedTemplateIndex !== -1) {
+        this.$set(this.languagesPayload, selectedTemplateIndex, {
+          ...this.selectedLanguagePayloadItemBeforeSave
+        })
+      }
+      this.activeLanguage = beforeSaveLanguage
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
+    },
+    handleConfirmEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      this.showEditLanguagesLeavingDialog = false
+      this.activeLanguage = beforeSaveLanguage
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
     }
   }
 }

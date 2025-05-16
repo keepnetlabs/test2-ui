@@ -55,7 +55,7 @@
             style="max-width: 554px; min-width: 554px;"
             persistent-hint
             class="max-w-554"
-            :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+            :hint="getEmailTemplatePreviewLanguageHint"
             :items="selectedTemplateLanguages"
             @input="handleEmailTemplatePreviewLanguageChange"
           />
@@ -159,10 +159,16 @@ export default {
       isAssistedByAI: false,
       languagePreview: '',
       selectedTemplateLanguages: [],
+      phishingEmailTemplates: [],
       ccAddresses: []
     }
   },
   computed: {
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     isFormData() {
       return Object.keys(this.formData).length
     }
@@ -194,6 +200,8 @@ export default {
             const {
               data: { data }
             } = response
+            this.phishingEmailTemplates = []
+            this.selectedTemplateLanguages = []
             this.emailTemplate = data.template
             this.difficulty =
               this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
@@ -205,6 +213,36 @@ export default {
             this.name = data.name
             this.ccAddresses = data?.ccAddresses || []
             this.isAssistedByAI = data?.isAssistedByAI || false
+            this.selectedTemplateLanguages.push({
+              value: data.languageTypeResourceId,
+              text: data.languageTypeName
+            })
+            this.phishingEmailTemplates.push({
+              fromName: this.fromName,
+              fromAddress: this.fromAddress,
+              subject: this.subject,
+              template: this.emailTemplate,
+              ccAddresses: this.ccAddresses,
+              languageTypeName: data.languageTypeName,
+              languageTypeResourceId: data.languageTypeResourceId
+            })
+            this.languagePreview = data.languageTypeResourceId
+            if (!data?.languages?.length) return
+            data.languages.forEach((item) => {
+              this.selectedTemplateLanguages.push({
+                value: item.languageTypeResourceId,
+                text: item.languageTypeName
+              })
+              this.phishingEmailTemplates.push({
+                fromName: item.fromName,
+                fromAddress: item.fromAddress,
+                subject: item.subject,
+                template: item.template,
+                ccAddresses: item.ccAddresses,
+                languageTypeName: item.languageTypeName,
+                languageTypeResourceId: item.languageTypeResourceId
+              })
+            })
           })
           .finally(() => {
             if (showLoader) this.setLoading()
@@ -216,7 +254,17 @@ export default {
     getBadgeText(text = '') {
       return text
     },
-    handleEmailTemplatePreviewLanguageChange() {}
+    handleEmailTemplatePreviewLanguageChange(val) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === val
+      )
+      if (!findedTemplate) return
+      this.fromName = findedTemplate.fromName
+      this.fromAddress = findedTemplate.fromAddress
+      this.subject = findedTemplate.subject
+      this.emailTemplate = findedTemplate.template
+      this.ccAddresses = findedTemplate.ccAddresses
+    }
   }
 }
 </script>

@@ -615,6 +615,7 @@ export default {
           response?.map((language) => ({
             name: language.name,
             text: language.name,
+            description: language.description,
             value: language.resourceId
           })) || []
       })

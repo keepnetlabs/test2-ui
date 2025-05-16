@@ -47,7 +47,7 @@
                 v-model="languagePreview"
                 persistent-hint
                 class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                :hint="getEmailTemplatePreviewLanguageHint"
                 :items="selectedTemplateLanguages"
                 :hide-details="false"
                 @input="handleEmailTemplatePreviewLanguageChange"
@@ -237,6 +237,11 @@ export default {
     }
   },
   computed: {
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     getFirstSubTabLabel() {
       return this.isQuishing ? labels.QuishingTemplate : labels.JustEmail
     },
@@ -339,6 +344,12 @@ export default {
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
+      this.selectedTemplateLanguages.push({
+        text: phishingScenarioPreviewDto?.[templateKey]?.languageTypeName,
+        value: phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
+      })
+      this.languagePreview = phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
+
       this.languages = phishingScenarioPreviewDto?.[templateKey]?.languages || []
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []

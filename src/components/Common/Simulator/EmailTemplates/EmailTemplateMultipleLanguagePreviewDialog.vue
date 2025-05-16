@@ -16,9 +16,11 @@
         <div class="template-preview__text" v-if="!!templateHTML">
           <template>
             <InputLanguagePreview
+              v-model="activeLanguage"
               class="max-w-554"
               persistent-hint
-              :hint="`This template is available in ${emailTemplateParams.length || 0} languages.`"
+              :hint="getLanguagePreviewHint"
+              :items="selectedLanguages"
               @input="handleLanguageChange"
             />
             <div>
@@ -131,7 +133,10 @@ export default {
       isPreviewLoading: false,
       emailTemplateParams: {},
       templateHTML: null,
-      isIndividualPrintoutButtonDisabled: false
+      isIndividualPrintoutButtonDisabled: false,
+      selectedLanguages: [],
+      activeLanguage: '',
+      templates: []
     }
   },
   computed: {
@@ -152,6 +157,11 @@ export default {
     },
     subtitle() {
       return this?.selectedRow?.name || ''
+    },
+    getLanguagePreviewHint() {
+      return `This template is available in ${this.selectedLanguages.length || 0} language${
+        this.selectedLanguages.length > 1 ? 's' : ''
+      }.`
     }
   },
   created() {
@@ -171,15 +181,46 @@ export default {
             difficultyResourceId,
             phishingFileName,
             subject,
-            languages
+            languages,
+            languageTypeName,
+            languageTypeResourceId
           } = data
-          this.languages = languages
-          this.emailTemplateParams = {
+          this.selectedLanguages.push({
+            text: languageTypeName,
+            value: languageTypeResourceId
+          })
+          this.activeLanguage = languageTypeResourceId
+          this.templates.push({
+            languageTypeResourceId,
             fromName,
             fromAddress,
             ccAddresses,
-            name,
             subject,
+            template: data.template,
+            isAssistedByAI: data.isAssistedByAI
+          })
+          if (languages.length) {
+            this.selectedLanguages.push(
+              ...languages.map((item) => ({
+                text: item.languageTypeName,
+                value: item.languageTypeResourceId
+              }))
+            )
+            this.templates.push(
+              ...languages.map((item) => ({
+                languageTypeResourceId: item.languageTypeResourceId,
+                fromName: item.fromName,
+                fromAddress: item.fromAddress,
+                ccAddresses: item.ccAddresses,
+                subject: item.subject,
+                template: item.template,
+                isAssistedByAI: item.isAssistedByAI
+              }))
+            )
+          }
+          this.emailTemplateParams = {
+            ...this.templates[0],
+            name,
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {
@@ -188,7 +229,7 @@ export default {
               : null,
             isAssistedByAI: data.isAssistedByAI
           }
-          this.templateHTML = data.template
+          this.templateHTML = this.templates[0].template
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -200,9 +241,11 @@ export default {
       this.$emit('on-close')
     },
     handleLanguageChange(val) {
-      this.emailTemplateParams=this.languages.find(
-        (item) => item.resourceId === val
-      )
+      this.emailTemplateParams = {
+        ...this.emailTemplateParams,
+        ...this.templates.find((item) => item.languageTypeResourceId === val)
+      }
+      this.templateHTML = this.emailTemplateParams.template
     }
   }
 }

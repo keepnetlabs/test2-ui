@@ -21,10 +21,7 @@
         :style="getGenerateWithAIButtonStyle"
         @click="handleGenerateWithAI"
       >
-        <VIcon
-          :style="getGenerateWithAIButtonIconStyle"
-          >mdi-creation</VIcon
-        >
+        <VIcon :style="getGenerateWithAIButtonIconStyle">mdi-creation</VIcon>
         <span class="button-new__text">Generate with AI</span>
       </VBtn>
     </div>
@@ -51,9 +48,10 @@
               return-object
               item-text="text"
               item-key="value"
+              item-disabled="disabled"
               :search="searchValue"
               :hoverable="false"
-              :items="getItems"
+              :items="items"
               @input="handleTreeViewChange"
             >
             </VTreeview>
@@ -125,9 +123,6 @@ export default {
       }
       return style
     },
-    getItems() {
-      return this.items
-    },
     getGenerateWithAIButtonStyle() {
       const style = {}
       if (this.isGenerateButtonDisabled) {
@@ -162,6 +157,22 @@ export default {
     },
     handleTreeViewChange(event) {
       this.selectedLanguages = event
+      if (this.selectedLanguages.length >= 10) {
+        this.items.forEach((item) => {
+          item.children.forEach((child) => {
+            const findedLanguage = this.selectedLanguages.find((item) => item.value === child.value)
+            if (!findedLanguage) {
+              this.$set(child, 'disabled', true)
+            }
+          })
+        })
+      } else {
+        this.items.forEach((item) => {
+          item.children.forEach((child) => {
+            this.$set(child, 'disabled', false)
+          })
+        })
+      }
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')

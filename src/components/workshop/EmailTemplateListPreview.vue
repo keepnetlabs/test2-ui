@@ -209,7 +209,11 @@
                 <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
-                  <div class="d-flex align-center">
+                  <EmailTemplateListLeftSideLanguages
+                    v-if="isPhishing || isCallback"
+                    :item="item"
+                  />
+                  <div v-else class="d-flex align-center">
                     <div class="template-list--item__narrator mr-2">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
                       <span class="template-list--item__language">{{ item.languageTypeName }}</span>
@@ -395,7 +399,7 @@
                           v-model="languagePreview"
                           persistent-hint
                           class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                          :hint="`This template is available in ${selectedTemplateLanguages.length} languages.`"
+                          :hint="getEmailTemplatePreviewLanguageHint"
                           :items="selectedTemplateLanguages"
                           :hide-details="false"
                           @input="handleEmailTemplatePreviewLanguageChange"
@@ -499,6 +503,7 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -547,7 +552,8 @@ export default {
     AppDialog,
     AttachmentsPreview,
     EmailTemplate,
-    AppDialogFooter
+    AppDialogFooter,
+    EmailTemplateListLeftSideLanguages
   },
   mixins: [useDebounce],
   data() {
@@ -604,7 +610,8 @@ export default {
           (v) => Validations.required(v, labels.Required),
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
-      }
+      },
+      phishingEmailTemplates: []
     }
   },
   computed: {
@@ -631,6 +638,11 @@ export default {
         this.quishingType.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
       )
+    },
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
     }
   },
   watch: {
@@ -1075,32 +1087,76 @@ export default {
       if (isInitial) {
         this.$emit('initialEmailTemplateId', item.id)
       }
+      this.selectedTemplateLanguages = []
+      this.phishingEmailTemplates = []
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
-          let template = response?.data?.data?.template || ''
+          const {
+            data: { data }
+          } = response
+          let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...item, ...response?.data?.data } || {}
-          this.selectedTemplateHeader = response?.data?.data?.name || ''
+          this.emailTemplateData = { ...item, ...data } || {}
+          this.selectedTemplateHeader = data?.name || ''
           this.templateHTML = template
-          this.templateFromName = response?.data?.data?.fromName || ''
-          this.templateSubject = response?.data?.data?.subject || ''
-          this.templateFromEmail = response?.data?.data?.fromAddress || ''
-          this.templateCCAddresses = response?.data?.data?.ccAddresses || ''
-          this.phishingFile = response?.data?.data?.phishingFileName
+          this.templateFromName = data?.fromName || ''
+          this.templateSubject = data?.subject || ''
+          this.templateFromEmail = data?.fromAddress || ''
+          this.templateCCAddresses = data?.ccAddresses || ''
+          this.phishingFile = data?.phishingFileName
             ? [
                 {
-                  fileName: response?.data?.data?.phishingFileName,
-                  url: response?.data?.data?.phishingFileUrl
+                  fileName: data?.phishingFileName,
+                  url: data?.phishingFileUrl
                 }
               ]
             : []
+          if (!this.isPhishing) return
+          this.selectedTemplateLanguages.push({
+            text: data?.languageTypeName,
+            value: data?.languageTypeResourceId
+          })
+          this.phishingEmailTemplates.push({
+            template: data?.template,
+            language: data?.languageTypeName,
+            languageType: data?.languageTypeResourceId,
+            templateFromName: data?.fromName,
+            templateSubject: data?.subject,
+            templateFromEmail: data?.fromAddress,
+            templateCCAddresses: data?.ccAddresses
+          })
+          this.languagePreview = this.selectedTemplateLanguages[0].value
+          if (!data?.languages?.length) return
+          data.languages.forEach((item) => {
+            this.phishingEmailTemplates.push({
+              template: item?.template,
+              language: item?.languageTypeName,
+              languageType: item?.languageTypeResourceId,
+              templateFromName: item?.fromName,
+              templateSubject: item?.subject,
+              templateFromEmail: item?.fromAddress,
+              templateCCAddresses: item?.ccAddresses
+            })
+            this.selectedTemplateLanguages.push({
+              text: item?.languageTypeName,
+              value: item?.languageTypeResourceId
+            })
+          })
         })
         .finally(() => {
           this.loadingTemplatePreview = false
         })
     },
-    handleEmailTemplatePreviewLanguageChange() {}
+    handleEmailTemplatePreviewLanguageChange(val) {
+      const findedTemplate = this.phishingEmailTemplates.find((item) => item.languageType === val)
+      if (!findedTemplate) return
+      this.templateHTML = findedTemplate?.template || ''
+      this.templateFromName = findedTemplate?.templateFromName || ''
+      this.templateSubject = findedTemplate?.templateSubject || ''
+      this.templateFromEmail = findedTemplate?.templateFromEmail || ''
+      this.templateCCAddresses = findedTemplate?.templateCCAddresses || ''
+    }
   }
 }
 </script>
