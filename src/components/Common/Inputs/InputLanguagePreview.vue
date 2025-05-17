@@ -1,7 +1,6 @@
 <template>
   <KSelect
     ref="refSelect"
-    type="autocomplete"
     :value="value"
     class="input-languages-email-template-preview-select"
     label="Template Preview"

@@ -297,7 +297,19 @@ export default {
       return scenariosGeneralInfo?.categories || []
     },
     getScenarioInfoItems() {
-      const { scenariosGeneralInfo = {} } = this.campaignSummary || {}
+      const { scenariosGeneralInfo = {}, scenarios = {} } = this.campaignSummary || {}
+      let languageShortCodesEmailTemplateInfos = new Set()
+      if (scenarios?.length) {
+        scenarios.forEach((item) => {
+          if (item.emailTemplateInfos?.length) {
+            item.emailTemplateInfos.forEach((emailTemplateInfo) => {
+              languageShortCodesEmailTemplateInfos.add(emailTemplateInfo.languageShortCode)
+            })
+          } else {
+            languageShortCodesEmailTemplateInfos.add(item.emailTemplateInfo.languageShortCode)
+          }
+        })
+      }
       if (Object.keys(scenariosGeneralInfo).length) {
         const {
           categories,
@@ -316,7 +328,9 @@ export default {
         return {
           NumberOfCategories: categories.length,
           Method: methodText,
-          Languages: languageShortCodes.join(','),
+          Languages: languageShortCodesEmailTemplateInfos.size
+            ? [...languageShortCodesEmailTemplateInfos].join(', ')
+            : languageShortCodes.join(','),
           Difficulty: difficultyText
         }
       }
@@ -493,7 +507,8 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.category || 'Remote Working'
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {}, scenarioInfo = {},emailTemplateInfos = {} } = this.getActiveScenario || {
+      const { emailTemplateInfo = {}, scenarioInfo = {}, emailTemplateInfos = {} } = this
+        .getActiveScenario || {
         emailTemplateInfo: {}
       }
       if (!Object.keys(emailTemplateInfo)?.length) {
@@ -509,17 +524,17 @@ export default {
                 name: phishingFileName
               }
             : null,
-            campaignResourceId: this.id,
-            instanceGroup: this.instanceGroup,
-            languages: emailTemplateInfos?.map((item) => ({
-              languageTypeResourceId: item.languageTypeResourceId,
-              languageShortCode: item.languageShortCode,
-              fromName: item.fromName,
-              fromAddress: item.fromAddress,
-              subject: item.subject,
-              ccAddresses: item.ccAddresses,
-              template: item.template
-            }))
+          campaignResourceId: this.id,
+          instanceGroup: this.instanceGroup,
+          languages: emailTemplateInfos?.map((item) => ({
+            languageTypeResourceId: item.languageTypeResourceId,
+            languageShortCode: item.languageShortCode,
+            fromName: item.fromName,
+            fromAddress: item.fromAddress,
+            subject: item.subject,
+            ccAddresses: item.ccAddresses,
+            template: item.template
+          }))
         }
       }
       return Object.keys(emailTemplateInfo)?.length
