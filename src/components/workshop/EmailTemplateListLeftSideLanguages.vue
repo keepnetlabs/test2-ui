@@ -15,7 +15,7 @@
           class="template-list--item__language-separator"
           >|</span
         >
-        <VTooltip v-if="item.languageTypeCode.length > 2 && index >= 2" bottom z-index="10000">
+        <VTooltip v-if="item.languageTypeCode.length > 2 && index === 2" bottom z-index="10000">
           <template #activator="{ on }">
             <span v-on="on">+{{ item.languageTypeCode.length - 2 }}</span>
           </template>
