@@ -197,11 +197,7 @@
                 />
                 <EmailTemplateListPreviewLanguages
                   v-if="emailTemplateParams && isPhishing"
-                  :languageShortCode="
-                    typeof emailTemplateParams.languageShortCode === 'string'
-                      ? [emailTemplateParams.languageShortCode]
-                      : emailTemplateParams.languageShortCode
-                  "
+                  :languageShortCode="getLanguageShortCode"
                 />
                 <Badge v-else size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
                   <template #content>
@@ -442,6 +438,11 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getLanguageShortCode() {
+      return typeof this.emailTemplateParams.languageShortCode === 'string'
+        ? [this.emailTemplateParams.languageShortCode || '']
+        : this.emailTemplateParams.languageShortCode
+    },
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
         this.selectedTemplateLanguages.length > 1 ? 's' : ''
