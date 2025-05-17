@@ -8,7 +8,7 @@ const getPhishingFileType = (payload) => {
   }
   return payload?.phishingFileName?.split('.')?.[1] || null
 }
-const createCommonFormDataForPhishingTemplate = (payload, isEdit = false,id = '') => {
+const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '') => {
   const formData = new FormData()
   formData.append('name', payload.name || '')
   formData.append('description', payload.description || '')
@@ -39,7 +39,8 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false,id = ''
   formData.append('prompt', payload.languages[0].prompt || '')
   formData.append('toneResourceId', payload.languages[0].toneResourceId || '')
   formData.append('localizationResourceId', payload.languages[0].localizationResourceId || '')
-  if (isEdit) formData.append('detailActionType', payload.languages[0].detailActionType.toString())
+  if (isEdit && payload?.languages[0]?.detailActionType)
+    formData.append('detailActionType', payload?.languages[0]?.detailActionType?.toString())
   if (payload.languages?.length > 1) {
     for (let i = 1; i < payload.languages.length; i++) {
       formData.append(`languages[${[i - 1]}].ResourceId`, id)
@@ -69,7 +70,7 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false,id = ''
 }
 
 export function updatePhishingEmailTemplate(payload = {}, id = '') {
-  const formData = createCommonFormDataForPhishingTemplate(payload, true,id)
+  const formData = createCommonFormDataForPhishingTemplate(payload, true, id)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR

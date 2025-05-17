@@ -37,7 +37,13 @@
               :text="getBadgeText(method)"
               :outline="false"
             />
-            <EmailTemplateListPreviewLanguages :languageShortCode="formData.languageShortCode" />
+            <EmailTemplateListPreviewLanguages
+              :languageShortCode="
+                typeof formData.languageShortCode === 'string'
+                  ? [formData.languageShortCode]
+                  : formData.languageShortCode
+              "
+            />
           </div>
         </div>
       </div>
@@ -76,7 +82,7 @@
             fromAddress
           }}</span>
         </div>
-        <div v-if="ccAddresses.length > 0">
+        <div v-if="ccAddresses && ccAddresses.length > 0">
           <span class="template-preview__text--title fw-600 text-primary-color fs-medium"
             >CC:
           </span>
@@ -216,9 +222,11 @@ export default {
             this.name = data.name
             this.ccAddresses = data?.ccAddresses || []
             this.isAssistedByAI = data?.isAssistedByAI || false
-            if(this?.formData?.languages?.length){
+            if (this?.formData?.languages?.length) {
               this.formData.languages.forEach((item) => {
-                const findedLanguage = this.languageOptions.find((lItem) => lItem.code === item.languageShortCode)
+                const findedLanguage = this.languageOptions.find(
+                  (lItem) => lItem.code === item.languageShortCode
+                )
                 this.selectedTemplateLanguages.push({
                   value: findedLanguage?.value,
                   text: findedLanguage?.text
@@ -232,7 +240,7 @@ export default {
                   languageTypeName: findedLanguage?.text,
                   languageTypeResourceId: findedLanguage?.value
                 })
-            })
+              })
               this.languagePreview = this.selectedTemplateLanguages[0]?.value
               return
             }
@@ -251,7 +259,6 @@ export default {
               languageTypeResourceId: data.languageTypeResourceId
             })
             this.languagePreview = data.languageTypeResourceId
-
           })
           .finally(() => {
             if (showLoader) this.setLoading()

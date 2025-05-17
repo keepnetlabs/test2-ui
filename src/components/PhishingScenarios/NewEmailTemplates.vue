@@ -119,7 +119,7 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <FormGroup
                       class-name="mt-8"
-                      style="max-width: 753px;"
+                      class="email-template-languages-settings-form-group"
                       title="Languages Settings"
                       sub-title="You can select multiple languages to generate AI-assisted email localization. A maximum of 10 languages can be added per template."
                     >
@@ -179,6 +179,7 @@
                       </div>
                       <EmailTemplate
                         ref="refEmailTemplate"
+                        class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
