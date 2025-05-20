@@ -1557,6 +1557,24 @@
     }
   }
 }
+.small-badge.data-table-multi-text {
+  button {
+    color:#383B41 !important;
+    border:none !important;
+    background-color: transparent !important;
+    padding:0 !important;
+    margin-right: 0 !important;
+    font-weight: 400 !important;
+  }
+  .k-badge .v-btn__content{
+    font-weight: 400 !important;
+  }
+  .k-badge.data-table-multi-text-tooltip{
+    .v-btn__content{
+      font-weight: 600 !important;
+    }
+  }
+}
 
 .data-table-text-with-badge {
   .k-badge {

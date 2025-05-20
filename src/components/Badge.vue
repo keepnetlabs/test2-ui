@@ -98,6 +98,10 @@ export default {
     },
     errorStateValue: {
       default: ''
+    },
+    hideBorder: {
+      type: Boolean,
+      default: false
     }
   },
   getBadgeSize(val) {
@@ -131,7 +135,10 @@ export default {
     }
     dynamicProps['color'] = props.defaultBackgroundColor
     dynamicProps['style'] = [
-      { border: `1px solid ${props.color} !important`, color: props.color },
+      {
+        border: props.hideBorder ? 'none' : `1px solid ${props.color} !important`,
+        color: props.color
+      },
       props.col && props.col.props && props.col.props.style
     ]
     return dynamicProps

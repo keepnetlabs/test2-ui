@@ -236,7 +236,7 @@
         max-step="2"
         :step.sync="step"
         :disabled-statuses="{
-          nextButton: isSubmitDisabled,
+          nextButton: !isDefault && isSubmitDisabled,
           submitButton: isSubmitDisabled
         }"
         :ids="footerButtonsIds"
@@ -273,10 +273,14 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
-import { getEmailTemplateMethodItems, EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from './utils'
+import {
+  getEmailTemplateMethodItems,
+  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
+  EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
+  MERGED_TEXTS
+} from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
@@ -398,37 +402,11 @@ export default {
       },
       editItemsDisabled: false,
       methodItems,
-      difficultyItems: [
-        {
-          resourceId: 'mT0CeYGgKsVb',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'Z5XeVlpw6Dps',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: 'c4LCGEB9MayB',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
+      difficultyItems: EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
       selectedLanguagePayloadItemBeforeSave: null,
-      beforeSaveLanguage: ''
+      beforeSaveLanguage: '',
+      isDefault: false,
+      timeoutId: null
     }
   },
   computed: {
@@ -573,6 +551,11 @@ export default {
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
     }
   },
+  beforeDestroy() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+    }
+  },
   methods: {
     setLanguageItems() {
       const languageTypes = this.scenarioDetailsLookup.languageTypes
@@ -607,6 +590,10 @@ export default {
           JSON.stringify(this.getSelectedLanguagePayload)
         )
         this.$refs?.refEmailTemplateContent?.resetValidation()
+        if (this.getSelectedLanguagePayload.template && !this.isEdit) {
+          this.isDefault = true
+          this.handleGenerateWithAI()
+        }
       })
     },
     handleEditHtmlTemplate(value) {
@@ -903,7 +890,7 @@ export default {
       scrollToEmailTemplateContent()
       generateEmailTemplateTranslation({
         languages: this.selectedLanguages
-          .filter((item) => item.value !== this.activeLanguage)
+          .filter((item) => this.isDefault || item.value !== this.activeLanguage)
           .map((item) => ({
             languageResourceId: item.value,
             languageName: item.text
@@ -923,8 +910,8 @@ export default {
         this.resetGenerateWithAIDisabled(timeoutId)
         return
       }
-      if (timeoutId) clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
         getEmailTemplateTranslation()
           .then((response) => {
             const {
@@ -969,6 +956,7 @@ export default {
       this.isGenerateWithAIDisabled = false
       this.$refs.refEmailTemplate.isEmailGenerating = false
       this.isSubmitDisabled = false
+      this.isDefault = false
       clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {

@@ -10,7 +10,7 @@
         <Scenarios
           v-if="tab === 'scenarios'"
           ref="refScenarios"
-          @on-scenario-details-lookup="scenarioDetailsLookup = $event"
+          :scenario-details-lookup="scenarioDetailsLookup"
         />
       </el-tab-pane>
       <el-tab-pane
@@ -49,9 +49,10 @@ import Scenarios from '@/components/PhishingScenarios/Scenarios'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import { getAIAllySettings } from '@/api/company'
-
+import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 export default {
   name: 'PhishingSimulator',
+  mixins: [useScenarioDetailsLookup],
   components: {
     KContainer,
     EmailTemplates,
@@ -61,7 +62,6 @@ export default {
   data() {
     return {
       tab: 'scenarios',
-      scenarioDetailsLookup: null,
       aiAllySettings: {
         psEmailTemplateGenerationAssistant: false,
         landingPageTemplateGenerationAssistant: false
@@ -91,6 +91,7 @@ export default {
   },
   created() {
     this.getAIAllySettings()
+    this.callForScenarioDetails()
     if (!this.getPhishingScenariosSearchPermissions && this.getEmailTemplatesSearchPermissions) {
       this.tab = 'emailTemplates'
     } else if (

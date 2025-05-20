@@ -288,3 +288,32 @@ export const EMAIL_TEMPLATE_DETAIL_ACTION_TYPES = {
   EDIT: 1,
   NO_CHANGE: 0
 }
+export const EMAIL_TEMPLATE_DIFFICULTY_ITEMS = [
+  {
+    resourceId: 'mT0CeYGgKsVb',
+    genericCodeTypeId: 20,
+    genericCodeTypeName: 'Phishing Simulator Difficulties',
+    name: 'Easy',
+    code: '1',
+    description: null,
+    orderNumber: 1
+  },
+  {
+    resourceId: 'Z5XeVlpw6Dps',
+    genericCodeTypeId: 20,
+    genericCodeTypeName: 'Phishing Simulator Difficulties',
+    name: 'Medium',
+    code: '2',
+    description: null,
+    orderNumber: 2
+  },
+  {
+    resourceId: 'c4LCGEB9MayB',
+    genericCodeTypeId: 20,
+    genericCodeTypeName: 'Phishing Simulator Difficulties',
+    name: 'Hard',
+    code: '3',
+    description: null,
+    orderNumber: 3
+  }
+]
