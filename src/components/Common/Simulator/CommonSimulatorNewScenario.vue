@@ -1365,6 +1365,8 @@ export default {
                 )
               }
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
+              this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
+              this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
               this.setPhishingEmailTemplates(response?.data?.data)
               this.step += 1
             })
@@ -1414,6 +1416,8 @@ export default {
               )
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
+              this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
+              this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
               this.setPhishingEmailTemplates(data)
               this.step += 1
             })
