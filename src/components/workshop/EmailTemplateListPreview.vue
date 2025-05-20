@@ -785,8 +785,7 @@ export default {
           prompt: payload.prompt,
           toneResourceId: payload.toneResourceId,
           localizationResourceId: payload.localizationResourceId,
-          template: payload.template,
-          detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          template: payload.template
         })
       }
       delete payload.attachments
