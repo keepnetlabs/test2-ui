@@ -492,6 +492,7 @@ import {
   SCENARIO_METHODS,
   MERGED_TEXTS
 } from '@/components/PhishingScenarios/utils'
+import { EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
@@ -773,6 +774,21 @@ export default {
             ? this.editData.phishingFile[0]?.fileName
             : null
       }
+      if (payload.languages) {
+        payload.languages.unshift({
+          fromAddress: payload.fromAddress,
+          fromName: payload.fromName,
+          subject: payload.subject,
+          template: payload.template,
+          ccAddresses: payload.ccAddresses,
+          languageTypeResourceId: payload.languageTypeResourceId,
+          prompt: payload.prompt,
+          toneResourceId: payload.toneResourceId,
+          localizationResourceId: payload.localizationResourceId,
+          template: payload.template,
+          detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        })
+      }
       delete payload.attachments
       delete payload.resourceId
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
@@ -807,6 +823,21 @@ export default {
             : null
       }
       delete payload.attachments
+      if (payload.languages) {
+        payload.languages.push({
+          fromAddress: payload.fromAddress,
+          fromName: payload.fromName,
+          subject: payload.subject,
+          template: payload.template,
+          ccAddresses: payload.ccAddresses,
+          languageTypeResourceId: payload.languageTypeResourceId,
+          prompt: payload.prompt,
+          toneResourceId: payload.toneResourceId,
+          localizationResourceId: payload.localizationResourceId,
+          template: payload.template,
+          detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        })
+      }
       updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then(() => {
           this.updateTemplate(this.emailTemplateData.resourceId, payload)
