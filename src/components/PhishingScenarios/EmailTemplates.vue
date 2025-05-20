@@ -252,7 +252,7 @@ export default {
             label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'smallBadge',
+            type: 'multiText',
             fixed: false,
             width: 175,
             filterableType: 'select',
