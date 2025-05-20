@@ -586,6 +586,9 @@
                 <div v-if="col.type === 'smallBadge'">
                   <data-table-small-badge :scope="scope" :col="col" />
                 </div>
+                <div v-if="col.type === 'multiText'">
+                  <data-table-multi-text :scope="scope" :col="col" />
+                </div>
                 <data-table-status :col="col" :scope="scope" v-if="col.type === 'status'" />
                 <div v-if="col.type === 'priority'">
                   <badge
@@ -1005,6 +1008,7 @@ import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
 import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
+import DataTableMultiText from './DataTableComponents/DataTableMultiText'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 import DataTableFilter from './DataTableComponents/DataTableFilter'
 import DataTableStatus from './DataTableComponents/DataTableStatus'
@@ -1051,6 +1055,7 @@ export default {
     DownloadModal,
     ExtendedView,
     DataTableSmallBadge,
+    DataTableMultiText,
     DatatableTextWithBadge,
     DatatableLoading,
     DataTableTextArray,

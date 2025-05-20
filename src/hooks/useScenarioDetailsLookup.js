@@ -16,7 +16,6 @@ export default {
           preferredLanguageTypes: [],
           companyLanguageTypeResourceId: ''
         }
-        this.$emit('on-scenario-details-lookup', this.scenarioDetailsLookup)
         return response
       })
     }
