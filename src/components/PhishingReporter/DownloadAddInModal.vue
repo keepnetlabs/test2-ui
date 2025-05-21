@@ -124,10 +124,78 @@
           :is-loading="gmailSpinnerStatus"
           class="mt-n4"
           title="Page View"
-          :description="`Users can report phishing directly from the main ribbon with a dedicated &quot;Report&quot; button.`"
+          description="Users can report phishing directly from the main ribbon with a dedicated 'Report' button."
           :is-button-disabled="!isAccountConnected"
+          :show-buttons="false"
           @button-click="callForGenerateO365AddIn"
         >
+          <div class="download-add-in__list-item-page-view">
+            <div class="d-flex flex-column">
+              <div class="download-add-in__list-item-page-view-title">
+                Graph API
+              </div>
+              <div class="download-add-in__list-item-page-view-desc">
+                For Microsoft 365-connected environments using Graph API.
+              </div>
+            </div>
+            <div>
+              <VBtn
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in"
+                style="margin-left: 5px !important; text-transform: capitalize;"
+                color="#2196f3"
+                rounded
+                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
+                :loading="gmailSpinnerStatus"
+                @click="callForGenerateO365AddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template #loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </VBtn>
+            </div>
+          </div>
+          <div class="download-add-in__list-item-page-view">
+            <div class="d-flex flex-column">
+              <div class="download-add-in__list-item-page-view-title">On-Premise Exchange</div>
+              <div class="download-add-in__list-item-page-view-desc">
+                For environments using EWS without Microsoft 365 integration.
+              </div>
+            </div>
+            <div>
+              <VBtn
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in"
+                style="margin-left: 5px !important; text-transform: capitalize;"
+                color="#2196f3"
+                rounded
+                :loading="onPremiseSpinnerStatus"
+                @click="callForGenerateOnPremiseAddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template #loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </VBtn>
+            </div>
+          </div>
           <AlertBox
             v-if="isAccountConnected"
             class="mt-4 w-100"
@@ -154,7 +222,10 @@
           @button-click="callForGenerateDiagnosticTool"
         />
       </div>
-      <v-list-item class="px-0 mt-6 add-in-configuration__list-item">
+      <v-list-item
+        class="px-0 mt-0 pt-2 add-in-configuration__list-item"
+        style="border-top: 1px solid #f5f7fa;"
+      >
         <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
             @click="$emit('handleClose')"
@@ -201,6 +272,7 @@ export default {
   data() {
     return {
       outlookSpinnerStatus: false,
+      onPremiseSpinnerStatus: false,
       isAccountConnected: this.formData ? this.formData.isGraphAccountConnected : false,
       isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
@@ -236,9 +308,9 @@ export default {
           this.outlookSpinnerStatus = false
         })
     },
-    callForGenerateO365AddIn() {
-      this.gmailSpinnerStatus = true
-      generateO365AddIn()
+    callForGenerateO365AddIn(isShowSpinner = true) {
+      if (isShowSpinner) this.gmailSpinnerStatus = true
+      return generateO365AddIn()
         .then((response) => {
           const { data } = response
           const link = document.createElement('a')
@@ -247,8 +319,14 @@ export default {
           link.click()
         })
         .finally(() => {
-          this.gmailSpinnerStatus = false
+          if (isShowSpinner) this.gmailSpinnerStatus = false
         })
+    },
+    callForGenerateOnPremiseAddIn() {
+      this.onPremiseSpinnerStatus = true
+      this.callForGenerateO365AddIn(false).finally(() => {
+        this.onPremiseSpinnerStatus = false
+      })
     },
     callForGenerateO365SpamAddIn() {
       this.o365SpinnerStatus = true

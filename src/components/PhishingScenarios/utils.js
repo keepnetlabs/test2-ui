@@ -284,6 +284,7 @@ export const getEmailTemplateMethodItems = () => [
 ]
 
 export const EMAIL_TEMPLATE_DETAIL_ACTION_TYPES = {
+  ADD: 3,
   DELETE: 2,
   EDIT: 1,
   NO_CHANGE: 0
