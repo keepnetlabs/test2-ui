@@ -17,7 +17,7 @@
         </slot>
       </div>
     </div>
-    <div>
+    <div v-if="showButtons">
       <slot name="buttons">
         <v-btn
           id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
@@ -80,6 +80,10 @@ export default {
     titleClass: {
       type: String,
       default: ''
+    },
+    showButtons: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {

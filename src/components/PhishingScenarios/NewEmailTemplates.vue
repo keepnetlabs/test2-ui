@@ -710,7 +710,8 @@ export default {
           template: this.initialFormValues.template,
           prompt: '',
           toneResourceId: '',
-          localizationResourceId: ''
+          localizationResourceId: '',
+          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD
         }
       })
     },
@@ -809,6 +810,7 @@ export default {
             })
           }
         })
+        payload.languages = this.setEmptyLanguagesPayload()
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
@@ -817,19 +819,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
-        const preferredLanguagePayload = this.getPreferredLanguagePayload()
-        payload.languages = this.languagesPayload.map((item) => {
-          return {
-            ...item,
-            fromName: item.fromName || preferredLanguagePayload.fromName,
-            fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
-            subject: item.subject || preferredLanguagePayload.subject,
-            template: item.template || preferredLanguagePayload.template,
-            ccAddresses: item.ccAddresses.length
-              ? item.ccAddresses
-              : preferredLanguagePayload.ccAddresses
-          }
-        })
+        payload.languages = this.setEmptyLanguagesPayload()
         createPhishingEmailTemplate(payload)
           .then((response) => {
             this.$emit(
@@ -844,6 +834,27 @@ export default {
           })
       }
     },
+    callForMergedTags() {
+      getMergedTextForPhishing().then((response) => {
+        this.blockManagerComponents = response.data.data['mergeTags']
+        this.setActiveBlockManagerComponents(this.blockManagerComponents)
+      })
+    },
+    setEmptyLanguagesPayload() {
+      const preferredLanguagePayload = this.getPreferredLanguagePayload()
+      return this.languagesPayload.map((item) => {
+        return {
+          ...item,
+          fromName: item.fromName || preferredLanguagePayload.fromName,
+          fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
+          subject: item.subject || preferredLanguagePayload.subject,
+          template: item.template || preferredLanguagePayload.template,
+          ccAddresses: item.ccAddresses.length
+            ? item.ccAddresses
+            : preferredLanguagePayload.ccAddresses
+        }
+      })
+    },
     getPreferredLanguagePayload() {
       let preferredLanguagePayload = this.languagesPayload.find(
         (item) =>
@@ -855,12 +866,6 @@ export default {
         (item) => item?.fromName && item?.fromAddress
       )
       return preferredLanguagePayload || this.languagesPayload[0]
-    },
-    callForMergedTags() {
-      getMergedTextForPhishing().then((response) => {
-        this.blockManagerComponents = response.data.data['mergeTags']
-        this.setActiveBlockManagerComponents(this.blockManagerComponents)
-      })
     },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
