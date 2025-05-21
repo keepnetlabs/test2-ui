@@ -513,7 +513,7 @@ export default {
           template: this.formValues.template,
           prompt: this.formValues.prompt,
           toneResourceId: this.formValues.toneResourceId,
-          localizationResourceId: this.formValues.localizationResourceId
+          localizationResourceId: this.formValues.localizationResourceId,
         })
         this.selectedLanguages.push({
           text: this.formValues.languageTypeName,
@@ -534,7 +534,8 @@ export default {
               template: item.template,
               prompt: item.prompt,
               toneResourceId: item.toneResourceId,
-              localizationResourceId: item.localizationResourceId
+              localizationResourceId: item.localizationResourceId,
+              resourceId: item.resourceId
             })
           })
         }
@@ -558,9 +559,9 @@ export default {
   },
   methods: {
     setLanguageItems() {
-      const languageTypes = this.scenarioDetailsLookup.languageTypes
-      const preferredLanguageTypes = this.scenarioDetailsLookup.preferredLanguageTypes
-      const companyLanguageTypeResourceId = this.scenarioDetailsLookup.companyLanguageTypeResourceId
+      const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
+      const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []
+      const companyLanguageTypeResourceId = this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
       const languageItems = []
       languageItems.push({
         value: 1,
@@ -571,12 +572,12 @@ export default {
         value: 5,
         text: 'All Languages',
         children: languageTypes.filter(
-          (item) => !preferredLanguageTypes.find((pItem) => pItem.value === item.value)
+          (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
         )
       })
       this.languageItems = languageItems
       if (this.isEdit) return
-      const findedLanguage = languageTypes.find(
+      const findedLanguage = languageTypes?.find(
         (item) => item.value === companyLanguageTypeResourceId
       )
       if (!findedLanguage) return

@@ -43,7 +43,6 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
     formData.append('detailActionType', payload?.languages[0]?.detailActionType?.toString())
   if (payload.languages?.length > 1) {
     for (let i = 1; i < payload.languages.length; i++) {
-      formData.append(`languages[${[i - 1]}].ResourceId`, id)
       for (const [key, value] of Object.entries(payload.languages[i])) {
         if (key === 'ccAddresses') {
           for (let j = 0; j < value.length; j++) {
