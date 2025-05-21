@@ -354,6 +354,7 @@
                     :attachmentFiles.sync="editData.phishingFile"
                     :isAttachmentError="isAttachmentError"
                     :is-edit="true"
+                    :show-language-field="showLanguageField"
                     :is-phishing-template="isAttachmentBasedScenario"
                     :isNotificationTemplate="true"
                     :isEmailTemplate="isPhishing"
@@ -361,11 +362,17 @@
                     :size="5"
                     fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                     :isHorizontalFormGroups="true"
+                    :languagePreview.sync="languagePreview"
+                    :selectedTemplateLanguages="selectedTemplateLanguages"
+                    :getEmailTemplatePreviewLanguageHint="getEmailTemplatePreviewLanguageHint"
                     @handleEditHtmlTemplate="editData.template = $event"
                     @setAttachmentFile="setAttachmentFile"
                     @handleRenameAttachment="handleShowRenameAttachmentModal"
                     @handleDeleteAttachment="handleDeleteAttachment"
                     @template-edit="handleTemplateEdit"
+                    @on-email-template-preview-language-change="
+                      handleEmailTemplatePreviewLanguageChange
+                    "
                   />
                 </template>
                 <template v-else>
@@ -538,6 +545,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    showLanguageField: {
+      type: Boolean,
+      default: false
     }
   },
   directives: {
@@ -612,7 +623,8 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
-      phishingEmailTemplates: []
+      phishingEmailTemplates: [],
+      initialPhishingEmailTemplates: []
     }
   },
   computed: {
@@ -748,6 +760,7 @@ export default {
         show: true,
         callback: () => {
           this.isEditMode = false
+          this.phishingEmailTemplates = this.initialPhishingEmailTemplates
         }
       })
     },
@@ -1151,10 +1164,10 @@ export default {
             template: data?.template,
             language: data?.languageTypeName,
             languageType: data?.languageTypeResourceId,
-            templateFromName: data?.fromName,
-            templateSubject: data?.subject,
-            templateFromEmail: data?.fromAddress,
-            templateCCAddresses: data?.ccAddresses
+            fromName: data?.fromName,
+            subject: data?.subject,
+            fromAddress: data?.fromAddress,
+            ccAddresses: data?.ccAddresses
           })
           this.languagePreview = this.selectedTemplateLanguages[0].value
           if (!data?.languages?.length) return
@@ -1163,29 +1176,50 @@ export default {
               template: item?.template,
               language: item?.languageTypeName,
               languageType: item?.languageTypeResourceId,
-              templateFromName: item?.fromName,
-              templateSubject: item?.subject,
-              templateFromEmail: item?.fromAddress,
-              templateCCAddresses: item?.ccAddresses
+              fromName: item?.fromName,
+              subject: item?.subject,
+              fromAddress: item?.fromAddress,
+              ccAddresses: item?.ccAddresses
             })
             this.selectedTemplateLanguages.push({
               text: item?.languageTypeName,
               value: item?.languageTypeResourceId
             })
           })
+          this.initialPhishingEmailTemplates = JSON.parse(
+            JSON.stringify(this.phishingEmailTemplates)
+          )
         })
         .finally(() => {
           this.loadingTemplatePreview = false
         })
     },
-    handleEmailTemplatePreviewLanguageChange(val) {
+    handleEmailTemplatePreviewLanguageChange(val, languagePreview) {
       const findedTemplate = this.phishingEmailTemplates.find((item) => item.languageType === val)
       if (!findedTemplate) return
       this.templateHTML = findedTemplate?.template || ''
-      this.templateFromName = findedTemplate?.templateFromName || ''
-      this.templateSubject = findedTemplate?.templateSubject || ''
-      this.templateFromEmail = findedTemplate?.templateFromEmail || ''
-      this.templateCCAddresses = findedTemplate?.templateCCAddresses || ''
+      this.templateFromName = findedTemplate?.fromName || ''
+      this.templateSubject = findedTemplate?.subject || ''
+      this.templateFromEmail = findedTemplate?.fromAddress || ''
+      this.templateCCAddresses = findedTemplate?.ccAddresses || ''
+      if (!this.isEditMode) return
+      if (languagePreview) this.handleSaveOldEditLanguage(languagePreview)
+      this.editData.template = this.templateHTML
+      this.editData.fromName = this.templateFromName
+      this.editData.subject = this.templateSubject
+      this.editData.fromAddress = this.templateFromEmail
+      this.editData.ccAddresses = this.templateCCAddresses
+    },
+    handleSaveOldEditLanguage(languagePreview) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageType === languagePreview
+      )
+      if (!findedTemplate) return
+      findedTemplate.fromAddress = this.editData.fromAddress
+      findedTemplate.fromName = this.editData.fromName
+      findedTemplate.subject = this.editData.subject
+      findedTemplate.template = this.editData.template
+      findedTemplate.ccAddresses = this.editData.ccAddresses
     }
   }
 }

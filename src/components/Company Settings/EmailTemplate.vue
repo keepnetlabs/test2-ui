@@ -312,10 +312,7 @@
         </div>
       </transition>
     </div>
-    <div
-      v-if="!onlyGrapes && showNameField"
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
-    >
+    <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
       <FormGroup
         title="Template Name:"
         style="max-width: unset;"
@@ -329,6 +326,27 @@
           :value="name"
           :disabled="editItemsDisabled"
           @input="$emit('update:name', $event)"
+        />
+      </FormGroup>
+    </div>
+    <div
+      v-if="!onlyGrapes && showLanguageField"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-2 ' : 'pt-6']"
+    >
+      <FormGroup
+        title="Languages:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
+        <InputLanguagePreview
+          :value="languagePreview"
+          persistent-hint
+          class="campaign-manager-phishing-scenario-input-language"
+          :hint="getEmailTemplatePreviewLanguageHint"
+          :items="selectedTemplateLanguages"
+          hide-details
+          @input="handleEmailTemplatePreviewLanguageChange($event, languagePreview)"
         />
       </FormGroup>
     </div>
@@ -585,7 +603,7 @@ import {
 } from '@/api/phishingsimulator'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
-
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -604,7 +622,8 @@ export default {
     KFileUpload,
     AttachmentsPreview,
     InputEntityName,
-    FormGroup
+    FormGroup,
+    InputLanguagePreview
   },
   props: [
     'name',
@@ -649,7 +668,11 @@ export default {
     'languageOptions',
     'selectedMethod',
     'isPlainText',
-    'isGenerateWithAi'
+    'isGenerateWithAi',
+    'getEmailTemplatePreviewLanguageHint',
+    'selectedTemplateLanguages',
+    'languagePreview',
+    'showLanguageField'
   ],
   data() {
     return {
@@ -835,6 +858,9 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    getTemplateNameFieldClass() {
+      return ['mx-6', 'pt-4']
+    },
     getSelectedStateName() {
       return (
         this.localeOptions?.find?.((item) => item.resourceId === this.localizationResourceId)
@@ -1161,6 +1187,12 @@ export default {
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
       }, 100)
+    },
+    handleEmailTemplatePreviewLanguageChange(value, languagePreview) {
+      this.$nextTick(() => {
+        this.$emit('update:languagePreview', value)
+        this.$emit('on-email-template-preview-language-change', value, languagePreview)
+      })
     }
   }
 }
