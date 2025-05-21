@@ -1179,7 +1179,8 @@ export default {
               fromName: item?.fromName,
               subject: item?.subject,
               fromAddress: item?.fromAddress,
-              ccAddresses: item?.ccAddresses
+              ccAddresses: item?.ccAddresses,
+              resourceId: item?.resourceId
             })
             this.selectedTemplateLanguages.push({
               text: item?.languageTypeName,

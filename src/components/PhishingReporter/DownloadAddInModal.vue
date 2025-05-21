@@ -135,7 +135,7 @@
                 Graph API
               </div>
               <div class="download-add-in__list-item-page-view-desc">
-                For Microsoft 365-connected environments using Graph API.
+                For Microsoft 365 environments using Graph API.
               </div>
             </div>
             <div>
@@ -166,9 +166,12 @@
           </div>
           <div class="download-add-in__list-item-page-view">
             <div class="d-flex flex-column">
-              <div class="download-add-in__list-item-page-view-title">On-Premise Exchange</div>
+              <div class="download-add-in__list-item-page-view-title">
+                On-Premise Exchange
+              </div>
               <div class="download-add-in__list-item-page-view-desc">
-                For environments using EWS without Microsoft 365 integration.
+                For on-premise Exchange environments that use EWS without Microsoft 365
+                integration.
               </div>
             </div>
             <div>
