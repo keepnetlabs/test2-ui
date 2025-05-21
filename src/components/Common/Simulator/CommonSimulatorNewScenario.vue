@@ -200,6 +200,7 @@
                   <EmailTemplateListPreview
                     v-if="step === 2"
                     ref="refEmailTemplateListPreview"
+                    show-language-field
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"
