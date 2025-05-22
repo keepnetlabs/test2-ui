@@ -314,10 +314,10 @@
 
 
   .overlay__container {
-    max-height: 740px !important;
+    max-height: 636px !important;
   }
-  .overlay__container-account-connected.overlay__container{
-    max-height: 830px !important;
+  .overlay__container-account.overlay__container{
+    max-height: 700px !important;
   }
 
   &__title {
@@ -359,26 +359,10 @@
     &--hide-border{
       border-bottom: none !important;
     }
-    &-page-view{
-      display:flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding:8px 16px;
-      border-radius: 8px;
-      margin-top:8px;
-      border: 1px solid #E0E0E0;
-      &-title{
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 21px;
-        letter-spacing: normal;
-        color: #383B41;
-      }
-      &-desc{
-        font-size:14px;
-        color:rgba(56, 59, 65, 0.72);
-      }
-    }
+  }
+}
+.microsoft-365-add-in-list-item{
+  .alert-box__default-content{
+    align-items: center;
   }
 }

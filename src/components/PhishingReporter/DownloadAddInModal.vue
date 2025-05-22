@@ -7,10 +7,7 @@
     />
     <v-card
       light
-      :class="[
-        'overlay__container',
-        isAccountConnected ? 'overlay__container-account-connected' : ''
-      ]"
+      :class="['overlay__container', 'overlay__container-account']"
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
@@ -58,7 +55,7 @@
           title-class="download-add-in__list-item-margin-title"
           hide-border
           title="Ribbon View"
-          description="Ribbon Reporter requires authorization to Microsoft Graph API to function correctly."
+          description="Requires Microsoft Graph API access to report suspicious emails from the Outlook ribbon."
         >
           <template #buttons>
             <div class="d-flex justify-end align-end flex-column gap-6">
@@ -94,123 +91,81 @@
                 <v-icon left>mdi-link-off</v-icon>
                 <span>Unlink</span>
               </VBtn>
-              <VBtn
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
-                :loading="o365SpinnerStatus"
-                @click="callForGenerateO365SpamAddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template #loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
+              <VTooltip bottom>
+                <template #activator="{ on }">
+                  <div v-on="on">
+                    <VBtn
+                      v-on="on"
+                      id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                      class="white--text btn-util btn-download-add-in"
+                      style="margin-left: 5px !important; text-transform: capitalize;"
+                      color="#2196f3"
+                      rounded
+                      :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
+                      :loading="o365SpinnerStatus"
+                      @click="callForGenerateO365SpamAddIn"
+                    >
+                      <v-icon left>mdi-download</v-icon>
+                      Download
+                      <template #loader>
+                        <img
+                          src="../../assets/img/spinner.svg"
+                          class="add-in-settings__spinner"
+                          alt="spinner"
+                        />
+                        <span style="font-size: 14px; text-transform: capitalize;">
+                          Generating...
+                        </span>
+                      </template>
+                    </VBtn>
+                  </div>
                 </template>
-              </VBtn>
+                <span>
+                  Connect your account to enable download.
+                </span>
+              </VTooltip>
             </div>
           </template>
         </DownloadAddInListItem>
         <DownloadAddInListItem
           :is-loading="gmailSpinnerStatus"
-          class="mt-n4"
+          class="mt-n4 microsoft-365-add-in-list-item"
           title="Page View"
-          description="Users can report phishing directly from the main ribbon with a dedicated 'Report' button."
-          :is-button-disabled="!isAccountConnected"
-          :show-buttons="false"
+          :description="`Allows users to report suspicious emails from the Outlook side panel.`"
           @button-click="callForGenerateO365AddIn"
         >
-          <div class="download-add-in__list-item-page-view">
-            <div class="d-flex flex-column">
-              <div class="download-add-in__list-item-page-view-title">
-                Graph API
-              </div>
-              <div class="download-add-in__list-item-page-view-desc">
-                For Microsoft 365 environments using Graph API.
-              </div>
-            </div>
-            <div>
-              <VBtn
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
-                :loading="gmailSpinnerStatus"
-                @click="callForGenerateO365AddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template #loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
-                </template>
-              </VBtn>
-            </div>
-          </div>
-          <div class="download-add-in__list-item-page-view">
-            <div class="d-flex flex-column">
-              <div class="download-add-in__list-item-page-view-title">
-                On-Premise Exchange
-              </div>
-              <div class="download-add-in__list-item-page-view-desc">
-                For on-premise Exchange environments that use EWS without Microsoft 365 integration.
-              </div>
-            </div>
-            <div>
-              <VBtn
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                :loading="onPremiseSpinnerStatus"
-                @click="callForGenerateOnPremiseAddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template #loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
-                </template>
-              </VBtn>
-            </div>
-          </div>
           <AlertBox
             v-if="isAccountConnected"
             class="mt-4 w-100"
             style="background-color: rgba(67, 160, 71, 0.15);"
-            icon-name="mdi-check-circle"
+            icon-name="mdi-lock-check"
             icon-color="#43A047"
             :slots="{ primaryAction: false, secondaryAction: false }"
           >
             <template #text>
               <div class="ml-2" style="font-size: 14px; color: #383b41;">
                 <div class="fw-600">GRAPH Authorization Successful</div>
-                <div style="color: #000;">
-                  All Phishing Reporters in your domain can now use the Graph APIs.
+                <div class="text-primary-color">
+                  Ribbon and Page View are now authorized. Page View still works on Exchange without
+                  GRAPH authorization.
+                </div>
+              </div>
+            </template>
+          </AlertBox>
+          <AlertBox
+            v-else
+            class="mt-4 w-100"
+            style="background-color: #f2f2f2;"
+            icon-name="mdi-lock"
+            icon-color="#757575"
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          >
+            <template #text>
+              <div class="ml-2" style="font-size: 14px; color: #383b41;">
+                <div class="fw-600">GRAPH Authorization Required</div>
+                <div class="text-primary-color">
+                  Ribbon and Page View require GRAPH authorization. Page View works on Exchange
+                  without it.
                 </div>
               </div>
             </template>
@@ -224,10 +179,7 @@
           @button-click="callForGenerateDiagnosticTool"
         />
       </div>
-      <v-list-item
-        class="px-0 mt-0 pt-2 add-in-configuration__list-item"
-        style="border-top: 1px solid #f5f7fa;"
-      >
+      <v-list-item class="px-0 mt-2 add-in-configuration__list-item">
         <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
             @click="$emit('handleClose')"
@@ -274,7 +226,6 @@ export default {
   data() {
     return {
       outlookSpinnerStatus: false,
-      onPremiseSpinnerStatus: false,
       isAccountConnected: this.formData ? this.formData.isGraphAccountConnected : false,
       isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
@@ -310,9 +261,9 @@ export default {
           this.outlookSpinnerStatus = false
         })
     },
-    callForGenerateO365AddIn(isShowSpinner = true) {
-      if (isShowSpinner) this.gmailSpinnerStatus = true
-      return generateO365AddIn()
+    callForGenerateO365AddIn() {
+      this.gmailSpinnerStatus = true
+      generateO365AddIn()
         .then((response) => {
           const { data } = response
           const link = document.createElement('a')
@@ -321,14 +272,8 @@ export default {
           link.click()
         })
         .finally(() => {
-          if (isShowSpinner) this.gmailSpinnerStatus = false
+          this.gmailSpinnerStatus = false
         })
-    },
-    callForGenerateOnPremiseAddIn() {
-      this.onPremiseSpinnerStatus = true
-      this.callForGenerateO365AddIn(false).finally(() => {
-        this.onPremiseSpinnerStatus = false
-      })
     },
     callForGenerateO365SpamAddIn() {
       this.o365SpinnerStatus = true
