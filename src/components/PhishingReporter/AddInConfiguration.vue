@@ -4,7 +4,7 @@
       :status="status"
       icon-name="mdi-domain"
       title="Phishing Reporter Add-in Configuration"
-      class-name="add-in-configuration"
+      class-name="add-in-configuration add-in-configuration-container"
       title-id="text--create-phishing-reporter-modal-title"
       @closeOverlay="$emit('closeOverlay')"
     >
@@ -125,6 +125,10 @@
             nextButton: 'btn-next--phishing-reporter-settings-add-in-configuration',
             saveButton: 'btn-save--phishing-reporter-settings-add-in-configuration'
           }"
+          :disabled-statuses="{
+            nextButton: isActionButtonDisabled,
+            submitButton: isActionButtonDisabled
+          }"
           @on-cancel="closeOverlay"
           @on-back="changeStep(-1)"
           @on-next="changeStep(+1)"
@@ -171,6 +175,7 @@ export default {
   },
   data() {
     return {
+      isActionButtonDisabled: false,
       labels,
       step: 1,
       initialAddInSettings: null,
@@ -352,6 +357,7 @@ export default {
       this.otherSettings = {}
     },
     callForCreatePhishingReporter() {
+      this.isActionButtonDisabled = true
       const otherSettings = {
         companyKey: localStorage.getItem('companyId'),
         enableEnterpriseVault: false,
@@ -456,9 +462,13 @@ export default {
           formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
         }
       })
-      createPhishingReporter(formData).then(() => {
-        this.showModal = true
-      })
+      createPhishingReporter(formData)
+        .then(() => {
+          this.showModal = true
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }
