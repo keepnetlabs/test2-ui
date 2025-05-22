@@ -1,5 +1,10 @@
 <template>
   <div class="position-relative" v-click-outside="handleClickOutside">
+    <DataTableTooltip
+      v-if="showOverFlowTooltip"
+      :tooltipStyle="overFlowTooltipStyle"
+      :content="overFlowTooltipContent"
+    />
     <div class="d-flex gap-4">
       <VTextField
         v-model.trim="getTextFieldValue"
@@ -23,7 +28,7 @@
         @click="handleGenerateWithAI"
       >
         <VIcon :style="getGenerateWithAIButtonIconStyle">mdi-creation</VIcon>
-        <span class="button-new__text">Generate with AI</span>
+        <span class="button-new__text">Localize</span>
       </VBtn>
     </div>
     <div v-show="!loading" class="switch-account__container input-language-settings__container">
@@ -55,6 +60,19 @@
               :items="items"
               @input="handleTreeViewChange"
             >
+              <template #label="{ item }">
+                <div
+                  :class="item.text === 'Preferred Languages' ? 'd-flex flex-column mt-1' : ''"
+                  style="margin-top: 1px;"
+                >
+                  <span>{{ item.text }}</span>
+                  <div v-if="item.text === 'Preferred Languages'">
+                    <div class="fw-400 mt-1 mb-1">
+                      Based on target users' language preferences within your company.
+                    </div>
+                  </div>
+                </div>
+              </template>
             </VTreeview>
           </div>
         </div>
@@ -76,9 +94,12 @@
 
 <script>
 import { createRandomCryptStringNumber } from '@/utils/functions'
-
+import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip.vue'
 export default {
   name: 'InputLanguagesSettings',
+  components: {
+    DataTableTooltip
+  },
   props: {
     value: {
       type: Array
@@ -100,7 +121,14 @@ export default {
       loading: false,
       menuMaxHeight: '300px',
       searchValue: '',
-      items: this.languageItems
+      items: this.languageItems,
+      showOverFlowTooltip: false,
+      overFlowTooltipContent: 'Maximum of 10 languages added. Uncheck one to add another.',
+      overFlowTooltipStyle: {
+        top: '0px',
+        left: '0px'
+      },
+      checkboxesEventAdded: false
     }
   },
   computed: {
@@ -153,7 +181,7 @@ export default {
     },
     handleClickOutside() {
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
-      this.selectedLanguages = this.value
+      this.handleTreeViewChange(this.value)
       this.changeMenuStatus('hidden')
     },
     handleTreeViewChange(event) {
@@ -177,7 +205,42 @@ export default {
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
+      if (!this.checkboxesEventAdded) {
+        this.checkboxesEventAdded = true
+        this.addCheckboxEventListeners()
+      }
     },
+    addCheckboxEventListeners() {
+      const checkboxes = document.querySelectorAll(
+        '.input-languages-settings-treeview .v-treeview-node--leaf .v-treeview-node__root'
+      )
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('mouseover', (e) => {
+          if (
+            this.selectedLanguages.length >= 10 &&
+            checkbox.parentElement.classList.contains('v-treeview-node--disabled')
+          ) {
+            const { left, top, height } = e.target.getBoundingClientRect()
+            this.overFlowTooltipStyle = {
+              top: `${top + height + 5}px`,
+              left: `${left}px`,
+              zIndex: '100000000000',
+              maxWidth: '220px !important',
+              padding: '8px 12px'
+            }
+            this.showOverFlowTooltip = true
+          }
+        })
+        checkbox.addEventListener('mouseout', () => {
+          this.showOverFlowTooltip = false
+          this.overFlowTooltipStyle = {
+            top: '0px',
+            left: '0px'
+          }
+        })
+      })
+    },
+
     changeMenuStatus(status = 'hidden') {
       const menu = document.querySelector('.switch-account__container')
       if (menu) {
