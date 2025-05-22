@@ -128,7 +128,7 @@ export default {
         top: '0px',
         left: '0px'
       },
-      nodesEventAdded: false
+      activeNodes: []
     }
   },
   computed: {
@@ -178,11 +178,13 @@ export default {
     handleAdd() {
       this.$emit('input', this.selectedLanguages)
       this.changeMenuStatus('hidden')
+      this.removeLanguageNodeEventListeners()
     },
     handleClickOutside() {
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
       this.handleTreeViewChange(this.value)
       this.changeMenuStatus('hidden')
+      this.removeLanguageNodeEventListeners()
     },
     handleTreeViewChange(event) {
       this.selectedLanguages = event
@@ -205,40 +207,50 @@ export default {
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
-      if (!this.nodesEventAdded) {
-        this.nodesEventAdded = true
-        this.setupLanguageNodeTooltips()
+      this.setupLanguageNodeTooltips()
+    },
+    handleTooltipShow(e) {
+      const node = e.target
+      if (
+        this.selectedLanguages.length >= 10 &&
+        node.parentElement.classList.contains('v-treeview-node--disabled')
+      ) {
+        this.updateTooltipPosition(e)
+        this.showOverFlowTooltip = true
+      }
+    },
+    handleTooltipHide() {
+      this.showOverFlowTooltip = false
+      this.overFlowTooltipStyle = {
+        top: '0px',
+        left: '0px'
+      }
+    },
+    updateTooltipPosition(e) {
+      const { left, top, height } = e.target.getBoundingClientRect()
+      this.overFlowTooltipStyle = {
+        top: `${top + height + 5}px`,
+        left: `${left}px`,
+        zIndex: '100000000000',
+        maxWidth: '220px !important',
+        padding: '8px 12px'
       }
     },
     setupLanguageNodeTooltips() {
-      const nodes = document.querySelectorAll(
+      this.activeNodes = document.querySelectorAll(
         '.input-languages-settings-treeview .v-treeview-node--leaf .v-treeview-node__root'
       )
-      nodes.forEach((node) => {
-        node.addEventListener('mouseover', (e) => {
-          if (
-            this.selectedLanguages.length >= 10 &&
-            node.parentElement.classList.contains('v-treeview-node--disabled')
-          ) {
-            const { left, top, height } = e.target.getBoundingClientRect()
-            this.overFlowTooltipStyle = {
-              top: `${top + height + 5}px`,
-              left: `${left}px`,
-              zIndex: '100000000000',
-              maxWidth: '220px !important',
-              padding: '8px 12px'
-            }
-            this.showOverFlowTooltip = true
-          }
-        })
-        node.addEventListener('mouseout', () => {
-          this.showOverFlowTooltip = false
-          this.overFlowTooltipStyle = {
-            top: '0px',
-            left: '0px'
-          }
-        })
+      this.activeNodes.forEach((node) => {
+        node.addEventListener('mouseover', this.handleTooltipShow)
+        node.addEventListener('mouseout', this.handleTooltipHide)
       })
+    },
+    removeLanguageNodeEventListeners() {
+      this.activeNodes.forEach((node) => {
+        node.removeEventListener('mouseover', this.handleTooltipShow)
+        node.removeEventListener('mouseout', this.handleTooltipHide)
+      })
+      this.activeNodes = []
     },
     changeMenuStatus(status = 'hidden') {
       const menu = document.querySelector('.switch-account__container')
