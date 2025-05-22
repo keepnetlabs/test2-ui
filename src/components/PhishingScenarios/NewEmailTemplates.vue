@@ -462,10 +462,16 @@ export default {
       } else {
         this.activeLanguage = val[0].value
       }
+    },
+    scenarioDetailsLookup: {
+      immediate: true,
+      handler(val) {
+        if (!val || this.isDefault) return
+        this.setLanguageItems()
+      }
     }
   },
   created() {
-    this.setLanguageItems()
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
