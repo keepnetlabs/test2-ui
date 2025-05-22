@@ -128,7 +128,7 @@ export default {
         top: '0px',
         left: '0px'
       },
-      checkboxesEventAdded: false
+      nodesEventAdded: false
     }
   },
   computed: {
@@ -205,20 +205,20 @@ export default {
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
-      if (!this.checkboxesEventAdded) {
-        this.checkboxesEventAdded = true
-        this.addCheckboxEventListeners()
+      if (!this.nodesEventAdded) {
+        this.nodesEventAdded = true
+        this.setupLanguageNodeTooltips()
       }
     },
-    addCheckboxEventListeners() {
-      const checkboxes = document.querySelectorAll(
+    setupLanguageNodeTooltips() {
+      const nodes = document.querySelectorAll(
         '.input-languages-settings-treeview .v-treeview-node--leaf .v-treeview-node__root'
       )
-      checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener('mouseover', (e) => {
+      nodes.forEach((node) => {
+        node.addEventListener('mouseover', (e) => {
           if (
             this.selectedLanguages.length >= 10 &&
-            checkbox.parentElement.classList.contains('v-treeview-node--disabled')
+            node.parentElement.classList.contains('v-treeview-node--disabled')
           ) {
             const { left, top, height } = e.target.getBoundingClientRect()
             this.overFlowTooltipStyle = {
@@ -231,7 +231,7 @@ export default {
             this.showOverFlowTooltip = true
           }
         })
-        checkbox.addEventListener('mouseout', () => {
+        node.addEventListener('mouseout', () => {
           this.showOverFlowTooltip = false
           this.overFlowTooltipStyle = {
             top: '0px',
@@ -240,7 +240,6 @@ export default {
         })
       })
     },
-
     changeMenuStatus(status = 'hidden') {
       const menu = document.querySelector('.switch-account__container')
       if (menu) {
