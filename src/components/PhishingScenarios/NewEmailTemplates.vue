@@ -121,7 +121,7 @@
                       class-name="mt-8"
                       class="email-template-languages-settings-form-group"
                       title="Languages Settings"
-                      sub-title="You can select multiple languages to generate AI-assisted email localization. A maximum of 10 languages can be added per template."
+                      sub-title="You can select multiple languages for AI-assisted email localization. Each template can include up to 10 languages in total, including edits."
                     >
                       <InputLanguagesSettings
                         v-model="selectedLanguages"
@@ -513,7 +513,7 @@ export default {
           template: this.formValues.template,
           prompt: this.formValues.prompt,
           toneResourceId: this.formValues.toneResourceId,
-          localizationResourceId: this.formValues.localizationResourceId,
+          localizationResourceId: this.formValues.localizationResourceId
         })
         this.selectedLanguages.push({
           text: this.formValues.languageTypeName,
@@ -561,7 +561,8 @@ export default {
     setLanguageItems() {
       const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
       const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []
-      const companyLanguageTypeResourceId = this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
+      const companyLanguageTypeResourceId =
+        this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
       const languageItems = []
       languageItems.push({
         value: 1,
