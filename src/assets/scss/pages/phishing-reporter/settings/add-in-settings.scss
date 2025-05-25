@@ -229,6 +229,11 @@
       overflow-y: auto;
     }
   }
+  &-configuration-container{
+    .k-overlay__footer{
+      z-index: 98 !important
+    }
+  }
 }
 
 .btn-select-file {
