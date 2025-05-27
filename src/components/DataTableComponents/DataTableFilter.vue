@@ -333,6 +333,15 @@ export default {
     }
   },
   data() {
+    let filteredSelectValueDate = '<='
+    if (this.filterableType === 'date') {
+      filteredSelectValueDate =
+        this.value.selectValue || this.defaultDate ? this.value.selectValue : '<='
+    }
+    let filterChecked = []
+    if (this.filterableType === 'select') {
+      filterChecked = this.value.selectValue === '' ? [] : this.value.selectValue.split(',')
+    }
     return {
       isCloseOnClick: true,
       status: false,
@@ -346,12 +355,7 @@ export default {
         : this.value.selectValue || 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueNumber: '=',
-      filteredSelectValueDate:
-        this.filterableType === 'date'
-          ? this.value.selectValue || this.defaultDate
-            ? this.value.selectValue
-            : '<='
-          : '<=',
+      filteredSelectValueDate,
       filteredDateValue:
         this.filterableType === 'date' &&
         this.value.selectValue !== 'between' &&
@@ -372,12 +376,7 @@ export default {
         this.value.selectValue === 'between'
           ? [this.value.textValue[0], this.value.textValue[1]]
           : [],
-      filterChecked:
-        this.filterableType === 'select'
-          ? this.value.selectValue === ''
-            ? []
-            : this.value?.selectValue?.split(',')
-          : [],
+      filterChecked,
       textFilterItems: [
         { text: 'Contains', value: 'Contains' },
         { text: 'Equal', value: '=' },
