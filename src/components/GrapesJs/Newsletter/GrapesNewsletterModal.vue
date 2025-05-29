@@ -992,10 +992,16 @@ export default {
               const code = codeViewer.editor.getValue()
               const callback = (importedCode = code) => {
                 const doc = new DOMParser().parseFromString(importedCode, 'text/html')
+                btnImp.style.opacity = '1'
+                btnImp.style.cursor = 'pointer'
+                btnImp.style.pointerEvents = 'auto'
                 editor.setComponents(doc.children[0].outerHTML)
                 editor.getWrapper().setStyle(doc.body.style.cssText)
                 editor.Modal.close()
               }
+              btnImp.style.opacity = '0.5'
+              btnImp.style.cursor = 'default'
+              btnImp.style.pointerEvents = 'none'
               minifyHTML(code)
                 .then((response) => {
                   callback(response?.data?.data?.htmlContent || '')
