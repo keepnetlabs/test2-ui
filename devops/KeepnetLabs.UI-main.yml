@@ -65,7 +65,7 @@ stages:
           artifactName: 'drop'
 
 # DEPLOY DEV DASH NEW
-- stage: DEV_DASH
+- stage: DEV_API_UI
   variables:
   - group: Dev-UI-Config
   condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
@@ -74,7 +74,7 @@ stages:
     - template: sub-KeepnetLabs.UI-CD.yml
       parameters:
           jobName: 'Deploy_UI'
-          environment: 'DEV_DASH_UI'
+          environment: 'DEV_API_UI'
           websiteName: 'DevUI'
           artifactName: 'drop'
 
