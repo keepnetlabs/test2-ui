@@ -895,7 +895,7 @@ export default {
               })
             }
             this.phishingEmailTemplates.push(
-              ...emailTemplate?.languages.map((item) => {
+              ...(emailTemplate?.languages?.map((item) => {
                 return {
                   fromName: item.fromName,
                   fromAddress: item.fromAddress,
@@ -908,7 +908,7 @@ export default {
                     (language) => language.value === item.languageTypeResourceId
                   )?.description
                 }
-              })
+              }) || [])
             )
             this.emailTemplateParams.languageShortCode = [
               ...this.phishingEmailTemplates.map((item) => item.languageShortCode)

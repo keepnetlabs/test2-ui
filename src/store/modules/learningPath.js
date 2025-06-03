@@ -209,11 +209,13 @@ const learningPath = {
         state.availableFor = payload
       }
       state.learningPathTableData.sort((a, b) => {
-        return isInavailable(state.availableFor, a) === isInavailable(state.availableFor, b)
-          ? 0
-          : !isInavailable(state.availableFor, a)
-          ? -1
-          : 1
+        let sortedResult = 1
+        if (isInavailable(state.availableFor, a) === isInavailable(state.availableFor, b)) {
+          sortedResult = 0
+        } else if (!isInavailable(state.availableFor, a)) {
+          sortedResult = -1
+        }
+        return sortedResult
       })
     },
     RESET_LEARNING_PATH_DATA(state) {

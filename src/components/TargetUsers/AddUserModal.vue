@@ -616,9 +616,9 @@ export default {
           this.validations.maxLength(v, 256, labels.getMaxLengthMessage(item.name, 256))
         )
       } else if (item.isRequired) {
-          rules.push(() => {
-            return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
-          })
+        rules.push(() => {
+          return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
+        })
       }
       item.fieldDataType === 'Email' &&
         rules.push((v) => this.validations.mail(v, 'Invalid email address'))

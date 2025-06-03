@@ -226,7 +226,9 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label :id="`text--playbook-investigate-email-date-range-title-${getParentIndex}`"
+            <label
+              :id="`text--playbook-investigate-email-date-range-title-${getParentIndex}`"
+              :for="`input--action-investigate-ranges-${getParentIndex}`"
               >Email Date Range</label
             >
             <v-list-item-title
@@ -253,7 +255,9 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label :id="`text--playbook-investigate-select-sources-title-${getParentIndex}`"
+            <label
+              :id="`text--playbook-investigate-select-sources-title-${getParentIndex}`"
+              :for="`input--action-investigate-sources-${getParentIndex}`"
               >Select Sources</label
             >
             <v-list-item-title
@@ -273,7 +277,9 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label :id="`text--playbook-investigate-duration-title-${getParentIndex}`"
+            <label
+              :id="`text--playbook-investigate-duration-title-${getParentIndex}`"
+              :for="`input--action-investigate-sources-${getParentIndex}-${index}`"
               >Duration</label
             >
             <v-list-item-title

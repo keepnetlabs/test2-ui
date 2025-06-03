@@ -214,16 +214,20 @@ export default {
         !this.phoneNumbers.length
       )
         return 'EN'
-      const phoneNumberObj = this.createPhoneNumberObj(
-        this.isPhishingScenario || this.isSmishing || this.isQuishing
-          ? typeof phoneNumber === 'object'
-            ? phoneNumber.text
-            : this.phoneNumbers.find(
-                (phoneNumberWrapper) => phoneNumberWrapper.value === phoneNumber
-              )?.text
-          : phoneNumber
-      )
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
+      let phoneNumberPayload = phoneNumber
+      if (this.isPhishingScenario || this.isSmishing || this.isQuishing) {
+        if (typeof phoneNumber === 'object') {
+          phoneNumberPayload = phoneNumber.text
+        } else {
+          phoneNumberPayload = this.phoneNumbers.find(
+            (phoneNumberWrapper) => phoneNumberWrapper.value === phoneNumber
+          )?.text
+        }
+      }
+      const phoneNumberObj = this.createPhoneNumberObj(phoneNumberPayload)
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
+        type: 'region'
+      })
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
     },
     createPhoneNumberObj(phoneNumber = '') {

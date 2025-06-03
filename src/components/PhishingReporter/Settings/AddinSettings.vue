@@ -916,9 +916,9 @@ export default {
     },
     checkDialogBoxSettings() {
       const invalidLanguages = []
-      for (let i = 0; i < this.formValues.dialogBoxSettings.length; i++) {
-        if (!checkDialogBoxSettings(this.formValues.dialogBoxSettings[i]))
-          invalidLanguages.push(this.formValues.dialogBoxSettings[i].languageName)
+      for (const dialogBoxSetting of this.formValues.dialogBoxSettings) {
+        if (!checkDialogBoxSettings(dialogBoxSetting))
+          invalidLanguages.push(dialogBoxSetting.languageName)
       }
       return invalidLanguages
     },

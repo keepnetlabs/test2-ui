@@ -256,10 +256,7 @@
                           <InputEmail
                             v-model.trim="mailForResetPassword"
                             id="input--login-reset-password"
-                            :class="{
-                              'reset-pass-textfield': true,
-                              'input-error': isErrorActive
-                            }"
+                            :class="mailForResetPasswordClass"
                             style="padding: 0 !important;"
                             validate-on-blur
                             @click="resetPasswordError = false"
@@ -351,7 +348,7 @@
                     </div>
                   </div>
                   <div v-if="isPasswordAreEqual" class="login-error-container">
-                    <div v-if="isPasswordAreEqual" class="login-error-wrapper">
+                    <div class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
@@ -458,7 +455,7 @@
               </div>
               <div v-if="pageNumber === 7">
                 <div v-if="isErrorActive" class="login-error-container">
-                  <div v-if="isErrorActive" class="login-error-wrapper">
+                  <div class="login-error-wrapper">
                     <div class="login-error-icon dark pr-2">
                       <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                     </div>
@@ -478,7 +475,7 @@
               </div>
               <div v-if="pageNumber === 8">
                 <div v-if="isErrorActive" class="login-error-container">
-                  <div v-if="isErrorActive" class="login-error-wrapper">
+                  <div class="login-error-wrapper">
                     <div class="login-error-icon dark pr-2">
                       <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                     </div>
@@ -500,7 +497,7 @@
               </div>
               <div v-if="pageNumber === 9">
                 <div v-if="isErrorActive" class="login-error-container">
-                  <div v-if="isErrorActive" class="login-error-wrapper">
+                  <div class="login-error-wrapper">
                     <div class="login-error-icon dark pr-2">
                       <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                     </div>
@@ -716,11 +713,9 @@ export default {
         this.redirectToAnalysisDetails()
       } else if (this.checkQueryHasResetPasswordOrCreatePassword()) {
         this.setQueryResetPasswordOrCreatePassword()
-      } else {
+      } else if (this.$route.name !== 'Dashboard') {
         //go to main page
-        if (this.$route.name !== 'Dashboard') {
-          this.$router.push('/')
-        }
+        this.$router.push('/')
       }
     } else {
       //if it is not logined then remove permissions from local storage
@@ -747,6 +742,12 @@ export default {
       loginWhiteLabel: 'login/loginWhiteLabel',
       getReCaptcha: 'common/getReCaptcha'
     }),
+    mailForResetPasswordClass() {
+      return {
+        'reset-pass-textfield': true,
+        'input-error': this.isErrorActive
+      }
+    },
     getPasswordFieldIcon() {
       return this.isHidePassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
     },
@@ -1084,28 +1085,26 @@ export default {
         this.redirectToInvitationPage()
       } else if (this.checkQueryHasCommunityId()) {
         this.redirectToThreatSharingCommunity()
+      } else if (this.$route.query && this.checkQueryHasResetPasswordOrCreatePassword()) {
+        this.setQueryResetPasswordOrCreatePassword()
       } else {
-        if (this.$route.query && this.checkQueryHasResetPasswordOrCreatePassword()) {
-          this.setQueryResetPasswordOrCreatePassword()
-        } else {
-          //login to the application
-          let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
-          let tokenData = jwt_decode(token)
-          let currentUserData = setGlobalUserData(tokenData)
-          localStorage.setItem('userData', JSON.stringify(currentUserData))
-          localStorage.setItem('selectedCompanyName', currentUserData.name)
-          localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
-          getSystemUserSettings()
-            .then((response) => {
-              localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
-              localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
-            })
-            .finally(() => {
-              if (this.$route.name !== 'Dashboard') {
-                this.$router.push('/')
-              }
-            })
-        }
+        //login to the application
+        let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
+        let tokenData = jwt_decode(token)
+        let currentUserData = setGlobalUserData(tokenData)
+        localStorage.setItem('userData', JSON.stringify(currentUserData))
+        localStorage.setItem('selectedCompanyName', currentUserData.name)
+        localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            if (this.$route.name !== 'Dashboard') {
+              this.$router.push('/')
+            }
+          })
       }
     },
     onErrorLogin(payload, error) {
@@ -1114,18 +1113,16 @@ export default {
       } else if (error?.response?.data?.mfa?.StatusId === 0) {
         this.mfaDetails = error.response.data.mfa
         this.pageNumber = 6
+      } else if (error && error.response && error.response.status === 401) {
+        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
+          root: true
+        })
       } else {
-        if (error && error.response && error.response.status === 401) {
-          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-          this.$store.commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
-            root: true
-          })
-        } else {
-          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-          this.$store.commit('common/SET_ERROR_MESSAGE', this.getLoginErrorMessage(error), {
-            root: true
-          })
-        }
+        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.commit('common/SET_ERROR_MESSAGE', this.getLoginErrorMessage(error), {
+          root: true
+        })
       }
     },
     getLoginErrorMessage(error) {
@@ -1166,7 +1163,7 @@ export default {
     },
     getToken(name, url) {
       if (!url) url = location.href
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]')
+      name = name.replace(/\[/, '\\[').replace(/\]/, '\\]')
       let regexS = '[\\?&]' + name + '=([^&#]*)'
       let regex = new RegExp(regexS)
       let results = regex.exec(url)

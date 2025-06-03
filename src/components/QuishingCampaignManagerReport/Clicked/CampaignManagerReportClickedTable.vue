@@ -129,16 +129,7 @@ export default {
   data() {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
-    const columns = [
-      COLUMNS.FIRST_NAME,
-      COLUMNS.LAST_NAME,
-      COLUMNS.EMAIL,
-      COLUMNS.DEPARTMENT,
-      COLUMNS.PHISHING_SCENARIO_NAME,
-      COLUMNS.LAST_CLICKED
-    ]
     if (isQuishingTypePrintout) {
-      columns.push(COLUMNS.TIMES_CLICKED_PRINTOUT)
       rowActions.push({
         name: labels.Details,
         id: 'btn-details--row-actions-campaign-manager-report-clicked',
@@ -149,7 +140,6 @@ export default {
         ]
       })
     } else {
-      columns.push(COLUMNS.TIMES_CLICKED)
       rowActions.push(
         {
           name: labels.Details,

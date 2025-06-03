@@ -377,7 +377,7 @@ export default {
             tooltipFooter.style.padding = '16px'
             tooltipFooter.style.maxWidth = '280px'
             tooltipFooter.style.fontWeight = 'normal'
-            if (tooltipModel.body && this._chart && this._chart.data.datasets) {
+            if (tooltipModel.body && this?._chart?.data?.datasets) {
               let tableRoot = tooltipContent.querySelector('table')
               tableRoot.innerHTML = ''
               tableRoot.style.width = '100%'
