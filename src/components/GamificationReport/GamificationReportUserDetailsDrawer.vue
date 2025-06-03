@@ -568,10 +568,7 @@
                 outlined
                 text
                 style="border: none;"
-                :style="{
-                  'background-color': hover ? '#F2F2F2' : '#FFFFFF',
-                  marginBottom: '16px'
-                }"
+                :style="getLoadMoreButtonStyle(hover)"
                 @click="handleLoadMore"
               >
                 <span style="color: #2196f3; font-weight: 600;">LOAD MORE</span>
@@ -802,11 +799,10 @@ export default {
       const uniqueDates = [
         ...new Set(timelineWithHeaders.map((activity) => activity.ActionTimeWithDay))
       ]
-      for (let i = 0; i < uniqueDates.length; i++) {
-        if (this.timeline.some((activity) => activity.ActionTimeWithDay === uniqueDates[i]))
-          continue
+      for (const uniqueDate of uniqueDates) {
+        if (this.timeline.some((activity) => activity.ActionTimeWithDay === uniqueDate)) continue
         const firstActivityIndex = timelineWithHeaders.findIndex(
-          (activity) => activity.ActionTimeWithDay === uniqueDates[i]
+          (activity) => activity.ActionTimeWithDay === uniqueDate
         )
         if (firstActivityIndex === -1) continue
         timelineWithHeaders.splice(firstActivityIndex, 0, {
@@ -1163,6 +1159,12 @@ export default {
     },
     handleDrawerClickOutside() {
       if (!this.isShowDownloadModal && !this.menu) this.$emit('on-close')
+    },
+    getLoadMoreButtonStyle(hover) {
+      return {
+        'background-color': hover ? '#F2F2F2' : '#FFFFFF',
+        marginBottom: '16px'
+      }
     }
   }
 }

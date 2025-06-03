@@ -883,10 +883,9 @@ router.beforeEach((to, from, next) => {
         if (storeRef.state.common.downloadModalStatus) {
           storeRef.dispatch('common/changeDownloadModalStatus', false)
           next(false)
-        } else {
-          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
-          else next(from.name ? false : '/')
-        }
+        } else if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) {
+          next()
+        } else next(from.name ? false : '/')
       } else {
         next('/login')
       }

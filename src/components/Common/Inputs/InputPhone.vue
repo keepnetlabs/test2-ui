@@ -136,17 +136,22 @@ export default {
     },
     validatePhoneNumber() {
       this.$nextTick(() => {
-        if (this.$refs.refTelInput) {
-          this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
-          if (this.required) {
-            this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
-          } else {
-            if (this.value) {
-              this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
-            } else {
-              this.isPhoneNumberValid = true
-            }
+        try {
+          if (!this.$refs.refTelInput) {
+            return
           }
+          const { phoneObject } = this.$refs.refTelInput
+          if (!phoneObject) {
+            return
+          }
+          this.regionCode = phoneObject.regionCode
+          if (!this.required && !this.value) {
+            this.isPhoneNumberValid = true
+            return
+          }
+          this.isPhoneNumberValid = phoneObject.isValid
+        } catch (e) {
+          this.isPhoneNumberValid = false
         }
       })
     }

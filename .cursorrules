@@ -1,1209 +1,212 @@
 # KeepnetLabs Vue 2 Frontend Development Rules
 
-## Project Overview
-This project is built with Vue 2.7.8, Vuetify 2.6.9, and follows enterprise-grade development practices. As a Senior Frontend Developer working on this project, you are expected to:
+## 🎯 PROJECT OVERVIEW
 
-- Write clean, maintainable, and scalable code
-- Follow Vue 2 Options API patterns
-- Implement proper state management with Vuex
-- Use Vuetify components effectively
-- Ensure high performance and accessibility
-- Maintain code quality and consistency
-- Follow security best practices
-- Document your code properly
+The project aims to develop a **KeepnetLabs Human Risk Management** platform for web users.
+**Mission:** Transform human risk into human resilience.
 
-## Development Environment
-- Vue 2.7.8
-- Vuetify 2.6.9
-- Vuex 3.4.0
-- Vue Router 3.3.4
-- Axios 0.27.2
-- ESLint & Prettier for code quality
-- Jest for testing
-
-## Senior Frontend Developer Coding Guidelines
-
-### Code Writing Style
-- Always write code as if the next developer is a psychopath who knows where you live
-- Write code that is easy to delete, not easy to extend
-- If you can't explain it to a six-year-old, you don't understand it yourself
-- Code is like humor. When you have to explain it, it's bad
-- Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live
-- The best code is no code at all
-- The only way to go fast is to go well
-- Clean code always looks like it was written by someone who cares
-
-### Component Development
-- Components should do one thing and do it well
-- Keep components small and focused
-- Use meaningful component names
-- Follow single responsibility principle
-- Make components reusable and configurable
-- Document component props and events
-- Use proper error boundaries
-- Implement proper loading states
-- Use proper component lifecycle hooks
-- Implement proper component communication
-- Use proper component composition
-- Follow proper component naming conventions
-- Use proper component documentation
-- Implement proper component testing
-- Use proper component styling
-
-### Vue 2 Specific Guidelines
-- Use Options API with proper organization:
-  - name
-  - components
-  - props
-  - data
-  - computed
-  - watch
-  - methods
-  - lifecycle hooks
-- Use v-bind and v-on shorthands (: and @)
-- Implement proper component lifecycle hooks
-- Use Vue.set for reactive array/object updates
-- Follow Vue 2 best practices for state management with Vuex
-- Use proper event handling
-- Implement proper form handling
-- Use proper routing patterns
-- Implement proper authentication flow
-- Use proper error handling
-- Implement proper loading states
-- Use proper animation patterns
-- Implement proper transition effects
-- Use proper directive patterns
-- Implement proper filter patterns
-- Use proper mixin patterns
-
-### State Management
-- Keep state as close as possible to where it's used
-- Use Vuex for global state only
-- Implement proper state normalization
-- Use proper state immutability
-- Implement proper state persistence
-- Use proper state validation
-- Implement proper state synchronization
-- Use proper state caching
-- Use proper state namespacing
-- Implement proper state actions
-- Use proper state mutations
-- Implement proper state getters
-- Use proper state modules
-- Implement proper state plugins
-- Use proper state strict mode
-
-### Vuetify Specific Guidelines
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
-- Use proper navigation patterns
-- Implement proper dialog patterns
-- Use proper snackbar patterns
-- Implement proper card patterns
-- Use proper list patterns
-- Implement proper chip patterns
-- Use proper button patterns
-- Implement proper icon patterns
-- Use proper typography patterns
-
-### Performance Optimization
-- Implement proper code splitting
-- Use proper lazy loading
-- Optimize bundle size
-- Use proper caching strategies
-- Implement proper memoization
-- Use proper debouncing and throttling
-- Optimize render performance
-- Use proper virtual scrolling
-- Implement proper image optimization
-- Use proper font optimization
-- Implement proper CSS optimization
-- Use proper JavaScript optimization
-- Implement proper API optimization
-- Use proper state optimization
-- Implement proper component optimization
-
-### Error Handling
-- Implement proper error boundaries
-- Use proper error logging
-- Provide user-friendly error messages
-- Handle edge cases properly
-- Implement proper error recovery
-- Use proper error tracking
-- Implement proper error reporting
-- Use proper error monitoring
-- Use proper error types
-- Implement proper error handling patterns
-- Use proper error recovery patterns
-- Implement proper error logging patterns
-- Use proper error tracking patterns
-- Implement proper error reporting patterns
-- Use proper error monitoring patterns
-
-### Testing
-- Write tests that are easy to maintain
-- Test behavior, not implementation
-- Use proper test naming
-- Follow testing best practices
-- Implement proper test coverage
-- Use proper test isolation
-- Implement proper test data
-- Use proper test assertions
-- Use proper test patterns
-- Implement proper test organization
-- Use proper test documentation
-- Implement proper test automation
-- Use proper test reporting
-- Implement proper test coverage reporting
-- Use proper test performance monitoring
-
-### Security
-- Sanitize all user input
-- Implement proper authentication
-- Use proper authorization
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
-- Use proper security headers
-- Use proper security patterns
-- Implement proper security testing
-- Use proper security monitoring
-- Implement proper security logging
-- Use proper security reporting
-- Implement proper security auditing
-- Use proper security compliance
-
-### Documentation
-- Document complex logic
-- Keep documentation up to date
-- Use proper JSDoc comments
-- Document API endpoints
-- Keep README up to date
-- Document deployment process
-- Keep changelog up to date
-- Document troubleshooting steps
-- Use proper documentation patterns
-- Implement proper documentation organization
-- Use proper documentation tools
-- Implement proper documentation automation
-- Use proper documentation review
-- Implement proper documentation maintenance
-- Use proper documentation versioning
-
-### Code Review
-- Review code with empathy
-- Provide constructive feedback
-- Focus on maintainability
-- Check for security issues
-- Verify performance impact
-- Ensure proper error handling
-- Check for accessibility
-- Verify proper testing
-- Use proper code review patterns
-- Implement proper code review process
-- Use proper code review tools
-- Implement proper code review automation
-- Use proper code review metrics
-- Implement proper code review reporting
-- Use proper code review follow-up
-
-
-### Deployment
-- Use proper CI/CD pipeline
-- Implement proper versioning
-- Use proper environment variables
-- Follow deployment best practices
-- Implement proper rollback
-- Use proper monitoring
-- Implement proper logging
-- Follow deployment guidelines
-- Use proper deployment patterns
-- Implement proper deployment process
-- Use proper deployment tools
-- Implement proper deployment automation
-- Use proper deployment metrics
-- Implement proper deployment reporting
-- Use proper deployment follow-up
-
-## Code Style Guidelines
-
-### General
-- Use early returns for better code readability
-- Follow DRY (Don't Repeat Yourself) principle
-- Write self-documenting code with clear variable and function names
-- Keep functions small and focused on single responsibility
-- Use proper error handling with try-catch blocks
-- Follow Vue 2 Options API patterns
-
-### Naming Conventions
-- Use camelCase for variables and functions
-- Use PascalCase for components
-- Prefix event handlers with 'handle' (e.g., handleClick, handleSubmit)
-- Use descriptive names that explain purpose
-- Avoid abbreviations unless widely accepted
-- Component names should be multi-word (e.g., UserProfile, DataTable)
-
-### JavaScript
-- Use ES6+ features where supported
-- Implement proper error handling
-- Use async/await for asynchronous operations
-- Follow functional programming principles
-- Use proper type checking
-- Implement proper logging
-
-### Styling
-- Use Vuetify components and classes
-- Follow BEM naming for custom CSS
-- Use scoped styles in components
-- Implement responsive design
-- Use CSS variables for theme values
-- Keep styles modular and reusable
-
-### Accessibility
-- Implement proper ARIA attributes
-- Ensure keyboard navigation
-- Add proper focus management
-- Include alt text for images
-- Use semantic HTML elements
-- Follow WCAG 2.1 guidelines
-
-### Performance
-- Use v-if and v-show appropriately
-- Implement proper list rendering with :key
-- Use computed properties for complex calculations
-- Implement proper caching strategies
-- Optimize images and assets
-- Use proper lazy loading
-
-### Testing
-- Write unit tests for components
-- Use Vue Test Utils
-- Implement proper test coverage
-- Follow testing best practices
-- Document test cases
-- Use proper mocking
-
-### Git
-- Write clear commit messages
-- Follow conventional commits
-- Keep commits atomic
-- Review code before committing
-- Use proper branching strategy
-- Keep feature branches up to date
-
-### Security
-- Sanitize user input
-- Implement proper authentication
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
-
-### Error Handling
-- Implement proper error boundaries
-- Use try-catch blocks appropriately
-- Log errors properly
-- Handle edge cases
-- Provide user-friendly error messages
-- Implement proper error recovery
-
-### Code Organization
-- Follow feature-based folder structure
-- Keep related files together
-- Use proper import/export patterns
-- Maintain consistent file naming
-- Organize code logically
-- Use proper module separation
-
-### Development Workflow
-- Use proper linting with ESLint
-- Follow formatting rules with Prettier
-- Run tests before committing
-- Review code regularly
-- Keep development environment consistent
-- Use proper debugging tools
-
-### Vuetify Specific
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
-
-### Vuex Store
-- Use proper module structure
-- Implement proper state management
-- Use proper getters and mutations
-- Follow Vuex best practices
-- Keep store organized
-- Use proper namespacing
-
-### API Integration
-- Use proper axios configuration
-- Implement proper error handling
-- Use proper request/response interceptors
-- Follow REST API best practices
-- Implement proper caching
-- Use proper authentication
-
-### GrapesJS Integration
-- Use proper editor initialization
-- Implement proper block management
-- Handle editor events properly
-- Use proper asset management
-- Implement proper style management
-- Handle custom components properly
-- Use proper plugin configuration
-- Implement proper storage handling
-- Handle editor state properly
-- Use proper command management
-- Implement proper UI customization
-- Handle editor content properly
-- Use proper block customization
-- Implement proper style customization
-- Handle editor export properly
-
-### Chart.js Integration
-- Use proper chart initialization
-- Implement proper data formatting
-- Handle chart updates properly
-- Use proper chart types
-- Implement proper chart options
-- Handle chart events properly
-- Use proper chart styling
-- Implement proper chart animations
-- Handle chart responsiveness properly
-- Use proper chart plugins
-- Implement proper chart tooltips
-- Handle chart legends properly
-- Use proper chart scales
-- Implement proper chart interactions
-- Handle chart exports properly
-
-### PDF Handling
-- Use proper PDF initialization
-- Implement proper page navigation
-- Handle PDF loading properly
-- Use proper PDF rendering
-- Implement proper PDF zooming
-- Handle PDF errors properly
-- Use proper PDF annotations
-- Implement proper PDF searching
-- Handle PDF printing properly
-- Use proper PDF downloading
-- Implement proper PDF rotation
-- Handle PDF scaling properly
-- Use proper PDF caching
-- Implement proper PDF security
-- Handle PDF accessibility properly
-
-### PowerBI Integration
-- Use proper report embedding
-- Implement proper report configuration
-- Handle report events properly
-- Use proper report filtering
-- Implement proper report navigation
-- Handle report errors properly
-- Use proper report styling
-- Implement proper report interactions
-- Handle report updates properly
-- Use proper report security
-- Implement proper report customization
-- Handle report loading properly
-- Use proper report performance
-- Implement proper report accessibility
-- Handle report exports properly
-
-### Form Handling
-- Use proper form validation
-- Implement proper input masking
-- Handle form submission properly
-- Use proper form state management
-- Implement proper form error handling
-- Handle form reset properly
-- Use proper form field types
-- Implement proper form field validation
-- Handle form field updates properly
-- Use proper form field styling
-- Implement proper form field accessibility
-- Handle form field focus properly
-- Use proper form field events
-- Implement proper form field dependencies
-- Handle form field visibility properly
-
-### Offline Support
-- Use proper offline detection
-- Implement proper data caching
-- Handle offline state properly
-- Use proper sync strategies
-- Implement proper error handling
-- Handle reconnection properly
-- Use proper data persistence
-- Implement proper conflict resolution
-- Handle offline forms properly
-- Use proper offline notifications
-- Implement proper offline queue
-- Handle offline updates properly
-- Use proper offline storage
-- Implement proper offline security
-- Handle offline cleanup properly
-
-### API Integration
-- Use proper API configuration
-- Implement proper request handling
-- Handle API errors properly
-- Use proper response formatting
-- Implement proper caching strategies
-- Handle API timeouts properly
-- Use proper authentication
-- Implement proper authorization
-- Handle API rate limiting properly
-- Use proper API documentation
-- Implement proper API testing
-- Handle API versioning properly
-- Use proper API security
-- Implement proper API monitoring
-- Handle API logging properly
-
-### Helper Classes
-- Use proper class organization
-- Implement proper method naming
-- Handle class inheritance properly
-- Use proper class documentation
-- Implement proper class testing
-- Handle class errors properly
-- Use proper class utilities
-- Implement proper class validation
-- Handle class state properly
-- Use proper class patterns
-- Implement proper class security
-- Handle class performance properly
-- Use proper class accessibility
-- Implement proper class maintenance
-- Handle class updates properly
-
-### Directives
-- Use proper directive registration
-- Implement proper directive logic
-- Handle directive updates properly
-- Use proper directive documentation
-- Implement proper directive testing
-- Handle directive errors properly
-- Use proper directive performance
-- Implement proper directive security
-- Handle directive cleanup properly
-- Use proper directive patterns
-- Implement proper directive validation
-- Handle directive state properly
-- Use proper directive accessibility
-- Implement proper directive maintenance
-- Handle directive updates properly
-
-### Permissions
-- Use proper permission checking
-- Implement proper role management
-- Handle permission updates properly
-- Use proper permission documentation
-- Implement proper permission testing
-- Handle permission errors properly
-- Use proper permission caching
-- Implement proper permission security
-- Handle permission state properly
-- Use proper permission patterns
-- Implement proper permission validation
-- Handle permission changes properly
-- Use proper permission logging
-- Implement proper permission monitoring
-- Handle permission cleanup properly
-
-### Model Management
-- Use proper model definition
-- Implement proper model validation
-- Handle model updates properly
-- Use proper model documentation
-- Implement proper model testing
-- Handle model errors properly
-- Use proper model relationships
-- Implement proper model security
-- Handle model state properly
-- Use proper model patterns
-- Implement proper model serialization
-- Handle model persistence properly
-- Use proper model caching
-- Implement proper model monitoring
-- Handle model cleanup properly
-
-## Code Style Guidelines
-
-### General
-- Use early returns for better code readability
-- Follow DRY (Don't Repeat Yourself) principle
-- Write self-documenting code with clear variable and function names
-- Keep functions small and focused on single responsibility
-- Use proper error handling with try-catch blocks
-- Follow Vue 2 Options API patterns
-
-### Naming Conventions
-- Use camelCase for variables and functions
-- Use PascalCase for components
-- Prefix event handlers with 'handle' (e.g., handleClick, handleSubmit)
-- Use descriptive names that explain purpose
-- Avoid abbreviations unless widely accepted
-- Component names should be multi-word (e.g., UserProfile, DataTable)
-
-### JavaScript
-- Use ES6+ features where supported
-- Implement proper error handling
-- Use async/await for asynchronous operations
-- Follow functional programming principles
-- Use proper type checking
-- Implement proper logging
-
-### Styling
-- Use Vuetify components and classes
-- Follow BEM naming for custom CSS
-- Use scoped styles in components
-- Implement responsive design
-- Use CSS variables for theme values
-- Keep styles modular and reusable
-
-### Accessibility
-- Implement proper ARIA attributes
-- Ensure keyboard navigation
-- Add proper focus management
-- Include alt text for images
-- Use semantic HTML elements
-- Follow WCAG 2.1 guidelines
-
-### Performance
-- Use v-if and v-show appropriately
-- Implement proper list rendering with :key
-- Use computed properties for complex calculations
-- Implement proper caching strategies
-- Optimize images and assets
-- Use proper lazy loading
-
-### Testing
-- Write unit tests for components
-- Use Vue Test Utils
-- Implement proper test coverage
-- Follow testing best practices
-- Document test cases
-- Use proper mocking
-
-### Git
-- Write clear commit messages
-- Follow conventional commits
-- Keep commits atomic
-- Review code before committing
-- Use proper branching strategy
-- Keep feature branches up to date
-
-### Documentation
-- Document complex logic
-- Add JSDoc comments for functions
-- Keep README up to date
-- Document component props and events
-- Maintain changelog
-- Document API integrations
-
-### Security
-- Sanitize user input
-- Implement proper authentication
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
-
-### Error Handling
-- Implement proper error boundaries
-- Use try-catch blocks appropriately
-- Log errors properly
-- Handle edge cases
-- Provide user-friendly error messages
-- Implement proper error recovery
-
-### Code Organization
-- Follow feature-based folder structure
-- Keep related files together
-- Use proper import/export patterns
-- Maintain consistent file naming
-- Organize code logically
-- Use proper module separation
-
-### Development Workflow
-- Use proper linting with ESLint
-- Follow formatting rules with Prettier
-- Run tests before committing
-- Review code regularly
-- Keep development environment consistent
-- Use proper debugging tools
-
-### Vuetify Specific
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
-
-### Vuex Store
-- Use proper module structure
-- Implement proper state management
-- Use proper getters and mutations
-- Follow Vuex best practices
-- Keep store organized
-- Use proper namespacing
-
-### API Integration
-- Use proper axios configuration
-- Implement proper error handling
-- Use proper request/response interceptors
-- Follow REST API best practices
-- Implement proper caching
-- Use proper authentication## 1. PROJECT OVERVIEW
-
-The project aims to develop a **KeepnetLabs Human Risk Management** platform, catering to both **web** users.
-The mission is to **transform human risk into human resilience**.
 Phishing, social‑engineering and user error still trigger the majority of breaches.
 The platform reframes this as a human‑risk problem and couples continuous measurement with adaptive controls to shrink that risk over time.
-AI‑driven “best‑of‑suite” platform that unifies training, behavioural telemetry and automated controls under one console.
+AI‑driven "best‑of‑suite" platform that unifies training, behavioural telemetry and automated controls under one console.
 
-Core benefits include:
+### Core Benefits
+- **Quantify human risk:** Individual & org‑level risk scores pull from phishing tests, password hygiene, email behaviour and policy violations
+- **Lower breach probability:** Average Phish‑prone % drops from >30% to <5% in 12 months when programmes run continuously
+- **Reduce incident‑response effort:** Automates triage & remediation of >85% of user‑reported emails
 
-- Quantify human risk: Individual & org‑level risk scores pull from phishing tests, password hygiene, email behaviour and policy violations.
-- Lower breach probability: Average Phish‑prone % drops from >30 % to <5 % in 12 months when programmes run continuously.
-- Reduce incident‑response effort: Automates triage & remediation of >85 % of user‑reported emails.
+### Scale & Performance Requirements
+- **1,000 organizations** and **500,000 users**
+- **95% user engagement**, **99.9% uptime**, **10,000 monthly risk assessments**
+- **<1000ms response time** for real-time analytics
 
-For the back of the envelope calculation, the platform will initially onboard **1,000 organizations** and **500,000 users**.
-Key performance indicators (KPIs) include achieving a **95% user engagement rate** within the first three months, maintaining a **99.9% system uptime**, and processing **10,000 risk assessments** monthly.
-Additionally, the platform aims to deliver **real-time analytics** with a response time of under **1000 milliseconds**.
+---
 
-The primary focus is on delivering a **scalable, efficient, and high-performance** system to manage large volumes of organization user data, policies, and risk assessments.
+## 🛠️ TECH STACK
 
-## 2. FEATURES
+### Core Framework
+- **Vue 2.7.8** (Options API only)
+- **Vuetify 2.6.9** (Material Design)
+- **Vuex 3.4.0** + **Vue Router 3.3.4**
+- **Axios 0.27.2** + **Sentry** (Error tracking)
 
-- User management and authentication.
-- Organization management.
-- Campaign management.
+### Key Libraries
+- **Forms:** vue-tel-input, v-mask, awesome-phonenumber
+- **Charts:** chart.js, vue-chartjs
+- **Rich Text:** GrapesJS + plugins
+- **Security:** sanitize-html
+- **Testing:** jest, @vue/test-utils
 
-  - It is a campaign management system that allows you to create, manage, and track phishing campaigns.
-  - Includes campaign settings which are:
-    - Campaign name
-    - Campaign description
-    - Campaign schedule: Send Now, Save for later, Schedule to datetime with timezone.
-    - Campaign duration: How many days the campaign will be active.
-    - Campaign can be marked as test or not.
-  - Phishing scenarios consists of:
-    - Template
-    - Type: Click-only, Data submission, Attachment, MFA.
-    - Language
-    - Difficulty
-    - Category
-  - Target audience selection. Groups, Departments, All, or Random.
-    - Limit recipients by groups, departments, or random. For example, send this campaign to randomly selected 20 % of the target users.
-  - Delivery settings consists of:
-    - Email delivery
-      - SMTP
-      - Platform Default
-        - Utilize Amazon SES or SendGrid for email delivery, with SendGrid being the preferred method due to its robust API integration and advanced analytics capabilities.
-        - The platform supports a monthly email sending limit of up to 500,000 emails, ensuring scalability for large campaigns.
-        - Leverage a pool of 50 dedicated phishing domains to enhance the realism and effectiveness of phishing simulations, allowing for diverse and targeted attack scenarios.
-          - Those domains will be increased over time.
-          - To ensure high deliverability rates and prevent blacklisting, it is essential to add these domains to the email providers' whitelists. This step helps in maintaining a positive sender reputation and ensures that phishing simulation emails reach their intended recipients.
-          - Be aware that some email providers impose limits on the number of domains and DKIM (DomainKeys Identified Mail) keys that can be whitelisted. It is crucial to understand these limitations to effectively manage domain and key usage.
-          - Consider employing a domain provider service that facilitates the rotation of domains and DKIM keys. This approach can help in distributing the sending load and minimizing the risk of any single domain being flagged or blacklisted.
-          - Evaluate the possibility of using a unified DKIM key, SPF (Sender Policy Framework), and DMARC (Domain-based Message Authentication, Reporting & Conformance) policy under a single domain. This strategy can simplify the management of email authentication across all subdomains, ensuring consistent security measures and easier administration.
-        - Ensure compliance with email authentication standards (SPF, DKIM, DMARC) to improve email security and deliverability.
-        - Monitor blacklists (e.g., Spamhaus, VirusTotal API, Google Safe Browsing) and retire flagged domains.
-    - Distribution
-      - Sending interval is a number of seconds, minutes, hours, days to wait before sending the next email.
-  - Campaign summary
+---
 
-- Phishing simulation
-  - Simulate real‑world email phishing attacks, train your employees and boost their phishing defence skills.
-  - Create phishing campaigns and send them to your employees.
-  - Analyze the results of the phishing campaigns.
-  - Build templates for the phishing campaigns.
-  - Use **SendGrid** to send the phishing emails.
-  - Develop a comprehensive data ingestion pipeline to ingest the phishing emails and the results of the phishing campaigns.
-  - Telemetry & User Response Capture
-    - Log opens, link clicks, submitted credentials, data entry time‑stamps and—crucially—reports made via mail‑client plug‑ins or SIEM tickets. A strong reporting culture is as important as low click rates; feed these events to a SIEM or SOAR so security can respond when real attacks occur.
-  - Metrics, Reporting & Continuous Improvement
-    - Track both leading indicators (report‑to‑click ratio, median reporting time) and lagging indicators (overall click rate, credential‑submission rate).
-- Smishing simulation
-  - Prepare your employees against SMS phishing using real‑world text scam simulations.
-- Vishing simulation
-  - Test and train your employees to identify voice scams using our AI‑driven interactive call scenarios.
-- Quishing simulation
-  - Train your employees to detect QR‑code phishing with realistic digital or physical test scenarios.
-- Callback simulation
-  - Assess and educate your employees to recognize and handle callback phishing attacks effectively.
-- Spear phishing simulation
-  - Run sophisticated, hyper‑targeted email campaigns that mimic real‑world spear‑phishing tactics:
-    - Personalized payloads – Messages are tailored to specific individuals or small groups, using contextual details (names, roles, current projects) to appear legitimate.
-    - Granular targeting options – Choose any subset of users or VIP “high‑risk” personas and vary the pre‑text, sender spoofing, or reply‑to domains for each wave.
-    - Adaptive difficulty – The platform can automatically escalate from generic spear phishing to highly customized “whaling” attempts based on previous user performance.
-    - Rich analytics & benchmarking – Track open, click‑through, credential‑harvest, and reply rates, then compare against industry peers to pinpoint training gaps.
-    - Integrated just‑in‑time training – Users who fall for a simulated spear‑phish are immediately shown micro‑training or coached by the HRM+ real‑time feedback engine, reinforcing correct behavior.
-  - Why it matters: 91 % of successful breaches start with spear‑phishing emails, so practicing detection of target‑specific attacks is critical for reducing human‑factor risk.
-- Security awareness training **SAT** (CBT, VBT, AIT)
-  - Computer-Based Training (CBT), Video-Based Training (VBT), and Adaptive Interactive Training (AIT) to educate users on recognizing and mitigating security threats.
-  - AI suggests content & schedules based on user behaviour.
-- Phishing Incident Response
-  - Incident responder
-    - Respond to Phishing, Ransomware, BEC (Business Email Compromise), and other social engineering attacks and analyze, and identify them 48.6 times faster.
-  - Threat sharing | hunting
-    - Join threat sharing communities to share, collaborate, and act upon threat intelligence data.
-- AI Keeper Agents (AIKA)
-  - Suite of AI‑native “mini‑agents” that automate repetitive tasks (phish response, content curation, risk dashboards).
-  - Multi‑modal AI, role‑aware reporting and predictive risk forecasting.
-  - AI‑powered risk‑assessment engine that uses AI‑agents to automate risk‑assessment tasks.
-  - Automated Training Agent
-  - Template Generation Agent
-  - Knowledge Refresher Agent
-  - Policy Quiz Agent
-- Compliance
-  - 700 + modules spanning GDPR, HIPAA, PCI‑DSS, ISO 27001; ties into the same risk scoring.
-  - Compliance reporting and analytics.
-  - Continuous content refresh; completion analytics aligned to regulators
+## 📝 CODING PRINCIPLES
 
-Competitors:
+### Philosophy
+- Always write code as if the next developer is a psychopath who knows where you live
+- Clean code always looks like it was written by someone who cares
+- The best code is no code at all
 
-- KnowBe4 (https://www.knowbe4.com/)
-- Cofense & PhishMe (https://www.cofense.com/)
-- Proofpoint (https://www.proofpoint.com/)
-- GoPhish (https://getgophish.com/)
-- PhishLabs (https://www.phishlabs.com/)
+### Core Rules
+- **KISS** - Keep It Simple, Stupid
+- **DRY** - Don't Repeat Yourself
+- **TDD** - Test-Driven Development
+- **YAGNI** - You Aren't Gonna Need It
 
-## 3. PERSONALITY OF THE PLATFORM
+### Platform Personality
+- **Reliable & Trustworthy** – Ensures accurate organization listings, transparent pricing, and secure transactions
+- **User-Centric & Intuitive** – Provides a seamless experience for both organizations and employees
+- **Fast & Responsive** – Optimized for quick search results and smooth booking processes across web and mobile
+- **Scalable & Adaptable** – Designed to accommodate future growth and new human risk management services
+- **Modern & Aesthetic** – Features a clean, visually appealing, and engaging user interface
 
-The platform will embody the following personality traits:
+---
 
-- **Reliable & Trustworthy** – Ensures accurate organization listings, transparent pricing, and secure transactions.
-- **User-Centric & Intuitive** – Provides a seamless experience for both organizations and employees.
-- **Fast & Responsive** – Optimized for quick search results and smooth booking processes across web and mobile.
-- **Scalable & Adaptable** – Designed to accommodate future growth and new human risk management services.
-- **Modern & Aesthetic** – Features a clean, visually appealing, and engaging user interface.
+## 🏗️ VUE 2 COMPONENT GUIDELINES
 
-The platform's personality will reflect a balance between **professionalism and approachability**, making human risk management effortless and enjoyable.
+### Structure (Options API)
+```javascript
+export default {
+  name: 'ComponentName',        // PascalCase
+  components: {},
+  props: {},
+  data() { return {} },
+  computed: {},
+  watch: {},
+  methods: {
+    handleClick() {}            // 'handle' prefix for events
+  },
+  mounted() {}
+}
+```
 
-## 4. PERSONALITY OF THE CODING ASSISTANT
+### Naming Conventions
+- **Components:** PascalCase (`UserProfile.vue`)
+- **Variables/Functions:** camelCase (`isValid`, `handleSubmit`)
+- **Event Handlers:** `handle` prefix (`handleClick`)
+- **Constants:** UPPER_SNAKE_CASE (`API_BASE_URL`)
 
-* **Vue‐First Mindset**
+### Development Approach
+- **Vue‐First Mindset:** Write every UI element as a Vue 2.7 Single‐File Component (`.vue`)
+- **Vuetify Priority:** Prefer Vuetify 2.6 components (`<v-*>`) over raw HTML
+- **Simple Solutions:** Choose computed properties over complex watchers when reactivity suffices
+- **Consistent Structure:** Always structure templates, scripts, and styles in their own blocks
 
-  * Writes every UI element as a Vue 2.7 Single‐File Component (`.vue`).
-  * Prefers Vuetify 2.6 components (`<v-*>`) over raw HTML whenever possible.
-  * Always structures templates, scripts, and styles in their own blocks for readability.
+---
 
-* **KISS (Keep It Simple, Stupid)**
+## 🎨 VUETIFY GUIDELINES
 
-  * Avoids unnecessary mixins, plugins, or abstractions—especially in Vuex modules and router guards.
-  * Chooses the simplest working solution: e.g., a computed property instead of a complex watcher when reactivity suffices.
-  * If a feature can be done in plain JavaScript or minimal Vuetify props, it won’t introduce extra dependencies.
+### Best Practices
+- Use Vuetify components over raw HTML
+- Proper grid system and form validation
+- Material Design patterns + responsive design
+- Theme customization and proper props
+- Tree-shaking: Import only used components
 
-* **TDD‐Driven (Test‐Driven Development)**
+### Example
+```vue
+<template>
+  <v-container>
+    <v-card>
+      <v-card-title>{{ title }}</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="form.email" :rules="emailRules" label="Email" required />
+      </v-card-text>
+    </v-card>
+  </v-container>
+</template>
+```
 
-  * Starts by writing a Jest + Vue Test Utils spec under `src/tests/unit/` before implementing a component or helper.
-  * Ensures that every new piece of logic has at least one passing unit test, including:
+---
 
-    * Vuex store actions/mutations.
-    * Utility functions (e.g. phone‐number formatting via `awesome-phonenumber`).
-    * GrapesJS editor initialization logic.
-  * Runs `npm run test:unit` frequently; treats failing tests as blockers until fixed.
+## 📊 STATE MANAGEMENT (VUEX)
 
-* **DRY (Don’t Repeat Yourself)**
+### Module Structure
+```javascript
+export default {
+  namespaced: true,
+  state: {},
+  getters: {},
+  mutations: {},
+  actions: {}
+}
+```
 
-  * Extracts shared code—utility functions in `/src/utils/`—rather than copying logic across components.
-  * Creates reusable chart wrappers under `/src/components/charts/` so multiple dashboard pages can import the same Bar/Line/Pie chart component.
-  * Shares Axios configuration (`src/services/apiClient.js`) instead of scattering `axios.create(...)` in different files.
+### Usage Patterns
+```javascript
+// Actions
+this.$store.dispatch('auth/login', { username, password })
+// Getters
+this.$store.getters['auth/isLoggedIn']
+```
 
-* **YAGNI (You Aren’t Gonna Need It)**
+### Rules
+- Keep state close to where it's used
+- Use Vuex for global state only
+- Proper namespacing and immutability
+- Always prefix module name in dispatch calls
 
-  * Does not scaffold Vue 3 or Composition API bits into a strictly Vue 2 project.
-  * Avoids over‐architecting Vuex modules: only adds namespaced state/actions/getters when there’s an actual need for shared state.
-  * Postpones adding PWA, service worker, or offline caching until a concrete requirement emerges (even though `v-offline` is already installed).
+---
 
-* **Consistent & Readable**
+## 🔒 SECURITY & PERFORMANCE
 
-  * Strictly follows the ESLint + Prettier conventions defined in `package.json`:
+### Security First
+- **Never render unsanitized HTML** - Use `sanitize-html` with `cleanUserHtml()` function
+- **Environment variables** - Use `process.env.VUE_APP_*` exclusively, no hardcoded secrets
+- **Input validation** - Phone numbers with `awesome-phonenumber`
+- **Error tracking** - Wrap API calls with try-catch + Sentry
+- **Authentication** - JWT tokens + route guards
 
-    * No semicolons.
-    * Single quotes.
-    * No trailing commas.
-  * Always runs `npm run lint` before committing.
-  * Names component files in `PascalCase.vue`, and matches the default export name inside the `<script>`.
-  * Writes Vuex modules with a uniform shape: `{ namespaced: true, state, getters, actions, mutations }`.
+### Performance Optimization
+- **Lazy load** large dependencies (GrapesJS, Chart.js) via dynamic imports
+- **Computed properties** for expensive calculations
+- **Memoization** in Vuex getters and component computed properties
+- **Early returns** in methods
+- **Vuetify tree-shaking** - Import only used components
 
-* **Inline Comments for Clarity**
+### Error Handling Pattern
+```javascript
+try {
+  const response = await apiClient.get('/dashboard/data')
+  return response.data
+} catch (err) {
+  Sentry.captureException(err)
+  throw err
+}
+```
 
-  * In complex components—such as the GrapesJS wrapper—adds short comments explaining:
+---
 
-    ```js
-    mounted() {
-      // Initialize GrapesJS editor once DOM is rendered
-      this.editor = grapesjs.init({ … })
-      // Load user’s saved template from API
-    }
-    ```
-  * Documents any non‐obvious prop/emit contracts in components:
+## 🧪 TESTING (TDD)
 
-    ```js
-    props: {
-      initialChartData: { type: Object, required: true } // reactive data for chart.js
-    }
-    ```
-  * Clarifies Axios interceptors by commenting why certain errors are sent to Sentry.
+### Framework & Location
+- **Jest + Vue Test Utils**
+- **Location:** `tests/unit/`
+- **Coverage:** Components, store modules, utilities
+- **Write tests first** - Treat failures as blockers
 
-* **Vuex & Router‐Savvy**
+### Test Everything
+- Vuex store actions/mutations
+- Utility functions (phone formatting, etc.)
+- GrapesJS editor initialization logic
+- Component rendering and interactions
 
-  * When writing a Vuex action, always prefixes with the module name in the dispatch:
+### Example
+```javascript
+import { shallowMount } from '@vue/test-utils'
+import MyComponent from '@/components/MyComponent.vue'
 
-    ```js
-    // In a component method:
-    this.$store.dispatch('auth/login', { username, password })
-    ```
-  * Implements route guards in `router.beforeEach()` with clear comments on authentication checks:
-
-    ```js
-    router.beforeEach((to, from, next) => {
-      // If route requires auth but user is not logged in, redirect to /login
-      if (to.meta.requiresAuth && !store.getters['auth/isLoggedIn']) {
-        return next({ name: 'Login' })
-      }
-      next()
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    const wrapper = shallowMount(MyComponent, {
+      propsData: { title: 'Test' }
     })
-    ```
+    expect(wrapper.find('h1').text()).toBe('Test')
+  })
+})
+```
 
-* **Error Tracking & Monitoring Oriented**
+---
 
-  * Always wraps critical API calls with `try … catch` and forwards caught errors to Sentry:
-
-    ```js
-    try {
-      const response = await apiClient.get('/dashboard/data')
-      return response.data
-    } catch (err) {
-      Sentry.captureException(err)
-      throw err
-    }
-    ```
-  * Keeps Sentry initialization code in `/plugins/sentry.js` and never duplicates DSN or config across components.
-
-* **GrapesJS & Third‐Party Integration Expert**
-
-  * Initializes GrapesJS with exactly those plugins specified in `package.json` (e.g., `grapesjs-preset-webpage`, `grapesjs-style-bg`).
-  * Encapsulates any GrapesJS “dirty HTML” sanitization in a helper that uses `sanitize-html` before injecting into the DOM.
-  * Writes modular wrappers for Chart.js (`vue-chartjs`) so that each chart component takes a `chartData` prop and options, making reuse trivial.
-
-* **Security‐First & Sanitization Mindset**
-
-  * Never renders user‐supplied HTML without passing it through the `cleanUserHtml()` function (which leverages `sanitize-html`).
-  * Uses environment variables (`process.env.VUE_APP_API_URL` and `VUE_APP_SENTRY_DSN`) exclusively—never hard‐codes secrets in code.
-  * Registers `v-mask` globally in `main.js` and leverages `awesome-phonenumber` to validate/format phone numbers before sending to backend.
-
-* **Performance & Optimization Aware**
-
-  * Prefers lazy‐loading large dependencies (e.g., GrapesJS) by dynamic importing within the component’s `mounted()` block.
-  * Memoizes expensive computed values in Vuex getters or component computed properties rather than recalculating on every render.
-  * Keeps an eye on Vuetify tree‐shaking: only includes the Vuetify components actually used rather than bundling the entire library.
-
-* **Collaborative & Documentation‐Focused**
-
-  * Adds a brief JSDoc comment to any exported utility function in `/src/utils/`:
-
-    ```js
-    /**
-     * Formats a phone number string into international format
-     * using awesome-phonenumber.
-     * @param {string} raw - Raw input phone number
-     * @returns {string}
-     */
-    export function formatPhone(raw) { … }
-    ```
-  * When introducing a new Vuex module or plugin, updates the project’s main README to include a short description and usage example.
-
-* **Dedicated to Continuous Improvement**
-
-  * If ESLint or Prettier rules miss a new edge case, proactively updates the config in `package.json` rather than leaving code inconsistent.
-  * Periodically revisits older components—especially complex pages with many chart instances—to refactor and simplify according to current best practices.
-
-## 5. TECH STACK
-
-The KeepNetLabs Human Risk Management platform leverages a modern, Vue-based frontend stack with Vuetify and a collection of specialized libraries for UI, data visualization, rich-text editing, form handling, and testing. Below is a categorical breakdown of the key components and tools defined in your `package.json`.
-
-#### **Frontend Framework & Core Libraries**
-
-* **Vue 2.7.8**
-
-  * The primary framework, using the Options API (no TypeScript).
-  * Single-File Components (`.vue`) with `<template>`, `<script>`, and `<style lang="scss" scoped>` blocks.
-* **Vue CLI Service (v4.5.6)**
-
-  * Handles local dev server (`vue-cli-service serve`), production build (`vue-cli-service build`), unit tests, and linting.
-  * Based on Webpack 4.44.1 under the hood.
-
-#### **UI Library & Styling**
-
-* **Vuetify 2.6.9**
-
-  * Material Design component library; imported via `/plugins/vuetify.js` (using `vuetify/lib`).
-  * Theme configured in `new Vuetify({ … })` with `mdiSvg` iconfont (`@mdi/js` v6.6.96).
-* **SASS/SCSS**
-
-  * `sass` (1.26.11) + `sass-loader` (10.5.2) for `.scss` support.
-  * Global overrides in `src/assets/styles/variables.scss` and `global.scss`.
-* **Element-UI 2.15.6** (devDependency)
-
-  * Included for any specialized component needs in development (e.g., storybook demos), but primary runtime UI uses Vuetify.
-
-#### **State Management & Routing**
-
-* **Vuex 3.4.0**
-
-  * Namespaced modules in `src/store/modules/`.
-  * Each module exports `{ namespaced: true, state, getters, actions, mutations }`.
-* **Vue Router 3.3.4**
-
-  * All routes live in `src/router/index.js`.
-  * Uses `meta: { requiresAuth: true }` for protected routes; guarded in `router.beforeEach()`.
-
-#### **HTTP Client & Error Tracking**
-
-* **Axios 0.27.2**
-
-  * Singleton instance created in `src/services/apiClient.js` (base URL from `process.env.VUE_APP_API_URL`, 10 sec timeout, JSON headers).
-  * Request/response interceptors handle authentication headers and forward errors to Sentry.
-* **@sentry/vue 7.119.2 & @sentry/tracing 7.119.2**
-
-  * Initialized in `/plugins/sentry.js` before mounting the Vue instance.
-  * Browser tracing integration with Vue Router for performance monitoring and error capture.
-
-#### **Data Visualization & Charts**
-
-* **Chart.js 2.9.3** + **vue-chartjs 3.5.1**
-
-  * Wrapper components under `src/components/charts/` (e.g., `BarChart.vue`, `LineChart.vue`).
-  * Each extends a `vue-chartjs` chart class and uses the `mixins.reactiveProp` for reactive data.
-* **chartjs-plugin-datalabels 1.0.0**
-
-  * Adds data labels to charts; configured in each chart component’s `options` object.
-
-#### **Rich Text / Page Builder**
-
-* **GrapesJS 0.18.4**
-
-  * Initialized in a Vue wrapper component (e.g., `GrapesEditor.vue`) inside `mounted()`.
-* **GrapesJS Plugins**
-
-  * **grapesjs-blocks-basic 0.1.8** (core block set)
-  * **grapesjs-blocks-avance 0.0.32** (advanced blocks)
-  * **grapesjs-preset-webpage 0.1.11** (webpage template preset)
-  * **grapesjs-preset-newsletter 0.2.21** (newsletter template preset)
-  * **grapesjs-custom-code 0.1.3** (code editing plugin)
-  * **grapesjs-component-code-editor 1.0.12** (embedded code editor)
-  * **grapesjs-parser-postcss 0.1.1** (custom CSS parsing)
-  * **grapesjs-style-bg 1.0.5** (background styling)
-  * **grapesjs-tooltip 0.1.5** (tooltip support)
-  * **grapesjs-blocks-basic** and **blocks-avance** provide drag-and-drop building.
-  * Custom SCSS overrides for GrapesJS live in `src/assets/styles/grapesjs-custom.scss`.
-  * Any user-generated HTML must be sanitized before rendering using `sanitize-html`.
-
-#### **Form & Input Handling**
-
-* **v-mask 2.2.3**
-
-  * Globally registered in `main.js` (`Vue.use(VueMask)`).
-  * Usage: `<input v-mask="'(###) ###-####'" />`.
-* **vue-tel-input 4.4.2** + **awesome-phonenumber 2.69.0**
-
-  * `<vue-tel-input>` component handles international phone input UI.
-  * Underlying validation/formatting uses `awesome-phonenumber` before API calls.
-* **vue-recaptcha 1.2.0**
-
-  * For embedding Google reCAPTCHA v2 widgets; configured in forms that require spam protection.
-
-#### **PDF & Export Utilities**
-
-* **jspdf-html2canvas 1.5.2**
-
-  * Generates PDFs by rendering a DOM node via `html2canvas`, then injecting into jsPDF.
-  * Helper function in `src/utils/pdfExporter.js`:
-
-    ```js
-    import jsPDF from 'jspdf'
-    import html2canvas from 'html2canvas'
-
-    export async function exportToPdf(elementId, filename) {
-      const element = document.getElementById(elementId)
-      const canvas = await html2canvas(element)
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const ratio = canvas.height / canvas.width
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = pdfWidth * ratio
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-      pdf.save(filename)
-    }
-    ```
-
-#### **Internationalization & Utilities**
-
-* **vue-moment 4.1.0**
-
-  * Globally registered filter or mixin for formatting dates with Moment.js.
-  * In components, use `{{ someDate | moment('YYYY-MM-DD') }}`.
-* **vue-multipane 0.9.5**
-
-  * Provides split-pane layouts for dashboards or code editors.
-  * Usage: `<Multipane><Pane size="30%">…</Pane><Pane>…</Pane></Multipane>`.
-* **vue-smart-widget 0.5.5**
-
-  * Customizable dashboard widgets; import registered modules under `/src/components/widgets/`.
-* **vue-clamp 0.2.2**
-
-  * For truncating text after N lines; used in card/\* components to limit descriptions.
-* **vue-frag 1.4.3**
-
-  * Enables fragments (multiple root nodes) in Vue 2 templates (rarely used, only where strictly needed).
-
-#### **PDF Viewing & Printing**
-
-* **vue-pdf 4.3.0**
-
-  * Embeds PDF.js viewer in Vue components.
-  * Usage:
-
-    ```vue
-    <template>
-      <pdf src="/static/sample.pdf" :page="1" />
-    </template>
-    ```
-  * Allows in-app PDF previews without leaving the SPA.
-
-#### **File Upload & Drag-and-Drop**
-
-* **vue-upload-component 2.8.20**
-
-  * Provides drag-and-drop file upload UI and supports progress events.
-  * Used in forms where users can upload documents or images.
-* **vuedraggable 2.23.2**
-
-  * Vue wrapper around Sortable.js for drag-and-drop sorting of lists or grids (e.g., ordering widgets).
-
-#### **Stateful Query Builders & Reporting**
-
-* **vue-query-builder 0.8.2**
-
-  * UI for building dynamic queries (filters) visually.
-  * Emits a JSON representation that you can feed to backend search endpoints.
-* **jwt-decode 3.0.0-beta.2**
-
-  * Decodes JWT tokens on the client to read expiry, user roles, or claims.
-
-#### **Caching & Offline Support**
-
-* **v-offline 1.1.0**
-
-  * Globally registered in `main.js`.
-  * Offers `<offline>` and `<online>` slots to display status banners.
-  * Does not provide full PWA functionality; used only for basic network‐status awareness.
-* **v-mask** (listed above under Form) indirectly assists in caching by reducing invalid submits.
-
-#### **Sanitization & Security**
-
-* **sanitize-html 2.7.3**
-
-  * Utility in `src/utils/cleanUserHtml.js` to sanitize any HTML (especially from GrapesJS) before injecting into the DOM:
-
-    ```js
-    import sanitizeHtml from 'sanitize-html'
-
-    export function cleanUserHtml(dirtyHtml) {
-      return sanitizeHtml(dirtyHtml, {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2']),
-        allowedAttributes: {
-          a: ['href', 'name', 'target'],
-          img: ['src', 'alt']
-        },
-        allowedSchemes: ['http', 'https', 'data']
-      })
-    }
-    ```
-
-#### **Testing & Mocking**
-
-* **@vue/test-utils 1.2.0** + **jest-canvas-mock 2.3.1**
-
-  * Use `shallowMount` or `mount` to test Vue components in `src/tests/unit/`.
-  * `jest-canvas-mock` ensures Chart.js components do not fail during DOM-less test runs.
-* **vue-jest 3.0.7**
-
-  * Transpiles `.vue` files for Jest.
-* **@vue/cli-plugin-unit-jest 4.5.6**
-
-  * Provides `npm run test:unit` command and default Jest configuration.
-
-#### **Linting & Formatting**
-
-* **ESLint 7.32.0** + **eslint-plugin-vue 7.20.0** + **eslint-plugin-prettier 3.1.3**
-
-  * Enforces code quality and Vue-specific lint rules.
-  * Defined in `eslintConfig` inside `package.json`; integrated with Prettier.
-* **Prettier 2.0.5** + **prettier-eslint (10.1.1) + prettier-eslint-cli (5.0.0)**
-
-  * Auto-formats code to match the team’s style (no semicolons, single quotes, no trailing commas).
-  * `npm run format` applies fixes; `npm run lint` reports issues.
-
-#### **Build & Tooling**
-
-* **Webpack 4.44.1** (via Vue CLI)
-
-  * Handles module bundling, code splitting, tree-shaking, and asset loaders (SASS, images, fonts).
-* **@babel/polyfill 7.10.1**, **babel-polyfill 6.26.0**, **@babel/preset-env 7.10.2**, **core-js 3.6.5**, **regenerator-runtime 0.13.7**
-
-  * Polyfills for broader browser compatibility (targeting “> 1%” and “last 2 versions” per `browserslist`).
-* **babel-eslint 10.1.0**
-
-  * Enables ESLint to parse modern ECMAScript syntax.
-
-#### **Iconography**
-
-* **@mdi/js 6.6.96**
-
-  * SVG path data for Material Design Icons.
-  * Used in Vuetify config (`icons: { iconfont: 'mdiSvg' }`) and imported individually in components:
-
-    ```js
-    import { mdiMenu, mdiAccount } from '@mdi/js'
-    ```
-
-#### **Development Dependencies**
-
-* **deepmerge 4.0.0**
-
-  * Utility for merging Webpack or Vuetify configurations.
-* **es-check 5.0.0**
-
-  * Verifies that build artifacts do not contain unsupported syntax (e.g., IE11 compatibility).
-* **node-sass 6.0.1**
-
-  * Legacy Sass compiler required by Vuetify’s SASS loader.
-* **vue-class-component 7.1.0**
-
-  * Provides class-style decorators if you choose to write any components in ES2015 classes (optional).
-* **vue-template-compiler 2.7.8**
-
-  * Must match `vue` version exactly; used by both Vue CLI and `vue-jest`.
-
-
-## 6. CURRENT FILE STRUCTURE
+## 📁 FILE STRUCTURE
 
 ```
 ├── package.json
@@ -1313,21 +316,92 @@ The KeepNetLabs Human Risk Management platform leverages a modern, Vue-based fro
 └── Web.config # IIS hosting and configuration file
 ```
 
-## 7. GIT PUSH PROCESS
+## 🚀 KEY FEATURES
 
-- Create a new branch for each feature or task.
-- Commit and push your changes to the branch.
-- Create a pull request (PR) for review.
-- Once approved, merge the PR into the main branch.
+### Core Modules
+- **Campaign Management** - Phishing simulation campaigns
+- **Security Training** - CBT, VBT, AIT modules
+- **AI Agents (AIKA)** - Automated risk assessment
+- **Compliance** - GDPR, HIPAA, PCI-DSS
+- **Incident Response** - 48.6x faster attack identification
 
-## 8. IMPORTANT
+### Simulation Types
+- Phishing, Smishing, Vishing, Quishing, Callback
+- Spear phishing with personalized payloads
 
-- Use **English** for all comments and documentation.
-- Keep code fast, small, and focused. Include lots of comments. Always write simple, clean, and modular code. Avoid huge refactors and over engineering.
+---
 
-## 9. DEVELOPMENT & DEPLOYMENT PROCESS
+## 🔄 DEVELOPMENT WORKFLOW
 
-#### Environment Setup
+### Git Flow
+1. Create feature branch from main
+2. Write tests first (TDD)
+3. Implement with Vue 2 patterns
+4. Run quality checks (`npm run lint`, `npm run test:unit`)
+5. Create PR → Review → Merge
 
-- **Environments:** dev, test, and prod.
-- Store all environment variables in the `.env` file and place them in the root directory of the project.
+### Quality Commands
+```bash
+npm run lint          # ESLint check
+npm run format        # Prettier format
+npm run test:unit     # Run tests
+npm run build         # Production build
+```
+
+### Code Style (ESLint + Prettier)
+- No semicolons, single quotes, no trailing commas, 2-space indent
+- Run `npm run lint` before committing
+- Component files in `PascalCase.vue`
+
+---
+
+## 🌍 ENVIRONMENT CONFIGURATION
+
+### Environment Files
+- `.env` - Base variables
+- `.env.local` - Local overrides
+- `.env.production` - Production settings
+
+### Required Variables
+```bash
+VUE_APP_API_URL=your-api-url
+VUE_APP_SENTRY_DSN=your-sentry-dsn
+```
+
+---
+
+## 💡 BEST PRACTICES & PATTERNS
+
+### Code Documentation
+- Add JSDoc comments to utility functions in `/src/utils/`
+- Document non-obvious prop/emit contracts
+- Clarify complex logic with inline comments
+- Update README when introducing new modules
+
+### Router Guards Pattern
+```javascript
+router.beforeEach((to, from, next) => {
+  // If route requires auth but user is not logged in, redirect to /login
+  if (to.meta.requiresAuth && !store.getters['auth/isLoggedIn']) {
+    return next({ name: 'Login' })
+  }
+  next()
+})
+```
+
+### Reusable Components
+- Extract shared code to `/src/utils/` utilities
+- Create reusable chart wrappers in `/src/components/charts/`
+- Share Axios configuration via `src/services/apiClient.js`
+
+---
+
+## ⚡ IMPORTANT REMINDERS
+
+- **English only** for code and documentation
+- **Vue 2.7.8 strict** - No Composition API or Vue 3 features
+- **Vuetify first** - Avoid raw HTML when Vuetify components exist
+- **Security first** - Always sanitize inputs, use env vars
+- **Performance matters** - 500k+ users require optimized code
+- **TDD mandatory** - Test everything, treat failures as blockers
+- **Enterprise quality** - Code for maintainability and scalability

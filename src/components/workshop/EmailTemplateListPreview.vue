@@ -497,9 +497,9 @@ import {
   getDefaultEmailTemplatePayload,
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHODS,
-  MERGED_TEXTS
+  MERGED_TEXTS,
+  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES
 } from '@/components/PhishingScenarios/utils'
-import { EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
@@ -797,8 +797,7 @@ export default {
           languageTypeResourceId: payload.languageTypeResourceId,
           prompt: payload.prompt,
           toneResourceId: payload.toneResourceId,
-          localizationResourceId: payload.localizationResourceId,
-          template: payload.template
+          localizationResourceId: payload.localizationResourceId
         })
       }
       delete payload.attachments
@@ -846,7 +845,6 @@ export default {
           prompt: payload.prompt,
           toneResourceId: payload.toneResourceId,
           localizationResourceId: payload.localizationResourceId,
-          template: payload.template,
           detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
         })
       }
@@ -1140,7 +1138,7 @@ export default {
           } = response
           let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...item, ...data } || {}
+          this.emailTemplateData = { ...(item || {}), ...(data || {}) } || {}
           this.selectedTemplateHeader = data?.name || ''
           this.templateHTML = template
           this.templateFromName = data?.fromName || ''

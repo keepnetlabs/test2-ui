@@ -208,17 +208,17 @@ export default {
       if (this.getCompanyName === 'System') {
         return false
       }
-      if (
+      const isMyCompanyOnly =
         this.availableForRequests?.includes('MyCompanyOnly') &&
         (training?.availableFor?.includes('MyCompanyOnly') ||
           training?.availableFor?.includes(this.getCompanyResourceId))
-      ) {
-        return false
-      } else if (training?.availableFor?.includes('AllCompanies')) {
-        return false
-      } else if (
-        this.availableForRequests.every((item) => training?.availableFor?.includes(item))
-      ) {
+
+      const isAllCompanies = training?.availableFor?.includes('AllCompanies')
+
+      const isEveryItemIncluded = this.availableForRequests.every((item) =>
+        training?.availableFor?.includes(item)
+      )
+      if (isMyCompanyOnly || isAllCompanies || isEveryItemIncluded) {
         return false
       }
       return true

@@ -189,21 +189,22 @@
                 </template>
 
                 <v-list class="user-name-dropdown__content">
-                  <v-list-item
-                    v-if="setDropdownVisibility(item)"
-                    v-for="item in dropdownData"
-                    :id="item.id"
-                    :key="item.key"
-                    :class="{
-                      'user-name-dropdown__content--divider': setDropdownDivider(item)
-                    }"
-                    @click="changeDropdownItem(item.value)"
-                  >
-                    <v-list-item-title>
-                      <v-icon>{{ item.icon }}</v-icon>
-                      {{ item.text }}
-                    </v-list-item-title>
-                  </v-list-item>
+                  <template v-for="item in dropdownData">
+                    <v-list-item
+                      v-if="setDropdownVisibility(item)"
+                      :id="item.id"
+                      :key="item.key"
+                      :class="{
+                        'user-name-dropdown__content--divider': setDropdownDivider(item)
+                      }"
+                      @click="changeDropdownItem(item.value)"
+                    >
+                      <v-list-item-title>
+                        <v-icon>{{ item.icon }}</v-icon>
+                        {{ item.text }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </template>
                 </v-list>
               </v-menu>
             </div>

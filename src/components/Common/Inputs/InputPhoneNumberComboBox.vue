@@ -178,16 +178,20 @@ export default {
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
       if (this.isPhishingScenario && !this.phoneNumbers.length) return 'EN'
-      const phoneNumberObj = this.createPhoneNumberObj(
-        this.isPhishingScenario
-          ? typeof phoneNumber === 'object'
-            ? phoneNumber.phoneNumber
-            : this.phoneNumbers.find(
-                (phoneNumberWrapper) => phoneNumberWrapper.value === phoneNumber
-              )?.phoneNumber
-          : phoneNumber
-      )
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
+      let phoneNumberPayload = phoneNumber
+      if (this.isPhishingScenario) {
+        if (typeof phoneNumber === 'object') {
+          phoneNumberPayload = phoneNumber.phoneNumber
+        } else {
+          phoneNumberPayload = this.phoneNumbers.find(
+            (phoneNumberWrapper) => phoneNumberWrapper.value === phoneNumber
+          )?.phoneNumber
+        }
+      }
+      const phoneNumberObj = this.createPhoneNumberObj(phoneNumberPayload)
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
+        type: 'region'
+      })
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
     },
     createPhoneNumberObj(phoneNumber = '') {

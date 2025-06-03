@@ -11,84 +11,89 @@ export function getBtnStatusColor(type) {
   if (typeof _type !== 'number') {
     _type = _type.toLowerCase()
   }
-  if (!_type) return '#00bcd4'
-  if (_type === 'pending') return '#00bcd4'
-  if (_type === 'clean') return '#00bcd4'
-  if (_type === 'active') return '#1173C1'
-  if (_type === 'deferred') return '#B6791D'
-  if (_type === 'dropped') return '#F56C6C'
-  if (_type === 'blocked') return '#F56C6C'
-  if (_type === 'inactive') return '#b83a3a'
-  if (_type === 'sending') return '#1173C1'
-  if (_type === 'scheduled') return '#1173C1'
-  if (_type === 'finished') return '#217124'
-  if (_type === 'warning') return '#b6791d'
-  if (_type === 'processing') return '#1173C1'
-  if (_type === 'processed') return '#217124'
-  if (_type === 'delivered') return '#217124'
-  if (_type === 'clicked') return '#217124'
-  if (_type === 'opened') return '#217124'
-  if (_type === 'bounced') return '#F56C6C'
-  if (_type === 'blocks') return '#F56C6C'
-  if (_type === 'spam_report') return '#F56C6C'
-  if (_type === 'malicious') return '#b83a3a'
-  if (_type === 'unsubscribes') return '#B6791D'
-  if (_type === 'group_unsubscribe') return '#B6791D'
-  if (_type === 'group_resubscribe') return '#B6791D'
-  if (_type === 'nonmalicious') return '#00bcd4'
-  if (_type === 'offline') return '#B83A3A'
-  if (_type === 'expired') return '#B6791D'
-  if (_type === 'paused') return '#B6791D'
-  if (_type === 'passive') return '#b83a3a'
-  if (_type === 'cancelled') return '#B6791D'
-  if (_type === 'canceled') return '#B6791D'
-  if (_type === 'quequed') return '#0198AC'
-  if (_type === 'phishing') return '#b83a3a'
-  if (_type === 'idle') return '#0198AC'
-  if (_type === 'excluded') return '#757575'
-  if (_type === 'disabled') return '#b83a3a'
-  if (_type === 'network error') return '#b83a3a'
-  if (_type === 'quedued') return '#00bcd4'
-  if (_type === 'inqueue') if (_type === 'in queue') return '#1173C1'
-  if (_type === 'none') return '#00bcd4'
-  if (_type === 'running') return '#1173C1'
-  if (_type === 'Running') return '#1173C1'
-  if (_type === 'Not Running') return '#1173C1'
-  if (_type === 'not delivered') return '#757575'
-  if (_type === 'completed') return '#217124'
-  if (_type === 'complete') return '#217124'
-  if (_type === 'finished') return '#217124'
-  if (_type === 'successful') return '#217124'
-  if (_type === 'success') return '#217124'
-  if (_type === 'online') return '#217124'
-  if (_type === 'deactivated') return '#757575'
-  if (_type === 'notinstalled') return '#757575'
-  if (_type === 'user unavailable') return '#757575'
-  if (_type === 'completedwitherror') return '#6d6d6d'
-  if (_type === 'itemnotfound') return '#fafafa'
-  if (_type === 'failed') return '#b83a3a'
-  if (_type === 'n/a') return '#00bcd4'
-  if (_type === 'stopped') return '#b83a3a'
-  if (_type === 'error') return '#B83A3A'
-  if (_type === 'exist') return '#1173C1'
-  if (_type === 'new') return '#217124'
-  if (_type === 'undetected') return '#1173C1'
-  if (_type === 'listed') return '#b83a3a'
-  if (_type === 'low') return '#0198AC'
-  if (_type === 'verylow') return '#757575'
-  if (_type === 'custom') return '#f56c6c'
-  if (_type === 'system') return '#1173C1'
-  if (_type === 'yes') return '#1173c1'
-  if (_type === 'no') return '#757575'
-  if (_type === 'not running') return '#B83A3A'
-  if (_type === 'easy') return 'rgba(33, 113, 36, 1)'
-  if (_type === 'medium') return 'rgba(17, 115, 193, 1)'
-  if (_type === 'hard') return 'rgba(184, 58, 58, 1)'
-  if (_type === 'no match') return '#757575'
-  if (_type === 'not in use') return '#757575'
-  if (_type === 'in use') return '#1173C1'
-  if (_type === 'passed') return '#217124'
-  return '#00bcd4'
+
+  const statusColorMap = {
+    pending: '#00bcd4',
+    clean: '#00bcd4',
+    active: '#1173C1',
+    deferred: '#B6791D',
+    dropped: '#F56C6C',
+    blocked: '#F56C6C',
+    inactive: '#b83a3a',
+    sending: '#1173C1',
+    scheduled: '#1173C1',
+    finished: '#217124',
+    warning: '#b6791d',
+    processing: '#1173C1',
+    processed: '#217124',
+    delivered: '#217124',
+    clicked: '#217124',
+    opened: '#217124',
+    bounced: '#F56C6C',
+    blocks: '#F56C6C',
+    spam_report: '#F56C6C',
+    malicious: '#b83a3a',
+    unsubscribes: '#B6791D',
+    group_unsubscribe: '#B6791D',
+    group_resubscribe: '#B6791D',
+    nonmalicious: '#00bcd4',
+    offline: '#B83A3A',
+    expired: '#B6791D',
+    paused: '#B6791D',
+    passive: '#b83a3a',
+    cancelled: '#B6791D',
+    canceled: '#B6791D',
+    quequed: '#0198AC', // Assuming this was a typo for 'queued'
+    queued: '#0198AC',
+    phishing: '#b83a3a',
+    idle: '#0198AC',
+    excluded: '#757575',
+    disabled: '#b83a3a',
+    'network error': '#b83a3a',
+    quedued: '#00bcd4', // Assuming this was a typo for 'queued'
+    'in queue': '#1173C1',
+    inqueue: '#1173C1', // Added to handle both 'in queue' and 'inqueue'
+    none: '#00bcd4',
+    running: '#1173C1',
+    'not running': '#B83A3A', // Corrected from #1173C1 to #B83A3A as per previous logic
+    'not delivered': '#757575',
+    completed: '#217124',
+    complete: '#217124',
+    // 'finished' is already defined
+    successful: '#217124',
+    success: '#217124',
+    online: '#217124',
+    deactivated: '#757575',
+    notinstalled: '#757575',
+    'user unavailable': '#757575',
+    completedwitherror: '#6d6d6d',
+    itemnotfound: '#fafafa',
+    failed: '#b83a3a',
+    'n/a': '#00bcd4',
+    stopped: '#b83a3a',
+    error: '#B83A3A',
+    exist: '#1173C1',
+    new: '#217124',
+    undetected: '#1173C1',
+    listed: '#b83a3a',
+    low: '#0198AC',
+    verylow: '#757575',
+    custom: '#f56c6c',
+    system: '#1173C1',
+    yes: '#1173c1',
+    no: '#757575',
+    easy: 'rgba(33, 113, 36, 1)',
+    medium: 'rgba(17, 115, 193, 1)',
+    hard: 'rgba(184, 58, 58, 1)',
+    'no match': '#757575',
+    'not in use': '#757575',
+    'in use': '#1173C1',
+    passed: '#217124'
+  }
+
+  if (!_type) return '#00bcd4' // Default for empty or null type after processing
+
+  return statusColorMap[_type] || '#00bcd4' // Return color from map or default
 }
 
 export function getBtnPriorityColor(type) {
@@ -547,12 +552,7 @@ export function getTimeZone(isDate, fallback) {
   let timeZone = localStorage.getItem('selectedDateFormat') || fallback?.dateFormat || ''
   let timeFormat = localStorage.getItem('selectedTimeFormat') || fallback?.timeFormat || ''
   let is12H = timeFormat === '12h'
-
-  if (is12H) {
-    timeFormat = 'hh'
-  } else {
-    timeFormat = 'HH'
-  }
+  timeFormat = is12H ? 'hh' : 'HH'
 
   if (isDate) {
     if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy`
@@ -562,17 +562,16 @@ export function getTimeZone(isDate, fallback) {
     //timeZone = `yyyy-MM-dd HH:mm:ss`
     if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd`
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-  } else {
-    const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
-    if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
-    //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
-
-    //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
-    //timeZone = `yyyy-MM-dd HH:mm:ss`
+    return timeZone
   }
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
+  if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
+  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
 
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
+  if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
+  //timeZone = `yyyy-MM-dd HH:mm:ss`
   return timeZone
 }
 
