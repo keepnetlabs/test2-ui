@@ -1345,14 +1345,17 @@ export default {
           if (this.isPhishing) {
             this.phishingEmailTemplates = []
             this.selectedTemplateLanguages = []
-            this.summaryData.emailTemplate.languageShortCode = []
+            if (this.summaryData.emailTemplate)
+              this.summaryData.emailTemplate.languageShortCode = []
           }
           this.getEmailTemplateApiFuncs
             .content(this.emailTemplateResourceId)
             .then((response) => {
               const emailTemplateData = {
                 ...response.data.data,
-                languageShortCode
+                languageShortCode: this.languageOptions.find(
+                  (language) => language.value === response?.data?.data?.languageTypeResourceId
+                )?.description
               }
               if (this.selectedEmailTemplate) {
                 this.generalDifficultyTypeId =
@@ -1368,7 +1371,7 @@ export default {
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
-              this.setPhishingEmailTemplates(response?.data?.data)
+              this.setPhishingEmailTemplates(this.summaryData)
               this.step += 1
             })
             .finally(() => {
