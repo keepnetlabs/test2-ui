@@ -161,6 +161,7 @@
               :isDuplicate="isDuplicate"
               :phishing-type-id="1"
               :is-frequency-disabled="isFrequencyDisabled"
+              :frequency-disabled-text="frequencyDisabledText"
               :targetGroupCompanyNames="targetGroupCompanyNames"
               @set-action-button-disability="setActionButtonDisability"
             />
@@ -314,7 +315,14 @@ export default {
   },
   computed: {
     isFrequencyDisabled() {
-      return this.sendUserPreferredLanguage.toString() === '1'
+      return this.isSendUserPreferredLanguage || this.hasEmailTemplateMultipleLanguage
+    },
+    frequencyDisabledText() {
+      if (this.isSendUserPreferredLanguage && this.hasEmailTemplateMultipleLanguage) return 'Both'
+      else if (this.isSendUserPreferredLanguage)
+        return "When sending in the target users' preferred language, only the 'One Time' frequency is available."
+      else
+        return "When sending multilingual campaigns to target users, only the 'One Time' frequency is available."
     },
     getIsPhishingScenariosValid() {
       return this.isSecondNextClicked
@@ -323,6 +331,12 @@ export default {
             (this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY &&
               !!this.selectedPhishingScenarios.length)
         : true
+    },
+    hasEmailTemplateMultipleLanguage() {
+      return this.selectedPhishingScenarios.some((scenario) => scenario.languageTypeCode.length > 1)
+    },
+    isSendUserPreferredLanguage() {
+      return this.sendUserPreferredLanguage.toString() === '1'
     },
     isMFAScenarioSelected() {
       if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
