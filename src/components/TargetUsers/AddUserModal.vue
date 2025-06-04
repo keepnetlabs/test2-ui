@@ -410,7 +410,10 @@ export default {
     },
     getTimeZoneList() {
       const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
-      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+      return timeZoneList.map((item) => ({
+        text: item.displayName,
+        value: item.id
+      }))
     }
   },
   watch: {
@@ -562,20 +565,18 @@ export default {
           const el = this.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
+      } else if (this.editData) {
+        this.callForUpdateTargetUser()
       } else {
-        if (this.editData) {
-          this.callForUpdateTargetUser()
+        if (!this.companyLicense) return
+        const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
+        if (
+          isLimited &&
+          (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
+        ) {
+          this.toggleShowLicenseExceededDialog()
         } else {
-          if (!this.companyLicense) return
-          const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
-          if (
-            isLimited &&
-            (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
-          ) {
-            this.toggleShowLicenseExceededDialog()
-          } else {
-            this.callForCreateTargetUser()
-          }
+          this.callForCreateTargetUser()
         }
       }
     },
@@ -614,12 +615,10 @@ export default {
         rules.push((v) =>
           this.validations.maxLength(v, 256, labels.getMaxLengthMessage(item.name, 256))
         )
-      } else {
-        if (item.isRequired) {
-          rules.push(() => {
-            return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
-          })
-        }
+      } else if (item.isRequired) {
+        rules.push(() => {
+          return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
+        })
       }
       item.fieldDataType === 'Email' &&
         rules.push((v) => this.validations.mail(v, 'Invalid email address'))

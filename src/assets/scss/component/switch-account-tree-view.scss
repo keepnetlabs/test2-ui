@@ -40,15 +40,13 @@
   .v-treeview-node__label{
     overflow: visible;
   }
-  .v-treeview-node__root{
-    min-height: 36px !important;
-  }
   .mdi-checkbox-marked.v-treeview-node__checkbox{
     color: #2196F3 !important;
     caret-color: #2196F3 !important;
   }
   .v-treeview-node__root{
     padding-left: 0;
+     min-height: 36px !important;
     .v-treeview-node__checkbox {
       display: none;
       padding-left: 0;

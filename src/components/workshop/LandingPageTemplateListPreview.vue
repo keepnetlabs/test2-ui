@@ -326,14 +326,7 @@
                               ]"
                               :ripple="false"
                               :readonly="isInvisibleCaptchaDisabled"
-                              :style="
-                                isInvisibleCaptchaDisabled
-                                  ? {
-                                      opacity: 0.38,
-                                      cursor: 'default !important'
-                                    }
-                                  : ''
-                              "
+                              :style="invisibleCaptchaEnabledStyle"
                             >
                               <template #label>
                                 Stop bots to prevent false clicks.
@@ -678,14 +671,7 @@
                             ]"
                             :ripple="false"
                             :readonly="isInvisibleCaptchaDisabled"
-                            :style="
-                              isInvisibleCaptchaDisabled
-                                ? {
-                                    opacity: 0.38,
-                                    cursor: 'default !important'
-                                  }
-                                : ''
-                            "
+                            :style="invisibleCaptchaEnabledStyle"
                           >
                             <template #label>
                               Stop bots to prevent false clicks.
@@ -1041,6 +1027,14 @@ export default {
     },
     getPathTypes() {
       return this.landingPageData?.pathTypes || []
+    },
+    invisibleCaptchaEnabledStyle() {
+      return this.isInvisibleCaptchaDisabled
+        ? {
+            opacity: 0.38,
+            cursor: 'default !important'
+          }
+        : {}
     }
   },
   watch: {
@@ -1463,7 +1457,7 @@ export default {
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
-          this.landingPageTemplateData = { ...item, ...response?.data?.data } || {}
+          this.landingPageTemplateData = { ...(item || {}), ...(response?.data?.data || {}) }
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.isInvisibleCaptchaEnabled = response?.data?.data?.isInvisibleCaptchaEnabled || false
           this.newUrlTemplate = this.templateURL

@@ -918,7 +918,7 @@ export default {
         this.askForEmailTemplateTranslation()
       })
     },
-    askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId) {
+    askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId = 0) {
       if (count >= maxCount) {
         this.resetGenerateWithAIDisabled(timeoutId)
         return

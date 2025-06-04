@@ -462,21 +462,19 @@ export default {
                   ).memberCount - 1
               }
             }
-          } else {
-            if (this.$store.state['communities'].communities.communitiesData) {
-              if (
-                this.$parent.$refs.tsCommunities &&
-                this.$parent.$refs.tsCommunities.listData.find(
-                  (item) => item.communityResourceId === this.communityDetails.resourceId
-                )
-              ) {
-                this.$store.state['communities'].communities.communitiesData.tableData.find(
-                  (item) => item.communityResourceId === this.communityDetails.resourceId
-                ).membershipStatusId = 0
-                this.$store.state['communities'].communities.communitiesData.tableData.find(
-                  (item) => item.communityResourceId === this.communityDetails.resourceId
-                ).privacyStatusName = 'Private'
-              }
+          } else if (this.$store.state['communities'].communities.communitiesData) {
+            if (
+              this.$parent.$refs.tsCommunities &&
+              this.$parent.$refs.tsCommunities.listData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
+              )
+            ) {
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
+              ).membershipStatusId = 0
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
+              ).privacyStatusName = 'Private'
             }
           }
           this.$store.dispatch('tableReload/setTableReload', true)
@@ -575,14 +573,20 @@ export default {
         if (this.$route.name === 'Community') {
           this.$router.replace({
             query: { postId: post.communityPostResourceId },
-            params: { communityName: post.communityName, id: post.communityResourceId }
+            params: {
+              communityName: post.communityName,
+              id: post.communityResourceId
+            }
           })
         } else {
           this.$router.replace({ query: null, params: null })
           this.$router.push({
             name: 'Community',
             query: { postId: post.communityPostResourceId },
-            params: { communityName: post.communityName, id: post.communityResourceId }
+            params: {
+              communityName: post.communityName,
+              id: post.communityResourceId
+            }
           })
         }
         this.getAllRightColumnData()
@@ -651,7 +655,10 @@ export default {
         if (this.$route.params.id !== post.communityResourceId) {
           this.$router.push({
             name: 'Community',
-            params: { communityName: post.communityName, id: post.communityResourceId }
+            params: {
+              communityName: post.communityName,
+              id: post.communityResourceId
+            }
           })
         }
         this.getAllRightColumnData()

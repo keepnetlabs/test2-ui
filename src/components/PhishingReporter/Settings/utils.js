@@ -27,6 +27,13 @@ export const defaultDialogBoxSettings = {
   isDefault: true
 }
 
+export const defaultCommonSettings = {
+  isConfirmationBeforeAnalysis: true,
+  isDeleteEmailBeforeAnalysis: true,
+  isDeleteWithoutConfirmation: true,
+  isSendSimulationMails: true
+}
+
 export const deleteEmailOptions = [
   { text: 'with confirmation', value: false },
   { text: 'automatically', value: true }

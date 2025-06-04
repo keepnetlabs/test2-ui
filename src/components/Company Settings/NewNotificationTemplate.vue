@@ -126,7 +126,7 @@
             :isNotificationTemplate="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
             :cc-addresses.sync="formValues.ccAddresses"
-            @handleEditHtmlTemplate="formValues.template = $event"
+            @handleEditHtmlTemplate="handleEditHtmlTemplate"
           />
         </form-group>
       </v-form>
@@ -440,7 +440,7 @@ export default {
       })
     },
     callForDefaultEmailDeliverySetting() {
-      if (!!this.selectedItem) return
+      if (this.selectedItem) return
       getDefaultEmailDeliverySetting().then((res) => {
         if (res?.data?.data?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) {
           this.defaultDECSettingResourceId = res?.data?.data?.resourceId
@@ -598,6 +598,9 @@ export default {
           scrollToComponent(el)
         })
       }
+    },
+    handleEditHtmlTemplate(template = '') {
+      this.formValues.template = template
     }
   }
 }
