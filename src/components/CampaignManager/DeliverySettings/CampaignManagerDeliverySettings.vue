@@ -106,9 +106,21 @@
       class="bg-aqua-light mb-4"
       icon-color="#2196F3"
       icon-name="mdi-information"
-      text="When sending in the target users' preferred language, only the 'One Time' frequency is available."
       :slots="{ primaryAction: false, secondaryAction: false }"
-    />
+    >
+      <template #text>
+        <span v-if="frequencyDisabledText === 'Both'" class="text-primary-color ml-2 fs-3-4">
+          <span>
+            Only the 'One Time' frequency is available when:
+            <ul class="pl-4">
+              <li>Sending in the target users' preferred language.</li>
+              <li>Sending multilingual campaigns to target users.</li>
+            </ul>
+          </span>
+        </span>
+        <span v-else class="text-primary-color ml-2 fs-3-4">{{ frequencyDisabledText }}</span>
+      </template>
+    </AlertBox>
     <InputSchedule
       v-model="inputScheduleFormData"
       :isEditOrDuplicate="isEdit || isDuplicate"
@@ -219,6 +231,11 @@ export default {
     },
     targetGroupCompanyNames: {
       type: Array
+    },
+    frequencyDisabledText: {
+      type: String,
+      default:
+        "When sending in the target users' preferred language, only the 'One Time' frequency is available."
     }
   },
   data() {
