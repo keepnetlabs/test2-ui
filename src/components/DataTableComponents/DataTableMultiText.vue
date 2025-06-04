@@ -104,7 +104,7 @@ export default {
       if (this.checkIsChanged(badges, width)) {
         this.width = width
         this.badges = badges
-        let totalWidth = Math.floor(this.width)
+        let totalWidth = Math.floor(this.width) - 15
         let maximumRenderedBadgeCount = 0
         for (let text of this.badges) {
           let multiplyBy = this.getMultiplyBy(text)
