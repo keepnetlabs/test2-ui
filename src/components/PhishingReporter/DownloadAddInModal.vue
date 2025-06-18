@@ -91,7 +91,7 @@
                 <v-icon left>mdi-link-off</v-icon>
                 <span>Unlink</span>
               </VBtn>
-              <VTooltip v-if="!isAccountConnected" bottom>
+              <VTooltip bottom>
                 <template #activator="{ on }">
                   <div v-on="on">
                     <VBtn
@@ -124,30 +124,6 @@
                   Connect your account to enable download.
                 </span>
               </VTooltip>
-              <VBtn
-                v-else
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-                class="white--text btn-util btn-download-add-in"
-                style="margin-left: 5px !important; text-transform: capitalize;"
-                color="#2196f3"
-                rounded
-                :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
-                :loading="o365SpinnerStatus"
-                @click="callForGenerateO365SpamAddIn"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-                <template #loader>
-                  <img
-                    src="../../assets/img/spinner.svg"
-                    class="add-in-settings__spinner"
-                    alt="spinner"
-                  />
-                  <span style="font-size: 14px; text-transform: capitalize;">
-                    Generating...
-                  </span>
-                </template>
-              </VBtn>
             </div>
           </template>
         </DownloadAddInListItem>
