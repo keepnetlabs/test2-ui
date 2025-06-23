@@ -284,7 +284,7 @@ import {
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
-
+import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -301,6 +301,7 @@ export default {
     InputEntityName,
     InputDescription
   },
+  mixins: [useSetAttachmentFile],
   props: {
     status: {
       type: Boolean,
@@ -356,13 +357,10 @@ export default {
       },
       editedLanguages: [],
       languageItems: [],
-      isAttachmentError: false,
       isGenerateWithAIDisabled: false,
       isGenerateWithAi: false,
       isAssistedByAI: false,
       isPlainText: false,
-      isPhishingFileModified: false,
-      isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
       attachmentName: '',
@@ -670,38 +668,6 @@ export default {
     },
     handleInitialTemplate(value) {
       this.initialFormValues.template = value
-    },
-    setAttachmentFile(file) {
-      if (Array.isArray(file) && file.length === 0) return
-      if (file && !file.type) {
-        let newFile = null
-        let fileExtension = ''
-        if (file?.name.includes('.')) {
-          fileExtension = file?.name?.split('.')?.pop()
-        }
-        if (fileExtension === '.doc') {
-          newFile = new File([file], file.name, { type: 'application/msword' })
-        } else if (fileExtension === 'docx') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-          })
-        } else if (fileExtension === 'ppt') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.ms-powerpoint'
-          })
-        } else if (fileExtension === 'pptx') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-          })
-        }
-        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
-        this.isAttachmentError = false
-      } else {
-        this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
-        this.isAttachmentError = false
-      }
-      this.isPhishingFileModified = true
-      this.isAddedNewPhishingFile = true
     },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {

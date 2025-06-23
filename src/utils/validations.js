@@ -195,7 +195,7 @@ export function isDescriptionSpecialCharacter(
   message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
   value = getValue(value)
-  return /^(\d|[A-Z]|[-\/,&\s().öğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
+  return /^(\d|[A-Z]|[-/,&\s().öğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
 }
 
 export function isProxyAddressOrIp(
@@ -203,7 +203,7 @@ export function isProxyAddressOrIp(
   message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
   value = getValue(value)
-  return /^(\d|[A-Z]|[-\/,&()ö.ğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
+  return /^(\d|[A-Z]|[-/,&()ö.ğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
 }
 
 export function isNameSpecialCharacter(
@@ -222,7 +222,7 @@ export function isEntityNameSpecialCharacter(
 }
 
 export function isEmailSpecialCharacter(value) {
-  return /^([A-Z]|\d|[,&!#$%'*+-/=?@^_`~]){0,320}$/gi.test(value)
+  return /^([a-z]|\d|[,&!#$%'*+-/=?@^_`~]){0,320}$/gi.test(value)
 }
 
 export function port(value, message = 'Only use numbers') {
@@ -291,13 +291,13 @@ export function isGsm7(
   v = '',
   message = "The SMS content isn't compatible with the GSM-7 character set."
 ) {
-  const gsm = /^[A-Za-z0-9 \r\n@£$¥èéùìòÇØøÅå\u0394_\u03A6\u0393\u039B\u03A9\u03A0\u03A8\u03A3\u0398\u039EÆæßÉ!"#$%&'()*+,\-./:;<=>?¡ÄÖÑÜ§¿äöñüà^{}\\\[~\]|\u20AC]*$/
+  const gsm = /^[A-Za-z0-9 \r\n@£$¥èéùìòÇØøÅå\u0394_\u03A6\u0393\u039B\u03A9\u03A0\u03A8\u03A3\u0398\u039EÆæßÉ!"#$%&'()*+,\-./:;<=>?¡ÄÖÑÜ§¿äöñüà^{}\\[~\]|\u20AC]*$/
   return gsm.test(v) || message
 }
 
 export function ldapConnectionStringUrl(value, message = 'Incorrect path format') {
   return (
-    /^(ldaps?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[a-zA-Z][a-zA-Z0-9._-]+)(:\d{1,5})?$/i.test(
+    /^(ldaps?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[a-z][a-z0-9._-]+)(:\d{1,5})?$/i.test(
       value
     ) || message
   )

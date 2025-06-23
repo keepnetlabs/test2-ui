@@ -306,7 +306,9 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label :id="`text--playbook-investigate-actions-title-${getParentIndex}`"
+            <label
+              :id="`text--playbook-investigate-actions-title-${getParentIndex}`"
+              :for="`input--action-investigate-auto-action-type-${getParentIndex}`"
               >Actions</label
             >
             <v-list-item-title

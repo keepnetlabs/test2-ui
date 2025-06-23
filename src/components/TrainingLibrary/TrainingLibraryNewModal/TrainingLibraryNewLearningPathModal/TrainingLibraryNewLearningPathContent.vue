@@ -218,10 +218,7 @@ export default {
       const isEveryItemIncluded = this.availableForRequests.every((item) =>
         training?.availableFor?.includes(item)
       )
-      if (isMyCompanyOnly || isAllCompanies || isEveryItemIncluded) {
-        return false
-      }
-      return true
+      return !(isMyCompanyOnly || isAllCompanies || isEveryItemIncluded)
     },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight

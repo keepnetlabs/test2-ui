@@ -1138,7 +1138,7 @@ export default {
           } = response
           let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...(item || {}), ...(data || {}) } || {}
+          this.emailTemplateData = { ...(item || {}), ...(data || {}) }
           this.selectedTemplateHeader = data?.name || ''
           this.templateHTML = template
           this.templateFromName = data?.fromName || ''
