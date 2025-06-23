@@ -83,7 +83,10 @@
               "
             >
               <div v-if="!col.showOnlyPreview || editMode">
-                <label :id="`label--extended-view-singular-${col.label}-${index}`">
+                <label
+                  :id="`label--extended-view-singular-${col.label}-${index}`"
+                  :for="`input--extended-view-singular-value-${col.label}-${index}`"
+                >
                   {{ col.label }}
                 </label>
                 <span
@@ -613,9 +616,11 @@
                       copyOfEditedRows[0]['createTime'] !== undefined
                     "
                   >
-                    <label id="text--extended-view-footer-label-0">{{
-                      options.footer[0].label
-                    }}</label>
+                    <label
+                      id="text--extended-view-footer-label-0"
+                      :for="`input--extended-view-footer-value-0`"
+                      >{{ options.footer[0].label }}</label
+                    >
                     <span id="text--extended-view-footer-value-0">{{
                       multipleValues('createTime')
                         ? 'Multiple Values'
@@ -628,9 +633,11 @@
                     class="edit-date-created"
                     v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
                   >
-                    <label id="text--extended-view-footer-label-1">{{
-                      options.footer[1].label
-                    }}</label>
+                    <label
+                      id="text--extended-view-footer-label-1"
+                      :for="`input--extended-view-footer-value-1`"
+                      >{{ options.footer[1].label }}</label
+                    >
                     <span id="text--extended-view-footer-value-1">{{
                       multipleValues('lastUpdateDate')
                         ? 'Multiple Values'

@@ -233,18 +233,7 @@
                       >
                       </k-select>
                     </FormGroup>
-                    <FormGroup
-                      title="Security Label (TLP)"
-                      sub-title='Use TLP labels to inform recipients about how to share sensitive information.
-                      Please visit
-                      <a
-                        href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)."
-                        class="text-primary"
-                        target="_blank"
-                        >Traffic Light Protocol</a
-                      >
-                      for more information.'
-                    >
+                    <FormGroup title="Security Label (TLP)" :sub-title="securityLabelTlpSubtitle">
                       <k-select
                         v-model="value"
                         id="input--threat-sharing-incident-tlp"
@@ -259,7 +248,7 @@
                         :return-object="false"
                         :slots="{ selection: true, item: true }"
                       >
-                        <template v-slot:selection="{ attrs, item, select }">
+                        <template v-slot:selection="{ item, select }">
                           <v-chip @click="select" :class="item.cssClass">
                             <span>{{ item.text }}</span>
                           </v-chip>
@@ -443,7 +432,9 @@
                               :indeterminate="checkHeaderSelected && !this.allHeader"
                               @change="headerValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-header"
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-header"
                               >All Header</label
                             >
                           </div>
@@ -546,7 +537,9 @@
                               on-icon="mdi-eye-off"
                               @change="fromValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-from-hidden"
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-from-hidden"
                               >From</label
                             >
                           </div>
@@ -619,7 +612,9 @@
                               on-icon="mdi-eye-off"
                               @change="toValChange"
                             ></v-checkbox>
-                            <label v-if="filterOpened" for="input--threat-sharing-incident-is-to-hidden"
+                            <label
+                              v-if="filterOpened"
+                              for="input--threat-sharing-incident-is-to-hidden"
                               >To</label
                             >
                           </div>
@@ -1420,7 +1415,7 @@ export default {
       required: (v) => Validations.required(v),
       default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
       regex: (v) =>
-        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
       minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
@@ -1429,7 +1424,7 @@ export default {
       default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
       required: (v) => Validations.required(v),
       regex: (v) =>
-        /^[A-Z0-9ışŞğĞçÇöÖüÜİ\/,.\-_\s]*$/gi.test(v) ||
+        /^[A-Z0-9ışŞğĞçÇöÖüÜİ/,.\-_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
         if (!v) return true
@@ -1457,7 +1452,9 @@ export default {
     allLinks: false,
     allAttachments: false,
     isAnonym: false,
-    onUploadProgress: null
+    onUploadProgress: null,
+    securityLabelTlpSubtitle:
+      'Use TLP labels to inform recipients about how to share sensitive information. Please visit <a href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)." class="text-primary" target="_blank">Traffic Light Protocol</a> for more information.'
   }),
   computed: {
     isStep1Valid() {

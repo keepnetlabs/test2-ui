@@ -361,10 +361,7 @@ export function isInavailable(
 
   const isEveryItemIncluded = availableFor.every((item) => training?.availableFor?.includes(item))
 
-  if (isMyCompanyOnly || isAllCompanies || isEveryItemIncluded) {
-    return false
-  }
-  return true
+  return !(isMyCompanyOnly || isAllCompanies || isEveryItemIncluded)
 }
 
 export function getAutoEnrollText(
