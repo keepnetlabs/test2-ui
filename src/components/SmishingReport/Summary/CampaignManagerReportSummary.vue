@@ -249,9 +249,9 @@ export default {
       let senderPhoneNumbers = []
       if (Array.isArray(settings?.smsProviderNumbers)) {
         senderPhoneNumbers.push(
-          ...settings?.smsProviderNumbers?.map(
+          ...(settings?.smsProviderNumbers?.map(
             (pn) => new PhoneNumber(pn?.toString() || '')?.g?.number?.international
-          )
+          ) || [])
         )
       } else {
         senderPhoneNumbers.push(

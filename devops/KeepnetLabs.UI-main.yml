@@ -1,178 +1,177 @@
-
 pool:
   name: 'Azure Pipelines'
   vmImage: 'ubuntu-latest'
 
 schedules:
-- cron: "00 5,9,13 * 12 1-5"
-  displayName: Daily build
-  branches:
-    include:
-    - dev
+  - cron: "00 5,9,13 * 12 1-5"
+    displayName: Daily build
+    branches:
+      include:
+        - dev
 
 resources:
   repositories:
-  - repository: GitHub_Prod_Repo # In a different organization
-    type: git
-    name: Keepnet/KeepnetLabs.UI
-    ref: $(Build.SourceBranch)
-    trigger:
-    - release/*
-  - repository: GitHub_Test_Repo # In a different organization
-    type: git
-    name: Keepnet/KeepnetLabs.UI
-    ref: test
-    trigger:
-    - test
+    - repository: GitHub_Prod_Repo # In a different organization
+      type: git
+      name: Keepnet/KeepnetLabs.UI
+      ref: $(Build.SourceBranch)
+      trigger:
+        - release/*
+    - repository: GitHub_Test_Repo # In a different organization
+      type: git
+      name: Keepnet/KeepnetLabs.UI
+      ref: test
+      trigger:
+        - test
 
 stages:
-# BUILD DEV
-- stage: CI_Dev 
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
-  jobs:
-  - job: Build_UI
-    steps:
-      - template: sub-KeepnetLabs.UI-CI.yml
+  # BUILD DEV
+  - stage: CI_Dev
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
+    jobs:
+      - job: Build_UI
+        steps:
+          - template: sub-KeepnetLabs.UI-CI.yml
 
-# # BUILD TEST
-- stage: CI_Test
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
-  jobs:   
-  - job: Build_UI
-    steps:
-      - template: sub-KeepnetLabs.UI-CI.yml
+  # # BUILD TEST
+  - stage: CI_Test
+    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+    jobs:
+      - job: Build_UI
+        steps:
+          - template: sub-KeepnetLabs.UI-CI.yml
 
-# # BUILD PROD
-- stage: CI_Prod
-  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
-  jobs:   
-  - job: Build_UI
-    steps:
-      - template: sub-KeepnetLabs.UI-CI.yml
+  # # BUILD PROD
+  - stage: CI_Prod
+    condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
+    jobs:
+      - job: Build_UI
+        steps:
+          - template: sub-KeepnetLabs.UI-CI.yml
 
-# DEPLOY DEV NEW
-- stage: DEV
-  variables:
-  - group: Dev-UI-Config
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
-  dependsOn: CI_Dev
-  jobs:
-    - template: sub-KeepnetLabs.UI-CD.yml
-      parameters:
+  # DEPLOY DEV NEW
+  - stage: DEV
+    variables:
+      - group: Dev-UI-Config
+    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
+    dependsOn: CI_Dev
+    jobs:
+      - template: sub-KeepnetLabs.UI-CD.yml
+        parameters:
           jobName: 'Deploy_UI'
           environment: 'DEV_UI'
           websiteName: 'DevUI'
           artifactName: 'drop'
 
-# DEPLOY DEV DASH NEW
-- stage: DEV_API_UI
-  variables:
-  - group: Dev-UI-Config
-  condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
-  dependsOn: CI_Dev
-  jobs:
-    - template: sub-KeepnetLabs.UI-CD.yml
-      parameters:
+  # DEPLOY DEV API NEW
+  - stage: DEV_API
+    variables:
+      - group: Dev-UI-Config
+    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
+    dependsOn: CI_Dev
+    jobs:
+      - template: sub-KeepnetLabs.UI-CD.yml
+        parameters:
           jobName: 'Deploy_UI'
           environment: 'DEV_API_UI'
           websiteName: 'DevUI'
           artifactName: 'drop'
 
-# # DEPLOY TEST          
-# - stage: TEST
-#   variables:
-#   - group: Test-UI-Config
-#   condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))  
-#   dependsOn: CI_Test
-#   jobs:
-#     - template: sub-KeepnetLabs.UI-CD.yml
-#       parameters:
-#           jobName: 'Deploy_UI'
-#           environment: 'TEST_UI'
-#           websiteName: 'TestUI'
-#           artifactName: 'drop'
+  # # DEPLOY TEST
+  # - stage: TEST
+  #   variables:
+  #   - group: Test-UI-Config
+  #   condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+  #   dependsOn: CI_Test
+  #   jobs:
+  #     - template: sub-KeepnetLabs.UI-CD.yml
+  #       parameters:
+  #           jobName: 'Deploy_UI'
+  #           environment: 'TEST_UI'
+  #           websiteName: 'TestUI'
+  #           artifactName: 'drop'
 
-## DEPLOY GITHUB TEST  
-- stage: GH_Repo_TEST
-  dependsOn: CI_test
-  condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
-  variables:
-  - group: Test-UI-Config
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Test_Repo
-      environment: TEST_UI
-      githubConnectionUrl: $(testGitHubConnectionURL)
-      githubBranchName: test
+  ## DEPLOY GITHUB TEST
+  - stage: GH_Repo_TEST
+    dependsOn: CI_test
+    condition: and(in(dependencies.CI_Test.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+    variables:
+      - group: Test-UI-Config
+    jobs:
+      - template: sub-KeepnetLabs.UI-GH.yml
+        parameters:
+          repositoryName: GitHub_Test_Repo
+          environment: TEST_UI
+          githubConnectionUrl: $(testGitHubConnectionURL)
+          githubBranchName: test
 
-# # DEPLOY PROD          
-# - stage: PROD
-#   variables:
-#   - group: Prod-UI-Config
-#   condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))  
-#   dependsOn: CI_Prod
-#   jobs:
-#     - template: sub-KeepnetLabs.UI-CD.yml
-#       parameters:
-#           jobName: 'Deploy_UI'
-#           environment: 'PROD_UI'
-#           websiteName: 'UI'
-#           artifactName: 'drop'
+  # # DEPLOY PROD
+  # - stage: PROD
+  #   variables:
+  #   - group: Prod-UI-Config
+  #   condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
+  #   dependsOn: CI_Prod
+  #   jobs:
+  #     - template: sub-KeepnetLabs.UI-CD.yml
+  #       parameters:
+  #           jobName: 'Deploy_UI'
+  #           environment: 'PROD_UI'
+  #           websiteName: 'UI'
+  #           artifactName: 'drop'
 
 
-## DEPLOY GITHUB PROD 
-- stage: GH_Repo_PROD
-  variables:
-  - group: Prod-UI-Config
-  dependsOn: CI_Prod
-  condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release')) 
-  jobs:
-  - template: sub-KeepnetLabs.UI-GH.yml
-    parameters:
-      repositoryName: GitHub_Prod_Repo
-      environment: PROD_UI
-      githubConnectionUrl: $(prodGitHubConnectionURL)
-      githubBranchName: production
+  ## DEPLOY GITHUB PROD
+  - stage: GH_Repo_PROD
+    variables:
+      - group: Prod-UI-Config
+    dependsOn: CI_Prod
+    condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
+    jobs:
+      - template: sub-KeepnetLabs.UI-GH.yml
+        parameters:
+          repositoryName: GitHub_Prod_Repo
+          environment: PROD_UI
+          githubConnectionUrl: $(prodGitHubConnectionURL)
+          githubBranchName: production
 
-- stage: ONPREM_BUCKET
-  variables:
-  - group: OnPrem-UI-Config
-  dependsOn: CI_Prod
-  condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release')) 
-  jobs:
-  - deployment: Upload_to_Bucket
-    workspace:
-      clean: all 
-    displayName: Upload_to_S3_Bucket
-    environment: PROD_UI
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: drop
+  - stage: ONPREM_BUCKET
+    variables:
+      - group: OnPrem-UI-Config
+    dependsOn: CI_Prod
+    condition: and(in(dependencies.CI_Prod.result, 'Succeeded', 'SucceededWithIssues'), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
+    jobs:
+      - deployment: Upload_to_Bucket
+        workspace:
+          clean: all
+        displayName: Upload_to_S3_Bucket
+        environment: PROD_UI
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
 
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: 'Replace tokens in config.js'
-            inputs:
-              rootDirectory: '$(Pipeline.Workspace)/drop'
-              targetFiles: config.js
+                - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+                  displayName: 'Replace tokens in config.js'
+                  inputs:
+                    rootDirectory: '$(Pipeline.Workspace)/drop'
+                    targetFiles: config.js
 
-          - task: ArchiveFiles@2
-            displayName: 'Archive API'
-            inputs:
-              rootFolderOrFile: '$(Pipeline.Workspace)/drop/'
-              archiveFile: '$(Pipeline.Workspace)/ui/$(Build.BuildNumber).zip'
+                - task: ArchiveFiles@2
+                  displayName: 'Archive API'
+                  inputs:
+                    rootFolderOrFile: '$(Pipeline.Workspace)/drop/'
+                    archiveFile: '$(Pipeline.Workspace)/ui/$(Build.BuildNumber).zip'
 
-          - task: AmazonWebServices.aws-vsts-tools.S3Upload.S3Upload@1
-            displayName: 'S3 Upload: API-Master'
-            inputs:
-              awsCredentials: 'AWS-S3-Connection'
-              regionName: 'us-east-1'
-              bucketName: 'keepnetlabs-dev'
-              sourceFolder: '$(Pipeline.Workspace)/ui'
-              globExpressions: '**/$(Build.BuildNumber).zip'
-              targetFolder: 'next-ui-artifacts/drop/ui'
-              filesAcl: 'authenticated-read'
-              createBucket: true
+                - task: AmazonWebServices.aws-vsts-tools.S3Upload.S3Upload@1
+                  displayName: 'S3 Upload: API-Master'
+                  inputs:
+                    awsCredentials: 'AWS-S3-Connection'
+                    regionName: 'us-east-1'
+                    bucketName: 'keepnetlabs-dev'
+                    sourceFolder: '$(Pipeline.Workspace)/ui'
+                    globExpressions: '**/$(Build.BuildNumber).zip'
+                    targetFolder: 'next-ui-artifacts/drop/ui'
+                    filesAcl: 'authenticated-read'
+                    createBucket: true
