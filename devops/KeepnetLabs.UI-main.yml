@@ -64,8 +64,8 @@ stages:
           websiteName: 'DevUI'
           artifactName: 'drop'
 
-# DEPLOY DEV DASH NEW
-- stage: DEV_API_UI
+# DEPLOY DEV API NEW
+- stage: DEV_API
   variables:
   - group: Dev-UI-Config
   condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))  
