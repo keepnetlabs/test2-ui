@@ -65,13 +65,22 @@ const whitelabel = {
       releaseNotesUrl,
       systemVersion
     }) {
+      let isShowDocumentation = true
+      const companies = ['Phishack', 'EMA Security', 'Newex Security', 'OneCloud']
+      if (companies.includes(localStorage.getItem('companyName'))) {
+        isShowDocumentation = false
+      }
+      if (isShowDocumentation && companies.includes(localStorage.getItem('selectedCompanyName'))) {
+        isShowDocumentation = false
+      }
       return {
         mainLogoUrl,
         minimizedMenuLogoUrl,
         isShowReleaseVersionNumber,
         isShowReleaseNotes,
         releaseNotesUrl,
-        systemVersion
+        systemVersion,
+        isShowDocumentation
       }
     },
     getSupportEmailAddress({ supportEmailAddress }) {
