@@ -1,6 +1,8 @@
 import { createLocalVue, mount } from '@vue/test-utils'
 import InputCallerPhoneNumber from '@/components/Common/Inputs/InputCallerPhoneNumber'
+import { setupPromisePool } from '../promise-pool-helpers'
 describe('Input caller phone number component', () => {
+  setupPromisePool()
   const localVue = createLocalVue()
   it('Check is rendering', () => {
     const wrapper = mount(InputCallerPhoneNumber, {

@@ -1,7 +1,9 @@
 import { createLocalVue, mount } from '@vue/test-utils'
 import InputTag from '@/components/Common/Inputs/InputTag.vue'
+import { setupPromisePool } from '../promise-pool-helpers'
 
 describe('Input tag component', () => {
+  setupPromisePool()
   const localVue = createLocalVue()
 
   it('Check is rendering', () => {

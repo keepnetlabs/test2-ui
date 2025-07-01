@@ -1,7 +1,9 @@
 import { createLocalVue, mount } from '@vue/test-utils'
 import { customVuetify as vuetify } from '../utils'
 import MapCustomAndSCIMFields from '@/components/Company Settings/SCIM/MapCustomAndSCIMFields.vue'
+import { setupPromisePool } from '../promise-pool-helpers'
 describe('Map Custom Fields Suit', () => {
+  setupPromisePool()
   const localVue = createLocalVue()
   it('Checking is rendering', () => {
     const wrapper = mount(MapCustomAndSCIMFields, {
