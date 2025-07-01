@@ -120,6 +120,64 @@ if (typeof window === 'undefined') {
   }
 }
 
+// Mock XMLHttpRequest to prevent ECONNREFUSED errors in JSDOM
+const mockXMLHttpRequest = function () {
+  return {
+    open: jest.fn(),
+    send: jest.fn(function () {
+      // Simulate immediate successful response
+      setTimeout(() => {
+        this.readyState = 4
+        this.status = 200
+        this.responseText = '{}'
+        this.response = '{}'
+
+        // Trigger success callbacks
+        if (this.onreadystatechange) {
+          this.onreadystatechange()
+        }
+        if (this.onload) {
+          this.onload()
+        }
+      }, 0)
+    }),
+    setRequestHeader: jest.fn(),
+    abort: jest.fn(),
+    getAllResponseHeaders: jest.fn(() => ''),
+    getResponseHeader: jest.fn(() => null),
+    readyState: 0,
+    status: 0,
+    statusText: '',
+    responseText: '',
+    response: '',
+    responseXML: null,
+    upload: {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    },
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    onreadystatechange: null,
+    onload: null,
+    onerror: null,
+    ontimeout: null,
+    onabort: null
+  }
+}
+
+// Override JSDOM's XMLHttpRequest
+global.XMLHttpRequest = mockXMLHttpRequest
+
+// Also mock fetch API if used
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({}),
+    text: () => Promise.resolve('{}')
+  })
+)
+
 jest.mock('powerbi-client', () => ({
   get: Promise.resolve({})
 }))
