@@ -16,7 +16,7 @@ describe('Input entity name', () => {
     })
     expect(wrapper.find('#input-entity-name').exists()).toBeTruthy()
   })
-  it('should render props successfully', () => {
+  it('should render props successfully', async () => {
     const props = {
       id: 'input-entity-name',
       value: 'Some input entity name value',
@@ -25,7 +25,7 @@ describe('Input entity name', () => {
       required: false,
       entityName: 'entity-name'
     }
-    const wrapper = mount(InputEntityName, {
+    const wrapper = await mount(InputEntityName, {
       localVue,
       vuetify,
       propsData: props
@@ -69,7 +69,7 @@ describe('Input entity name', () => {
       wrapper
     )
     expect(wrapper.find('.v-messages__message').text()).toEqual(
-      `${props.entityName} cannot exceed 64 characters`
+      `${props.entityName} cannot exceed 200 characters`
     )
     //checking required
     await inputHelper.addData('', textInput, wrapper)
