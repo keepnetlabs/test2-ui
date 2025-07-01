@@ -105,7 +105,7 @@ const router = new Router({
     },
     {
       path: '/training/scorm/phished-landing-page',
-      name: 'scorm',
+      name: 'Phished Landing Page',
       component: PhishedLandingPage,
       meta: {
         isAuthenticated: false
