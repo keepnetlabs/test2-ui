@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
 import { customVuetify as vuetify } from '../utils'
+import { setupPromisePool } from '../promise-pool-helpers'
 
 // Mock Badge component to avoid functional component test issues
 const MockBadge = {
@@ -17,6 +18,8 @@ const MockAudioPlayer = {
 }
 
 describe('Vishing template preview step', () => {
+  setupPromisePool()
+
   it('should render TextToSpeech variant successfully', () => {
     const step = {
       inputType: 'TextToSpeech',
