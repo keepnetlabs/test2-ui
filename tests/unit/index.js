@@ -1,5 +1,6 @@
 require('regenerator-runtime')
-jest.mock('powerbi-client-vue-js', () => ({
+require('jest-canvas-mock')
+jest.mock('powerbi-client', () => ({
   get: Promise.resolve({})
 }))
 import Vue from 'vue'

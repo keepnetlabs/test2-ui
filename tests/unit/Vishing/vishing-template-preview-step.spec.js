@@ -1,10 +1,22 @@
-import { createLocalVue, mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import VishingTemplatePreviewStep from '@/components/VishingTemplates/VishingTemplatePreviewStep'
 import { customVuetify as vuetify } from '../utils'
 
-describe('Vishing template preview step', () => {
-  const localVue = createLocalVue()
+// Mock Badge component to avoid functional component test issues
+const MockBadge = {
+  name: 'Badge',
+  template: '<div :class="className">{{ text }}</div>',
+  props: ['text', 'color', 'textBlack', 'size', 'className', 'outline']
+}
 
+// Mock AudioPlayer component
+const MockAudioPlayer = {
+  name: 'AudioPlayer',
+  template: '<div class="audio-player__wrapper"><audio :src="src"></audio></div>',
+  props: ['src', 'isFetchingTTSUrl', 'isTextToSpeechCompatible']
+}
+
+describe('Vishing template preview step', () => {
   it('should render TextToSpeech variant successfully', () => {
     const step = {
       inputType: 'TextToSpeech',
@@ -15,11 +27,14 @@ describe('Vishing template preview step', () => {
       isVishingStep: true
     }
     const wrapper = mount(VishingTemplatePreviewStep, {
-      localVue,
       vuetify,
       propsData: {
         step: step,
         index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
       }
     })
 
@@ -49,11 +64,14 @@ describe('Vishing template preview step', () => {
       isVishingStep: false
     }
     const wrapper = mount(VishingTemplatePreviewStep, {
-      localVue,
       vuetify,
       propsData: {
         step: step,
         index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
       }
     })
 
@@ -75,11 +93,14 @@ describe('Vishing template preview step', () => {
       isVishingStep: false
     }
     const wrapper = mount(VishingTemplatePreviewStep, {
-      localVue,
       vuetify,
       propsData: {
         step: step,
         index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
       }
     })
 
@@ -100,11 +121,14 @@ describe('Vishing template preview step', () => {
       isVishingStep: false
     }
     const wrapper = mount(VishingTemplatePreviewStep, {
-      localVue,
       vuetify,
       propsData: {
         step: step,
         index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
       }
     })
 
