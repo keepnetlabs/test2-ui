@@ -1,7 +1,3 @@
-/**
- * Promise Pool Management - Enterprise Level Promise Tracking
- * Inspired by Google's test utilities and Facebook's Jest patterns
- */
 class PromisePool {
   constructor() {
     this.activePromises = new Set()
@@ -51,13 +47,13 @@ class PromisePool {
         const promise = this
         pool.activePromises.add(promise)
 
-        // Auto cleanup after 30 seconds
+        // Auto cleanup after 5 seconds (unit test appropriate)
         setTimeout(() => {
           if (pool.activePromises.has(promise)) {
             pool.activePromises.delete(promise)
             pool.rejectedPromises.add(promise)
           }
-        }, 30000)
+        }, 5000)
       }
 
       static resolve(value) {
