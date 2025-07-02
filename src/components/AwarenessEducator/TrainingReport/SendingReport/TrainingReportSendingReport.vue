@@ -8,6 +8,7 @@
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
       :resendItemCount="resendItemCount"
+      :is-certification="isCertification"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -46,6 +47,21 @@
           :form-details="formDetails"
         />
       </ElTabPane>
+      <ElTabPane label="Certificate Emails" name="certificate" id="certificate-emails-content">
+        <CampaignManagerReportHeader
+          class="mb-6"
+          title="Training Certificate Sending Report"
+          subtitle="Training certificate email delivery details"
+        />
+        <TrainingReportCertificateEmailsTable
+          v-if="tab === 'certificate'"
+          ref="refCertificateTable"
+          class="mt-6"
+          :customFields="customFields"
+          :id="id"
+          :form-details="formDetails"
+        />
+      </ElTabPane>
     </ElTabs>
     <div v-else>
       <CampaignManagerReportHeader
@@ -75,6 +91,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportEnrollmentEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportEnrollmentEmailsTable'
 import TrainingReportReminderEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportReminderEmailsTable'
+import TrainingReportCertificateEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportCertificateEmailsTable'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import labels from '@/model/constants/labels'
 
@@ -84,7 +101,8 @@ export default {
     TrainingReportResendDialog,
     CampaignManagerReportHeader,
     TrainingReportEnrollmentEmailsTable,
-    TrainingReportReminderEmailsTable
+    TrainingReportReminderEmailsTable,
+    TrainingReportCertificateEmailsTable
   },
   props: {
     id: {
@@ -145,6 +163,9 @@ export default {
       return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
         ? 'Poster email delivery details'
         : 'Infographic email delivery details'
+    },
+    isCertification() {
+      return this.tab === 'certificate'
     }
   },
   methods: {

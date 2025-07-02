@@ -30,8 +30,9 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportTrainingReportSendingReportTable"
+    @downloadEvent="exportTrainingReportCertificateEmailsTable"
     @refreshAction="callForData"
+    @on-resend="handleOnResend"
     @on-details="handleOnDetail"
   >
     <template #datatable-custom-column="{ scope, col }">
@@ -94,7 +95,6 @@
     </template>
   </DataTable>
 </template>
-
 <script>
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
@@ -117,7 +117,7 @@ const ENUMS = {
 }
 
 export default {
-  name: 'TrainingReportReminderEmailsTable',
+  name: 'TrainingReportCertificateEmailsTable',
   components: {
     DataTable,
     Badge,
@@ -144,15 +144,16 @@ export default {
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
-        id: 'training-report-users-data-table',
+        id: 'training-report-certificate-emails-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           clipboard: true
@@ -234,12 +235,18 @@ export default {
           show: false
         },
         iEmpty: {
-          message: `No reminder has been enabled for this campaign yet`
+          message: `You do not have any certificate delivery for this training`
         },
         rowActions: [
           {
+            name: 'Resend Certificate',
+            id: 'btn-interactions--row-actions-certificate-sending-report',
+            icon: '$custom-resend',
+            action: 'on-resend'
+          },
+          {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-sending-report',
+            id: 'btn-interactions--row-actions-certificate-sending-report',
             icon: '$custom-details',
             action: 'on-details'
           }
@@ -247,7 +254,7 @@ export default {
       },
       isShowExtendedView: false,
       extendedViewOptions: {
-        title: 'Reminder Email Details',
+        title: 'Certificate Email Details',
         col: [
           {
             property: 'subject',
@@ -375,7 +382,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchSendingReportReminderEmails(this.axiosPayload, this.id)
+      AwarenessEducatorService.searchSendingReportCertificateEmails(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
@@ -395,7 +402,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportTrainingReportSendingReportTable(downloadTypes) {
+    exportTrainingReportCertificateEmailsTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
@@ -435,6 +442,9 @@ export default {
         .finally(() => {
           this.extendedViewLoading = false
         })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver, filter) {
+      this.$emit('on-resend', items, excludedResourceIdList, isSelectedAllEver, filter)
     }
   }
 }

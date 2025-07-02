@@ -309,6 +309,9 @@ const searchSendingReportEnrollmentEmails = (payload, resourceId) => {
 const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
+const searchSendingReportCertificateEmails = (payload, resourceId) => {
+  return testRequest.post(`/training-reports/${resourceId}/certificate-mails/search`, payload)
+}
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
@@ -573,6 +576,7 @@ export default {
   exportNoResponseReportResults,
   exportExamTrainingReportResults,
   exportSendingReport,
+  searchSendingReportCertificateEmails,
   getTrainingReportInteractions,
   getTrainingReportNonTargetUserInteractions,
   getProgressDetailsTable,
