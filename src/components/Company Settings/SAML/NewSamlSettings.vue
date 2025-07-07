@@ -41,7 +41,11 @@
           :title="labels.AllowedDomains"
           :sub-title="labels.SamlDomainSubLabel"
         >
-          <v-form ref="refDomainToAddForm" onSubmit="return false;">
+          <v-form
+            v-model="isDomainToAddFormValid"
+            ref="refDomainToAddForm"
+            onSubmit="return false;"
+          >
             <div class="copy-to-clipboard__container saml-domain">
               <v-text-field
                 v-model.trim="formValues.domainToAdd"
@@ -74,6 +78,7 @@
                 rounded
                 color="#2196F3"
                 class="btn-domain-add ml-10"
+                :style="getAddDomainButtonStyle"
                 @click="handleDomainToAddButtonClick"
               >
                 <v-icon left>mdi-plus</v-icon>
@@ -400,6 +405,7 @@ export default {
         '',
       labels,
       validations,
+      isDomainToAddFormValid: false,
       isCertificateTextDisabled: false,
       resourceId: null,
       certificateText: '',
@@ -443,6 +449,15 @@ export default {
     },
     getTitle() {
       return this.isEdit ? labels.SamlModalBodyEditTitle : labels.SamlModalBodyTitle
+    },
+    getAddDomainButtonStyle() {
+      const style = {}
+      if (!this.isDomainToAddFormValid || !this.formValues.domainToAdd) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+        style.pointerEvents = 'none'
+      }
+      return style
     }
   },
   watch: {

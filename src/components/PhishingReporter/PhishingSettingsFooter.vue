@@ -18,7 +18,7 @@
         class="white--text btn-util btn-save-changes"
         color="#2196f3"
         rounded
-        :disabled="getPhishingReporterSavePermissions && saveDisable"
+        :style="getSaveButtonStyle"
         @click="submit"
       >
         {{ labels.Save }} CHANGES
@@ -28,7 +28,7 @@
         class="white--text btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
-        :disabled="getPhishingReporterSavePermissions && saveDisable"
+        :style="getManageAndDownloadButtonStyle"
         @click="submitWithDownload"
       >
         <v-icon left>mdi-download</v-icon>
@@ -57,6 +57,19 @@ export default {
     VersionHistoryModal,
     ReporterVersionModal
   },
+  props: {
+    className: {
+      type: String
+    },
+    saveDisable: {
+      type: Boolean,
+      default: false
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       labels,
@@ -68,15 +81,25 @@ export default {
   computed: {
     ...mapGetters({
       getPhishingReporterSavePermissions: 'permissions/getPhishingReporterSavePermissions'
-    })
-  },
-  props: {
-    className: {
-      type: String
+    }),
+    isSaveButtonDisabled() {
+      if (!this.getPhishingReporterSavePermissions) return true
+      return this.saveButtonDisabled
     },
-    saveDisable: {
-      type: Boolean,
-      default: false
+    getSaveButtonStyle() {
+      return {
+        opacity: this.isSaveButtonDisabled ? 0.5 : 1,
+        cursor: this.isSaveButtonDisabled ? 'default' : 'pointer',
+        pointerEvents: this.isSaveButtonDisabled ? 'none' : 'auto'
+      }
+    },
+    getManageAndDownloadButtonStyle() {
+      const isDisabled = !this.getPhishingReporterSavePermissions || this.saveDisable
+      return {
+        opacity: isDisabled ? 0.5 : 1,
+        cursor: isDisabled ? 'default' : 'pointer',
+        pointerEvents: isDisabled ? 'none' : 'auto'
+      }
     }
   },
   methods: {

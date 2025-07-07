@@ -155,6 +155,7 @@
                   :is="tabComponent.name"
                   :ref="tabComponent.ref"
                   :formData="tabComponent.formData"
+                  :initialFormData="initialFormData"
                   @getPhishingReport="getPhishingReport"
               /></el-tab-pane>
             </el-tabs>
@@ -197,6 +198,7 @@ export default {
         ref: 'refFirstTime',
         formData: null
       },
+      initialFormData: {},
       isLoading: true,
       selectedDate: 'Last 4 minutes',
       listItems: [
@@ -453,6 +455,7 @@ export default {
             }
             this.tab = 'phishing-reporter-settings'
           } else if (response.status === 200) {
+            this.initialFormData = JSON.parse(JSON.stringify(data.data))
             this.tabComponent = {
               name: Settings,
               ref: 'refSettings',

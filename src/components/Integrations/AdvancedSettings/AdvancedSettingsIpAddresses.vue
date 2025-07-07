@@ -10,7 +10,11 @@
     />
     <DataContainerWithSearchInput
       ref="refSearchInput"
-      :labels="{ title: labels.IpAddresses, subtitle: labels.IPAddressesSubtitle }"
+      :labels="{
+        title: labels.IpAddresses,
+        subtitle: labels.IPAddressesSubtitle
+      }"
+      :input-value="ipAddressSearch"
       @on-add-click="handleIpAddressesAdd"
     >
       <template #search-input>
@@ -40,7 +44,7 @@
       class="white--text btn-util btn-save-changes"
       color="#2196f3"
       rounded
-      :disabled="isActionButtonDisabled"
+      :style="getSaveButtonStyle"
       @click="handleSaveChanges"
     >
       {{ labels.SaveChanges }}
@@ -79,7 +83,23 @@ export default {
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
-      labels
+      labels,
+      initialData: []
+    }
+  },
+  computed: {
+    isInitialDataAndModelEqual() {
+      return JSON.stringify(this.dataContainerWithSearchItems) === JSON.stringify(this.initialData)
+    },
+    getIsActionButtonDisabled() {
+      return this.isActionButtonDisabled || this.isInitialDataAndModelEqual
+    },
+    getSaveButtonStyle() {
+      return {
+        opacity: this.getIsActionButtonDisabled ? 0.5 : 1,
+        cursor: this.getIsActionButtonDisabled ? 'default' : 'pointer',
+        pointerEvents: this.getIsActionButtonDisabled ? 'none' : 'auto'
+      }
     }
   },
   watch: {
@@ -93,6 +113,7 @@ export default {
   methods: {
     setFormDataToIpAddresses(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'IP')
+      this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
     },
     handleBatchImport(data = []) {
       if (!data.length) return

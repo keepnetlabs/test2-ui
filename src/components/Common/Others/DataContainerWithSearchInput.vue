@@ -22,7 +22,7 @@
           outlined
           rounded
           color="#2196F3"
-          :class="['btn-domain-add ml-4', { 'btn-data-container-invalid': !isValid }]"
+          :class="['btn-domain-add ml-4', { 'btn-data-container-invalid': isButtonDisabled }]"
           @click="handleAddClick"
         >
           <v-icon left>mdi-plus</v-icon>
@@ -45,11 +45,20 @@ export default {
       default() {
         return { title: '', subtitle: '' }
       }
+    },
+    inputValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       isValid: true
+    }
+  },
+  computed: {
+    isButtonDisabled() {
+      return !this.isValid || !this.inputValue
     }
   },
   methods: {

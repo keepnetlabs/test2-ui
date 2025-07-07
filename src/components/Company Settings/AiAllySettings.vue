@@ -58,7 +58,13 @@
           </template>
         </VSwitch>
       </div>
-      <VBtn class="k-overlay__btn-save white--text" color="#2196f3" rounded @click="handleSubmit">
+      <VBtn
+        class="k-overlay__btn-save white--text"
+        color="#2196f3"
+        rounded
+        :style="getSaveButtonStyle"
+        @click="handleSubmit"
+      >
         SAVE
       </VBtn>
     </div>
@@ -80,6 +86,10 @@ export default {
         psEmailTemplateGenerationAssistant: false,
         landingPageTemplateGenerationAssistant: false
       },
+      initialAiAllySettings: {
+        psEmailTemplateGenerationAssistant: false,
+        landingPageTemplateGenerationAssistant: false
+      },
       isAIAllySettingsEnabled: false
     }
   },
@@ -94,6 +104,20 @@ export default {
           this.isAIAllySettingsEnabled = false
         }
       }
+    }
+  },
+  computed: {
+    getSaveButtonStyle() {
+      const style = {}
+      if (
+        this.isSaveDisabled ||
+        JSON.stringify(this.aiAllySettings) === JSON.stringify(this.initialAiAllySettings)
+      ) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+        style.pointerEvents = 'none'
+      }
+      return style
     }
   },
   created() {
@@ -123,6 +147,7 @@ export default {
           ) {
             this.isAIAllySettingsEnabled = true
           }
+          this.initialAiAllySettings = JSON.parse(JSON.stringify(this.aiAllySettings))
         })
         .finally(() => {
           this.isLoading = false
@@ -132,6 +157,7 @@ export default {
       this.isSaveDisabled = true
       saveAIAllySettings(this.aiAllySettings).finally(() => {
         this.isSaveDisabled = false
+        this.initialAiAllySettings = JSON.parse(JSON.stringify(this.aiAllySettings))
       })
     }
   }

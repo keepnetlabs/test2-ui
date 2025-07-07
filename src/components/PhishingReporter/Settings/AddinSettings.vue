@@ -578,6 +578,7 @@
         v-if="showFooter"
         className="mt-3"
         :saveDisable="saveDisable || isFetchingDefaultSettingsForLanguage"
+        :saveButtonDisabled="saveButtonDisabled"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
       />
@@ -655,6 +656,10 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -667,11 +672,19 @@ export default {
       isLanguageDeletionDialogVisible: false,
       selectedLanguageToDelete: '',
       isAddNewLanguageMenuVisible: false,
+      isInitialFormValues: true,
       languageFilter: '',
       tab: 'English',
       defaultLanguage: 'English',
       languageOptions: [],
       formValues: {
+        addInName: 'Suspicious email reporter',
+        brandName: '',
+        file: '',
+        warningLabel: 'Suspicious E-mail',
+        dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
+      },
+      initialFormValues: {
         addInName: 'Suspicious email reporter',
         brandName: '',
         file: '',
@@ -947,6 +960,7 @@ export default {
       })
       this.$emit('getInitialFormValues', this.formValues)
     }
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   watch: {
     defaultLanguage(val) {
@@ -979,6 +993,15 @@ export default {
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    },
+    formValues: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
     }
   }
 }
