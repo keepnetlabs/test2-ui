@@ -1,6 +1,7 @@
 .btn-data-container-invalid {
-    color: #757575 !important;
-    border-color: #757575;
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
 }
 
 .data-container-with-search-input {

@@ -36,7 +36,7 @@
         color="#2196f3"
         style="margin-top: 14px;"
         rounded
-        :disabled="isActionButtonDisabled"
+        :style="getSaveButtonStyle"
         @click="handleSaveChanges"
       >
         {{ labels.SaveChanges }}
@@ -66,7 +66,23 @@ export default {
   data() {
     return {
       labels,
-      values: []
+      values: [],
+      initialData: []
+    }
+  },
+  computed: {
+    isInitialDataAndModelEqual() {
+      return JSON.stringify(this.values) === JSON.stringify(this.initialData)
+    },
+    getIsActionButtonDisabled() {
+      return this.isActionButtonDisabled || this.isInitialDataAndModelEqual
+    },
+    getSaveButtonStyle() {
+      return {
+        opacity: this.getIsActionButtonDisabled ? 0.5 : 1,
+        cursor: this.getIsActionButtonDisabled ? 'default' : 'pointer',
+        pointerEvents: this.getIsActionButtonDisabled ? 'none' : 'auto'
+      }
     }
   },
   watch: {
@@ -88,6 +104,7 @@ export default {
         if (exclusionType === 'AttacmentExtension') acc.push(attachmentExtensionType)
         return acc
       }, [])
+      this.initialData = JSON.parse(JSON.stringify(this.values))
     },
     createPayload() {
       return this.values.reduce((acc, item) => {

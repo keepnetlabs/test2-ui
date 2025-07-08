@@ -292,19 +292,19 @@ export default {
                 const average = Math.round(
                   item.data.reduce((total, current) => total + current.y, 0) / item.data.length
                 )
-                let label = 'Users Who Did Not Reported'
+                let label = 'Users Who Did Not Report'
                 if (item.label === 'Users Who Clicked And Reported (%)') {
                   label = 'Users Who Clicked And Reported'
                 } else if (item.label === 'Users Who Did Not Click And Reported (%)') {
-                  label = 'Users Who Did Not Click And Reported'
+                  label = 'Users Who Did Not Click And Report'
                 }
                 const percentage = average.toString().includes('.') ? average.toFixed(2) : average
                 const customSpacer =
-                  label !== labels.UserWhoDidNotClickAndReported ? '        ' : '     '
+                  label !== labels.UserWhoDidNotClickAndReport ? '        ' : '     '
                 let customMarginLeft = 6
                 if (label === labels.UserWhoClickedAndReported) {
                   customMarginLeft = 8
-                } else if (label === labels.UserWhoDidNotClickAndReported) {
+                } else if (label === labels.UserWhoDidNotClickAndReport) {
                   customMarginLeft = 16
                 }
                 return {
@@ -388,11 +388,11 @@ export default {
               }/${xValue.getFullYear()}</th>`
               tableRoot.appendChild(titleRow)
               this._chart.data.datasets.forEach((dataset) => {
-                let datasetLabel = 'Users Who Did Not Reported'
+                let datasetLabel = 'Users Who Did Not Report'
                 if (dataset.label === 'Users Who Clicked And Reported (%)') {
                   datasetLabel = 'Users Who Clicked And Reported'
                 } else if (dataset.label === 'Users Who Did Not Click And Reported (%)') {
-                  datasetLabel = 'Users Who Did Not Click And Reported'
+                  datasetLabel = 'Users Who Did Not Click And Report'
                 }
                 let dataValue = dataset.data[tooltipModel.dataPoints[0].index]
                 let backgroundColor = dataset.backgroundColor || '#000'

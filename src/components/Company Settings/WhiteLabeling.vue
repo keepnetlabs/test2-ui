@@ -316,8 +316,7 @@
           class="white--text btn-util btn-save-changes mb-6"
           color="#2196f3"
           rounded
-          :disabled="getActionButtonDisabled"
-          :style="formValues.isShowReleaseNotes ? { marginTop: '21px' } : { marginTop: '23px' }"
+          :style="getActionButtonStyle"
           @click="submit"
         >
           {{ labels.SaveChanges }}
@@ -413,6 +412,7 @@ export default {
       resetToDefaultWhiteLabelingDialogStatus: false,
       acceptedDnsRecordSettingsDomain: '',
       formValues: JSON.parse(JSON.stringify(formValues)),
+      initialFormValues: JSON.parse(JSON.stringify(formValues)),
       fileUploadKey: `key-${createRandomCryptStringNumber()}`,
       mainDomainItems: ['https://', 'http://'],
       configureCompanyWhitelabelingResourceId: '',
@@ -439,7 +439,24 @@ export default {
     }),
     getActionButtonDisabled() {
       if (this.isCompanyAdmin) return true
+      if (JSON.stringify(this.formValues) === JSON.stringify(this.initialFormValues)) {
+        return true
+      }
       return this.isActionButtonDisabled || !this.getWhiteLabelingUpdatePermissions
+    },
+    getActionButtonStyle() {
+      const style = {}
+      if (this.formValues.isShowReleaseNotes) {
+        style.marginTop = '21px'
+      } else {
+        style.marginTop = '23px'
+      }
+      if (this.getActionButtonDisabled) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+        style.pointerEvents = 'none'
+      }
+      return style
     },
     isCompanyAdmin() {
       return this.$store.state?.auth?.userRoleName === labels.CompanyAdmin
@@ -609,6 +626,7 @@ export default {
               this.formValues[key] = payload[key]
             }
           }
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .finally(() => {
           this.isWhiteLabelLoading = false

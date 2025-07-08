@@ -11,6 +11,7 @@
     />
     <DataContainerWithSearchInput
       ref="refSearchInput"
+      :input-value="ipAddressSearch"
       :labels="{
         title: labels.ExcludeIPAddress,
         subtitle: labels.ExcludeIPAddressSubtitle
@@ -51,7 +52,7 @@
       class="white--text btn-util btn-save-changes"
       color="#2196f3"
       rounded
-      :disabled="isActionButtonDisabled"
+      :style="getSaveButtonStyle"
       @click="handleSaveChanges"
     >
       {{ labels.SaveChanges }}
@@ -103,6 +104,16 @@ export default {
   computed: {
     isInitialDataAndModelEqual() {
       return JSON.stringify(this.dataContainerWithSearchItems) === JSON.stringify(this.initialData)
+    },
+    getIsActionButtonDisabled() {
+      return this.isActionButtonDisabled || this.isInitialDataAndModelEqual
+    },
+    getSaveButtonStyle() {
+      return {
+        opacity: this.getIsActionButtonDisabled ? 0.5 : 1,
+        cursor: this.getIsActionButtonDisabled ? 'default' : 'pointer',
+        pointerEvents: this.getIsActionButtonDisabled ? 'none' : 'auto'
+      }
     }
   },
   watch: {
