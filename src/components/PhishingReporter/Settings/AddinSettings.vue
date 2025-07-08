@@ -673,7 +673,6 @@ export default {
       isLanguageDeletionDialogVisible: false,
       selectedLanguageToDelete: '',
       isAddNewLanguageMenuVisible: false,
-      isInitialFormValues: true,
       languageFilter: '',
       tab: 'English',
       defaultLanguage: 'English',
