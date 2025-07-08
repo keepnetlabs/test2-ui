@@ -791,6 +791,9 @@ export default {
       if (defaultSettingIndex !== -1) {
         this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
         this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+        Object.keys(this.commonSettings).forEach((key) => {
+          this.commonSettings[key] = dialogBoxSettings[defaultSettingIndex][key]
+        })
       }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
@@ -801,6 +804,7 @@ export default {
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.dialogBoxSettings = [{ ...defaultDialogBoxSettings }]
+      this.commonSettings = JSON.parse(JSON.stringify(defaultCommonSettings))
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
@@ -935,7 +939,6 @@ export default {
     },
     checkDialogBoxSettings() {
       const invalidLanguages = []
-
       for (const dialogBoxSetting of this.formValues.dialogBoxSettings) {
         if (!checkDialogBoxSettings(dialogBoxSetting))
           invalidLanguages.push(dialogBoxSetting.languageName)
@@ -962,7 +965,6 @@ export default {
       }
       if (this.$refs.refForm.validate()) {
         const mappedDialogBoxSettings = new Map()
-
         this.formValues.dialogBoxSettings.forEach((setting) => {
           if (mappedDialogBoxSettings.has(setting.languageName)) return
           mappedDialogBoxSettings.set(setting.languageName, {
