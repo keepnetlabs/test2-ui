@@ -128,6 +128,7 @@
         v-if="showFooter"
         class-name="mt-3"
         :save-disable="saveDisable"
+        :save-button-disabled="saveButtonDisabled"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
       />
@@ -148,18 +149,6 @@ export default {
     FormGroup,
     InputEmail,
     PhishingSettingsFooter
-  },
-  watch: {
-    formData: {
-      handler(data) {
-        const { to, cc, bcc, subject, content } = data
-        this.formValues.to = to || ''
-        this.formValues.cc = cc || ''
-        this.formValues.bcc = bcc || ''
-        this.formValues.subject = subject || ''
-        this.formValues.content = content || ''
-      }
-    }
   },
   props: {
     showHeader: {
@@ -185,6 +174,10 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -192,6 +185,14 @@ export default {
       labels,
       validations,
       formValues: {
+        to: '',
+        cc: '',
+        bcc: '',
+        subject: '',
+        content: '',
+        isSendInformationEmail: null
+      },
+      initialFormValues: {
         to: '',
         cc: '',
         bcc: '',
@@ -258,6 +259,41 @@ export default {
       return []
     }
   },
+  watch: {
+    formData: {
+      handler(data) {
+        const { to, cc, bcc, subject, content } = data
+        this.formValues.to = to || ''
+        this.formValues.cc = cc || ''
+        this.formValues.bcc = bcc || ''
+        this.formValues.subject = subject || ''
+        this.formValues.content = content || ''
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      }
+    },
+    formValues: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
+    }
+  },
+  created() {
+    if (this.formData) {
+      const { to, cc, bcc, subject, content, isSendInformationEmail } = this.formData
+      this.formValues.to = to || ''
+      this.formValues.cc = cc || ''
+      this.formValues.bcc = bcc || ''
+      this.formValues.subject = subject || ''
+      this.formValues.content = content || ''
+      this.formValues.isSendInformationEmail = isSendInformationEmail
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.$emit('getInitialFormValues', this.formValues)
+  },
   methods: {
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
@@ -280,18 +316,6 @@ export default {
         return false
       }
     }
-  },
-  created() {
-    if (this.formData) {
-      const { to, cc, bcc, subject, content, isSendInformationEmail } = this.formData
-      this.formValues.to = to || ''
-      this.formValues.cc = cc || ''
-      this.formValues.bcc = bcc || ''
-      this.formValues.subject = subject || ''
-      this.formValues.content = content || ''
-      this.formValues.isSendInformationEmail = isSendInformationEmail
-    }
-    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>

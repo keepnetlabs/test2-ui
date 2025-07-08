@@ -10,13 +10,14 @@
     <DataContainerWithSearchInput
       ref="refSearchInput"
       :labels="{ title: labels.URLS, subtitle: labels.URLSSubtitle }"
+      :input-value="urlSearch"
       @on-add-click="handleUrlAdd"
     >
       <template #search-input>
         <InputUrl
+          v-model.trim="urlSearch"
           id="input--advanced-settings-url"
           placeholder="Enter URL"
-          v-model.trim="urlSearch"
         />
       </template>
     </DataContainerWithSearchInput>
@@ -44,7 +45,7 @@
       class="white--text btn-util btn-save-changes"
       color="#2196f3"
       rounded
-      :disabled="isActionButtonDisabled"
+      :style="getSaveButtonStyle"
       @click="handleSaveChanges"
     >
       {{ labels.SaveChanges }}
@@ -66,7 +67,12 @@ import {
 } from '@/components/Integrations/AdvancedSettings/util'
 export default {
   name: 'AdvancedSettingsURLs',
-  components: { BatchImportPopup, DataContainerWithSearch, InputUrl, DataContainerWithSearchInput },
+  components: {
+    BatchImportPopup,
+    DataContainerWithSearch,
+    InputUrl,
+    DataContainerWithSearchInput
+  },
   props: {
     formData: {
       type: Array
@@ -80,10 +86,26 @@ export default {
     return {
       urlSearch: '',
       dataContainerWithSearchItems: [],
+      initialData: [],
       dataWithObjects: [],
       isBatchImportPopupOpen: false,
       labels,
       COMMON_CONSTANTS
+    }
+  },
+  computed: {
+    isInitialDataAndModelEqual() {
+      return JSON.stringify(this.dataContainerWithSearchItems) === JSON.stringify(this.initialData)
+    },
+    getIsActionButtonDisabled() {
+      return this.isActionButtonDisabled || this.isInitialDataAndModelEqual
+    },
+    getSaveButtonStyle() {
+      return {
+        opacity: this.getIsActionButtonDisabled ? 0.5 : 1,
+        cursor: this.getIsActionButtonDisabled ? 'default' : 'pointer',
+        pointerEvents: this.getIsActionButtonDisabled ? 'none' : 'auto'
+      }
     }
   },
   watch: {
@@ -100,6 +122,7 @@ export default {
     },
     setFormDataToURL(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'URL')
+      this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
       this.dataWithObjects = getFormDataWithObjects(val, 'URL')
     },
     handleUrlAdd() {

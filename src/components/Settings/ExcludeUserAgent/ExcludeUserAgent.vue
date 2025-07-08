@@ -13,6 +13,7 @@
     <DataContainerWithSearchInput
       ref="refSearchInput"
       :labels="{ title: labels.ExcludeUserAgent, subtitle: labels.ExcludeUserAgentSubtitle }"
+      :input-value="userAgentInput"
       @on-add-click="handleUserAgentAdd"
     >
       <template #search-input>

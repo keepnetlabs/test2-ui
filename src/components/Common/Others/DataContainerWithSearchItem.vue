@@ -2,7 +2,7 @@
   <div class="data-container-with-search-item" :style="getStyle">
     <div class="data-container-with-search-item__text">
       <span v-if="!isEdit" :style="!isValid && { color: '#B83A3A' }">{{ value }}</span>
-      <v-form v-else ref="refForm">
+      <v-form v-else ref="refForm" onSubmit="return false;">
         <v-text-field
           ref="refTextField"
           id="input--saml-settings-domain-to-add"

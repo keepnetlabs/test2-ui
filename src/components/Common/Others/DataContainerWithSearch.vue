@@ -73,7 +73,7 @@
           :item-height="itemHeight"
           :items="getItems"
         >
-          <template #default="{item,index}">
+          <template #default="{index}">
             <data-container-with-search-item
               :key="getItems[index].key"
               :value="getItems[index].val"

@@ -155,10 +155,11 @@ export default {
         relativeDNs: '',
         isActive: true
       },
+      copyFormData: {},
       isTestingConnection: false,
       isTestConnectionValid: false,
       isFormValid: false,
-      disabledStyle: { pointerEvents: 'none', opacity: '.5' },
+      disabledStyle: { pointerEvents: 'none', opacity: '.5', cursor: 'auto' },
       baseDNRules: [
         (v) => {
           if (!v) return true
@@ -200,7 +201,7 @@ export default {
         ? this.getLDAPSettingUpdatePermission
         : this.getLDAPSettingCreatePermission
       if (!permissionIsValid) return this.disabledStyle
-      const isDiff = this.initialFormData ? isDifferent(this.formData, this.initialFormData) : true
+      const isDiff = this.initialFormData ? isDifferent(this.formData, this.copyFormData) : true
       if (!isDiff) return this.disabledStyle
       return this.isTestingConnection || !this.isFormValid ? this.disabledStyle : {}
     },
@@ -226,6 +227,7 @@ export default {
           relativeDNs: copyOfFormData?.relativeDN?.join('\n') || '',
           isActive: copyOfFormData.isActive
         }
+        this.copyFormData = JSON.parse(JSON.stringify(this.formData))
       }
     }
   },
@@ -268,7 +270,7 @@ export default {
         })
     },
     handleSubmit() {
-      if (this.isTestConnectionValid)
+      if (this.isTestConnectionValid) {
         this.$emit('on-submit', {
           url: this.formData.url,
           username: this.formData.username,
@@ -278,7 +280,8 @@ export default {
           isActive: this.formData.isActive,
           fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
         })
-      else this.handleTestConnection(true)
+        this.copyFormData = JSON.parse(JSON.stringify(this.formData))
+      } else this.handleTestConnection(true)
     }
   }
 }

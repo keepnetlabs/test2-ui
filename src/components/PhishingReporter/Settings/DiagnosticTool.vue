@@ -143,6 +143,7 @@
       v-if="showFooter"
       className="mt-4"
       :saveDisable="saveDisable"
+      :saveButtonDisabled="saveButtonDisabled"
       @submit="submit($event)"
       @submitWithDownload="submit($event, true)"
     />
@@ -193,11 +194,25 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       formValues: {
+        isEnableAddIn: false,
+        writeAddinStatusToHKLM: false,
+        writeAddinStatusToHKCU: false,
+        proxyMode: 0,
+        proxyAddress: '',
+        proxyPort: '',
+        proxyUserName: '',
+        proxyUserPassword: ''
+      },
+      initialFormValues: {
         isEnableAddIn: false,
         writeAddinStatusToHKLM: false,
         writeAddinStatusToHKCU: false,
@@ -253,6 +268,33 @@ export default {
       if (this.authenticationTypeId === 1) rules.unshift((v) => validations.required(v))
       return rules
     }
+  },
+  watch: {
+    formValues: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
+    }
+  },
+  created() {
+    if (this.formData) {
+      this.formValues.isEnableAddIn = this.formData.isEnableAddIn
+      this.formValues.writeAddinStatusToHKCU = this.formData.writeAddinStatusToHKCU
+      this.formValues.writeAddinStatusToHKLM = this.formData.writeAddinStatusToHKLM
+      this.formValues.proxyMode = this.formData.proxyMode
+      this.formValues.proxyPort = this.formData.proxyPort
+      this.formValues.proxyAddress = this.formData.proxyAddress
+      this.formValues.proxyUserName = this.formData.proxyUserName
+      this.formValues.proxyUserPassword = this.formData.proxyUserPassword
+      if (this.formValues.proxyUserName || this.formValues.proxyUserPassword) {
+        this.authenticationTypeId = 1
+      }
+    }
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.$emit('getInitialFormValues', this.formValues)
   },
   methods: {
     submit(event, isAddIn = false) {
@@ -317,22 +359,6 @@ export default {
           }
         })
     }
-  },
-  created() {
-    if (this.formData) {
-      this.formValues.isEnableAddIn = this.formData.isEnableAddIn
-      this.formValues.writeAddinStatusToHKCU = this.formData.writeAddinStatusToHKCU
-      this.formValues.writeAddinStatusToHKLM = this.formData.writeAddinStatusToHKLM
-      this.formValues.proxyMode = this.formData.proxyMode
-      this.formValues.proxyPort = this.formData.proxyPort
-      this.formValues.proxyAddress = this.formData.proxyAddress
-      this.formValues.proxyUserName = this.formData.proxyUserName
-      this.formValues.proxyUserPassword = this.formData.proxyUserPassword
-      if (this.formValues.proxyUserName || this.formValues.proxyUserPassword) {
-        this.authenticationTypeId = 1
-      }
-    }
-    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>

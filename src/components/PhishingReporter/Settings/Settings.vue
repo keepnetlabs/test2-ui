@@ -34,6 +34,8 @@
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          :saveButtonDisabled="saveButtonDisabled"
+          @formValuesChanged="saveButtonDisabled = false"
           @updateForm="callForCreatePhishingReporter"
       /></el-tab-pane>
       <el-tab-pane
@@ -50,6 +52,8 @@
           :showHeaderLink="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          :saveButtonDisabled="saveButtonDisabled"
+          @formValuesChanged="saveButtonDisabled = false"
           @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
@@ -67,6 +71,8 @@
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          :saveButtonDisabled="saveButtonDisabled"
+          @formValuesChanged="saveButtonDisabled = false"
           @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
@@ -84,6 +90,8 @@
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          :saveButtonDisabled="saveButtonDisabled"
+          @formValuesChanged="saveButtonDisabled = false"
           @updateForm="callForCreatePhishingReporter"
         />
       </el-tab-pane>
@@ -96,6 +104,8 @@
         :show-header-link="!inModal"
         :showForm="!inModal"
         :saveDisable="saveDisable"
+        :saveButtonDisabled="saveButtonDisabled"
+        @formValuesChanged="saveButtonDisabled = false"
         @updateForm="callForCreatePhishingReporter"
       />
     </div>
@@ -125,6 +135,10 @@ export default {
       type: Object,
       default: null
     },
+    initialFormData: {
+      type: Object,
+      default: null
+    },
     inModal: {
       type: Boolean,
       default: false
@@ -137,6 +151,7 @@ export default {
   data() {
     return {
       saveDisable: false,
+      saveButtonDisabled: false,
       tab: 'phishing-reporter-settings-add-in-settings',
       spinnerStatus: false,
       downloadAddInModalStatus: false,
@@ -146,6 +161,11 @@ export default {
   },
   watch: {
     formData() {
+      if (JSON.stringify(this.initialFormData) === JSON.stringify(this.formData)) {
+        this.saveButtonDisabled = true
+      } else {
+        this.saveButtonDisabled = false
+      }
       this.$nextTick(() => {
         setTimeout(() => {
           if (this.tab !== 'phishing-reporter-settings-add-in-settings') {
@@ -199,6 +219,7 @@ export default {
     },
     callForCreatePhishingReporter(updatedValues) {
       this.saveDisable = true
+      this.saveButtonDisabled = true
       let addinSettings = this?.$refs?.refAddinSettings?.getFormValues() || {}
       const emailSettings = this?.$refs?.refEmailSettings?.getFormValues() || {}
       const otherSettingsFormValues = this?.$refs?.refOtherSettings?.getFormValues() || {}
