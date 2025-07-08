@@ -62,6 +62,11 @@ export default {
         columns: [],
         headers: [],
         tableData: []
+      },
+      initialMappingData: {
+        columns: [],
+        headers: [],
+        tableData: []
       }
     }
   },
@@ -74,8 +79,14 @@ export default {
     }),
     getSubmitButtonStyle() {
       const { isLoading, isLoadingFromParent, getLDAPSettingCreatePermission } = this
-      const disabledStyle = { opacity: '0.5', pointerEvents: 'none' }
+      const disabledStyle = {
+        opacity: '0.5',
+        pointerEvents: 'none',
+        cursor: 'auto'
+      }
       if (!getLDAPSettingCreatePermission) return disabledStyle
+      if (JSON.stringify(this.mappingData) === JSON.stringify(this.initialMappingData))
+        return disabledStyle
       return (isLoading || isLoadingFromParent) && disabledStyle
     }
   },
@@ -114,6 +125,7 @@ export default {
         this.setLoading()
         this.$nextTick(() => {
           this?.$refs?.refMapTable?.setDisabilityOfSelect()
+          this.initialMappingData = JSON.parse(JSON.stringify(this.mappingData))
         })
       })
     },

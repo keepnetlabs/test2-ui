@@ -578,6 +578,7 @@
         v-if="showFooter"
         className="mt-3"
         :saveDisable="saveDisable || isFetchingDefaultSettingsForLanguage"
+        :saveButtonDisabled="saveButtonDisabled"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
       />
@@ -656,6 +657,10 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -680,6 +685,13 @@ export default {
         dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
       commonSettings: JSON.parse(JSON.stringify(defaultCommonSettings)),
+      initialFormValues: {
+        addInName: 'Suspicious email reporter',
+        brandName: '',
+        file: '',
+        warningLabel: 'Suspicious E-mail',
+        dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
+      },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
       selectedVersionRow: null,
@@ -751,6 +763,15 @@ export default {
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    },
+    formValues: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
     }
   },
   created() {
@@ -788,6 +809,7 @@ export default {
       })
       this.$emit('getInitialFormValues', this.formValues)
     }
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   methods: {
     callForLanguages() {

@@ -144,6 +144,7 @@
         v-if="showFooter"
         class-name="mt-4"
         :saveDisable="saveDisable"
+        :saveButtonDisabled="saveButtonDisabled"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
       />
@@ -187,26 +188,24 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
-    }
-  },
-  watch: {
-    formData: {
-      handler(data) {
-        const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = data
-        this.formValues.companyKey = companyKey || ''
-        this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-        this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl || false
-        this.enterpriseVaultDisabled = !enterpriseVaultUrl
-        this.formValues.apiUrl = apiUrl || ''
-        this.formValues.isEnableProxy = isEnableProxy || false
-        this.formValues.apiKey = apiKey || ''
-      }
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       labels,
       formValues: {
+        isEnableProxy: false,
+        apiUrl: '',
+        companyKey: '',
+        enableEnterpriseVault: null,
+        enterpriseVaultUrl: '',
+        apiKey: ''
+      },
+      initialFormValues: {
         isEnableProxy: false,
         apiUrl: '',
         companyKey: '',
@@ -253,6 +252,50 @@ export default {
       return rules
     }
   },
+  watch: {
+    formData: {
+      handler(data) {
+        const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = data
+        this.formValues.companyKey = companyKey || ''
+        this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
+        this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl || false
+        this.enterpriseVaultDisabled = !enterpriseVaultUrl
+        this.formValues.apiUrl = apiUrl || ''
+        this.formValues.isEnableProxy = isEnableProxy || false
+        this.formValues.apiKey = apiKey || ''
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      }
+    },
+    formValues: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
+    }
+  },
+  created() {
+    if (this.formData) {
+      const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = this.formData
+      this.formValues.companyKey = companyKey || ''
+      this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
+      this.formValues.enableEnterpriseVault = enterpriseVaultUrl || false
+      this.enterpriseVaultDisabled = !enterpriseVaultUrl
+      this.formValues.apiUrl = apiUrl || ''
+      this.formValues.isEnableProxy = isEnableProxy || false
+      this.formValues.apiKey = apiKey || ''
+    } else {
+      this.formValues.companyKey = localStorage.getItem('companyId')
+      this.formValues.enableEnterpriseVault = false
+      this.formValues.apiKey =
+        APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+      this.formValues.apiUrl =
+        APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api'
+    }
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.$emit('getInitialFormValues', this.formValues)
+  },
   methods: {
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
@@ -278,26 +321,6 @@ export default {
       this.enterpriseVaultDisabled = !value
       if (!value) this.formValues.enterpriseVaultUrl = ''
     }
-  },
-  created() {
-    if (this.formData) {
-      const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = this.formData
-      this.formValues.companyKey = companyKey || ''
-      this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-      this.formValues.enableEnterpriseVault = enterpriseVaultUrl || false
-      this.enterpriseVaultDisabled = !enterpriseVaultUrl
-      this.formValues.apiUrl = apiUrl || ''
-      this.formValues.isEnableProxy = isEnableProxy || false
-      this.formValues.apiKey = apiKey || ''
-    } else {
-      this.formValues.companyKey = localStorage.getItem('companyId')
-      this.formValues.enableEnterpriseVault = false
-      this.formValues.apiKey =
-        APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
-      this.formValues.apiUrl =
-        APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api'
-    }
-    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>
