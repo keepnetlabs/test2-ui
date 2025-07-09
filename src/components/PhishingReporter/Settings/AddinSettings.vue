@@ -692,6 +692,7 @@ export default {
         warningLabel: 'Suspicious E-mail',
         dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
+      initialCommonSettings: JSON.parse(JSON.stringify(defaultCommonSettings)),
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
       selectedVersionRow: null,
@@ -764,10 +765,19 @@ export default {
         this.formValues.file = response.data
       })
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialCommonSettings = JSON.parse(JSON.stringify(this.commonSettings))
     },
     formValues: {
       handler(val) {
         if (JSON.stringify(val) !== JSON.stringify(this.initialFormValues)) {
+          this.$emit('formValuesChanged', val)
+        }
+      },
+      deep: true
+    },
+    commonSettings: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(this.initialCommonSettings)) {
           this.$emit('formValuesChanged', val)
         }
       },
@@ -810,6 +820,7 @@ export default {
       this.$emit('getInitialFormValues', this.formValues)
     }
     this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialCommonSettings = JSON.parse(JSON.stringify(this.commonSettings))
   },
   methods: {
     callForLanguages() {

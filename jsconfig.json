@@ -15,13 +15,26 @@
         "target": "ES6",
         "module": "commonjs",
         "allowSyntheticDefaultImports": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "allowJs": true,
+        "checkJs": false,
+        "jsx": "preserve",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true
+    },
+    "vueCompilerOptions": {
+        "experimentalCompatMode": 2,
+        "extensions": [".vue", ".js", ".ts", ".jsx", ".tsx"]
     },
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "src/assets/scss/**/*"
     ],
     "include": [
-        "src/**/*"
+        "src/**/*.js",
+        "src/**/*.vue",
+        "src/**/*.ts"
     ]
 }
