@@ -68,6 +68,7 @@ import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwaren
 import { trashRowActions } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
 import { mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFilters'
 export default {
   name: 'EnrollmentsAllTypesTable',
   components: {
@@ -102,7 +103,7 @@ export default {
       default: false
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi,useEnrollmentTableFilters],
   data() {
     return {
       CONSTANTS: {
@@ -192,45 +193,6 @@ export default {
     })
   },
   watch: {
-    enrollmentStatusEnum(val) {
-      const filterableItems = val.map((item) => ({
-        text: item.displayName || item.name,
-        value: item.id || item.name
-      }))
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'status'),
-        'filterableItems',
-        filterableItems
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    languages(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'languages'),
-        'filterableItems',
-        val.map((l) => ({
-          text: l.name,
-          value: l.code
-        }))
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    categories(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'category'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
-    targetAudiences(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'targetAudience'),
-        'filterableItems',
-        val
-      )
-      this?.$refs?.refTable?.reRenderFilters()
-    },
     types: {
       immediate: true,
       handler(val) {

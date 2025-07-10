@@ -1,6 +1,6 @@
 <template>
   <KContainer tabless id="audit-logs">
-    <data-table
+    <DataTable
       id="audit-data-list"
       ref="refAuditList"
       is-server-side
@@ -27,7 +27,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
-    ></data-table>
+    />
   </KContainer>
 </template>
 

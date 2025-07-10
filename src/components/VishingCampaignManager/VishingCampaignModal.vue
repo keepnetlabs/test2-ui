@@ -341,7 +341,8 @@
         :step.sync="step"
         :saveButtonText="getSaveText"
         :disabled-statuses="{
-          submitButton: isActionButtonDisabled
+          submitButton: isActionButtonDisabled,
+          nextButton: isActionButtonDisabled
         }"
         @on-cancel="changeVishingCampaignModalStatus"
         @on-back="backStep"
@@ -516,9 +517,7 @@ export default {
     },
     getTargetGroupItems() {
       const activeItems =
-        this.formData?.userCountDetailResponse?.data?.data?.filter?.(
-          (row) => row.status === 'Active'
-        ) || []
+        this?.userCountDetailResponse?.data?.data?.filter?.((row) => row.status === 'Active') || []
       return activeItems
     },
     getTotalTargetGroupsAndUsersCount() {
@@ -897,7 +896,9 @@ export default {
           const targetGroupResourceIds = this.formValues.targetGroupResourceIds.map(
             (item) => item.value
           )
+          this.isActionButtonDisabled = true
           this.userCountDetailResponse = await getTargetGroupCountDetail(targetGroupResourceIds)
+          this.isActionButtonDisabled = false
           this.step++
         } else {
           this.isTargetGroupsValid = false

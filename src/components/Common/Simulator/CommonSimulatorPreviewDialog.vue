@@ -26,6 +26,17 @@
                   emailTemplateParams.type || 'Email'
                 }}</span>
               </div>
+              <div v-if="isPhishing">
+                <InputLanguagePreview
+                  v-model="languagePreview"
+                  persistent-hint
+                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                  :hint="getEmailTemplatePreviewLanguageHint"
+                  :items="selectedTemplateLanguages"
+                  :hide-details="false"
+                  @input="handleEmailTemplatePreviewLanguageChange"
+                />
+              </div>
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body"
@@ -41,24 +52,30 @@
                 </span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+                <span class="template-preview__text--title text-primary-color">From Name: </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  emailTemplateParams.fromName
+                }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title">From Email Address: </span>
-                <span class="template-preview__text--body">{{
+                <span class="template-preview__text--title text-primary-color"
+                  >From Email Address:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.fromAddress
                 }}</span>
               </div>
               <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title">CC: </span>
-                <span class="template-preview__text--body">{{
+                <span class="template-preview__text--title text-primary-color">CC: </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.ccAddresses.join(', ')
                 }}</span>
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--subject">Subject: </span>
-                <span class="template-preview__text--subject">{{
+                <span class="template-preview__text--title mt-n2 text-primary-color fw-600"
+                  >Subject:
+                </span>
+                <span class="template-preview__text--body fw-400 text-primary-color">{{
                   emailTemplateParams.subject
                 }}</span>
               </div>
@@ -133,9 +150,11 @@ import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
+    InputLanguagePreview,
     AppDialogFooterWithClose,
     AppDialog,
     AttachmentsPreview,
@@ -164,6 +183,9 @@ export default {
       emailTemplate: null,
       landingPageTemplates: [],
       isMethodMfa: false,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
+      phishingEmailTemplates: [],
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
@@ -176,6 +198,11 @@ export default {
     }
   },
   computed: {
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
+    },
     getFirstTabLabel() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.JustEmail
@@ -248,7 +275,9 @@ export default {
             subject,
             type,
             resourceId,
-            isAssistedByAI = false
+            isAssistedByAI = false,
+            languageTypeResourceId,
+            languageTypeName
           } = emailTemplate || {}
 
           this.emailTemplateParams = {
@@ -265,7 +294,42 @@ export default {
                 }
               : null,
             type,
-            isAssistedByAI
+            isAssistedByAI,
+            languageTypeResourceId,
+            languageTypeName
+          }
+          if (this.isPhishing) {
+            this.phishingEmailTemplates.push({
+              fromName,
+              fromAddress,
+              subject,
+              template,
+              languageTypeResourceId,
+              languageTypeName,
+              ccAddresses
+            })
+            this.selectedTemplateLanguages.push({
+              value: languageTypeResourceId,
+              text: languageTypeName
+            })
+            this.languagePreview = languageTypeResourceId
+            if (emailTemplate?.languages?.length) {
+              emailTemplate?.languages?.forEach((item) => {
+                this.phishingEmailTemplates.push({
+                  ccAddresses: item.ccAddresses,
+                  fromName: item.fromName,
+                  fromAddress: item.fromAddress,
+                  subject: item.subject,
+                  template: item.template,
+                  languageTypeResourceId: item.languageTypeResourceId,
+                  languageTypeName: item.languageTypeName
+                })
+                this.selectedTemplateLanguages.push({
+                  value: item.languageTypeResourceId,
+                  text: item.languageTypeName
+                })
+              })
+            }
           }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -326,6 +390,21 @@ export default {
         .finally(() => {
           this.isIndividualPrintoutButtonDisabled = false
         })
+    },
+    handleEmailTemplatePreviewLanguageChange() {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageTypeResourceId === this.languagePreview
+      )
+      if (!findedTemplate) return
+      this.emailTemplateParams = {
+        ...this.emailTemplateParams,
+        ccAddresses: findedTemplate.ccAddresses,
+        fromName: findedTemplate.fromName,
+        fromAddress: findedTemplate.fromAddress,
+        subject: findedTemplate.subject,
+        template: findedTemplate.template
+      }
+      this.emailTemplate = findedTemplate.template
     }
   }
 }

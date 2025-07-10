@@ -209,7 +209,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting first row
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = wrapper.find('.el-table__body-wrapper .el-table__row')
     //getting first row checkbox
     const checkbox = firstRow.find('.el-checkbox')
     //clicking checkbox
@@ -229,9 +229,10 @@ describe('Datatable test cases suite', () => {
     ])
   })
   it('Multi selection case selection that lower than table length', async () => {
-    const { wrapper } = new DataTableWrapper(localVue, store, {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
       selectable: true
     })
+    const { wrapper } = datatableWrapper
     await wrapper.setProps({
       table: [
         {
@@ -244,8 +245,8 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    //getting all rows
-    const row = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting first row
+    const row = datatableWrapper.getFirstRow()
     //checking  checkbox
 
     const checkbox = row.find('.el-checkbox')
@@ -377,7 +378,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting filter cell
-    const cell = wrapper.findAll('.el-table__fixed-header-wrapper .k-table-header th .cell').at(1)
+    const cell = wrapper.findAll('.el-table__header-wrapper .k-table-header th .cell').at(1)
     //getting filter button
     const button = cell.find('button')
     //clicking
@@ -434,7 +435,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting filter cell
-    const cell = wrapper.findAll('.el-table__fixed-header-wrapper .k-table-header th .cell').at(1)
+    const cell = wrapper.findAll('.el-table__header-wrapper .k-table-header th .cell').at(1)
     //getting filter button
     const button = cell.find('button')
     //clicking
@@ -508,13 +509,14 @@ describe('Datatable test cases suite', () => {
     expect(emittedBulletedEvent[0]).toStrictEqual([])
   })
   it('Server side Select all', async () => {
-    const { wrapper } = new DataTableWrapper(localVue, store, {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
       selectable: true,
       isServerSide: true,
       serverSideEvents: { pagination: true, search: true, sort: true },
       isServerSideSelection: true,
       serverSideProps: new ServerSideProps()
     })
+    const { wrapper } = datatableWrapper
     wrapper.vm.serverSideProps.totalNumberOfRecords = 2
     await wrapper.setProps({
       table: [
@@ -529,8 +531,8 @@ describe('Datatable test cases suite', () => {
       ]
     })
 
-    //getting all rows
-    const row = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting first row
+    const row = datatableWrapper.getFirstRow()
     //checking  checkbox
     const checkbox = row.find('.el-checkbox')
     await checkbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
@@ -587,7 +589,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting firstRow
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it datatableText component
     expect(wrapper.findComponent({ name: 'DataTableText' })).toBeTruthy()
     //checking is dom element is text and equal do what we expect
@@ -619,7 +621,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting firstRow
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DataTableColorfulText component
     expect(wrapper.findComponent({ name: 'DataTableColorfulText' })).toBeTruthy()
     //checking is dom element is text and equal do what we expect
@@ -655,7 +657,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting firstRow
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DatatableTextWithBadge component
     expect(wrapper.findComponent({ name: 'DatatableTextWithBadge' })).toBeTruthy()
     //getting dom element
@@ -698,7 +700,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting firstRow
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DatatableTextWithBadge component
     expect(wrapper.findComponent({ name: 'DataTableAttachment' })).toBeTruthy()
     //getting dom element
@@ -734,7 +736,7 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DatatableTextWithBadge component
     expect(wrapper.findComponent({ name: 'DataTableDetected' })).toBeTruthy()
     //getting dom element
@@ -768,7 +770,7 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DatatableTextWithBadge component
     expect(wrapper.findComponent({ name: 'DataTableUserStatus' })).toBeTruthy()
     //getting dom element
@@ -802,7 +804,7 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DataTableFiber component
     expect(wrapper.findComponent({ name: 'DataTableFiber' })).toBeTruthy()
     //getting dom element
@@ -840,7 +842,7 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it DataTableProgress component
     expect(wrapper.findComponent({ name: 'DataTableProgress' })).toBeTruthy()
     //getting dom element
@@ -882,14 +884,14 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     expect(wrapper.findComponent({ name: 'DataTableService' }).exists()).toBeTruthy()
     expect(firstRow.find('img[alt="outlook"').exists()).toBe(true)
-    const secondRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(2)')
+    const secondRow = datatableWrapper.getNthRow(1)
     expect(secondRow.find('img[alt="o365"').exists()).toBe(true)
-    const thirdRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(3)')
+    const thirdRow = datatableWrapper.getNthRow(2)
     expect(thirdRow.find('img[alt="gsuite"').exists()).toBe(true)
-    const fourthRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(4)')
+    const fourthRow = datatableWrapper.getNthRow(3)
     expect(fourthRow.find('img[alt="exchange"').exists()).toBe(true)
   })
   it('Badge column type', async () => {
@@ -916,7 +918,7 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //getting dom element
     const cell = firstRow.find('.cell')
     //expecting cell is equal text
@@ -948,13 +950,13 @@ describe('Datatable test cases suite', () => {
         }
       ]
     })
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //checking is it Badge component
     const cell = firstRow.find('.cell')
     //expecting cell is equal text
     expect(cell.text()).toEqual('warning')
     //expecting is badge component
-    expect(cell.findAll('button').at(1).classes('k-badge')).toBe(true)
+    expect(cell.find('button').classes('k-badge')).toBe(true)
   })
   it('Small badge column type', async () => {
     const datatableWrapper = new DataTableWrapper(localVue, store, {
@@ -981,7 +983,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting row
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //getting dom element
     const cell = firstRow.find('.cell')
     const smallBadgeContainer = cell.find('.small-badge__container')
@@ -1014,7 +1016,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting row
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //getting dom element
     const cell = firstRow.find('.cell')
     //expecting text to be rendered
@@ -1036,7 +1038,7 @@ describe('Datatable test cases suite', () => {
       serverSideEvents: { pagination: true, search: true, sort: true }
     })
     //getting first row
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //getting edit button
     const editButton = firstRow.find('button')
     //clicking edit button on table
@@ -1133,7 +1135,7 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting firstRow
-    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = datatableWrapper.getFirstRow()
     //getting RowActionsButtons
     const rowActionsButtons = firstRow.findAll('button')
     //getting edit button

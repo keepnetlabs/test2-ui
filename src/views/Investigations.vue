@@ -85,14 +85,15 @@
         >
           {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
         </span>
-        <span
-          v-else
-          v-for="item in scope.row.matchingPlaybooks"
-          :key="item.resourceId"
-          class="popup-link"
-          @click="togglePlaybookModalWithSelected(item.resourceId)"
-          >{{ item.name }}</span
-        >
+        <template v-else>
+          <span
+            v-for="item in scope.row.matchingPlaybooks"
+            :key="item.resourceId"
+            class="popup-link"
+            @click="togglePlaybookModalWithSelected(item.resourceId)"
+            >{{ item.name }}</span
+          >
+        </template>
       </template>
       <template v-slot:datatable-row-actions="{ scope }">
         <DefaultButtonRowAction

@@ -76,6 +76,36 @@
                     "
                   />
                 </div>
+                <div>
+                  <KSelect
+                    v-model="languageSelectValue"
+                    :items="languages"
+                    placeholder="Language"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    class="filter-field-scenarios filter-field-scenarios__language"
+                    custom-menu-class="filter-field-scenarios__language-menu"
+                    :min-width-type="isPhishing ? 'medium' : ''"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      min-width: 150px;
+                    "
+                    :type="isPhishing ? 'autocomplete' : 'select'"
+                    :multiple="isPhishing"
+                    :slots="isPhishing ? { selection: true } : {}"
+                    @change="handleInputLanguageChange"
+                  >
+                    <template v-if="isPhishing" #selection="data">
+                      <span v-if="data.index === 0"
+                        >Language ({{ languageSelectValue.length }})</span
+                      >
+                    </template>
+                  </KSelect>
+                </div>
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
@@ -90,22 +120,6 @@
                     :items="difficulties"
                     @change="getTemplatesForSearch"
                   />
-                </div>
-                <div style="max-width: 140px;">
-                  <v-select
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
-                    :items="languages"
-                    placeholder="Language"
-                    item-disabled="disabled"
-                    item-text="text"
-                    item-value="value"
-                    outlined
-                    persistent-hint
-                    class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
-                    @change="getTemplatesForSearch"
-                  >
-                  </v-select>
                 </div>
               </div>
               <div v-if="isPhishing">
@@ -195,7 +209,11 @@
                 <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags || !item.tags.length">{{ '\xa0' }}</div>
-                  <div class="d-flex align-center">
+                  <EmailTemplateListLeftSideLanguages
+                    v-if="isPhishing || isCallback"
+                    :item="item"
+                  />
+                  <div v-else class="d-flex align-center">
                     <div class="template-list--item__narrator mr-2">
                       <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
                       <span class="template-list--item__language">{{ item.languageTypeName }}</span>
@@ -336,6 +354,7 @@
                     :attachmentFiles.sync="editData.phishingFile"
                     :isAttachmentError="isAttachmentError"
                     :is-edit="true"
+                    :show-language-field="showLanguageField"
                     :is-phishing-template="isAttachmentBasedScenario"
                     :isNotificationTemplate="true"
                     :isEmailTemplate="isPhishing"
@@ -343,15 +362,21 @@
                     :size="5"
                     fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                     :isHorizontalFormGroups="true"
+                    :languagePreview.sync="languagePreview"
+                    :selectedTemplateLanguages="selectedTemplateLanguages"
+                    :getEmailTemplatePreviewLanguageHint="getEmailTemplatePreviewLanguageHint"
                     @handleEditHtmlTemplate="editData.template = $event"
                     @setAttachmentFile="setAttachmentFile"
                     @handleRenameAttachment="handleShowRenameAttachmentModal"
                     @handleDeleteAttachment="handleDeleteAttachment"
                     @template-edit="handleTemplateEdit"
+                    @on-email-template-preview-language-change="
+                      handleEmailTemplatePreviewLanguageChange
+                    "
                   />
                 </template>
                 <template v-else>
-                  <div class="template-preview">
+                  <div class="template-preview" :style="isPhishing ? 'padding-bottom:8px;' : ''">
                     <div v-if="!isPhishing" class="template-preview__icon">
                       <v-btn
                         v-if="!!templateHTML"
@@ -365,26 +390,60 @@
                     </div>
                     <div class="template-preview__text pl-2" v-if="!!templateHTML">
                       <div>
-                        <span class="template-preview__text--title">Template Name: </span>
-                        <span class="template-preview__text--body">{{
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >Template Name:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
                           selectedTemplateHeader
                         }}</span>
                       </div>
-                      <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">Subject: </span>
-                        <span class="template-preview__text--body">{{ templateSubject }}</span>
+                      <div
+                        v-if="isPhishing"
+                        style="background: #e0e0e0; height: 1px; max-width: 554px;"
+                      ></div>
+                      <div v-if="isPhishing">
+                        <InputLanguagePreview
+                          v-model="languagePreview"
+                          persistent-hint
+                          class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                          :hint="getEmailTemplatePreviewLanguageHint"
+                          :items="selectedTemplateLanguages"
+                          :hide-details="false"
+                          @input="handleEmailTemplatePreviewLanguageChange"
+                        />
+                      </div>
+                      <div
+                        v-if="!isQuishingTypeIndividualPrintOut"
+                        :class="isPhishing ? 'mt-n2' : ''"
+                      >
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >Subject:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateSubject
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Name: </span>
-                        <span class="template-preview__text--body">{{ templateFromName }}</span>
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >From Name:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateFromName
+                        }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
-                        <span class="template-preview__text--title">From Email Address: </span>
-                        <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >From Email Address:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
+                          templateFromEmail
+                        }}</span>
                       </div>
                       <div v-if="isPhishing">
-                        <span class="template-preview__text--title">CC: </span>
-                        <span class="template-preview__text--body">{{
+                        <span class="template-preview__text--title fw-600 text-primary-color"
+                          >CC:
+                        </span>
+                        <span class="template-preview__text--body fw-400 text-primary-color">{{
                           templateCCAddresses.join(', ')
                         }}</span>
                       </div>
@@ -438,7 +497,8 @@ import {
   getDefaultEmailTemplatePayload,
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHODS,
-  MERGED_TEXTS
+  MERGED_TEXTS,
+  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -450,6 +510,8 @@ import { isDifferent } from '@/utils/functions'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -483,12 +545,17 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    showLanguageField: {
+      type: Boolean,
+      default: false
     }
   },
   directives: {
     'infinite-scroll': InfiniteScroll
   },
   components: {
+    InputLanguagePreview,
     KSelect,
     ShowMoreTags,
     KEmailPreview,
@@ -497,14 +564,18 @@ export default {
     AppDialog,
     AttachmentsPreview,
     EmailTemplate,
-    AppDialogFooter
+    AppDialogFooter,
+    EmailTemplateListLeftSideLanguages
   },
   mixins: [useDebounce],
   data() {
     return {
       labels,
+      languagePreview: '',
+      selectedTemplateLanguages: [],
       isSaving: false,
       emailTemplateData: {},
+      languageSelectValue: this.isPhishing ? [] : '',
       attachmentName: '',
       isRenameAttachmentModalVisible: false,
       isAttachmentError: false,
@@ -551,7 +622,9 @@ export default {
           (v) => Validations.required(v, labels.Required),
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
-      }
+      },
+      phishingEmailTemplates: [],
+      initialPhishingEmailTemplates: []
     }
   },
   computed: {
@@ -578,6 +651,11 @@ export default {
         this.quishingType.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
       )
+    },
+    getEmailTemplatePreviewLanguageHint() {
+      return `This template is available in ${this.selectedTemplateLanguages.length} language${
+        this.selectedTemplateLanguages.length > 1 ? 's' : ''
+      }.`
     }
   },
   watch: {
@@ -682,6 +760,7 @@ export default {
         show: true,
         callback: () => {
           this.isEditMode = false
+          this.phishingEmailTemplates = this.initialPhishingEmailTemplates
         }
       })
     },
@@ -707,6 +786,19 @@ export default {
           !this.isAddedNewPhishingFile && !!this.editData?.phishingFile?.length
             ? this.editData.phishingFile[0]?.fileName
             : null
+      }
+      if (payload.languages) {
+        payload.languages.unshift({
+          fromAddress: payload.fromAddress,
+          fromName: payload.fromName,
+          subject: payload.subject,
+          template: payload.template,
+          ccAddresses: payload.ccAddresses,
+          languageTypeResourceId: payload.languageTypeResourceId,
+          prompt: payload.prompt,
+          toneResourceId: payload.toneResourceId,
+          localizationResourceId: payload.localizationResourceId
+        })
       }
       delete payload.attachments
       delete payload.resourceId
@@ -742,6 +834,20 @@ export default {
             : null
       }
       delete payload.attachments
+      if (payload.languages) {
+        payload.languages.push({
+          fromAddress: payload.fromAddress,
+          fromName: payload.fromName,
+          subject: payload.subject,
+          template: payload.template,
+          ccAddresses: payload.ccAddresses,
+          languageTypeResourceId: payload.languageTypeResourceId,
+          prompt: payload.prompt,
+          toneResourceId: payload.toneResourceId,
+          localizationResourceId: payload.localizationResourceId,
+          detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        })
+      }
       updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then(() => {
           this.updateTemplate(this.emailTemplateData.resourceId, payload)
@@ -893,6 +999,12 @@ export default {
           })
       }, 500)
     },
+    handleInputLanguageChange(value) {
+      this.bodyData.filter.FilterGroups[0].FilterItems[2].value = this.isPhishing
+        ? value.join(',')
+        : value
+      this.getTemplatesForSearch()
+    },
     getTemplatesForSearch() {
       this.bodyData.pageSize = 100
       if (this.search) {
@@ -1016,30 +1128,97 @@ export default {
       if (isInitial) {
         this.$emit('initialEmailTemplateId', item.id)
       }
+      this.selectedTemplateLanguages = []
+      this.phishingEmailTemplates = []
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
-          let template = response?.data?.data?.template || ''
+          const {
+            data: { data }
+          } = response
+          let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...item, ...response?.data?.data } || {}
-          this.selectedTemplateHeader = response?.data?.data?.name || ''
+          this.emailTemplateData = { ...(item || {}), ...(data || {}) }
+          this.selectedTemplateHeader = data?.name || ''
           this.templateHTML = template
-          this.templateFromName = response?.data?.data?.fromName || ''
-          this.templateSubject = response?.data?.data?.subject || ''
-          this.templateFromEmail = response?.data?.data?.fromAddress || ''
-          this.templateCCAddresses = response?.data?.data?.ccAddresses || ''
-          this.phishingFile = response?.data?.data?.phishingFileName
+          this.templateFromName = data?.fromName || ''
+          this.templateSubject = data?.subject || ''
+          this.templateFromEmail = data?.fromAddress || ''
+          this.templateCCAddresses = data?.ccAddresses || ''
+          this.phishingFile = data?.phishingFileName
             ? [
                 {
-                  fileName: response?.data?.data?.phishingFileName,
-                  url: response?.data?.data?.phishingFileUrl
+                  fileName: data?.phishingFileName,
+                  url: data?.phishingFileUrl
                 }
               ]
             : []
+          if (!this.isPhishing) return
+          this.selectedTemplateLanguages.push({
+            text: data?.languageTypeName,
+            value: data?.languageTypeResourceId
+          })
+          this.phishingEmailTemplates.push({
+            template: data?.template,
+            language: data?.languageTypeName,
+            languageType: data?.languageTypeResourceId,
+            fromName: data?.fromName,
+            subject: data?.subject,
+            fromAddress: data?.fromAddress,
+            ccAddresses: data?.ccAddresses
+          })
+          this.languagePreview = this.selectedTemplateLanguages[0].value
+          if (!data?.languages?.length) return
+          data.languages.forEach((item) => {
+            this.phishingEmailTemplates.push({
+              template: item?.template,
+              language: item?.languageTypeName,
+              languageType: item?.languageTypeResourceId,
+              fromName: item?.fromName,
+              subject: item?.subject,
+              fromAddress: item?.fromAddress,
+              ccAddresses: item?.ccAddresses,
+              resourceId: item?.resourceId
+            })
+            this.selectedTemplateLanguages.push({
+              text: item?.languageTypeName,
+              value: item?.languageTypeResourceId
+            })
+          })
+          this.initialPhishingEmailTemplates = JSON.parse(
+            JSON.stringify(this.phishingEmailTemplates)
+          )
         })
         .finally(() => {
           this.loadingTemplatePreview = false
         })
+    },
+    handleEmailTemplatePreviewLanguageChange(val, languagePreview) {
+      const findedTemplate = this.phishingEmailTemplates.find((item) => item.languageType === val)
+      if (!findedTemplate) return
+      this.templateHTML = findedTemplate?.template || ''
+      this.templateFromName = findedTemplate?.fromName || ''
+      this.templateSubject = findedTemplate?.subject || ''
+      this.templateFromEmail = findedTemplate?.fromAddress || ''
+      this.templateCCAddresses = findedTemplate?.ccAddresses || ''
+      if (!this.isEditMode) return
+      if (languagePreview) this.handleSaveOldEditLanguage(languagePreview)
+      this.editData.template = this.templateHTML
+      this.editData.fromName = this.templateFromName
+      this.editData.subject = this.templateSubject
+      this.editData.fromAddress = this.templateFromEmail
+      this.editData.ccAddresses = this.templateCCAddresses
+    },
+    handleSaveOldEditLanguage(languagePreview) {
+      const findedTemplate = this.phishingEmailTemplates.find(
+        (item) => item.languageType === languagePreview
+      )
+      if (!findedTemplate) return
+      findedTemplate.fromAddress = this.editData.fromAddress
+      findedTemplate.fromName = this.editData.fromName
+      findedTemplate.subject = this.editData.subject
+      findedTemplate.template = this.editData.template
+      findedTemplate.ccAddresses = this.editData.ccAddresses
     }
   }
 }

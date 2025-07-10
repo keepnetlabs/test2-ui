@@ -188,7 +188,6 @@ import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSi
 import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
-import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
 import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
 export default {
@@ -206,7 +205,13 @@ export default {
     DataTable,
     CommonSimulatorDeleteScenario
   },
-  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions, useScenarioDetailsLookup],
+  mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
       languageFilterOptions: [],
@@ -234,7 +239,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.NAME,
           COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
-          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          COMMON_SIMULATOR_COLUMNS.LANGUAGES,
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,
@@ -313,10 +318,9 @@ export default {
       return this.selectedRow?.method === 'Attachment' || undefined
     }
   },
-  mounted() {
-    this.callForLanguages('refScenariosList')
-    this.callForScenarioDetails()
-      .then(() => {
+  watch: {
+    scenarioDetailsLookup: {
+      handler() {
         this.$set(
           this.tableOptions.columns[1],
           'filterableItems',
@@ -339,8 +343,13 @@ export default {
           })
         )
         this?.$refs?.refScenariosList?.reRenderFilters()
-      })
-      .then(this.callForData)
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.callForLanguages('refScenariosList')
+    this.callForData()
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,

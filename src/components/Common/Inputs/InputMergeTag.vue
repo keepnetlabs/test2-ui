@@ -213,9 +213,9 @@ export default {
           const matches = v.match(/{(.*?)}/gi)
           if (!matches?.length) return true
           const tags = this.mergeTags.map((tag) => tag.value)
-          for (let i = 0; i < matches.length; i++) {
-            if (!tags.includes(matches[i].toUpperCase())) {
-              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+          for (const match of matches) {
+            if (!tags.includes(match.toUpperCase())) {
+              return `${match} is an incorrect merge tag. Please enter an existing merge tag.`
             }
           }
           return true

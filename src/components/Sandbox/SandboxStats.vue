@@ -119,12 +119,10 @@ export default {
             type: 'text',
             filterableType: 'select',
             filterableCustomFieldName: 'scanType',
-            filterableItems: [
-              { text: 'Url', value: 1 },
-              { text: 'Attachment', value: 2 },
-              { text: 'Ip', value: 3 },
-              { text: 'Hash', value: 4 }
-            ]
+            filterableItems: scanTypesEnum.map((item) => ({
+              text: item.name,
+              value: item.value
+            }))
           },
           {
             property: 'totalRequest',

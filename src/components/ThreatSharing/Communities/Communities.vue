@@ -229,7 +229,9 @@
           >
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
               <div class="empty-communities-inline">
-                <span class="no-community"> No community has been created </span>
+                <span class="no-community">
+                  No community has been created
+                </span>
                 <v-btn
                   id="threat-sharing-communities-create-community-button"
                   class="create-com-btn mb-11"
@@ -242,7 +244,9 @@
             </div>
             <div class="empty-communities" v-if="selectedTab === 'tab-0'">
               <div class="empty-communities-inline">
-                <span class="no-community"> You haven’t joined any communities </span>
+                <span class="no-community">
+                  You haven’t joined any communities
+                </span>
                 <v-btn
                   id="threat-sharing-communities-browse-community-button"
                   class="create-com-btn mb-11"
@@ -893,16 +897,14 @@ export default {
         this.selectedTab = 'tab-1'
         this.page = 1
         this.getAllCommunitiesListData()
-      } else {
-        if (!this.isLoadState) {
-          this.selectedTab = 'tab-2'
-          this.page = 1
-          this.filter = ''
-          this.industryValue = []
-          this.privacyValue = []
-          this.getInvitions()
-          this.getInvitationCount()
-        }
+      } else if (!this.isLoadState) {
+        this.selectedTab = 'tab-2'
+        this.page = 1
+        this.filter = ''
+        this.industryValue = []
+        this.privacyValue = []
+        this.getInvitions()
+        this.getInvitationCount()
       }
     }
   }

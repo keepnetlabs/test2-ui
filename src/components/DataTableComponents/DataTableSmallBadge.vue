@@ -95,7 +95,7 @@ export default {
     },
     getBadges() {
       const item = this.scope.row[this.col.property] || []
-      const badges = item.filter(Boolean) || []
+      const badges = typeof item === 'string' ? [item] : item.filter(Boolean) || []
       const width = this.scope.column.width
       if (this.checkIsChanged(badges, width)) {
         this.width = width

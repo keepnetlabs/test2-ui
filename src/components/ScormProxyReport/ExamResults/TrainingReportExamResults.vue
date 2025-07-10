@@ -295,19 +295,6 @@ export default {
           this.isShowResendDialog = false
         })
     },
-    getStatusBadgeProps(status) {
-      if (status === 'Failed')
-        return {
-          color: '#B83A3A',
-          text: 'Failed'
-        }
-
-      if (status === 'Success')
-        return {
-          color: '#217124',
-          text: 'Success'
-        }
-    },
     callForData() {
       this.setLoading(true)
       AwarenessEducatorService.examTrainingReportResults(this.axiosPayload, this.id)

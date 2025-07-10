@@ -93,6 +93,14 @@ export default {
       getLDAPFieldMappingPermissions: 'permissions/getLDAPFieldMappingPermissions'
     })
   },
+  watch: {
+    tab(val) {
+      if (val === 'field-mapping') {
+        this.callForData()
+        this.callForCustomFields()
+      }
+    }
+  },
   created() {
     this.callForData()
     this.callForCustomFields()

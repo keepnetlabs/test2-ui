@@ -276,12 +276,10 @@ export default {
           if (!this.isLoadState) {
             this.getIncidentList('', '', true)
           }
-        } else {
-          if (!this.isLoadState) {
-            this.debounce(() => {
-              this.getIncidentList('', '', true)
-            }, 750)
-          }
+        } else if (!this.isLoadState) {
+          this.debounce(() => {
+            this.getIncidentList('', '', true)
+          }, 750)
         }
       }
     },
@@ -426,59 +424,55 @@ export default {
             this.totalNumberOfPages = response.data.data.totalNumberOfPages
           })
           .finally(() => (this.incidentLoading = false))
-      } else {
-        if (this.$router.currentRoute.name === 'Community') {
-          getCOmmunityIncidentList(this.$route.params.id, payload)
-            .then((response) => {
-              if (isSearch) this.page = 1
-              this.incidentList = response.data.data.results
-              this.incidentList = this.incidentList.map((item) => {
-                return { ...item, isToggle: false }
-              })
-              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-              this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              this.incidentLoading = false
+      } else if (this.$router.currentRoute.name === 'Community') {
+        getCOmmunityIncidentList(this.$route.params.id, payload)
+          .then((response) => {
+            if (isSearch) this.page = 1
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
             })
-            .catch((error) => {
-              this.incidentLoading = false
-              if (error?.response?.data?.message === 'No permission to access resource') {
-                this.$router
-                  .push({
-                    name: 'Threat Sharing',
-                    params: {
-                      isCommunity: true,
-                      postId: this.$route.query.postId,
-                      communityId: this.$route.params['id'],
-                      communityName: localStorage.getItem('communityName')
-                    }
-                  })
-                  .finally(() => {
-                    this.$store.dispatch('common/createSnackBar', {
-                      color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                      message: `you need to join the ${localStorage.getItem(
-                        'communityName'
-                      )} before viewing the post`
-                    })
-                  })
-              }
-            })
-        } else {
-          if (!this.isLoadState || this.isTableReload) {
-            getIncidentList(payload)
-              .then((response) => {
-                if (isSearch) this.page = 1
-                this.incidentList = response.data.data.results
-                this.incidentList = this.incidentList.map((item) => {
-                  return { ...item, isToggle: false }
+            this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+            this.totalNumberOfPages = response.data.data.totalNumberOfPages
+            this.incidentLoading = false
+          })
+          .catch((error) => {
+            this.incidentLoading = false
+            if (error?.response?.data?.message === 'No permission to access resource') {
+              this.$router
+                .push({
+                  name: 'Threat Sharing',
+                  params: {
+                    isCommunity: true,
+                    postId: this.$route.query.postId,
+                    communityId: this.$route.params['id'],
+                    communityName: localStorage.getItem('communityName')
+                  }
                 })
-                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-                this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              })
-              .finally(() => {
-                this.incidentLoading = false
-              })
-          }
-        }
+                .finally(() => {
+                  this.$store.dispatch('common/createSnackBar', {
+                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                    message: `you need to join the ${localStorage.getItem(
+                      'communityName'
+                    )} before viewing the post`
+                  })
+                })
+            }
+          })
+      } else if (!this.isLoadState || this.isTableReload) {
+        getIncidentList(payload)
+          .then((response) => {
+            if (isSearch) this.page = 1
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
+            })
+            this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+            this.totalNumberOfPages = response.data.data.totalNumberOfPages
+          })
+          .finally(() => {
+            this.incidentLoading = false
+          })
       }
     }
   }

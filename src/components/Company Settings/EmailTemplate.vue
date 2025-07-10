@@ -115,7 +115,7 @@
                   label="Language"
                   :items="languageOptions"
                   :menu-props="{ offsetY: true }"
-                  :disabled="isEmailGenerating"
+                  disabled
                   @input="$emit('update:languageTypeResourceId', $event)"
                 />
                 <KSelect
@@ -187,10 +187,7 @@
                       <VListItem
                         v-for="state in data.item.states"
                         :key="state.resourceId"
-                        :class="{
-                          'training-library-filtering-options-parent-list-item': true,
-                          'v-list-item--active': localizationResourceId === state.resourceId
-                        }"
+                        :class="getListItemClass(state)"
                         @click="handleStateChange(state)"
                       >
                         <VListItemTitle
@@ -315,10 +312,7 @@
         </div>
       </transition>
     </div>
-    <div
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-4' : 'pt-4']"
-      v-if="!onlyGrapes && showNameField"
-    >
+    <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
       <FormGroup
         title="Template Name:"
         style="max-width: unset;"
@@ -335,6 +329,27 @@
         />
       </FormGroup>
     </div>
+    <div
+      v-if="!onlyGrapes && showLanguageField"
+      :class="['mx-6', isHorizontalFormGroups ? 'pt-2 ' : 'pt-6']"
+    >
+      <FormGroup
+        title="Languages:"
+        style="max-width: unset;"
+        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+      >
+        <InputLanguagePreview
+          :value="languagePreview"
+          persistent-hint
+          class="campaign-manager-phishing-scenario-input-language"
+          :hint="getEmailTemplatePreviewLanguageHint"
+          :items="selectedTemplateLanguages"
+          hide-details
+          @input="handleEmailTemplatePreviewLanguageChange($event, languagePreview)"
+        />
+      </FormGroup>
+    </div>
     <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-6']" v-if="!onlyGrapes">
       <FormGroup
         title="Subject:"
@@ -348,6 +363,8 @@
           id="input--notification-template-subject"
           initialPlaceholder="Enter email subject"
           entityName="email subject"
+          label="Subject"
+          persistent-placeholder
           :value="subject"
           :disabled="editItemsDisabled"
           :initialRules="getSubjectRules"
@@ -366,6 +383,8 @@
           id="input--notification-template-sender-name"
           initialPlaceholder="Enter sender name"
           entityName="sender name"
+          label="From Name"
+          persistent-placeholder
           :value="fromName"
           :disabled="editItemsDisabled"
           :initialRules="senderNameRules"
@@ -381,7 +400,10 @@
         :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
       >
         <InputEmail
+          label="From Email"
           id="input--notification-template-from-email"
+          placeholder="Enter sender email address"
+          persistent-placeholder
           :disabled="editItemsDisabled"
           :value="fromAddress"
           @input="$emit('update:fromAddress', $event)"
@@ -403,6 +425,10 @@
           id="input--threat-sharing-incident-share-email"
           type="combobox"
           :items="[]"
+          :class="{
+            'email-template__cc-select': true,
+            'email-template__cc-select-selected': ccAddresses && ccAddresses.length > 0
+          }"
           placeholder="Enter an email address"
           multiple
           dense
@@ -410,24 +436,27 @@
           autocomplete="disabled"
           small-chips
           outlined
-          class="pop-up-card__invite-member"
-          :persistentHint="true"
+          persistent-hint
+          persistent-placeholder
+          label="CC"
           hint="Press enter to separate email addresses"
           :rules="[ccEmailRules.email]"
           @input="$emit('update:ccAddresses', $event)"
-        ></KSelect>
+        >
+        </KSelect>
       </FormGroup>
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
         v-if="isPhishingTemplate && !onlyGrapes"
+        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
       >
         <label
           :class="[
             'mr-4',
             isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
           ]"
+          for="input--email-template-upload"
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
         >
@@ -499,7 +528,7 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader :title="getLoaderTitle" />
+      <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
     </div>
     <div v-else id="email-template-content">
       <v-btn
@@ -549,6 +578,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
+import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapActions, mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -573,7 +603,7 @@ import {
 } from '@/api/phishingsimulator'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
-
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -592,7 +622,8 @@ export default {
     KFileUpload,
     AttachmentsPreview,
     InputEntityName,
-    FormGroup
+    FormGroup,
+    InputLanguagePreview
   },
   props: [
     'name',
@@ -636,7 +667,12 @@ export default {
     'localizationResourceId',
     'languageOptions',
     'selectedMethod',
-    'isPlainText'
+    'isPlainText',
+    'isGenerateWithAi',
+    'getEmailTemplatePreviewLanguageHint',
+    'selectedTemplateLanguages',
+    'languagePreview',
+    'showLanguageField'
   ],
   data() {
     return {
@@ -741,9 +777,9 @@ export default {
           const matches = v.match(/{(.*?)}/gi)
           if (!matches?.length) return true
           const tags = this.mergeTags.map((tag) => tag.value)
-          for (let i = 0; i < matches.length; i++) {
-            if (!tags.includes(matches[i].toUpperCase())) {
-              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+          for (const match of matches) {
+            if (!tags.includes(match.toUpperCase())) {
+              return `${match} is an incorrect merge tag. Please enter an existing merge tag.`
             }
           }
           return true
@@ -772,9 +808,9 @@ export default {
           const matches = v.match(/{(.*?)}/gi)
           if (!matches?.length) return true
           const tags = this.learningPathEnrollmentReminderMergeTags.map((tag) => tag.value)
-          for (let i = 0; i < matches.length; i++) {
-            if (!tags.includes(matches[i].toUpperCase())) {
-              return `${matches[i]} is an incorrect merge tag. Please enter an existing merge tag.`
+          for (const match of matches) {
+            if (!tags.includes(match.toUpperCase())) {
+              return `${match} is an incorrect merge tag. Please enter an existing merge tag.`
             }
           }
           return true
@@ -815,100 +851,6 @@ export default {
       localeOptions: [],
       usaStateResourceIds: [],
       usaResourceId: ''
-      // [
-      //   {
-      //     text: 'United Kingdom',
-      //     value: 'United Kingdom',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'United States',
-      //     value: 'United States',
-      //     isVisible: true,
-      //     children: [
-      //       {
-      //         text: 'Alabama',
-      //         value: 'Alabama'
-      //       },
-      //       {
-      //         text: 'Alaska',
-      //         value: 'Alaska'
-      //       },
-      //       {
-      //         text: 'Arizona',
-      //         value: 'Arizona'
-      //       },
-      //       {
-      //         text: 'Arkansas',
-      //         value: 'Arkansas'
-      //       },
-      //       {
-      //         text: 'California',
-      //         value: 'California'
-      //       },
-      //       {
-      //         text: 'Colorado',
-      //         value: 'Colorado'
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     text: 'Turkey',
-      //     value: 'Turkey',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'France',
-      //     value: 'France',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'Arabia',
-      //     value: 'Arabia',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'China',
-      //     value: 'China',
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: 'Alabama',
-      //     value: 'Alabama',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Alaska',
-      //     value: 'Alaska',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Arizona',
-      //     value: 'Arizona',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Arkansas',
-      //     value: 'Arkansas',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'California',
-      //     value: 'California',
-      //     isVisible: false,
-      //     disabled: true
-      //   },
-      //   {
-      //     text: 'Colorado',
-      //     value: 'Colorado',
-      //     isVisible: false,
-      //     disabled: true
-      //   }
-      // ]
     }
   },
   computed: {
@@ -916,6 +858,9 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    getTemplateNameFieldClass() {
+      return ['mx-6', 'pt-4']
+    },
     getSelectedStateName() {
       return (
         this.localeOptions?.find?.((item) => item.resourceId === this.localizationResourceId)
@@ -946,9 +891,16 @@ export default {
         : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
     },
     getLoaderTitle() {
+      if (this.isGenerateWithAi)
+        return 'The email template is being localized by AI for the selected languages.'
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
+    },
+    getLoaderDescription() {
+      if (this.isGenerateWithAi)
+        return 'This process may take some time depending on the number of localizations. Please stay on the page.'
+      return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
@@ -1029,13 +981,18 @@ export default {
     this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
-    this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   beforeDestroy() {
     if (this.timeoutId) clearTimeout(this.timeoutId)
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    getListItemClass(state) {
+      return {
+        'training-library-filtering-options-parent-list-item': true,
+        'v-list-item--active': this.localizationResourceId === state.resourceId
+      }
+    },
     handleValueComparator(a, b) {
       if (a === b) return true
       return a === this.usaResourceId && this.usaStateResourceIds.includes(b)
@@ -1068,11 +1025,7 @@ export default {
     },
     handleGenerateEmail() {
       this.isEmailGenerating = true
-      document?.querySelector('#email-template-content')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center'
-      })
+      scrollToEmailTemplateContent()
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,
@@ -1187,6 +1140,7 @@ export default {
     },
     setDefaultTemplate() {
       this.$emit('update:template', this.defaultTemplate)
+      this.$emit('handleInitialTemplate', this.defaultTemplate)
     },
     toggleShowGrapesModal(isSubmitted = false) {
       if (!this.showGrapesModal) {
@@ -1233,6 +1187,12 @@ export default {
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
       }, 100)
+    },
+    handleEmailTemplatePreviewLanguageChange(value, languagePreview) {
+      this.$nextTick(() => {
+        this.$emit('update:languagePreview', value)
+        this.$emit('on-email-template-preview-language-change', value, languagePreview)
+      })
     }
   }
 }

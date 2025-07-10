@@ -22,11 +22,12 @@
             <v-row align="center" justify="center" class="mr-0">
               <v-col sm="12" class="p-0">
                 <div class="password-modal__list-header">
-                  <label
+                  <div
                     id="text--security-popup-login-password"
                     class="new-password-wrapper__label mb-0"
-                    >{{ labels.LoginPassword }}</label
                   >
+                    {{ labels.LoginPassword }}
+                  </div>
                   <v-btn
                     id="btn-change--security-login-password-dashboard-popup"
                     style="font-weight: 600;"
@@ -39,9 +40,9 @@
                   >
                 </div>
                 <div class="password-modal__list-header mt-6">
-                  <label id="text--security-popup-mfa" class="new-password-wrapper__label mb-0">{{
-                    labels.Mfa
-                  }}</label>
+                  <div id="text--security-popup-mfa" class="new-password-wrapper__label mb-0">
+                    {{ labels.Mfa }}
+                  </div>
                   <v-btn
                     id="btn-status--security-mfa-dashboard-popup"
                     style="font-weight: 600;"

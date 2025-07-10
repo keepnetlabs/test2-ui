@@ -105,7 +105,7 @@ const router = new Router({
     },
     {
       path: '/training/scorm/phished-landing-page',
-      name: 'scorm',
+      name: 'Phished Landing Page',
       component: PhishedLandingPage,
       meta: {
         isAuthenticated: false
@@ -883,10 +883,9 @@ router.beforeEach((to, from, next) => {
         if (storeRef.state.common.downloadModalStatus) {
           storeRef.dispatch('common/changeDownloadModalStatus', false)
           next(false)
-        } else {
-          if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) next()
-          else next(from.name ? false : '/')
-        }
+        } else if (to.name === 'Dashboard' || storeRef.getters[to.meta.permissionStoreKey]) {
+          next()
+        } else next(from.name ? false : '/')
       } else {
         next('/login')
       }

@@ -160,15 +160,16 @@
                 >
                   {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
                 </span>
-                <span
-                  v-else
-                  v-for="(item, index) in scope.row.matchingPlaybooks"
-                  :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
-                  :key="item.resourceId"
-                  class="incident-responder-parent__link"
-                  @click="togglePlaybookModalWithSelected(item.resourceId)"
-                  >{{ item.name }}</span
-                >
+                <template v-else>
+                  <span
+                    v-for="(item, index) in scope.row.matchingPlaybooks"
+                    :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
+                    :key="item.resourceId"
+                    class="incident-responder-parent__link"
+                    @click="togglePlaybookModalWithSelected(item.resourceId)"
+                    >{{ item.name }}</span
+                  >
+                </template>
               </template>
               <template v-if="scope.column.property === 'status'">
                 <template v-if="scope.row.status === 'BeingAnalyzed'">
@@ -328,15 +329,16 @@
                 >
                   {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
                 </span>
-                <span
-                  v-else
-                  v-for="(item, index) in scope.row.matchingPlaybooks"
-                  :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
-                  :key="item.resourceId"
-                  class="incident-responder-parent__link"
-                  @click="togglePlaybookModalWithSelected(item.resourceId)"
-                  >{{ item.name }}</span
-                >
+                <template v-else>
+                  <span
+                    v-for="(item, index) in scope.row.matchingPlaybooks"
+                    :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
+                    :key="item.resourceId"
+                    class="incident-responder-parent__link"
+                    @click="togglePlaybookModalWithSelected(item.resourceId)"
+                    >{{ item.name }}</span
+                  >
+                </template>
               </template>
               <template v-if="scope.column.property === 'status'">
                 <template v-if="scope.row.status === 'BeingAnalyzed'">

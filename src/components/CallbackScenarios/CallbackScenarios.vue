@@ -147,7 +147,7 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-
+import { callbackScenariosDifficultyTypes } from '@/components/CallbackScenarios/utils'
 export default {
   name: 'CallbackScenarios',
   components: {
@@ -172,20 +172,7 @@ export default {
     return {
       languageFilterOptions: [],
       scenarioDetailsLookup: {
-        difficultyTypes: [
-          {
-            text: 'Easy',
-            value: 1
-          },
-          {
-            text: 'Medium',
-            value: 2
-          },
-          {
-            text: 'Hard',
-            value: 3
-          }
-        ]
+        difficultyTypes: callbackScenariosDifficultyTypes
       },
       isShowFastLaunch: false,
       isShowPreviewDialog: false,

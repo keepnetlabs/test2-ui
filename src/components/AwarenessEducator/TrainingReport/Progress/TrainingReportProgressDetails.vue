@@ -34,7 +34,7 @@
         <template v-slot:datatable-custom-column="{ scope, col }">
           <div class="training-report-progress__progress-column">
             <v-btn style="display: none;" />
-            <Badge v-bind="getStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
+            <Badge v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
           </div>
         </template>
       </DataTable>
@@ -58,7 +58,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 import Badge from '@/components/Badge'
-
+import { getTrainingReportProgressStatusBadgeProps } from './utils'
 export default {
   name: 'TrainingReportProgressDetails',
   components: { DataTable, AppDialog, Badge },
@@ -194,6 +194,7 @@ export default {
     this.callForData()
   },
   methods: {
+    getTrainingReportProgressStatusBadgeProps,
     callForData() {
       this.setLoading(true)
       AwarenessEducatorService.getProgressDetailsTable(
@@ -207,25 +208,6 @@ export default {
           }))
         })
         .finally(this.setLoading)
-    },
-    getStatusBadgeProps(progress) {
-      if (progress === 'Not Completed')
-        return {
-          color: '#B83A3A',
-          text: 'Not Completed'
-        }
-
-      if (progress === 'In Progress')
-        return {
-          color: '#B6791D',
-          text: 'In Progress'
-        }
-
-      if (progress === 'Completed')
-        return {
-          color: '#217124',
-          text: 'Completed'
-        }
     },
     handleClose() {
       this.$emit('on-close')

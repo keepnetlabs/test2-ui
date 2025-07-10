@@ -352,18 +352,16 @@ export function isInavailable(
   if (selectedCompanyName === 'System') {
     return false
   }
-  if (
+  const isMyCompanyOnly =
     availableFor?.includes('MyCompanyOnly') &&
     (training?.availableFor?.includes('MyCompanyOnly') ||
       training?.availableFor?.includes(selectedCompanyResourceId))
-  ) {
-    return false
-  } else if (training?.availableFor?.includes('AllCompanies')) {
-    return false
-  } else if (availableFor.every((item) => training?.availableFor?.includes(item))) {
-    return false
-  }
-  return true
+
+  const isAllCompanies = training?.availableFor?.includes('AllCompanies')
+
+  const isEveryItemIncluded = availableFor.every((item) => training?.availableFor?.includes(item))
+
+  return !(isMyCompanyOnly || isAllCompanies || isEveryItemIncluded)
 }
 
 export function getAutoEnrollText(

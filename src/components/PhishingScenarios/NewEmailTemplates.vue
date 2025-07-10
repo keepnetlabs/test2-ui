@@ -55,21 +55,6 @@
                   :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                   :items="methodItems"
                 />
-                <form-group
-                  has-hint
-                  title="Language"
-                  sub-title="Select the language you are writing this webpage template in"
-                >
-                  <input-select-language
-                    v-model="formValues.languageTypeResourceId"
-                    v-bind="commonRules"
-                    item-text="text"
-                    item-value="value"
-                    required
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                  />
-                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     ref="refTags"
@@ -111,6 +96,14 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <div class="email-settings">
+              <EditLanguagesLeavingDialog
+                v-if="showEditLanguagesLeavingDialog"
+                :status="showEditLanguagesLeavingDialog"
+                :before-save-language="beforeSaveLanguage"
+                @on-close="handleCloseEditLanguagesLeavingDialog"
+                @on-discard="handleDiscardEditLanguagesLeavingDialog"
+                @on-confirm="handleConfirmEditLanguagesLeavingDialog"
+              />
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="new-email-template__title">
@@ -124,52 +117,79 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
+                    <FormGroup
+                      class-name="mt-8"
+                      class="email-template-languages-settings-form-group"
+                      title="Languages Settings"
+                      sub-title="You can select multiple languages for AI-assisted email localization. Each template can include up to 10 languages in total, including edits."
+                    >
+                      <InputLanguagesSettings
+                        v-model="selectedLanguages"
+                        :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                        :language-items="languageItems"
+                        @input="handleSelectedLanguagesChange"
+                        @on-generate-with-ai="handleGenerateWithAI"
+                      />
+                    </FormGroup>
                     <form-group
                       title="Email Template"
-                      class-name="email-template mt-8 p-4"
+                      class-name="email-template mt-6 p-4"
                       onsubmit="return false"
                     >
-                      <template #title>
+                      <div>
                         <div class="d-flex align-baseline justify-space-between mb-3">
-                          <div class="k-form-group__title">Email Template</div>
-                          <v-tooltip bottom opacity="1">
-                            <template v-slot:activator="{ on }">
-                              <v-btn
-                                v-on="on"
-                                rounded
-                                outlined
-                                color="#2196f3"
-                                style="font-weight: 600;"
-                                @click="handleUploadEmailButtonClick"
-                              >
-                                <v-icon style="font-size: 20px; margin-top: 1px;"
-                                  >mdi-upload</v-icon
+                          <div>
+                            <InputLanguagePreview
+                              :value="activeLanguage"
+                              ref="refInputLanguagePreview"
+                              style="max-width: 554px; min-width: 554px;"
+                              hide-details
+                              :items="selectedLanguages"
+                              :disabled="selectedLanguages.length === 0 || isGenerateWithAIDisabled"
+                              @input="handleActiveLanguageChange"
+                            />
+                          </div>
+                          <div>
+                            <v-tooltip bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-btn
+                                  v-on="on"
+                                  rounded
+                                  outlined
+                                  color="#2196f3"
+                                  style="font-weight: 600;"
+                                  @click="handleUploadEmailButtonClick"
                                 >
-                                <span class="button-new__text">IMPORT EMAIL</span>
-                              </v-btn>
-                            </template>
-                            <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
-                          </v-tooltip>
-                          <input
-                            v-show="false"
-                            ref="refInputFileUpload"
-                            type="file"
-                            @change="handleFileUpload"
-                          />
+                                  <v-icon style="font-size: 20px; margin-top: 1px;"
+                                    >mdi-upload</v-icon
+                                  >
+                                  <span class="button-new__text">IMPORT EMAIL</span>
+                                </v-btn>
+                              </template>
+                              <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
+                            </v-tooltip>
+                            <input
+                              v-show="false"
+                              ref="refInputFileUpload"
+                              type="file"
+                              @change="handleFileUpload"
+                            />
+                          </div>
                         </div>
-                      </template>
+                      </div>
                       <EmailTemplate
                         ref="refEmailTemplate"
+                        class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
-                        :from-address.sync="formValues.fromAddress"
-                        :cc-addresses.sync="formValues.ccAddresses"
-                        :from-name.sync="formValues.fromName"
+                        :from-address.sync="getSelectedLanguagePayload.fromAddress"
+                        :cc-addresses.sync="getSelectedLanguagePayload.ccAddresses"
+                        :from-name.sync="getSelectedLanguagePayload.fromName"
                         :attachmentFiles.sync="formValues.attachmentFiles"
                         :importedEmailAttachments.sync="formValues.importedEmailAttachments"
-                        :subject.sync="formValues.subject"
-                        :template.sync="formValues.template"
+                        :subject.sync="getSelectedLanguagePayload.subject"
+                        :template.sync="getSelectedLanguagePayload.template"
                         :ai-assistant.sync="formValues.aiAssistant"
                         :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
                         :ai-assistant-total-right="aiAssistantTotalRights"
@@ -179,20 +199,25 @@
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
-                        :language-type-resource-id.sync="formValues.languageTypeResourceId"
+                        :language-type-resource-id.sync="
+                          getSelectedLanguagePayload.languageTypeResourceId
+                        "
                         :is-assisted-by-a-i-template.sync="isAssistedByAI"
                         :isAIAllyEnabled="isAIAllyEnabled"
                         :method-type-id="getMethodTypeId"
-                        :prompt.sync="formValues.prompt"
-                        :toneResourceId.sync="formValues.toneResourceId"
-                        :localizationResourceId.sync="formValues.localizationResourceId"
+                        :prompt.sync="getSelectedLanguagePayload.prompt"
+                        :toneResourceId.sync="getSelectedLanguagePayload.toneResourceId"
+                        :localizationResourceId.sync="
+                          getSelectedLanguagePayload.localizationResourceId
+                        "
                         :language-options="languageOptions"
                         :selected-method="getSelectedMethod"
                         :is-plain-text.sync="isPlainText"
+                        :is-generate-with-ai.sync="isGenerateWithAi"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
-                        @handleEditHtmlTemplate="formValues.template = $event"
+                        @handleEditHtmlTemplate="handleEditHtmlTemplate"
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
@@ -210,7 +235,10 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :disabled-statuses="{
+          nextButton: !isDefault && isSubmitDisabled,
+          submitButton: isSubmitDisabled
+        }"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
@@ -223,7 +251,6 @@
 
 <script>
 import AppModal from '../AppModal'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -232,35 +259,49 @@ import {
   createPhishingEmailTemplate,
   getEmailTemplatePreviewContent,
   getMergedTextForPhishing,
-  updatePhishingEmailTemplate
+  updatePhishingEmailTemplate,
+  generateEmailTemplateTranslation,
+  getEmailTemplateTranslation
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
+import EditLanguagesLeavingDialog from '@/components/PhishingScenarios/EditLanguagesLeavingDialog.vue'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
-import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
-import { getEmailTemplateMethodItems } from './utils'
+import {
+  getEmailTemplateMethodItems,
+  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
+  EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
+  MERGED_TEXTS
+} from './utils'
+import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
+import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
+import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
+import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 export default {
   name: 'NewEmailTemplates',
   components: {
+    EditLanguagesLeavingDialog,
+    InputLanguagePreview,
+    InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
     AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputSelectLanguage,
     InputTag,
     InputEntityName,
     InputDescription
   },
+  mixins: [useSetAttachmentFile],
   props: {
     status: {
       type: Boolean,
@@ -290,6 +331,10 @@ export default {
     selectedMethodText: {
       type: String,
       default: ''
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -310,14 +355,18 @@ export default {
         nextButton: 'btn-next--add-or-edit-email-templates-modal',
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
-      isAttachmentError: false,
+      editedLanguages: [],
+      languageItems: [],
+      isGenerateWithAIDisabled: false,
+      isGenerateWithAi: false,
       isAssistedByAI: false,
       isPlainText: false,
-      isPhishingFileModified: false,
-      isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
+      showEditLanguagesLeavingDialog: false,
       attachmentName: '',
       languageOptions: [],
+      selectedLanguages: [],
+      activeLanguage: '',
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -333,20 +382,12 @@ export default {
         categoryResourceId,
         tags: [],
         difficultyResourceId: 'mT0CeYGgKsVb',
-        fromAddress: null,
-        ccAddresses: [],
-        fromName: null,
-        subject: null,
-        template: null,
         aiAssistant: false,
         attachmentFiles: [],
         importedEmailAttachments: [],
-        attachmentFilesFromApi: [],
-        languageTypeResourceId: '862249c19aad',
-        prompt: '',
-        toneResourceId: '',
-        localizationResourceId: ''
+        attachmentFilesFromApi: []
       },
+      languagesPayload: [],
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
       commonRules: {
@@ -359,41 +400,23 @@ export default {
       },
       editItemsDisabled: false,
       methodItems,
-      difficultyItems: [
-        {
-          resourceId: 'mT0CeYGgKsVb',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'Z5XeVlpw6Dps',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: 'c4LCGEB9MayB',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ]
+      difficultyItems: EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
+      selectedLanguagePayloadItemBeforeSave: null,
+      beforeSaveLanguage: '',
+      isDefault: false,
+      timeoutId: null
     }
   },
   computed: {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getSelectedLanguagePayload() {
+      return (
+        this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) ||
+        {}
+      )
+    },
     getTitle() {
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Email Template'
@@ -420,6 +443,30 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    }
+  },
+  watch: {
+    selectedLanguages(val) {
+      if (!val.length) {
+        this.activeLanguage = ''
+      } else if (this.activeLanguage) {
+        const isInSelected = val.find((item) => item.value === this.activeLanguage)
+        if (!isInSelected) {
+          this.activeLanguage = val[0].value
+          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+            JSON.stringify(this.getSelectedLanguagePayload)
+          )
+        }
+      } else {
+        this.activeLanguage = val[0].value
+      }
+    },
+    scenarioDetailsLookup: {
+      immediate: true,
+      handler(val) {
+        if (!val || this.isDefault) return
+        this.setLanguageItems()
+      }
     }
   },
   created() {
@@ -461,16 +508,103 @@ export default {
             }
           ]
         }
+        this.languagesPayload.push({
+          languageTypeResourceId: this.formValues.languageTypeResourceId,
+          subject: this.formValues.subject,
+          fromName: this.formValues.fromName,
+          fromAddress: this.formValues.fromAddress,
+          ccAddresses: this.formValues.ccAddresses || [],
+          template: this.formValues.template,
+          prompt: this.formValues.prompt,
+          toneResourceId: this.formValues.toneResourceId,
+          localizationResourceId: this.formValues.localizationResourceId
+        })
+        this.selectedLanguages.push({
+          text: this.formValues.languageTypeName,
+          value: this.formValues.languageTypeResourceId
+        })
+        if (response?.data?.data?.languages.length) {
+          response?.data?.data?.languages.forEach((item) => {
+            this.selectedLanguages.push({
+              text: item.languageTypeName,
+              value: item.languageTypeResourceId
+            })
+            this.languagesPayload.push({
+              languageTypeResourceId: item.languageTypeResourceId,
+              subject: item.subject,
+              fromName: item.fromName,
+              fromAddress: item.fromAddress,
+              ccAddresses: item.ccAddresses || [],
+              template: item.template,
+              prompt: item.prompt,
+              toneResourceId: item.toneResourceId,
+              localizationResourceId: item.localizationResourceId,
+              resourceId: item.resourceId
+            })
+          })
+        }
+        this.activeLanguage = this.formValues.languageTypeResourceId
+        this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
-      const preferredLanguageTypeResourceId =
+      this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
-      this.formValues.languageTypeResourceId = preferredLanguageTypeResourceId
+    }
+  },
+  beforeDestroy() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
     }
   },
   methods: {
+    setLanguageItems() {
+      const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
+      const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []
+      const companyLanguageTypeResourceId =
+        this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
+      const languageItems = []
+      languageItems.push({
+        value: 1,
+        text: 'Preferred Languages',
+        children: preferredLanguageTypes
+      })
+      languageItems.push({
+        value: 5,
+        text: 'All Languages',
+        children: languageTypes.filter(
+          (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+        )
+      })
+      this.languageItems = languageItems
+      if (this.isEdit) return
+      const findedLanguage = languageTypes?.find(
+        (item) => item.value === companyLanguageTypeResourceId
+      )
+      if (!findedLanguage) return
+      this.selectedLanguages.push({
+        text: findedLanguage.text,
+        value: companyLanguageTypeResourceId
+      })
+      this.$nextTick(() => {
+        this.handleSelectedLanguagesChange(this.selectedLanguages)
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        this.$refs?.refEmailTemplateContent?.resetValidation()
+        if (this.getSelectedLanguagePayload.template && !this.isEdit) {
+          this.isDefault = true
+          this.handleGenerateWithAI()
+        }
+      })
+    },
+    handleEditHtmlTemplate(value) {
+      this.getSelectedLanguagePayload.template = value
+    },
     setFooterButtonIds() {
       if (!this.isDuplicate) return
       this.footerButtonsIds = {
@@ -500,10 +634,12 @@ export default {
             data: { data }
           } = response
           let { from, fromName, subject, attachments, body } = data
-          this.formValues.fromAddress = from
-          this.formValues.template = body
-          this.formValues.subject = subject
-          this.formValues.fromName = fromName
+          this.languagesPayload.forEach((item) => {
+            item.template = body
+            item.subject = subject
+            item.fromName = fromName
+            item.fromAddress = from
+          })
           if (attachments) {
             attachments = attachments.map((item) => ({
               ...item,
@@ -533,37 +669,25 @@ export default {
     handleInitialTemplate(value) {
       this.initialFormValues.template = value
     },
-    setAttachmentFile(file) {
-      if (Array.isArray(file) && file.length === 0) return
-      if (file && !file.type) {
-        let newFile = null
-        let fileExtension = ''
-        if (file?.name.includes('.')) {
-          fileExtension = file?.name?.split('.')?.pop()
+    handleSelectedLanguagesChange(languages) {
+      this.languagesPayload = languages.map((language) => {
+        const item = this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === language.value
+        )
+        if (item) return item
+        return {
+          languageTypeResourceId: language.value,
+          subject: '',
+          fromName: '',
+          fromAddress: '',
+          ccAddresses: [],
+          template: this.initialFormValues.template,
+          prompt: '',
+          toneResourceId: '',
+          localizationResourceId: '',
+          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD
         }
-        if (fileExtension === '.doc') {
-          newFile = new File([file], file.name, { type: 'application/msword' })
-        } else if (fileExtension === 'docx') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-          })
-        } else if (fileExtension === 'ppt') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.ms-powerpoint'
-          })
-        } else if (fileExtension === 'pptx') {
-          newFile = new File([file], file.name, {
-            type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-          })
-        }
-        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
-        this.isAttachmentError = false
-      } else {
-        this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
-        this.isAttachmentError = false
-      }
-      this.isPhishingFileModified = true
-      this.isAddedNewPhishingFile = true
+      })
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
@@ -639,10 +763,28 @@ export default {
           this.availableForRequests
         ),
         isAssistedByAI: this.isAssistedByAI,
-        isPlainText: !this.isPlainText
+        isPlainText: !this.isPlainText,
+        languages: this.languagesPayload
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
+        this.editedLanguages.forEach((item) => {
+          const payloadLanguage = payload.languages.find(
+            (language) => language.languageTypeResourceId === item.languageTypeResourceId
+          )
+          if (payloadLanguage) {
+            const isEqual = JSON.stringify(item) === JSON.stringify(payloadLanguage)
+            payloadLanguage.detailActionType = isEqual
+              ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO_CHANGE
+              : EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          } else {
+            payload.languages.push({
+              ...item,
+              detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE
+            })
+          }
+        })
+        payload.languages = this.setEmptyLanguagesPayload()
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
@@ -651,6 +793,7 @@ export default {
             this.isSubmitDisabled = false
           })
       } else {
+        payload.languages = this.setEmptyLanguagesPayload()
         createPhishingEmailTemplate(payload)
           .then((response) => {
             this.$emit(
@@ -665,17 +808,46 @@ export default {
           })
       }
     },
-
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })
     },
+    setEmptyLanguagesPayload() {
+      const preferredLanguagePayload = this.getPreferredLanguagePayload()
+      return this.languagesPayload.map((item) => {
+        return {
+          ...item,
+          fromName: item.fromName || preferredLanguagePayload.fromName,
+          fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
+          subject: item.subject || preferredLanguagePayload.subject,
+          template: item.template || preferredLanguagePayload.template,
+          ccAddresses: item.ccAddresses.length
+            ? item.ccAddresses
+            : preferredLanguagePayload.ccAddresses
+        }
+      })
+    },
+    getPreferredLanguagePayload() {
+      let preferredLanguagePayload = this.languagesPayload.find(
+        (item) =>
+          item.languageTypeResourceId === this.scenarioDetailsLookup.companyLanguageTypeResourceId
+      )
+      if (preferredLanguagePayload?.fromName && preferredLanguagePayload?.fromAddress)
+        return preferredLanguagePayload
+      preferredLanguagePayload = this.languagesPayload.find(
+        (item) => item?.fromName && item?.fromAddress
+      )
+      return preferredLanguagePayload || this.languagesPayload[0]
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
-          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
       })
     },
     getTagsComponent(item) {
@@ -686,6 +858,126 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
+    },
+    handleGenerateWithAI() {
+      this.isGenerateWithAi = true
+      this.isGenerateWithAIDisabled = true
+      this.$refs.refEmailTemplate.isEmailGenerating = true
+      let template = this.getSelectedLanguagePayload.template
+      let subject = this.getSelectedLanguagePayload.subject
+      this.isSubmitDisabled = true
+      scrollToEmailTemplateContent()
+      generateEmailTemplateTranslation({
+        languages: this.selectedLanguages
+          .filter((item) => this.isDefault || item.value !== this.activeLanguage)
+          .map((item) => ({
+            languageResourceId: item.value,
+            languageName: item.text
+          })),
+        template,
+        subject
+      }).then((response) => {
+        if (!response?.data?.data?.isSuccess) {
+          this.resetGenerateWithAIDisabled()
+          return
+        }
+        this.askForEmailTemplateTranslation()
+      })
+    },
+    askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId = 0) {
+      if (count >= maxCount) {
+        this.resetGenerateWithAIDisabled(timeoutId)
+        return
+      }
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        getEmailTemplateTranslation()
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            data.forEach((item) => {
+              const languagePayload = this.languagesPayload.find(
+                (language) => language.languageTypeResourceId === item.languageResourceId
+              )
+              if (!languagePayload) return
+              languagePayload.template = item.template
+              languagePayload.subject = item.subject || languagePayload.subject
+              this.$nextTick(() => {
+                const modalContent = document.querySelector('.k-overlay__container')
+                if (modalContent) {
+                  modalContent.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                    inline: 'start'
+                  })
+                  const selectedElement = document.querySelector(
+                    '.input-languages-email-template-preview-select'
+                  )
+                  if (selectedElement.classList.contains('executive-widget-container--active'))
+                    selectedElement.classList.remove('executive-widget-container--active')
+                  setTimeout(
+                    () => selectedElement.classList.add('executive-widget-container--active'),
+                    500
+                  )
+                }
+              })
+            })
+            this.resetGenerateWithAIDisabled(timeoutId)
+          })
+          .catch(() => {
+            this.askForEmailTemplateTranslation(count + 1, maxCount, timeoutId)
+          })
+      }, 5000)
+    },
+    resetGenerateWithAIDisabled(timeoutId) {
+      this.isGenerateWithAi = false
+      this.isGenerateWithAIDisabled = false
+      this.$refs.refEmailTemplate.isEmailGenerating = false
+      this.isSubmitDisabled = false
+      this.isDefault = false
+      clearTimeout(timeoutId)
+    },
+    handleActiveLanguageChange(value) {
+      if (
+        JSON.stringify(this.selectedLanguagePayloadItemBeforeSave) ===
+        JSON.stringify(this.getSelectedLanguagePayload)
+      ) {
+        this.activeLanguage = value
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        return
+      }
+      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.initialValue = this.activeLanguage
+      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.lazyValue = this.activeLanguage
+      this.showEditLanguagesLeavingDialog = true
+      this.beforeSaveLanguage = value
+    },
+    handleCloseEditLanguagesLeavingDialog() {
+      this.showEditLanguagesLeavingDialog = false
+    },
+    handleDiscardEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      this.showEditLanguagesLeavingDialog = false
+      let selectedTemplateIndex = this.languagesPayload.findIndex(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedTemplateIndex !== -1) {
+        this.$set(this.languagesPayload, selectedTemplateIndex, {
+          ...this.selectedLanguagePayloadItemBeforeSave
+        })
+      }
+      this.activeLanguage = beforeSaveLanguage
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
+    },
+    handleConfirmEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      this.showEditLanguagesLeavingDialog = false
+      this.activeLanguage = beforeSaveLanguage
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
     }
   }
 }

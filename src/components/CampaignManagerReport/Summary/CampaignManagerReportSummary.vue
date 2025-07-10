@@ -68,7 +68,7 @@
       :category="getScenarioCategory"
       :isFetchingSummary="isLoading"
     />
-    <CampaignManagerReportSummaryEmail
+    <CampaignManagerReportSummaryPhishingEmail
       :difficulties="difficulties"
       :methods="methods"
       :form-data="getEmailTemplateData"
@@ -95,7 +95,6 @@
 import CampaignManagerReportSummaryHeader from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryHeader'
 import CampaignManagerReportSummaryCards from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
-import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
@@ -107,13 +106,14 @@ import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Su
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
 import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
+import CampaignManagerReportSummaryPhishingEmail from './CampaignManagerReportSummaryPhishingEmail.vue'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryPhishingEmail,
     CampaignManagerReportSummaryTraining,
     CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
-    CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader,
@@ -297,7 +297,19 @@ export default {
       return scenariosGeneralInfo?.categories || []
     },
     getScenarioInfoItems() {
-      const { scenariosGeneralInfo = {} } = this.campaignSummary || {}
+      const { scenariosGeneralInfo = {}, scenarios = {} } = this.campaignSummary || {}
+      let languageShortCodesEmailTemplateInfos = new Set()
+      if (scenarios?.length) {
+        scenarios.forEach((item) => {
+          if (item.emailTemplateInfos?.length) {
+            item.emailTemplateInfos.forEach((emailTemplateInfo) => {
+              languageShortCodesEmailTemplateInfos.add(emailTemplateInfo.languageShortCode)
+            })
+          } else {
+            languageShortCodesEmailTemplateInfos.add(item.emailTemplateInfo.languageShortCode)
+          }
+        })
+      }
       if (Object.keys(scenariosGeneralInfo).length) {
         const {
           categories,
@@ -316,7 +328,9 @@ export default {
         return {
           NumberOfCategories: categories.length,
           Method: methodText,
-          Languages: languageShortCodes.join(','),
+          Languages: languageShortCodesEmailTemplateInfos.size
+            ? [...languageShortCodesEmailTemplateInfos].join(', ')
+            : languageShortCodes.join(','),
           Difficulty: difficultyText
         }
       }
@@ -493,14 +507,36 @@ export default {
       return this.getActiveScenario?.scenarioInfo?.category || 'Remote Working'
     },
     getEmailTemplateData() {
-      const { emailTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {
+      const { emailTemplateInfo = {}, scenarioInfo = {}, emailTemplateInfos = {} } = this
+        .getActiveScenario || {
         emailTemplateInfo: {}
       }
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
       const { resourceId, phishingFileName } = emailTemplateInfo || {}
-
+      if (Object.keys(emailTemplateInfos)?.length) {
+        return {
+          resourceId,
+          languageShortCode: emailTemplateInfos?.map((item) => item.languageShortCode),
+          attachment: phishingFileName
+            ? {
+                name: phishingFileName
+              }
+            : null,
+          campaignResourceId: this.id,
+          instanceGroup: this.instanceGroup,
+          languages: emailTemplateInfos?.map((item) => ({
+            languageTypeResourceId: item.languageTypeResourceId,
+            languageShortCode: item.languageShortCode,
+            fromName: item.fromName,
+            fromAddress: item.fromAddress,
+            subject: item.subject,
+            ccAddresses: item.ccAddresses,
+            template: item.template
+          }))
+        }
+      }
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,

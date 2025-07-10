@@ -1,5 +1,8 @@
 <template>
-  <div style="margin-bottom: 110px !important;" id="threat-sharing-post-incident-grapesjs-modal">
+  <div
+    style="margin-bottom: 110px !important;"
+    id="threat-sharing-post-incident-grapesjs-modal"
+  >
     <DefaultErrorDialog
       v-if="showInvalidUrlMessage"
       :status="showInvalidUrlMessage"
@@ -99,7 +102,7 @@ export default {
       url: {
         required: (v) => (v && v.length <= 256) || 'It must between 1 - 256 characters',
         format: (v) =>
-          /(ftp|http|https):\/\/(\w+:?\w*@)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/gi.test(v) ||
+          /(ftp|http|https):\/\/(\w+:?\w*@)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%@\-/]))?/gi.test(v) ||
           'invalid url'
       },
       urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
@@ -265,11 +268,12 @@ export default {
       let dModel = dType.model
       let dView = dType.view
       this.editor.DomComponents.addType('link', {
-        model: dModel.extend({
-          defaults: Object.assign({}, dModel.prototype.defaults, {
+        model: {
+          defaults: {
+            ...dModel.prototype.defaults,
             traits: this.traits
-          })
-        }),
+          }
+        },
         view: dView
       })
     },
@@ -583,7 +587,7 @@ export default {
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
           )
           arrangedComment = arrangedComment.replace(
-            /fillcolor="([^\'\"]+)?"/g,
+            /fillcolor="([^'"]+)?"/g,
             `fillcolor="${buttonStyles['background-color'] || buttonStyles['background']}}"`
           )
           arrangedComment = arrangedComment.replace(
@@ -697,7 +701,7 @@ export default {
                 styleChanges?.property?.attributes?.property === 'background'
               ) {
                 commentElement.attributes.content = commentElement.attributes.content.replace(
-                  /fillcolor="([^\'\"]+)"/g,
+                  /fillcolor="([^'"]+)"/g,
                   `fillcolor="${styleChanges.value}"`
                 )
               }
@@ -832,8 +836,7 @@ export default {
         if (component?.ccid?.includes('outlook-button-href-id')) {
           const editor = this.editor
           const outlookSpanItems = editor.DomComponents.getWrapper().find('.outlook-button-span-id')
-          for (let i = 0; i < outlookSpanItems.length; i++) {
-            const element = outlookSpanItems[i]
+          for (const element of outlookSpanItems) {
             if (!element?.toHTML?.()?.includes('outlook-button-href-id')) element.remove()
           }
         }
@@ -993,10 +996,16 @@ export default {
               const code = codeViewer.editor.getValue()
               const callback = (importedCode = code) => {
                 const doc = new DOMParser().parseFromString(importedCode, 'text/html')
+                btnImp.style.opacity = '1'
+                btnImp.style.cursor = 'pointer'
+                btnImp.style.pointerEvents = 'auto'
                 editor.setComponents(doc.children[0].outerHTML)
                 editor.getWrapper().setStyle(doc.body.style.cssText)
                 editor.Modal.close()
               }
+              btnImp.style.opacity = '0.5'
+              btnImp.style.cursor = 'default'
+              btnImp.style.pointerEvents = 'none'
               minifyHTML(code)
                 .then((response) => {
                   callback(response?.data?.data?.htmlContent || '')

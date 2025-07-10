@@ -121,6 +121,20 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableItems: [],
     filterableCustomFieldName: 'languageTypeResourceId'
   },
+  LANGUAGES: {
+    property: PROPERTY_STORE.LANGUAGE,
+    align: 'left',
+    editable: false,
+    label: labels.Languages,
+    sortable: true,
+    show: true,
+    type: 'multiText',
+    fixed: false,
+    width: 175,
+    filterableType: 'select',
+    filterableItems: [],
+    filterableCustomFieldName: 'languageTypeResourceId'
+  },
   TAGS: {
     property: PROPERTY_STORE.TAGS,
     align: 'left',

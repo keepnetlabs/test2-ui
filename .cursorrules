@@ -1,670 +1,407 @@
 # KeepnetLabs Vue 2 Frontend Development Rules
 
-## Project Overview
-This project is built with Vue 2.7.8, Vuetify 2.6.9, and follows enterprise-grade development practices. As a Senior Frontend Developer working on this project, you are expected to:
+## 🎯 PROJECT OVERVIEW
 
-- Write clean, maintainable, and scalable code
-- Follow Vue 2 Options API patterns
-- Implement proper state management with Vuex
-- Use Vuetify components effectively
-- Ensure high performance and accessibility
-- Maintain code quality and consistency
-- Follow security best practices
-- Document your code properly
+The project aims to develop a **KeepnetLabs Human Risk Management** platform for web users.
+**Mission:** Transform human risk into human resilience.
 
-## Development Environment
-- Vue 2.7.8
-- Vuetify 2.6.9
-- Vuex 3.4.0
-- Vue Router 3.3.4
-- Axios 0.27.2
-- ESLint & Prettier for code quality
-- Jest for testing
+Phishing, social‑engineering and user error still trigger the majority of breaches.
+The platform reframes this as a human‑risk problem and couples continuous measurement with adaptive controls to shrink that risk over time.
+AI‑driven "best‑of‑suite" platform that unifies training, behavioural telemetry and automated controls under one console.
 
-## Senior Frontend Developer Coding Guidelines
+### Core Benefits
+- **Quantify human risk:** Individual & org‑level risk scores pull from phishing tests, password hygiene, email behaviour and policy violations
+- **Lower breach probability:** Average Phish‑prone % drops from >30% to <5% in 12 months when programmes run continuously
+- **Reduce incident‑response effort:** Automates triage & remediation of >85% of user‑reported emails
 
-### Code Writing Style
+### Scale & Performance Requirements
+- **1,000 organizations** and **500,000 users**
+- **95% user engagement**, **99.9% uptime**, **10,000 monthly risk assessments**
+- **<1000ms response time** for real-time analytics
+
+---
+
+## 🛠️ TECH STACK
+
+### Core Framework
+- **Vue 2.7.8** (Options API only)
+- **Vuetify 2.6.9** (Material Design)
+- **Vuex 3.4.0** + **Vue Router 3.3.4**
+- **Axios 0.27.2** + **Sentry** (Error tracking)
+
+### Key Libraries
+- **Forms:** vue-tel-input, v-mask, awesome-phonenumber
+- **Charts:** chart.js, vue-chartjs
+- **Rich Text:** GrapesJS + plugins
+- **Security:** sanitize-html
+- **Testing:** jest, @vue/test-utils
+
+---
+
+## 📝 CODING PRINCIPLES
+
+### Philosophy
 - Always write code as if the next developer is a psychopath who knows where you live
-- Write code that is easy to delete, not easy to extend
-- If you can't explain it to a six-year-old, you don't understand it yourself
-- Code is like humor. When you have to explain it, it's bad
-- Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live
-- The best code is no code at all
-- The only way to go fast is to go well
 - Clean code always looks like it was written by someone who cares
+- The best code is no code at all
 
-### Component Development
-- Components should do one thing and do it well
-- Keep components small and focused
-- Use meaningful component names
-- Follow single responsibility principle
-- Make components reusable and configurable
-- Document component props and events
-- Use proper error boundaries
-- Implement proper loading states
-- Use proper component lifecycle hooks
-- Implement proper component communication
-- Use proper component composition
-- Follow proper component naming conventions
-- Use proper component documentation
-- Implement proper component testing
-- Use proper component styling
+### Core Rules
+- **KISS** - Keep It Simple, Stupid
+- **DRY** - Don't Repeat Yourself
+- **TDD** - Test-Driven Development
+- **YAGNI** - You Aren't Gonna Need It
 
-### Vue 2 Specific Guidelines
-- Use Options API with proper organization:
-  - name
-  - components
-  - props
-  - data
-  - computed
-  - watch
-  - methods
-  - lifecycle hooks
-- Use v-bind and v-on shorthands (: and @)
-- Implement proper component lifecycle hooks
-- Use Vue.set for reactive array/object updates
-- Follow Vue 2 best practices for state management with Vuex
-- Use proper event handling
-- Implement proper form handling
-- Use proper routing patterns
-- Implement proper authentication flow
-- Use proper error handling
-- Implement proper loading states
-- Use proper animation patterns
-- Implement proper transition effects
-- Use proper directive patterns
-- Implement proper filter patterns
-- Use proper mixin patterns
+### Platform Personality
+- **Reliable & Trustworthy** – Ensures accurate organization listings, transparent pricing, and secure transactions
+- **User-Centric & Intuitive** – Provides a seamless experience for both organizations and employees
+- **Fast & Responsive** – Optimized for quick search results and smooth booking processes across web and mobile
+- **Scalable & Adaptable** – Designed to accommodate future growth and new human risk management services
+- **Modern & Aesthetic** – Features a clean, visually appealing, and engaging user interface
 
-### State Management
-- Keep state as close as possible to where it's used
+---
+
+## 🏗️ VUE 2 COMPONENT GUIDELINES
+
+### Structure (Options API)
+```javascript
+export default {
+  name: 'ComponentName',        // PascalCase
+  components: {},
+  props: {},
+  data() { return {} },
+  computed: {},
+  watch: {},
+  methods: {
+    handleClick() {}            // 'handle' prefix for events
+  },
+  mounted() {}
+}
+```
+
+### Naming Conventions
+- **Components:** PascalCase (`UserProfile.vue`)
+- **Variables/Functions:** camelCase (`isValid`, `handleSubmit`)
+- **Event Handlers:** `handle` prefix (`handleClick`)
+- **Constants:** UPPER_SNAKE_CASE (`API_BASE_URL`)
+
+### Development Approach
+- **Vue‐First Mindset:** Write every UI element as a Vue 2.7 Single‐File Component (`.vue`)
+- **Vuetify Priority:** Prefer Vuetify 2.6 components (`<v-*>`) over raw HTML
+- **Simple Solutions:** Choose computed properties over complex watchers when reactivity suffices
+- **Consistent Structure:** Always structure templates, scripts, and styles in their own blocks
+
+---
+
+## 🎨 VUETIFY GUIDELINES
+
+### Best Practices
+- Use Vuetify components over raw HTML
+- Proper grid system and form validation
+- Material Design patterns + responsive design
+- Theme customization and proper props
+- Tree-shaking: Import only used components
+
+### Example
+```vue
+<template>
+  <v-container>
+    <v-card>
+      <v-card-title>{{ title }}</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="form.email" :rules="emailRules" label="Email" required />
+      </v-card-text>
+    </v-card>
+  </v-container>
+</template>
+```
+
+---
+
+## 📊 STATE MANAGEMENT (VUEX)
+
+### Module Structure
+```javascript
+export default {
+  namespaced: true,
+  state: {},
+  getters: {},
+  mutations: {},
+  actions: {}
+}
+```
+
+### Usage Patterns
+```javascript
+// Actions
+this.$store.dispatch('auth/login', { username, password })
+// Getters
+this.$store.getters['auth/isLoggedIn']
+```
+
+### Rules
+- Keep state close to where it's used
 - Use Vuex for global state only
-- Implement proper state normalization
-- Use proper state immutability
-- Implement proper state persistence
-- Use proper state validation
-- Implement proper state synchronization
-- Use proper state caching
-- Use proper state namespacing
-- Implement proper state actions
-- Use proper state mutations
-- Implement proper state getters
-- Use proper state modules
-- Implement proper state plugins
-- Use proper state strict mode
+- Proper namespacing and immutability
+- Always prefix module name in dispatch calls
 
-### Vuetify Specific Guidelines
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
-- Use proper navigation patterns
-- Implement proper dialog patterns
-- Use proper snackbar patterns
-- Implement proper card patterns
-- Use proper list patterns
-- Implement proper chip patterns
-- Use proper button patterns
-- Implement proper icon patterns
-- Use proper typography patterns
+---
+
+## 🔒 SECURITY & PERFORMANCE
+
+### Security First
+- **Never render unsanitized HTML** - Use `sanitize-html` with `cleanUserHtml()` function
+- **Environment variables** - Use `process.env.VUE_APP_*` exclusively, no hardcoded secrets
+- **Input validation** - Phone numbers with `awesome-phonenumber`
+- **Error tracking** - Wrap API calls with try-catch + Sentry
+- **Authentication** - JWT tokens + route guards
 
 ### Performance Optimization
-- Implement proper code splitting
-- Use proper lazy loading
-- Optimize bundle size
-- Use proper caching strategies
-- Implement proper memoization
-- Use proper debouncing and throttling
-- Optimize render performance
-- Use proper virtual scrolling
-- Implement proper image optimization
-- Use proper font optimization
-- Implement proper CSS optimization
-- Use proper JavaScript optimization
-- Implement proper API optimization
-- Use proper state optimization
-- Implement proper component optimization
+- **Lazy load** large dependencies (GrapesJS, Chart.js) via dynamic imports
+- **Computed properties** for expensive calculations
+- **Memoization** in Vuex getters and component computed properties
+- **Early returns** in methods
+- **Vuetify tree-shaking** - Import only used components
 
-### Error Handling
-- Implement proper error boundaries
-- Use proper error logging
-- Provide user-friendly error messages
-- Handle edge cases properly
-- Implement proper error recovery
-- Use proper error tracking
-- Implement proper error reporting
-- Use proper error monitoring
-- Use proper error types
-- Implement proper error handling patterns
-- Use proper error recovery patterns
-- Implement proper error logging patterns
-- Use proper error tracking patterns
-- Implement proper error reporting patterns
-- Use proper error monitoring patterns
+### Error Handling Pattern
+```javascript
+try {
+  const response = await apiClient.get('/dashboard/data')
+  return response.data
+} catch (err) {
+  Sentry.captureException(err)
+  throw err
+}
+```
 
-### Testing
-- Write tests that are easy to maintain
-- Test behavior, not implementation
-- Use proper test naming
-- Follow testing best practices
-- Implement proper test coverage
-- Use proper test isolation
-- Implement proper test data
-- Use proper test assertions
-- Use proper test patterns
-- Implement proper test organization
-- Use proper test documentation
-- Implement proper test automation
-- Use proper test reporting
-- Implement proper test coverage reporting
-- Use proper test performance monitoring
+---
 
-### Security
-- Sanitize all user input
-- Implement proper authentication
-- Use proper authorization
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
-- Use proper security headers
-- Use proper security patterns
-- Implement proper security testing
-- Use proper security monitoring
-- Implement proper security logging
-- Use proper security reporting
-- Implement proper security auditing
-- Use proper security compliance
+## 🧪 TESTING (TDD)
 
-### Documentation
-- Document complex logic
-- Keep documentation up to date
-- Use proper JSDoc comments
-- Document API endpoints
-- Keep README up to date
-- Document deployment process
-- Keep changelog up to date
-- Document troubleshooting steps
-- Use proper documentation patterns
-- Implement proper documentation organization
-- Use proper documentation tools
-- Implement proper documentation automation
-- Use proper documentation review
-- Implement proper documentation maintenance
-- Use proper documentation versioning
+### Framework & Location
+- **Jest + Vue Test Utils**
+- **Location:** `tests/unit/`
+- **Coverage:** Components, store modules, utilities
+- **Write tests first** - Treat failures as blockers
 
-### Code Review
-- Review code with empathy
-- Provide constructive feedback
-- Focus on maintainability
-- Check for security issues
-- Verify performance impact
-- Ensure proper error handling
-- Check for accessibility
-- Verify proper testing
-- Use proper code review patterns
-- Implement proper code review process
-- Use proper code review tools
-- Implement proper code review automation
-- Use proper code review metrics
-- Implement proper code review reporting
-- Use proper code review follow-up
+### Test Everything
+- Vuex store actions/mutations
+- Utility functions (phone formatting, etc.)
+- GrapesJS editor initialization logic
+- Component rendering and interactions
 
+### Example
+```javascript
+import { shallowMount } from '@vue/test-utils'
+import MyComponent from '@/components/MyComponent.vue'
 
-### Deployment
-- Use proper CI/CD pipeline
-- Implement proper versioning
-- Use proper environment variables
-- Follow deployment best practices
-- Implement proper rollback
-- Use proper monitoring
-- Implement proper logging
-- Follow deployment guidelines
-- Use proper deployment patterns
-- Implement proper deployment process
-- Use proper deployment tools
-- Implement proper deployment automation
-- Use proper deployment metrics
-- Implement proper deployment reporting
-- Use proper deployment follow-up
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    const wrapper = shallowMount(MyComponent, {
+      propsData: { title: 'Test' }
+    })
+    expect(wrapper.find('h1').text()).toBe('Test')
+  })
+})
+```
 
-## Code Style Guidelines
+---
 
-### General
-- Use early returns for better code readability
-- Follow DRY (Don't Repeat Yourself) principle
-- Write self-documenting code with clear variable and function names
-- Keep functions small and focused on single responsibility
-- Use proper error handling with try-catch blocks
-- Follow Vue 2 Options API patterns
+## 📁 FILE STRUCTURE
 
-### Naming Conventions
-- Use camelCase for variables and functions
-- Use PascalCase for components
-- Prefix event handlers with 'handle' (e.g., handleClick, handleSubmit)
-- Use descriptive names that explain purpose
-- Avoid abbreviations unless widely accepted
-- Component names should be multi-word (e.g., UserProfile, DataTable)
+```
+├── package.json
+├── src/
+│   ├── api/
+│   │   └── (…any API‐related modules, e.g. apiClient.js, endpoints/*.js)
+│   │
+│   ├── assets/
+│   │   ├── Fonts/
+│   │   ├── img/
+│   │   └── scss/
+│   │
+│   ├── components/
+│   │   ├── AdvanceReports/
+│   │   ├── AwarenessEducator/
+│   │   ├── ButtonRadioGroup/
+│   │   └── (other reusable Vue components)
+│   │
+│   ├── directives/
+│   │   └── (e.g. datatable-row-color-handler, etc.)
+│   │
+│   ├── helper-classes/
+│   │   └── (plain JavaScript helper classes, e.g. query-helper.js)
+│   │
+│   ├── hooks/
+│   │   └── (Vue “composition‐style” or custom hook files, e.g. useCallbackResend.js)
+│   │
+│   ├── layout/
+│   │   ├── AppFooter.vue
+│   │   ├── AppRouterItem.vue
+│   │   └── (any other layout‐level components like SideNav.vue, DashboardLayout.vue)
+│   │
+│   ├── model/
+│   │   └── (Type definitions or plain JS model classes, e.g. labels.js)
+│   │
+│   ├── permissions/
+│   │   └── (permission logic or role constants, e.g. index.js)
+│   │
+│   ├── plugins/
+│   │   ├── sentry.js          # Sentry init
+│   │   └── vuetify.js         # `import Vue from 'vue'; import Vuetify from 'vuetify/lib'; …`
+│   │
+│   ├── router/
+│   │   └── index.js           # Vue Router config (routes, guards, etc.)
+│   │
+│   ├── services/
+│   │   ├── authentication.js     # login/logout API calls, token handling
+│   │   └── (other domain‐specific service modules)
+│   │
+│   ├── store/
+│   │   ├── modules/
+│   │   │   ├── auth.js
+│   │   │   ├── common.js
+│   │   │   ├── communities.js
+│   │   │   ├── dashboards.js
+│   │   │   ├── datatable.js
+│   │   │   ├── executiveReports.js
+│   │   │   ├── incidents.js
+│   │   │   ├── investigations.js
+│   │   │   ├── learningPath.js
+│   │   │   ├── login.js
+│   │   │   ├── permissions.js
+│   │   │   ├── playbook.js
+│   │   │   ├── rightColumn.js
+│   │   │   ├── tableReload.js
+│   │   │   ├── trainingLibrary.js
+│   │   │   ├── trainingLibraryHelpers.js
+│   │   │   ├── whitelabel.js
+│   │   │   ├── widgets.js
+│   │   │   └── index.js       # exports/aggregates all modules
+│   │   │
+│   │   └── index.js           # Vuex root store, imports the above modules
+│   │
+│   ├── utils/
+│   │   ├── authTestRequest.js   # auth test request
+│   │   └── (other shared utility functions)
+│   │
+│   ├── views/
+│   │   ├── Login.vue
+│   │   ├── DashBoard.vue
+│   │   ├── Enrollments.vue
+│   │   └── (other top‐level pages)
+│   │
+│   ├── App.vue
+│   └── main.js
+│
+├── tests/
+│   ├── unit/
+│   │   ├── components/
+│   │   │   └── MyComponent.spec.js
+│   │   ├── store/
+│   │   │   └── auth.spec.js
+│   │   └── services/
+│   │       └── authService.spec.js
+│   └── (any integration or e2e tests if added later)
+│
+└── README.md
+└── .env
+└── .env.local
+└── .env.production
+└── .nvmrc
+└── .gitignore
+└── .cursorrules
+└── babel.config.js
+└── jest.config.js
+└── vuetify.config.js
+└── Web.config # IIS hosting and configuration file
+```
 
-### JavaScript
-- Use ES6+ features where supported
-- Implement proper error handling
-- Use async/await for asynchronous operations
-- Follow functional programming principles
-- Use proper type checking
-- Implement proper logging
+## 🚀 KEY FEATURES
 
-### Styling
-- Use Vuetify components and classes
-- Follow BEM naming for custom CSS
-- Use scoped styles in components
-- Implement responsive design
-- Use CSS variables for theme values
-- Keep styles modular and reusable
+### Core Modules
+- **Campaign Management** - Phishing simulation campaigns
+- **Security Training** - CBT, VBT, AIT modules
+- **AI Agents (AIKA)** - Automated risk assessment
+- **Compliance** - GDPR, HIPAA, PCI-DSS
+- **Incident Response** - 48.6x faster attack identification
 
-### Accessibility
-- Implement proper ARIA attributes
-- Ensure keyboard navigation
-- Add proper focus management
-- Include alt text for images
-- Use semantic HTML elements
-- Follow WCAG 2.1 guidelines
+### Simulation Types
+- Phishing, Smishing, Vishing, Quishing, Callback
+- Spear phishing with personalized payloads
 
-### Performance
-- Use v-if and v-show appropriately
-- Implement proper list rendering with :key
-- Use computed properties for complex calculations
-- Implement proper caching strategies
-- Optimize images and assets
-- Use proper lazy loading
+---
 
-### Testing
-- Write unit tests for components
-- Use Vue Test Utils
-- Implement proper test coverage
-- Follow testing best practices
-- Document test cases
-- Use proper mocking
+## 🔄 DEVELOPMENT WORKFLOW
 
-### Git
-- Write clear commit messages
-- Follow conventional commits
-- Keep commits atomic
-- Review code before committing
-- Use proper branching strategy
-- Keep feature branches up to date
+### Git Flow
+1. Create feature branch from main
+2. Write tests first (TDD)
+3. Implement with Vue 2 patterns
+4. Run quality checks (`npm run lint`, `npm run test:unit`)
+5. Create PR → Review → Merge
 
-### Security
-- Sanitize user input
-- Implement proper authentication
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
+### Quality Commands
+```bash
+npm run lint          # ESLint check
+npm run format        # Prettier format
+npm run test:unit     # Run tests
+npm run build         # Production build
+```
 
-### Error Handling
-- Implement proper error boundaries
-- Use try-catch blocks appropriately
-- Log errors properly
-- Handle edge cases
-- Provide user-friendly error messages
-- Implement proper error recovery
+### Code Style (ESLint + Prettier)
+- No semicolons, single quotes, no trailing commas, 2-space indent
+- Run `npm run lint` before committing
+- Component files in `PascalCase.vue`
 
-### Code Organization
-- Follow feature-based folder structure
-- Keep related files together
-- Use proper import/export patterns
-- Maintain consistent file naming
-- Organize code logically
-- Use proper module separation
+---
 
-### Development Workflow
-- Use proper linting with ESLint
-- Follow formatting rules with Prettier
-- Run tests before committing
-- Review code regularly
-- Keep development environment consistent
-- Use proper debugging tools
+## 🌍 ENVIRONMENT CONFIGURATION
 
-### Vuetify Specific
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
+### Environment Files
+- `.env` - Base variables
+- `.env.local` - Local overrides
+- `.env.production` - Production settings
 
-### Vuex Store
-- Use proper module structure
-- Implement proper state management
-- Use proper getters and mutations
-- Follow Vuex best practices
-- Keep store organized
-- Use proper namespacing
+### Required Variables
+```bash
+VUE_APP_API_URL=your-api-url
+VUE_APP_SENTRY_DSN=your-sentry-dsn
+```
 
-### API Integration
-- Use proper axios configuration
-- Implement proper error handling
-- Use proper request/response interceptors
-- Follow REST API best practices
-- Implement proper caching
-- Use proper authentication
+---
 
-### GrapesJS Integration
-- Use proper editor initialization
-- Implement proper block management
-- Handle editor events properly
-- Use proper asset management
-- Implement proper style management
-- Handle custom components properly
-- Use proper plugin configuration
-- Implement proper storage handling
-- Handle editor state properly
-- Use proper command management
-- Implement proper UI customization
-- Handle editor content properly
-- Use proper block customization
-- Implement proper style customization
-- Handle editor export properly
+## 💡 BEST PRACTICES & PATTERNS
 
-### Chart.js Integration
-- Use proper chart initialization
-- Implement proper data formatting
-- Handle chart updates properly
-- Use proper chart types
-- Implement proper chart options
-- Handle chart events properly
-- Use proper chart styling
-- Implement proper chart animations
-- Handle chart responsiveness properly
-- Use proper chart plugins
-- Implement proper chart tooltips
-- Handle chart legends properly
-- Use proper chart scales
-- Implement proper chart interactions
-- Handle chart exports properly
+### Code Documentation
+- Add JSDoc comments to utility functions in `/src/utils/`
+- Document non-obvious prop/emit contracts
+- Clarify complex logic with inline comments
+- Update README when introducing new modules
 
-### PDF Handling
-- Use proper PDF initialization
-- Implement proper page navigation
-- Handle PDF loading properly
-- Use proper PDF rendering
-- Implement proper PDF zooming
-- Handle PDF errors properly
-- Use proper PDF annotations
-- Implement proper PDF searching
-- Handle PDF printing properly
-- Use proper PDF downloading
-- Implement proper PDF rotation
-- Handle PDF scaling properly
-- Use proper PDF caching
-- Implement proper PDF security
-- Handle PDF accessibility properly
+### Router Guards Pattern
+```javascript
+router.beforeEach((to, from, next) => {
+  // If route requires auth but user is not logged in, redirect to /login
+  if (to.meta.requiresAuth && !store.getters['auth/isLoggedIn']) {
+    return next({ name: 'Login' })
+  }
+  next()
+})
+```
 
-### PowerBI Integration
-- Use proper report embedding
-- Implement proper report configuration
-- Handle report events properly
-- Use proper report filtering
-- Implement proper report navigation
-- Handle report errors properly
-- Use proper report styling
-- Implement proper report interactions
-- Handle report updates properly
-- Use proper report security
-- Implement proper report customization
-- Handle report loading properly
-- Use proper report performance
-- Implement proper report accessibility
-- Handle report exports properly
+### Reusable Components
+- Extract shared code to `/src/utils/` utilities
+- Create reusable chart wrappers in `/src/components/charts/`
+- Share Axios configuration via `src/services/apiClient.js`
 
-### Form Handling
-- Use proper form validation
-- Implement proper input masking
-- Handle form submission properly
-- Use proper form state management
-- Implement proper form error handling
-- Handle form reset properly
-- Use proper form field types
-- Implement proper form field validation
-- Handle form field updates properly
-- Use proper form field styling
-- Implement proper form field accessibility
-- Handle form field focus properly
-- Use proper form field events
-- Implement proper form field dependencies
-- Handle form field visibility properly
+---
 
-### Offline Support
-- Use proper offline detection
-- Implement proper data caching
-- Handle offline state properly
-- Use proper sync strategies
-- Implement proper error handling
-- Handle reconnection properly
-- Use proper data persistence
-- Implement proper conflict resolution
-- Handle offline forms properly
-- Use proper offline notifications
-- Implement proper offline queue
-- Handle offline updates properly
-- Use proper offline storage
-- Implement proper offline security
-- Handle offline cleanup properly
+## ⚡ IMPORTANT REMINDERS
 
-### API Integration
-- Use proper API configuration
-- Implement proper request handling
-- Handle API errors properly
-- Use proper response formatting
-- Implement proper caching strategies
-- Handle API timeouts properly
-- Use proper authentication
-- Implement proper authorization
-- Handle API rate limiting properly
-- Use proper API documentation
-- Implement proper API testing
-- Handle API versioning properly
-- Use proper API security
-- Implement proper API monitoring
-- Handle API logging properly
-
-### Helper Classes
-- Use proper class organization
-- Implement proper method naming
-- Handle class inheritance properly
-- Use proper class documentation
-- Implement proper class testing
-- Handle class errors properly
-- Use proper class utilities
-- Implement proper class validation
-- Handle class state properly
-- Use proper class patterns
-- Implement proper class security
-- Handle class performance properly
-- Use proper class accessibility
-- Implement proper class maintenance
-- Handle class updates properly
-
-### Directives
-- Use proper directive registration
-- Implement proper directive logic
-- Handle directive updates properly
-- Use proper directive documentation
-- Implement proper directive testing
-- Handle directive errors properly
-- Use proper directive performance
-- Implement proper directive security
-- Handle directive cleanup properly
-- Use proper directive patterns
-- Implement proper directive validation
-- Handle directive state properly
-- Use proper directive accessibility
-- Implement proper directive maintenance
-- Handle directive updates properly
-
-### Permissions
-- Use proper permission checking
-- Implement proper role management
-- Handle permission updates properly
-- Use proper permission documentation
-- Implement proper permission testing
-- Handle permission errors properly
-- Use proper permission caching
-- Implement proper permission security
-- Handle permission state properly
-- Use proper permission patterns
-- Implement proper permission validation
-- Handle permission changes properly
-- Use proper permission logging
-- Implement proper permission monitoring
-- Handle permission cleanup properly
-
-### Model Management
-- Use proper model definition
-- Implement proper model validation
-- Handle model updates properly
-- Use proper model documentation
-- Implement proper model testing
-- Handle model errors properly
-- Use proper model relationships
-- Implement proper model security
-- Handle model state properly
-- Use proper model patterns
-- Implement proper model serialization
-- Handle model persistence properly
-- Use proper model caching
-- Implement proper model monitoring
-- Handle model cleanup properly
-
-## Code Style Guidelines
-
-### General
-- Use early returns for better code readability
-- Follow DRY (Don't Repeat Yourself) principle
-- Write self-documenting code with clear variable and function names
-- Keep functions small and focused on single responsibility
-- Use proper error handling with try-catch blocks
-- Follow Vue 2 Options API patterns
-
-### Naming Conventions
-- Use camelCase for variables and functions
-- Use PascalCase for components
-- Prefix event handlers with 'handle' (e.g., handleClick, handleSubmit)
-- Use descriptive names that explain purpose
-- Avoid abbreviations unless widely accepted
-- Component names should be multi-word (e.g., UserProfile, DataTable)
-
-### JavaScript
-- Use ES6+ features where supported
-- Implement proper error handling
-- Use async/await for asynchronous operations
-- Follow functional programming principles
-- Use proper type checking
-- Implement proper logging
-
-### Styling
-- Use Vuetify components and classes
-- Follow BEM naming for custom CSS
-- Use scoped styles in components
-- Implement responsive design
-- Use CSS variables for theme values
-- Keep styles modular and reusable
-
-### Accessibility
-- Implement proper ARIA attributes
-- Ensure keyboard navigation
-- Add proper focus management
-- Include alt text for images
-- Use semantic HTML elements
-- Follow WCAG 2.1 guidelines
-
-### Performance
-- Use v-if and v-show appropriately
-- Implement proper list rendering with :key
-- Use computed properties for complex calculations
-- Implement proper caching strategies
-- Optimize images and assets
-- Use proper lazy loading
-
-### Testing
-- Write unit tests for components
-- Use Vue Test Utils
-- Implement proper test coverage
-- Follow testing best practices
-- Document test cases
-- Use proper mocking
-
-### Git
-- Write clear commit messages
-- Follow conventional commits
-- Keep commits atomic
-- Review code before committing
-- Use proper branching strategy
-- Keep feature branches up to date
-
-### Documentation
-- Document complex logic
-- Add JSDoc comments for functions
-- Keep README up to date
-- Document component props and events
-- Maintain changelog
-- Document API integrations
-
-### Security
-- Sanitize user input
-- Implement proper authentication
-- Follow security best practices
-- Keep dependencies updated
-- Handle sensitive data properly
-- Implement proper CORS policies
-
-### Error Handling
-- Implement proper error boundaries
-- Use try-catch blocks appropriately
-- Log errors properly
-- Handle edge cases
-- Provide user-friendly error messages
-- Implement proper error recovery
-
-### Code Organization
-- Follow feature-based folder structure
-- Keep related files together
-- Use proper import/export patterns
-- Maintain consistent file naming
-- Organize code logically
-- Use proper module separation
-
-### Development Workflow
-- Use proper linting with ESLint
-- Follow formatting rules with Prettier
-- Run tests before committing
-- Review code regularly
-- Keep development environment consistent
-- Use proper debugging tools
-
-### Vuetify Specific
-- Use proper grid system
-- Implement proper form validation
-- Use theme customization
-- Follow Vuetify best practices
-- Use proper component props
-- Implement proper data tables
-
-### Vuex Store
-- Use proper module structure
-- Implement proper state management
-- Use proper getters and mutations
-- Follow Vuex best practices
-- Keep store organized
-- Use proper namespacing
-
-### API Integration
-- Use proper axios configuration
-- Implement proper error handling
-- Use proper request/response interceptors
-- Follow REST API best practices
-- Implement proper caching
-- Use proper authentication
+- **English only** for code and documentation
+- **Vue 2.7.8 strict** - No Composition API or Vue 3 features
+- **Vuetify first** - Avoid raw HTML when Vuetify components exist
+- **Security first** - Always sanitize inputs, use env vars
+- **Performance matters** - 500k+ users require optimized code
+- **TDD mandatory** - Test everything, treat failures as blockers
+- **Enterprise quality** - Code for maintainability and scalability

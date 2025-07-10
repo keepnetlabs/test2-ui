@@ -242,6 +242,9 @@ export default {
           }
         ]
       }
+      let stepSize = maxTick / 5
+      if (maxTick < 50) stepSize = 10
+      else if (maxTick <= 100) stepSize = 20
       this.chartOptions = {
         devicePixelRatio: 2,
         responsive: true,
@@ -285,7 +288,7 @@ export default {
               ticks: {
                 min: 0,
                 max: maxTick,
-                stepSize: maxTick < 50 ? 10 : maxTick <= 100 ? 20 : maxTick / 5,
+                stepSize,
                 labelOffset: 0,
                 padding: 12,
                 fontColor: 'rgba(56, 59, 65, 0.72)',

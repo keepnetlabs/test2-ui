@@ -165,28 +165,9 @@ export default {
       const simulated = values.find((data) => data.name === 'SimulatedPercentage')?.value
       const realSimulatedUsers = simulatedUsers
       if (simulated === 1) {
-        const divideValue = nonSimulatedUsers / simulatedUsers
-        if (divideValue > 2000) simulatedUsers *= 20
-        else if (divideValue > 1000) simulatedUsers *= 10
-        else if (divideValue > 500) simulatedUsers *= 5
-        else if (divideValue > 200) simulatedUsers *= 2
+        simulatedUsers = this.calculateSimulatedValue(nonSimulatedUsers, simulatedUsers)
       }
-      if (biggestValue <= 20) {
-        biggestValue = 20
-      } else if (biggestValue > 20 && biggestValue <= 40) {
-        biggestValue = 40
-      } else if (biggestValue > 40 && biggestValue <= 60) {
-        biggestValue = 60
-      } else if (biggestValue > 60 && biggestValue <= 80) {
-        biggestValue = 80
-      } else {
-        const remainder = Math.floor(biggestValue / 50)
-        if (!remainder) {
-          biggestValue = 100
-        } else {
-          biggestValue = remainder * 50 + 50
-        }
-      }
+      biggestValue = this.calculateBiggestValue(biggestValue)
       this.chartData = {
         labels: ['Simulated users', 'Non-simulated users'],
         datasets: [
@@ -416,6 +397,33 @@ export default {
       }
       this.isEmpty = false
       this.isLoading = false
+    },
+    calculateSimulatedValue(nonSimulatedUsers, simulatedUsers) {
+      const divideValue = nonSimulatedUsers / simulatedUsers
+      if (divideValue > 2000) simulatedUsers *= 20
+      else if (divideValue > 1000) simulatedUsers *= 10
+      else if (divideValue > 500) simulatedUsers *= 5
+      else if (divideValue > 200) simulatedUsers *= 2
+      return simulatedUsers
+    },
+    calculateBiggestValue(biggestValue) {
+      if (biggestValue <= 20) {
+        biggestValue = 20
+      } else if (biggestValue > 20 && biggestValue <= 40) {
+        biggestValue = 40
+      } else if (biggestValue > 40 && biggestValue <= 60) {
+        biggestValue = 60
+      } else if (biggestValue > 60 && biggestValue <= 80) {
+        biggestValue = 80
+      } else {
+        const remainder = Math.floor(biggestValue / 50)
+        if (!remainder) {
+          biggestValue = 100
+        } else {
+          biggestValue = remainder * 50 + 50
+        }
+      }
+      return biggestValue
     },
     handleDelete() {
       this.$emit('on-delete', this.card)

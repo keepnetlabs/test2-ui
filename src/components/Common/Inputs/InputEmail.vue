@@ -30,6 +30,14 @@ export default {
       type: Boolean,
       default: true
     },
+    label: {
+      type: String,
+      default: ''
+    },
+    persistentPlaceholder: {
+      type: Boolean,
+      default: false
+    },
     rules: {
       default: () => [...COMMON_CONSTANTS.DEFAULT_EMAIL_RULES]
     }

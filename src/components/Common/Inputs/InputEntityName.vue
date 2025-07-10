@@ -8,6 +8,8 @@
     :id="id"
     :type="type"
     :placeholder="placeholder"
+    :persistent-placeholder="persistentPlaceholder"
+    :label="label"
     :rules="rules"
     :disabled="disabled"
     :readonly="readonly"
@@ -64,6 +66,14 @@ export default {
     maxLength: {
       type: Number,
       default: 200
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    persistentPlaceholder: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,7 +114,10 @@ export default {
   methods: {
     applyRequiredProps() {
       if (this.required) {
-        this.requiredProps = { hint: this.hint || '*Required', persistentHint: true }
+        this.requiredProps = {
+          hint: this.hint || '*Required',
+          persistentHint: true
+        }
         this.rules.unshift((v) => Validations.required(v))
       } else {
         this.requiredProps = {}

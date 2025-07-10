@@ -230,87 +230,84 @@ export default {
     },
     getTrainingSummaryFormData() {
       let formData = {}
-      if (this.step === 3) {
-        const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-        const languages = refSendTrainingSettings.formData.languageIds
-          .map(
-            (lang) =>
-              refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
-                (item) => item.value === lang
-              ).text
-          )
-          ?.join(', ')
-        formData.trainingInfo = {
-          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
-          'Content Type': this?.selectedRow?.type,
-          Languages: languages
-        }
-        formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
-        if (formData.selectedStep2)
-          formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
-        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
-        formData.userCountDetailResponse = this.userCountDetailResponse
-        const isProxy = refSendTrainingSettings?.formData?.isProxy
-        const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-        formData.settings = {
-          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
-          'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
-            ? {
-                smsText:
-                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
-                    ?.smsTextTemplate,
-                senderPhoneNumber:
-                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
-              }
-            : 'Off',
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          Schedule:
-            refSendTrainingSettings.formData.scheduleTypeId === '1'
-              ? 'Now'
-              : `${
-                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
-                } ${this.getTimeZoneText(
-                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
-                )}`
-        }
-        if (refSendTrainingSettings.isAutoEnroll) {
-          const autoEnrollType =
-            enrollmentAutoEnrollTypeItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.type
-            )?.text || ''
-          const autoEnrollDayOfWeek =
-            enrollmentAutoEnrollDayOfWeekItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.dayOfWeek
-            )?.text || ''
-          const autoEnrollPeriodType =
-            periodTypeItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
-            )?.text || ''
-          formData.settings['Auto-enroll'] = getAutoEnrollText(
-            autoEnrollType,
-            autoEnrollDayOfWeek,
-            enrollmentAutoEnroll,
-            autoEnrollPeriodType
-          )
-        } else formData.settings['Auto-enroll'] = 'No'
-        if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
-          delete formData.settings['Sender Phone Number']
-          delete formData.settings['SMS Text']
-        }
-        if (isProxy) {
-          delete formData.settings['Auto-enroll']
-          delete formData.settings['Schedule']
-        }
-
-        formData.certificateData = refSendTrainingSettings.formData.awardCertificate
-          ? this.certificateData
-          : null
-        formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
-        formData.enrollmentData = this.enrollmentData
-        formData.trainingData = this.trainingPreviewData
-        formData.isProxy = isProxy
+      if (this.step !== 3) return formData
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      const languages = refSendTrainingSettings.formData.languageIds
+        .map(
+          (lang) =>
+            refSendTrainingSettings.$refs.refInputContentLanguage.contentLanguageItems.find(
+              (item) => item.value === lang
+            ).text
+        )
+        ?.join(', ')
+      formData.trainingInfo = {
+        'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
+        'Content Type': this?.selectedRow?.type,
+        Languages: languages
       }
+      formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
+      if (formData.selectedStep2)
+        formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
+      formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+      formData.userCountDetailResponse = this.userCountDetailResponse
+      const isProxy = refSendTrainingSettings?.formData?.isProxy
+      const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
+      formData.settings = {
+        Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+        'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+        'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
+          ? {
+              smsText:
+                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
+                  ?.smsTextTemplate,
+              senderPhoneNumber:
+                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
+            }
+          : 'Off',
+        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+        Schedule:
+          refSendTrainingSettings.formData.scheduleTypeId === '1'
+            ? 'Now'
+            : `${
+                refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+              } ${this.getTimeZoneText(
+                refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+              )}`
+      }
+      if (refSendTrainingSettings.isAutoEnroll) {
+        const autoEnrollType =
+          enrollmentAutoEnrollTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.type)
+            ?.text || ''
+        const autoEnrollDayOfWeek =
+          enrollmentAutoEnrollDayOfWeekItems?.find?.(
+            (item) => item.value === enrollmentAutoEnroll.dayOfWeek
+          )?.text || ''
+        const autoEnrollPeriodType =
+          periodTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum)
+            ?.text || ''
+        formData.settings['Auto-enroll'] = getAutoEnrollText(
+          autoEnrollType,
+          autoEnrollDayOfWeek,
+          enrollmentAutoEnroll,
+          autoEnrollPeriodType
+        )
+      } else formData.settings['Auto-enroll'] = 'No'
+      if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
+        delete formData.settings['Sender Phone Number']
+        delete formData.settings['SMS Text']
+      }
+      if (isProxy) {
+        delete formData.settings['Auto-enroll']
+        delete formData.settings['Schedule']
+      }
+
+      formData.certificateData = refSendTrainingSettings.formData.awardCertificate
+        ? this.certificateData
+        : null
+      formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
+      formData.enrollmentData = this.enrollmentData
+      formData.trainingData = this.trainingPreviewData
+      formData.isProxy = isProxy
       return formData
     }
   },

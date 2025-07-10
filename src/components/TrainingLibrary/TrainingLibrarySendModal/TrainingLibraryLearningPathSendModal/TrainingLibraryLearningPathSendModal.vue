@@ -133,7 +133,10 @@ import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
-import { emptyLearningPathSendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
+import {
+  emptyLearningPathSendModalObj,
+  getAutoEnrollText
+} from '@/components/TrainingLibrary/utils'
 import {
   endTypeItems,
   enrollmentAutoEnrollTypeItems,
@@ -231,102 +234,99 @@ export default {
     },
     getTrainingSummaryFormData() {
       let formData = {}
-      if (this.step === 3) {
-        const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
-        formData.trainingInfo = {
-          'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
-          'Content Type': this?.selectedRow?.type
-        }
-        formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
-        if (formData.selectedStep2)
-          formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
-        formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
-        formData.userCountDetailResponse = this.userCountDetailResponse
-        const isProxy = refSendTrainingSettings?.formData?.isProxy
-        const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
-        const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
-        const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-        formData.settings = {
-          'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
-            ? {
-                smsText:
-                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
-                    ?.smsTextTemplate,
-                senderPhoneNumber:
-                  refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
-              }
-            : 'Off',
-          'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
-          Schedule:
-            refSendTrainingSettings.formData.scheduleTypeId === '1'
-              ? 'Now'
-              : `${
-                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
-                } ${this.getTimeZoneText(
-                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
-                )}`,
-          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
-          Distribution: refSendTrainingSettings.isDistributionEnabled
-            ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
-            : 'No',
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          Reminder: sendReminderEvery
-        }
-        if (sendReminderEvery) {
-          const reminderEndType =
-            endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
-          formData.settings.Reminder = `Every ${
-            enrollmentReminder.periodCount === '1' ? '' : enrollmentReminder.periodCount
-          } ${
-            enrollmentReminder.periodCount > 1
-              ? enrollmentReminder.periodType.toLowerCase() + 's'
-              : enrollmentReminder.periodType.toLowerCase()
-          } - Ends ${
-            enrollmentReminder.endType === 'OnDate'
-              ? 'on ' + enrollmentReminder.stopTime
-              : enrollmentReminder.endType === 'AfterOccurrences'
-              ? 'after occurrences ' + enrollmentReminder.occurrenceCount + ' times'
-              : reminderEndType
-          }`
-        } else formData.settings['Reminder'] = 'No'
-        if (refSendTrainingSettings.isAutoEnroll) {
-          const autoEnrollType =
-            enrollmentAutoEnrollTypeItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.type
-            )?.text || ''
-          const autoEnrollDayOfWeek =
-            enrollmentAutoEnrollDayOfWeekItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.dayOfWeek
-            )?.text || ''
-          const autoEnrollPeriodType =
-            periodTypeItems?.find?.(
-              (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
-            )?.text || ''
-          formData.settings['Auto-enroll'] = getAutoEnrollText(
-            autoEnrollType,
-            autoEnrollDayOfWeek,
-            enrollmentAutoEnroll,
-            autoEnrollPeriodType
-          )
-        } else formData.settings['Auto-enroll'] = 'No'
-        if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
-          delete formData.settings['Sender Phone Number']
-          delete formData.settings['SMS Text']
-        }
-        if (isProxy) {
-          delete formData.settings['Auto-enroll']
-          delete formData.settings['Distribution']
-          delete formData.settings['Schedule']
-        }
-
-        formData.certificateData = refSendTrainingSettings.formData.awardCertificate
-          ? this.certificateData
-          : null
-        formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
-        formData.enrollmentData = this.enrollmentData
-        formData.trainingData = this.trainingPreviewData
-        formData.isProxy = isProxy
+      if (this.step !== 3) return formData
+      const { refSendTrainingSelectUsers, refSendTrainingSettings } = this.$refs
+      formData.trainingInfo = {
+        'Target Users': `${refSendTrainingSelectUsers.totalTargetUserCount} users`,
+        'Content Type': this?.selectedRow?.type
       }
+      formData.selectedStep2 = refSendTrainingSelectUsers.selectedRadioGroupIndex
+      if (formData.selectedStep2)
+        formData.selectedCampaign = refSendTrainingSelectUsers.selectedCampaign
+      formData.selectedTargetGroups = refSendTrainingSelectUsers.selectedTargetGroups
+      formData.userCountDetailResponse = this.userCountDetailResponse
+      const isProxy = refSendTrainingSettings?.formData?.isProxy
+      const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
+      const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
+      const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
+      formData.settings = {
+        'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
+          ? {
+              smsText:
+                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
+                  ?.smsTextTemplate,
+              senderPhoneNumber:
+                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
+            }
+          : 'Off',
+        'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
+        Schedule:
+          refSendTrainingSettings.formData.scheduleTypeId === '1'
+            ? 'Now'
+            : `${
+                refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+              } ${this.getTimeZoneText(
+                refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+              )}`,
+        'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
+        Distribution: refSendTrainingSettings.isDistributionEnabled
+          ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
+          : 'No',
+        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+        Reminder: sendReminderEvery
+      }
+      if (sendReminderEvery) {
+        const reminderEndType =
+          endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
+        let endText = reminderEndType
+        if (enrollmentReminder.endType === 'OnDate') {
+          endText = 'on ' + enrollmentReminder.stopTime
+        } else if (enrollmentReminder.endType === 'AfterOccurrences') {
+          endText = 'after occurrences ' + enrollmentReminder.occurrenceCount + ' times'
+        }
+        formData.settings.Reminder = `Every ${
+          enrollmentReminder.periodCount === '1' ? '' : enrollmentReminder.periodCount
+        } ${
+          enrollmentReminder.periodCount > 1
+            ? enrollmentReminder.periodType.toLowerCase() + 's'
+            : enrollmentReminder.periodType.toLowerCase()
+        } - Ends ${endText}`
+      } else formData.settings['Reminder'] = 'No'
+      if (refSendTrainingSettings.isAutoEnroll) {
+        const autoEnrollType =
+          enrollmentAutoEnrollTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.type)
+            ?.text || ''
+        const autoEnrollDayOfWeek =
+          enrollmentAutoEnrollDayOfWeekItems?.find?.(
+            (item) => item.value === enrollmentAutoEnroll.dayOfWeek
+          )?.text || ''
+        const autoEnrollPeriodType =
+          periodTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum)
+            ?.text || ''
+        formData.settings['Auto-enroll'] = getAutoEnrollText(
+          autoEnrollType,
+          autoEnrollDayOfWeek,
+          enrollmentAutoEnroll,
+          autoEnrollPeriodType
+        )
+      } else formData.settings['Auto-enroll'] = 'No'
+      if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
+        delete formData.settings['Sender Phone Number']
+        delete formData.settings['SMS Text']
+      }
+      if (isProxy) {
+        delete formData.settings['Auto-enroll']
+        delete formData.settings['Distribution']
+        delete formData.settings['Schedule']
+      }
+
+      formData.certificateData = refSendTrainingSettings.formData.awardCertificate
+        ? this.certificateData
+        : null
+      formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
+      formData.enrollmentData = this.enrollmentData
+      formData.trainingData = this.trainingPreviewData
+      formData.isProxy = isProxy
       return formData
     }
   },
