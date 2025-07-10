@@ -38,7 +38,7 @@
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
       <v-tooltip
-        v-if="col.property === 'lastSendingStatus'"
+        v-if="col.property === 'status'"
         bottom
         nudgeLeft="40"
         :disabled="!scope.row.hasTooltip"
@@ -160,7 +160,7 @@ export default {
         },
         columns: [
           {
-            property: 'email',
+            property: 'userEmail',
             align: 'left',
             editable: false,
             label: 'Email',
@@ -196,7 +196,7 @@ export default {
             width: 180
           },
           {
-            property: 'lastSendingStatus',
+            property: 'status',
             align: 'center',
             editable: false,
             fixed: false,
@@ -219,7 +219,7 @@ export default {
               })) || []
           },
           {
-            property: PROPERTY_STORE.EMAIL_DELIVERY,
+            property: 'emailDeliveryType',
             align: 'left',
             editable: false,
             label: labels.EmailDelivery,
@@ -417,7 +417,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report-Reminder-Emails.${
+          link.download = `Training-Sending-Report-Certificate-Emails.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

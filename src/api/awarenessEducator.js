@@ -310,7 +310,7 @@ const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
 const searchSendingReportCertificateEmails = (payload, resourceId) => {
-  return testRequest.post(`/training-reports/${resourceId}/certificate-mails/search`, payload)
+  return testRequest.post(`/enrollments/${resourceId}/certificates/search`, payload)
 }
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
