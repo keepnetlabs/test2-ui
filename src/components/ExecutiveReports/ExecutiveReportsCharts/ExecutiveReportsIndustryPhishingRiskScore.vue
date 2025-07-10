@@ -20,9 +20,11 @@
               :custom-plugin="customPlugin"
             />
             <span class="executive-report-phishing-risk-score-description"
-              >Phishing Risk Score (%) = (Risky Actions ÷ Total Simulations Delivered) × 100 (Phish
-              reports are not included in this calculation.)</span
-            >
+              >Phishing Risk Score (%) = (Risky Actions ÷ Total Simulations Delivered) × 100
+              <span style="font-style: italic; font-size: 7px;"
+                >(Phish reports are not included in this calculation.)</span
+              >
+            </span>
           </template>
           <div
             v-else
@@ -278,7 +280,7 @@ export default {
             order: 2
           },
           {
-            label: 'Total Risky Actions',
+            label: 'Risky Actions',
             type: 'bar',
             yAxisID: 'B',
             data: phishingSimulationMetricsData,
@@ -502,6 +504,7 @@ export default {
               tableRoot.appendChild(titleRow)
               console.log(dataPoint)
               detailsObj['Start Time'] = startDate
+              /*
               if (phishingType === 'Phishing') {
                 detailsObj['Emails Delivered'] = 'N/A'
               } else if (phishingType === 'Quishing') {
@@ -513,6 +516,7 @@ export default {
               } else if (phishingType === 'Callback') {
                 detailsObj['Emails Delivered'] = 'N/A'
               }
+              */
               detailsObj['Phishing Risk Score'] = Math.round(riskScore) + '%'
               const riskyActionsObj = {}
               if (phishingType === 'Phishing') {
