@@ -455,8 +455,12 @@ export default {
             tooltipEl.style.opacity = 1
             tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
-            tooltipEl.style.left =
-              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
+            let leftPosition =
+              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2
+            if (leftPosition + tooltipWidth > window.innerWidth) {
+              leftPosition = window.innerWidth - tooltipWidth - 10
+            }
+            tooltipEl.style.left = leftPosition + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
             tooltipEl.style.pointerEvents = 'none'
 
