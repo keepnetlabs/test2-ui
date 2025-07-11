@@ -503,7 +503,6 @@ export default {
               titleRow.textContent = dataPoint.x
               tableRoot.appendChild(titlePoint)
               tableRoot.appendChild(titleRow)
-              console.log(dataPoint)
               detailsObj['Start Time'] = startDate
               /*
               if (phishingType === 'Phishing') {

@@ -452,7 +452,7 @@ export default {
               tooltipFooter.style.background = isIncreased ? '#43A047' : '#E6A23C'
               const explanationText = isIncreased ? ' increased by' : ' decreased by'
               tooltipFooter.style.opacity = dataIndex === 0 || comparatorValue === 0 ? 0 : 1
-              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${comparatorValue}%</span> in simulation users</th>`
+              tooltipFooter.innerHTML = `<th style="text-align: left; font-size:12px; font-weight: normal; display: block;">Phishing reporting ${explanationText} <span style="font-weight:700;">${comparatorValue}%</span> compared to the previous month</th>`
             }
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
