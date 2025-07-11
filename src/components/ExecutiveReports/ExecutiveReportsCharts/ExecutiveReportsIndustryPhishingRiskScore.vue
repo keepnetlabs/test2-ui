@@ -450,8 +450,7 @@ export default {
             }
 
             let position = this._chart.canvas.getBoundingClientRect()
-
-            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth || 240
             tooltipEl.style.opacity = 1
             tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
