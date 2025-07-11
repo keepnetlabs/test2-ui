@@ -433,6 +433,7 @@ export default {
               tooltipEl = document.createElement('div')
               tooltipEl.id = 'chartjs-tooltip-phishing-risk-score'
               tooltipEl.innerHTML = '<div class="tooltip-content" style="width:240px;"></div>'
+              tooltipEl.style.zIndex = 99
               document.body.appendChild(tooltipEl)
             }
 
@@ -502,7 +503,6 @@ export default {
               titleRow.textContent = dataPoint.x
               tableRoot.appendChild(titlePoint)
               tableRoot.appendChild(titleRow)
-              console.log(dataPoint)
               detailsObj['Start Time'] = startDate
               /*
               if (phishingType === 'Phishing') {
