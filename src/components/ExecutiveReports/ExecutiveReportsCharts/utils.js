@@ -73,8 +73,8 @@ export const CHART_COLORS = {
     pointHoverRadius: 3
   },
   'Clicked Email Trends': {
-    backgroundColor: '#F56C6C',
-    borderColor: '#F56C6C',
+    backgroundColor: '#E6A23C',
+    borderColor: '#E6A23C',
     pointRadius: 3,
     borderWidth: 2,
     lineTension: 0,
