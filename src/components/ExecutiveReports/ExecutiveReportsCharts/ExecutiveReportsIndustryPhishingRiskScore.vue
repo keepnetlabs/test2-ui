@@ -21,7 +21,7 @@
             />
             <span class="executive-report-phishing-risk-score-description"
               >Phishing Risk Score (%) = (Risky Actions ÷ Total Simulations Delivered) × 100
-              <span style="font-style: italic; font-size: 7px;"
+              <span style="font-style: italic;"
                 >(Phish reports are not included in this calculation.)</span
               >
             </span>
