@@ -1,7 +1,7 @@
 <template>
   <WidgetLoading :loading="isLoading">
     <template #skeleton-content>
-      <ExecutiveWidgetContainer>
+      <ExecutiveWidgetContainer class="executive-report-phishing-risk-score-container">
         <ExecutiveWidgetHeader
           :title="getTitle"
           :subtitle="card.parentKey"
@@ -19,6 +19,12 @@
               :add-custom-legend-label-height="16"
               :custom-plugin="customPlugin"
             />
+            <span class="executive-report-phishing-risk-score-description"
+              >Phishing Risk Score (%) = (Risky Actions ÷ Total Simulations Delivered) × 100
+              <span style="font-style: italic;"
+                >(Phish reports are not included in this calculation.)</span
+              >
+            </span>
           </template>
           <div
             v-else
@@ -234,8 +240,8 @@ export default {
             label: 'Industry Average',
             type: 'line',
             data: industryAverageData,
-            backgroundColor: '#1173C1',
-            borderColor: '#1173C1',
+            backgroundColor: 'rgba(17, 115, 193, 0.60)',
+            borderColor: 'rgba(17, 115, 193, 0.60)',
             fill: false,
             yAxisID: 'A',
             pointHoverRadius: 0,
@@ -274,7 +280,7 @@ export default {
             order: 2
           },
           {
-            label: 'Total Risky Actions',
+            label: 'Risky Actions',
             type: 'bar',
             yAxisID: 'B',
             data: phishingSimulationMetricsData,
@@ -426,7 +432,8 @@ export default {
             if (!tooltipEl) {
               tooltipEl = document.createElement('div')
               tooltipEl.id = 'chartjs-tooltip-phishing-risk-score'
-              tooltipEl.innerHTML = '<div class="tooltip-content"></div>'
+              tooltipEl.innerHTML = '<div class="tooltip-content" style="width:240px;"></div>'
+              tooltipEl.style.zIndex = 99
               document.body.appendChild(tooltipEl)
             }
 
@@ -443,13 +450,16 @@ export default {
             }
 
             let position = this._chart.canvas.getBoundingClientRect()
-
-            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth
+            let tooltipWidth = tooltipEl.offsetWidth > 300 ? 250 : tooltipEl.offsetWidth || 240
             tooltipEl.style.opacity = 1
             tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
-            tooltipEl.style.left =
-              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2 + 'px'
+            let leftPosition =
+              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2
+            if (leftPosition + tooltipWidth > window.innerWidth) {
+              leftPosition = window.innerWidth - tooltipWidth - 10
+            }
+            tooltipEl.style.left = leftPosition + 'px'
             tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
             tooltipEl.style.pointerEvents = 'none'
 
@@ -467,14 +477,8 @@ export default {
             if (tooltipModel.body && this._chart && this._chart.data.datasets) {
               let tableRoot = tooltipContent
               tableRoot.innerHTML = ''
-
               let dataIndex = tooltipModel.dataPoints[0].index
               let dataPoint = this._chart.data.datasets[0].data[dataIndex]
-              let titleRow = document.createElement('div')
-              titleRow.style.fontWeight = 'bold'
-              titleRow.style.paddingBottom = '8px'
-              titleRow.textContent = dataPoint.x
-              tableRoot.appendChild(titleRow)
               const {
                 phishingType,
                 Frequency,
@@ -488,56 +492,136 @@ export default {
                 totalVishedCount,
                 totalCalledCount,
                 totalEnteredCount,
-                totalReportedCount
+                totalReportedCount,
+                riskScore
               } = dataPoint.dataObject
               const detailsObj = {}
-              detailsObj['Campaign Type'] = phishingType
-              detailsObj['Frequency'] = Frequency
-              detailsObj['Instances'] = instanceGroupCount
+              let titleRow = document.createElement('div')
+              let titlePoint = document.createElement('div')
+              titlePoint.style.fontSize = '8px'
+              titlePoint.textContent = phishingType + ' Campaign'
+              titleRow.style.fontWeight = 'bold'
+              titleRow.style.paddingBottom = '8px'
+              titleRow.style.fontSize = '14px'
+              titleRow.textContent = dataPoint.x
+              tableRoot.appendChild(titlePoint)
+              tableRoot.appendChild(titleRow)
               detailsObj['Start Time'] = startDate
+              /*
               if (phishingType === 'Phishing') {
-                detailsObj['Clicked Link'] = totalClickedCount
-                detailsObj['Submitted Data'] = totalSubmittedCount
-                detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
-                detailsObj['Open Attachment'] = totalAttachmentOpenedCount
-                detailsObj['Reports'] = totalReportedCount
+                detailsObj['Emails Delivered'] = 'N/A'
               } else if (phishingType === 'Quishing') {
-                detailsObj['Scanned QR Link'] = totalScanQRCount
-                detailsObj['Submitted Data'] = totalSubmittedCount
-                detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
-                detailsObj['Reports'] = totalReportedCount
+                detailsObj['Emails Delivered'] = 'N/A'
               } else if (phishingType === 'Vishing') {
-                detailsObj['Total Vished Count'] = totalVishedCount
-                detailsObj['Reports'] = totalReportedCount
+                detailsObj['Calls Made'] = 'N/A'
               } else if (phishingType === 'Smishing') {
-                detailsObj['Clicked Link'] = totalClickedCount
-                detailsObj['Submitted Data'] = totalSubmittedCount
-                detailsObj['Submitted MFA Code'] = totalMfaSubmittedCount
-                detailsObj['Reports'] = totalReportedCount
+                detailsObj['SMS Delivered'] = 'N/A'
               } else if (phishingType === 'Callback') {
-                detailsObj['Called Back'] = totalCalledCount
-                detailsObj['Entered Digits'] = totalEnteredCount
-                detailsObj['Reports'] = totalReportedCount
+                detailsObj['Emails Delivered'] = 'N/A'
+              }
+              */
+              detailsObj['Phishing Risk Score'] = Math.round(riskScore) + '%'
+              const riskyActionsObj = {}
+              if (phishingType === 'Phishing') {
+                riskyActionsObj['Clicked Link'] = totalClickedCount
+                riskyActionsObj['Submitted Data'] = totalSubmittedCount
+                riskyActionsObj['Submitted MFA Code'] = totalMfaSubmittedCount
+                riskyActionsObj['Open Attachment'] = totalAttachmentOpenedCount
+                detailsObj['Risky Actions'] =
+                  totalClickedCount +
+                  totalSubmittedCount +
+                  totalMfaSubmittedCount +
+                  totalAttachmentOpenedCount
+              } else if (phishingType === 'Quishing') {
+                riskyActionsObj['Scanned QR Link'] = totalScanQRCount
+                riskyActionsObj['Submitted Data'] = totalSubmittedCount
+                riskyActionsObj['Submitted MFA Code'] = totalMfaSubmittedCount
+                detailsObj['Risky Actions'] =
+                  totalScanQRCount + totalSubmittedCount + totalMfaSubmittedCount
+              } else if (phishingType === 'Vishing') {
+                riskyActionsObj['Vished'] = totalVishedCount
+                detailsObj['Risky Actions'] = totalVishedCount
+              } else if (phishingType === 'Smishing') {
+                riskyActionsObj['Clicked Link'] = totalClickedCount
+                riskyActionsObj['Submitted Data'] = totalSubmittedCount
+                riskyActionsObj['Submitted MFA Code'] = totalMfaSubmittedCount
+                detailsObj['Risky Actions'] =
+                  totalClickedCount + totalSubmittedCount + totalMfaSubmittedCount
+              } else if (phishingType === 'Callback') {
+                riskyActionsObj['Called Back'] = totalCalledCount
+                riskyActionsObj['Entered Digits'] = totalEnteredCount
+                detailsObj['Risky Actions'] = totalCalledCount + totalEnteredCount
               }
               for (const [key, value] of Object.entries(detailsObj)) {
                 let fieldRow = document.createElement('div')
                 fieldRow.style.display = 'flex'
                 fieldRow.style.justifyContent = 'space-between'
                 fieldRow.style.paddingBottom = '6px'
+                fieldRow.style.fontSize = '12px'
+                if (key === 'Risky Actions') {
+                  fieldRow.style.paddingTop = '2px'
+                  fieldRow.style.paddingBottom = '8px'
+                  fieldRow.style.fontWeight = '700'
+                }
 
                 let fieldLabel = document.createElement('span')
                 fieldLabel.textContent = `${key}:`
                 fieldRow.appendChild(fieldLabel)
 
                 let fieldValue = document.createElement('span')
-                fieldValue.style.fontWeight = '700'
+                fieldValue.style.fontWeight = '400'
+                if (key === 'Phishing Risk Score' || key === 'Risky Actions') {
+                  fieldValue.style.fontWeight = '700'
+                }
                 fieldValue.style.paddingLeft = '8px'
                 fieldValue.textContent = value
                 fieldRow.appendChild(fieldValue)
-
                 tableRoot.appendChild(fieldRow)
               }
+
+              let listContainer = document.createElement('ul')
+              listContainer.style.margin = '0'
+              listContainer.style.padding = '0'
+              listContainer.style.paddingLeft = '4px'
+              listContainer.style.listStyleType = 'none'
+
+              for (const [key, value] of Object.entries(riskyActionsObj)) {
+                let listItem = document.createElement('li')
+                listItem.style.display = 'flex'
+                listItem.style.justifyContent = 'space-between'
+                listItem.style.paddingBottom = '4px'
+                listItem.style.fontSize = '12px'
+
+                let fieldLabel = document.createElement('span')
+                fieldLabel.textContent = `• ${key}:`
+                listItem.appendChild(fieldLabel)
+                let fieldValue = document.createElement('span')
+                fieldValue.style.fontWeight = '400'
+                fieldValue.style.paddingLeft = '8px'
+                fieldValue.textContent = value
+                listItem.appendChild(fieldValue)
+
+                listContainer.appendChild(listItem)
+              }
+              tableRoot.appendChild(listContainer)
+              let phishReportsRow = document.createElement('div')
+              phishReportsRow.style.display = 'flex'
+              phishReportsRow.style.alignItems = 'center'
+              phishReportsRow.style.gap = '4px'
+              phishReportsRow.style.fontSize = '12px'
+              phishReportsRow.style.paddingTop = '8px'
+              let phishReportsLabel = document.createElement('span')
+              phishReportsLabel.textContent = `Phish Reports: ${totalReportedCount}`
+              let phishReportsValue = document.createElement('span')
+              phishReportsValue.textContent = '(not included in risk score)'
+              phishReportsValue.style.color = '#757575'
+              phishReportsValue.style.fontWeight = '400'
+              phishReportsValue.style.fontSize = '8px'
+              phishReportsRow.appendChild(phishReportsLabel)
+              phishReportsRow.appendChild(phishReportsValue)
+              tableRoot.appendChild(phishReportsRow)
             }
+
             this._chart.canvas.addEventListener('mouseout', () => {
               tooltipEl.style.opacity = 0
               tooltipEl.style.display = 'none'

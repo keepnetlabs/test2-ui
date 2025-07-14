@@ -39,5 +39,17 @@
     font-style: normal;
     line-height: 19px;
   }
-
+}
+.executive-report-phishing-risk-score-container{
+  .executive-widget-body > div {
+    height: 85%;
+  }
+}
+.executive-report-phishing-risk-score-description{
+  position: absolute;
+  font-size: 9px;
+  color: rgba(56, 59, 65, 0.72);
+  font-weight: 400;
+  margin-top:-4px;
+  white-space: nowrap;
 }
