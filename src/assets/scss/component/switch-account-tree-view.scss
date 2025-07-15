@@ -105,6 +105,9 @@
   .v-label.v-label--active.theme--light.primary--text + .v-select__selections input{
     padding-top:16px !important;
   }
+  .mdi-menu-down{
+    display: none;
+  }
 }
 .email-template__cc-select-selected{
   .v-select__selections{

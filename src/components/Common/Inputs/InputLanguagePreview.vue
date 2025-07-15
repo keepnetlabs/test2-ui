@@ -3,7 +3,7 @@
     ref="refSelect"
     :value="value"
     class="input-languages-email-template-preview-select"
-    label="Template Preview"
+    :label="label"
     outlined
     dense
     placeholder="Select a language"
@@ -42,6 +42,10 @@ export default {
     hideDetails: {
       type: Boolean,
       default: false
+    },
+    label: {
+      type: String,
+      default: 'Template Preview'
     }
   },
   methods: {
