@@ -345,7 +345,7 @@ const getTrainingReportReminderEmailDetails = (enrollmentId, userMailId) => {
 }
 
 const getTrainingReportCertificateEmailDetails = (enrollmentId, userMailId) => {
-  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/certificate`)
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
 
 
