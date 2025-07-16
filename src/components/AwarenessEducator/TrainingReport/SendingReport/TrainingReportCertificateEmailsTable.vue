@@ -244,14 +244,12 @@ export default {
             icon: '$custom-resend',
             action: 'on-resend'
           },
-          /*
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-certificate-sending-report',
             icon: '$custom-details',
             action: 'on-details'
           }
-            */
         ],
         downloadButton: {
           show: false
