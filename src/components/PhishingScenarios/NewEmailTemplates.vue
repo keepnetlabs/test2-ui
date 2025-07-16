@@ -124,7 +124,7 @@
                       onsubmit="return false"
                     >
                       <div>
-                        <div v-if="false" class="d-flex align-baseline justify-space-between mb-3">
+                        <div v-show="false" class="d-flex align-baseline justify-space-between mb-3">
                           <div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
@@ -218,6 +218,8 @@
                             :language-items="languageItems"
                             @input="handleSelectedLanguagesChange"
                             @on-generate-with-ai="handleGenerateWithAI"
+                            @on-edit-mode-click="handleEditModeClick"
+                            @on-import-languages-click="handleUploadEmailButtonClick"
                           />
                         </template>
                       </EmailTemplate>
@@ -977,6 +979,9 @@ export default {
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
         JSON.stringify(this.getSelectedLanguagePayload)
       )
+    },
+    handleEditModeClick() {
+      this.$refs.refEmailTemplate.toggleShowGrapesModal()
     }
   }
 }

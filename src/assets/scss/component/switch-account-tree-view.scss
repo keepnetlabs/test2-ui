@@ -22,12 +22,18 @@
 }
 .input-language-settings__container{
   min-height: 300px;
+  min-width: 280px;
   padding: 0;
   overflow-y: hidden;
   max-width:554px;
 }
 .input-languages-settings-treeview {
   margin-top:8px;
+  & >  .v-treeview-node:last-child > .v-treeview-node__root{
+    max-height: 1px !important;
+    min-height: 1px !important;
+    margin-bottom: 8px;
+  }
   .v-treeview-node__toggle{
     display: none;
   }
