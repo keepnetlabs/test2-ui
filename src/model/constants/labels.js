@@ -14,6 +14,7 @@ export const labels = {
   InfoGraphicName: 'Infographic Name',
   RepeatOffenders: 'Repeat Offenders',
   ReplyTracking: 'Reply Tracking',
+  ResendTheCertificate: 'Resend the Certificate',
   ReplyTrackingSub: 'Enter custom reply-to address to track replies',
   RepliedTitle: 'Users who replied to the email',
   RepliedSub: 'List of users who replied or sent an out-of-office auto-response',

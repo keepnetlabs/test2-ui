@@ -8,6 +8,7 @@
       :title="getResendDialogTitle"
       :body-training-type="getBodyTrainingType"
       :resendItemCount="resendItemCount"
+      :is-certification="isCertification"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -46,6 +47,22 @@
           :form-details="formDetails"
         />
       </ElTabPane>
+      <ElTabPane label="Certificate Emails" name="certificate" id="certificate-emails-content">
+        <CampaignManagerReportHeader
+          class="mb-6"
+          title="Training Certificate Sending Report"
+          subtitle="Training certificate email delivery details"
+        />
+        <TrainingReportCertificateEmailsTable
+          v-if="tab === 'certificate'"
+          ref="refCertificateTable"
+          class="mt-6"
+          :customFields="customFields"
+          :id="id"
+          :form-details="formDetails"
+          @on-resend="handleOnResend"
+        />
+      </ElTabPane>
     </ElTabs>
     <div v-else>
       <CampaignManagerReportHeader
@@ -75,6 +92,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingReportEnrollmentEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportEnrollmentEmailsTable'
 import TrainingReportReminderEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportReminderEmailsTable'
+import TrainingReportCertificateEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportCertificateEmailsTable'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import labels from '@/model/constants/labels'
 
@@ -84,7 +102,8 @@ export default {
     TrainingReportResendDialog,
     CampaignManagerReportHeader,
     TrainingReportEnrollmentEmailsTable,
-    TrainingReportReminderEmailsTable
+    TrainingReportReminderEmailsTable,
+    TrainingReportCertificateEmailsTable
   },
   props: {
     id: {
@@ -118,6 +137,9 @@ export default {
   },
   computed: {
     getResendDialogTitle() {
+      if (this.isCertification) {
+        return labels.ResendTheCertificate
+      }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -127,6 +149,9 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isCertification) {
+        return labels.Certificate.toLowerCase()
+      }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -145,6 +170,9 @@ export default {
       return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
         ? 'Poster email delivery details'
         : 'Infographic email delivery details'
+    },
+    isCertification() {
+      return this.tab === 'certificate'
     }
   },
   methods: {
@@ -153,18 +181,38 @@ export default {
     },
     resendItem() {
       this.isResendActionButtonDisabled = true
-      AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
-        .then(() => {
-          this.toggleIsShowResendDialog()
-          this.$refs?.refEnrollmentTable?.$refs?.refTable?.resetSelectableParams?.()
-          this.$refs?.refReminderTable?.$refs?.refTable?.resetSelectableParams?.()
-          this.$refs?.refEnrollmentTable?.callForData?.()
-          this.$refs?.refReminderTable?.callForData?.()
-        })
-        .finally(() => {
-          this.isResendActionButtonDisabled = false
-          this.isShowResendDialog = false
-        })
+      if (this.isCertification) {
+        const payload = [
+          ...this.resendPayload.selectedItems.map((item) => ({
+            targetUserResourceId: item,
+            enrollmentId: this.id
+          }))
+        ]
+        console.log('payload', payload)
+        AwarenessEducatorService.resendCertificateToUserList(payload)
+          .then(() => {
+            this.toggleIsShowResendDialog()
+            this.$refs?.refCertificateTable?.$refs?.refTable?.resetSelectableParams?.()
+            this.$refs?.refCertificateTable?.callForData?.()
+          })
+          .finally(() => {
+            this.isResendActionButtonDisabled = false
+            this.isShowResendDialog = false
+          })
+      } else {
+        AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
+          .then(() => {
+            this.toggleIsShowResendDialog()
+            this.$refs?.refEnrollmentTable?.$refs?.refTable?.resetSelectableParams?.()
+            this.$refs?.refReminderTable?.$refs?.refTable?.resetSelectableParams?.()
+            this.$refs?.refEnrollmentTable?.callForData?.()
+            this.$refs?.refReminderTable?.callForData?.()
+          })
+          .finally(() => {
+            this.isResendActionButtonDisabled = false
+            this.isShowResendDialog = false
+          })
+      }
     },
     toggleIsShowResendDialog() {
       if (this.isShowResendDialog) {

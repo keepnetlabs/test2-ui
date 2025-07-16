@@ -18,16 +18,17 @@
         </div>
         <div class="campaign-manager-summary-card__body-item-value">
           <span>{{ getBodyValue }}</span>
-          <span v-if="false" class="datatable-link" @click="handleAudienceClick">
-            {{ getAudienceText }}
-          </span>
         </div>
       </template>
       <template #TargetGroups="{ props: { key, val } }">
         <div class="campaign-manager-summary-card__body-item-key">Target Groups</div>
         <div class="campaign-manager-summary-card__body-item-value">
-          <div class="d-flex align-center">
-            <v-btn class="mr-1" icon @click="handleViewTargetGroupsClick">
+          <div
+            class="mt-n2 cursor-pointer"
+            style="max-height: 19px;"
+            @click="handleViewTargetGroupsClick"
+          >
+            <v-btn class="mr-1" style="margin-top: -1px;" icon>
               <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
             </v-btn>
             <span style="color: #2196f3; font-weight: 600;"
@@ -146,7 +147,8 @@ export default {
       return ''
     },
     getBodyValue() {
-      return `${this.items['Target Users']?.value} users`
+      const targetUsers = this.items['Target Users']?.value || 0
+      return `${targetUsers} ${targetUsers > 1 ? 'users' : 'user'}`
     },
     getTargetGroups() {
       return this.items?.['Target Groups']?.value || []

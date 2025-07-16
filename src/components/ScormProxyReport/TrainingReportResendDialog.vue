@@ -9,7 +9,7 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      You are about to re-send this training to the users you selected. Are you sure?
+      {{ getBodyText }}
     </template>
     <template #app-dialog-footer>
       <AppDialogFooter
@@ -39,6 +39,9 @@ export default {
     },
     isActionButtonDisabled: {
       type: Boolean
+    },
+    isCertification: {
+      type: Boolean
     }
   },
   data() {
@@ -49,6 +52,16 @@ export default {
         ascending: 'ascending',
         title: 'Resend the training?'
       }
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.isCertification ? 'Resend the certificate?' : this.CONSTANTS.title
+    },
+    getBodyText() {
+      return this.isCertification
+        ? 'You are about to re-send this certificate to the users you selected. Are you sure?'
+        : 'You are about to re-send this training to the users you selected. Are you sure?'
     }
   },
   methods: {
