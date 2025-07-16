@@ -344,6 +344,11 @@ const getTrainingReportReminderEmailDetails = (enrollmentId, userMailId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
 
+const getTrainingReportCertificateEmailDetails = (enrollmentId, userMailId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/certificate`)
+}
+
+
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
 }
@@ -514,6 +519,11 @@ const removeFromFavorite = (resourceId) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const resendCertificateToUserList = (payload = {}) => {
+  return testRequest.post(`/enrollments/resend-certificate`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   searchTraining,
   getTrainingTypeCount,
@@ -599,6 +609,7 @@ export default {
   resendTrainingNoResponseList,
   resendTrainingSendingReportList,
   resendTrainingToUserList,
+  resendCertificateToUserList,
   exportTrainingReport,
   getTrainingItems,
   getPhishedLandingPage,
@@ -613,5 +624,6 @@ export default {
   downloadPoster,
   addToFavorite,
   removeFromFavorite,
-  getTrainingTypes
+  getTrainingTypes,
+  getTrainingReportCertificateEmailDetails
 }

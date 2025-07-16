@@ -6,12 +6,12 @@
     selectable
     filterable
     options
-    is-server-side-selection
     is-server-side
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
+    :download-button="tableOptions.downloadButton"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
@@ -103,8 +103,7 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-  PROPERTY_STORE
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
@@ -156,6 +155,7 @@ export default {
           TABLE_SETTINGS_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
+          resend: true,
           clipboard: true
         },
         columns: [
@@ -169,10 +169,10 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 260
           },
           {
-            property: 'firstSendDate',
+            property: 'firstSendTime',
             align: 'left',
             editable: false,
             label: 'Date First Sent',
@@ -184,7 +184,7 @@ export default {
             width: 160
           },
           {
-            property: 'lastSendDate',
+            property: 'lastSendTime',
             align: 'left',
             editable: false,
             label: 'Date Last Sent',
@@ -219,7 +219,7 @@ export default {
               })) || []
           },
           {
-            property: 'emailDeliveryType',
+            property: 'emailDelivery',
             align: 'left',
             editable: false,
             label: labels.EmailDelivery,
@@ -244,13 +244,18 @@ export default {
             icon: '$custom-resend',
             action: 'on-resend'
           },
+          /*
           {
             name: labels.Details,
             id: 'btn-interactions--row-actions-certificate-sending-report',
             icon: '$custom-details',
             action: 'on-details'
           }
-        ]
+            */
+        ],
+        downloadButton: {
+          show: false
+        }
       },
       isShowExtendedView: false,
       extendedViewOptions: {
@@ -428,7 +433,7 @@ export default {
       this.extendedViewOptions.isErrorState = false
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      AwarenessEducatorService.getTrainingReportReminderEmailDetails(this.id, row.userEmailId)
+      AwarenessEducatorService.getTrainingReportCertificateEmailDetails(this.id, row.userEmailId)
         .then((response) => {
           const { data: { data = [] } = {} } = response || {
             data: { data: [] }
