@@ -6,12 +6,12 @@
     selectable
     filterable
     options
-    is-server-side-selection
     is-server-side
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
+    :download-button="tableOptions.downloadButton"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
@@ -38,7 +38,7 @@
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
       <v-tooltip
-        v-if="col.property === 'lastSendingStatus'"
+        v-if="col.property === 'status'"
         bottom
         nudgeLeft="40"
         :disabled="!scope.row.hasTooltip"
@@ -103,8 +103,7 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-  PROPERTY_STORE
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
@@ -156,11 +155,12 @@ export default {
           TABLE_SETTINGS_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
+          resend: true,
           clipboard: true
         },
         columns: [
           {
-            property: 'email',
+            property: 'userEmail',
             align: 'left',
             editable: false,
             label: 'Email',
@@ -169,10 +169,10 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 260
           },
           {
-            property: 'firstSendDate',
+            property: 'firstSendTime',
             align: 'left',
             editable: false,
             label: 'Date First Sent',
@@ -184,7 +184,7 @@ export default {
             width: 160
           },
           {
-            property: 'lastSendDate',
+            property: 'lastSendTime',
             align: 'left',
             editable: false,
             label: 'Date Last Sent',
@@ -196,7 +196,7 @@ export default {
             width: 180
           },
           {
-            property: 'lastSendingStatus',
+            property: 'status',
             align: 'center',
             editable: false,
             fixed: false,
@@ -219,7 +219,7 @@ export default {
               })) || []
           },
           {
-            property: PROPERTY_STORE.EMAIL_DELIVERY,
+            property: 'emailDelivery',
             align: 'left',
             editable: false,
             label: labels.EmailDelivery,
@@ -250,7 +250,10 @@ export default {
             icon: '$custom-details',
             action: 'on-details'
           }
-        ]
+        ],
+        downloadButton: {
+          show: false
+        }
       },
       isShowExtendedView: false,
       extendedViewOptions: {
@@ -417,7 +420,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report-Reminder-Emails.${
+          link.download = `Training-Sending-Report-Certificate-Emails.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -428,7 +431,7 @@ export default {
       this.extendedViewOptions.isErrorState = false
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      AwarenessEducatorService.getTrainingReportReminderEmailDetails(this.id, row.userEmailId)
+      AwarenessEducatorService.getTrainingReportCertificateEmailDetails(this.id, row.userEmailId)
         .then((response) => {
           const { data: { data = [] } = {} } = response || {
             data: { data: [] }
