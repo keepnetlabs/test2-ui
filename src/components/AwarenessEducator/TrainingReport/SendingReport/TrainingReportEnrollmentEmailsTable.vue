@@ -265,32 +265,6 @@ export default {
             type: 'text',
             filterableType: 'text'
           }
-          // {
-          //   property: 'smtpName',
-          //   align: 'left',
-          //   editable: false,
-          //   label: 'SMTP',
-          //   sortable: true,
-          //   show: true,
-          //   fixed: false,
-          //   type: 'text',
-          //   width: 150,
-          //   filterableType: 'text'
-          // }
-          /*
-          {
-            property: 'emailType',
-            align: 'left',
-            editable: false,
-            label: 'Email Type',
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
-            filterableType: 'text',
-            width: 150
-          }
-           */
         ],
         addButton: {
           show: false
@@ -392,9 +366,6 @@ export default {
       return `Event history is only available for SMTP`
     }
   },
-  created() {
-    this.callForData()
-  },
   watch: {
     customFields: {
       deep: true,
@@ -422,6 +393,9 @@ export default {
         }
       }
     }
+  },
+  created() {
+    this.callForData()
   },
   methods: {
     handleSelectionChange(selectionCount) {
@@ -539,8 +513,7 @@ export default {
         .finally(() => {
           this.extendedViewLoading = false
         })
-    },
-    confirmResend() {}
+    }
   }
 }
 </script>

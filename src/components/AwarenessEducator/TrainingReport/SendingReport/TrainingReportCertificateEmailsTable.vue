@@ -6,12 +6,12 @@
     selectable
     filterable
     options
-    is-server-side-selection
     is-server-side
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
+    :download-button="tableOptions.downloadButton"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
@@ -30,14 +30,15 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportTrainingReportSendingReportTable"
+    @downloadEvent="exportTrainingReportCertificateEmailsTable"
     @refreshAction="callForData"
+    @on-resend="handleOnResend"
     @on-details="handleOnDetail"
   >
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
       <v-tooltip
-        v-if="col.property === 'lastSendingStatus'"
+        v-if="col.property === 'status'"
         bottom
         nudgeLeft="40"
         :disabled="!scope.row.hasTooltip"
@@ -79,14 +80,21 @@
       </div>
       <div
         v-if="!getEvents.length && !extendedViewOptions.isErrorState"
-        class="training-report-no-event-message"
+        style="
+          background-color: #f5f7fa;
+          padding: 8px;
+          border-radius: 8px;
+          font-weight: normal;
+          font-size: 12px;
+          line-height: 18px;
+          color: #383b41;
+        "
       >
         {{ getNoEventMessage }}
       </div>
     </template>
   </DataTable>
 </template>
-
 <script>
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
@@ -95,8 +103,7 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-  PROPERTY_STORE
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
@@ -109,7 +116,7 @@ const ENUMS = {
 }
 
 export default {
-  name: 'TrainingReportReminderEmailsTable',
+  name: 'TrainingReportCertificateEmailsTable',
   components: {
     DataTable,
     Badge,
@@ -136,22 +143,24 @@ export default {
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
-        id: 'training-report-users-data-table',
+        id: 'training-report-certificate-emails-data-table',
         ascending: 'ascending'
       },
       axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.TRAINING_REPORT_CERTIFICATE_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
+          resend: true,
           clipboard: true
         },
         columns: [
           {
-            property: 'email',
+            property: 'userEmail',
             align: 'left',
             editable: false,
             label: 'Email',
@@ -160,10 +169,10 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 260
           },
           {
-            property: 'firstSendDate',
+            property: 'firstSendTime',
             align: 'left',
             editable: false,
             label: 'Date First Sent',
@@ -175,7 +184,7 @@ export default {
             width: 160
           },
           {
-            property: 'lastSendDate',
+            property: 'lastSendTime',
             align: 'left',
             editable: false,
             label: 'Date Last Sent',
@@ -187,7 +196,7 @@ export default {
             width: 180
           },
           {
-            property: 'lastSendingStatus',
+            property: 'status',
             align: 'center',
             editable: false,
             fixed: false,
@@ -210,7 +219,7 @@ export default {
               })) || []
           },
           {
-            property: PROPERTY_STORE.EMAIL_DELIVERY,
+            property: 'emailDelivery',
             align: 'left',
             editable: false,
             label: labels.EmailDelivery,
@@ -226,20 +235,31 @@ export default {
           show: false
         },
         iEmpty: {
-          message: `No reminder has been enabled for this campaign yet`
+          message: `You do not have any certificate delivery for this training`
         },
         rowActions: [
           {
+            name: 'Resend Certificate',
+            id: 'btn-interactions--row-actions-certificate-sending-report',
+            icon: '$custom-resend',
+            action: 'on-resend'
+          },
+          /*
+          {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-sending-report',
+            id: 'btn-interactions--row-actions-certificate-sending-report',
             icon: '$custom-details',
             action: 'on-details'
           }
-        ]
+            */
+        ],
+        downloadButton: {
+          show: false
+        }
       },
       isShowExtendedView: false,
       extendedViewOptions: {
-        title: 'Reminder Email Details',
+        title: 'Certificate Email Details',
         col: [
           {
             property: 'subject',
@@ -367,7 +387,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchSendingReportReminderEmails(this.axiosPayload, this.id)
+      AwarenessEducatorService.searchSendingReportCertificateEmails(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
@@ -387,7 +407,7 @@ export default {
         })
         .finally(this.setLoading)
     },
-    exportTrainingReportSendingReportTable(downloadTypes) {
+    exportTrainingReportCertificateEmailsTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
@@ -402,7 +422,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report-Reminder-Emails.${
+          link.download = `Training-Sending-Report-Certificate-Emails.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -413,7 +433,7 @@ export default {
       this.extendedViewOptions.isErrorState = false
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      AwarenessEducatorService.getTrainingReportReminderEmailDetails(this.id, row.userEmailId)
+      AwarenessEducatorService.getTrainingReportCertificateEmailDetails(this.id, row.userEmailId)
         .then((response) => {
           const { data: { data = [] } = {} } = response || {
             data: { data: [] }
@@ -427,6 +447,9 @@ export default {
         .finally(() => {
           this.extendedViewLoading = false
         })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver, filter) {
+      this.$emit('on-resend', items, excludedResourceIdList, isSelectedAllEver, filter)
     }
   }
 }

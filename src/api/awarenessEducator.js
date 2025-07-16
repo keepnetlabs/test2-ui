@@ -309,6 +309,9 @@ const searchSendingReportEnrollmentEmails = (payload, resourceId) => {
 const searchSendingReportReminderEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/reminder-mails/search`, payload)
 }
+const searchSendingReportCertificateEmails = (payload, resourceId) => {
+  return testRequest.post(`/enrollments/${resourceId}/certificates/search`, payload)
+}
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
   let url = `/training-reports/${enrollmentId}/interactions/${resourceId}`
@@ -340,6 +343,11 @@ const getTrainingReportSendingReportDetails = (enrollmentId, resourceId) => {
 const getTrainingReportReminderEmailDetails = (enrollmentId, userMailId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
+
+const getTrainingReportCertificateEmailDetails = (enrollmentId, userMailId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/certificate`)
+}
+
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
@@ -511,6 +519,11 @@ const removeFromFavorite = (resourceId) => {
     snackbar: COMMON_SNACKBAR
   })
 }
+const resendCertificateToUserList = (payload = {}) => {
+  return testRequest.post(`/enrollments/resend-certificate`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
 export default {
   searchTraining,
   getTrainingTypeCount,
@@ -573,6 +586,7 @@ export default {
   exportNoResponseReportResults,
   exportExamTrainingReportResults,
   exportSendingReport,
+  searchSendingReportCertificateEmails,
   getTrainingReportInteractions,
   getTrainingReportNonTargetUserInteractions,
   getProgressDetailsTable,
@@ -595,6 +609,7 @@ export default {
   resendTrainingNoResponseList,
   resendTrainingSendingReportList,
   resendTrainingToUserList,
+  resendCertificateToUserList,
   exportTrainingReport,
   getTrainingItems,
   getPhishedLandingPage,
@@ -609,5 +624,6 @@ export default {
   downloadPoster,
   addToFavorite,
   removeFromFavorite,
-  getTrainingTypes
+  getTrainingTypes,
+  getTrainingReportCertificateEmailDetails
 }
