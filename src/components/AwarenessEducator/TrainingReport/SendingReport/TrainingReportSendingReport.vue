@@ -188,7 +188,6 @@ export default {
             enrollmentId: this.id
           }))
         ]
-        console.log('payload', payload)
         AwarenessEducatorService.resendCertificateToUserList(payload)
           .then(() => {
             this.toggleIsShowResendDialog()

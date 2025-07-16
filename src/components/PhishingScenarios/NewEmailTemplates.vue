@@ -124,7 +124,7 @@
                       onsubmit="return false"
                     >
                       <div>
-                        <div v-show="false" class="d-flex align-baseline justify-space-between mb-3">
+                        <div v-show="false" class="mb-3">
                           <div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
@@ -216,10 +216,12 @@
                             v-model="selectedLanguages"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                             :language-items="languageItems"
+                            :show-red-flags="isShowRedFlags"
                             @input="handleSelectedLanguagesChange"
                             @on-generate-with-ai="handleGenerateWithAI"
                             @on-edit-mode-click="handleEditModeClick"
-                            @on-import-languages-click="handleUploadEmailButtonClick"
+                            @on-upload-email-button-click="handleUploadEmailButtonClick"
+                            @on-show-red-flags-click="handleShowRedFlagsClick"
                           />
                         </template>
                       </EmailTemplate>
@@ -364,6 +366,7 @@ export default {
       isPlainText: false,
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
+      isShowRedFlags: false,
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
@@ -982,6 +985,9 @@ export default {
     },
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
+    },
+    handleShowRedFlagsClick() {
+      this.isShowRedFlags = !this.isShowRedFlags
     }
   }
 }

@@ -409,8 +409,8 @@
             :value="fromAddress"
             @input="$emit('update:fromAddress', $event)"
           >
-          <template #append>
-            <AppendableMergeTag />
+          <template v-if="isPhishingTemplate" #append>
+            <AppendableMergeTag @on-add-merge-tag="handleAddMergeTag" />
           </template>
           </InputEmail>
         </FormGroup>
@@ -1223,7 +1223,10 @@ export default {
         this.$emit('update:languagePreview', value)
         this.$emit('on-email-template-preview-language-change', value, languagePreview)
       })
-    }
+    },
+    handleAddMergeTag(tag) {
+      this.fromAddress= this.fromAddress + tag
+    } 
   }
 }
 </script>

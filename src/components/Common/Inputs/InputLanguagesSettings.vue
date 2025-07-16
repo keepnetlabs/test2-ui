@@ -88,7 +88,7 @@
         color="#2196f3"
       >
         <VIcon>mdi-flag</VIcon>
-        <span class="button-new__text ml-1" style="text-transform:none;">Show Red Flags</span>
+        <span class="button-new__text ml-1" style="text-transform:none;" @click="handleShowRedFlagsClick">{{ redFlagsText }}</span>
       </VBtn>
       <VTextField
         v-if="false"
@@ -122,10 +122,10 @@
         >
       </template>
       <VList>
-        <VListItem class="cursor-pointer" @click="handleImportLanguagesClick">
+        <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
           <VListItemTitle>
             <VIcon>mdi-upload</VIcon>
-            <span>Import Languages</span>
+            <span>Import Email</span>
           </VListItemTitle>
         </VListItem>
       </VList>
@@ -153,6 +153,10 @@ export default {
     languageItems: {
       type: Array,
       default: () => []
+    },
+    showRedFlags:{
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -171,10 +175,13 @@ export default {
         top: '0px',
         left: '0px'
       },
-      activeNodes: []
+      activeNodes: [],
     }
   },
   computed: {
+    redFlagsText() {
+      return this.showRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
+    },
     getGenerateWithAIButtonIconStyle() {
       return {
         fontSize: '20px',
@@ -226,6 +233,7 @@ export default {
       this.$emit('input', this.selectedLanguages)
       this.changeMenuStatus('hidden')
       this.removeLanguageNodeEventListeners()
+      this.handleGenerateWithAI()
     },
     handleClickOutside() {
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
@@ -326,8 +334,11 @@ export default {
     handleEditModeClick() {
       this.$emit('on-edit-mode-click')
     },
-    handleImportLanguagesClick() {
-      this.$emit('on-import-languages-click')
+    handleUploadEmailButtonClick() {
+      this.$emit('on-upload-email-button-click')
+    },
+    handleShowRedFlagsClick() {
+      this.$emit('on-show-red-flags-click')
     }
   }
 }

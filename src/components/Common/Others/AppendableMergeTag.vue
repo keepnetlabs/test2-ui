@@ -25,8 +25,7 @@ export default {
   data() {
     return {
       mergeTags: [
-        { name: 'First Name', value: '{FIRST_NAME}' },
-        { name: 'Last Name', value: '{LAST_NAME}' },
+        { name: 'Email', value: '{EMAIL}' }
       ]
     }
   },
