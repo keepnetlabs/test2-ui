@@ -119,21 +119,6 @@
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <FormGroup
-                      v-if="false"
-                      class-name="mt-8"
-                      class="email-template-languages-settings-form-group"
-                      title="Languages Settings"
-                      sub-title="You can select multiple languages for AI-assisted email localization. Each template can include up to 10 languages in total, including edits."
-                    >
-                      <InputLanguagesSettings
-                        v-model="selectedLanguages"
-                        :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
-                        :language-items="languageItems"
-                        @input="handleSelectedLanguagesChange"
-                        @on-generate-with-ai="handleGenerateWithAI"
-                      />
-                    </FormGroup>
-                    <FormGroup
                       title=""
                       class-name="email-template mt-6 p-4"
                       onsubmit="return false"
@@ -218,7 +203,7 @@
                           <InputLanguagePreview
                             :value="activeLanguage"
                             ref="refInputLanguagePreview"
-                            style="max-width: 554px; min-width: 554px;"
+                            style="max-width: 240px;"
                             hide-details
                             label="View/Edit Template"
                             :items="selectedLanguages"

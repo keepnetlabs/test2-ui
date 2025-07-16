@@ -408,7 +408,11 @@
             :disabled="editItemsDisabled"
             :value="fromAddress"
             @input="$emit('update:fromAddress', $event)"
-          />
+          >
+          <template #append>
+            <AppendableMergeTag />
+          </template>
+          </InputEmail>
         </FormGroup>
       </div>
       <div
@@ -621,6 +625,7 @@ import {
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import AppendableMergeTag from '@/components/Common/Others/AppendableMergeTag.vue'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -640,7 +645,8 @@ export default {
     AttachmentsPreview,
     InputEntityName,
     FormGroup,
-    InputLanguagePreview
+    InputLanguagePreview,
+    AppendableMergeTag
   },
   props: [
     'name',
