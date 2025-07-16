@@ -481,8 +481,6 @@ export default {
               let dataPoint = this._chart.data.datasets[0].data[dataIndex]
               const {
                 phishingType,
-                Frequency,
-                instanceGroupCount,
                 startDate,
                 totalClickedCount,
                 totalSubmittedCount,
@@ -493,7 +491,8 @@ export default {
                 totalCalledCount,
                 totalEnteredCount,
                 totalReportedCount,
-                riskScore
+                riskScore,
+                totalDeliveredCount
               } = dataPoint.dataObject
               const detailsObj = {}
               let titleRow = document.createElement('div')
@@ -507,19 +506,17 @@ export default {
               tableRoot.appendChild(titlePoint)
               tableRoot.appendChild(titleRow)
               detailsObj['Start Time'] = startDate
-              /*
               if (phishingType === 'Phishing') {
-                detailsObj['Emails Delivered'] = 'N/A'
+                detailsObj['Emails Delivered'] = totalDeliveredCount
               } else if (phishingType === 'Quishing') {
-                detailsObj['Emails Delivered'] = 'N/A'
+                detailsObj['Emails Delivered'] = totalDeliveredCount
               } else if (phishingType === 'Vishing') {
-                detailsObj['Calls Made'] = 'N/A'
+                detailsObj['Calls Made'] = totalCalledCount
               } else if (phishingType === 'Smishing') {
-                detailsObj['SMS Delivered'] = 'N/A'
+                detailsObj['SMS Delivered'] = totalDeliveredCount
               } else if (phishingType === 'Callback') {
-                detailsObj['Emails Delivered'] = 'N/A'
+                detailsObj['Emails Delivered'] = totalDeliveredCount
               }
-              */
               detailsObj['Phishing Risk Score'] = Math.round(riskScore) + '%'
               const riskyActionsObj = {}
               if (phishingType === 'Phishing') {
