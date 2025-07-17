@@ -47,7 +47,12 @@
           :form-details="formDetails"
         />
       </ElTabPane>
-      <ElTabPane label="Certificate Emails" name="certificate" id="certificate-emails-content">
+      <ElTabPane
+        v-if="!isLearningPath"
+        label="Certificate Emails"
+        name="certificate"
+        id="certificate-emails-content"
+      >
         <CampaignManagerReportHeader
           class="mb-6"
           title="Training Certificate Sending Report"

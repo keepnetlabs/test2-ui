@@ -3,6 +3,11 @@
     <ElTabs v-if="isTrainingTypeLearningPath" v-model="tab" class="k-sub-tab">
       <ElTabPane label="Summary" name="summary" id="summary-content" />
       <ElTabPane label="Users" name="users" id="users-content" />
+      <ElTabPane
+        label="Certificate Emails"
+        name="certificate-emails"
+        id="certificate-emails-content"
+      />
     </ElTabs>
     <div v-if="tab === 'summary'">
       <TrainingReportSummaryAudienceDetails
@@ -76,7 +81,7 @@
         "
       />
     </div>
-    <div v-else>
+    <div v-else-if="tab === 'users'">
       <TrainingReportUsers
         is-add-training-type-key-to-payload
         :id="id"
@@ -86,6 +91,14 @@
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
         :form-details="formDetails"
+      />
+    </div>
+    <div v-else-if="tab === 'certificate-emails'">
+      <TrainingReportCertificateEmailsTable
+        :is-learning-path="isTrainingTypeLearningPath"
+        :form-details="formDetails"
+        :custom-fields="customFields"
+        :id="id"
       />
     </div>
   </div>
@@ -107,6 +120,7 @@ import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/U
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import { mapGetters } from 'vuex'
+import TrainingReportCertificateEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportCertificateEmailsTable'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -119,7 +133,8 @@ export default {
     TrainingReportSummaryCards,
     TrainingReportSummaryHeader,
     TrainingReportSummaryAudienceDetails,
-    TrainingReportCertificate
+    TrainingReportCertificate,
+    TrainingReportCertificateEmailsTable
   },
   props: {
     id: {

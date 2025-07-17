@@ -1,99 +1,107 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    rowKey="targetUserResourceId"
-    selectable
-    filterable
-    options
-    is-server-side
-    :loading="isLoading"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :download-button="tableOptions.downloadButton"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    :select-event="tableOptions.selectEvent"
-    :extended-view-options="extendedViewOptions"
-    :extended-view-loading="extendedViewLoading"
-    :extended-view-value="extendedViewValue"
-    :is-show-extended-view-with-external-value.sync="isShowExtendedView"
-    :axios-payload.sync="axiosPayload"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @downloadEvent="exportTrainingReportCertificateEmailsTable"
-    @refreshAction="callForData"
-    @on-resend="handleOnResend"
-    @on-details="handleOnDetail"
-  >
-    <template #datatable-custom-column="{ scope, col }">
-      <v-btn style="display: none;" />
-      <v-tooltip
-        v-if="col.property === 'status'"
-        bottom
-        nudgeLeft="40"
-        :disabled="!scope.row.hasTooltip"
-      >
-        <template #activator="{ on }">
-          <Badge
-            v-if="scope.row && scope.row[col.property]"
-            :listeners="on"
-            :color="getBtnStatusColor(scope.row[col.property])"
-            :text="scope.row[col.property]"
-            :col="col"
-            size="medium"
+  <div>
+    <CampaignManagerReportHeader
+      v-if="isLearningPath"
+      class="mb-6"
+      title="Learning Path Certificate Sending Report"
+      subtitle="Learning path certificate email delivery details"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      rowKey="targetUserResourceId"
+      selectable
+      filterable
+      options
+      is-server-side
+      :loading="isLoading"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :download-button="tableOptions.downloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      :select-event="tableOptions.selectEvent"
+      :extended-view-options="extendedViewOptions"
+      :extended-view-loading="extendedViewLoading"
+      :extended-view-value="extendedViewValue"
+      :is-show-extended-view-with-external-value.sync="isShowExtendedView"
+      :axios-payload.sync="axiosPayload"
+      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
+      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @downloadEvent="exportTrainingReportCertificateEmailsTable"
+      @refreshAction="callForData"
+      @on-resend="handleOnResend"
+      @on-details="handleOnDetail"
+    >
+      <template #datatable-custom-column="{ scope, col }">
+        <v-btn style="display: none;" />
+        <v-tooltip
+          v-if="col.property === 'status'"
+          bottom
+          nudgeLeft="40"
+          :disabled="!scope.row.hasTooltip"
+        >
+          <template #activator="{ on }">
+            <Badge
+              v-if="scope.row && scope.row[col.property]"
+              :listeners="on"
+              :color="getBtnStatusColor(scope.row[col.property])"
+              :text="scope.row[col.property]"
+              :col="col"
+              size="medium"
+            />
+          </template>
+          <span>{{ scope.row.tooltipText }}</span>
+        </v-tooltip>
+      </template>
+      <template #extended-view-slot>
+        <div
+          style="
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 21px;
+            color: #383b41;
+            margin-bottom: 8px;
+          "
+        >
+          Event History
+        </div>
+        <div v-for="(event, index) in getEvents" :key="index">
+          <TrainingReportSendingReportExtendedView
+            :item="{
+              title: `Received By ${
+                event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
+              }`,
+              ...event
+            }"
           />
-        </template>
-        <span>{{ scope.row.tooltipText }}</span>
-      </v-tooltip>
-    </template>
-    <template #extended-view-slot>
-      <div
-        style="
-          font-weight: 600;
-          font-size: 14px;
-          line-height: 21px;
-          color: #383b41;
-          margin-bottom: 8px;
-        "
-      >
-        Event History
-      </div>
-      <div v-for="(event, index) in getEvents" :key="index">
-        <TrainingReportSendingReportExtendedView
-          :item="{
-            title: `Received By ${
-              event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
-            }`,
-            ...event
-          }"
-        />
-      </div>
-      <div
-        v-if="!getEvents.length && !extendedViewOptions.isErrorState"
-        style="
-          background-color: #f5f7fa;
-          padding: 8px;
-          border-radius: 8px;
-          font-weight: normal;
-          font-size: 12px;
-          line-height: 18px;
-          color: #383b41;
-        "
-      >
-        {{ getNoEventMessage }}
-      </div>
-    </template>
-  </DataTable>
+        </div>
+        <div
+          v-if="!getEvents.length && !extendedViewOptions.isErrorState"
+          style="
+            background-color: #f5f7fa;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 18px;
+            color: #383b41;
+          "
+        >
+          {{ getNoEventMessage }}
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 <script>
 import DataTable from '@/components/DataTable'
@@ -110,6 +118,7 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -120,15 +129,13 @@ export default {
   components: {
     DataTable,
     Badge,
-    TrainingReportSendingReportExtendedView
+    TrainingReportSendingReportExtendedView,
+    CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
       type: String
-    },
-    lastSendingStatusItems: {
-      type: Array
     },
     formDetails: {
       type: Object
@@ -136,6 +143,10 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isLearningPath: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -235,7 +246,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: `You do not have any certificate delivery for this training`
+          message: this.isLearningPath
+            ? 'You do not have any certificate delivery for this learning path'
+            : `You do not have any certificate delivery for this training`
         },
         rowActions: [
           {
