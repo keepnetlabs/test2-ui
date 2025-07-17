@@ -6,7 +6,95 @@
       :content="overFlowTooltipContent"
     />
     <div class="d-flex gap-4">
+      <div class="position-relative">
+        <div>
+          <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleLocalizeClick">
+            <VIcon>mdi-web</VIcon>
+            <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
+          </VBtn>
+        </div>
+        <div
+          v-show="!loading || isShowLanguages"
+          class="switch-account__container input-language-settings__container"
+        >
+          <div>
+            <div class="px-4 py-4 pb-12" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
+              <div>
+                <VTextField
+                  v-model.trim="searchValue"
+                  outlined
+                  hide-details
+                  autocomplete="off"
+                  prepend-inner-icon="mdi-magnify"
+                  placeholder="Search"
+                />
+                <VTreeview
+                  :key="treeViewKey"
+                  ref="refTreeView"
+                  :value="value"
+                  class="input-languages-settings-treeview"
+                  dense
+                  selectable
+                  open-all
+                  return-object
+                  item-text="text"
+                  item-key="value"
+                  item-disabled="disabled"
+                  :search="searchValue"
+                  :hoverable="false"
+                  :items="items"
+                  @input="handleTreeViewChange"
+                >
+                  <template #label="{ item }">
+                    <span
+                      v-if="item.text === 'All Languages'"
+                      style="
+                        background-color: #e0e0e0;
+                        width: 100%;
+                        height: 1px;
+                        display: inline-block;
+                      "
+                    ></span>
+                    <div
+                      v-else
+                      :class="item.text === 'Preferred Languages' ? 'd-flex flex-column mt-1' : ''"
+                      style="margin-top: 1px;"
+                    >
+                      <span
+                        v-if="item.text !== 'Preferred Languages' && item.text !== 'All Languages'"
+                        >{{ item.text }}</span
+                      >
+                      <div v-if="item.text === 'Preferred Languages'">
+                        <div class="fw-400 mt-1 mb-1">
+                          Languages your employees prefer
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </VTreeview>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 input-language-settings__footer">
+            <VBtn
+              text
+              id="btn-confirm--switch-company-dashboard-popup"
+              color="#2196f3"
+              class="k-dialog__button mr-4 px-0"
+              :style="getAddButtonStyle"
+              @click="handleAdd"
+              >LOCALIZE</VBtn
+            >
+          </div>
+        </div>
+      </div>
+
+      <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
+        <VIcon>mdi-flag</VIcon>
+        <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
+      </VBtn>
       <VTextField
+        v-if="false"
         v-model.trim="getTextFieldValue"
         ref="refSearchTextField"
         id="input-language-settings"
@@ -19,75 +107,28 @@
         :disabled="isGenerateWithAIDisabled"
         @focus="handleSearchInputFocus"
       />
-      <VBtn
-        class="fw-600"
-        rounded
-        outlined
+      <VIcon
         color="#2196f3"
-        :style="getGenerateWithAIButtonStyle"
-        @click="handleGenerateWithAI"
+        class="executive-reports-card__right-btn"
+        small
+        @click="handleEditModeClick"
+        >mdi-pencil</VIcon
       >
-        <VIcon :style="getGenerateWithAIButtonIconStyle">mdi-creation</VIcon>
-        <span class="button-new__text">Localize</span>
-      </VBtn>
-    </div>
-    <div v-show="!loading" class="switch-account__container input-language-settings__container">
-      <div>
-        <div class="px-4 py-4 pb-12" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
-          <div>
-            <VTextField
-              v-model.trim="searchValue"
-              outlined
-              hide-details
-              autocomplete="off"
-              prepend-inner-icon="mdi-magnify"
-              placeholder="Search"
-            />
-            <VTreeview
-              :key="treeViewKey"
-              ref="refTreeView"
-              :value="value"
-              class="input-languages-settings-treeview"
-              dense
-              selectable
-              open-all
-              return-object
-              item-text="text"
-              item-key="value"
-              item-disabled="disabled"
-              :search="searchValue"
-              :hoverable="false"
-              :items="items"
-              @input="handleTreeViewChange"
-            >
-              <template #label="{ item }">
-                <div
-                  :class="item.text === 'Preferred Languages' ? 'd-flex flex-column mt-1' : ''"
-                  style="margin-top: 1px;"
-                >
-                  <span>{{ item.text }}</span>
-                  <div v-if="item.text === 'Preferred Languages'">
-                    <div class="fw-400 mt-1 mb-1">
-                      Based on target users' language preferences within your company.
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </VTreeview>
-          </div>
-        </div>
-      </div>
-      <div class="p-4 input-language-settings__footer">
-        <VBtn
-          text
-          id="btn-confirm--switch-company-dashboard-popup"
-          color="#2196f3"
-          class="k-dialog__button mr-2 py- px-0"
-          :style="getAddButtonStyle"
-          @click="handleAdd"
-          >Add</VBtn
-        >
-      </div>
+      <VMenu bottom :offset="24" nudge-bottom="40" nudge-left="40">
+        <template #activator="{ on }">
+          <VIcon v-on="on" color="#2196f3" class="executive-reports-card__right-btn" small
+            >mdi-dots-vertical</VIcon
+          >
+        </template>
+        <VList>
+          <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
+            <VListItemTitle>
+              <VIcon>mdi-upload</VIcon>
+              <span>Import Email</span>
+            </VListItemTitle>
+          </VListItem>
+        </VList>
+      </VMenu>
     </div>
   </div>
 </template>
@@ -111,6 +152,10 @@ export default {
     languageItems: {
       type: Array,
       default: () => []
+    },
+    showRedFlags: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -119,6 +164,7 @@ export default {
       treeViewKey: `key-${createRandomCryptStringNumber()}`,
       selectedLanguages: this.value || [],
       loading: false,
+      isShowLanguages: false,
       menuMaxHeight: '300px',
       searchValue: '',
       items: this.languageItems,
@@ -132,6 +178,9 @@ export default {
     }
   },
   computed: {
+    redFlagsText() {
+      return this.showRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
+    },
     getGenerateWithAIButtonIconStyle() {
       return {
         fontSize: '20px',
@@ -175,10 +224,15 @@ export default {
     }
   },
   methods: {
+    handleLocalizeClick() {
+      this.isShowLanguages = true
+      this.changeMenuStatus('visible')
+    },
     handleAdd() {
       this.$emit('input', this.selectedLanguages)
       this.changeMenuStatus('hidden')
       this.removeLanguageNodeEventListeners()
+      this.handleGenerateWithAI()
     },
     handleClickOutside() {
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
@@ -275,6 +329,15 @@ export default {
     },
     handleGenerateWithAI() {
       this.$emit('on-generate-with-ai')
+    },
+    handleEditModeClick() {
+      this.$emit('on-edit-mode-click')
+    },
+    handleUploadEmailButtonClick() {
+      this.$emit('on-upload-email-button-click')
+    },
+    handleShowRedFlagsClick() {
+      this.$emit('on-show-red-flags-click')
     }
   }
 }

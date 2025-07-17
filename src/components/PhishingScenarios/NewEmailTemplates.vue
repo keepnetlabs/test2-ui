@@ -110,7 +110,8 @@
                     Email Settings</v-list-item-title
                   >
                   <v-list-item-subtitle class="new-email-template__sub-title"
-                    >Create your email template</v-list-item-subtitle
+                    >Create, edit, design, and localize your email templates across multiple
+                    languages with ease.</v-list-item-subtitle
                   >
                 </v-list-item-content>
               </v-list-item>
@@ -118,37 +119,12 @@
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <FormGroup
-                      class-name="mt-8"
-                      class="email-template-languages-settings-form-group"
-                      title="Languages Settings"
-                      sub-title="You can select multiple languages for AI-assisted email localization. Each template can include up to 10 languages in total, including edits."
-                    >
-                      <InputLanguagesSettings
-                        v-model="selectedLanguages"
-                        :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
-                        :language-items="languageItems"
-                        @input="handleSelectedLanguagesChange"
-                        @on-generate-with-ai="handleGenerateWithAI"
-                      />
-                    </FormGroup>
-                    <form-group
-                      title="Email Template"
+                      title=""
                       class-name="email-template mt-6 p-4"
                       onsubmit="return false"
                     >
                       <div>
-                        <div class="d-flex align-baseline justify-space-between mb-3">
-                          <div>
-                            <InputLanguagePreview
-                              :value="activeLanguage"
-                              ref="refInputLanguagePreview"
-                              style="max-width: 554px; min-width: 554px;"
-                              hide-details
-                              :items="selectedLanguages"
-                              :disabled="selectedLanguages.length === 0 || isGenerateWithAIDisabled"
-                              @input="handleActiveLanguageChange"
-                            />
-                          </div>
+                        <div v-show="false" class="mb-3">
                           <div>
                             <v-tooltip bottom opacity="1">
                               <template v-slot:activator="{ on }">
@@ -181,6 +157,7 @@
                         ref="refEmailTemplate"
                         class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
+                        :is-phishing-template="true"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="getSelectedLanguagePayload.fromAddress"
@@ -195,7 +172,8 @@
                         :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
-                        :is-phishing-template="isAttachmentBasedTemplate"
+                        :is-show-red-flags="isShowRedFlags"
+                        :is-attachment-based-scenario="isAttachmentBasedTemplate"
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
@@ -221,8 +199,34 @@
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
-                      />
-                    </form-group>
+                      >
+                        <template #template-header-left>
+                          <InputLanguagePreview
+                            :value="activeLanguage"
+                            ref="refInputLanguagePreview"
+                            style="max-width: 240px;"
+                            hide-details
+                            label="View/Edit Template"
+                            :items="selectedLanguages"
+                            :disabled="selectedLanguages.length === 0 || isGenerateWithAIDisabled"
+                            @input="handleActiveLanguageChange"
+                          />
+                        </template>
+                        <template #template-header-right>
+                          <InputLanguagesSettings
+                            v-model="selectedLanguages"
+                            :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                            :language-items="languageItems"
+                            :show-red-flags="isShowRedFlags"
+                            @input="handleSelectedLanguagesChange"
+                            @on-generate-with-ai="handleGenerateWithAI"
+                            @on-edit-mode-click="handleEditModeClick"
+                            @on-upload-email-button-click="handleUploadEmailButtonClick"
+                            @on-show-red-flags-click="handleShowRedFlagsClick"
+                          />
+                        </template>
+                      </EmailTemplate>
+                    </FormGroup>
                   </v-form>
                 </v-list-item-content>
               </v-list-item>
@@ -363,6 +367,7 @@ export default {
       isPlainText: false,
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
+      isShowRedFlags: false,
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
@@ -978,6 +983,12 @@ export default {
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
         JSON.stringify(this.getSelectedLanguagePayload)
       )
+    },
+    handleEditModeClick() {
+      this.$refs.refEmailTemplate.toggleShowGrapesModal()
+    },
+    handleShowRedFlagsClick() {
+      this.isShowRedFlags = !this.isShowRedFlags
     }
   }
 }
