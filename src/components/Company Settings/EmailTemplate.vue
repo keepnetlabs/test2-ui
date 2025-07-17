@@ -23,7 +23,7 @@
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
-          :isAttachmentBasedTemplate="isPhishingTemplate"
+          :isAttachmentBasedTemplate="isAttachmentBasedScenario"
         />
       </template>
     </app-modal>
@@ -68,7 +68,7 @@
               <VIcon class="cursor-pointer mr-1" color="#fff">
                 mdi-creation
               </VIcon>
-              USE AI ALLY
+              USE
             </VBtn>
           </div>
           <VIcon
@@ -312,143 +312,167 @@
         </div>
       </transition>
     </div>
-    <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
-      <FormGroup
-        title="Template Name:"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <InputEntityName
-          id="input--notification-template-name"
-          initialPlaceholder="Enter template name"
-          entityName="template name"
-          :value="name"
-          :disabled="editItemsDisabled"
-          @input="$emit('update:name', $event)"
-        />
-      </FormGroup>
-    </div>
-    <div
-      v-if="!onlyGrapes && showLanguageField"
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-2 ' : 'pt-6']"
-    >
-      <FormGroup
-        title="Languages:"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <InputLanguagePreview
-          :value="languagePreview"
-          persistent-hint
-          class="campaign-manager-phishing-scenario-input-language"
-          :hint="getEmailTemplatePreviewLanguageHint"
-          :items="selectedTemplateLanguages"
-          hide-details
-          @input="handleEmailTemplatePreviewLanguageChange($event, languagePreview)"
-        />
-      </FormGroup>
-    </div>
-    <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-6']" v-if="!onlyGrapes">
-      <FormGroup
-        title="Subject:"
-        :sub-title="getSubjectSubtitle"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <InputEntityName
-          ref="refInputEntityName"
-          id="input--notification-template-subject"
-          initialPlaceholder="Enter email subject"
-          entityName="email subject"
-          label="Subject"
-          persistent-placeholder
-          :value="subject"
-          :disabled="editItemsDisabled"
-          :initialRules="getSubjectRules"
-          @input="$emit('update:subject', $event)"
-        />
-      </FormGroup>
-    </div>
-    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
-      <FormGroup
-        title="From Name:"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <InputEntityName
-          id="input--notification-template-sender-name"
-          initialPlaceholder="Enter sender name"
-          entityName="sender name"
-          label="From Name"
-          persistent-placeholder
-          :value="fromName"
-          :disabled="editItemsDisabled"
-          :initialRules="senderNameRules"
-          @input="$emit('update:fromName', $event)"
-        />
-      </FormGroup>
-    </div>
-    <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
-      <FormGroup
-        title="From Email Address:"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <InputEmail
-          label="From Email"
-          id="input--notification-template-from-email"
-          placeholder="Enter sender email address"
-          persistent-placeholder
-          :disabled="editItemsDisabled"
-          :value="fromAddress"
-          @input="$emit('update:fromAddress', $event)"
-        />
-      </FormGroup>
-    </div>
-    <div
-      v-if="!onlyGrapes && (isNotificationEnrollment || isEmailTemplate)"
-      :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']"
-    >
-      <FormGroup
-        title="CC:"
-        style="max-width: unset;"
-        :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-        :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
-      >
-        <KSelect
-          :value="ccAddresses"
-          id="input--threat-sharing-incident-share-email"
-          type="combobox"
-          :items="[]"
-          :class="{
-            'email-template__cc-select': true,
-            'email-template__cc-select-selected': ccAddresses && ccAddresses.length > 0
-          }"
-          placeholder="Enter an email address"
-          multiple
-          dense
-          deletable-chips
-          autocomplete="disabled"
-          small-chips
-          outlined
-          persistent-hint
-          persistent-placeholder
-          label="CC"
-          hint="Press enter to separate email addresses"
-          :rules="[ccEmailRules.email]"
-          @input="$emit('update:ccAddresses', $event)"
+    <div style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;">
+      <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
+        <FormGroup
+          title="Template Name:"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-        </KSelect>
-      </FormGroup>
+          <InputEntityName
+            id="input--notification-template-name"
+            initialPlaceholder="Enter template name"
+            entityName="template name"
+            :value="name"
+            :disabled="editItemsDisabled"
+            @input="$emit('update:name', $event)"
+          />
+        </FormGroup>
+      </div>
+      <div
+        v-if="!onlyGrapes && showLanguageField"
+        :class="['mx-6', isHorizontalFormGroups ? 'pt-2 ' : 'pt-6']"
+      >
+        <FormGroup
+          title="Languages:"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+        >
+          <InputLanguagePreview
+            :value="languagePreview"
+            persistent-hint
+            class="campaign-manager-phishing-scenario-input-language"
+            :hint="getEmailTemplatePreviewLanguageHint"
+            :items="selectedTemplateLanguages"
+            hide-details
+            @input="handleEmailTemplatePreviewLanguageChange($event, languagePreview)"
+          />
+        </FormGroup>
+      </div>
+      <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-0']" v-if="!onlyGrapes">
+        <FormGroup
+          title="Subject:"
+          :sub-title="getSubjectSubtitle"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+        >
+          <div class="position-relative">
+            <InputEntityName
+              ref="refInputEntityName"
+              id="input--notification-template-subject"
+              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              initialPlaceholder="Enter email subject"
+              entityName="email subject"
+              label="Subject"
+              persistent-placeholder
+              :value="subject"
+              :disabled="editItemsDisabled"
+              :initialRules="getSubjectRules"
+              @input="$emit('update:subject', $event)"
+            />
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The subject line uses urgency (“Action required”) and threats (“prevent suspension”)—classic phishing tactics"
+            />
+          </div>
+        </FormGroup>
+      </div>
+      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
+        <FormGroup
+          title="From Name:"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+        >
+          <div class="position-relative">
+            <InputEntityName
+              id="input--notification-template-sender-name"
+              initialPlaceholder="Enter sender name"
+              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              entityName="sender name"
+              label="From Name"
+              persistent-placeholder
+              :value="fromName"
+              :disabled="editItemsDisabled"
+              :initialRules="senderNameRules"
+              @input="$emit('update:fromName', $event)"
+            />
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The sender’s display name is misspelled (“M1crosoft Account Team”); the correct name is “Microsoft Account Team.”"
+            />
+          </div>
+        </FormGroup>
+      </div>
+      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
+        <FormGroup
+          title="From Email Address:"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+        >
+          <div class="position-relative">
+            <InputEmail
+              label="From Email"
+              id="input--notification-template-from-email"
+              placeholder="Enter sender email address"
+              :class="isShowRedFlags ? 'red-flag-active' : ''"
+              persistent-placeholder
+              :disabled="editItemsDisabled"
+              :value="fromAddress"
+              @input="$emit('update:fromAddress', $event)"
+            >
+              <template v-if="isPhishingTemplate" #append>
+                <AppendableMergeTag @on-add-merge-tag="handleAddMergeTag" />
+              </template>
+            </InputEmail>
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The sender’s domain is misspelled (“m1crosoft.com”); legitimate Microsoft emails come from “microsoft.com.”"
+            />
+          </div>
+        </FormGroup>
+      </div>
+      <div
+        v-if="!onlyGrapes && (isNotificationEnrollment || isEmailTemplate)"
+        :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']"
+      >
+        <FormGroup
+          title="CC:"
+          style="max-width: unset;"
+          :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
+        >
+          <KSelect
+            :value="ccAddresses"
+            id="input--threat-sharing-incident-share-email"
+            type="combobox"
+            :items="[]"
+            :class="getEmailTemplateCCSelectClasses"
+            placeholder="Enter an email address"
+            multiple
+            dense
+            deletable-chips
+            autocomplete="disabled"
+            small-chips
+            outlined
+            persistent-hint
+            persistent-placeholder
+            label="CC"
+            hint="Press enter to separate email addresses"
+            :rules="[ccEmailRules.email]"
+            @input="$emit('update:ccAddresses', $event)"
+          >
+          </KSelect>
+        </FormGroup>
+      </div>
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        v-if="isPhishingTemplate && !onlyGrapes"
+        v-if="isAttachmentBasedScenario && !onlyGrapes"
         :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
       >
         <label
@@ -530,43 +554,61 @@
     <div v-if="isEmailGenerating">
       <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
     </div>
-    <div v-else id="email-template-content">
-      <v-btn
-        id="btn-edit--notification-template-email-template"
-        style="text-transform: none;"
-        :disabled="editItemsDisabled"
-        rounded
-        color="#2196f3"
-        class="email-template-preview__button"
-        @click="editHtmlTemplate"
-      >
-        <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6">mdi-pencil</v-icon>
-        EDIT
-      </v-btn>
-      <div class="email-template-preview" style="pointer-events: none;">
-        <k-email-preview v-if="template" :key="template" ref="refPreview" :html="previewTemplate" />
-        <template v-else>
-          <landing-page-template-default
-            v-if="templateType === 'landing'"
+    <div v-else id="email-template-content" class="email-template-content">
+      <div>
+        <v-btn
+          v-if="!isPhishingTemplate"
+          id="btn-edit--notification-template-email-template"
+          style="text-transform: none;"
+          :disabled="editItemsDisabled"
+          rounded
+          color="#2196f3"
+          class="email-template-preview__button"
+          @click="editHtmlTemplate"
+        >
+          <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6">mdi-pencil</v-icon>
+          EDIT
+        </v-btn>
+        <div v-else>
+          <div class="email-template-preview__template-header">
+            <div class="email-template-preview__template-header-left">
+              <slot name="template-header-left" />
+            </div>
+            <div>
+              <slot name="template-header-right" />
+            </div>
+          </div>
+        </div>
+        <div class="email-template-preview" style="pointer-events: none;">
+          <k-email-preview
+            v-if="template"
+            :key="template"
             ref="refPreview"
-            :email-template-logo="emailTemplateLogo"
+            :html="previewTemplate"
           />
-          <individual-print-out-template-default
-            v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
-            ref="refPreview"
-            :email-template-logo="emailTemplateLogo"
-          />
-          <quishing-email-template-default
-            v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
-            ref="refPreview"
-            :email-template-logo="emailTemplateLogo"
-          />
-          <email-template-default
-            v-else
-            ref="refPreview"
-            :email-template-logo="emailTemplateLogo"
-          />
-        </template>
+          <template v-else>
+            <landing-page-template-default
+              v-if="templateType === 'landing'"
+              ref="refPreview"
+              :email-template-logo="emailTemplateLogo"
+            />
+            <individual-print-out-template-default
+              v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
+              ref="refPreview"
+              :email-template-logo="emailTemplateLogo"
+            />
+            <quishing-email-template-default
+              v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL"
+              ref="refPreview"
+              :email-template-logo="emailTemplateLogo"
+            />
+            <email-template-default
+              v-else
+              ref="refPreview"
+              :email-template-logo="emailTemplateLogo"
+            />
+          </template>
+        </div>
       </div>
     </div>
   </v-card>
@@ -604,6 +646,8 @@ import {
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import AppendableMergeTag from '@/components/Common/Others/AppendableMergeTag.vue'
+import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -623,7 +667,9 @@ export default {
     AttachmentsPreview,
     InputEntityName,
     FormGroup,
-    InputLanguagePreview
+    InputLanguagePreview,
+    AppendableMergeTag,
+    RedFlagTooltip
   },
   props: [
     'name',
@@ -644,6 +690,7 @@ export default {
     'extensions',
     'fileUploadHint',
     'size',
+    'isAttachmentBasedScenario',
     'isAttachmentError',
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
@@ -672,7 +719,8 @@ export default {
     'getEmailTemplatePreviewLanguageHint',
     'selectedTemplateLanguages',
     'languagePreview',
-    'showLanguageField'
+    'showLanguageField',
+    'isShowRedFlags'
   ],
   data() {
     return {
@@ -858,6 +906,12 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    getEmailTemplateCCSelectClasses() {
+      return {
+        'email-template__cc-select': true,
+        'email-template__cc-select-selected': this.ccAddresses && this.ccAddresses.length > 0
+      }
+    },
     getTemplateNameFieldClass() {
       return ['mx-6', 'pt-4']
     },
@@ -1193,6 +1247,9 @@ export default {
         this.$emit('update:languagePreview', value)
         this.$emit('on-email-template-preview-language-change', value, languagePreview)
       })
+    },
+    handleAddMergeTag(tag) {
+      this.fromAddress = this.fromAddress + tag
     }
   }
 }

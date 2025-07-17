@@ -127,7 +127,7 @@
                         onsubmit="return false"
                       >
                         <template #title>
-                          <div style="display: flex; justify-content: space-between;">
+                          <div class="d-flex align-center justify-space-between">
                             <div class="k-form-group__title">
                               Email Template
                             </div>
