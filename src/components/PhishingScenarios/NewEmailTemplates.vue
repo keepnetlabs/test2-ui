@@ -172,6 +172,7 @@
                         :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
+                        :is-show-red-flags="isShowRedFlags"
                         :is-attachment-based-scenario="isAttachmentBasedTemplate"
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"

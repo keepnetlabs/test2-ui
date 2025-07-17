@@ -492,3 +492,38 @@
         }
     }
 }
+#app .v-text-field--outlined.red-flag-active .v-text-field__slot{
+  position: relative;
+  &:after{
+    content: '';
+    background: rgba(245, 108, 108, 0.10);
+    position: absolute;
+    top: 14px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #F56C6C;
+    max-height: 22px;
+    z-index: 1;
+  }
+  &:before{
+    content: '';
+    background-image: url('~@/assets/img/red-flag-icon.svg');
+    background-size: 16px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    top: 16px;
+    position: absolute;
+  }
+  input{
+    padding-left: 20px;
+  }
+}
+
+// Tooltip trigger overlay for red flag icon
+.red-flag-tooltip-trigger {
+  background: transparent !important;
+  border: none !important;
+}

@@ -8,18 +8,15 @@
     <div class="d-flex gap-4">
       <div class="position-relative">
         <div>
-          <VBtn
-            class="fw-600"
-            rounded
-            outlined
-            color="#2196f3"
-            @click="handleLocalizeClick"
-      >
-        <VIcon>mdi-web</VIcon>
-        <span class="button-new__text ml-1" style="text-transform:none;">Localize</span>
-      </VBtn>
+          <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleLocalizeClick">
+            <VIcon>mdi-web</VIcon>
+            <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
+          </VBtn>
         </div>
-        <div v-show="!loading || isShowLanguages" class="switch-account__container input-language-settings__container">
+        <div
+          v-show="!loading || isShowLanguages"
+          class="switch-account__container input-language-settings__container"
+        >
           <div>
             <div class="px-4 py-4 pb-12" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
               <div>
@@ -49,13 +46,24 @@
                   @input="handleTreeViewChange"
                 >
                   <template #label="{ item }">
-                    <span v-if="item.text === 'All Languages'" style="background-color:#e0e0e0; width:100%; height:1px; display:inline-block;"></span>
+                    <span
+                      v-if="item.text === 'All Languages'"
+                      style="
+                        background-color: #e0e0e0;
+                        width: 100%;
+                        height: 1px;
+                        display: inline-block;
+                      "
+                    ></span>
                     <div
                       v-else
                       :class="item.text === 'Preferred Languages' ? 'd-flex flex-column mt-1' : ''"
                       style="margin-top: 1px;"
                     >
-                      <span v-if="item.text !== 'Preferred Languages' && item.text !== 'All Languages'">{{ item.text }}</span>
+                      <span
+                        v-if="item.text !== 'Preferred Languages' && item.text !== 'All Languages'"
+                        >{{ item.text }}</span
+                      >
                       <div v-if="item.text === 'Preferred Languages'">
                         <div class="fw-400 mt-1 mb-1">
                           Languages your employees prefer
@@ -66,29 +74,24 @@
                 </VTreeview>
               </div>
             </div>
-      </div>
-      <div class="p-4 input-language-settings__footer">
-        <VBtn
-          text
-          id="btn-confirm--switch-company-dashboard-popup"
-          color="#2196f3"
-          class="k-dialog__button mr-4 px-0"
-          :style="getAddButtonStyle"
-          @click="handleAdd"
-          >LOCALIZE</VBtn
-        >
-      </div>
-    </div>
+          </div>
+          <div class="p-4 input-language-settings__footer">
+            <VBtn
+              text
+              id="btn-confirm--switch-company-dashboard-popup"
+              color="#2196f3"
+              class="k-dialog__button mr-4 px-0"
+              :style="getAddButtonStyle"
+              @click="handleAdd"
+              >LOCALIZE</VBtn
+            >
+          </div>
+        </div>
       </div>
 
-      <VBtn
-        class="fw-600"
-        rounded
-        outlined
-        color="#2196f3"
-      >
+      <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
         <VIcon>mdi-flag</VIcon>
-        <span class="button-new__text ml-1" style="text-transform:none;" @click="handleShowRedFlagsClick">{{ redFlagsText }}</span>
+        <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
       </VBtn>
       <VTextField
         v-if="false"
@@ -111,25 +114,21 @@
         @click="handleEditModeClick"
         >mdi-pencil</VIcon
       >
-      <VMenu bottom :offset="24" nudge-bottom="40" nudge-left="40" > 
+      <VMenu bottom :offset="24" nudge-bottom="40" nudge-left="40">
         <template #activator="{ on }">
-        <VIcon
-          v-on="on"
-          color="#2196f3"
-          class="executive-reports-card__right-btn"
-          small
-          >mdi-dots-vertical</VIcon
-        >
-      </template>
-      <VList>
-        <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
-          <VListItemTitle>
-            <VIcon>mdi-upload</VIcon>
-            <span>Import Email</span>
-          </VListItemTitle>
-        </VListItem>
-      </VList>
-    </VMenu>
+          <VIcon v-on="on" color="#2196f3" class="executive-reports-card__right-btn" small
+            >mdi-dots-vertical</VIcon
+          >
+        </template>
+        <VList>
+          <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
+            <VListItemTitle>
+              <VIcon>mdi-upload</VIcon>
+              <span>Import Email</span>
+            </VListItemTitle>
+          </VListItem>
+        </VList>
+      </VMenu>
     </div>
   </div>
 </template>
@@ -154,7 +153,7 @@ export default {
       type: Array,
       default: () => []
     },
-    showRedFlags:{
+    showRedFlags: {
       type: Boolean,
       default: false
     }
@@ -175,7 +174,7 @@ export default {
         top: '0px',
         left: '0px'
       },
-      activeNodes: [],
+      activeNodes: []
     }
   },
   computed: {

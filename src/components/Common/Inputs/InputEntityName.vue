@@ -14,6 +14,7 @@
     :disabled="disabled"
     :readonly="readonly"
     :hide-details="hideDetails"
+    :class="className"
     @input="$emit('input', $event)"
   />
 </template>
@@ -74,6 +75,10 @@ export default {
     persistentPlaceholder: {
       type: Boolean,
       default: false
+    },
+    className: {
+      type: String,
+      default: ''
     }
   },
   data() {

@@ -359,18 +359,25 @@
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-          <InputEntityName
-            ref="refInputEntityName"
-            id="input--notification-template-subject"
-            initialPlaceholder="Enter email subject"
-            entityName="email subject"
-            label="Subject"
-            persistent-placeholder
-            :value="subject"
-            :disabled="editItemsDisabled"
-            :initialRules="getSubjectRules"
-            @input="$emit('update:subject', $event)"
-          />
+          <div class="position-relative">
+            <InputEntityName
+              ref="refInputEntityName"
+              id="input--notification-template-subject"
+              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              initialPlaceholder="Enter email subject"
+              entityName="email subject"
+              label="Subject"
+              persistent-placeholder
+              :value="subject"
+              :disabled="editItemsDisabled"
+              :initialRules="getSubjectRules"
+              @input="$emit('update:subject', $event)"
+            />
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The subject line uses urgency (“Action required”) and threats (“prevent suspension”)—classic phishing tactics"
+            />
+          </div>
         </FormGroup>
       </div>
       <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
@@ -380,17 +387,24 @@
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-          <InputEntityName
-            id="input--notification-template-sender-name"
-            initialPlaceholder="Enter sender name"
-            entityName="sender name"
-            label="From Name"
-            persistent-placeholder
-            :value="fromName"
-            :disabled="editItemsDisabled"
-            :initialRules="senderNameRules"
-            @input="$emit('update:fromName', $event)"
-          />
+          <div class="position-relative">
+            <InputEntityName
+              id="input--notification-template-sender-name"
+              initialPlaceholder="Enter sender name"
+              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              entityName="sender name"
+              label="From Name"
+              persistent-placeholder
+              :value="fromName"
+              :disabled="editItemsDisabled"
+              :initialRules="senderNameRules"
+              @input="$emit('update:fromName', $event)"
+            />
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The sender’s display name is misspelled (“M1crosoft Account Team”); the correct name is “Microsoft Account Team.”"
+            />
+          </div>
         </FormGroup>
       </div>
       <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
@@ -400,19 +414,26 @@
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-          <InputEmail
-            label="From Email"
-            id="input--notification-template-from-email"
-            placeholder="Enter sender email address"
-            persistent-placeholder
-            :disabled="editItemsDisabled"
-            :value="fromAddress"
-            @input="$emit('update:fromAddress', $event)"
-          >
-          <template v-if="isPhishingTemplate" #append>
-            <AppendableMergeTag @on-add-merge-tag="handleAddMergeTag" />
-          </template>
-          </InputEmail>
+          <div class="position-relative">
+            <InputEmail
+              label="From Email"
+              id="input--notification-template-from-email"
+              placeholder="Enter sender email address"
+              :class="isShowRedFlags ? 'red-flag-active' : ''"
+              persistent-placeholder
+              :disabled="editItemsDisabled"
+              :value="fromAddress"
+              @input="$emit('update:fromAddress', $event)"
+            >
+              <template v-if="isPhishingTemplate" #append>
+                <AppendableMergeTag @on-add-merge-tag="handleAddMergeTag" />
+              </template>
+            </InputEmail>
+            <RedFlagTooltip
+              v-if="isShowRedFlags"
+              tooltipContent="The sender’s domain is misspelled (“m1crosoft.com”); legitimate Microsoft emails come from “microsoft.com.”"
+            />
+          </div>
         </FormGroup>
       </div>
       <div
@@ -626,6 +647,7 @@ import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.
 import FeedbackPopup from '@/components/FeedbackPopup.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import AppendableMergeTag from '@/components/Common/Others/AppendableMergeTag.vue'
+import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -646,7 +668,8 @@ export default {
     InputEntityName,
     FormGroup,
     InputLanguagePreview,
-    AppendableMergeTag
+    AppendableMergeTag,
+    RedFlagTooltip
   },
   props: [
     'name',
@@ -696,7 +719,8 @@ export default {
     'getEmailTemplatePreviewLanguageHint',
     'selectedTemplateLanguages',
     'languagePreview',
-    'showLanguageField'
+    'showLanguageField',
+    'isShowRedFlags'
   ],
   data() {
     return {
@@ -1225,8 +1249,8 @@ export default {
       })
     },
     handleAddMergeTag(tag) {
-      this.fromAddress= this.fromAddress + tag
-    } 
+      this.fromAddress = this.fromAddress + tag
+    }
   }
 }
 </script>
