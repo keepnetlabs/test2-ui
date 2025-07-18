@@ -1,0 +1,331 @@
+.k-swiper-education {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  &__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    gap: 30px;
+    flex: 1;
+  }
+  
+  // Header Section
+  &__header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  &__title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1565c0;
+    margin-bottom: 15px;
+    line-height: 1.2;
+  }
+  
+  &__description {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #424242;
+    margin: 0;
+  }
+  
+  // Dynamic Fields Section
+  &__fields {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+  }
+  
+  &__field {
+    margin-bottom: 12px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  &__field-content {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    
+    &:hover {
+      background: rgba(220, 53, 69, 0.05);
+      transform: translateX(2px);
+    }
+  }
+  
+  &__field-icon {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  
+  &__field-key {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    color: #37474f;
+    margin-right: 8px;
+    min-width: 120px;
+  }
+  
+  &__field-value {
+    font-family: 'Open Sans', sans-serif;
+    color: #dc3545;
+    font-weight: 500;
+    flex: 1;
+  }
+  
+  // HTML Content Section
+  &__html-content {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    overflow: auto;
+  }
+  
+  &__html-wrapper {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: #424242;
+    
+    // Email content styling
+    h1, h2, h3, h4, h5, h6 {
+      color: #1565c0;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin-bottom: 12px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    
+    a {
+      color: #1976d2;
+      text-decoration: underline;
+      
+      &:hover {
+        color: #0d47a1;
+      }
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      
+      th, td {
+        padding: 8px 12px;
+        border: 1px solid #e0e0e0;
+        text-align: left;
+      }
+      
+      th {
+        background: #f5f5f5;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  // Actions Section
+  &__actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  &__action-button {
+    font-family: 'Open Sans', sans-serif;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    
+    // Primary variant
+    &--primary {
+      background: #1976d2;
+      color: white;
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+      
+      &:hover {
+        background: #1565c0;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+      }
+    }
+    
+    // Secondary variant
+    &--secondary {
+      background: #f5f5f5;
+      color: #424242;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      
+      &:hover {
+        background: #eeeeee;
+        transform: translateY(-2px);
+      }
+    }
+    
+    // Success variant
+    &--success {
+      background: #4caf50;
+      color: white;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      
+      &:hover {
+        background: #43a047;
+        transform: translateY(-2px);
+      }
+    }
+    
+    // Warning variant
+    &--warning {
+      background: #ff9800;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+      
+      &:hover {
+        background: #f57c00;
+        transform: translateY(-2px);
+      }
+    }
+  }
+  
+  // Footer Section
+  &__footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  &__footer-text {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    font-style: italic;
+  }
+  
+  // Theme Variants
+  &--phishing {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    
+    .k-swiper-education__title {
+      color: #c62828;
+    }
+  }
+  
+  &--security {
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+    
+    .k-swiper-education__title {
+      color: #2e7d32;
+    }
+  }
+  
+  &--awareness {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+    
+    .k-swiper-education__title {
+      color: #ef6c00;
+    }
+  }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  .k-swiper-education {
+    padding: 25px 20px;
+    min-height: 500px;
+    
+    &__title {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+    
+    &__description {
+      font-size: 0.9rem;
+    }
+    
+    &__fields {
+      padding: 15px;
+    }
+    
+    &__field-key {
+      min-width: 100px;
+      font-size: 0.9rem;
+    }
+    
+    &__field-value {
+      font-size: 0.9rem;
+    }
+    
+    &__html-content {
+      padding: 20px;
+    }
+    
+    &__actions {
+      flex-direction: column;
+    }
+    
+    &__action-button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .k-swiper-education {
+    padding: 20px 15px;
+    
+    &__title {
+      font-size: 1.5rem;
+    }
+    
+    &__fields {
+      padding: 12px;
+    }
+    
+    &__html-content {
+      padding: 15px;
+    }
+  }
+} 

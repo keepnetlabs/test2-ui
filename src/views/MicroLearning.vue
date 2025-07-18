@@ -53,6 +53,46 @@ export default {
         },
         layout: 'split',
         theme: 'default'
+      },
+      educationData: {
+        title: 'What You Missed',
+        description:
+          'Hover over each box to view details. Please review all flags to complete the process—thank you!',
+        theme: 'phishing', // phishing, security, awareness
+        fields: [
+          {
+            key: 'From Name',
+            value: 'Microsoft Account Team',
+            tooltip:
+              "The sender name doesn't match Microsoft's official naming convention. Real Microsoft emails use 'Microsoft Security Team' or similar."
+          },
+          {
+            key: 'From Email Address',
+            value: 'no-reply@m1crosoft.com',
+            tooltip:
+              "Notice the '1' instead of 'i' in 'microsoft'. This is a common phishing technique called typosquatting."
+          },
+          {
+            key: 'Subject',
+            value: 'Action required: Verify your account to avoid suspension',
+            tooltip:
+              'Creates false urgency to pressure quick action. Legitimate Microsoft emails rarely threaten account suspension.'
+          }
+        ],
+        htmlContent: `<div>Email HTML content buraya gelecek...</div>`, // Sen vereceğin HTML
+        actions: [
+          {
+            text: 'Continue Learning',
+            action: 'next_slide',
+            variant: 'primary'
+          },
+          {
+            text: 'Go Back',
+            action: 'prev_slide',
+            variant: 'secondary'
+          }
+        ],
+        footerInfo: 'Red Flags Reviewed: (0/9)'
       }
     }
   },
