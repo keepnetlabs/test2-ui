@@ -25,6 +25,7 @@
             :trainingSummary="trainingSummary"
             :isScormProxy="isScormProxy"
             :active-step="item.activeStep"
+            :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           />
         </ElTabPane>
       </template>
@@ -126,7 +127,8 @@ export default {
           isVisible: true
         }
       ],
-      formDetails: null
+      formDetails: null,
+      awardCertificateEnrollmentId: null
     }
   },
   computed: {
@@ -184,6 +186,16 @@ export default {
             component: TrainingReportSummary,
             isVisible: true
           })
+          const awardCertificateIndex = this.trainingSummary.steps.findIndex(
+            (step) => step.awardCertificate
+          )
+          console.log('awardCertificateIndex', awardCertificateIndex)
+          if (awardCertificateIndex !== -1) {
+            this.awardCertificateEnrollmentId = this.trainingSummary.steps[
+              awardCertificateIndex
+            ].enrollmentId
+            console.log('awardCertificateEnrollmentId', this.awardCertificateEnrollmentId)
+          }
           this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
           this.trainingSummary.steps.forEach((step, index) => {
             newTabItems.push({
