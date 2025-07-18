@@ -1,33 +1,34 @@
 <template>
   <KContainer id="training-report">
     <el-tabs v-model="tab" @tab-click="handleTabClick">
-      <el-tab-pane
-        v-for="item in tabItems"
-        v-if="item.isVisible"
-        :key="item.name"
-        :id="item.id"
-        :name="item.name"
-        :label="item.label"
-        :disabled="isLoading"
-      >
-        <span slot="label">
-          <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-          <template v-else> {{ item.label }} </template>
-        </span>
-        <component
-          v-if="item.name === tab"
-          :is="item.component"
-          :id="id"
-          :custom-fields="customFields"
-          :isLoading="isLoading"
-          :training-name="getTrainingName"
-          :form-details="formDetails"
-          :trainingSummary="trainingSummary"
-          :isScormProxy="isScormProxy"
-          :active-step="item.activeStep"
-          :award-certificate-enrollment-id="awardCertificateEnrollmentId"
-        />
-      </el-tab-pane>
+      <template v-for="item in tabItems">
+        <el-tab-pane
+          v-if="item.isVisible"
+          :key="item.name"
+          :id="item.id"
+          :name="item.name"
+          :label="item.label"
+          :disabled="isLoading"
+        >
+          <span slot="label">
+            <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+            <template v-else> {{ item.label }} </template>
+          </span>
+          <component
+            v-if="item.name === tab"
+            :is="item.component"
+            :id="id"
+            :custom-fields="customFields"
+            :isLoading="isLoading"
+            :training-name="getTrainingName"
+            :form-details="formDetails"
+            :trainingSummary="trainingSummary"
+            :isScormProxy="isScormProxy"
+            :active-step="item.activeStep"
+            :award-certificate-enrollment-id="awardCertificateEnrollmentId"
+          />
+        </el-tab-pane>
+      </template>
     </el-tabs>
   </KContainer>
 </template>
