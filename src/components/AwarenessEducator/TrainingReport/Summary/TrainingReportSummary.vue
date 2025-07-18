@@ -1,8 +1,26 @@
 <template>
   <div id="training-report-summary" class="training-report-summary">
+    <TrainingReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      :payload="resendPayload"
+      :title="labels.ResendTheCertificate"
+      :body-training-type="labels.Certificate.toLowerCase()"
+      :resendItemCount="resendItemCount"
+      :is-certification="true"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
     <ElTabs v-if="isTrainingTypeLearningPath" v-model="tab" class="k-sub-tab">
       <ElTabPane label="Summary" name="summary" id="summary-content" />
       <ElTabPane label="Users" name="users" id="users-content" />
+      <ElTabPane
+        v-if="awardCertificateEnrollmentId"
+        label="Certificate Emails"
+        name="certificate-emails"
+        id="certificate-emails-content"
+      />
     </ElTabs>
     <div v-if="tab === 'summary'">
       <TrainingReportSummaryAudienceDetails
@@ -76,7 +94,7 @@
         "
       />
     </div>
-    <div v-else>
+    <div v-else-if="tab === 'users'">
       <TrainingReportUsers
         is-add-training-type-key-to-payload
         :id="id"
@@ -86,6 +104,18 @@
         :training-summary="trainingSummary"
         :is-scorm-proxy="isScormProxy"
         :form-details="formDetails"
+      />
+    </div>
+    <div v-else-if="tab === 'certificate-emails' && awardCertificateEnrollmentId">
+      <TrainingReportCertificateEmailsTable
+        ref="refCertificateTable"
+        :is-learning-path="isTrainingTypeLearningPath"
+        :form-details="formDetails"
+        :custom-fields="customFields"
+        :id="id"
+        :award-certificate-enrollment-id="awardCertificateEnrollmentId"
+        @on-resend="handleOnResend"
+        @on-selection-text-change="handleSelectionChange"
       />
     </div>
   </div>
@@ -107,6 +137,9 @@ import TrainingReportUsers from '@/components/AwarenessEducator/TrainingReport/U
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import { mapGetters } from 'vuex'
+import TrainingReportCertificateEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportCertificateEmailsTable'
+import labels from '@/model/constants/labels'
+import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -119,7 +152,9 @@ export default {
     TrainingReportSummaryCards,
     TrainingReportSummaryHeader,
     TrainingReportSummaryAudienceDetails,
-    TrainingReportCertificate
+    TrainingReportCertificate,
+    TrainingReportCertificateEmailsTable,
+    TrainingReportResendDialog
   },
   props: {
     id: {
@@ -141,13 +176,21 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    awardCertificateEnrollmentId: {
+      type: String
     }
   },
   data() {
     return {
+      labels,
       tab: 'summary',
+      isShowResendDialog: false,
       isAudienceModalVisible: false,
+      isResendActionButtonDisabled: false,
+      resendPayload: null,
       targetGroups: [],
+      resendItemCount: 0,
       interval: null,
       enrollmentEmailData: {},
       certificateEmailData: {}
@@ -499,6 +542,45 @@ export default {
     },
     hideAudienceDetailsModal() {
       this.isAudienceModalVisible = false
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver, filter) {
+      this.resendPayload = {
+        selectedItems: Array.isArray(items)
+          ? items.map((item) => item.targetUserResourceId)
+          : [items.targetUserResourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter
+      }
+      this.toggleIsShowResendDialog()
+    },
+    handleSelectionChange(selectionCount) {
+      this.resendItemCount = selectionCount
+    },
+    toggleIsShowResendDialog() {
+      if (this.isShowResendDialog) {
+        this.selectedRow = null
+      }
+      this.isShowResendDialog = !this.isShowResendDialog
+    },
+    resendItem() {
+      this.isResendActionButtonDisabled = true
+      const payload = [
+        ...this.resendPayload.selectedItems.map((item) => ({
+          targetUserResourceId: item,
+          enrollmentId: this.awardCertificateEnrollmentId
+        }))
+      ]
+      AwarenessEducatorService.resendCertificateToUserList(payload)
+        .then(() => {
+          this.toggleIsShowResendDialog()
+          this.$refs?.refCertificateTable?.$refs?.refTable?.resetSelectableParams?.()
+          this.$refs?.refCertificateTable?.callForData?.()
+        })
+        .finally(() => {
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+        })
     }
   }
 }

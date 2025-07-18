@@ -47,7 +47,12 @@
           :form-details="formDetails"
         />
       </ElTabPane>
-      <ElTabPane label="Certificate Emails" name="certificate" id="certificate-emails-content">
+      <ElTabPane
+        v-if="!isLearningPath"
+        label="Certificate Emails"
+        name="certificate"
+        id="certificate-emails-content"
+      >
         <CampaignManagerReportHeader
           class="mb-6"
           title="Training Certificate Sending Report"
@@ -60,7 +65,9 @@
           :customFields="customFields"
           :id="id"
           :form-details="formDetails"
+          :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
         />
       </ElTabPane>
     </ElTabs>
@@ -124,6 +131,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    awardCertificateEnrollmentId: {
+      type: String
     }
   },
   data() {
@@ -177,6 +187,7 @@ export default {
   },
   methods: {
     handleSelectionChange(selectionCount) {
+      console.log('selectionCount', selectionCount)
       this.resendItemCount = selectionCount
     },
     resendItem() {
