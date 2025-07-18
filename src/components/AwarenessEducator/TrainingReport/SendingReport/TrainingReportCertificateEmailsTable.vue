@@ -41,6 +41,7 @@
       @refreshAction="callForData"
       @on-resend="handleOnResend"
       @on-details="handleOnDetail"
+      @on-selection-text-change="handleSelectionChange"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -147,6 +148,9 @@ export default {
     isLearningPath: {
       type: Boolean,
       default: false
+    },
+    awardCertificateEnrollmentId: {
+      type: String
     }
   },
   data() {
@@ -398,7 +402,10 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      AwarenessEducatorService.searchSendingReportCertificateEmails(this.axiosPayload, this.id)
+      AwarenessEducatorService.searchSendingReportCertificateEmails(
+        this.axiosPayload,
+        this.isLearningPath ? this.awardCertificateEnrollmentId : this.id
+      )
         .then((response) => {
           const {
             data: {
@@ -429,7 +436,10 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        AwarenessEducatorService.exportSendingReport(payload, this.id).then((response) => {
+        AwarenessEducatorService.exportSendingReport(
+          payload,
+          this.isLearningPath ? this.awardCertificateEnrollmentId : this.id
+        ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -444,7 +454,10 @@ export default {
       this.extendedViewOptions.isErrorState = false
       this.extendedViewLoading = true
       this.isShowExtendedView = true
-      AwarenessEducatorService.getTrainingReportCertificateEmailDetails(this.id, row.userEmailId)
+      AwarenessEducatorService.getTrainingReportCertificateEmailDetails(
+        this.isLearningPath ? this.awardCertificateEnrollmentId : this.id,
+        row.userEmailId
+      )
         .then((response) => {
           const { data: { data = [] } = {} } = response || {
             data: { data: [] }
@@ -460,7 +473,11 @@ export default {
         })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver, filter) {
+      this.handleSelectionChange(items.length)
       this.$emit('on-resend', items, excludedResourceIdList, isSelectedAllEver, filter)
+    },
+    handleSelectionChange(selectionCount) {
+      this.$emit('on-selection-text-change', selectionCount)
     }
   }
 }

@@ -65,7 +65,9 @@
           :customFields="customFields"
           :id="id"
           :form-details="formDetails"
+          :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
         />
       </ElTabPane>
     </ElTabs>
@@ -129,6 +131,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    awardCertificateEnrollmentId: {
+      type: String
     }
   },
   data() {
@@ -182,6 +187,7 @@ export default {
   },
   methods: {
     handleSelectionChange(selectionCount) {
+      console.log('selectionCount', selectionCount)
       this.resendItemCount = selectionCount
     },
     resendItem() {
@@ -193,7 +199,6 @@ export default {
             enrollmentId: this.id
           }))
         ]
-        console.log('payload', payload)
         AwarenessEducatorService.resendCertificateToUserList(payload)
           .then(() => {
             this.toggleIsShowResendDialog()
