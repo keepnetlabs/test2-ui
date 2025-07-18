@@ -13,39 +13,66 @@
           </p>
         </div>
 
-        <!-- Dynamic Fields Section -->
-        <div v-if="data.fields && data.fields.length" class="k-swiper-education__fields">
-          <div v-for="(field, index) in data.fields" :key="index" class="k-swiper-education__field">
-            <VTooltip
-              v-if="field.tooltip"
-              right
-              color="#dc3545"
-              class="k-swiper-education__field-tooltip"
-              attach=".k-swiper-education__fields"
-              max-width="320"
-              eager
-              z-index="9999"
+        <!-- Combined Content Section -->
+        <div
+          v-if="(data.fields && data.fields.length) || data.htmlContent"
+          class="k-swiper-education__main-content"
+        >
+          <!-- Dynamic Fields Section -->
+          <div v-if="data.fields && data.fields.length" class="k-swiper-education__fields">
+            <div
+              v-for="(field, index) in data.fields"
+              :key="index"
+              class="k-swiper-education__field"
             >
-              <template #activator="{ on, attrs }">
-                <div class="k-swiper-education__field-content" v-bind="attrs" v-on="on">
-                  <span class="k-swiper-education__field-icon">🚩</span>
-                  <span class="k-swiper-education__field-key">{{ field.key }}:</span>
-                  <span class="k-swiper-education__field-value">{{ field.value }}</span>
-                </div>
-              </template>
-              <span>{{ field.tooltip }}</span>
-            </VTooltip>
+              <VTooltip
+                v-if="field.tooltip"
+                color="#B83A3A"
+                class="k-swiper-education__field-tooltip"
+                max-width="320"
+                attach=".k-swiper-education__field-content"
+                bottom
+                eager
+                z-index="9999"
+              >
+                <template #activator="{ on, attrs }">
+                  <div
+                    class="k-swiper-education__field-content"
+                    data-flagged-area
+                    :data-field="field.key"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <span class="k-swiper-education__field-icon"
+                      ><img
+                        src="https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/506bf119-942d-4224-7ab1-98292e2e3900/public"
+                        alt="Red Flag"
+                        class="k-swiper-education__field-icon-image"
+                    /></span>
+                    <span class="k-swiper-education__field-key">{{ field.key }}:</span>
+                    <span class="k-swiper-education__field-value">{{ field.value }}</span>
+                  </div>
+                </template>
+                <span>{{ field.tooltip }}</span>
+              </VTooltip>
 
-            <div v-else class="k-swiper-education__field-content">
-              <span class="k-swiper-education__field-key">{{ field.key }}:</span>
-              <span class="k-swiper-education__field-value">{{ field.value }}</span>
+              <div v-else class="k-swiper-education__field-content">
+                <span class="k-swiper-education__field-key">{{ field.key }}:</span>
+                <span class="k-swiper-education__field-value">{{ field.value }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- HTML Content Section -->
-        <div v-if="data.htmlContent" class="k-swiper-education__html-content">
-          <div class="k-swiper-education__html-wrapper" v-html="data.htmlContent"></div>
+          <!-- Separator -->
+          <div
+            v-if="data.fields && data.fields.length && data.htmlContent"
+            class="k-swiper-education__separator"
+          ></div>
+
+          <!-- HTML Content Section -->
+          <div v-if="data.htmlContent" class="k-swiper-education__html-content">
+            <div class="k-swiper-education__html-wrapper" v-html="data.htmlContent"></div>
+          </div>
         </div>
 
         <!-- Actions Section -->
@@ -62,10 +89,12 @@
         </div>
 
         <!-- Footer Info -->
-        <div v-if="data.footerInfo" class="k-swiper-education__footer">
-          <p class="k-swiper-education__footer-text">
-            {{ data.footerInfo }}
-          </p>
+        <div class="k-swiper-education__footer">
+          <div v-if="data.isShowRedFlags" class="k-swiper-education__red-flags">
+            <span class="k-swiper-education__red-flags-text">
+              Red Flags Reviewed: ({{ data.redFlagsReviewed }}/{{ data.totalRedFlags }})
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -89,6 +118,11 @@ export default {
     }
   },
 
+  data() {
+    return {
+      reviewedFlags: new Set()
+    }
+  },
   computed: {
     educationClasses() {
       return {
@@ -98,7 +132,20 @@ export default {
       }
     }
   },
-
+  mounted() {
+    const flaggedAreas = document.querySelectorAll('.flagged-area')
+    const fieldFlags = document.querySelectorAll('[data-flagged-area]')
+    const allFlags = [...flaggedAreas, ...fieldFlags]
+    allFlags.forEach((area) => {
+      area.addEventListener('mouseover', (e) => {
+        const flagId = e.target.getAttribute('data-field')
+        if (flagId && !this.reviewedFlags.has(flagId)) {
+          this.reviewedFlags.add(flagId)
+          this.data.redFlagsReviewed++
+        }
+      })
+    })
+  },
   methods: {
     handleActionClick(action) {
       // Swiper navigation

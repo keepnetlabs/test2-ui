@@ -52,6 +52,8 @@
       :navigation="internalNavigation ? 'true' : 'false'"
       :pagination="paginationAttribute"
       :pagination-type="paginationType"
+      :auto-height="isDesktop ? 'true' : 'false'"
+      class="k-swiper-container"
     >
       <slot />
     </swiper-container>
@@ -90,7 +92,8 @@ export default {
     return {
       swiper: null,
       isFirst: true,
-      isLast: false
+      isLast: false,
+      windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1024
     }
   },
 
@@ -102,16 +105,27 @@ export default {
     paginationType() {
       if (!this.pagination) return 'bullets'
       return typeof this.pagination === 'string' ? this.pagination : 'bullets'
+    },
+
+    isDesktop() {
+      return this.windowWidth > 768
     }
   },
 
   mounted() {
     this.initSwiper()
+    this.handleResize = () => {
+      this.windowWidth = window.innerWidth
+    }
+    window.addEventListener('resize', this.handleResize)
   },
 
   beforeDestroy() {
     if (this.swiper) {
       this.swiper.destroy(true, true)
+    }
+    if (this.handleResize) {
+      window.removeEventListener('resize', this.handleResize)
     }
   },
 

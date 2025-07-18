@@ -79,118 +79,155 @@
     
     > * {
       width: 100%;
-      padding: 40px;
-    }
-  }
-}
-
-// 🆕 Internal Navigation Styling
-.swiper-button-next,
-.swiper-button-prev {
-  width: 50px !important;
-  height: 50px !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-radius: 50% !important;
-  color: #2196f3 !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-  border: 2px solid #e3f2fd !important;
-  transition: all 0.3s ease !important;
-  
-  &:after {
-    font-size: 18px !important;
-    font-weight: bold !important;
-  }
-  
-  &:hover {
-    background: #2196f3 !important;
-    color: white !important;
-    transform: scale(1.1) !important;
-    border-color: #2196f3 !important;
-  }
-  
-  &.swiper-button-disabled {
-    opacity: 0.3 !important;
-    transform: none !important;
-  }
-}
-
-// Pagination styles
-::v-deep {
-  .swiper-pagination-progressbar {
-    background: rgba(255, 255, 255, 0.3) !important;
-    height: 6px !important;
-    border-radius: 3px !important;
-    bottom: 20px !important;
-    left: 20px !important;
-    right: 20px !important;
-    width: calc(100% - 40px) !important;
-    
-    .swiper-pagination-progressbar-fill {
-      background: linear-gradient(90deg, #2196f3, #21cbf3) !important;
-      border-radius: 3px !important;
-      box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3) !important;
+      padding: 32px;
     }
   }
   
-  .swiper-pagination-bullets {
-    bottom: 20px !important;
-    
-    .swiper-pagination-bullet {
-      width: 12px !important;
-      height: 12px !important;
-      background: rgba(255, 255, 255, 0.5) !important;
-      opacity: 1 !important;
-      transition: all 0.3s ease !important;
-      margin: 0 6px !important;
-      
-      &-active {
-        background: #2196f3 !important;
-        transform: scale(1.3) !important;
-        box-shadow: 0 2px 10px rgba(33, 150, 243, 0.4) !important;
-      }
-    }
-  }
-}
-
-// Mobile Responsive
-@media (max-width: 768px) {
-  .k-swiper {
-    max-width: none;
-    padding: 10px;
-    margin: 0;
-    
-    swiper-container {
-      min-height: 100vh;
-      border-radius: 0;
-    }
-    
+  // Swiper height problemi için CSS çözümü
+  .k-swiper-container {
     swiper-slide {
-      border-radius: 0;
+      height: auto !important;
+      min-height: 200px; // Normal slide'lar için minimum
+      max-height: 800px; // Kontrolsüz büyümeyi önlemek için
+      transition: min-height 0.3s ease;
+      overflow-y: auto; // İçerik taşarsa scroll
       
+      // İçeriği flexbox ile center et
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+  
+  // Daha dinamik çözüm için CSS Custom Properties
+  .k-swiper-container[data-dynamic="true"] {
+    swiper-slide {
+      min-height: var(--slide-min-height, 200px);
+      max-height: var(--slide-max-height, none);
+      
+      // Content'e göre auto-sizing
+      height: fit-content !important;
+      
+      // Nested content için auto spacing
       > * {
-        padding: 20px;
+        margin: auto 0;
       }
     }
   }
   
-  .k-swiper-nav,
+  .slide-taller {
+    min-height: 800px !important; // Max-height ile tutarlı
+  }
+  
+  // 🆕 Internal Navigation Styling
   .swiper-button-next,
   .swiper-button-prev {
-    display: none !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .k-swiper {
-    padding: 0;
+    width: 50px !important;
+    height: 50px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 50% !important;
+    color: #2196f3 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    border: 2px solid #e3f2fd !important;
+    transition: all 0.3s ease !important;
     
-    swiper-container {
-      border-radius: 0;
-      box-shadow: none;
+    &:after {
+      font-size: 18px !important;
+      font-weight: bold !important;
     }
     
-    swiper-slide > * {
-      padding: 15px;
+    &:hover {
+      background: #2196f3 !important;
+      color: white !important;
+      transform: scale(1.1) !important;
+      border-color: #2196f3 !important;
+    }
+    
+    &.swiper-button-disabled {
+      opacity: 0.3 !important;
+      transform: none !important;
+    }
+  }
+  
+  // Pagination styles
+  ::v-deep {
+    .swiper-pagination-progressbar {
+      background: rgba(255, 255, 255, 0.3) !important;
+      height: 6px !important;
+      border-radius: 3px !important;
+      bottom: 20px !important;
+      left: 20px !important;
+      right: 20px !important;
+      width: calc(100% - 40px) !important;
+      
+      .swiper-pagination-progressbar-fill {
+        background: linear-gradient(90deg, #2196f3, #21cbf3) !important;
+        border-radius: 3px !important;
+        box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3) !important;
+      }
+    }
+    
+    .swiper-pagination-bullets {
+      bottom: 20px !important;
+      
+      .swiper-pagination-bullet {
+        width: 12px !important;
+        height: 12px !important;
+        background: rgba(255, 255, 255, 0.5) !important;
+        opacity: 1 !important;
+        transition: all 0.3s ease !important;
+        margin: 0 6px !important;
+        
+        &-active {
+          background: #2196f3 !important;
+          transform: scale(1.3) !important;
+          box-shadow: 0 2px 10px rgba(33, 150, 243, 0.4) !important;
+        }
+      }
+    }
+  }
+  
+  // Mobile Responsive - Fixed height
+  @media (max-width: 768px) {
+    .k-swiper {
+      max-width: none;
+      padding: 10px;
+      margin: 0;
+      
+      swiper-container {
+        min-height: 100vh;
+        border-radius: 0;
+        height: 100vh !important; // Override auto-height on mobile
+      }
+      
+      swiper-slide {
+        border-radius: 0;
+        
+        > * {
+          padding: 20px;
+        }
+      }
+    }
+    
+    .k-swiper-nav,
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .k-swiper {
+      padding: 0;
+      
+      swiper-container {
+        border-radius: 0;
+        box-shadow: none;
+      }
+      
+      swiper-slide > * {
+        padding: 15px;
+      }
     }
   }
 }
