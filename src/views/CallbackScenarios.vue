@@ -5,7 +5,7 @@
         v-if="getCallbackScenariosSearchPermissions"
         label="Scenarios"
         name="scenarios"
-        id="smishing-scenarios-content"
+        id="callback-scenarios-content"
       >
         <CallbackScenariosTab
           v-if="tab === 'scenarios'"
