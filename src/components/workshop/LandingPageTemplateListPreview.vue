@@ -402,7 +402,6 @@
                                 :edit-items-disabled="false"
                                 :template.sync="page.content"
                                 :is-edit="true"
-                                :is-phishing-template="true"
                                 :onlyGrapes="true"
                                 @template-edit="handleTemplateEdit"
                               />
@@ -747,7 +746,6 @@
                               :edit-items-disabled="false"
                               :template.sync="page.content"
                               :is-edit="true"
-                              :is-phishing-template="true"
                               :onlyGrapes="true"
                               @template-edit="handleTemplateEdit"
                             />
@@ -1457,7 +1455,10 @@ export default {
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
-          this.landingPageTemplateData = { ...(item || {}), ...(response?.data?.data || {}) }
+          this.landingPageTemplateData = {
+            ...(item || {}),
+            ...(response?.data?.data || {})
+          }
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.isInvisibleCaptchaEnabled = response?.data?.data?.isInvisibleCaptchaEnabled || false
           this.newUrlTemplate = this.templateURL

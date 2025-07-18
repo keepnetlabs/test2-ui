@@ -266,7 +266,6 @@
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
                           :is-edit="!!isEdit"
-                          :is-phishing-template="true"
                           :onlyGrapes="true"
                           @setAttachmentFile="setAttachmentFile"
                         />

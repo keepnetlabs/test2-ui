@@ -200,7 +200,11 @@
                         <template #label>
                           <div
                             style="display: flex;"
-                            :style="formValues.landingPages.length > 1 && { width: '68px' }"
+                            :style="
+                              formValues.landingPages.length > 1 && {
+                                width: '68px'
+                              }
+                            "
                           >
                             <span class="landing-page-tab__label">
                               {{ `Page ${index + 1}` }}
@@ -238,7 +242,6 @@
                           :edit-items-disabled="editItemsDisabled"
                           :template.sync="page.content"
                           :is-edit="!!isEdit"
-                          :is-phishing-template="true"
                           :onlyGrapes="true"
                           @setAttachmentFile="setAttachmentFile"
                         />
@@ -301,7 +304,10 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{ nextButton: isSubmitDisabled, submitButton: isSubmitDisabled }"
+        :disabled-statuses="{
+          nextButton: isSubmitDisabled,
+          submitButton: isSubmitDisabled
+        }"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
@@ -608,7 +614,10 @@ export default {
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
-          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId
+          })) || []
       })
     },
     callForMergedTags() {
