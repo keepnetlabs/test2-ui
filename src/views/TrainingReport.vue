@@ -1,8 +1,8 @@
 <template>
   <KContainer id="training-report">
-    <el-tabs v-model="tab" @tab-click="handleTabClick">
+    <ElTabs v-model="tab" @tab-click="handleTabClick">
       <template v-for="item in tabItems">
-        <el-tab-pane
+        <ElTabPane
           v-if="item.isVisible"
           :key="item.name"
           :id="item.id"
@@ -11,7 +11,7 @@
           :disabled="isLoading"
         >
           <span slot="label">
-            <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+            <VSkeletonLoader v-if="isLoading" :loading="isLoading" type="chip" />
             <template v-else> {{ item.label }} </template>
           </span>
           <component
@@ -27,9 +27,9 @@
             :active-step="item.activeStep"
             :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           />
-        </el-tab-pane>
+        </ElTabPane>
       </template>
-    </el-tabs>
+    </ElTabs>
   </KContainer>
 </template>
 
