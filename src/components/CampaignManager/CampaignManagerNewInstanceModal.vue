@@ -245,7 +245,14 @@ export default {
   created() {
     getCampaignManager(this.selectedRow.resourceId).then((response) => {
       const { data: { data = {} } = {} } = response
+      console.log('data', data)
       this.scenarioResourceIds = data?.phishingScenarios?.map((item) => item.value)
+      this.inputDistributionFormData.distributionStartTypeId = data?.distributionStartTypeId
+      this.inputDistributionFormData.distributionDelayEvery = data?.distributionDelayEvery.toString()
+      this.inputDistributionFormData.distributionDelayTimeTypeId = data?.distributionDelayTimeTypeId.toString()
+      this.inputDistributionFormData.distributionEmailOver = data?.distributionEmailOver.toString()
+      this.inputDistributionFormData.distributionEmailOverTimeTypeId = data?.distributionEmailOverTimeTypeId.toString()
+      this.inputDistributionFormData.sendingLimit = data?.sendingLimit
       this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
     })
     this.callForTargetGroups()
