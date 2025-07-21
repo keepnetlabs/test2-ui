@@ -873,12 +873,10 @@ export default {
       this.isSubmitDisabled = true
       scrollToEmailTemplateContent()
       generateEmailTemplateTranslation({
-        languages: this.selectedLanguages
-          .filter((item) => this.isDefault || item.value !== this.activeLanguage)
-          .map((item) => ({
-            languageResourceId: item.value,
-            languageName: item.text
-          })),
+        languages: this.selectedLanguages.map((item) => ({
+          languageResourceId: item.value,
+          languageName: item.text
+        })),
         template,
         subject
       }).then((response) => {
@@ -919,10 +917,10 @@ export default {
                   const selectedElement = document.querySelector(
                     '.input-languages-email-template-preview-select'
                   )
-                  if (selectedElement.classList.contains('executive-widget-container--active'))
+                  if (selectedElement?.classList?.contains('executive-widget-container--active'))
                     selectedElement.classList.remove('executive-widget-container--active')
                   setTimeout(
-                    () => selectedElement.classList.add('executive-widget-container--active'),
+                    () => selectedElement?.classList?.add('executive-widget-container--active'),
                     500
                   )
                 }
