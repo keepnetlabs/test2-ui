@@ -186,27 +186,13 @@
       }
     }
   }
-  
-  // Mobile Responsive - Fixed height
+}
+// Mobile Responsive - Fixed height
   @media (max-width: 768px) {
     .k-swiper {
-      max-width: none;
-      padding: 10px;
+      width: 100% !important;
+      padding:8px !important;
       margin: 0;
-      
-      swiper-container {
-        min-height: 100vh;
-        border-radius: 0;
-        height: 100vh !important; // Override auto-height on mobile
-      }
-      
-      swiper-slide {
-        border-radius: 0;
-        
-        > * {
-          padding: 20px;
-        }
-      }
     }
     
     .k-swiper-nav,
@@ -230,4 +216,3 @@
       }
     }
   }
-}

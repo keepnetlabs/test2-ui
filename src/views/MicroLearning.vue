@@ -1,7 +1,6 @@
 <template>
   <div class="microlearning-container">
     <k-swiper ref="mainSwiper" pagination="progressbar" :navigation="true">
-      <!-- Introduction slide -->
       <k-swiper-introduction
         :data="introData"
         :swiper-ref="$refs.mainSwiper?.swiper"
@@ -10,25 +9,40 @@
 
       <k-swiper-education class="slide-taller" :data="educationData" />
 
-      <k-swiper-slide type="quiz">
-        <div>Quiz content...</div>
-      </k-swiper-slide>
+      <k-swiper-behavior
+        :data="behaviorData"
+        :swiper-ref="swiperInstance"
+        @action="handleBehaviorAction"
+      />
+      <k-swiper-behavior
+        :data="whatYouCanDoNextData"
+        :swiper-ref="swiperInstance"
+        @action="handleWhatYouCanDoNextAction"
+      />
+
+      <k-swiper-feedback
+        :data="feedbackData"
+        :swiper-ref="swiperInstance"
+        @submit="handleFeedbackSubmit"
+        @action="handleFeedbackAction"
+      />
     </k-swiper>
   </div>
 </template>
 <script>
 import KSwiper from '@/components/Common/Swiper/KSwiper.vue'
-import KSwiperSlide from '@/components/Common/Swiper/KSwiperSlide.vue'
 import KSwiperIntroduction from '@/components/Common/Swiper/KSwiperIntroduction.vue'
 import KSwiperEducation from '@/components/Common/Swiper/KSwiperEducation.vue'
-
+import KSwiperBehavior from '@/components/Common/Swiper/KSwiperBehavior.vue'
+import KSwiperFeedback from '@/components/Common/Swiper/KSwiperFeedback.vue'
 export default {
   name: 'MicroLearning',
   components: {
     KSwiper,
-    KSwiperSlide,
     KSwiperIntroduction,
-    KSwiperEducation
+    KSwiperEducation,
+    KSwiperBehavior,
+    KSwiperFeedback
   },
   data() {
     return {
@@ -215,14 +229,125 @@ export default {
         isShowRedFlags: true,
         redFlagsReviewed: 0,
         totalRedFlags: 9
+      },
+      behaviorData: {
+        title: 'Your Behavior',
+        description:
+          'You clicked the link in under 5 seconds. This was a fast reaction. Next time, take a moment to inspect.',
+        theme: 'primary',
+        layout: 'default',
+        tips: [
+          {
+            icon: 'mdi-magnify',
+            title: 'Inspect the Sender',
+            description: "Check the sender's domain carefully."
+          },
+          {
+            icon: 'mdi-link-variant',
+            title: 'Preview Links',
+            description: 'Hover over links before clicking.'
+          },
+          {
+            icon: 'mdi-clock-outline',
+            title: 'Validate Urgency',
+            description: 'Verify urgency claims through a second channel.'
+          }
+        ],
+        actions: [
+          /*
+          {
+            text: 'Continue',
+            action: 'next_slide',
+            type: 'primary'
+          }*/
+        ]
+      },
+
+      // What You Can Do Next behavior data
+      whatYouCanDoNextData: {
+        title: 'What You Can Do Next',
+        description: 'Continue improving your security awareness with these recommended actions.',
+        theme: 'primary',
+        layout: 'default',
+        tips: [
+          {
+            icon: 'mdi-lock',
+            title: 'Stay Vigilant',
+            description:
+              'You can still show your awareness. Use the Phishing Reporter button in your inbox to report any future suspicious emails—even after falling for one.'
+          },
+          {
+            icon: 'mdi-file-document-multiple',
+            title: 'Learn from Others',
+            description:
+              "Most of your peers spotted this email's red flags. Many hovered over the sender's address before clicking."
+          },
+          {
+            icon: 'mdi-refresh',
+            title: 'Keep Practicing',
+            description:
+              "You'll get more simulated phishing emails. Each one is a chance to sharpen your instincts."
+          }
+        ],
+        actions: []
+      },
+
+      // Feedback data
+      feedbackData: {
+        title: "We'd love your feedback",
+        userName: 'John',
+        placeholder: 'tell us what was helpful or what can be improved...',
+        requireRating: true,
+        requireText: false,
+        minTextLength: 0,
+        maxLength: 500,
+        rows: 4,
+        theme: 'primary',
+        layout: 'default',
+        actions: [
+          {
+            text: 'Submit Feedback',
+            action: 'submit',
+            type: 'primary',
+            autoNext: true
+          }
+        ]
       }
     }
   },
-
+  computed: {
+    swiperInstance() {
+      return this.$refs.mainSwiper?.swiper || null
+    }
+  },
   methods: {
     handleIntroAction(action) {
       console.log('Introduction action:', action)
       this.$refs.mainSwiper.swiper.slideNext()
+    },
+
+    handleBehaviorAction(action) {
+      console.log('Behavior action:', action)
+    },
+
+    handleWhatYouCanDoNextAction(action) {
+      console.log('What you can do next action:', action)
+    },
+
+    handleFeedbackSubmit(feedbackData) {
+      console.log('Feedback submitted:', feedbackData)
+      // Here you would typically send the feedback to your API
+      // Example API call:
+      // this.$store.dispatch('feedback/submitFeedback', feedbackData)
+    },
+
+    handleFeedbackAction(action) {
+      console.log('Feedback action:', action)
+
+      if (action.type === 'submit') {
+        // Feedback was successfully submitted
+        console.log('Feedback submitted with data:', action.feedbackData)
+      }
     }
   }
 }
