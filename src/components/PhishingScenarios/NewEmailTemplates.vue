@@ -899,6 +899,10 @@ export default {
             const {
               data: { data }
             } = response
+            if (this.isDefault) {
+              this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
+              this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
+            }
             data.forEach((item) => {
               const languagePayload = this.languagesPayload.find(
                 (language) => language.languageTypeResourceId === item.languageResourceId
