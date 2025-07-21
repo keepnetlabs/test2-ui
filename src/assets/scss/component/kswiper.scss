@@ -99,22 +99,6 @@
     }
   }
   
-  // Daha dinamik çözüm için CSS Custom Properties
-  .k-swiper-container[data-dynamic="true"] {
-    swiper-slide {
-      min-height: var(--slide-min-height, 200px);
-      max-height: var(--slide-max-height, none);
-      
-      // Content'e göre auto-sizing
-      height: fit-content !important;
-      
-      // Nested content için auto spacing
-      > * {
-        margin: auto 0;
-      }
-    }
-  }
-  
   .slide-taller {
     min-height: 800px !important; // Max-height ile tutarlı
   }

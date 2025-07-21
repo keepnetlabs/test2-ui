@@ -194,28 +194,73 @@
     }
   }
 
-  // Theme Variations
+  // Theme Variants
   &--primary {
-    background: #EBF4FF;
-    border-color: rgba(33, 150, 243, 0.12);
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    
+    .k-swiper-feedback__title {
+      color: #1565c0;
+    }
   }
-
+  
   &--success {
-    background: #F1F8E9;
-    border-color: rgba(76, 175, 80, 0.12);
-
-    .k-swiper-feedback__star .v-icon {
-      color: #4CAF50 !important;
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+    
+    .k-swiper-feedback__title {
+      color: #2e7d32;
+    }
+  }
+  
+  &--warning {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+    
+    .k-swiper-feedback__title {
+      color: #ef6c00;
     }
   }
 
-  &--warning {
-    background: #FFF8E1;
-    border-color: rgba(255, 152, 0, 0.12);
+  &--submitted {
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  }
 
-    .k-swiper-feedback__star .v-icon {
-      color: #FF9800 !important;
-    }
+  // Success State
+  &__success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    min-height: 300px;
+  }
+
+  &__success-icon {
+    margin-bottom: 24px;
+    animation: successBounce 0.6s ease-out;
+  }
+
+  &__success-title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  &__success-message {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.1rem;
+    color: #4a4a4a;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  // Form State (when not submitted)
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   // Layout Variations
@@ -236,45 +281,80 @@
 // Mobile Responsive
 @media (max-width: 768px) {
   .k-swiper-feedback {
-    width: 100% !important;
-    padding: 20px;
-    min-height: 350px;
-
+    padding: 25px 20px;
+    
     &__title {
-      font-size: 24px;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
     }
-
-    &__content {
-      gap: 24px;
-    }
-
-    &__rating {
-      justify-content: center;
-    }
-
+    
     &__stars {
-      gap: 6px;
+      gap: 8px;
     }
-
-    &__star .v-icon {
-      font-size: 28px !important;
+    
+    &__star {
+      width: 36px;
+      height: 36px;
     }
-
+    
     &__textarea {
       font-size: 15px;
       padding: 14px;
     }
-
+    
     &__actions {
       flex-direction: column;
-      gap: 12px;
-      align-items: stretch;
     }
-
+    
     &__action-button {
       width: 100%;
-      justify-content: center;
-      padding: 14px 24px;
+      margin-bottom: 10px;
+    }
+
+    &__success {
+      padding: 30px 16px;
+      min-height: 250px;
+    }
+
+    &__success-title {
+      font-size: 1.6rem;
+    }
+
+    &__success-message {
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .k-swiper-feedback {
+    padding: 20px 15px;
+    
+    &__title {
+      font-size: 1.5rem;
+    }
+    
+    &__star {
+      width: 32px;
+      height: 32px;
+    }
+    
+    &__textarea {
+      font-size: 14px;
+      padding: 12px;
+    }
+
+    &__success {
+      padding: 24px 12px;
+      min-height: 200px;
+    }
+
+    &__success-title {
+      font-size: 1.4rem;
+    }
+
+    &__success-message {
+      font-size: 0.95rem;
     }
   }
 }
@@ -324,5 +404,21 @@
 .k-swiper-feedback__action-button {
   .v-progress-circular {
     margin-right: 8px;
+  }
+} 
+
+// Animations
+@keyframes successBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 } 

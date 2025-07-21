@@ -2,71 +2,87 @@
   <swiper-slide class="k-swiper-slide k-swiper-slide--feedback">
     <div class="k-swiper-feedback" :class="feedbackClasses">
       <div class="k-swiper-feedback__content">
-        <!-- Header Section -->
-        <div class="k-swiper-feedback__header">
-          <h1 v-if="data.title" class="k-swiper-feedback__title">
-            {{ data.title }}
-          </h1>
+        <!-- Success State -->
+        <div v-if="isSubmitted" class="k-swiper-feedback__success">
+          <div class="k-swiper-feedback__success-icon">
+            <v-icon color="#4CAF50" size="64">mdi-check-circle</v-icon>
+          </div>
+          <h2 class="k-swiper-feedback__success-title">
+            Thanks for submitting!
+          </h2>
+          <p class="k-swiper-feedback__success-message">
+            You can close the window
+          </p>
         </div>
 
-        <!-- Star Rating Section -->
-        <div class="k-swiper-feedback__rating">
-          <div class="k-swiper-feedback__stars">
+        <!-- Feedback Form (shown when not submitted) -->
+        <div v-else class="k-swiper-feedback__form">
+          <!-- Header Section -->
+          <div class="k-swiper-feedback__header">
+            <h1 v-if="data.title" class="k-swiper-feedback__title">
+              {{ data.title }}
+            </h1>
+          </div>
+
+          <!-- Star Rating Section -->
+          <div class="k-swiper-feedback__rating">
+            <div class="k-swiper-feedback__stars">
+              <button
+                v-for="star in 5"
+                :key="star"
+                class="k-swiper-feedback__star"
+                :class="{ 'k-swiper-feedback__star--active': star <= rating }"
+                :aria-label="`Rate ${star} ${star === 1 ? 'star' : 'stars'}`"
+                @click="setRating(star)"
+                @mouseenter="hoverRating = star"
+                @mouseleave="hoverRating = 0"
+              >
+                <v-icon :color="star <= rating ? '#FFD700' : '#E0E0E0'" size="32">
+                  {{ getStarIcon(star) }}
+                </v-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Feedback Text Section -->
+          <div class="k-swiper-feedback__input">
+            <div class="k-swiper-feedback__textarea-wrapper">
+              <textarea
+                v-model="feedbackText"
+                :placeholder="computedPlaceholder"
+                :rows="data.rows || 4"
+                :maxlength="data.maxLength || 500"
+                class="k-swiper-feedback__textarea"
+                :class="{ 'k-swiper-feedback__textarea--error': hasTextError }"
+                @focus="isFocused = true"
+                @blur="isFocused = false"
+              />
+
+              <!-- Character Counter -->
+              <div v-if="data.maxLength" class="k-swiper-feedback__counter">
+                {{ feedbackText.length }}/{{ data.maxLength }}
+              </div>
+
+              <!-- Error Message -->
+              <div v-if="hasTextError" class="k-swiper-feedback__error">
+                {{ textErrorMessage }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Section -->
+          <div v-if="data.actions && data.actions.length" class="k-swiper-feedback__actions">
             <button
-              v-for="star in 5"
-              :key="star"
-              class="k-swiper-feedback__star"
-              :class="{ 'k-swiper-feedback__star--active': star <= rating }"
-              :aria-label="`Rate ${star} ${star === 1 ? 'star' : 'stars'}`"
-              @click="setRating(star)"
-              @mouseenter="hoverRating = star"
-              @mouseleave="hoverRating = 0"
+              v-for="(action, index) in data.actions"
+              :key="index"
+              class="k-swiper-feedback__action-button"
+              :class="getActionButtonClasses(action)"
+              :disabled="!isValid || isSubmitting"
+              @click="handleActionClick(action)"
             >
-              <v-icon :color="star <= rating ? '#FFD700' : '#E0E0E0'" size="32">
-                {{ getStarIcon(star) }}
-              </v-icon>
+              {{ action.text }}
             </button>
           </div>
-        </div>
-
-        <!-- Feedback Text Section -->
-        <div class="k-swiper-feedback__input">
-          <div class="k-swiper-feedback__textarea-wrapper">
-            <textarea
-              v-model="feedbackText"
-              :placeholder="computedPlaceholder"
-              :rows="data.rows || 4"
-              :maxlength="data.maxLength || 500"
-              class="k-swiper-feedback__textarea"
-              :class="{ 'k-swiper-feedback__textarea--error': hasTextError }"
-              @focus="isFocused = true"
-              @blur="isFocused = false"
-            />
-
-            <!-- Character Counter -->
-            <div v-if="data.maxLength" class="k-swiper-feedback__counter">
-              {{ feedbackText.length }}/{{ data.maxLength }}
-            </div>
-
-            <!-- Error Message -->
-            <div v-if="hasTextError" class="k-swiper-feedback__error">
-              {{ textErrorMessage }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions Section -->
-        <div v-if="data.actions && data.actions.length" class="k-swiper-feedback__actions">
-          <button
-            v-for="(action, index) in data.actions"
-            :key="index"
-            class="k-swiper-feedback__action-button"
-            :class="getActionButtonClasses(action)"
-            :disabled="!isValid || isSubmitting"
-            @click="handleActionClick(action)"
-          >
-            {{ action.text }}
-          </button>
         </div>
       </div>
     </div>
@@ -97,7 +113,8 @@ export default {
       hoverRating: 0,
       feedbackText: this.data.initialText || '',
       isSubmitting: false,
-      isFocused: false
+      isFocused: false,
+      isSubmitted: false
     }
   },
 
@@ -106,7 +123,8 @@ export default {
       return {
         [`k-swiper-feedback--${this.data.layout || 'default'}`]: true,
         [`k-swiper-feedback--${this.data.theme || 'primary'}`]: true,
-        'k-swiper-feedback--has-actions': !!(this.data.actions && this.data.actions.length)
+        'k-swiper-feedback--has-actions': !!(this.data.actions && this.data.actions.length),
+        'k-swiper-feedback--submitted': this.isSubmitted
       }
     },
 
@@ -210,11 +228,17 @@ export default {
         // Emit feedback data
         this.$emit('submit', this.feedbackData)
 
+        // Show success state
+        this.isSubmitted = true
+
+        // Disable navigation after successful submission
+        this.$emit('disable-navigation')
+
         // Auto-advance to next slide if configured
         if (action.autoNext && this.swiperRef) {
           setTimeout(() => {
             this.swiperRef.slideNext()
-          }, 1000)
+          }, 2000) // Increased delay to show success message
         }
       } catch (error) {
         this.$emit('error', error)
@@ -232,6 +256,7 @@ export default {
       this.rating = 0
       this.feedbackText = ''
       this.hoverRating = 0
+      this.isSubmitted = false
       this.$emit('reset')
     },
 

@@ -4,7 +4,7 @@
     <button
       v-if="navigation"
       class="k-swiper-nav k-swiper-nav--prev"
-      :disabled="isFirst"
+      :disabled="isFirst || navigationDisabled"
       @click="slidePrev"
       type="button"
     >
@@ -27,7 +27,7 @@
     <button
       v-if="navigation"
       class="k-swiper-nav k-swiper-nav--next"
-      :disabled="isLast"
+      :disabled="isLast || navigationDisabled"
       @click="slideNext"
       type="button"
     >
@@ -85,6 +85,12 @@ export default {
       type: [Boolean, String],
       default: false,
       validator: (val) => [false, true, 'bullets', 'fraction', 'progressbar'].includes(val)
+    },
+
+    navigationDisabled: {
+      type: Boolean,
+      default: false,
+      description: 'Disable navigation buttons (useful after feedback submission)'
     }
   },
 
