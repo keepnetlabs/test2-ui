@@ -20,7 +20,7 @@
           <div v-if="data.button" class="k-swiper-introduction__actions">
             <VTooltip
               v-if="data.button.tooltip"
-              bottom
+              top
               color="#0671C0"
               class="k-swiper-introduction__tooltip"
               attach=".k-swiper-introduction__actions"
@@ -115,25 +115,10 @@ export default {
 
   methods: {
     handleButtonClick() {
-      // Swiper action
-      if (this.data.button.action === 'next_slide' && this.swiperRef) {
-        this.swiperRef.slideNext()
-      }
-
-      // Parent component'e emit
       this.$emit('action', {
         type: this.data.button.action,
         data: this.data
       })
-    },
-
-    getIllustrationComponent(type) {
-      const componentMap = {
-        security_awareness: 'SecurityIllustration',
-        phishing_simulation: 'PhishingIllustration',
-        training_completion: 'TrainingIllustration'
-      }
-      return componentMap[type] || 'SecurityIllustration'
     }
   }
 }

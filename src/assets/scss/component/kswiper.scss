@@ -7,6 +7,9 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  & * {
+    box-sizing: border-box;
+  }
   
   // External Navigation Buttons (mevcut)
   &-nav {
@@ -59,8 +62,7 @@
   // Swiper Container
   swiper-container {
     width: 100%;
-    height: auto;
-    min-height: 400px;
+    height: 450px; // Optimized for microlearning - 25% smaller
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -76,31 +78,26 @@
     border-radius: 16px;
     overflow: hidden;
     position: relative;
+    height: 450px !important; // Optimized height for better UX
     
     > * {
       width: 100%;
-      padding: 32px;
+      padding: 24px 12px;
+      height: 100%;
+      overflow-y: auto; // Allow scroll if content is too tall
     }
   }
   
-  // Swiper height problemi için CSS çözümü
+  // Swiper height optimizasyonu için CSS
   .k-swiper-container {
     swiper-slide {
-      height: auto !important;
-      min-height: 200px; // Normal slide'lar için minimum
-      max-height: 800px; // Kontrolsüz büyümeyi önlemek için
-      transition: min-height 0.3s ease;
-      overflow-y: auto; // İçerik taşarsa scroll
+      height: 450px !important;
       
-      // İçeriği flexbox ile center et
+      // İçeriği flexbox ile organize et
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
     }
-  }
-  
-  .slide-taller {
-    min-height: 800px !important; // Max-height ile tutarlı
   }
   
   // 🆕 Internal Navigation Styling
@@ -142,7 +139,6 @@
       bottom: 20px !important;
       left: 20px !important;
       right: 20px !important;
-      width: calc(100% - 40px) !important;
       
       .swiper-pagination-progressbar-fill {
         background: linear-gradient(90deg, #2196f3, #21cbf3) !important;
@@ -171,12 +167,20 @@
     }
   }
 }
-// Mobile Responsive - Fixed height
   @media (max-width: 768px) {
     .k-swiper {
       width: 100% !important;
-      padding:8px !important;
+      padding: 4px !important; // Minimal padding for immersive experience
       margin: 0;
+      
+      swiper-container {
+        border-radius: 4px; // Smaller radius for modern look
+        height: 95vh !important; // Almost full viewport - modern e-learning standard
+      }
+      
+      swiper-slide {
+        height: 95vh !important;
+      }
     }
     
     .k-swiper-nav,
@@ -184,19 +188,38 @@
     .swiper-button-prev {
       display: none !important;
     }
+    
+    // Override container specific height for mobile
+    .k-swiper-container {
+      swiper-slide {
+        height: 95vh !important;
+      }
+    }
   }
   
   @media (max-width: 480px) {
     .k-swiper {
-      padding: 0;
+      padding: 2px; // Edge-to-edge experience like mobile apps
       
       swiper-container {
-        border-radius: 0;
-        box-shadow: none;
+        border-radius: 2px; // Minimal radius for app-like feel
+        box-shadow: none; // Remove shadow for cleaner mobile look
+        height: 98vh !important; // Almost full screen - mobile app standard
       }
       
-      swiper-slide > * {
-        padding: 15px;
+      swiper-slide {
+        height: 98vh !important;
+        
+        > * {
+          padding: 12px; // Reduced padding for more content space
+        }
+      }
+      
+      // Override container specific height for small mobile
+      .k-swiper-container {
+        swiper-slide {
+          height: 98vh !important;
+        }
       }
     }
   }
