@@ -187,7 +187,6 @@ export default {
   },
   methods: {
     handleSelectionChange(selectionCount) {
-      console.log('selectionCount', selectionCount)
       this.resendItemCount = selectionCount
     },
     resendItem() {
