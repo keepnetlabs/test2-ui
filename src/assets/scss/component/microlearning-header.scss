@@ -1,0 +1,153 @@
+/* MicroLearning Header Styles */
+.microlearning-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.microlearning-header__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.microlearning-header__logo {
+  display: flex;
+  align-items: center;
+  img {
+    max-width: 166px;
+  }
+}
+
+.microlearning-header__language {
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.microlearning-header__language-label {
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.microlearning-header__language-dropdown {
+  position: relative;
+}
+
+.microlearning-header__language-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+  }
+}
+
+.microlearning-header__language-text {
+  font-weight: 500;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.microlearning-header__language-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.microlearning-header__language-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+
+  &.active {
+    background: #e3f2fd;
+    color: #1976d2;
+    font-weight: 500;
+  }
+}
+
+.microlearning-header__flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* Header Mobile Responsive */
+@media (max-width: 768px) {
+  .microlearning-header {
+    padding: 8px 16px;
+
+    &__content {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    &__language {
+      align-self: flex-end;
+
+      &-menu {
+        right: 0;
+        min-width: 200px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .microlearning-header {
+    &__content {
+      align-items: center;
+    }
+
+    &__language {
+      align-self: center;
+
+      &-label {
+        display: none;
+      }
+    }
+  }
+} 
