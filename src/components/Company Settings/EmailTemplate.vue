@@ -23,7 +23,7 @@
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
-          :isAttachmentBasedTemplate="isPhishingTemplate"
+          :isAttachmentBasedTemplate="isAttachmentBasedScenario"
           :customHeadScripts="customHeadScripts"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
