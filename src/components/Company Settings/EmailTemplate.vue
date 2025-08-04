@@ -24,6 +24,10 @@
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
           :isAttachmentBasedTemplate="isPhishingTemplate"
+          :customHeadScripts="customHeadScripts"
+          @on-custom-head-scripts-change="
+            (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
+          "
         />
       </template>
     </app-modal>
@@ -636,7 +640,9 @@ export default {
     'localizationResourceId',
     'languageOptions',
     'selectedMethod',
-    'isPlainText'
+    'isPlainText',
+    'customHeadScripts',
+    'currentPageIndex'
   ],
   data() {
     return {
@@ -1025,6 +1031,7 @@ export default {
       this.$emit('update:prompt', val || '')
     }
   },
+
   mounted() {
     this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
@@ -1036,6 +1043,9 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    onCustomHeadScriptsChange(value, pageIndex) {
+      this.$emit('on-custom-head-scripts-change', value, pageIndex)
+    },
     handleValueComparator(a, b) {
       if (a === b) return true
       return a === this.usaResourceId && this.usaStateResourceIds.includes(b)
