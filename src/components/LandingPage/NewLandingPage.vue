@@ -261,6 +261,11 @@
                           :is-edit="!!isEdit"
                           :onlyGrapes="true"
                           :prompt.sync="page.prompt"
+                          :custom-head-scripts="customHeadScripts[index] || ''"
+                          :current-page-index="index"
+                          @on-custom-head-scripts-change="
+                            (value) => onCustomHeadScriptsChange(value, index)
+                          "
                           @setAttachmentFile="setAttachmentFile"
                         />
                       </el-tab-pane>
@@ -352,7 +357,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
-import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
+import { MERGED_TEXTS_MAP, processTemplateWithCustomScripts } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
@@ -411,6 +416,7 @@ export default {
         nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
         saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
       },
+      customHeadScripts: {},
       isInvisibleCaptchaDisabled: false,
       languageOptions: [],
       isPageAddMenuOpen: [],
@@ -501,6 +507,10 @@ export default {
         this.formValues.landingPages[0].order = 1
       }
       setTimeout(() => (this.isPageAddMenuOpen[index] = false), 100)
+    },
+    onCustomHeadScriptsChange(value, pageIndex) {
+      // Her sayfa için ayrı customHeadScripts değeri tut
+      this.$set(this.customHeadScripts, pageIndex, value)
     },
     handleUploadHTML() {
       this.$refs.refHtmlFile.click()
@@ -756,6 +766,15 @@ export default {
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
+        data.landingPages.forEach((page, index) => {
+          const { customScripts } = processTemplateWithCustomScripts(page.content)
+          console.log('customScripts 1', customScripts)
+          if (customScripts.length > 0) {
+            this.customHeadScripts[index] = customScripts
+              .map((s) => s.outerHTML || s.content || '')
+              .join('\n')
+          }
+        })
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }

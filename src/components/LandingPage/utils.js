@@ -132,3 +132,65 @@ export const MERGED_TEXTS_MAP = {
   '{RANDOM_NUMBER_2_DIGITS}': randomNumberTwoDigits,
   '{RANDOM_NUMBER_3_DIGITS}': randomNumberThreeDigits
 }
+
+/**
+ * Processes a template string to extract custom scripts and clean template
+ * @param {string} templateString - The HTML template string
+ * @returns {Object} Object containing customScripts, cleanTemplate, and scriptsContent
+ */
+export function processTemplateWithCustomScripts(templateString) {
+  if (!templateString || typeof templateString !== 'string') {
+    return {
+      customScripts: [],
+      cleanTemplate: templateString,
+      scriptsContent: ''
+    }
+  }
+
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = templateString
+
+  // Find all script elements with data-custom-landing-page-script attribute
+  const customScripts = tempDiv.querySelectorAll('script[data-custom-landing-page-script="true"]')
+
+  // Extract custom scripts
+  const extractedScripts = Array.from(customScripts).map((script) => {
+    return {
+      src: script.src || null,
+      type: script.type || null,
+      content: script.innerHTML || '',
+      outerHTML: script.outerHTML
+    }
+  })
+
+  // Remove custom scripts from template
+  customScripts.forEach((script) => script.remove())
+  const cleanTemplate = tempDiv.innerHTML
+
+  // Get custom scripts content
+  const scriptsContent = extractedScripts
+    .map((script) => {
+      const createdScript = document.createElement('script')
+      if (script.src) {
+        createdScript.src = script.src
+        console.log('createdScript', createdScript)
+        return createdScript.outerHTML
+      } else if (script.content) {
+        console.log('script.content', script.content)
+        createdScript.innerHTML = script.content
+        return createdScript.outerHTML
+      }
+      return ''
+    })
+    .join('\n')
+
+  console.log('Found custom scripts:', extractedScripts)
+  console.log('Clean template:', cleanTemplate)
+  console.log('Custom scripts content:', scriptsContent)
+
+  return {
+    customScripts: extractedScripts,
+    cleanTemplate,
+    scriptsContent
+  }
+}
