@@ -1148,10 +1148,10 @@ export default {
     if (this.timeoutId) clearTimeout(this.timeoutId)
   },
   methods: {
+    ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)
     },
-    ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     getListItemClass(state) {
       return {
         'training-library-filtering-options-parent-list-item': true,
