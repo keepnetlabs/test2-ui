@@ -1,11 +1,6 @@
 <template>
   <v-card class="email-template__container" :style="'overflow-y:hidden'">
-    <v-dialog
-      v-if="feedbackDialog"
-      v-model="feedbackDialog"
-      persistent
-      :width="600"
-    >
+    <v-dialog v-if="feedbackDialog" v-model="feedbackDialog" persistent :width="600">
       <feedback-popup></feedback-popup>
     </v-dialog>
     <app-modal
@@ -28,7 +23,7 @@
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
-          :isAttachmentBasedTemplate="isAttachmentBasedScenario"
+          :isAttachmentBasedTemplate="isPhishingTemplate"
           :customHeadScripts="customHeadScripts"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
@@ -40,9 +35,7 @@
       v-if="isAiAssistant && isAIAllyEnabled"
       :class="[
         'email-template__ai-assistant',
-        templateType === 'landing'
-          ? 'email-template__ai-assistant--landing'
-          : ''
+        templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
       ]"
     >
       <div class="email-template__ai-assistant-header">
@@ -165,9 +158,7 @@
                   @input="$emit('update:localizationResourceId', $event)"
                 >
                   <template #selection="data">
-                    <span v-if="isUSAStateSelected"
-                      >USA, {{ getSelectedStateName }}</span
-                    >
+                    <span v-if="isUSAStateSelected">USA, {{ getSelectedStateName }}</span>
                     <span v-else>{{ data.item.name }}</span>
                   </template>
                   <template #item="data">
@@ -184,24 +175,14 @@
                       <template #activator="{ on }">
                         <div
                           v-on="on"
-                          :class="[
-                            'mail-configuration-select-sources__item-container'
-                          ]"
-                          @click="
-                            $emit(
-                              'update:localizationResourceId',
-                              data.item.resourceId
-                            )
-                          "
+                          :class="['mail-configuration-select-sources__item-container']"
+                          @click="$emit('update:localizationResourceId', data.item.resourceId)"
                         >
                           <div class="mail-configuration-select-sources__item">
                             <div style="font-size: 14px;" class="mr-2 mr-auto">
                               {{ data.item.name }}
                             </div>
-                            <v-icon
-                              :color="
-                                isUSAStateSelected ? '#1976d2' : '#757575'
-                              "
+                            <v-icon :color="isUSAStateSelected ? '#1976d2' : '#757575'"
                               >mdi-menu-right</v-icon
                             >
                           </div>
@@ -220,16 +201,8 @@
                         </VListItemTitle>
                       </VListItem>
                     </VMenu>
-                    <div
-                      v-else
-                      :class="[
-                        'mail-configuration-select-sources__item-container'
-                      ]"
-                    >
-                      <div
-                        style="font-size: 14px;"
-                        class="mail-configuration-select-sources__item"
-                      >
+                    <div v-else :class="['mail-configuration-select-sources__item-container']">
+                      <div style="font-size: 14px;" class="mail-configuration-select-sources__item">
                         {{ data.item.name }}
                       </div>
                     </div>
@@ -254,29 +227,17 @@
                 <template #append>
                   <div
                     class="email-template__ai-assistant-footer-text"
-                    :style="
-                      aiTemplateText.length > 500
-                        ? { color: '#B83A3A', opacity: '1' }
-                        : ''
-                    "
+                    :style="aiTemplateText.length > 500 ? { color: '#B83A3A', opacity: '1' } : ''"
                   >
-                    <VTooltip
-                      v-if="aiTemplateText.length > 500"
-                      bottom
-                      max-width="300"
-                    >
+                    <VTooltip v-if="aiTemplateText.length > 500" bottom max-width="300">
                       <template #activator="{ on }">
-                        <VIcon
-                          style="font-size: 20px;"
-                          v-on="on"
-                          color="#B83A3A"
-                          small
+                        <VIcon style="font-size: 20px;" v-on="on" color="#B83A3A" small
                           >mdi-information</VIcon
                         >
                       </template>
                       <span
-                        >Description cannot exceed the 500 character limit.
-                        Please shorten description.</span
+                        >Description cannot exceed the 500 character limit. Please shorten
+                        description.</span
                       >
                     </VTooltip>
                     {{ aiTemplateText.length }} / 500 characters
@@ -295,9 +256,7 @@
                   v-if="templateType !== 'landing'"
                   :value="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
-                  :style="
-                    isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''
-                  "
+                  :style="isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''"
                   hide-details
                   :ripple="false"
                   color="#2196f3"
@@ -322,9 +281,7 @@
             <div
               :class="[
                 'd-flex mt-2 w-full items-center',
-                generatedTemplates.length > 1
-                  ? 'justify-space-between'
-                  : 'justify-end'
+                generatedTemplates.length > 1 ? 'justify-space-between' : 'justify-end'
               ]"
             >
               <div v-if="generatedTemplates.length > 1">
@@ -332,28 +289,20 @@
                   class="cursor-pointer"
                   color="#757575"
                   :disabled="activeGeneratedTemplateIndex < 1"
-                  @click="
-                    setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)
-                  "
+                  @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex - 1)"
                   >mdi-chevron-left</VIcon
                 >
                 <VIcon
                   class="ml-1 cursor-pointer"
                   color="#757575"
-                  :disabled="
-                    activeGeneratedTemplateIndex ===
-                    generatedTemplates.length - 1
-                  "
-                  @click="
-                    setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)
-                  "
+                  :disabled="activeGeneratedTemplateIndex === generatedTemplates.length - 1"
+                  @click="setActiveGeneratedTemplate(activeGeneratedTemplateIndex + 1)"
                   >mdi-chevron-right</VIcon
                 >
                 <span class="email-template__ai-assistant-footer-left-text"
                   >Generated
                   {{ templateType === 'landing' ? 'landing page' : 'email' }}
-                  {{ activeGeneratedTemplateIndex + 1 }} of
-                  {{ generatedTemplates.length }}</span
+                  {{ activeGeneratedTemplateIndex + 1 }} of {{ generatedTemplates.length }}</span
                 >
               </div>
               <div
@@ -367,20 +316,13 @@
         </div>
       </transition>
     </div>
-    <div
-      style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;"
-    >
-      <div
-        v-if="!onlyGrapes && showNameField"
-        :class="getTemplateNameFieldClass"
-      >
+    <div style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;">
+      <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
         <FormGroup
           title="Template Name:"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <InputEntityName
             id="input--notification-template-name"
@@ -400,9 +342,7 @@
           title="Languages:"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <InputLanguagePreview
             :value="languagePreview"
@@ -411,24 +351,17 @@
             :hint="getEmailTemplatePreviewLanguageHint"
             :items="selectedTemplateLanguages"
             hide-details
-            @input="
-              handleEmailTemplatePreviewLanguageChange($event, languagePreview)
-            "
+            @input="handleEmailTemplatePreviewLanguageChange($event, languagePreview)"
           />
         </FormGroup>
       </div>
-      <div
-        :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-0']"
-        v-if="!onlyGrapes"
-      >
+      <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-0']" v-if="!onlyGrapes">
         <FormGroup
           title="Subject:"
           :sub-title="getSubjectSubtitle"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <div class="position-relative">
             <InputEntityName
@@ -451,17 +384,12 @@
           </div>
         </FormGroup>
       </div>
-      <div
-        v-if="!onlyGrapes"
-        :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']"
-      >
+      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
         <FormGroup
           title="From Name:"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <div class="position-relative">
             <InputEntityName
@@ -483,17 +411,12 @@
           </div>
         </FormGroup>
       </div>
-      <div
-        v-if="!onlyGrapes"
-        :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']"
-      >
+      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
         <FormGroup
           title="From Email Address:"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <div class="position-relative">
             <InputEmail
@@ -525,9 +448,7 @@
           title="CC:"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
-          :labelClassName="
-            isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''
-          "
+          :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <KSelect
             :value="ccAddresses"
@@ -553,24 +474,15 @@
         </FormGroup>
       </div>
     </div>
-    <div
-      :class="[
-        isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : ''
-      ]"
-    >
+    <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
         v-if="isAttachmentBasedScenario && !onlyGrapes"
-        :class="[
-          'd-flex mx-6 align-center',
-          isHorizontalFormGroups ? 'v-list-item__content' : ''
-        ]"
+        :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
       >
         <label
           :class="[
             'mr-4',
-            isHorizontalFormGroups
-              ? 'k-form-group__title--horizontal mb-4'
-              : 'mb-6'
+            isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
           ]"
           for="input--email-template-upload"
           style="font-weight: 600; font-size: 20px;"
@@ -594,10 +506,7 @@
         />
         <div
           v-else
-          :class="[
-            'email-template__attachment-list',
-            isHorizontalFormGroups ? 'ml-0' : ''
-          ]"
+          :class="['email-template__attachment-list', isHorizontalFormGroups ? 'ml-0' : '']"
           :style="
             isHorizontalFormGroups
               ? {}
@@ -607,10 +516,7 @@
           <div v-for="(item, index) in attachments" :key="index">
             <div class="attachment-wrapper" style="position: relative;">
               <div
-                :class="[
-                  'attachment blue-attach mr-2',
-                  isHorizontalFormGroups ? 'full-width' : ''
-                ]"
+                :class="['attachment blue-attach mr-2', isHorizontalFormGroups ? 'full-width' : '']"
                 :id="'email-template-' + item.name"
               >
                 <AttachmentsPreview
@@ -650,10 +556,7 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader
-        :title="getLoaderTitle"
-        :description="getLoaderDescription"
-      />
+      <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
     </div>
     <div v-else id="email-template-content" class="email-template-content">
       <div>
@@ -667,9 +570,7 @@
           class="email-template-preview__button"
           @click="editHtmlTemplate"
         >
-          <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6"
-            >mdi-pencil</v-icon
-          >
+          <v-icon style="margin-right: 2px; margin-top: -1px;" class="text-h6">mdi-pencil</v-icon>
           EDIT
         </v-btn>
         <div v-else>
@@ -696,10 +597,7 @@
               :email-template-logo="emailTemplateLogo"
             />
             <individual-print-out-template-default
-              v-else-if="
-                templateType ===
-                QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
-              "
+              v-else-if="templateType === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT"
               ref="refPreview"
               :email-template-logo="emailTemplateLogo"
             />
