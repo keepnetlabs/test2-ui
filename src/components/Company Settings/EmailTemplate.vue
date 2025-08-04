@@ -640,6 +640,12 @@ export default {
     'localizationResourceId',
     'languageOptions',
     'selectedMethod',
+    'isGenerateWithAi',
+    'getEmailTemplatePreviewLanguageHint',
+    'selectedTemplateLanguages',
+    'languagePreview',
+    'showLanguageField',
+    'isShowRedFlags',
     'isPlainText',
     'customHeadScripts',
     'currentPageIndex'
@@ -1045,6 +1051,12 @@ export default {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)
+    },
+    getListItemClass(state) {
+      return {
+        'training-library-filtering-options-parent-list-item': true,
+        'v-list-item--active': this.localizationResourceId === state.resourceId
+      }
     },
     handleValueComparator(a, b) {
       if (a === b) return true
