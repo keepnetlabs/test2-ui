@@ -1037,6 +1037,7 @@ export default {
       this.$emit('update:prompt', val || '')
     }
   },
+
   mounted() {
     this.getAIGenerationOptions()
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML

@@ -16,6 +16,28 @@
       <div id="gjsNewsletterModal" style="height: 100vh;"></div>
       <div id="blocksModal"></div>
     </div>
+
+    <!-- Custom Scripts Dialog -->
+    <app-dialog
+      :status="showHeadScriptsDialog"
+      title="Custom Scripts"
+      subtitle="Add custom JavaScript code that will be inserted at the beginning of the HTML body section:"
+      size="big"
+      @changeStatus="handleHeadScriptsDialogStatus"
+    >
+      <template #app-dialog-body>
+        <div
+          ref="codeMirrorContainer"
+          style="height: 300px; width: 100%; position: relative;"
+        ></div>
+      </template>
+      <template #app-dialog-footer>
+        <app-dialog-footer
+          @handleClose="handleHeadScriptsCancel"
+          @handleConfirm="handleHeadScriptsSave"
+        />
+      </template>
+    </app-dialog>
   </div>
 </template>
 
@@ -52,6 +74,8 @@ import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import AppDialog from '@/components/AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import outlookButton from '@/components/GrapesJs/Newsletter/components/outlookButton'
 import {
   getComponentTypeDefaultParams,
@@ -60,7 +84,7 @@ import {
 } from '@/components/GrapesJs/Newsletter/utils'
 export default {
   name: 'GrapesNewsletterModal',
-  components: { DefaultErrorDialog },
+  components: { DefaultErrorDialog, AppDialog, AppDialogFooter },
   props: {
     htmlData: {
       required: false
@@ -93,12 +117,22 @@ export default {
     templateType: {
       type: String,
       default: 'email'
+    },
+    customHeadScripts: {
+      type: String,
+      default: ''
+    },
+    currentPageIndex: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
       showInvalidUrlMessage: false,
       editor: null,
+      showHeadScriptsDialog: false,
+      codeMirrorViewer: null,
       url: {
         required: (v) => (v && v.length <= 256) || 'It must between 1 - 256 characters',
         format: (v) =>
@@ -1016,6 +1050,17 @@ export default {
             btnCopyToClipboard.onclick = () => {
               copyToClipboard(codeViewer.editor.getValue())
             }
+
+            // Add Custom Scripts text link
+            const customScriptsText = document.createElement('div')
+            customScriptsText.innerHTML =
+              'Some scripts may be blocked for security reasons. <span style="text-decoration: underline; cursor: pointer;">Click here</span> to add custom JavaScript code.'
+            customScriptsText.style.cssText =
+              'text-align: left;margin-top:8px; font-size: 12px; color: #fff;'
+            customScriptsText.onclick = () => {
+              this.openHeadScriptsEditor()
+            }
+
             codeViewer.set({
               codeName: 'htmlmixed',
               readOnly: 0,
@@ -1023,6 +1068,7 @@ export default {
             })
             let txtarea = document.createElement('textarea')
             container.appendChild(txtarea)
+            container.appendChild(customScriptsText)
             container.appendChild(btnImp)
             container.appendChild(btnCopyToClipboard)
             codeViewer.init(txtarea)
@@ -1087,6 +1133,110 @@ export default {
       })
       return searchField
     },
+    openHeadScriptsEditor() {
+      this.showHeadScriptsDialog = true
+      this.$nextTick(() => {
+        this.initializeCodeMirror()
+      })
+    },
+
+    initializeCodeMirror() {
+      const editor = this.editor
+      const container = this.$refs.codeMirrorContainer
+
+      if (!container) return
+
+      // Clear previous content
+      container.innerHTML = ''
+
+      // Create textarea for CodeMirror
+      const textarea = document.createElement('textarea')
+      textarea.value = this.customHeadScripts
+      textarea.style.cssText = 'width: 100%; height: 100%;'
+      container.appendChild(textarea)
+
+      // Initialize CodeMirror editor
+      const codeViewer = editor.CodeManager.getViewer('CodeMirror').clone()
+      codeViewer.set({
+        codeName: 'htmlmixed',
+        readOnly: 0,
+        theme: 'hopscotch',
+        autoCloseTags: true,
+        autoCloseBrackets: true,
+        lineWrapping: true,
+        lineNumbers: true,
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+        mode: 'text/html',
+        indentUnit: 2,
+        tabSize: 2,
+        indentWithTabs: false,
+        extraKeys: {
+          'Ctrl-Space': 'autocomplete'
+        }
+      })
+
+      codeViewer.init(textarea)
+      this.codeMirrorViewer = codeViewer.editor
+      this.codeMirrorViewer.setValue(this.customHeadScripts)
+      this.codeMirrorViewer.refresh()
+
+      // Force refresh and ensure proper layout
+      setTimeout(() => {
+        if (this.codeMirrorViewer) {
+          this.codeMirrorViewer.refresh()
+          this.codeMirrorViewer.focus()
+
+          // Ensure the editor takes full width
+          const cmElement = container.querySelector('.CodeMirror')
+          if (cmElement) {
+            cmElement.style.width = '100%'
+            cmElement.style.height = '100%'
+          }
+        }
+      }, 100)
+    },
+
+    handleHeadScriptsDialogStatus(value) {
+      this.showHeadScriptsDialog = value
+      if (!value) {
+        // Clean up CodeMirror when dialog closes
+        if (this.codeMirrorViewer) {
+          this.codeMirrorViewer = null
+        }
+        // Clear the container to prevent layout issues
+        const container = this.$refs.codeMirrorContainer
+        if (container) {
+          container.innerHTML = ''
+        }
+      }
+    },
+
+    handleHeadScriptsSave() {
+      if (this.codeMirrorViewer) {
+        const newValue = this.codeMirrorViewer.getValue()
+        this.$emit('update:customHeadScripts', newValue)
+        // Ayrıca pageIndex ile birlikte emit et
+        this.$emit('on-custom-head-scripts-change', newValue, this.currentPageIndex)
+      }
+      this.showHeadScriptsDialog = false
+      this.codeMirrorViewer = null
+      // Clear the container
+      const container = this.$refs.codeMirrorContainer
+      if (container) {
+        container.innerHTML = ''
+      }
+    },
+
+    handleHeadScriptsCancel() {
+      this.showHeadScriptsDialog = false
+      this.codeMirrorViewer = null
+      // Clear the container
+      const container = this.$refs.codeMirrorContainer
+      if (container) {
+        container.innerHTML = ''
+      }
+    },
     getGrapesEditorContent() {
       const { editor } = this
       editor?.select(editor?.getWrapper())
@@ -1108,6 +1258,27 @@ export default {
       const meta = document.createElement('meta')
       meta.httpEquiv = 'Content-Security-Policy'
       meta.content = 'upgrade-insecure-requests'
+      const addedScripts = []
+      if (this.customHeadScripts && this.customHeadScripts.trim()) {
+        const createScript = (script) => {
+          const newScript = document.createElement('script')
+          if (script.src) newScript.src = script.src
+          if (script.type) newScript.type = script.type
+          // Use data attribute instead of custom property
+          newScript.setAttribute('data-custom-landing-page-script', 'true')
+          newScript.innerHTML = script.innerHTML
+          return newScript
+        }
+        const scriptsContainer = document.createElement('div')
+        scriptsContainer.innerHTML = this.customHeadScripts
+        const scripts = scriptsContainer.querySelectorAll('script')
+        if (scripts.length > 0) {
+          scripts.forEach((script) => {
+            addedScripts.push(createScript(script))
+          })
+        }
+      }
+      console.log('addedScripts', addedScripts)
       if (head) {
         head.appendChild(style)
         head.appendChild(meta)
@@ -1126,9 +1297,21 @@ export default {
           const newHtmlDOM = document.createElement('html')
           newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
           newHtmlDOM.insertAdjacentElement('afterbegin', head)
+          addedScripts.forEach((script) => {
+            newHtmlDOM.querySelector('body').insertAdjacentElement('afterbegin', script)
+          })
           return newHtmlDOM.outerHTML
         }
       }
+      if (addedScripts.length > 0) {
+        const body = htmlDOM.querySelector('body')
+        if (body) {
+          addedScripts.forEach((script) => {
+            body.insertAdjacentElement('afterbegin', script)
+          })
+        }
+      }
+
       return htmlDOM.outerHTML
     }
   }
