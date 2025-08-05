@@ -509,7 +509,6 @@ export default {
       setTimeout(() => (this.isPageAddMenuOpen[index] = false), 100)
     },
     onCustomHeadScriptsChange(value, pageIndex) {
-      // Her sayfa için ayrı customHeadScripts değeri tut
       this.$set(this.customHeadScripts, pageIndex, value)
     },
     handleUploadHTML() {
@@ -768,11 +767,12 @@ export default {
         )
         data.landingPages.forEach((page, index) => {
           const { customScripts } = processTemplateWithCustomScripts(page.content)
-          console.log('customScripts 1', customScripts)
           if (customScripts.length > 0) {
-            this.customHeadScripts[index] = customScripts
-              .map((s) => s.outerHTML || s.content || '')
-              .join('\n')
+            this.$set(
+              this.customHeadScripts,
+              index,
+              customScripts.map((s) => s.outerHTML || s.content || '').join('\n')
+            )
           }
         })
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))

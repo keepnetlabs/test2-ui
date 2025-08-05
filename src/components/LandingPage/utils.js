@@ -173,20 +173,14 @@ export function processTemplateWithCustomScripts(templateString) {
       const createdScript = document.createElement('script')
       if (script.src) {
         createdScript.src = script.src
-        console.log('createdScript', createdScript)
         return createdScript.outerHTML
       } else if (script.content) {
-        console.log('script.content', script.content)
         createdScript.innerHTML = script.content
         return createdScript.outerHTML
       }
       return ''
     })
     .join('\n')
-
-  console.log('Found custom scripts:', extractedScripts)
-  console.log('Clean template:', cleanTemplate)
-  console.log('Custom scripts content:', scriptsContent)
 
   return {
     customScripts: extractedScripts,
