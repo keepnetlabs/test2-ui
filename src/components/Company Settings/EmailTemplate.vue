@@ -19,6 +19,7 @@
         <GrapesNewsletterModal
           v-if="showGrapesModal"
           ref="grapesJsPostIncident"
+          :isEdit="isEdit"
           :htmlData="template"
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"

@@ -122,6 +122,10 @@ export default {
     currentPageIndex: {
       type: Number,
       default: 0
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -136,11 +140,15 @@ export default {
           /(ftp|http|https):\/\/(\w+:?\w*@)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/gi.test(v) ||
           'invalid url'
       },
-      urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
+      urlMergedTexts: [{ value: '', name: 'No Merged Text' }],
+      editedCustomHeadScripts: ''
     }
   },
   created() {
     this.callForImages()
+    if (this.isEdit) {
+      this.editedCustomHeadScripts = this.customHeadScripts
+    }
   },
   mounted() {
     this.setMergedTextsForLinks()
@@ -1166,7 +1174,6 @@ export default {
           'Ctrl-Space': 'autocomplete'
         }
       })
-
       codeViewer.init(textarea)
       this.codeMirrorViewer = codeViewer.editor
       this.codeMirrorViewer.setValue(this.customHeadScripts)
@@ -1207,7 +1214,6 @@ export default {
       if (this.codeMirrorViewer) {
         const newValue = this.codeMirrorViewer.getValue()
         this.$emit('update:customHeadScripts', newValue)
-        // Ayrıca pageIndex ile birlikte emit et
         this.$emit('on-custom-head-scripts-change', newValue, this.currentPageIndex)
       }
       this.showHeadScriptsDialog = false
@@ -1250,6 +1256,12 @@ export default {
       meta.httpEquiv = 'Content-Security-Policy'
       meta.content = 'upgrade-insecure-requests'
       const addedScripts = []
+      if (this.isEdit && this.editedCustomHeadScripts) {
+        const scripts = htmlDOM.querySelectorAll('script[data-custom-landing-page-script="true"]')
+        scripts.forEach((script) => {
+          script.remove()
+        })
+      }
       if (this.customHeadScripts && this.customHeadScripts.trim()) {
         const createScript = (script) => {
           const newScript = document.createElement('script')
@@ -1269,7 +1281,6 @@ export default {
           })
         }
       }
-      console.log('addedScripts', addedScripts)
       if (head) {
         head.appendChild(style)
         head.appendChild(meta)
