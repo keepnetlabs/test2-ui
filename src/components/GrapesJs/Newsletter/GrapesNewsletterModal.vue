@@ -93,6 +93,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isShowHeadScripts: {
+      type: Boolean,
+      default: false
+    },  
     blockManagerComponents: {
       type: Object,
       default() {
@@ -1060,15 +1064,18 @@ export default {
             }
 
             // Add Custom Scripts text link
-            const customScriptsText = document.createElement('div')
-            customScriptsText.innerHTML =
-              'Some scripts may be blocked for security reasons. <span style="text-decoration: underline; cursor: pointer;">Click here</span> to add custom JavaScript code.'
-            customScriptsText.style.cssText =
-              'text-align: left;margin-top:8px; font-size: 12px; color: #fff;'
-            customScriptsText.onclick = () => {
-              this.openHeadScriptsEditor()
+            let customScriptsText = null
+            if (this.isShowHeadScripts) {
+              customScriptsText = document.createElement('div')
+              customScriptsText.innerHTML =
+                'Some scripts may be blocked for security reasons. <span style="text-decoration: underline; cursor: pointer;">Click here</span> to add custom JavaScript code.'
+              customScriptsText.style.cssText =
+                'text-align: left;margin-top:8px; font-size: 12px; color: #fff;'
+              customScriptsText.onclick = () => {
+                this.openHeadScriptsEditor()
+              }
             }
-
+            
             codeViewer.set({
               codeName: 'htmlmixed',
               readOnly: 0,
@@ -1076,7 +1083,9 @@ export default {
             })
             let txtarea = document.createElement('textarea')
             container.appendChild(txtarea)
-            container.appendChild(customScriptsText)
+            if (this.isShowHeadScripts) {
+              container.appendChild(customScriptsText)
+            }
             container.appendChild(btnImp)
             container.appendChild(btnCopyToClipboard)
             codeViewer.init(txtarea)
