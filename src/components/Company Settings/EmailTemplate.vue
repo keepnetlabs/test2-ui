@@ -26,6 +26,7 @@
           :template-type="templateType"
           :isAttachmentBasedTemplate="isPhishingTemplate"
           :customHeadScripts="customHeadScripts"
+          :isShowHeadScripts="isShowHeadScripts"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
           "
@@ -649,7 +650,8 @@ export default {
     'isShowRedFlags',
     'isPlainText',
     'customHeadScripts',
-    'currentPageIndex'
+    'currentPageIndex',
+    'isShowHeadScripts'
   ],
   data() {
     return {
