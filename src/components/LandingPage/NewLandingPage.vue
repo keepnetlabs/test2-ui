@@ -244,6 +244,7 @@
                         <EmailTemplate
                           ref="refEmailTemplate"
                           template-type="landing"
+                          :is-show-head-scripts="true"
                           :name="formValues.name"
                           :is-ai-assistant="true"
                           :ai-assistant.sync="aiAssistant"
