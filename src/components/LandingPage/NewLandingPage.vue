@@ -260,7 +260,7 @@
                           :language-options="languageOptions"
                           :selected-method="getSelectedMethod"
                           :is-edit="!!isEdit"
-                          :is-phishing-template="true"
+                          :is-phishing-template="false"
                           :onlyGrapes="true"
                           :prompt.sync="page.prompt"
                           :custom-head-scripts="customHeadScripts[index] || ''"
