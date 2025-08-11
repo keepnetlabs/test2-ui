@@ -156,6 +156,10 @@ export default {
     showRedFlags: {
       type: Boolean,
       default: false
+    },
+    activeLanguage: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -169,7 +173,7 @@ export default {
       searchValue: '',
       items: this.languageItems,
       showOverFlowTooltip: false,
-      overFlowTooltipContent: 'Maximum of 10 languages added. Uncheck one to add another.',
+      overFlowTooltipContent: 'Active language can’t be removed. Switch to another language first.',
       overFlowTooltipStyle: {
         top: '0px',
         left: '0px'
@@ -221,11 +225,26 @@ export default {
           this.handleMenuHeight()
         })
       }
+    },
+    activeLanguage: {
+      immediate: true,
+      handler(val) {
+        this.items.forEach((item) => {
+          item.children.forEach((child) => {
+            if (val === child.value) {
+              this.$set(child, 'disabled', true)
+            } else {
+              this.$set(child, 'disabled', false)
+            }
+          })
+        })
+      }
     }
   },
   methods: {
     handleLocalizeClick() {
       this.isShowLanguages = true
+      this.setupLanguageNodeTooltips()
       this.changeMenuStatus('visible')
     },
     handleAdd() {
@@ -242,22 +261,6 @@ export default {
     },
     handleTreeViewChange(event) {
       this.selectedLanguages = event
-      if (this.selectedLanguages.length >= 10) {
-        this.items.forEach((item) => {
-          item.children.forEach((child) => {
-            const findedLanguage = this.selectedLanguages.find((item) => item.value === child.value)
-            if (!findedLanguage) {
-              this.$set(child, 'disabled', true)
-            }
-          })
-        })
-      } else {
-        this.items.forEach((item) => {
-          item.children.forEach((child) => {
-            this.$set(child, 'disabled', false)
-          })
-        })
-      }
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
@@ -265,10 +268,7 @@ export default {
     },
     handleTooltipShow(e) {
       const node = e.target
-      if (
-        this.selectedLanguages.length >= 10 &&
-        node.parentElement.classList.contains('v-treeview-node--disabled')
-      ) {
+      if (node.parentElement.classList.contains('v-treeview-node--disabled')) {
         this.updateTooltipPosition(e)
         this.showOverFlowTooltip = true
       }
