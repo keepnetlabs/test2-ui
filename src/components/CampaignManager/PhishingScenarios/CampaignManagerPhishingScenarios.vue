@@ -1159,10 +1159,6 @@ export default {
     },
     callForSelectedPhishingScenario(resourceId = '', item = {}) {
       this.adjustTrainingModel(resourceId)
-      if (this.isPhishing) {
-        this.phishingEmailTemplates = []
-        this.selectedTemplateLanguages = []
-      }
       const apiFunc = this.isPhishing ? getScenario : QuishingService.getScenario
       apiFunc(resourceId).then((response) => {
         const {
@@ -1222,6 +1218,9 @@ export default {
             phishingFileName
           }
           if (this.isPhishing) {
+            this.phishingEmailTemplates = []
+            this.selectedTemplateLanguages = []
+
             this.selectedTemplateLanguages.push({
               value: languageOfEmailTemplate,
               text: languageTypeName
