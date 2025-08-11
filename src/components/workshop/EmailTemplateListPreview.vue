@@ -1129,14 +1129,14 @@ export default {
       if (isInitial) {
         this.$emit('initialEmailTemplateId', item.id)
       }
-      this.selectedTemplateLanguages = []
-      this.phishingEmailTemplates = []
       this.apiFuncs
         .content(item.resourceId)
         .then((response) => {
           const {
             data: { data }
           } = response
+          this.selectedTemplateLanguages = []
+          this.phishingEmailTemplates = []
           let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplateData = { ...(item || {}), ...(data || {}) }

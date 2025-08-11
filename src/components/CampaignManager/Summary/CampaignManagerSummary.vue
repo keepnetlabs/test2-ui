@@ -823,10 +823,6 @@ export default {
         this.selectedTraining = training
         this.callForTrainingDetail(training.trainingId)
       } else this.trainingParams = null
-      if (this.isPhishing) {
-        this.phishingEmailTemplates = []
-        this.selectedTemplateLanguages = []
-      }
       this.isScenarioDetailLoading = true
       const apiFunc = this.isPhishing
         ? getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
@@ -834,6 +830,10 @@ export default {
       apiFunc(resourceId)
         .then((response) => {
           const { data: { data = {} } = {} } = response
+          if (this.isPhishing) {
+            this.phishingEmailTemplates = []
+            this.selectedTemplateLanguages = []
+          }
           const { emailTemplate, landingPageTemplate, category = '' } = data
           let {
             template,

@@ -215,6 +215,7 @@
                         <template #template-header-right>
                           <InputLanguagesSettings
                             v-model="selectedLanguages"
+                            :active-language="activeLanguage"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                             :language-items="languageItems"
                             :show-red-flags="isShowRedFlags"
@@ -690,7 +691,8 @@ export default {
           prompt: '',
           toneResourceId: '',
           localizationResourceId: '',
-          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD
+          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD,
+          isTranslated: false
         }
       })
     },
@@ -871,9 +873,20 @@ export default {
       let template = this.getSelectedLanguagePayload.template
       let subject = this.getSelectedLanguagePayload.subject
       this.isSubmitDisabled = true
+      const prevTemplate = (this.selectedLanguagePayloadItemBeforeSave?.template || '').trim()
+      const currTemplate = (template || '').trim()
+      const shouldFilterTranslated = prevTemplate === currTemplate
+      const languagesToLocalize = shouldFilterTranslated
+        ? this.selectedLanguages.filter((lang) => {
+            const payload = this.languagesPayload.find(
+              (p) => p.languageTypeResourceId === lang.value
+            )
+            return !(payload && payload.isTranslated)
+          })
+        : this.selectedLanguages
       scrollToEmailTemplateContent()
       generateEmailTemplateTranslation({
-        languages: this.selectedLanguages.map((item) => ({
+        languages: languagesToLocalize.map((item) => ({
           languageResourceId: item.value,
           languageName: item.text
         })),
@@ -910,6 +923,7 @@ export default {
               if (!languagePayload) return
               languagePayload.template = item.template
               languagePayload.subject = item.subject || languagePayload.subject
+              languagePayload.isTranslated = true
               this.$nextTick(() => {
                 const modalContent = document.querySelector('.k-overlay__container')
                 if (modalContent) {
@@ -947,8 +961,8 @@ export default {
     },
     handleActiveLanguageChange(value) {
       if (
-        JSON.stringify(this.selectedLanguagePayloadItemBeforeSave) ===
-        JSON.stringify(this.getSelectedLanguagePayload)
+        JSON.stringify(this.selectedLanguagePayloadItemBeforeSave.template.trim()) ===
+        JSON.stringify(this.getSelectedLanguagePayload.template.trim())
       ) {
         this.activeLanguage = value
         this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
