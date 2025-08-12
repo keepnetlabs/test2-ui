@@ -219,11 +219,15 @@
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                             :language-items="languageItems"
                             :show-red-flags="isShowRedFlags"
+                            :translated-language-resource-ids="translatedLanguageResourceIds"
                             @input="handleSelectedLanguagesChange"
+                            @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
                             @on-edit-mode-click="handleEditModeClick"
                             @on-upload-email-button-click="handleUploadEmailButtonClick"
                             @on-show-red-flags-click="handleShowRedFlagsClick"
+                            @on-relocalize-replace="handleRelocalizeReplace"
+                            @on-relocalize-cancel="handleRelocalizeCancel"
                           />
                         </template>
                       </EmailTemplate>
@@ -417,6 +421,11 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    translatedLanguageResourceIds() {
+      return this.languagesPayload
+        .filter((item) => item && item.isTranslated)
+        .map((item) => item.languageTypeResourceId)
+    },
     getSelectedLanguagePayload() {
       return (
         this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) ||
@@ -568,6 +577,34 @@ export default {
     }
   },
   methods: {
+    handleRelocalizeReplace({ language }) {
+      const payload = this.languagesPayload.find(
+        (p) => p.languageTypeResourceId === language.value
+      ) || { subject: '', template: '' }
+      const subject = payload.subject || this.getSelectedLanguagePayload.subject || ''
+      const template = payload.template || this.getSelectedLanguagePayload.template || ''
+      const languages = [
+        {
+          languageResourceId: language.value,
+          languageName: language.text
+        }
+      ]
+      this.isGenerateWithAi = true
+      this.isGenerateWithAIDisabled = true
+      this.$refs.refEmailTemplate.isEmailGenerating = true
+      generateEmailTemplateTranslation({ languages, template, subject })
+        .then((response) => {
+          if (!response?.data?.data?.isSuccess) {
+            this.resetGenerateWithAIDisabled()
+            return
+          }
+          this.askForEmailTemplateTranslation()
+        })
+        .catch(() => {
+          this.resetGenerateWithAIDisabled()
+        })
+    },
+    handleRelocalizeCancel() {},
     setLanguageItems() {
       const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
       const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []

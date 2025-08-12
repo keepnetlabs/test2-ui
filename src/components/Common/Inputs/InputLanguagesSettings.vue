@@ -5,6 +5,7 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
+
     <div class="d-flex gap-4">
       <div class="position-relative">
         <div>
@@ -16,6 +17,7 @@
         <div
           v-show="!loading || isShowLanguages"
           class="switch-account__container input-language-settings__container"
+          :style="getMenuContainerStyle"
         >
           <div>
             <div class="px-4 py-4 pb-12" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
@@ -46,29 +48,67 @@
                   @input="handleTreeViewChange"
                 >
                   <template #label="{ item }">
-                    <span
-                      v-if="item.text === 'All Languages'"
-                      style="
-                        background-color: #e0e0e0;
-                        width: 100%;
-                        height: 1px;
-                        display: inline-block;
-                      "
-                    ></span>
-                    <div
-                      v-else
-                      :class="item.text === 'Preferred Languages' ? 'd-flex flex-column mt-1' : ''"
-                      style="margin-top: 1px;"
-                    >
+                    <template>
                       <span
-                        v-if="item.text !== 'Preferred Languages' && item.text !== 'All Languages'"
-                        >{{ item.text }}</span
+                        v-if="item.text === 'All Languages'"
+                        style="
+                          background-color: #e0e0e0;
+                          width: 100%;
+                          height: 1px;
+                          display: inline-block;
+                        "
+                      ></span>
+                      <div
+                        v-else
+                        :class="
+                          item.text === 'Preferred Languages'
+                            ? 'd-flex flex-column mt-1'
+                            : 'd-flex flex-column'
+                        "
+                        style="margin-top: 1px; position: relative;"
                       >
-                      <div v-if="item.text === 'Preferred Languages'">
-                        <div class="fw-400 mt-1 mb-1">
-                          Languages your employees prefer
+                        <div
+                          v-if="
+                            item.text !== 'Preferred Languages' && item.text !== 'All Languages'
+                          "
+                        >
+                          <span>{{ item.text }}</span>
+                        </div>
+                        <div
+                          v-if="
+                            item.text !== 'Preferred Languages' &&
+                            item.text !== 'All Languages' &&
+                            isLanguageAlreadyLocalized(item)
+                          "
+                          style="color: rgba(56, 59, 65, 0.72); font-size: 9px; margin-top: 2px;"
+                        >
+                          Already localized
+                        </div>
+
+                        <div v-if="item.text === 'Preferred Languages'">
+                          <div class="fw-400 mt-1 mb-1">
+                            Languages your employees prefer
+                          </div>
                         </div>
                       </div>
+                    </template>
+                  </template>
+                  <template #append="{ item }">
+                    <div
+                      v-if="
+                        item.text !== 'Preferred Languages' &&
+                        item.text !== 'All Languages' &&
+                        isLanguageAlreadyLocalized(item) &&
+                        !hiddenRelocalizeLanguageIds.includes(item.value)
+                      "
+                      class="d-flex align-center cursor-pointer"
+                      style="color: #2196f3; font-size: 12px; font-weight: 600;"
+                      @click.stop="handleRelocalizeClick(item, $event)"
+                    >
+                      <VIcon color="#2196f3" small style="font-size: 14px; margin-right: 4px;">
+                        mdi-refresh
+                      </VIcon>
+                      <span>Relocalize</span>
                     </div>
                   </template>
                 </VTreeview>
@@ -76,20 +116,35 @@
             </div>
           </div>
           <div class="p-4 input-language-settings__footer">
-            <VBtn
-              text
-              id="btn-confirm--switch-company-dashboard-popup"
-              color="#2196f3"
-              class="k-dialog__button mr-4 px-0"
-              :style="getAddButtonStyle"
-              @click="handleAdd"
-              >LOCALIZE</VBtn
-            >
+            <VTooltip bottom>
+              <template #activator="{ on, attrs }">
+                <VBtn
+                  v-bind="attrs"
+                  v-on="on"
+                  text
+                  id="btn-confirm--switch-company-dashboard-popup"
+                  color="#2196f3"
+                  class="k-dialog__button mr-4 px-0"
+                  :style="getAddButtonStyle"
+                  @click="handleAdd"
+                >
+                  LOCALIZE
+                </VBtn>
+              </template>
+              <span>Applies only to newly selected languages.</span>
+            </VTooltip>
           </div>
         </div>
       </div>
 
-      <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
+      <VBtn
+        v-if="false"
+        lass="fw-600"
+        rounded
+        outlined
+        color="#2196f3"
+        @click="handleShowRedFlagsClick"
+      >
         <VIcon>mdi-flag</VIcon>
         <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
       </VBtn>
@@ -160,6 +215,10 @@ export default {
     activeLanguage: {
       type: String,
       default: ''
+    },
+    translatedLanguageResourceIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -178,7 +237,17 @@ export default {
         top: '0px',
         left: '0px'
       },
-      activeNodes: []
+      activeNodes: [],
+      relocalizeConfirmFor: null,
+      showRelocalizeConfirm: false,
+      relocalizeConfirmStyle: {
+        top: '0px',
+        left: '0px'
+      },
+      confirmRowEl: null,
+      confirmRowWrapper: null,
+      confirmMode: null,
+      hiddenRelocalizeLanguageIds: []
     }
   },
   computed: {
@@ -197,13 +266,20 @@ export default {
       return `Language${length > 1 ? 's' : ''} (${length})`
     },
     getAddButtonStyle() {
-      const style = { marginTop: '2px' }
-      if (!this.selectedLanguages.length) {
+      const style = { marginTop: '2px', padding: '0 8px' }
+      const disable = !this.hasUnlocalizedSelected
+      if (disable) {
         style.color = '#2196f3 !important'
         style.opacity = '0.5'
         style.pointerEvents = 'none'
+        style.cursor = 'default'
       }
       return style
+    },
+    hasUnlocalizedSelected() {
+      if (!Array.isArray(this.selectedLanguages) || !this.selectedLanguages.length) return false
+      const translated = new Set(this.translatedLanguageResourceIds || [])
+      return this.selectedLanguages.some((lang) => !translated.has(lang?.value))
     },
     getGenerateWithAIButtonStyle() {
       const style = {}
@@ -213,6 +289,27 @@ export default {
         style.cursor = 'default'
       }
       return style
+    },
+    getMenuContainerStyle() {
+      return {
+        marginLeft: '-124px'
+      }
+    },
+    computedTreeItems() {
+      const clone = JSON.parse(JSON.stringify(this.items))
+      if (!this.relocalizeConfirmFor) return clone
+      clone.forEach((group) => {
+        const idx = (group.children || []).findIndex((c) => c.value === this.relocalizeConfirmFor)
+        if (idx !== -1) {
+          group.children.splice(idx + 1, 0, {
+            value: `${this.relocalizeConfirmFor}-confirm`,
+            text: 'RelocalizeConfirm',
+            isRelocalizeRow: true,
+            parentValue: this.relocalizeConfirmFor
+          })
+        }
+      })
+      return clone
     },
     isGenerateButtonDisabled() {
       return this.value.length <= 1 || this.isGenerateWithAIDisabled
@@ -225,26 +322,168 @@ export default {
           this.handleMenuHeight()
         })
       }
-    },
-    activeLanguage: {
-      immediate: true,
-      handler(val) {
-        this.items.forEach((item) => {
-          item.children.forEach((child) => {
-            if (val === child.value) {
-              this.$set(child, 'disabled', true)
-            } else {
-              this.$set(child, 'disabled', false)
-            }
-          })
-        })
-      }
     }
   },
   methods: {
+    isConfirmRowFor(item) {
+      if (!this.relocalizeConfirmFor) return false
+      return item && item.value === this.relocalizeConfirmFor
+    },
+    isLanguageAlreadyLocalized(item) {
+      if (!item || item.text === 'Preferred Languages' || item.text === 'All Languages')
+        return false
+      return this.translatedLanguageResourceIds.includes(item.value)
+    },
+    handleRelocalizeClick(item, event) {
+      this.relocalizeConfirmFor = item?.value || null
+      this.removeConfirmRow()
+      this.insertConfirmRow({ item, event, mode: 'relocalize' })
+      this.$emit('on-relocalize-click', item)
+    },
+    handleRelocalizeReplace(item) {
+      this.$emit('on-relocalize-replace', { language: item })
+      this.relocalizeConfirmFor = null
+      this.showRelocalizeConfirm = false
+      this.removeConfirmRow()
+      this.resetRootSpacing()
+    },
+    handleRelocalizeCancel() {
+      this.relocalizeConfirmFor = null
+      this.showRelocalizeConfirm = false
+      this.removeConfirmRow()
+      this.resetRootSpacing()
+      this.$emit('on-relocalize-cancel')
+    },
+    insertConfirmRow({ item, event, mode = 'relocalize' }) {
+      this.confirmMode = mode
+      const tree = this.$el.querySelector('.input-languages-settings-treeview')
+      if (!tree) return
+      let wrapper = event?.target?.closest?.('.v-treeview-node')
+      if (!wrapper) {
+        // Find by label text when no event or data-value attribute
+        const labels = Array.from(tree.querySelectorAll('.v-treeview-node__label span'))
+        const labelEl = labels.find((el) => el.textContent.trim() === (item.text || ''))
+        if (labelEl) wrapper = labelEl.closest('.v-treeview-node')
+      }
+      if (!wrapper) {
+        wrapper = tree.querySelector('.v-treeview-node__root')?.closest('.v-treeview-node')
+      }
+      if (!wrapper) return
+      const root = wrapper.querySelector('.v-treeview-node__root')
+      if (!root) return
+      const el = document.createElement('div')
+      el.className = 'relocalize-inline-confirm'
+      const isRemove = mode === 'remove'
+      const isLastTranslated = isRemove
+        ? (this.translatedLanguageResourceIds || []).filter((id) => id !== item.value).length === 0
+        : false
+      const message = isRemove
+        ? 'Localization will be removed.'
+        : 'Relocalize will replace this template.'
+      const primaryLabel = isRemove ? 'Remove' : 'Replace'
+      const primaryClass =
+        (isRemove ? 'js-remove' : 'js-replace') + (isLastTranslated ? ' is-disabled' : '')
+      el.innerHTML = `
+        <div class="relocalize-inline-confirm__left">
+          <i class="v-icon notranslate v-icon--link mdi mdi-information" style="color:#2196f3"></i>
+          <span class="relocalize-inline-confirm__text">${message}</span>
+        </div>
+        <div class="relocalize-inline-confirm__actions">
+          <span class="relocalize-inline-confirm__link ${primaryClass}">${primaryLabel}</span>
+          <span class="relocalize-inline-confirm__link js-cancel">Cancel</span>
+        </div>
+      `
+      root.insertAdjacentElement('afterend', el)
+      const replaceBtn = el.querySelector('.js-replace')
+      const removeBtn = el.querySelector('.js-remove')
+      const cancelBtn = el.querySelector('.js-cancel')
+      if (replaceBtn) {
+        replaceBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          this.handleRelocalizeReplace(item)
+        })
+      }
+      if (removeBtn && !isLastTranslated) {
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          // Keep deselected, just close row
+          if (!this.hiddenRelocalizeLanguageIds.includes(item.value)) {
+            this.hiddenRelocalizeLanguageIds = [...this.hiddenRelocalizeLanguageIds, item.value]
+          }
+          // If active language removed, switch preview to another selected language
+          if (this.activeLanguage === item.value) {
+            const fallback =
+              (this.selectedLanguages || [])
+                .map((l) => l.value)
+                .find((v) => v && v !== item.value) || ''
+            this.$emit('on-active-language-change', fallback)
+          }
+          this.removeConfirmRow()
+        })
+      }
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          if (this.confirmMode === 'remove') {
+            // Revert deselection
+            const exists = this.selectedLanguages?.some?.((l) => l.value === item.value)
+            if (!exists) {
+              this.selectedLanguages = [...(this.selectedLanguages || []), item]
+            }
+            this.treeViewKey = `key-${createRandomCryptStringNumber()}`
+          }
+          this.handleRelocalizeCancel()
+        })
+      }
+      this.confirmRowEl = el
+      this.confirmRowWrapper = wrapper
+    },
+    removeConfirmRow() {
+      if (this.confirmRowEl && this.confirmRowEl.parentNode) {
+        this.confirmRowEl.parentNode.removeChild(this.confirmRowEl)
+      }
+      if (this.confirmRowWrapper && this.confirmRowWrapper.style) {
+        this.confirmRowWrapper.style.marginBottom = ''
+      }
+      this.confirmRowEl = null
+      this.confirmRowWrapper = null
+      this.confirmMode = null
+    },
+    applyRootExpandedSpacing(item, event) {
+      const tree = this.$el.querySelector('.input-languages-settings-treeview')
+      if (!tree) return
+      this.resetRootSpacing()
+      let wrapperNode = null
+      if (event && event.target) {
+        wrapperNode = event.target.closest('.v-treeview-node')
+      }
+      if (!wrapperNode) {
+        const root = tree.querySelector(`.v-treeview-node__root[data-value="${item.value}"]`)
+        wrapperNode = root ? root.closest('.v-treeview-node') : null
+      }
+      if (!wrapperNode) return
+      wrapperNode.style.marginBottom = '36px'
+      console.log('wrapperNode', wrapperNode)
+    },
+    resetRootSpacing() {
+      const tree = this.$el.querySelector('.input-languages-settings-treeview')
+      if (!tree) return
+      tree.querySelectorAll('.v-treeview-node').forEach((el) => {
+        if (el && el.style) el.style.marginBottom = ''
+      })
+    },
+    getConfirmLanguageItem() {
+      const flat = []
+      this.items.forEach((g) => flat.push(...(g.children || [])))
+      return (
+        flat.find((c) => c.value === this.relocalizeConfirmFor) || {
+          value: this.relocalizeConfirmFor
+        }
+      )
+    },
     handleLocalizeClick() {
       this.isShowLanguages = true
-      this.setupLanguageNodeTooltips()
+      //this.setupLanguageNodeTooltips()
       this.changeMenuStatus('visible')
     },
     handleAdd() {
@@ -260,7 +499,31 @@ export default {
       this.removeLanguageNodeEventListeners()
     },
     handleTreeViewChange(event) {
+      // Commit selection first so checkbox reflects immediately
+      const previousValues = (this.selectedLanguages || []).map((l) => l.value)
       this.selectedLanguages = event
+      const currentValues = (event || []).map((l) => l.value)
+      const removedValues = previousValues.filter((v) => !currentValues.includes(v))
+      if (removedValues.length) {
+        const removedValue = removedValues[0]
+        const removedItem = (this.items || [])
+          .flatMap((g) => g.children || [])
+          .find((c) => c.value === removedValue)
+        // Show remove confirm ONLY if that language was localized
+        if (removedItem && this.isLanguageAlreadyLocalized(removedItem)) {
+          this.removeConfirmRow()
+          this.insertConfirmRow({
+            item: removedItem,
+            event: null,
+            mode: 'remove'
+          })
+          return
+        }
+      }
+      // If there is a relocalize confirm being shown, keep it; otherwise close any open confirm
+      if (this.confirmMode !== 'relocalize') {
+        this.removeConfirmRow()
+      }
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
@@ -342,3 +605,83 @@ export default {
   }
 }
 </script>
+<style>
+.relocalize-confirm {
+  position: absolute;
+  margin-left: -29px;
+  top: 28px;
+  background: #e9f0f8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.relocalize-confirm--overlay {
+  z-index: 10000;
+}
+.relocalize-confirm__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.relocalize-confirm__text {
+  color: rgba(56, 59, 65, 0.9);
+  font-size: 10px;
+}
+.relocalize-confirm__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.relocalize-confirm__link {
+  color: #2196f3;
+  font-weight: 600;
+  font-size: 10px;
+  cursor: pointer;
+}
+/* icon size for overlay confirm */
+.relocalize-confirm .v-icon {
+  font-size: 14px !important;
+}
+
+/* Inline confirm row inserted as DOM sibling */
+.relocalize-inline-confirm {
+  background: #e9f0f8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 0 48px;
+}
+.relocalize-inline-confirm__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.relocalize-inline-confirm__text {
+  color: rgba(56, 59, 65, 0.9);
+  font-size: 10px;
+}
+.relocalize-inline-confirm__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.relocalize-inline-confirm__link {
+  color: #2196f3;
+  font-weight: 600;
+  font-size: 10px;
+  cursor: pointer;
+}
+.relocalize-inline-confirm__link.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+/* icon size for inline confirm */
+.relocalize-inline-confirm .v-icon {
+  font-size: 14px !important;
+}
+</style>
