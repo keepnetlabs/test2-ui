@@ -22,13 +22,23 @@
 }
 .input-language-settings__container{
   min-height: 300px;
-  min-width: 280px;
+  min-width: 360px;
   padding: 0;
   overflow-y: hidden;
   max-width:554px;
 }
 .input-languages-settings-treeview {
   margin-top:8px;
+  .v-treeview-node__root.k-relocalize-open{
+    margin-bottom: 36px !important;
+  }
+  .v-treeview-node__children .v-treeview-node__root.k-relocalize-open{
+    margin-bottom: 36px !important;
+  }
+  // ensure label container is positioning context for absolute confirm row
+  .v-treeview-node__label .d-flex.flex-column {
+    position: relative;
+  }
   & >  .v-treeview-node:last-child > .v-treeview-node__root{
     max-height: 1px !important;
     min-height: 1px !important;
