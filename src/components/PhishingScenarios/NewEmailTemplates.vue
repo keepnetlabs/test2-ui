@@ -532,7 +532,8 @@ export default {
           template: this.formValues.template,
           prompt: this.formValues.prompt,
           toneResourceId: this.formValues.toneResourceId,
-          localizationResourceId: this.formValues.localizationResourceId
+          localizationResourceId: this.formValues.localizationResourceId,
+          isTranslated: true
         })
         this.selectedLanguages.push({
           text: this.formValues.languageTypeName,
@@ -554,7 +555,8 @@ export default {
               prompt: item.prompt,
               toneResourceId: item.toneResourceId,
               localizationResourceId: item.localizationResourceId,
-              resourceId: item.resourceId
+              resourceId: item.resourceId,
+              isTranslated: true
             })
           })
         }
