@@ -476,9 +476,21 @@ export default {
     canRenderAlertboxLanguage() {
       return (
         parseInt(this.formData?.sendUserPreferredLanguage) === 1 &&
+        this.getFallbackUsersCount > 0 &&
         !this.isVishing &&
         !this.isSmishing &&
         !this.isAwareness
+      )
+    },
+    getFallbackUsersCount() {
+      const activeRows = this.formData?.userCountDetailResponse?.data?.data?.filter(
+        (row) => row.status === 'Active'
+      )
+      return (
+        activeRows?.reduce((acc, row) => {
+          const noStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'No')
+          return acc + (noStatusItem?.count || 0)
+        }, 0) || 0
       )
     },
     getUserFromCompanyLanguage() {
@@ -500,11 +512,17 @@ export default {
       }, 0)
     },
     getPreferredLanguageText() {
-      return `${this.getUserFromPreferredLanguage} user${
-        this.getUserFromPreferredLanguage > 1 ? 's' : ''
-      } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
-        this.getUserFromCompanyLanguage > 1 ? 's' : ''
-      } in the company language.`
+      const activeRow = this.formData?.userCountDetailResponse?.data?.data?.find(
+        (row) => row.status === 'Active'
+      )
+      const companyLanguage = activeRow?.companyPreferredLanguage || ''
+      const fallbackCount = this.getFallbackUsersCount || 0
+      const usersWord = fallbackCount === 1 ? 'user' : 'users'
+      const dontWord = fallbackCount === 1 ? 'doesn’t' : 'don’t'
+      if (fallbackCount > 0) {
+        return `${fallbackCount} ${usersWord} ${dontWord} have a scenario in their preferred language. The company language (${companyLanguage}) will be selected as fallback.`
+      }
+      return 'All users have a scenario in their preferred language.'
     },
     isRenderTrainingCard() {
       return this.trainingParams

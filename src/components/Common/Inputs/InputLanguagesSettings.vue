@@ -569,7 +569,6 @@ export default {
       }
       if (!wrapperNode) return
       wrapperNode.style.marginBottom = '36px'
-      console.log('wrapperNode', wrapperNode)
     },
     resetRootSpacing() {
       const tree = this.$el.querySelector('.input-languages-settings-treeview')
