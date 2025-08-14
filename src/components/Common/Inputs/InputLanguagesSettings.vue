@@ -324,9 +324,35 @@ export default {
           this.handleMenuHeight()
         })
       }
+    },
+    translatedLanguageResourceIds: {
+      handler() {
+        this.$nextTick(() => this.refreshAllConfirmRowsDisabledState())
+      }
     }
   },
   methods: {
+    isRemovingLastLocalized(languageId) {
+      const translatedIds = new Set(
+        (this.translatedLanguageResourceIds || []).map((id) => String(id))
+      )
+      const currentId = String(languageId)
+      const remainingCount = [...translatedIds].filter((id) => id !== currentId).length
+      return remainingCount === 0
+    },
+    refreshConfirmRowDisabledState(value) {
+      const rec = this.pendingRemoveConfirm && this.pendingRemoveConfirm[value]
+      if (!rec || !rec.el) return
+      const removeBtn = rec.el.querySelector('.js-remove')
+      if (!removeBtn) return
+      const disabled = this.isRemovingLastLocalized(value)
+      removeBtn.classList.toggle('is-disabled', disabled)
+    },
+    refreshAllConfirmRowsDisabledState() {
+      Object.keys(this.pendingRemoveConfirm || {}).forEach((val) => {
+        this.refreshConfirmRowDisabledState(val)
+      })
+    },
     isConfirmRowFor(item) {
       if (!this.relocalizeConfirmFor) return false
       return item && item.value === this.relocalizeConfirmFor
@@ -375,9 +401,12 @@ export default {
       const el = document.createElement('div')
       el.className = 'relocalize-inline-confirm'
       const isRemove = mode === 'remove'
-      const isLastTranslated = isRemove
-        ? (this.translatedLanguageResourceIds || []).filter((id) => id !== item.value).length === 0
-        : false
+      // Disable remove when this action would result in zero localized languages remaining.
+      // Consider all currently pending removals together with the clicked item.
+      let isLastTranslated = false
+      if (isRemove) {
+        isLastTranslated = this.isRemovingLastLocalized(item.value)
+      }
       const message = isRemove
         ? 'Localization will be removed.'
         : 'Relocalize will replace this template.'
@@ -466,6 +495,10 @@ export default {
           this.$emit('on-relocalize-cancel')
         })
       }
+      // Ensure disabled state is correct after render
+      this.$nextTick(() => {
+        if (isRemove) this.refreshConfirmRowDisabledState(item.value)
+      })
       if (isRemove) {
         // track per-language confirm rows so multiple can stay visible
         if (!this.pendingRemoveConfirm[item.value]) {
@@ -620,6 +653,7 @@ export default {
         }
       })
       // Do not clear pendingRelocalizeConfirm on any selection change
+      this.$nextTick(() => this.refreshAllConfirmRowsDisabledState())
     },
     handleSearchInputFocus() {
       this.changeMenuStatus('visible')
@@ -702,8 +736,12 @@ export default {
       const translated = new Set(this.translatedLanguageResourceIds || [])
       const selectedSet = new Set((this.selectedLanguages || []).map((l) => l.value))
       const base = JSON.parse(JSON.stringify(this.languageItems || []))
-      const pref = base.find((g) => g && g.text === 'Preferred Languages') || { children: [] }
-      const all = base.find((g) => g && g.text === 'All Languages') || { children: [] }
+      const pref = base.find((g) => g && g.text === 'Preferred Languages') || {
+        children: []
+      }
+      const all = base.find((g) => g && g.text === 'All Languages') || {
+        children: []
+      }
       const originalPreferred = Array.isArray(pref.children) ? pref.children : []
       const originalAll = Array.isArray(all.children) ? all.children : []
       const byValue = new Map([...originalPreferred, ...originalAll].map((c) => [c.value, c]))
@@ -714,7 +752,12 @@ export default {
       let newPreferred = [...originalPreferred, ...selectedItems]
       // Remove duplicates
       const seen = new Set()
-      newPreferred = newPreferred.filter((c) => (c && !seen.has(c.value) ? (seen.add(c.value), true) : false))
+      newPreferred = newPreferred.filter((c) => {
+        if (!c) return false
+        if (seen.has(c.value)) return false
+        seen.add(c.value)
+        return true
+      })
       // New all children: original all minus those present in preferred now
       const newPreferredSet = new Set(newPreferred.map((c) => c.value))
       let newAll = originalAll.filter((c) => !newPreferredSet.has(c.value))

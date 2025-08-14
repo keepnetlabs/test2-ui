@@ -431,7 +431,7 @@
               :value="fromAddress"
               @input="$emit('update:fromAddress', $event)"
             >
-              <template v-if="isPhishingTemplate" #append>
+              <template v-if="false" #append>
                 <AppendableMergeTag @on-add-merge-tag="handleAddMergeTag" />
               </template>
             </InputEmail>
