@@ -215,35 +215,21 @@ export default {
     canRenderAlertboxLanguage() {
       return (
         parseInt(this.sendUserPreferredLanguage) === 1 &&
+        this.getUserFromCompanyLanguage > 0 &&
         !this.isVishing &&
         !this.isSmishing &&
         !this.isAwareness
       )
     },
     getPreferredLanguageText() {
-      const preferredLanguagesLength = this.preferredLanguages.length
-      let prefLanguagesText = this.preferredLanguages[0]
       const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
-      if (this.isRenderDefaultLanguageAlertBoxFormat) {
-        return `${this.getUserFromPreferredLanguage} user${
-          this.getUserFromPreferredLanguage > 1 ? 's' : ''
-        } get the scenario in their preferred language; ${this.getUserFromCompanyLanguage} other${
-          this.getUserFromCompanyLanguage > 1 ? 's' : ''
-        } in the company language.`
+      const fallbackCount = this.getUserFromCompanyLanguage || 0
+      const usersWord = fallbackCount === 1 ? 'user' : 'users'
+      const dontWord = fallbackCount === 1 ? 'doesn’t' : 'don’t'
+      if (fallbackCount > 0) {
+        return `${fallbackCount} ${usersWord} ${dontWord} have a scenario in their preferred language. The company language (${companyLanguage}) will be selected as fallback.`
       }
-      if (preferredLanguagesLength === 0) {
-        return `User's preferred languages are not defined, so the company language (${companyLanguage}) will be used.`
-      }
-      if (preferredLanguagesLength > 1) {
-        if (preferredLanguagesLength > 3)
-          prefLanguagesText = `e.g., ${this.preferredLanguages.slice(0, 3).join(', ')}, and ${
-            preferredLanguagesLength - 3
-          } more`
-        else prefLanguagesText = `e.g., ${this.preferredLanguages.join(', ')}`
-      }
-      return `Selected scenarios don’t match users’ preferred language${
-        preferredLanguagesLength > 1 ? 's' : ''
-      } (${prefLanguagesText}), so the company language (${companyLanguage}) will be used.`
+      return 'All users have a scenario in their preferred language.'
     },
     getUserFromPreferredLanguage() {
       if (!this.userCountDetailResponse) return
@@ -257,8 +243,8 @@ export default {
       if (!this.userCountDetailResponse) return
       const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
       return activeData.reduce((acc, row) => {
-        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
-        return acc + yesStatusItem?.count || 0
+        const noStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'No')
+        return acc + noStatusItem?.count || 0
       }, 0)
     },
     getUnverifiedDomainsText() {
