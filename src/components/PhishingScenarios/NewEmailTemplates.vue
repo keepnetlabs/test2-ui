@@ -939,8 +939,13 @@ export default {
         this.askForEmailTemplateTranslation()
       })
     },
-    askForEmailTemplateTranslation(count = 0, maxCount = 20, timeoutId = 0) {
-      if (count >= maxCount) {
+    askForEmailTemplateTranslation(count = 0, maxCount = null, timeoutId = 0) {
+      const languagesLength = Array.isArray(this.selectedLanguages)
+        ? this.selectedLanguages.length
+        : 0
+      const calculatedMax = Math.max((languagesLength || 1) * 4, 10)
+      const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
+      if (count >= effectiveMax) {
         this.resetGenerateWithAIDisabled(timeoutId)
         return
       }
@@ -986,7 +991,7 @@ export default {
             this.resetGenerateWithAIDisabled(timeoutId)
           })
           .catch(() => {
-            this.askForEmailTemplateTranslation(count + 1, maxCount, timeoutId)
+            this.askForEmailTemplateTranslation(count + 1, effectiveMax, timeoutId)
           })
       }, 5000)
     },
