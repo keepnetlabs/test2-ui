@@ -212,6 +212,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 import { mapGetters } from 'vuex'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'NewSmishingTemplate',
   components: {
@@ -254,6 +255,10 @@ export default {
         nextButton: 'btn-next--add-or-edit-email-templates-modal',
         saveButton: 'btn-save--add-or-edit-email-templates-modal'
       },
+      isEnhanceDisabled: false,
+      isAttachmentError: false,
+      isPhishingFileModified: false,
+      isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
       attachmentName: '',
       languageOptions: [],
