@@ -185,7 +185,7 @@
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
-        @on-submit="submit"
+        @on-submit="checkComplianceAndSubmit"
       />
     </template>
   </app-modal>
@@ -547,6 +547,11 @@ export default {
     },
     backStep() {
       this.step -= 1
+    },
+    checkComplianceAndSubmit() {
+      SmishingService.checkSmishingTextRisk(this.formValues.template).then((response) => {
+        console.log(response)
+      })
     },
     submit() {
       this.isSubmitDisabled = true

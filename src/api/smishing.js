@@ -1,5 +1,6 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import axios from 'axios'
 
 const searchTextMessageTemplates = (payload) => {
   return testRequest.post('/smishing-simulator/text-templates/search', payload)
@@ -371,7 +372,9 @@ function updateDnsServiceList(payload, id) {
 }
 
 function getDnsService(id) {
-  return testRequest.get(`smishing-simulator/dns-services/${id}`, { loading: true })
+  return testRequest.get(`smishing-simulator/dns-services/${id}`, {
+    loading: true
+  })
 }
 
 function deleteEmailTemplate(id) {
@@ -438,6 +441,17 @@ function postExcludedIPAddresses(payload = {}) {
   return testRequest.post(`/smishing-simulator/excluded-ip`, payload, {
     snackbar: COMMON_SNACKBAR
   })
+}
+
+// --- External SMS moderation/enhancement (Cloudflare Worker) ---
+const TXT_ENHANCE_URL = 'https://txt-enhance.keepnet-labs-ltd-business-profile4086.workers.dev/'
+
+function checkSmishingTextRisk(text) {
+  return axios.post(TXT_ENHANCE_URL, { method: 'check', text }, { timeout: 20000 })
+}
+
+function enhanceSmishingText(text) {
+  return axios.post(TXT_ENHANCE_URL, { method: 'enhance', text }, { timeout: 20000 })
 }
 
 export function getCampaignManagerFormDetails() {
@@ -522,6 +536,9 @@ export default {
   testDomainConnection,
   getExcludedIPAddresses,
   postExcludedIPAddresses,
+  // External moderation helpers
+  checkSmishingTextRisk,
+  enhanceSmishingText,
   getCampaignManagerFormDetails,
   getSmishingScenariosPhoneNumber
 }
