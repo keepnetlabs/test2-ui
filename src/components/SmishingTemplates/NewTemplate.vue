@@ -603,18 +603,22 @@ export default {
     },
     checkComplianceAndSubmit() {
       this.isSubmitDisabled = true
-      SmishingService.checkSmishingTextRisk(this.formValues.template).then((response) => {
-        const { data } = response
-        const assistantMessage = data.find((item) => item.role === 'assistant')
-        const { approval, reason } = JSON.parse(assistantMessage.content[0].text)
-        if (approval === 'Yes') {
-          this.enhanceAlertText = ''
-          this.submit()
-        } else {
-          this.enhanceAlertText = reason
+      SmishingService.checkSmishingTextRisk(this.formValues.template)
+        .then((response) => {
+          const { data } = response
+          const assistantMessage = data.find((item) => item.role === 'assistant')
+          const { approval, reason } = JSON.parse(assistantMessage.content[0].text)
+          if (approval === 'Yes') {
+            this.enhanceAlertText = ''
+            this.submit()
+          } else {
+            this.enhanceAlertText = reason
+            this.isSubmitDisabled = false
+          }
+        })
+        .catch(() => {
           this.isSubmitDisabled = false
-        }
-      })
+        })
     },
     submit() {
       this.isSubmitDisabled = true
