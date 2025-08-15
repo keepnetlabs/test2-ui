@@ -241,8 +241,8 @@ import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 import { mapGetters } from 'vuex'
-import AlertBox from '@/components/AlertBox'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'NewSmishingTemplate',
   components: {
