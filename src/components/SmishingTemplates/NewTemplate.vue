@@ -163,7 +163,37 @@
                         :maxLength="160"
                         :mergeTags="mergeTags"
                         :initialRules="textMessageRules"
-                      />
+                      >
+                        <template #append-inner>
+                          <v-btn
+                            class="enhance-button"
+                            color="#2196F3"
+                            rounded
+                            :style="getEnhanceButtonStyle"
+                            @click="handleEnhance"
+                          >
+                            <v-icon left color="white" style="margin-right: 4px; font-size: 16px;"
+                              >mdi-creation</v-icon
+                            >
+                            <span
+                              style="
+                                color: white;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                              "
+                              >Enhance</span
+                            >
+                          </v-btn>
+                        </template>
+                      </InputMergeTag>
+                      <AlertBox
+                        v-if="enhanceAlertText"
+                        class="enhance-alert-box"
+                        :text="enhanceAlertText"
+                        :slots="{ primaryAction: true, secondaryAction: true }"
+                      >
+                      </AlertBox>
                     </form-group>
                   </v-form>
                 </v-list-item-content>
@@ -185,7 +215,7 @@
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
-        @on-submit="submit"
+        @on-submit="checkComplianceAndSubmit"
       />
     </template>
   </app-modal>
@@ -225,7 +255,8 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    InputMergeTag
+    InputMergeTag,
+    AlertBox
   },
   mixins: [useSetAttachmentFile],
   props: {
@@ -267,6 +298,7 @@ export default {
       blockManagerComponents: {},
       availableForRequests: [],
       tagSearch: '',
+      enhanceAlertText: '',
       labels,
       step: 1,
       Validations: Validations,
@@ -422,6 +454,24 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    getEnhanceButtonStyle() {
+      const defaultStyle = {
+        textTransform: 'capitalize',
+        maxHeight: '28px'
+      }
+      if (
+        !this.formValues.template ||
+        this.formValues.template.length <= 1 ||
+        this.isEnhanceDisabled
+      ) {
+        return {
+          opacity: 0.5,
+          pointerEvents: 'none',
+          ...defaultStyle
+        }
+      }
+      return defaultStyle
     }
   },
   created() {
@@ -520,6 +570,21 @@ export default {
     backStep() {
       this.step -= 1
     },
+    checkComplianceAndSubmit() {
+      this.isSubmitDisabled = true
+      SmishingService.checkSmishingTextRisk(this.formValues.template).then((response) => {
+        const { data } = response
+        const assistantMessage = data.find((item) => item.role === 'assistant')
+        const { approval, reason } = JSON.parse(assistantMessage.content[0].text)
+        if (approval === 'Yes') {
+          this.enhanceAlertText = ''
+          this.submit()
+        } else {
+          this.enhanceAlertText = reason
+          this.isSubmitDisabled = false
+        }
+      })
+    },
     submit() {
       this.isSubmitDisabled = true
       let isMakeAvailableForValid = true
@@ -602,6 +667,29 @@ export default {
         acc[item] = this.getTagsComponent(item)
         return acc
       }, {})
+    },
+    handleEnhance() {
+      this.isEnhanceDisabled = true
+      this.enhanceAlertText = ''
+      this.isSubmitDisabled = true
+      SmishingService.enhanceSmishingText(this.formValues.template)
+        .then((response) => {
+          try {
+            const { data } = response
+            const assistantMessage = data.find((item) => item.role === 'assistant')
+            if (assistantMessage && assistantMessage.content && assistantMessage.content[0]) {
+              const enhancedData = JSON.parse(assistantMessage.content[0].text)
+              if (enhancedData.rewritten_text) {
+                this.formValues.template = enhancedData.rewritten_text
+              }
+            }
+          } catch (error) {}
+          this.isEnhanceDisabled = false
+        })
+        .catch(() => {
+          this.isEnhanceDisabled = false
+          this.isSubmitDisabled = false
+        })
     }
   }
 }
