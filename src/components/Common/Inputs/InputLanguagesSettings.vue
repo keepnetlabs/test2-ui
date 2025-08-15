@@ -82,7 +82,7 @@
                           "
                           style="color: rgba(56, 59, 65, 0.72); font-size: 9px; margin-top: 2px;"
                         >
-                          Already localized
+                          Localized
                         </div>
 
                         <div v-if="item.text === 'Preferred Languages'">
@@ -105,10 +105,20 @@
                       style="color: #2196f3; font-size: 12px; font-weight: 600;"
                       @click.stop="handleRelocalizeClick(item, $event)"
                     >
-                      <VIcon color="#2196f3" small style="font-size: 14px; margin-right: 4px;">
-                        mdi-refresh
-                      </VIcon>
-                      <span>Relocalize</span>
+                      <VTooltip bottom max-width="135">
+                        <template #activator="{ on, attrs }">
+                          <VIcon
+                            v-bind="attrs"
+                            v-on="on"
+                            color="#2196f3"
+                            small
+                            style="font-size: 20px;"
+                          >
+                            mdi-refresh
+                          </VIcon>
+                        </template>
+                        <span>Update Localization</span>
+                      </VTooltip>
                     </div>
                   </template>
                 </VTreeview>
@@ -116,7 +126,7 @@
             </div>
           </div>
           <div class="p-4 input-language-settings__footer">
-            <VTooltip bottom>
+            <VTooltip bottom max-width="135">
               <template #activator="{ on, attrs }">
                 <VBtn
                   v-bind="attrs"
@@ -124,7 +134,7 @@
                   text
                   id="btn-confirm--switch-company-dashboard-popup"
                   color="#2196f3"
-                  class="k-dialog__button mr-4 px-0"
+                  class="k-dialog__button k-dialog__button--localize mr-2 px-0"
                   :style="getAddButtonStyle"
                   @click="handleAdd"
                 >
@@ -409,7 +419,7 @@ export default {
       }
       const message = isRemove
         ? 'Localization will be removed.'
-        : 'Relocalize will replace this template.'
+        : 'Updating will replace the template.'
       const primaryLabel = isRemove ? 'Remove' : 'Replace'
       const primaryClass =
         (isRemove ? 'js-remove' : 'js-replace') + (isLastTranslated ? ' is-disabled' : '')
