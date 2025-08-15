@@ -9,7 +9,33 @@
     <div class="d-flex gap-4">
       <div class="position-relative">
         <div>
-          <VBtn class="fw-600" rounded outlined color="#2196f3" @click="handleLocalizeClick">
+          <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+            <template #activator="{ on, attrs }">
+              <VBtn
+                v-bind="attrs"
+                v-on="on"
+                class="fw-600"
+                rounded
+                outlined
+                color="#2196f3"
+                :style="getLocalizeButtonStyle"
+                @click="handleLocalizeClick"
+              >
+                <VIcon>mdi-web</VIcon>
+                <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
+              </VBtn>
+            </template>
+            <span>To start localization, fill in all required fields.</span>
+          </VTooltip>
+          <VBtn
+            v-else
+            class="fw-600"
+            rounded
+            outlined
+            color="#2196f3"
+            :style="getLocalizeButtonStyle"
+            @click="handleLocalizeClick"
+          >
             <VIcon>mdi-web</VIcon>
             <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
           </VBtn>
@@ -210,6 +236,22 @@ export default {
     value: {
       type: Array
     },
+    subject: {
+      type: String,
+      default: ''
+    },
+    fromName: {
+      type: String,
+      default: ''
+    },
+    fromAddress: {
+      type: String,
+      default: ''
+    },
+    isFromAddressValid: {
+      type: Boolean,
+      default: true
+    },
     isGenerateWithAIDisabled: {
       type: Boolean,
       default: false
@@ -263,6 +305,22 @@ export default {
     }
   },
   computed: {
+    isLocalizeReady() {
+      return (
+        Boolean(this.subject) &&
+        Boolean(this.fromName) &&
+        Boolean(this.fromAddress) &&
+        this.isFromAddressValid
+      )
+    },
+    getLocalizeButtonStyle() {
+      const style = {}
+      if (!this.isLocalizeReady) {
+        style.opacity = '0.5'
+        style.cursor = 'default'
+      }
+      return style
+    },
     redFlagsText() {
       return this.showRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     },
@@ -597,6 +655,7 @@ export default {
       )
     },
     handleLocalizeClick() {
+      if (!this.isLocalizeReady) return
       this.rebuildItemsForSelection()
       this.isShowLanguages = true
       //this.setupLanguageNodeTooltips()
