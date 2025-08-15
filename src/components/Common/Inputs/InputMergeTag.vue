@@ -29,83 +29,88 @@
         </v-list>
       </v-menu>
     </div>
-    <v-textarea
-      v-bind="requiredProps"
-      ref="refInput"
-      class="rounded-t-0"
-      :value="value"
-      :row="3"
-      outlined
-      dense
-      no-resize
-      autocomplete="disabled"
-      :height="height"
-      :rows="rows"
-      :disabled="disabled"
-      :placeholder="placeholder"
-      :rules="rules"
-      :readonly="readonly"
-      :hint="hint"
-      @input="$emit('input', $event)"
-    >
-      <template v-if="isTextToSpeech" #prepend-inner>
-        <div class="input-merge-tag__inner">
-          <div v-if="isTextToSpeech" class="input-merge-tag__badges-and-button">
-            <div class="input-merge-tag__badges">
-              <div class="input-merge-tag__badge">
-                <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon
-                >{{ language || 'Language' }}
+    <div class="input-merge-tag__container">
+      <v-textarea
+        v-bind="requiredProps"
+        ref="refInput"
+        class="rounded-t-0"
+        :value="value"
+        :row="3"
+        outlined
+        dense
+        no-resize
+        autocomplete="disabled"
+        :height="height"
+        :rows="rows"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        :rules="rules"
+        :readonly="readonly"
+        :hint="hint"
+        @input="$emit('input', $event)"
+      >
+        <template v-if="isTextToSpeech" #prepend-inner>
+          <div class="input-merge-tag__inner">
+            <div v-if="isTextToSpeech" class="input-merge-tag__badges-and-button">
+              <div class="input-merge-tag__badges">
+                <div class="input-merge-tag__badge">
+                  <v-icon class="mr-1" color="#757575" size="large">mdi-web</v-icon
+                  >{{ language || 'Language' }}
+                </div>
+                <div class="input-merge-tag__badge">
+                  <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
+                  >{{ voice || 'Voice' }}
+                </div>
               </div>
-              <div class="input-merge-tag__badge">
-                <v-icon class="mr-1" color="#757575" size="large">mdi-microphone-outline</v-icon
-                >{{ voice || 'Voice' }}
-              </div>
+              <v-tooltip :disabled="!isShowTooltip" right opacity="1">
+                <template #activator="{ on }">
+                  <v-btn
+                    v-on="on"
+                    rounded
+                    color="#2196f3"
+                    :id="'input-merge-tag__play-text-to-speech-button'"
+                    :class="[
+                      'add-step-button',
+                      'button-new',
+                      isPlayTextDisabled ? 'add-step-button--disabled' : ''
+                    ]"
+                    :disabled="isPlayTextDisabled"
+                    @click="handlePlayTextToSpeech"
+                  >
+                    <v-icon
+                      v-if="isFetchingTTSUrl"
+                      class="ml-1 loading-spin-clockwise"
+                      color="#ffffff"
+                      medium
+                      >mdi-rotate-right
+                    </v-icon>
+                    <v-icon v-else color="#ffffff" style="font-size: 20px; margin-top: 1px;"
+                      >mdi-play</v-icon
+                    >
+                    <span class="add-step-button__text" style="text-transform: none;"
+                      >Play the Text</span
+                    >
+                  </v-btn>
+                </template>
+                <span class="tooltip-span">
+                  The TTS provider of the selected voice cannot provide a preview of the converted
+                  speech
+                </span>
+              </v-tooltip>
             </div>
-            <v-tooltip :disabled="!isShowTooltip" right opacity="1">
-              <template #activator="{ on }">
-                <v-btn
-                  v-on="on"
-                  rounded
-                  color="#2196f3"
-                  :id="'input-merge-tag__play-text-to-speech-button'"
-                  :class="[
-                    'add-step-button',
-                    'button-new',
-                    isPlayTextDisabled ? 'add-step-button--disabled' : ''
-                  ]"
-                  :disabled="isPlayTextDisabled"
-                  @click="handlePlayTextToSpeech"
-                >
-                  <v-icon
-                    v-if="isFetchingTTSUrl"
-                    class="ml-1 loading-spin-clockwise"
-                    color="#ffffff"
-                    medium
-                    >mdi-rotate-right
-                  </v-icon>
-                  <v-icon v-else color="#ffffff" style="font-size: 20px; margin-top: 1px;"
-                    >mdi-play</v-icon
-                  >
-                  <span class="add-step-button__text" style="text-transform: none;"
-                    >Play the Text</span
-                  >
-                </v-btn>
-              </template>
-              <span class="tooltip-span">
-                The TTS provider of the selected voice cannot provide a preview of the converted
-                speech
-              </span>
-            </v-tooltip>
+            <div
+              v-if="audioSrc && isPlayTextClicked && !isFetchingTTSUrl"
+              class="input-merge-tag__audio-container"
+            >
+              <AudioPlayer class="input-merge-tag__audio-player" :src="audioSrc" />
+            </div>
           </div>
-          <div
-            v-if="audioSrc && isPlayTextClicked && !isFetchingTTSUrl"
-            class="input-merge-tag__audio-container"
-          >
-            <AudioPlayer class="input-merge-tag__audio-player" :src="audioSrc" />
-          </div>
-        </div>
-      </template>
-    </v-textarea>
+        </template>
+      </v-textarea>
+      <div v-if="$slots['append-inner']" class="input-merge-tag__button-overlay">
+        <slot name="append-inner"></slot>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -341,3 +346,19 @@ export default {
   }
 }
 </script>
+
+<style>
+.input-merge-tag__container {
+  position: relative;
+}
+
+.input-merge-tag__button-overlay {
+  position: absolute;
+  bottom: 32px;
+  right: 16px;
+  z-index: 10;
+}
+.enhance-alert-box .alert-box__default-content {
+  align-items: center;
+}
+</style>
