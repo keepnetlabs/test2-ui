@@ -707,6 +707,7 @@ export default {
         .then((response) => {
           try {
             const { data } = response
+            this.isSubmitDisabled = false
             const assistantMessage = data.find((item) => item.role === 'assistant')
             if (assistantMessage && assistantMessage.content && assistantMessage.content[0]) {
               const enhancedData = JSON.parse(assistantMessage.content[0].text)
