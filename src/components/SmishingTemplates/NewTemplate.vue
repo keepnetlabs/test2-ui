@@ -242,7 +242,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputMergeTag from '@/components/Common/Inputs/InputMergeTag'
 import { mapGetters } from 'vuex'
 import AlertBox from '@/components/AlertBox'
-
+import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 export default {
   name: 'NewSmishingTemplate',
   components: {
