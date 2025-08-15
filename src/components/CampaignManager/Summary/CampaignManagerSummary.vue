@@ -488,19 +488,10 @@ export default {
       )
       return (
         activeRows?.reduce((acc, row) => {
-          const noStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'No')
+          const noStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'No')
           return acc + (noStatusItem?.count || 0)
         }, 0) || 0
       )
-    },
-    getUserFromCompanyLanguage() {
-      const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(
-        (row) => row.status === 'Active'
-      )
-      return activeData.reduce((acc, row) => {
-        const yesStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'Yes')
-        return acc + yesStatusItem?.count || 0
-      }, 0)
     },
     getUserFromPreferredLanguage() {
       const activeData = this.formData?.userCountDetailResponse?.data?.data?.filter(

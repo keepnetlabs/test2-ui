@@ -215,7 +215,7 @@ export default {
     canRenderAlertboxLanguage() {
       return (
         parseInt(this.sendUserPreferredLanguage) === 1 &&
-        this.getUserFromCompanyLanguage > 0 &&
+        this.getNonPreferredLanguageUsers > 0 &&
         !this.isVishing &&
         !this.isSmishing &&
         !this.isAwareness
@@ -223,7 +223,7 @@ export default {
     },
     getPreferredLanguageText() {
       const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
-      const fallbackCount = this.getUserFromCompanyLanguage || 0
+      const fallbackCount = this.getNonPreferredLanguageUsers || 0
       const usersWord = fallbackCount === 1 ? 'user' : 'users'
       const dontWord = fallbackCount === 1 ? 'doesn’t' : 'don’t'
       if (fallbackCount > 0) {
@@ -239,11 +239,11 @@ export default {
         return acc + yesStatusItem?.count || 0
       }, 0)
     },
-    getUserFromCompanyLanguage() {
+    getNonPreferredLanguageUsers() {
       if (!this.userCountDetailResponse) return
       const activeData = this?.userCountDetailResponse?.filter((row) => row.status === 'Active')
       return activeData.reduce((acc, row) => {
-        const noStatusItem = row?.hasCompanyPreferredLanguage?.find((r) => r.status === 'No')
+        const noStatusItem = row?.hasPreferredLanguage?.find((r) => r.status === 'No')
         return acc + noStatusItem?.count || 0
       }, 0)
     },
