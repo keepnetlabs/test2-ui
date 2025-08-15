@@ -220,6 +220,10 @@
                             :language-items="languageItems"
                             :show-red-flags="isShowRedFlags"
                             :translated-language-resource-ids="translatedLanguageResourceIds"
+                            :from-address="getSelectedLanguagePayload.fromAddress"
+                            :from-name="getSelectedLanguagePayload.fromName"
+                            :subject="getSelectedLanguagePayload.subject"
+                            :is-from-address-valid="isFromAddressFieldValid"
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
@@ -458,6 +462,10 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    isFromAddressFieldValid() {
+      const v = (this.getSelectedLanguagePayload.fromAddress || '').trim()
+      return this.Validations.email(v, '') === true
     }
   },
   watch: {
@@ -722,10 +730,10 @@ export default {
         if (item) return item
         return {
           languageTypeResourceId: language.value,
-          subject: '',
-          fromName: '',
-          fromAddress: '',
-          ccAddresses: [],
+          subject: this.getSelectedLanguagePayload.subject,
+          fromName: this.getSelectedLanguagePayload.fromName,
+          fromAddress: this.getSelectedLanguagePayload.fromAddress,
+          ccAddresses: this.getSelectedLanguagePayload.ccAddresses || [],
           template: this.initialFormValues.template,
           prompt: '',
           toneResourceId: '',
