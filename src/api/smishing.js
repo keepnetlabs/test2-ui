@@ -447,11 +447,11 @@ function postExcludedIPAddresses(payload = {}) {
 const TXT_ENHANCE_URL = 'https://txt-enhance.keepnet-labs-ltd-business-profile4086.workers.dev/'
 
 function checkSmishingTextRisk(text) {
-  return axios.post(TXT_ENHANCE_URL, { method: 'check', text }, { timeout: 20000 })
+  return axios.post(TXT_ENHANCE_URL, { method: 'check', text }, { timeout: 100000 })
 }
 
 function enhanceSmishingText(text) {
-  return axios.post(TXT_ENHANCE_URL, { method: 'enhance', text }, { timeout: 20000 })
+  return axios.post(TXT_ENHANCE_URL, { method: 'enhance', text }, { timeout: 100000 })
 }
 
 export function getCampaignManagerFormDetails() {
