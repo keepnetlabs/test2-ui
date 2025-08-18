@@ -156,6 +156,7 @@
                         v-model.trim="formValues.template"
                         id="input--new-text-message-template-text-message"
                         initialPlaceholder="Text message {PHISHINGURL}"
+                        class="safari-hide-tooltip"
                         rows="5"
                         height="160"
                         hint="SMS supports the GSM-7 character set and can contain up to 160 characters"
@@ -165,26 +166,36 @@
                         :initialRules="textMessageRules"
                       >
                         <template #append-inner>
-                          <v-btn
-                            class="enhance-button"
-                            color="#2196F3"
-                            rounded
-                            :style="getEnhanceButtonStyle"
-                            @click="handleEnhance"
-                          >
-                            <v-icon left color="white" style="margin-right: 4px; font-size: 16px;"
-                              >mdi-creation</v-icon
-                            >
-                            <span
-                              style="
-                                color: white;
-                                font-size: 12px;
-                                font-weight: 600;
-                                text-transform: capitalize;
-                              "
-                              >Enhance</span
-                            >
-                          </v-btn>
+                          <VTooltip bottom opacity="1" z-index="1000">
+                            <template #activator="{ on }">
+                              <div v-on="on">
+                                <v-btn
+                                  class="enhance-button safari-hide-tooltip"
+                                  color="#2196F3"
+                                  rounded
+                                  :style="getEnhanceButtonStyle"
+                                  @click="handleEnhance"
+                                >
+                                  <v-icon
+                                    left
+                                    color="white"
+                                    style="margin-right: 4px; font-size: 16px;"
+                                    >mdi-creation</v-icon
+                                  >
+                                  <span
+                                    style="
+                                      color: white;
+                                      font-size: 12px;
+                                      font-weight: 600;
+                                      text-transform: capitalize;
+                                    "
+                                    >Enhance</span
+                                  >
+                                </v-btn>
+                              </div>
+                            </template>
+                            <span>Compliant Message</span>
+                          </VTooltip>
                         </template>
                       </InputMergeTag>
                       <AlertBox
