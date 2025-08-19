@@ -36,6 +36,7 @@
             <CommonSimulatorFastLaunchStep1
               ref="refFastLaunch"
               :form-details="formDetails"
+              :is-phishing="isPhishing"
               :isMFAScenarioSelected="isMFAScenarioSelected"
             />
           </v-stepper-content>
@@ -124,6 +125,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    isPhishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

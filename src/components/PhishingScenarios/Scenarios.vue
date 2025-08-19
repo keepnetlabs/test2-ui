@@ -8,6 +8,7 @@
     <CommonSimulatorFastLaunch
       v-if="isShowFastLaunch"
       ref="fastLaunch"
+      is-phishing
       :status="isShowFastLaunch"
       :selected-scenario="selectedRow"
       @on-close="toggleShowFastLaunch"

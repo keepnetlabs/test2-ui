@@ -24,7 +24,7 @@
           <div
             class="pane"
             :style="{
-              width: isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus() ? '100%' : '60%',
+              width: isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus() ? '100%' : isPhishing ? '50%' : '60%',
               minWidth: '50%'
             }"
           >
@@ -48,7 +48,7 @@
             v-if="!isTargetGroupEmpty && getTargetGroupUsersTableRenderStatus()"
             class="pane"
             :style="{
-              width: '40%',
+              width: isPhishing ? '50%' : '40%',
               minWidth: '25%'
             }"
           >
@@ -66,6 +66,7 @@
               :is-awareness="isAwareness"
               :isMFAScenarioSelected="isMFAScenarioSelected"
               :add-phone-number-column="isAwareness"
+              :add-prefferred-language-column="isPhishing"
               :scenario-resource-ids="scenarioResourceIds"
               :is-phishing="isPhishing"
               :target-group-resource-ids="targetGroupResourceIds"
