@@ -955,6 +955,11 @@ export default {
       const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
       if (count >= effectiveMax) {
         this.resetGenerateWithAIDisabled(timeoutId)
+        this.languagesPayload.forEach((lPayload) => {
+          if (!lPayload.isTranslated) {
+            lPayload.template = '<div style="height:300px"></div>'
+          }
+        })
         return
       }
       if (this.timeoutId) clearTimeout(this.timeoutId)

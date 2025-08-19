@@ -14,6 +14,7 @@
       :selected-target-groups.sync="selectedTargetGroups"
       :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
       :form-details="formDetails"
+      :is-phishing="isPhishing"
       :isMFAScenarioSelected="isMFAScenarioSelected"
     />
     <div>
@@ -76,12 +77,21 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 
 export default {
   name: 'CommonSimulatorFastLaunchStep1',
-  components: { FormGroup, CampaignManagerTargetAudience, KSelect, CampaignManagerCampaignInfo },
+  components: {
+    FormGroup,
+    CampaignManagerTargetAudience,
+    KSelect,
+    CampaignManagerCampaignInfo
+  },
   props: {
     formDetails: {
       type: Object
     },
     isMFAScenarioSelected: {
+      type: Boolean,
+      default: false
+    },
+    isPhishing: {
       type: Boolean,
       default: false
     }
@@ -113,7 +123,10 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify({ ...this.formData, ...values }))
     },
     getCurrentFormValues() {
-      return { ...this.formData, ...this.$refs.refCampaignManagerCampaignInfo.formData }
+      return {
+        ...this.formData,
+        ...this.$refs.refCampaignManagerCampaignInfo.formData
+      }
     }
   }
 }
