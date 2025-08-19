@@ -529,7 +529,9 @@ export default {
             if (found && !existsSet.has(found.value)) effective.push(found)
           })
           this.$emit('input', effective)
+          // Emit specific event for language removal
           if (isRemove) {
+            this.$emit('on-language-removed', { languageName: item.text, languageId: item.value })
             this.removeConfirmRowFor(item.value)
           } else {
             this.removeRelocalizeRowFor(item.value)

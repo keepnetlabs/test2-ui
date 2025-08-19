@@ -232,6 +232,7 @@
                             @on-show-red-flags-click="handleShowRedFlagsClick"
                             @on-relocalize-replace="handleRelocalizeReplace"
                             @on-relocalize-cancel="handleRelocalizeCancel"
+                            @on-language-removed="handleLanguageRemoved"
                           />
                         </template>
                       </EmailTemplate>
@@ -298,6 +299,7 @@ import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSet
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -418,7 +420,9 @@ export default {
       selectedLanguagePayloadItemBeforeSave: null,
       beforeSaveLanguage: '',
       isDefault: false,
-      timeoutId: null
+      timeoutId: null,
+      isRelocalizeOperation: false,
+      relocalizeLanguageName: ''
     }
   },
   computed: {
@@ -602,6 +606,9 @@ export default {
       this.isGenerateWithAi = true
       this.isGenerateWithAIDisabled = true
       this.$refs.refEmailTemplate.isEmailGenerating = true
+      // Set relocalize flag to differentiate from normal localization
+      this.isRelocalizeOperation = true
+      this.relocalizeLanguageName = language.text
       generateEmailTemplateTranslation({ languages, template, subject })
         .then((response) => {
           if (!response?.data?.data?.isSuccess) {
@@ -742,6 +749,9 @@ export default {
           isTranslated: false
         }
       })
+    },
+    handleLanguageRemoved({ languageName }) {
+      this.showLanguageRemovedMessage(languageName)
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
@@ -1001,7 +1011,13 @@ export default {
                 }
               })
             })
+            // Show success snackbar with dynamic message based on language count
+            this.showLocalizationSuccessMessage(data)
             this.resetGenerateWithAIDisabled(timeoutId)
+            const lastData = data[data.length - 1]
+            if (lastData) {
+              this.handleActiveLanguageChange(lastData.languageResourceId)
+            }
           })
           .catch(() => {
             this.askForEmailTemplateTranslation(count + 1, effectiveMax, timeoutId)
@@ -1062,6 +1078,62 @@ export default {
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
+    },
+    showLocalizationSuccessMessage(data) {
+      if (!data || !data.length || this.isDefault) return
+
+      let message = ''
+
+      // Check if this is a relocalize operation
+      if (this.isRelocalizeOperation) {
+        message = `The ${this.relocalizeLanguageName} localization has been updated.`
+        // Reset relocalize flags
+        this.isRelocalizeOperation = false
+        this.relocalizeLanguageName = ''
+      } else {
+        // Normal localization
+        if (data.length === 1) {
+          // Single language: "The [LANGUAGE] language was successfully localized."
+          const languageName = this.getLanguageNameById(data[0].languageResourceId)
+          message = `The ${languageName} language was successfully localized.`
+        } else {
+          // Multiple languages: "+n languages were successfully localized."
+          message = `${data.length} languages were successfully localized.`
+        }
+      }
+
+      this.$store.dispatch('common/createSnackBar', {
+        message: message,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
+    },
+    getLanguageNameById(languageResourceId) {
+      // Find language name from selectedLanguages or languageItems
+      const language = this.selectedLanguages.find((lang) => lang.value === languageResourceId)
+      if (language) {
+        return language.text
+      }
+
+      // If not found in selectedLanguages, search in languageItems
+      for (const group of this.languageItems) {
+        if (group.children) {
+          const foundLang = group.children.find((lang) => lang.value === languageResourceId)
+          if (foundLang) {
+            return foundLang.text
+          }
+        }
+      }
+
+      return 'Unknown'
+    },
+    showLanguageRemovedMessage(languageName) {
+      const message = `The ${languageName} language has been removed.`
+      this.$store.dispatch('common/createSnackBar', {
+        message: message,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
     }
   }
 }
