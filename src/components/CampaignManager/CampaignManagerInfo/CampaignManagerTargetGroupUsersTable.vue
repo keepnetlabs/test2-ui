@@ -39,9 +39,11 @@
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
       <AlertBox
-        v-if="canRenderAlertboxLanguage"
-        class="w-100"
+        v-if="canRenderAlertboxLanguage && !isLoading"
+        :class="getPreferredLanguageAlertBoxClass"
+        :icon-color="getNonPreferredLanguageUsers === 0 ? '#43A047' : '#2196f3'"
         :text="getPreferredLanguageText"
+        :icon-name="getNonPreferredLanguageUsers === 0 ? 'mdi-check-circle' : 'mdi-alert-circle'"
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </div>
@@ -139,6 +141,10 @@ export default {
     },
     categoryFilter: {
       type: Object
+    },
+    addPrefferredLanguageColumn: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -198,6 +204,15 @@ export default {
     getLoadingStatus() {
       return this.isTargetGroupLoading || this.isLoading
     },
+    canRenderAlertboxLanguage() {
+      return (
+        parseInt(this.sendUserPreferredLanguage) === 1 &&
+        this.totalUserCount > 0 &&
+        !this.isVishing &&
+        !this.isSmishing &&
+        !this.isAwareness
+      )
+    },
     canRenderAlertbox() {
       if (this.isAwareness) return false
       return this.usersFromUnverifiedDomainsCount > 0 && !this.isVishing
@@ -212,24 +227,53 @@ export default {
     canRenderNoPhoneNumberAlertBox() {
       return this.activeUsersWithPhoneNumberCount === 0 && this.isMFAScenarioSelected
     },
-    canRenderAlertboxLanguage() {
-      return (
-        parseInt(this.sendUserPreferredLanguage) === 1 &&
-        this.getNonPreferredLanguageUsers > 0 &&
-        !this.isVishing &&
-        !this.isSmishing &&
-        !this.isAwareness
-      )
+    getPreferredLanguageAlertBoxClass() {
+      const classes = ['w-100']
+      if (this.getNonPreferredLanguageUsers === 0) {
+        classes.push('preferred-language-alert-box--success')
+      } else {
+        classes.push('preferred-language-alert-box')
+      }
+      return classes.join(' ')
     },
     getPreferredLanguageText() {
-      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
+      if (!this.userCountDetailResponse) return ''
+
+      const activeData = this.userCountDetailResponse.filter((row) => row.status === 'Active')
       const fallbackCount = this.getNonPreferredLanguageUsers || 0
-      const usersWord = fallbackCount === 1 ? 'user' : 'users'
-      const dontWord = fallbackCount === 1 ? 'doesn’t' : 'don’t'
-      if (fallbackCount > 0) {
-        return `${fallbackCount} ${usersWord} ${dontWord} have a scenario in their preferred language. The company language (${companyLanguage}) will be selected as fallback.`
+      const companyLanguage = this.activeCompanyName || this.randomLanguages[0]
+
+      // Get language counts for matched users from both "Yes" and "No" status items
+      const languageCounts = []
+      activeData.forEach((row) => {
+        if (row.hasPreferredLanguage) {
+          // Get languages from "Yes" status items
+          const yesStatusItem = row.hasPreferredLanguage.find((item) => item.status === 'Yes')
+          if (yesStatusItem && yesStatusItem.hasPreferredLanguage) {
+            yesStatusItem.hasPreferredLanguage.forEach((lang) => {
+              if (lang.count > 0) {
+                languageCounts.push(`${lang.status} (${lang.count})`)
+              }
+            })
+          }
+        }
+      })
+
+      if (languageCounts.length === 0) {
+        // No language matches scenario
+        const userWord = fallbackCount === 1 ? 'user' : 'users'
+        return `No language match: ${fallbackCount} ${userWord} will get the company language (${companyLanguage}).`
+      } else if (fallbackCount === 0) {
+        // All users matched scenario
+        const languageText = languageCounts.join(', ')
+        return `All users matched: ${languageText}.`
+      } else {
+        // Some users need fallback scenario
+        const languageText = languageCounts.join(', ')
+        const userWord = fallbackCount === 1 ? 'user' : 'users'
+        const fallbackWord = fallbackCount === 1 ? 'fallbacks' : 'fallback'
+        return `Matched users: ${languageText}; ${fallbackCount} ${userWord} ${fallbackWord} to company language (${companyLanguage}).`
       }
-      return 'All users have a scenario in their preferred language.'
     },
     getUserFromPreferredLanguage() {
       if (!this.userCountDetailResponse) return
@@ -316,6 +360,9 @@ export default {
     },
     addPhoneNumberColumn() {
       this.tableOptions.columns = this.getColumns()
+    },
+    addPrefferredLanguageColumn() {
+      this.tableOptions.columns = this.getColumns()
     }
   },
   created() {
@@ -363,6 +410,20 @@ export default {
           align: 'left',
           editable: false,
           label: 'Phone Number',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 200,
+          overrideWidth: true,
+          hideSort: true
+        })
+      }
+      if (this.addPrefferredLanguageColumn) {
+        columns.push({
+          property: 'preferredLanguage',
+          align: 'left',
+          editable: false,
+          label: 'Preferred Language',
           sortable: true,
           show: true,
           type: 'text',

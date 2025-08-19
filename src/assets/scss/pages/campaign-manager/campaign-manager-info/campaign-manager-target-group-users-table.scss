@@ -17,7 +17,7 @@
     top: 1px;
   }
 }
-.campaign-manager-parent-categoryDistributionType-column span:before{
+.campaign-manager-parent-categoryDistributionType-column span:before {
   display: none !important;
 }
 .campaign-manager-target-user-groups-header {
@@ -47,5 +47,33 @@
 
   &__active-and-inactive-users {
     color: #757575;
+  }
+}
+.preferred-language-alert-box {
+  padding: 8px !important;
+  background-color: #f1f8fe;
+  p {
+    font-size: 12px !important;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+  }
+  i {
+    font-size: 16px !important;
+    margin-top: 2px !important;
+  }
+  &--success {
+    padding: 8px !important;
+    background: linear-gradient(0deg, rgba(67, 160, 71, 0.2) 0%, rgba(67, 160, 71, 0.2) 100%), #fff;
+    i {
+      font-size: 16px !important;
+      margin-top: 2px !important;
+    }
+    p {
+      font-size: 12px !important;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 19px;
+    }
   }
 }
