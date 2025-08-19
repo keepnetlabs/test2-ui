@@ -271,6 +271,10 @@ export default {
     translatedLanguageResourceIds: {
       type: Array,
       default: () => []
+    },
+    companyPreferredLanguageId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -413,7 +417,7 @@ export default {
       if (!rec || !rec.el) return
       const removeBtn = rec.el.querySelector('.js-remove')
       if (!removeBtn) return
-      const disabled = this.isRemovingLastLocalized(value)
+      const disabled = this.isRemovingLastLocalized(value) || this.companyPreferredLanguageId === value
       removeBtn.classList.toggle('is-disabled', disabled)
     },
     refreshAllConfirmRowsDisabledState() {
@@ -472,15 +476,18 @@ export default {
       // Disable remove when this action would result in zero localized languages remaining.
       // Consider all currently pending removals together with the clicked item.
       let isLastTranslated = false
+      let isCompanyPreferredLanguage = false
       if (isRemove) {
         isLastTranslated = this.isRemovingLastLocalized(item.value)
+        isCompanyPreferredLanguage = this.companyPreferredLanguageId === item.value
       }
       const message = isRemove
         ? 'Localization will be removed.'
         : 'Updating will replace the template.'
       const primaryLabel = isRemove ? 'Remove' : 'Replace'
       const primaryClass =
-        (isRemove ? 'js-remove' : 'js-replace') + (isLastTranslated ? ' is-disabled' : '')
+        (isRemove ? 'js-remove' : 'js-replace') + 
+        (isLastTranslated || isCompanyPreferredLanguage ? ' is-disabled' : '')
       el.innerHTML = `
         <div class="relocalize-inline-confirm__left">
           <i class="v-icon notranslate v-icon--link mdi mdi-information" style="color:#2196f3"></i>
@@ -501,7 +508,7 @@ export default {
           this.handleRelocalizeReplace(item)
         })
       }
-      if (removeBtn && !isLastTranslated) {
+      if (removeBtn && !isLastTranslated && !isCompanyPreferredLanguage) {
         removeBtn.addEventListener('click', (e) => {
           e.stopPropagation()
           // Keep deselected, just close row

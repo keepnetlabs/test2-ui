@@ -224,6 +224,7 @@
                             :from-name="getSelectedLanguagePayload.fromName"
                             :subject="getSelectedLanguagePayload.subject"
                             :is-from-address-valid="isFromAddressFieldValid"
+                            :company-preferred-language-id="getCompanyPreferredLanguageId"
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
@@ -375,7 +376,7 @@ export default {
       isGenerateWithAIDisabled: false,
       isGenerateWithAi: false,
       isAssistedByAI: false,
-      isPlainText: false,
+      isPlainText: true,
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
       isShowRedFlags: false,
@@ -470,6 +471,9 @@ export default {
     isFromAddressFieldValid() {
       const v = (this.getSelectedLanguagePayload.fromAddress || '').trim()
       return this.Validations.email(v, '') === true
+    },
+    getCompanyPreferredLanguageId() {
+      return this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
     }
   },
   watch: {
