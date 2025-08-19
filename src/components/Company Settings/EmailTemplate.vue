@@ -1,5 +1,5 @@
 <template>
-  <v-card class="email-template__container" :style="'overflow-y:hidden'">
+  <v-card class="email-template__container">
     <v-dialog v-if="feedbackDialog" v-model="feedbackDialog" persistent :width="600">
       <feedback-popup></feedback-popup>
     </v-dialog>
