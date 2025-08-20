@@ -19,12 +19,7 @@
               :add-custom-legend-label-height="16"
               :custom-plugin="customPlugin"
             />
-            <VTooltip bottom z-index="999999" max-width="240" color="#fff" content-class="tooltip-phishing-risk-score-hint">
-              <template #activator="{on}">
-                <span v-on="on" class="executive-report-phishing-risk-score-description" style="font-style: italic;">This chart shows the organization’s phishing risk scores per campaign against the 2% industry benchmark.</span>
-              </template>
-              <span class="text-primary-color">Phishing Risk Score (%) = Risky Actions ÷ Total Simulations Delivered × 100. Phish reports are excluded, as reporting is a positive behavior.</span>
-          </VTooltip>
+            <span class="executive-report-phishing-risk-score-description" style="font-style: italic;">This chart shows the organization’s phishing risk scores per campaign against the 2% industry benchmark.</span>
           </template>
           <div
             v-else
@@ -120,7 +115,114 @@ export default {
                 ctx.fillText(percentage, x + ctx.measureText(text).width - 7, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
+              
+              // Draw custom info icon for Phishing Risk Score %
+              if (legendItem.hasInfoIcon) {
+                const hitBox = chart.legend.legendHitBoxes[index]
+                const iconSize = 14
+                const iconX = hitBox.left + hitBox.width + 4
+                const iconY = hitBox.top + (hitBox.height - iconSize) / 2
+                
+                // Draw circle
+                ctx.beginPath()
+                ctx.arc(iconX + iconSize/2, iconY + iconSize/2, iconSize/2, 0, 2 * Math.PI)
+                ctx.strokeStyle = '#6C757D'
+                ctx.lineWidth = 1
+                ctx.stroke()
+                ctx.closePath()
+                
+                // Draw 'i' text
+                ctx.fillStyle = '#6C757D'
+                ctx.font = `bold 10px 'Open Sans', sans-serif`
+                ctx.textAlign = 'center'
+                ctx.textBaseline = 'middle'
+                ctx.fillText('i', iconX + iconSize/2, iconY + iconSize/2 + 1)
+                
+                // Reset text alignment
+                ctx.textAlign = 'left'
+                ctx.textBaseline = 'alphabetic'
+              }
             })
+          }
+        },
+        {
+          afterDraw: (chart) => {
+            // Add event listeners for legend tooltips
+            if (!chart.canvas._legendTooltipListenersAdded) {
+              const showTooltip = (event, text, iconX, iconY) => {
+                let tooltipEl = document.getElementById('legend-tooltip')
+                
+                if (!tooltipEl) {
+                  tooltipEl = document.createElement('div')
+                  tooltipEl.id = 'legend-tooltip'
+                  tooltipEl.style.position = 'absolute'
+                  tooltipEl.style.background = 'white'
+                  tooltipEl.style.border = '1px solid #ccc'
+                  tooltipEl.style.borderRadius = '8px'
+                  tooltipEl.style.padding = '8px 12px'
+                  tooltipEl.style.fontSize = '12px'
+                  tooltipEl.style.fontFamily = '"Open Sans", sans-serif'
+                  tooltipEl.style.color = '#383B41'
+                  tooltipEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
+                  tooltipEl.style.zIndex = '1000'
+                  tooltipEl.style.maxWidth = '300px'
+                  tooltipEl.style.lineHeight = '1.4'
+                  document.body.appendChild(tooltipEl)
+                }
+                
+                tooltipEl.textContent = text
+                tooltipEl.style.display = 'block'
+                
+                // Position tooltip below and centered on the icon
+                const rect = chart.canvas.getBoundingClientRect()
+                const tooltipWidth = tooltipEl.offsetWidth || 300
+                const leftPosition = rect.left + iconX + 7 - (tooltipWidth / 2) // Center on icon
+                const topPosition = rect.top + iconY + 25 // Below the icon
+                
+                tooltipEl.style.left = leftPosition + 'px'
+                tooltipEl.style.top = topPosition + 'px'
+              }
+              
+              const hideTooltip = () => {
+                const tooltipEl = document.getElementById('legend-tooltip')
+                if (tooltipEl) {
+                  tooltipEl.style.display = 'none'
+                }
+              }
+              
+              chart.canvas.addEventListener('mousemove', (e) => {
+                const rect = chart.canvas.getBoundingClientRect()
+                const x = e.clientX - rect.left
+                const y = e.clientY - rect.top
+                
+                let isOverInfoIcon = false
+                chart.legend.legendItems.forEach((legendItem, index) => {
+                  const hitBox = chart.legend.legendHitBoxes[index]
+                  if (legendItem.hasInfoIcon) {
+                    const iconSize = 14
+                    const iconX = hitBox.left + hitBox.width + 4
+                    const iconY = hitBox.top + (hitBox.height - iconSize) / 2
+                    
+                    // Check if mouse is over the icon area specifically
+                    if (x >= iconX && x <= iconX + iconSize &&
+                        y >= iconY && y <= iconY + iconSize) {
+                      isOverInfoIcon = true
+                      showTooltip(e, 'Phishing Risk Score (%) = Risky Actions ÷ Total Simulations Delivered × 100. Phish reports are excluded, as reporting is a positive behavior.', iconX, iconY)
+                    }
+                  }
+                })
+                
+                if (!isOverInfoIcon) {
+                  hideTooltip()
+                }
+              })
+              
+              chart.canvas.addEventListener('mouseleave', () => {
+                hideTooltip()
+              })
+              
+              chart.canvas._legendTooltipListenersAdded = true
+            }
           }
         }
       ]
@@ -186,11 +288,43 @@ export default {
         return acc
       }, 0)
       let maxTotalUserActions = totalUserActions
-      const remainder = Math.floor(maxTotalUserActions / 50)
-      if (!remainder) {
+      if(maxTotalUserActions <= 10){
+        maxTotalUserActions = 10
+      }
+      else if(maxTotalUserActions <= 20){
+        maxTotalUserActions = 20
+      }
+      else if(maxTotalUserActions <= 30){
+        maxTotalUserActions = 30
+      }
+      else if(maxTotalUserActions <= 40){
+        maxTotalUserActions = 40
+      }
+      else if(maxTotalUserActions <= 50){
+        maxTotalUserActions = 50
+      }
+      else if(maxTotalUserActions <= 60){
+        maxTotalUserActions = 60
+      }
+      else if(maxTotalUserActions <= 70){
+        maxTotalUserActions = 70
+      }
+      else if(maxTotalUserActions <= 80){
+        maxTotalUserActions = 80
+      }
+      else if(maxTotalUserActions <= 90){
+        maxTotalUserActions = 90
+      }
+      else if(maxTotalUserActions <= 100){
         maxTotalUserActions = 100
-      } else {
-        maxTotalUserActions = remainder * 50 + 50
+      }
+      else {
+        const remainder = Math.floor(maxTotalUserActions / 50)
+        if (!remainder) {
+          maxTotalUserActions = 100
+        } else {
+          maxTotalUserActions = remainder * 50 + 50
+        }
       }
       data[0].widgetDatas.map((obj) => {
         const generalObj = {
@@ -293,7 +427,7 @@ export default {
             stack: 'Stack 1',
             order: 3,
             barThickness: 32
-          }
+          },
         ]
       }
       this.chartOptions = {
@@ -337,7 +471,7 @@ export default {
             },
             {
               id: 'B',
-              display: true,
+              display: false,
               scaleLabel: {
                 display: true,
                 labelString: 'Total Actions',
@@ -349,8 +483,8 @@ export default {
               position: 'right',
               ticks: {
                 min: 0,
-                max: totalUserActions < 100 ? 100 : maxTotalUserActions,
-                stepSize: totalUserActions < 100 ? 20 : maxTotalUserActions / 5,
+                max: maxTotalUserActions,
+                stepSize: maxTotalUserActions / 5,
                 fontFamily: 'Open Sans, sans-serif',
                 beginAtZero: true
               }
@@ -411,6 +545,15 @@ export default {
                     textParts: [splittedLabel[0] + ' ' + splittedLabel[1], splittedLabel[2]]
                   }
                 }
+                if (item.label === 'Phishing Risk Score %') {
+                  return {
+                    text: item.label,
+                    fillStyle: item.borderColor,
+                    lineWidth: 0,
+                    datasetIndex: index,
+                    hasInfoIcon: true
+                  }
+                }
                 return {
                   text: item.label,
                   fillStyle: item.borderColor,
@@ -420,7 +563,7 @@ export default {
               })
             },
             fontFamily: 'Open-sans,sans-serif',
-            padding: 16,
+            padding: 28,
             fontSize: 12
           }
         },
