@@ -997,7 +997,7 @@ export default {
               languagePayload.template = item.template
               languagePayload.subject = item.subject || languagePayload.subject
               languagePayload.isTranslated = true
-              if(this.getSelectedLanguagePayload.fromFile){
+              if(this?.getSelectedLanguagePayload?.fromFile){
                 languagePayload.fromFile=true
               }
               this.$nextTick(() => {
