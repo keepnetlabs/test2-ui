@@ -19,12 +19,12 @@
               :add-custom-legend-label-height="16"
               :custom-plugin="customPlugin"
             />
-            <span class="executive-report-phishing-risk-score-description"
-              >Phishing Risk Score (%) = (Risky Actions ÷ Total Simulations Delivered) × 100
-              <span style="font-style: italic;"
-                >(Phish reports are not included in this calculation.)</span
-              >
-            </span>
+            <VTooltip bottom z-index="999999" max-width="240" color="#fff" content-class="tooltip-phishing-risk-score-hint">
+              <template #activator="{on}">
+                <span v-on="on" class="executive-report-phishing-risk-score-description" style="font-style: italic;">This chart shows the organization’s phishing risk scores per campaign against the 2% industry benchmark.</span>
+              </template>
+              <span class="text-primary-color">Phishing Risk Score (%) = Risky Actions ÷ Total Simulations Delivered × 100. Phish reports are excluded, as reporting is a positive behavior.</span>
+          </VTooltip>
           </template>
           <div
             v-else
