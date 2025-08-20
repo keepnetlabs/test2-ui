@@ -391,6 +391,7 @@ export default {
       tagSearch: '',
       labels,
       step: 1,
+      isEverythingLocalized:false,
       Validations,
       initialFormValues: {},
       formValues: {
@@ -619,6 +620,7 @@ export default {
             this.resetGenerateWithAIDisabled()
             return
           }
+          this.isEverythingLocalized=false
           this.askForEmailTemplateTranslation()
         })
         .catch(() => {
@@ -703,7 +705,7 @@ export default {
             item.subject = subject
             item.fromName = fromName
             item.fromAddress = from
-            item.fromFile=true
+            item.isTranslated=false
           })
           if (attachments) {
             attachments = attachments.map((item) => ({
@@ -959,15 +961,16 @@ export default {
           this.resetGenerateWithAIDisabled()
           return
         }
+        this.isEverythingLocalized=false
         this.askForEmailTemplateTranslation()
       })
     },
     askForEmailTemplateTranslation(count = 0, maxCount = null, timeoutId = 0) {
+      if(this.isEverythingLocalized) return 
       const languagesLength = Array.isArray(this.selectedLanguages)
         ? this.selectedLanguages.length
         : 0
-      const multiplier = this.getSelectedLanguagePayload.fromFile ? 10 : 4
-      const calculatedMax = Math.max((languagesLength || 1) * multiplier, 10)
+      const calculatedMax = Math.max((languagesLength || 1) * 20, 20)
       const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
       if (count >= effectiveMax) {
         this.resetGenerateWithAIDisabled(timeoutId)
@@ -985,6 +988,11 @@ export default {
             const {
               data: { data }
             } = response
+            if(this.timeoutId){
+              clearTimeout(this.timeoutId)
+            }
+            this.isEverythingLocalized=true
+
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
               this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
@@ -997,9 +1005,6 @@ export default {
               languagePayload.template = item.template
               languagePayload.subject = item.subject || languagePayload.subject
               languagePayload.isTranslated = true
-              if(this?.getSelectedLanguagePayload?.fromFile){
-                languagePayload.fromFile=true
-              }
               this.$nextTick(() => {
                 const modalContent = document.querySelector('.k-overlay__container')
                 if (modalContent) {
