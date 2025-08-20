@@ -703,6 +703,7 @@ export default {
             item.subject = subject
             item.fromName = fromName
             item.fromAddress = from
+            item.fromFile=true
           })
           if (attachments) {
             attachments = attachments.map((item) => ({
@@ -965,7 +966,8 @@ export default {
       const languagesLength = Array.isArray(this.selectedLanguages)
         ? this.selectedLanguages.length
         : 0
-      const calculatedMax = Math.max((languagesLength || 1) * 4, 10)
+      const multiplier = this.getSelectedLanguagePayload.fromFile ? 10 : 4
+      const calculatedMax = Math.max((languagesLength || 1) * multiplier, 10)
       const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
       if (count >= effectiveMax) {
         this.resetGenerateWithAIDisabled(timeoutId)
@@ -995,6 +997,9 @@ export default {
               languagePayload.template = item.template
               languagePayload.subject = item.subject || languagePayload.subject
               languagePayload.isTranslated = true
+              if(this.getSelectedLanguagePayload.fromFile){
+                languagePayload.fromFile=true
+              }
               this.$nextTick(() => {
                 const modalContent = document.querySelector('.k-overlay__container')
                 if (modalContent) {
