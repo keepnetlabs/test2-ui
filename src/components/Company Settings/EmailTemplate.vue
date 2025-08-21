@@ -256,7 +256,7 @@
               <div class="email-template__ai-assistant-footer-left">
                 <VCheckbox
                   v-if="templateType !== 'landing'"
-                  :value="isPlainText"
+                  v-model="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
                   :style="isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''"
                   hide-details
