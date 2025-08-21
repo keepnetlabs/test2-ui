@@ -391,7 +391,7 @@ export default {
       tagSearch: '',
       labels,
       step: 1,
-      isEverythingLocalized:false,
+      isEverythingLocalized: false,
       Validations,
       initialFormValues: {},
       formValues: {
@@ -620,7 +620,7 @@ export default {
             this.resetGenerateWithAIDisabled()
             return
           }
-          this.isEverythingLocalized=false
+          this.isEverythingLocalized = false
           this.askForEmailTemplateTranslation()
         })
         .catch(() => {
@@ -705,7 +705,7 @@ export default {
             item.subject = subject
             item.fromName = fromName
             item.fromAddress = from
-            item.isTranslated=false
+            item.isTranslated = item.languageTypeResourceId === this.getCompanyPreferredLanguageId
           })
           if (attachments) {
             attachments = attachments.map((item) => ({
@@ -961,12 +961,12 @@ export default {
           this.resetGenerateWithAIDisabled()
           return
         }
-        this.isEverythingLocalized=false
+        this.isEverythingLocalized = false
         this.askForEmailTemplateTranslation()
       })
     },
     askForEmailTemplateTranslation(count = 0, maxCount = null, timeoutId = 0) {
-      if(this.isEverythingLocalized) return 
+      if (this.isEverythingLocalized) return
       const languagesLength = Array.isArray(this.selectedLanguages)
         ? this.selectedLanguages.length
         : 0
@@ -988,10 +988,10 @@ export default {
             const {
               data: { data }
             } = response
-            if(this.timeoutId){
+            if (this.timeoutId) {
               clearTimeout(this.timeoutId)
             }
-            this.isEverythingLocalized=true
+            this.isEverythingLocalized = true
 
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
