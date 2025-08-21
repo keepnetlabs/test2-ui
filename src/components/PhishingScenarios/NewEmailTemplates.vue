@@ -232,7 +232,6 @@
                             @on-upload-email-button-click="handleUploadEmailButtonClick"
                             @on-show-red-flags-click="handleShowRedFlagsClick"
                             @on-relocalize-replace="handleRelocalizeReplace"
-                            @on-relocalize-cancel="handleRelocalizeCancel"
                             @on-language-removed="handleLanguageRemoved"
                           />
                         </template>
@@ -391,7 +390,7 @@ export default {
       tagSearch: '',
       labels,
       step: 1,
-      isEverythingLocalized:false,
+      isEverythingLocalized: false,
       Validations,
       initialFormValues: {},
       formValues: {
@@ -620,14 +619,13 @@ export default {
             this.resetGenerateWithAIDisabled()
             return
           }
-          this.isEverythingLocalized=false
+          this.isEverythingLocalized = false
           this.askForEmailTemplateTranslation()
         })
         .catch(() => {
           this.resetGenerateWithAIDisabled()
         })
     },
-    handleRelocalizeCancel() {},
     setLanguageItems() {
       const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
       const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []
@@ -705,8 +703,10 @@ export default {
             item.subject = subject
             item.fromName = fromName
             item.fromAddress = from
-            item.isTranslated=false
+            item.isTranslated = item.languageTypeResourceId === this.getCompanyPreferredLanguageId
           })
+          this.selectedLanguagePayloadItemBeforeSave.template = body
+          this.selectedLanguagePayloadItemBeforeSave.subject = subject
           if (attachments) {
             attachments = attachments.map((item) => ({
               ...item,
@@ -716,6 +716,9 @@ export default {
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
+
+          // Reset the input file so the same file can be uploaded again
+          e.target.value = ''
         })
       }
     },
@@ -961,12 +964,12 @@ export default {
           this.resetGenerateWithAIDisabled()
           return
         }
-        this.isEverythingLocalized=false
+        this.isEverythingLocalized = false
         this.askForEmailTemplateTranslation()
       })
     },
     askForEmailTemplateTranslation(count = 0, maxCount = null, timeoutId = 0) {
-      if(this.isEverythingLocalized) return 
+      if (this.isEverythingLocalized) return
       const languagesLength = Array.isArray(this.selectedLanguages)
         ? this.selectedLanguages.length
         : 0
@@ -988,10 +991,10 @@ export default {
             const {
               data: { data }
             } = response
-            if(this.timeoutId){
+            if (this.timeoutId) {
               clearTimeout(this.timeoutId)
             }
-            this.isEverythingLocalized=true
+            this.isEverythingLocalized = true
 
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
