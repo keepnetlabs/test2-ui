@@ -9,12 +9,6 @@ class RestApiModel {
     this.allowedIpAddresses = [{ value: '', name: '' }]
     this.roleResourceIdList = []
   }
-  get name() {
-    return this.name
-  }
-  set name(value) {
-    this.name = value
-  }
 }
 
 export default RestApiModel
