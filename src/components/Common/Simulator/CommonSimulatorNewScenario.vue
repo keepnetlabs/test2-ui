@@ -201,6 +201,7 @@
                     v-if="step === 2"
                     ref="refEmailTemplateListPreview"
                     show-language-field
+                    :show-email-template-edit-button="isPhishing"
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     :emailTemplateResourceId="emailTemplateResourceId"

@@ -354,6 +354,7 @@
                     :attachmentFiles.sync="editData.phishingFile"
                     :isAttachmentError="isAttachmentError"
                     :is-edit="true"
+                    :show-edit-button="showEmailTemplateEditButton"
                     :show-language-field="showLanguageField"
                     :is-phishing-template="isPhishing"
                     :is-attachment-based-scenario="isAttachmentBasedScenario"
@@ -548,6 +549,10 @@ export default {
       default: SCENARIO_TYPES.PHISHING
     },
     showLanguageField: {
+      type: Boolean,
+      default: false
+    },
+    showEmailTemplateEditButton: {
       type: Boolean,
       default: false
     }
