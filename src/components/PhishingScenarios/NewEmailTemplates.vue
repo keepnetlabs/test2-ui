@@ -232,7 +232,6 @@
                             @on-upload-email-button-click="handleUploadEmailButtonClick"
                             @on-show-red-flags-click="handleShowRedFlagsClick"
                             @on-relocalize-replace="handleRelocalizeReplace"
-                            @on-relocalize-cancel="handleRelocalizeCancel"
                             @on-language-removed="handleLanguageRemoved"
                           />
                         </template>
@@ -627,7 +626,6 @@ export default {
           this.resetGenerateWithAIDisabled()
         })
     },
-    handleRelocalizeCancel() {},
     setLanguageItems() {
       const languageTypes = this.scenarioDetailsLookup?.languageTypes || []
       const preferredLanguageTypes = this.scenarioDetailsLookup?.preferredLanguageTypes || []
@@ -707,6 +705,8 @@ export default {
             item.fromAddress = from
             item.isTranslated = item.languageTypeResourceId === this.getCompanyPreferredLanguageId
           })
+          this.selectedLanguagePayloadItemBeforeSave.template = body
+          this.selectedLanguagePayloadItemBeforeSave.subject = subject
           if (attachments) {
             attachments = attachments.map((item) => ({
               ...item,
@@ -716,6 +716,9 @@ export default {
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
+
+          // Reset the input file so the same file can be uploaded again
+          e.target.value = ''
         })
       }
     },
