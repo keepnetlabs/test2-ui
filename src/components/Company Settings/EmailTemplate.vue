@@ -256,7 +256,7 @@
               <div class="email-template__ai-assistant-footer-left">
                 <VCheckbox
                   v-if="templateType !== 'landing'"
-                  :value="isPlainText"
+                  v-model="isPlainText"
                   class="email-template__ai-assistant-footer-left-checkbox"
                   :style="isEmailGenerating ? 'opacity: 0.5;pointer-events:none;' : ''"
                   hide-details
@@ -563,7 +563,7 @@
     <div v-else id="email-template-content" class="email-template-content">
       <div>
         <v-btn
-          v-if="!isPhishingTemplate"
+          v-if="!isPhishingTemplate || showEditButton"
           id="btn-edit--notification-template-email-template"
           style="text-transform: none;"
           :disabled="editItemsDisabled"
@@ -729,7 +729,8 @@ export default {
     'isPlainText',
     'customHeadScripts',
     'currentPageIndex',
-    'isShowHeadScripts'
+    'isShowHeadScripts',
+    'showEditButton'
   ],
   data() {
     return {
