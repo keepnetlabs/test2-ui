@@ -1,3 +1,4 @@
+import axios from 'axios'
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const getPhishingFileType = (payload) => {
@@ -607,4 +608,12 @@ export const generateEmailTemplateTranslation = (payload) => {
 }
 export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
+}
+const workerUrl = 'https://red-flag-detector.keepnet-labs-ltd-business-profile4086.workers.dev'
+export const checkRedFlags = (payload) => {
+  return axios.post(`${workerUrl}?method=flag`, payload, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 }

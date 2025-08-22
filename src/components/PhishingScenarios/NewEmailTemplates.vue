@@ -173,6 +173,7 @@
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-show-red-flags="isShowRedFlags"
+                        :red-flags="redFlags"
                         :is-attachment-based-scenario="isAttachmentBasedTemplate"
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
@@ -218,7 +219,6 @@
                             :active-language="activeLanguage"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                             :language-items="languageItems"
-                            :show-red-flags="isShowRedFlags"
                             :translated-language-resource-ids="translatedLanguageResourceIds"
                             :from-address="getSelectedLanguagePayload.fromAddress"
                             :from-name="getSelectedLanguagePayload.fromName"
@@ -300,6 +300,7 @@ import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { checkRedFlags } from '@/api/phishingsimulator'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -423,7 +424,25 @@ export default {
       isDefault: false,
       timeoutId: null,
       isRelocalizeOperation: false,
-      relocalizeLanguageName: ''
+      relocalizeLanguageName: '',
+      redFlags: {
+        fromEmail: {
+          isRedFlagged: false,
+          tooltipMessage: ''
+        },
+        fromName: {
+          isRedFlagged: false,
+          tooltipMessage: ''
+        },
+        fromAddress: {
+          isRedFlagged: false,
+          tooltipMessage: ''
+        },
+        subject: {
+          isRedFlagged: false,
+          tooltipMessage: ''
+        }
+      }
     }
   },
   computed: {
@@ -1095,6 +1114,23 @@ export default {
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
+      if (this.isShowRedFlags) {
+        checkRedFlags({
+          template: this.getSelectedLanguagePayload.template,
+          subject: this.getSelectedLanguagePayload.subject,
+          fromName: this.getSelectedLanguagePayload.fromName,
+          fromAddress: this.getSelectedLanguagePayload.fromAddress,
+          ccAddresses: this.getSelectedLanguagePayload.ccAddresses
+        }).then((res) => {
+          console.log('res', res)
+          const { cc, fromEmail, fromName, subject, template } = res.data.data
+          this.redFlags.ccAddresses = cc
+          this.redFlags.fromEmail = fromEmail
+          this.redFlags.fromName = fromName
+          this.redFlags.subject = subject
+          this.redFlags.template = template
+        })
+      }
     },
     showLocalizationSuccessMessage(data) {
       if (!data || !data.length || this.isDefault) return

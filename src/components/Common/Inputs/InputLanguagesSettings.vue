@@ -173,14 +173,7 @@
         </div>
       </div>
 
-      <VBtn
-        v-if="false"
-        lass="fw-600"
-        rounded
-        outlined
-        color="#2196f3"
-        @click="handleShowRedFlagsClick"
-      >
+      <VBtn lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
         <VIcon>mdi-flag</VIcon>
         <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
       </VBtn>
@@ -417,7 +410,8 @@ export default {
       if (!rec || !rec.el) return
       const removeBtn = rec.el.querySelector('.js-remove')
       if (!removeBtn) return
-      const disabled = this.isRemovingLastLocalized(value) || this.companyPreferredLanguageId === value
+      const disabled =
+        this.isRemovingLastLocalized(value) || this.companyPreferredLanguageId === value
       removeBtn.classList.toggle('is-disabled', disabled)
     },
     refreshAllConfirmRowsDisabledState() {
@@ -486,7 +480,7 @@ export default {
         : 'Updating will replace the template.'
       const primaryLabel = isRemove ? 'Remove' : 'Replace'
       const primaryClass =
-        (isRemove ? 'js-remove' : 'js-replace') + 
+        (isRemove ? 'js-remove' : 'js-replace') +
         (isLastTranslated || isCompanyPreferredLanguage ? ' is-disabled' : '')
       el.innerHTML = `
         <div class="relocalize-inline-confirm__left">
@@ -538,7 +532,10 @@ export default {
           this.$emit('input', effective)
           // Emit specific event for language removal
           if (isRemove) {
-            this.$emit('on-language-removed', { languageName: item.text, languageId: item.value })
+            this.$emit('on-language-removed', {
+              languageName: item.text,
+              languageId: item.value
+            })
             this.removeConfirmRowFor(item.value)
           } else {
             this.removeRelocalizeRowFor(item.value)

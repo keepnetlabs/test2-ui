@@ -369,7 +369,7 @@
             <InputEntityName
               ref="refInputEntityName"
               id="input--notification-template-subject"
-              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              :className="redFlags.subject.isRedFlagged ? 'red-flag-active' : ''"
               initialPlaceholder="Enter email subject"
               entityName="email subject"
               label="Subject"
@@ -380,7 +380,7 @@
               @input="$emit('update:subject', $event)"
             />
             <RedFlagTooltip
-              v-if="isShowRedFlags"
+              v-if="redFlags.subject.tooltipMessage"
               tooltipContent="The subject line uses urgency (“Action required”) and threats (“prevent suspension”)—classic phishing tactics"
             />
           </div>
@@ -397,7 +397,7 @@
             <InputEntityName
               id="input--notification-template-sender-name"
               initialPlaceholder="Enter sender name"
-              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              :className="redFlags.fromName.isRedFlagged ? 'red-flag-active' : ''"
               entityName="sender name"
               label="From Name"
               persistent-placeholder
@@ -407,7 +407,7 @@
               @input="$emit('update:fromName', $event)"
             />
             <RedFlagTooltip
-              v-if="isShowRedFlags"
+              v-if="redFlags.fromName.tooltipMessage"
               tooltipContent="The sender’s display name is misspelled (“M1crosoft Account Team”); the correct name is “Microsoft Account Team.”"
             />
           </div>
@@ -425,7 +425,7 @@
               label="From Email"
               id="input--notification-template-from-email"
               placeholder="Enter sender email address"
-              :class="isShowRedFlags ? 'red-flag-active' : ''"
+              :class="redFlags.fromAddress.isRedFlagged ? 'red-flag-active' : ''"
               persistent-placeholder
               :disabled="editItemsDisabled"
               :value="fromAddress"
@@ -436,7 +436,7 @@
               </template>
             </InputEmail>
             <RedFlagTooltip
-              v-if="isShowRedFlags"
+              v-if="redFlags.fromAddress.tooltipMessage"
               tooltipContent="The sender’s domain is misspelled (“m1crosoft.com”); legitimate Microsoft emails come from “microsoft.com.”"
             />
           </div>
@@ -725,7 +725,7 @@ export default {
     'selectedTemplateLanguages',
     'languagePreview',
     'showLanguageField',
-    'isShowRedFlags',
+    'redFlags',
     'isPlainText',
     'customHeadScripts',
     'currentPageIndex',
