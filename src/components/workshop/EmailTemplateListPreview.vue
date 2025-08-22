@@ -843,6 +843,15 @@ export default {
           (item) => item.languageType === this.languagePreview
         )
         this.editData.languageIndex = languageIndex
+
+        if (languageIndex === 0) {
+          payload = {
+            ...payload,
+            ...this.editData
+          }
+          payload.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        }
+
         this.phishingEmailTemplates[
           this.editData.languageIndex
         ].fromAddress = this.editData.fromAddress
@@ -857,7 +866,7 @@ export default {
           ...payload,
           ...this.editData
         }
-        this.payload.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        payload.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
       } else {
         this.phishingEmailTemplates[
           this.editData.languageIndex
@@ -931,7 +940,7 @@ export default {
           languageIndex = 0
         }
         const findedTemplate = this.listData[templateIndex].languages[languageIndex]
-        this.selectedTemplateHeader = findedTemplate.name || ''
+        this.selectedTemplateHeader = this.listData[templateIndex].name || ''
         this.templateHTML = findedTemplate.template
         this.templateFromName = findedTemplate.fromName || ''
         this.templateSubject = findedTemplate.subject || ''
