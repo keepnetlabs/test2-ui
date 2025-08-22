@@ -19,7 +19,12 @@
               :add-custom-legend-label-height="16"
               :custom-plugin="customPlugin"
             />
-            <span class="executive-report-phishing-risk-score-description" style="font-style: italic;">This chart shows the organization’s phishing risk scores per campaign against the 2% industry benchmark.</span>
+            <span
+              class="executive-report-phishing-risk-score-description"
+              style="font-style: italic;"
+              >This chart shows the organization’s phishing risk scores per campaign against the 2%
+              industry benchmark.</span
+            >
           </template>
           <div
             v-else
@@ -115,29 +120,29 @@ export default {
                 ctx.fillText(percentage, x + ctx.measureText(text).width - 7, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
-              
+
               // Draw custom info icon for Phishing Risk Score %
               if (legendItem.hasInfoIcon) {
                 const hitBox = chart.legend.legendHitBoxes[index]
                 const iconSize = 14
                 const iconX = hitBox.left + hitBox.width + 4
                 const iconY = hitBox.top + (hitBox.height - iconSize) / 2
-                
+
                 // Draw circle
                 ctx.beginPath()
-                ctx.arc(iconX + iconSize/2, iconY + iconSize/2, iconSize/2, 0, 2 * Math.PI)
+                ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2, 0, 2 * Math.PI)
                 ctx.strokeStyle = '#6C757D'
                 ctx.lineWidth = 1
                 ctx.stroke()
                 ctx.closePath()
-                
+
                 // Draw 'i' text
                 ctx.fillStyle = '#6C757D'
                 ctx.font = `bold 10px 'Open Sans', sans-serif`
                 ctx.textAlign = 'center'
                 ctx.textBaseline = 'middle'
-                ctx.fillText('i', iconX + iconSize/2, iconY + iconSize/2 + 1)
-                
+                ctx.fillText('i', iconX + iconSize / 2, iconY + iconSize / 2 + 1)
+
                 // Reset text alignment
                 ctx.textAlign = 'left'
                 ctx.textBaseline = 'alphabetic'
@@ -151,7 +156,7 @@ export default {
             if (!chart.canvas._legendTooltipListenersAdded) {
               const showTooltip = (event, text, iconX, iconY) => {
                 let tooltipEl = document.getElementById('legend-tooltip')
-                
+
                 if (!tooltipEl) {
                   tooltipEl = document.createElement('div')
                   tooltipEl.id = 'legend-tooltip'
@@ -164,63 +169,156 @@ export default {
                   tooltipEl.style.fontFamily = '"Open Sans", sans-serif'
                   tooltipEl.style.color = '#383B41'
                   tooltipEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
-                  tooltipEl.style.zIndex = '1000'
+                  tooltipEl.style.zIndex = '999999'
                   tooltipEl.style.maxWidth = '300px'
                   tooltipEl.style.lineHeight = '1.4'
                   document.body.appendChild(tooltipEl)
+                } else {
                 }
-                
+
                 tooltipEl.textContent = text
                 tooltipEl.style.display = 'block'
-                
+                tooltipEl.style.pointerEvents = 'none'
+                tooltipEl.style.position = 'fixed'
+
                 // Position tooltip below and centered on the icon
                 const rect = chart.canvas.getBoundingClientRect()
                 const tooltipWidth = tooltipEl.offsetWidth || 300
-                const leftPosition = rect.left + iconX + 7 - (tooltipWidth / 2) // Center on icon
-                const topPosition = rect.top + iconY + 25 // Below the icon
-                
+
+                // Calculate position for fixed positioning
+                let leftPosition = rect.left + iconX + 7 - tooltipWidth / 2
+                let topPosition = rect.top + iconY + 25
+
+                // Ensure tooltip stays within viewport
+                const viewportWidth = window.innerWidth
+                const viewportHeight = window.innerHeight
+
+                // Adjust horizontal position if tooltip goes off screen
+                if (leftPosition + tooltipWidth > viewportWidth) {
+                  leftPosition = viewportWidth - tooltipWidth - 10
+                }
+                if (leftPosition < 10) {
+                  leftPosition = 10
+                }
+
+                // Adjust vertical position if tooltip goes off screen
+                if (topPosition > viewportHeight - 100) {
+                  topPosition = rect.top + iconY - 35 // Show above icon instead
+                }
+
                 tooltipEl.style.left = leftPosition + 'px'
                 tooltipEl.style.top = topPosition + 'px'
+
+                // Debug check if tooltip is visible in DOM
+                const computedStyle = window.getComputedStyle(tooltipEl)
               }
-              
+
+              let hideTimeout = null
+
               const hideTooltip = () => {
                 const tooltipEl = document.getElementById('legend-tooltip')
                 if (tooltipEl) {
                   tooltipEl.style.display = 'none'
                 }
+                currentTooltipData = null
               }
-              
+
+              const hideTooltipDelayed = () => {
+                if (hideTimeout) {
+                  clearTimeout(hideTimeout)
+                }
+                hideTimeout = setTimeout(() => {
+                  hideTooltip()
+                }, 100)
+              }
+
               chart.canvas.addEventListener('mousemove', (e) => {
                 const rect = chart.canvas.getBoundingClientRect()
                 const x = e.clientX - rect.left
                 const y = e.clientY - rect.top
-                
+
                 let isOverInfoIcon = false
                 chart.legend.legendItems.forEach((legendItem, index) => {
                   const hitBox = chart.legend.legendHitBoxes[index]
                   if (legendItem.hasInfoIcon) {
                     const iconSize = 14
-                    const iconX = hitBox.left + hitBox.width + 4
+                    const iconPadding = 25
+                    const iconX = hitBox.left + hitBox.width - iconSize - 2
                     const iconY = hitBox.top + (hitBox.height - iconSize) / 2
-                    
-                    // Check if mouse is over the icon area specifically
-                    if (x >= iconX && x <= iconX + iconSize &&
-                        y >= iconY && y <= iconY + iconSize) {
+
+                    // Check if mouse is over the legend item with info icon (entire hitbox area)
+                    if (
+                      x >= hitBox.left &&
+                      x <= hitBox.left + hitBox.width + 30 &&
+                      y >= hitBox.top &&
+                      y <= hitBox.top + hitBox.height
+                    ) {
                       isOverInfoIcon = true
-                      showTooltip(e, 'Phishing Risk Score (%) = Risky Actions ÷ Total Simulations Delivered × 100. Phish reports are excluded, as reporting is a positive behavior.', iconX, iconY)
+                      if (hideTimeout) {
+                        clearTimeout(hideTimeout)
+                        hideTimeout = null
+                      }
+                      currentTooltipData = { iconX, iconY }
+                      showTooltip(
+                        e,
+                        'Phishing Risk Score (%) = Risky Actions ÷ Total Simulations Delivered × 100. Phish reports are excluded, as reporting is a positive behavior.',
+                        iconX,
+                        iconY
+                      )
                     }
                   }
                 })
-                
+
                 if (!isOverInfoIcon) {
-                  hideTooltip()
+                  hideTooltipDelayed()
                 }
               })
-              
+
               chart.canvas.addEventListener('mouseleave', () => {
                 hideTooltip()
               })
-              
+
+              // Update tooltip position on scroll or hide it
+              let currentTooltipData = null
+
+              const updateTooltipOnScroll = () => {
+                const tooltipEl = document.getElementById('legend-tooltip')
+                if (tooltipEl && tooltipEl.style.display === 'block' && currentTooltipData) {
+                  const rect = chart.canvas.getBoundingClientRect()
+                  const { iconX, iconY } = currentTooltipData
+                  const tooltipWidth = tooltipEl.offsetWidth || 300
+
+                  let leftPosition = rect.left + iconX + 7 - tooltipWidth / 2
+                  let topPosition = rect.top + iconY + 25
+
+                  // Viewport bounds check
+                  const viewportWidth = window.innerWidth
+                  const viewportHeight = window.innerHeight
+
+                  if (leftPosition + tooltipWidth > viewportWidth) {
+                    leftPosition = viewportWidth - tooltipWidth - 10
+                  }
+                  if (leftPosition < 10) {
+                    leftPosition = 10
+                  }
+                  if (topPosition > viewportHeight - 100) {
+                    topPosition = rect.top + iconY - 35
+                  }
+
+                  tooltipEl.style.left = leftPosition + 'px'
+                  tooltipEl.style.top = topPosition + 'px'
+                }
+              }
+
+              window.addEventListener('scroll', updateTooltipOnScroll, true)
+              document.addEventListener('scroll', updateTooltipOnScroll, true)
+
+              // Store scroll listeners for cleanup
+              chart.canvas._scrollListeners = [
+                () => window.removeEventListener('scroll', updateTooltipOnScroll, true),
+                () => document.removeEventListener('scroll', updateTooltipOnScroll, true)
+              ]
+
               chart.canvas._legendTooltipListenersAdded = true
             }
           }
@@ -288,37 +386,27 @@ export default {
         return acc
       }, 0)
       let maxTotalUserActions = totalUserActions
-      if(maxTotalUserActions <= 10){
+      if (maxTotalUserActions <= 10) {
         maxTotalUserActions = 10
-      }
-      else if(maxTotalUserActions <= 20){
+      } else if (maxTotalUserActions <= 20) {
         maxTotalUserActions = 20
-      }
-      else if(maxTotalUserActions <= 30){
+      } else if (maxTotalUserActions <= 30) {
         maxTotalUserActions = 30
-      }
-      else if(maxTotalUserActions <= 40){
+      } else if (maxTotalUserActions <= 40) {
         maxTotalUserActions = 40
-      }
-      else if(maxTotalUserActions <= 50){
+      } else if (maxTotalUserActions <= 50) {
         maxTotalUserActions = 50
-      }
-      else if(maxTotalUserActions <= 60){
+      } else if (maxTotalUserActions <= 60) {
         maxTotalUserActions = 60
-      }
-      else if(maxTotalUserActions <= 70){
+      } else if (maxTotalUserActions <= 70) {
         maxTotalUserActions = 70
-      }
-      else if(maxTotalUserActions <= 80){
+      } else if (maxTotalUserActions <= 80) {
         maxTotalUserActions = 80
-      }
-      else if(maxTotalUserActions <= 90){
+      } else if (maxTotalUserActions <= 90) {
         maxTotalUserActions = 90
-      }
-      else if(maxTotalUserActions <= 100){
+      } else if (maxTotalUserActions <= 100) {
         maxTotalUserActions = 100
-      }
-      else {
+      } else {
         const remainder = Math.floor(maxTotalUserActions / 50)
         if (!remainder) {
           maxTotalUserActions = 100
@@ -427,7 +515,7 @@ export default {
             stack: 'Stack 1',
             order: 3,
             barThickness: 32
-          },
+          }
         ]
       }
       this.chartOptions = {
