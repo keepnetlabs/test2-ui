@@ -367,7 +367,6 @@
                     :languagePreview.sync="languagePreview"
                     :selectedTemplateLanguages="selectedTemplateLanguages"
                     :getEmailTemplatePreviewLanguageHint="getEmailTemplatePreviewLanguageHint"
-                    @handleEditHtmlTemplate="editData.template = $event"
                     @setAttachmentFile="setAttachmentFile"
                     @handleRenameAttachment="handleShowRenameAttachmentModal"
                     @handleDeleteAttachment="handleDeleteAttachment"
@@ -822,10 +821,10 @@ export default {
     },
     handleSaveChanges() {
       if (!this.validateEditData()) return
+
       this.isSaving = true
       let payload = {
         ...this.emailTemplateData,
-        ...this.editData,
         isDuplicated: false,
         duplicatedTemplateResourceId: null,
         availableForRequests: this.emailTemplateData.availableForList,
@@ -839,9 +838,40 @@ export default {
             ? this.editData.phishingFile[0]?.fileName
             : null
       }
+
+      if (this.editData.languageIndex === 0) {
+        payload = {
+          ...payload,
+          ...this.editData
+        }
+      } else {
+        this.phishingEmailTemplates[
+          this.editData.languageIndex
+        ].fromAddress = this.editData.fromAddress
+        this.phishingEmailTemplates[this.editData.languageIndex].fromName = this.editData.fromName
+        this.phishingEmailTemplates[this.editData.languageIndex].subject = this.editData.subject
+        this.phishingEmailTemplates[
+          this.editData.languageIndex
+        ].ccAddresses = this.editData.ccAddresses
+        this.phishingEmailTemplates[this.editData.languageIndex].template = this.editData.template
+      }
       delete payload.attachments
       if (payload.languages) {
-        payload.languages.push({
+        this.phishingEmailTemplates.forEach((item) => {
+          const language = payload.languages.find(
+            (lang) => lang.languageTypeResourceId === item.languageType
+          )
+          if (language) {
+            language.fromAddress = item.fromAddress
+            language.fromName = item.fromName
+            language.subject = item.subject
+            language.ccAddresses = item.ccAddresses
+            language.template = item.template
+            language.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          }
+        })
+        //initial item
+        payload.languages.unshift({
           fromAddress: payload.fromAddress,
           fromName: payload.fromName,
           subject: payload.subject,
@@ -851,7 +881,10 @@ export default {
           prompt: payload.prompt,
           toneResourceId: payload.toneResourceId,
           localizationResourceId: payload.localizationResourceId,
-          detailActionTypeResourceId: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+        })
+        payload.languages.forEach((item) => {
+          delete item.availableForList
         })
       }
       updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
@@ -1194,14 +1227,18 @@ export default {
           this.initialPhishingEmailTemplates = JSON.parse(
             JSON.stringify(this.phishingEmailTemplates)
           )
+
         })
         .finally(() => {
           this.loadingTemplatePreview = false
         })
     },
     handleEmailTemplatePreviewLanguageChange(val, languagePreview) {
-      const findedTemplate = this.phishingEmailTemplates.find((item) => item.languageType === val)
-      if (!findedTemplate) return
+      const findedTemplateIndex = this.phishingEmailTemplates.findIndex(
+        (item) => item.languageType === val
+      )
+      if (findedTemplateIndex === -1) return
+      const findedTemplate = this.phishingEmailTemplates[findedTemplateIndex]
       this.templateHTML = findedTemplate?.template || ''
       this.templateFromName = findedTemplate?.fromName || ''
       this.templateSubject = findedTemplate?.subject || ''
@@ -1214,17 +1251,27 @@ export default {
       this.editData.subject = this.templateSubject
       this.editData.fromAddress = this.templateFromEmail
       this.editData.ccAddresses = this.templateCCAddresses
+      this.editData.languageIndex = findedTemplateIndex
     },
     handleSaveOldEditLanguage(languagePreview) {
-      const findedTemplate = this.phishingEmailTemplates.find(
+      const findedTemplateIndex = this.phishingEmailTemplates.findIndex(
         (item) => item.languageType === languagePreview
       )
-      if (!findedTemplate) return
-      findedTemplate.fromAddress = this.editData.fromAddress
-      findedTemplate.fromName = this.editData.fromName
-      findedTemplate.subject = this.editData.subject
-      findedTemplate.template = this.editData.template
-      findedTemplate.ccAddresses = this.editData.ccAddresses
+      if (findedTemplateIndex === -1) return
+      const findedTemplate = this.phishingEmailTemplates[findedTemplateIndex]
+      if (findedTemplateIndex === 0) {
+        this.emailTemplateData.fromAddress = this.editData.fromAddress
+        this.emailTemplateData.fromName = this.editData.fromName
+        this.emailTemplateData.subject = this.editData.subject
+        this.emailTemplateData.template = this.editData.template
+        this.emailTemplateData.ccAddresses = this.editData.ccAddresses
+      } else {
+        findedTemplate.fromAddress = this.editData.fromAddress
+        findedTemplate.fromName = this.editData.fromName
+        findedTemplate.subject = this.editData.subject
+        findedTemplate.template = this.editData.template
+        findedTemplate.ccAddresses = this.editData.ccAddresses
+      }
     }
   }
 }
