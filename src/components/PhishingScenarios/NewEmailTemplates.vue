@@ -1125,13 +1125,13 @@ export default {
           template: this.getSelectedLanguagePayload.template,
           subject: this.getSelectedLanguagePayload.subject,
           fromName: this.getSelectedLanguagePayload.fromName,
-          fromAddress: this.getSelectedLanguagePayload.fromAddress,
-          ccAddresses: this.getSelectedLanguagePayload.ccAddresses
+          fromEmail: this.getSelectedLanguagePayload.fromAddress,
+          cc: this.getSelectedLanguagePayload.ccAddresses
         }).then((res) => {
           console.log('res', res)
-          const { cc, fromEmail, fromName, subject, template } = res.data.data
+          const { cc, fromEmail, fromName, subject, template } = res?.data
           this.redFlags.ccAddresses = cc
-          this.redFlags.fromEmail = fromEmail
+          this.redFlags.fromAddress = fromEmail
           this.redFlags.fromName = fromName
           this.redFlags.subject = subject
           this.redFlags.template = template
