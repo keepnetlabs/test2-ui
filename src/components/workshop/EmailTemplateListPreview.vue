@@ -839,7 +839,19 @@ export default {
             : null
       }
       if (this.editData.languageIndex === undefined) {
-        this.editData.languageIndex = 0
+        const languageIndex = this.phishingEmailTemplates.findIndex(
+          (item) => item.languageType === this.languagePreview
+        )
+        this.editData.languageIndex = languageIndex
+        this.phishingEmailTemplates[
+          this.editData.languageIndex
+        ].fromAddress = this.editData.fromAddress
+        this.phishingEmailTemplates[this.editData.languageIndex].fromName = this.editData.fromName
+        this.phishingEmailTemplates[this.editData.languageIndex].subject = this.editData.subject
+        this.phishingEmailTemplates[
+          this.editData.languageIndex
+        ].ccAddresses = this.editData.ccAddresses
+        this.phishingEmailTemplates[this.editData.languageIndex].template = this.editData.template
       } else if (this.editData.languageIndex === 0) {
         payload = {
           ...payload,
@@ -872,19 +884,24 @@ export default {
             language.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
           }
         })
-        //initial item
-        payload.languages.unshift({
-          fromAddress: payload.fromAddress,
-          fromName: payload.fromName,
-          subject: payload.subject,
-          template: payload.template,
-          ccAddresses: payload.ccAddresses,
-          languageTypeResourceId: payload.languageTypeResourceId,
-          prompt: payload.prompt,
-          toneResourceId: payload.toneResourceId,
-          localizationResourceId: payload.localizationResourceId,
-          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
-        })
+        if (
+          !payload.languages.find(
+            (item) => item.languageTypeResourceId === payload.languageTypeResourceId
+          )
+        ) {
+          payload.languages.unshift({
+            fromAddress: payload.fromAddress,
+            fromName: payload.fromName,
+            subject: payload.subject,
+            template: payload.template,
+            ccAddresses: payload.ccAddresses,
+            languageTypeResourceId: payload.languageTypeResourceId,
+            prompt: payload.prompt,
+            toneResourceId: payload.toneResourceId,
+            localizationResourceId: payload.localizationResourceId,
+            detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+          })
+        }
         payload.languages.forEach((item) => {
           delete item.availableForList
         })
@@ -907,20 +924,19 @@ export default {
           ...this.listData[templateIndex],
           ...newTemplate
         }
-        this.selectedTemplateHeader = this.listData[templateIndex].name || ''
-        this.templateHTML = this.listData[templateIndex].template
-        this.templateFromName = this.listData[templateIndex].fromName || ''
-        this.templateSubject = this.listData[templateIndex].subject || ''
-        this.templateFromEmail = this.listData[templateIndex].fromAddress || ''
-        this.templateCCAddresses = this.listData[templateIndex].ccAddresses || ''
-        this.phishingFile = this.listData[templateIndex].phishingFileName
-          ? [
-              {
-                fileName: this.listData[templateIndex].phishingFileName,
-                url: this.listData[templateIndex].phishingFileUrl
-              }
-            ]
-          : []
+        let languageIndex = this.listData[templateIndex].languages.findIndex(
+          (item) => item.languageTypeResourceId === this.languagePreview
+        )
+        if (languageIndex === -1) {
+          languageIndex = 0
+        }
+        const findedTemplate = this.listData[templateIndex].languages[languageIndex]
+        this.selectedTemplateHeader = findedTemplate.name || ''
+        this.templateHTML = findedTemplate.template
+        this.templateFromName = findedTemplate.fromName || ''
+        this.templateSubject = findedTemplate.subject || ''
+        this.templateFromEmail = findedTemplate.fromAddress || ''
+        this.templateCCAddresses = findedTemplate.ccAddresses || ''
       }
     },
     insertTemplate(resourceId, newTemplate) {
