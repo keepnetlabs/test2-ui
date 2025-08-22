@@ -838,12 +838,14 @@ export default {
             ? this.editData.phishingFile[0]?.fileName
             : null
       }
-
-      if (this.editData.languageIndex === 0) {
+      if (this.editData.languageIndex === undefined) {
+        this.editData.languageIndex = 0
+      } else if (this.editData.languageIndex === 0) {
         payload = {
           ...payload,
           ...this.editData
         }
+        this.payload.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
       } else {
         this.phishingEmailTemplates[
           this.editData.languageIndex
@@ -1227,7 +1229,6 @@ export default {
           this.initialPhishingEmailTemplates = JSON.parse(
             JSON.stringify(this.phishingEmailTemplates)
           )
-
         })
         .finally(() => {
           this.loadingTemplatePreview = false
