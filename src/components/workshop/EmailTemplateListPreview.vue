@@ -1302,7 +1302,7 @@ export default {
         this.emailTemplateData.fromAddress = this.editData.fromAddress
         this.emailTemplateData.fromName = this.editData.fromName
         this.emailTemplateData.subject = this.editData.subject
-        this.emailTemplateData.template = this.templateHTML
+        this.emailTemplateData.template = this.editData.template
         this.emailTemplateData.ccAddresses = this.editData.ccAddresses
       } else {
         findedTemplate.fromAddress = this.editData.fromAddress
