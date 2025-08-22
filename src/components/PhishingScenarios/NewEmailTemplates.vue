@@ -200,6 +200,7 @@
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
+                        @on-generate-email-template-success="handleGenerateEmailTemplateSuccess"
                       >
                         <template #template-header-left>
                           <InputLanguagePreview
@@ -614,6 +615,11 @@ export default {
     }
   },
   methods: {
+    handleGenerateEmailTemplateSuccess({ template, subject }) {
+      this.getSelectedLanguagePayload.isTranslated = true
+      this.selectedLanguagePayloadItemBeforeSave.template = template
+      this.selectedLanguagePayloadItemBeforeSave.subject = subject
+    },
     handleRelocalizeReplace({ language }) {
       const payload = this.languagesPayload.find(
         (p) => p.languageTypeResourceId === language.value

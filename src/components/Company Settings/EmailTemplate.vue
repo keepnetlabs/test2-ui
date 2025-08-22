@@ -1140,6 +1140,7 @@ export default {
           this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', template)
+          this.$emit('on-generate-email-template-success', { template, subject })
           this.isEmailGenerating = false
         })
         .catch(() => {
