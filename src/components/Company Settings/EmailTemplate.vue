@@ -318,7 +318,10 @@
         </div>
       </transition>
     </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;">
+    <div
+      style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;"
+      :class="!isAiAssistant && !showEditButton ? 'pt-6' : ''"
+    >
       <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
         <FormGroup
           title="Template Name:"
@@ -1140,7 +1143,10 @@ export default {
           this.$emit('update:subject', subject)
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', template)
-          this.$emit('on-generate-email-template-success', { template, subject })
+          this.$emit('on-generate-email-template-success', {
+            template,
+            subject
+          })
           this.isEmailGenerating = false
         })
         .catch(() => {
@@ -1252,6 +1258,7 @@ export default {
         }
       }
       this.$emit('update:template', template)
+      this.$emit('on-save-template', template)
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
         this.toggleShowGrapesModal(true)

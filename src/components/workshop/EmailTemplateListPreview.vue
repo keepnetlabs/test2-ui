@@ -148,7 +148,7 @@
             >
               <div
                 v-for="(item, index) in listData"
-                :key="item.name + index"
+                :key="item.resourceId"
                 :class="{
                   'template-list': true,
                   'template-list--selected': item['selected'],
@@ -374,6 +374,7 @@
                     @on-email-template-preview-language-change="
                       handleEmailTemplatePreviewLanguageChange
                     "
+                    @on-save-template="handleSaveTemplate"
                   />
                 </template>
                 <template v-else>
@@ -755,6 +756,14 @@ export default {
       this.editData = { ...this.initialEditData }
       this.isEditMode = true
     },
+    handleSaveTemplate(template) {
+      this.editData.template = template
+      const findedTemplateIndex = this.phishingEmailTemplates.findIndex(
+        (item) => item.languageType === this.languagePreview
+      )
+      if (findedTemplateIndex === -1) return
+      this.phishingEmailTemplates[findedTemplateIndex].template = template
+    },
     handleExitEditing() {
       const isChanged = isDifferent(this.editData, this.initialEditData)
       if (!isChanged) {
@@ -821,7 +830,6 @@ export default {
     },
     handleSaveChanges() {
       if (!this.validateEditData()) return
-
       this.isSaving = true
       let payload = {
         ...this.emailTemplateData,
@@ -980,6 +988,11 @@ export default {
       if (!this.editData.fromAddress || Validations.email(this.editData.fromAddress) !== true)
         return false
       if (!this.editData.template) return false
+      if (this.editData.ccAddresses && this.editData.ccAddresses.length > 0) {
+        this.editData.ccAddresses.forEach((item) => {
+          if (!item || Validations.email(item) !== true) return false
+        })
+      }
       return !(this.isAttachmentBasedScenario && !this.editData.phishingFile)
     },
     setAttachmentFile(file) {
@@ -1289,7 +1302,7 @@ export default {
         this.emailTemplateData.fromAddress = this.editData.fromAddress
         this.emailTemplateData.fromName = this.editData.fromName
         this.emailTemplateData.subject = this.editData.subject
-        this.emailTemplateData.template = this.editData.template
+        this.emailTemplateData.template = this.templateHTML
         this.emailTemplateData.ccAddresses = this.editData.ccAddresses
       } else {
         findedTemplate.fromAddress = this.editData.fromAddress
