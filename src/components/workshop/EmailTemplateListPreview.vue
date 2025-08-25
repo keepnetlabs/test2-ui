@@ -783,7 +783,6 @@ export default {
       this.isSaving = true
       let payload = {
         ...this.emailTemplateData,
-        ...this.editData,
         name:
           this.editData.name !== this.emailTemplateData.name
             ? this.editData.name
@@ -801,20 +800,7 @@ export default {
             ? this.editData.phishingFile[0]?.fileName
             : null
       }
-      if (payload.languages) {
-        payload.languages.unshift({
-          fromAddress: payload.fromAddress,
-          fromName: payload.fromName,
-          subject: payload.subject,
-          template: payload.template,
-          ccAddresses: payload.ccAddresses,
-          languageTypeResourceId: payload.languageTypeResourceId,
-          prompt: payload.prompt,
-          toneResourceId: payload.toneResourceId,
-          localizationResourceId: payload.localizationResourceId
-        })
-      }
-      delete payload.attachments
+      payload = this.preparePayload(payload)
       delete payload.resourceId
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then((response) => {
@@ -846,6 +832,17 @@ export default {
             ? this.editData.phishingFile[0]?.fileName
             : null
       }
+      payload = this.preparePayload(payload)
+      updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
+        .then(() => {
+          this.updateTemplate(this.emailTemplateData.resourceId, payload)
+        })
+        .finally(() => {
+          this.isSaving = false
+          this.isEditMode = false
+        })
+    },
+    preparePayload(payload) {
       if (this.editData.languageIndex === undefined) {
         const languageIndex = this.phishingEmailTemplates.findIndex(
           (item) => item.languageType === this.languagePreview
@@ -923,14 +920,7 @@ export default {
           delete item.availableForList
         })
       }
-      updatePhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
-        .then(() => {
-          this.updateTemplate(this.emailTemplateData.resourceId, payload)
-        })
-        .finally(() => {
-          this.isSaving = false
-          this.isEditMode = false
-        })
+      return payload
     },
     updateTemplate(resourceId, newTemplate) {
       const templateIndex = this.listData.findIndex(
@@ -957,12 +947,26 @@ export default {
       }
     },
     insertTemplate(resourceId, newTemplate) {
+      if (newTemplate?.languages?.length) {
+        const activeLanguage = newTemplate.languages.find(
+          (item) => item.languageTypeResourceId === this.languagePreview
+        )
+        if (activeLanguage) {
+          this.templateHTML = activeLanguage.template
+          this.templateFromName = activeLanguage.fromName || ''
+          this.templateSubject = activeLanguage.subject || ''
+          this.templateFromEmail = activeLanguage.fromAddress || ''
+          this.templateCCAddresses = activeLanguage.ccAddresses || ''
+        }
+      } else {
+        this.templateHTML = newTemplate.template
+        this.templateFromName = newTemplate.fromName || ''
+        this.templateSubject = newTemplate.subject || ''
+        this.templateFromEmail = newTemplate.fromAddress || ''
+        this.templateCCAddresses = newTemplate.ccAddresses || ''
+      }
+
       this.selectedTemplateHeader = newTemplate.name || ''
-      this.templateHTML = newTemplate.template
-      this.templateFromName = newTemplate.fromName || ''
-      this.templateSubject = newTemplate.subject || ''
-      this.templateFromEmail = newTemplate.fromAddress || ''
-      this.templateCCAddresses = newTemplate.ccAddresses || ''
       this.phishingFile = newTemplate.phishingFileName
         ? [
             {
