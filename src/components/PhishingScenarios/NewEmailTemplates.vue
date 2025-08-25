@@ -158,6 +158,7 @@
                         class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
                         :is-phishing-template="true"
+                        :is-red-flags-loading="isRedFlagsLoading"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="getSelectedLanguagePayload.fromAddress"
@@ -291,6 +292,7 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
+import { defaultRedFlags } from './utils'
 import {
   getEmailTemplateMethodItems,
   EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
@@ -382,6 +384,7 @@ export default {
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
       isShowRedFlags: false,
+      isRedFlagsLoading: false,
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
@@ -425,26 +428,10 @@ export default {
       beforeSaveLanguage: '',
       isDefault: false,
       timeoutId: null,
+      lastRedFlags: {},
       isRelocalizeOperation: false,
       relocalizeLanguageName: '',
-      redFlags: {
-        fromEmail: {
-          isRedFlagged: false,
-          tooltipMessage: ''
-        },
-        fromName: {
-          isRedFlagged: false,
-          tooltipMessage: ''
-        },
-        fromAddress: {
-          isRedFlagged: false,
-          tooltipMessage: ''
-        },
-        subject: {
-          isRedFlagged: false,
-          tooltipMessage: ''
-        }
-      },
+      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
       isFlaggedStylesEnabled: false,
       flaggedAreaCss: `
         <style>
@@ -465,7 +452,7 @@ export default {
             transform: translateY(-50%);
             width: 1em;
             height: 1em;
-            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/506bf119-942d-4224-7ab1-98292e2e3900/public') no-repeat center/contain;
+            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
           }
           .flagged-area:hover::after {
             content: attr(data-flag-tooltip);
@@ -474,11 +461,12 @@ export default {
             left: 50%;
             transform: translate(-50%, 0);
             margin-top: 0.4em;
-            padding: 0.6em 0.8em;
+            padding: 4px 8px;
             background:#B83A3A;
             color: #fff;
-            font-size: 0.8em;
-            line-height: 1.4;
+            font-size: 12px;
+            line-height: 1.33;
+            font-family:"Open Sans", sans-serif;
             white-space: normal;
             word-break: break-word;
             max-width: 240px;
@@ -1164,31 +1152,74 @@ export default {
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
-
       if (this.isShowRedFlags) {
+        this.isEqualRedFlags = this.compareRedFlags()
+        if (this.isEqualRedFlags) {
+          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
+          this.updateTemplateWithFlaggedStyles()
+          return
+        }
+        this.editItemsDisabled = true
+        this.isRedFlagsLoading = true
+        this.$refs.refEmailTemplate.isEmailGenerating = true
         checkRedFlags({
           template: this.getSelectedLanguagePayload.template,
           subject: this.getSelectedLanguagePayload.subject,
           fromName: this.getSelectedLanguagePayload.fromName,
           fromEmail: this.getSelectedLanguagePayload.fromAddress,
-          cc: this.getSelectedLanguagePayload.ccAddresses
-        }).then((res) => {
-          console.log('res', res)
-          const { cc, fromEmail, fromName, subject, template } = res?.data
-          this.redFlags.ccAddresses = cc
-          this.redFlags.fromAddress = fromEmail
-          this.redFlags.fromName = fromName
-          this.redFlags.subject = subject
-          this.getSelectedLanguagePayload.template = template
-          this.selectedLanguagePayloadItemBeforeSave.template = template
-
-          // CSS stillerini template'e ekle
-          this.updateTemplateWithFlaggedStyles()
+          cc: this.getSelectedLanguagePayload.ccAddresses,
+          language:
+            this.selectedLanguages.find((lang) => lang.value === this.activeLanguage)?.text || ''
         })
+          .then((res) => {
+            console.log('res', res)
+            const { cc, fromEmail, fromName, subject, template } = res?.data
+            this.redFlags.ccAddresses = cc
+            this.redFlags.fromAddress = fromEmail
+            this.redFlags.fromName = fromName
+            this.redFlags.subject = subject
+            this.getSelectedLanguagePayload.template = template
+            this.selectedLanguagePayloadItemBeforeSave.template = template
+            // CSS stillerini template'e ekle
+            this.updateTemplateWithFlaggedStyles()
+          })
+          .finally(() => {
+            this.$refs.refEmailTemplate.isEmailGenerating = false
+            this.editItemsDisabled = false
+            this.isRedFlagsLoading = false
+          })
       } else {
         // CSS stillerini template'den kaldır
+        this.lastRedFlags[this.activeLanguage] = {
+          flags: JSON.parse(JSON.stringify(this.redFlags)),
+          templates: [],
+          textfieldValues: {
+            fromName: this.getSelectedLanguagePayload.fromName,
+            fromAddress: this.getSelectedLanguagePayload.fromAddress,
+            subject: this.getSelectedLanguagePayload.subject
+          }
+        }
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
         this.updateTemplateWithFlaggedStyles()
       }
+    },
+    compareRedFlags() {
+      if (Object.keys(this.lastRedFlags).length === 0) return false
+      const { templates = [], textfieldValues = {} } = this.lastRedFlags[this.activeLanguage] || {}
+      const { fromName, fromAddress, subject } = textfieldValues
+      const {
+        fromName: fromCurrentName,
+        fromAddress: fromCurrentAddress,
+        subject: fromCurrentSubject
+      } = this.getSelectedLanguagePayload
+      if (
+        fromName !== fromCurrentName ||
+        fromAddress !== fromCurrentAddress ||
+        subject !== fromCurrentSubject
+      ) {
+        return false
+      }
+      return templates.find((template) => template === this.getSelectedLanguagePayload.template)
     },
     showLocalizationSuccessMessage(data) {
       if (!data || !data.length || this.isDefault) return
@@ -1256,6 +1287,7 @@ export default {
           languagePayload.template = this._addFlaggedStylesToTemplate(languagePayload.template)
         } else {
           languagePayload.template = this._removeFlaggedStylesFromTemplate(languagePayload.template)
+          this.lastRedFlags[this.activeLanguage]?.templates?.push(languagePayload.template)
         }
       })
     },

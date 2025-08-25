@@ -617,3 +617,10 @@ export const checkRedFlags = (payload) => {
     }
   })
 }
+export const translateRedFlagsTexts = (payload) => {
+  return axios.post(`${workerUrl}?method=translate`, payload, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}

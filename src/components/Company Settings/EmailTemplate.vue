@@ -745,7 +745,8 @@ export default {
     'customHeadScripts',
     'currentPageIndex',
     'isShowHeadScripts',
-    'showEditButton'
+    'showEditButton',
+    'isRedFlagsLoading'
   ],
   data() {
     return {
@@ -970,6 +971,7 @@ export default {
         : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
     },
     getLoaderTitle() {
+      if (this.isRedFlagsLoading) return 'Red flags are being detected...'
       if (this.isGenerateWithAi)
         return 'The email template is being localized by AI for the selected languages.'
       return this.templateType === 'landing'
@@ -977,6 +979,7 @@ export default {
         : 'AI Ally is carefully crafting your Email template'
     },
     getLoaderDescription() {
+      if (this.isRedFlagsLoading) return 'This process may take some time. Please stay on the page.'
       if (this.isGenerateWithAi)
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
       return 'This process may take approximately 20 seconds. Please stay on the page during this time.'

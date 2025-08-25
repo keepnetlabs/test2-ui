@@ -11,19 +11,20 @@
         <div>
           <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
             <template #activator="{ on, attrs }">
-              <VBtn
-                v-bind="attrs"
-                v-on="on"
-                class="fw-600"
-                rounded
-                outlined
-                color="#2196f3"
-                :style="getLocalizeButtonStyle"
-                @click="handleLocalizeClick"
-              >
-                <VIcon>mdi-web</VIcon>
-                <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
-              </VBtn>
+              <div v-bind="attrs" v-on="on" :style="getLocalizeButtonStyle">
+                <VBtn
+                  :ripple="false"
+                  class="fw-600"
+                  rounded
+                  outlined
+                  color="#2196f3"
+                  :style="isLocalizeReady ? {} : { pointerEvents: 'none' }"
+                  @click="handleLocalizeClick"
+                >
+                  <VIcon>mdi-web</VIcon>
+                  <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
+                </VBtn>
+              </div>
             </template>
             <span>To start localization, fill in all required fields.</span>
           </VTooltip>
@@ -172,8 +173,30 @@
           </div>
         </div>
       </div>
-
-      <VBtn lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
+      <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+        <template #activator="{ on, attrs }">
+          <div v-bind="attrs" v-on="on" :style="getLocalizeButtonStyle">
+            <VBtn
+              :ripple="false"
+              lass="fw-600"
+              rounded
+              outlined
+              color="#2196f3"
+              :style="isLocalizeReady ? {} : { pointerEvents: 'none' }"
+              @click="handleShowRedFlagsClick"
+            >
+              <VIcon>mdi-flag</VIcon>
+              <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                redFlagsText
+              }}</span>
+            </VBtn>
+          </div>
+        </template>
+        <span>
+          To see red flags, fill in all required fields.
+        </span>
+      </VTooltip>
+      <VBtn v-else lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
         <VIcon>mdi-flag</VIcon>
         <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
           redFlagsText
