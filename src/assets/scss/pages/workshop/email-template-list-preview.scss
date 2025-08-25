@@ -153,10 +153,10 @@
   .filter-field-scenarios {
     padding: 24px 16px !important;
     max-width: 140px;
-    &__language{
-      &-menu{
+    &__language {
+      &-menu {
         .v-list-item__action {
-          margin-right:16px !important;
+          margin-right: 16px !important;
         }
       }
     }
@@ -279,18 +279,18 @@
           margin-right: 4px;
         }
       }
-      &__language{
-        color:rgba(56, 59, 65, 0.72);
+      &__language {
+        color: rgba(56, 59, 65, 0.72);
         font-size: 12px;
         font-weight: 600;
-        line-height:16px;
-        &-separator{
-          color:transparent;
+        line-height: 16px;
+        &-separator {
+          color: transparent;
           width: 2px;
           display: inline-block;
           border-radius: 4px;
           margin-right: 4px;
-          background-color: #E0E0E0;
+          background-color: #e0e0e0;
         }
       }
     }
@@ -340,6 +340,11 @@
       right: 8px;
       top: 14px;
       cursor: pointer;
+    }
+  }
+  &.safari-grapes-js-fix {
+    .vertical-panes > .pane {
+      overflow: visible !important;
     }
   }
 
