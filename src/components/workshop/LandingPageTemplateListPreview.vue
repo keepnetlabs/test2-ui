@@ -1,5 +1,5 @@
 <template>
-  <div class="landingPagePreview">
+  <div :class="`landingPagePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
     <AppDialog
       style="overflow: hidden;"
       subtitle="Landing Page Template Preview"
@@ -892,6 +892,7 @@ import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { isDifferent } from '@/utils/functions'
+import { handleIsSafari } from '@/utils/functions'
 export default {
   name: 'LandingPageListPreview',
   mixins: [useDebounce],
@@ -947,6 +948,8 @@ export default {
       selectedTab: 'landingPage',
       selectedLandingPageTab: '1',
       selectedEditLandingPageTab: '1',
+      isSafari: handleIsSafari(),
+      showGrapesModal: false,
       landingPageTemplates: [],
       search: null,
       listData: [],
@@ -1068,6 +1071,7 @@ export default {
       this.$emit('on-create-landing-page-template')
     },
     handleTemplateEdit(val) {
+      this.showGrapesModal = val
       this.$emit('template-edit', val)
     },
     handleLinkChange(val) {
