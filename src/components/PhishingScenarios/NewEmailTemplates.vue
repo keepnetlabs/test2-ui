@@ -226,6 +226,7 @@
                             :subject="getSelectedLanguagePayload.subject"
                             :is-from-address-valid="isFromAddressFieldValid"
                             :company-preferred-language-id="getCompanyPreferredLanguageId"
+                            :show-red-flags="isShowRedFlags"
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
@@ -443,7 +444,49 @@ export default {
           isRedFlagged: false,
           tooltipMessage: ''
         }
-      }
+      },
+      isFlaggedStylesEnabled: false,
+      flaggedAreaCss: `
+        <style>
+          .flagged-area {
+            position: relative;
+            display: inline-block;
+            border: 1px solid #e00;
+            border-radius: 4px;
+            padding: 0.2em 2em;
+            margin: 0 0.1em;
+            background-color: rgba(255, 0, 0, 0.05);
+          }
+          .flagged-area::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0.5em;
+            transform: translateY(-50%);
+            width: 1em;
+            height: 1em;
+            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/506bf119-942d-4224-7ab1-98292e2e3900/public') no-repeat center/contain;
+          }
+          .flagged-area:hover::after {
+            content: attr(data-flag-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            margin-top: 0.4em;
+            padding: 0.6em 0.8em;
+            background:#B83A3A;
+            color: #fff;
+            font-size: 0.8em;
+            line-height: 1.4;
+            white-space: normal;
+            word-break: break-word;
+            max-width: 240px;
+            border-radius: 4px;
+            z-index: 1000;
+          }
+        </style>
+      `
     }
   },
   computed: {
@@ -1120,6 +1163,8 @@ export default {
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
+      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+
       if (this.isShowRedFlags) {
         checkRedFlags({
           template: this.getSelectedLanguagePayload.template,
@@ -1134,8 +1179,15 @@ export default {
           this.redFlags.fromAddress = fromEmail
           this.redFlags.fromName = fromName
           this.redFlags.subject = subject
-          this.redFlags.template = template
+          this.getSelectedLanguagePayload.template = template
+          this.selectedLanguagePayloadItemBeforeSave.template = template
+
+          // CSS stillerini template'e ekle
+          this.updateTemplateWithFlaggedStyles()
         })
+      } else {
+        // CSS stillerini template'den kaldır
+        this.updateTemplateWithFlaggedStyles()
       }
     },
     showLocalizationSuccessMessage(data) {
@@ -1193,6 +1245,66 @@ export default {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
         icon: 'mdi-check-circle'
       })
+    },
+    updateTemplateWithFlaggedStyles() {
+      if (!Array.isArray(this.languagesPayload)) return
+
+      this.languagesPayload.forEach((languagePayload) => {
+        if (!this._isValidLanguagePayload(languagePayload)) return
+
+        if (this.isFlaggedStylesEnabled) {
+          languagePayload.template = this._addFlaggedStylesToTemplate(languagePayload.template)
+        } else {
+          languagePayload.template = this._removeFlaggedStylesFromTemplate(languagePayload.template)
+        }
+      })
+    },
+
+    _isValidLanguagePayload(payload) {
+      return payload && typeof payload.template === 'string' && payload.template.trim()
+    },
+
+    _isFullHtmlTemplate(template) {
+      const htmlRegex = /<html[\s\S]*?>|<head[\s\S]*?>/i
+      return htmlRegex.test(template)
+    },
+
+    _hasHeadTag(template) {
+      return /<head[\s\S]*?>/i.test(template)
+    },
+
+    _addFlaggedStylesToTemplate(template) {
+      // Prevent duplicate CSS injection
+      if (template.includes(this.flaggedAreaCss.trim())) {
+        return template
+      }
+
+      if (this._isFullHtmlTemplate(template)) {
+        return this._injectCssIntoHead(template)
+      } else {
+        return this._prependCssToBodyContent(template)
+      }
+    },
+
+    _injectCssIntoHead(template) {
+      if (this._hasHeadTag(template)) {
+        return template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+      }
+      // If no head tag, create one
+      return template.replace(/<html[\s\S]*?>/i, `$&<head>${this.flaggedAreaCss}</head>`)
+    },
+
+    _prependCssToBodyContent(template) {
+      return `${this.flaggedAreaCss}${template}`
+    },
+
+    _removeFlaggedStylesFromTemplate(template) {
+      const cssToRemove = this.flaggedAreaCss.trim()
+      return template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+    },
+
+    _escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     }
   }
 }

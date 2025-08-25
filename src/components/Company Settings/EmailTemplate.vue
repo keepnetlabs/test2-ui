@@ -600,7 +600,7 @@
             </div>
           </div>
         </div>
-        <div class="email-template-preview" style="pointer-events: none;">
+        <div class="email-template-preview email-template-preview-phishing">
           <k-email-preview
             v-if="template"
             :key="template"
