@@ -201,6 +201,7 @@
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
+                        @template-edit="handleGrapesModalStatus"
                         @on-generate-email-template-success="handleGenerateEmailTemplateSuccess"
                       >
                         <template #template-header-left>
@@ -470,6 +471,7 @@ export default {
             white-space: normal;
             word-break: break-word;
             max-width: 240px;
+            min-width: 240px;
             border-radius: 4px;
             z-index: 1000;
           }
@@ -1106,6 +1108,11 @@ export default {
       clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {
+      if (this.lastRedFlags[value]) {
+        this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
+      } else {
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+      }
       if (
         JSON.stringify(this.selectedLanguagePayloadItemBeforeSave.template.trim()) ===
         JSON.stringify(this.getSelectedLanguagePayload.template.trim())
@@ -1149,6 +1156,10 @@ export default {
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
     },
+    handleGrapesModalStatus(status) {
+      this.isFlaggedStylesEnabled = !status
+      this.updateTemplateWithFlaggedStyles()
+    },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
@@ -1162,25 +1173,55 @@ export default {
         this.editItemsDisabled = true
         this.isRedFlagsLoading = true
         this.$refs.refEmailTemplate.isEmailGenerating = true
-        checkRedFlags({
-          template: this.getSelectedLanguagePayload.template,
-          subject: this.getSelectedLanguagePayload.subject,
-          fromName: this.getSelectedLanguagePayload.fromName,
-          fromEmail: this.getSelectedLanguagePayload.fromAddress,
-          cc: this.getSelectedLanguagePayload.ccAddresses,
-          language:
-            this.selectedLanguages.find((lang) => lang.value === this.activeLanguage)?.text || ''
-        })
-          .then((res) => {
-            console.log('res', res)
+        const redFlagsPromises = this.languagesPayload.map((item) => {
+          return checkRedFlags({
+            template: item.template,
+            subject: item.subject,
+            fromName: item.fromName,
+            fromEmail: item.fromAddress,
+            cc: item.ccAddresses,
+            language:
+              this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
+                ?.text || ''
+          }).then((res) => {
             const { cc, fromEmail, fromName, subject, template } = res?.data
-            this.redFlags.ccAddresses = cc
-            this.redFlags.fromAddress = fromEmail
-            this.redFlags.fromName = fromName
-            this.redFlags.subject = subject
-            this.getSelectedLanguagePayload.template = template
-            this.selectedLanguagePayloadItemBeforeSave.template = template
-            // CSS stillerini template'e ekle
+            const redFlags = {
+              ccAddresses: cc,
+              fromAddress: fromEmail,
+              fromName: fromName,
+              subject: subject
+            }
+
+            // Update item template and store red flags data
+            item.template = template
+            this.lastRedFlags[item.languageTypeResourceId] = {
+              flags: JSON.parse(JSON.stringify(redFlags)),
+              templates: [],
+              textfieldValues: {
+                fromName: item.fromName,
+                fromAddress: item.fromAddress,
+                subject: item.subject
+              }
+            }
+
+            return {
+              languageTypeResourceId: item.languageTypeResourceId,
+              redFlags,
+              template
+            }
+          })
+        })
+
+        Promise.all(redFlagsPromises)
+          .then((results) => {
+            // Set red flags for active language
+            const activeLanguageResult = results.find(
+              (result) => result.languageTypeResourceId === this.activeLanguage
+            )
+            if (activeLanguageResult) {
+              this.redFlags = JSON.parse(JSON.stringify(activeLanguageResult.redFlags))
+            }
+
             this.updateTemplateWithFlaggedStyles()
           })
           .finally(() => {
@@ -1213,8 +1254,8 @@ export default {
         subject: fromCurrentSubject
       } = this.getSelectedLanguagePayload
       if (
-        fromName !== fromCurrentName ||
-        fromAddress !== fromCurrentAddress ||
+        fromName !== fromCurrentName &&
+        fromAddress !== fromCurrentAddress &&
         subject !== fromCurrentSubject
       ) {
         return false
