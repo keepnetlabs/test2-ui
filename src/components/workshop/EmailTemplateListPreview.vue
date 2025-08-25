@@ -1,5 +1,5 @@
 <template>
-  <div class="emailTemplatePreview">
+  <div :class="`emailTemplatePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
     <app-dialog
       style="overflow: hidden;"
       custom-size="1600"
@@ -514,6 +514,7 @@ import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
+import { handleIsSafari } from '@/utils/functions'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -576,6 +577,7 @@ export default {
   mixins: [useDebounce],
   data() {
     return {
+      isSafari: handleIsSafari(),
       labels,
       languagePreview: '',
       selectedTemplateLanguages: [],
@@ -630,7 +632,8 @@ export default {
         ]
       },
       phishingEmailTemplates: [],
-      initialPhishingEmailTemplates: []
+      initialPhishingEmailTemplates: [],
+      showGrapesModal: false
     }
   },
   computed: {
@@ -1186,6 +1189,7 @@ export default {
       }
     },
     handleTemplateEdit(val) {
+      this.showGrapesModal = val
       this.$emit('template-edit', val)
     },
     setSelectedTemplate(item, index, isInitial = false) {
