@@ -372,7 +372,11 @@
             <InputEntityName
               ref="refInputEntityName"
               id="input--notification-template-subject"
-              :className="redFlags.subject.isRedFlagged ? 'red-flag-active' : ''"
+              :className="
+                redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               initialPlaceholder="Enter email subject"
               entityName="email subject"
               label="Subject"
@@ -383,8 +387,8 @@
               @input="$emit('update:subject', $event)"
             />
             <RedFlagTooltip
-              v-if="redFlags.subject.tooltipMessage"
-              tooltipContent="The subject line uses urgency (“Action required”) and threats (“prevent suspension”)—classic phishing tactics"
+              v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
+              :tooltipContent="redFlags.subject.tooltipMessage"
             />
           </div>
         </FormGroup>
@@ -400,7 +404,11 @@
             <InputEntityName
               id="input--notification-template-sender-name"
               initialPlaceholder="Enter sender name"
-              :className="redFlags.fromName.isRedFlagged ? 'red-flag-active' : ''"
+              :className="
+                redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               entityName="sender name"
               label="From Name"
               persistent-placeholder
@@ -410,8 +418,8 @@
               @input="$emit('update:fromName', $event)"
             />
             <RedFlagTooltip
-              v-if="redFlags.fromName.tooltipMessage"
-              tooltipContent="The sender’s display name is misspelled (“M1crosoft Account Team”); the correct name is “Microsoft Account Team.”"
+              v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
+              :tooltipContent="redFlags.fromName.tooltipMessage"
             />
           </div>
         </FormGroup>
@@ -428,7 +436,11 @@
               label="From Email"
               id="input--notification-template-from-email"
               placeholder="Enter sender email address"
-              :class="redFlags.fromAddress.isRedFlagged ? 'red-flag-active' : ''"
+              :class="
+                redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               persistent-placeholder
               :disabled="editItemsDisabled"
               :value="fromAddress"
@@ -439,8 +451,8 @@
               </template>
             </InputEmail>
             <RedFlagTooltip
-              v-if="redFlags.fromAddress.tooltipMessage"
-              tooltipContent="The sender’s domain is misspelled (“m1crosoft.com”); legitimate Microsoft emails come from “microsoft.com.”"
+              v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+              :tooltipContent="redFlags.fromAddress.tooltipMessage"
             />
           </div>
         </FormGroup>

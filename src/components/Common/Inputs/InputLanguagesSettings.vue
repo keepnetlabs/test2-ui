@@ -175,7 +175,9 @@
 
       <VBtn lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
         <VIcon>mdi-flag</VIcon>
-        <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
+        <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+          redFlagsText
+        }}</span>
       </VBtn>
       <VTextField
         v-if="false"
