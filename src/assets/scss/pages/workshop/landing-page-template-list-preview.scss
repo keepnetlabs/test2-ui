@@ -8,6 +8,11 @@
     overflow: hidden !important;
     text-overflow: ellipsis;
   }
+   &.safari-grapes-js-fix {
+    .vertical-panes > .pane {
+      overflow: visible !important;
+    }
+  }
   .toggle-advanced-search {
     font-style: normal;
     font-weight: 600;
