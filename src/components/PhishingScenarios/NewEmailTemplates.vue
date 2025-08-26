@@ -1388,7 +1388,6 @@ export default {
     _hasHeadTag(template) {
       return /<head[\s\S]*?>/i.test(template)
     },
-
     _addFlaggedStylesToTemplate(template) {
       // Prevent duplicate CSS injection
       if (template.includes(this.flaggedAreaCss.trim())) {
@@ -1404,19 +1403,94 @@ export default {
 
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
-        return template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        // CSS'i head'e ekle, script'i body'ye ekle
+        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        return this._injectScriptIntoBody(templateWithCss)
       }
       // If no head tag, create one
-      return template.replace(/<html[\s\S]*?>/i, `$&<head>${this.flaggedAreaCss}</head>`)
+      let templateWithCss = template.replace(
+        /<html[\s\S]*?>/i,
+        `$&<head>${this.flaggedAreaCss}</head>`
+      )
+      return this._injectScriptIntoBody(templateWithCss)
     },
 
     _prependCssToBodyContent(template) {
-      return `${this.flaggedAreaCss}${template}`
+      // CSS'i başa ekle, script'i body'ye ekle
+      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      return this._injectScriptIntoBody(templateWithCss)
+    },
+
+    _injectScriptIntoBody(template) {
+      const script = this._getPreventClickScript()
+
+      if (template.includes('</body>')) {
+        // Body tag varsa, kapanış tag'ından önce script ekle
+        return template.replace(/<\/body>/i, `${script}</body>`)
+      } else if (template.includes('<body')) {
+        // Body tag açılıyorsa ama kapanmıyorsa, açılış tag'ından sonra script ekle
+        return template.replace(/<body[^>]*>/i, `$&${script}`)
+      } else {
+        // Body tag yoksa, en sona script ekle
+        return template + script
+      }
     },
 
     _removeFlaggedStylesFromTemplate(template) {
+      // Hem CSS'i hem script'i kaldır
       const cssToRemove = this.flaggedAreaCss.trim()
-      return template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      const scriptToRemove = this._getPreventClickScript().trim()
+
+      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replace(
+        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        ''
+      )
+
+      return cleanedTemplate
+    },
+
+    _getPreventClickScript() {
+      // eslint-disable-next-line no-use-before-define
+      const method = `(function() {
+            'use strict';
+            
+            function initializeEventPrevention() {
+              // Tüm event türlerini tanımla
+              const eventTypes = [
+                'click', 'dblclick', 'mousedown', 'mouseup', 'mousemove',
+                'keydown', 'keyup', 'keypress', 'submit', 'change',
+                'focus', 'blur', 'input', 'select', 'dragstart',
+                'contextmenu', 'touchstart', 'touchend', 'touchmove',
+                'wheel', 'scroll'
+              ];
+              
+              // Her event türü için body listener ekle
+              eventTypes.forEach(eventType => {
+                document.body.addEventListener(eventType, function(e) {
+                  const flaggedElement = e.target.closest('.flagged-area');
+                  if (flaggedElement) {
+                    // Event'i tamamen engelle
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                  }
+                }, true); // Capture phase
+              });
+            }
+
+            // DOM hazır olduğunda çalıştır
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', initializeEventPrevention);
+            } else {
+              // DOM zaten hazırsa hemen çalıştır
+              initializeEventPrevention();
+            }
+          })();`
+      //@ts-ignore
+      //eslint-disable-next-line no-use-before-define
+      return '<script>' + method + '<\/script>'
     },
 
     _escapeRegExp(string) {
