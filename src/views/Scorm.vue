@@ -41,6 +41,13 @@ export default {
             .catch((error) => {
               window.alert(error?.response?.data?.message)
             })
+            .finally(() => {
+              setTimeout(() => {
+                if (window.__beforeUnloadHandler) {
+                  window.removeEventListener('beforeunload', window.__beforeUnloadHandler)
+                }
+              }, 12000)
+            })
         }
       }
     }

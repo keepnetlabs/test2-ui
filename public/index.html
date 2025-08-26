@@ -6,9 +6,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <script>
+    window.__beforeUnloadHandler = function (e) {
+        if (location.pathname.indexOf('/training/scorm/watch') > -1) {
+          e.preventDefault()
+          e.returnValue = ''
+          return ''
+        }
+      }
+      window.addEventListener('beforeunload', window.__beforeUnloadHandler)
+  </script>
   <script src="<%= BASE_URL %>3da9996d-1c60-461b-a56c-430f3ea053f4.js"></script>
   <title>Loading...</title>
-
 <body>
   <noscript>
     <strong>We're sorry but application doesn't work properly without JavaScript enabled. Please enable it to
