@@ -1052,13 +1052,26 @@ export default {
             if (this.timeoutId) {
               clearTimeout(this.timeoutId)
             }
+
             this.isEverythingLocalized = true
+            const errorLanguages = []
+            const successLanguages = []
+            data.forEach((item) => {
+              if (item.error) {
+                errorLanguages.push(item)
+              } else {
+                successLanguages.push(item)
+              }
+            })
 
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
               this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
             }
-            data.forEach((item) => {
+            errorLanguages.forEach((item) => {
+              this.showLocalizationErrorMessage(item)
+            })
+            successLanguages.forEach((item) => {
               const languagePayload = this.languagesPayload.find(
                 (language) => language.languageTypeResourceId === item.languageResourceId
               )
@@ -1223,6 +1236,8 @@ export default {
             }
 
             this.updateTemplateWithFlaggedStyles()
+            this.selectedLanguagePayloadItemBeforeSave.template = this.getSelectedLanguagePayload.template
+            this.selectedLanguagePayloadItemBeforeSave.subject = this.getSelectedLanguagePayload.subject
           })
           .finally(() => {
             this.$refs.refEmailTemplate.isEmailGenerating = false
@@ -1261,6 +1276,13 @@ export default {
         return false
       }
       return templates.find((template) => template === this.getSelectedLanguagePayload.template)
+    },
+    showLocalizationErrorMessage(item) {
+      this.$store.dispatch('common/createSnackBar', {
+        message: `${item.error}`,
+        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+        icon: 'mdi-alert-circle'
+      })
     },
     showLocalizationSuccessMessage(data) {
       if (!data || !data.length || this.isDefault) return
