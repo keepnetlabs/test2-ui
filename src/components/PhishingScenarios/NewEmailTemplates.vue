@@ -253,10 +253,7 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{
-          nextButton: !isDefault && isSubmitDisabled,
-          submitButton: isSubmitDisabled
-        }"
+        :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
@@ -441,10 +438,14 @@ export default {
             display: inline-block;
             border: 1px solid #e00;
             border-radius: 4px;
-            padding: 0.2em 2em;
-            margin: 0 0.1em;
-            background-color: rgba(255, 0, 0, 0.05);
+            padding-left:2em !important;
+            margin: 0.5em 0.1em;
           }
+           .flagged-area:not(a):not(button):not(.button) {
+            background-color: rgba(255, 0, 0, 0.1);
+            padding: 0.2em 2em;
+          }
+          
           .flagged-area::before {
             content: '';
             position: absolute;
@@ -473,7 +474,10 @@ export default {
             max-width: 240px;
             min-width: 240px;
             border-radius: 4px;
-            z-index: 1000;
+            z-index: 9999;
+          }
+          .email-container,.container,.email-container-wrapper{
+            overflow:visible;
           }
         </style>
       `
@@ -527,6 +531,12 @@ export default {
     },
     getCompanyPreferredLanguageId() {
       return this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
+    },
+    getDisabledStatuses() {
+      return {
+        nextButton: !this.isDefault && this.isSubmitDisabled,
+        submitButton: this.isSubmitDisabled || this.isRedFlagsLoading || this.isEmailGenerating
+      }
     }
   },
   watch: {
@@ -774,7 +784,9 @@ export default {
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
-
+          delete this.lastRedFlags[this.activeLanguage]
+          this.redFlags = JSON.parse(JSON.stringify(this.defaultRedFlags))
+          this.isShowRedFlags = false
           // Reset the input file so the same file can be uploaded again
           e.target.value = ''
         })
@@ -873,6 +885,11 @@ export default {
         scrollToComponent(el)
         this.isSubmitDisabled = false
         return
+      }
+      if (this.isShowRedFlags) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       let payload = {
@@ -1176,6 +1193,7 @@ export default {
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+      this.editItemsDisabled = true
       if (this.isShowRedFlags) {
         this.isEqualRedFlags = this.compareRedFlags()
         if (this.isEqualRedFlags) {
@@ -1183,7 +1201,6 @@ export default {
           this.updateTemplateWithFlaggedStyles()
           return
         }
-        this.editItemsDisabled = true
         this.isRedFlagsLoading = true
         this.$refs.refEmailTemplate.isEmailGenerating = true
         const redFlagsPromises = this.languagesPayload.map((item) => {
@@ -1241,10 +1258,13 @@ export default {
           })
           .finally(() => {
             this.$refs.refEmailTemplate.isEmailGenerating = false
-            this.editItemsDisabled = false
             this.isRedFlagsLoading = false
+            this.editItemsDisabled = false
           })
       } else {
+        // Red Flags gizlendiğinde form alanlarını enable et
+        this.editItemsDisabled = false
+
         // CSS stillerini template'den kaldır
         this.lastRedFlags[this.activeLanguage] = {
           flags: JSON.parse(JSON.stringify(this.redFlags)),
@@ -1275,6 +1295,7 @@ export default {
       ) {
         return false
       }
+
       return templates.find((template) => template === this.getSelectedLanguagePayload.template)
     },
     showLocalizationErrorMessage(item) {

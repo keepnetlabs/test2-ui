@@ -216,19 +216,64 @@
         :disabled="isGenerateWithAIDisabled"
         @focus="handleSearchInputFocus"
       />
+      <VTooltip v-if="showRedFlags" bottom max-width="142">
+        <template #activator="{ on }">
+          <div v-on="on">
+            <VIcon
+              color="#2196f3"
+              class="executive-reports-card__right-btn"
+              small
+              :style="getEditModeIconStyle"
+              @click="handleEditModeClick"
+              >mdi-pencil</VIcon
+            >
+          </div>
+        </template>
+        <span>To use this action, first hide the Red Flag.</span>
+      </VTooltip>
       <VIcon
+        v-else
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small
         @click="handleEditModeClick"
         >mdi-pencil</VIcon
       >
-      <VMenu bottom :offset="24" nudge-bottom="40" nudge-left="40">
+      <VMenu
+        :key="showRedFlags ? 'red-flags' : 'normal'"
+        bottom
+        :offset="24"
+        nudge-bottom="40"
+        nudge-left="40"
+      >
         <template #activator="{ on }">
-          <VIcon v-on="on" color="#2196f3" class="executive-reports-card__right-btn" small
+          <VTooltip v-if="showRedFlags" bottom max-width="142">
+            <template #activator="{ on: onTooltip }">
+              <div v-on="onTooltip">
+                <VIcon
+                  v-on="on"
+                  color="#2196f3"
+                  class="executive-reports-card__right-btn"
+                  :style="getEditModeIconStyle"
+                  small
+                  >mdi-dots-vertical</VIcon
+                >
+              </div>
+            </template>
+            <span>To use this action, first hide the Red Flag.</span>
+          </VTooltip>
+
+          <VIcon
+            v-else
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            :style="getEditModeIconStyle"
+            small
             >mdi-dots-vertical</VIcon
           >
         </template>
+
         <VList>
           <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
             <VListItemTitle>
@@ -405,6 +450,13 @@ export default {
     },
     isGenerateButtonDisabled() {
       return this.value.length <= 1 || this.isGenerateWithAIDisabled
+    },
+    getEditModeIconStyle() {
+      return {
+        opacity: this.showRedFlags ? '0.5' : '1',
+        cursor: this.showRedFlags ? 'default' : 'pointer',
+        pointerEvents: this.showRedFlags ? 'none' : 'initial'
+      }
     }
   },
   watch: {

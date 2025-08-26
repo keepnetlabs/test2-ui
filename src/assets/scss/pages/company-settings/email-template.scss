@@ -464,6 +464,9 @@
   .k-email-preview {
     pointer-events: initial !important;
   }
+  &.pointer-none .k-email-preview {
+    pointer-events: none !important;
+  }
 }
 #app .email-template__ai-assistant-textarea.v-input--is-disabled {
   textarea {
