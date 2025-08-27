@@ -1138,8 +1138,12 @@ export default {
       clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {
-      if (this.lastRedFlags[value]) {
-        this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
+      if (this.isShowRedFlags) {
+        if (this.lastRedFlags[value]) {
+          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
+        } else {
+          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        }
       } else {
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
       }
@@ -1194,17 +1198,22 @@ export default {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
       this.editItemsDisabled = true
+      let differentProperties = {}
       if (this.isShowRedFlags) {
-        this.isEqualRedFlags = this.compareRedFlags()
-        if (this.isEqualRedFlags) {
+        const responseFlags = this.compareRedFlags()
+        if (
+          (typeof responseFlags === 'object' && Object.keys(responseFlags).length === 0) ||
+          (typeof responseFlags === 'boolean' && responseFlags)
+        ) {
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
           this.updateTemplateWithFlaggedStyles()
           return
         }
+        //differentProperties = responseFlags
         this.isRedFlagsLoading = true
         this.$refs.refEmailTemplate.isEmailGenerating = true
         const redFlagsPromises = this.languagesPayload.map((item) => {
-          return checkRedFlags({
+          const payload = {
             template: item.template,
             subject: item.subject,
             fromName: item.fromName,
@@ -1213,7 +1222,8 @@ export default {
             language:
               this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
                 ?.text || ''
-          }).then((res) => {
+          }
+          return checkRedFlags(payload).then((res) => {
             const { cc, fromEmail, fromName, subject, template } = res?.data
             const redFlags = {
               ccAddresses: cc,
@@ -1253,8 +1263,6 @@ export default {
             }
 
             this.updateTemplateWithFlaggedStyles()
-            this.selectedLanguagePayloadItemBeforeSave.template = this.getSelectedLanguagePayload.template
-            this.selectedLanguagePayloadItemBeforeSave.subject = this.getSelectedLanguagePayload.subject
           })
           .finally(() => {
             this.$refs.refEmailTemplate.isEmailGenerating = false
@@ -1280,6 +1288,7 @@ export default {
       }
     },
     compareRedFlags() {
+      let differentProperties = {}
       if (Object.keys(this.lastRedFlags).length === 0) return false
       const { templates = [], textfieldValues = {} } = this.lastRedFlags[this.activeLanguage] || {}
       const { fromName, fromAddress, subject } = textfieldValues
@@ -1288,15 +1297,28 @@ export default {
         fromAddress: fromCurrentAddress,
         subject: fromCurrentSubject
       } = this.getSelectedLanguagePayload
-      if (
-        fromName !== fromCurrentName &&
-        fromAddress !== fromCurrentAddress &&
-        subject !== fromCurrentSubject
-      ) {
-        return false
+
+      if (fromName !== fromCurrentName) {
+        differentProperties.fromName = fromCurrentName
+      }
+      if (fromAddress !== fromCurrentAddress) {
+        differentProperties.fromAddress = fromCurrentAddress
+      }
+      if (subject !== fromCurrentSubject) {
+        differentProperties.subject = fromCurrentSubject
       }
 
-      return templates.find((template) => template === this.getSelectedLanguagePayload.template)
+      const templateExists = templates.find(
+        (template) => template.trim() === this.selectedLanguagePayloadItemBeforeSave.template.trim()
+      )
+      if (!templateExists) {
+        differentProperties.template = this.getSelectedLanguagePayload.template
+      }
+      if (Object.keys(differentProperties).length === 0) {
+        return true
+      }
+
+      return differentProperties
     },
     showLocalizationErrorMessage(item) {
       this.$store.dispatch('common/createSnackBar', {
@@ -1372,6 +1394,10 @@ export default {
         } else {
           languagePayload.template = this._removeFlaggedStylesFromTemplate(languagePayload.template)
           this.lastRedFlags[this.activeLanguage]?.templates?.push(languagePayload.template)
+        }
+        if (languagePayload.languageTypeResourceId === this.activeLanguage) {
+          this.selectedLanguagePayloadItemBeforeSave.template = languagePayload.template
+          this.selectedLanguagePayloadItemBeforeSave.subject = languagePayload.subject
         }
       })
     },
@@ -1458,11 +1484,10 @@ export default {
             function initializeEventPrevention() {
               // Tüm event türlerini tanımla
               const eventTypes = [
-                'click', 'dblclick', 'mousedown', 'mouseup', 'mousemove',
+                'click', 'auxclick', 'dblclick', 'mousedown', 'mouseup', 'mousemove',
                 'keydown', 'keyup', 'keypress', 'submit', 'change',
                 'focus', 'blur', 'input', 'select', 'dragstart',
-                'contextmenu', 'touchstart', 'touchend', 'touchmove',
-                'wheel', 'scroll'
+                'contextmenu'
               ];
               
               // Her event türü için body listener ekle
@@ -1478,9 +1503,19 @@ export default {
                   }
                 }, true); // Capture phase
               });
+              ['click', 'auxclick'].forEach(anchorEvent => {
+                document.body.addEventListener(anchorEvent, function(e) {
+                  const anchor = e.target.closest('a');
+                  if (anchor && anchor.closest('.flagged-area')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    try { anchor.setAttribute('data-blocked', 'true'); } catch (_) {}
+                    return false;
+                  }
+                }, true);
+              });
             }
-
-            // DOM hazır olduğunda çalıştır
             if (document.readyState === 'loading') {
               document.addEventListener('DOMContentLoaded', initializeEventPrevention);
             } else {

@@ -1239,6 +1239,7 @@ export default {
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
+      this.isShowRedFlags = false
       this.$emit('update:isPlainText', this.generatedTemplates[index].isPlainText)
       this.$emit(
         'update:languageTypeResourceId',

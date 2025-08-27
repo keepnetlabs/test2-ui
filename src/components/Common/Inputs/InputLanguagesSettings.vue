@@ -9,16 +9,16 @@
     <div class="d-flex gap-4">
       <div class="position-relative">
         <div>
-          <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+          <VTooltip v-if="!isLocalizeReady || showRedFlags" bottom max-width="260">
             <template #activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on" :style="getLocalizeButtonStyle">
+              <div v-bind="attrs" v-on="on">
                 <VBtn
                   :ripple="false"
                   class="fw-600"
                   rounded
                   outlined
                   color="#2196f3"
-                  :style="isLocalizeReady ? {} : { pointerEvents: 'none' }"
+                  :style="getLocalizeButtonStyle"
                   @click="handleLocalizeClick"
                 >
                   <VIcon>mdi-web</VIcon>
@@ -26,7 +26,13 @@
                 </VBtn>
               </div>
             </template>
-            <span>To start localization, fill in all required fields.</span>
+            <span>
+              {{
+                showRedFlags
+                  ? 'To see red flags, fill in all required fields.'
+                  : 'To start localization, fill in all required fields.'
+              }}
+            </span>
           </VTooltip>
           <VBtn
             v-else
@@ -175,7 +181,7 @@
       </div>
       <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
         <template #activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" :style="getLocalizeButtonStyle">
+          <div v-bind="attrs" v-on="on" :style="getRedFlagButtonStyle">
             <VBtn
               :ripple="false"
               lass="fw-600"
@@ -382,7 +388,7 @@ export default {
     },
     getLocalizeButtonStyle() {
       const style = {}
-      if (!this.isLocalizeReady) {
+      if (!this.isLocalizeReady || this.showRedFlags) {
         style.opacity = '0.5'
         style.cursor = 'default'
       }
@@ -457,6 +463,15 @@ export default {
         cursor: this.showRedFlags ? 'default' : 'pointer',
         pointerEvents: this.showRedFlags ? 'none' : 'initial'
       }
+    },
+    getRedFlagButtonStyle() {
+      const style={}
+      if(!this.isLocalizeReady){
+        style.opacity = '0.5'
+        style.pointerEvents = 'none'
+        style.cursor = 'default'
+      }
+      return style
     }
   },
   watch: {
