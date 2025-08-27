@@ -1249,6 +1249,12 @@ export default {
               redFlags,
               template
             }
+          }).catch((e) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message:e?.response?.data?.detail || e?.response?.data?.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
           })
         })
 
