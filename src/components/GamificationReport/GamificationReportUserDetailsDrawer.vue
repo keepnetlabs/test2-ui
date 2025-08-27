@@ -481,7 +481,7 @@
                       <span v-if="item.pointRule">
                         and <span class="gamification-report__timeline-item-bold-text"  v-if="item.pointRule.ruleName === 'Joined After 3 Days'">lost </span> <span class="gamification-report__timeline-item-bold-text" v-else>received </span>
                         <span class="gamification-report__timeline-item-bold-text"><span class="gamification-report__timeline-item-bold-text">{{ item.pointRule.ruleName === 'Joined After 3 Days' ? '' : item.pointRule.ruleName === 'Joined 1–3 Days' ? '': '+' }}</span>{{ item.pointRule.rulePoint }} </span>
-                        <span class="gamification-report__timeline-item-bold-text">{{ item.pointRule.ruleName==='Joined After 3 Days' ? 'lost' : 'extra' }}
+                        <span class="gamification-report__timeline-item-bold-text">{{ item.pointRule.ruleName==='Joined After 3 Days' ? '' : 'extra' }}
                           </span> <span class="gamification-report__timeline-item-bold-text">points</span> for joining the training <span>{{ item.pointRule.ruleName==='Joined After 3 Days' ? 'more than 3 days after invitation.':item.pointRule.ruleName==='Joined 1–3 Days' ? '1–3 days after invitation.':'within 24 hours.' }}</span>
                       </span>
                     </span>
