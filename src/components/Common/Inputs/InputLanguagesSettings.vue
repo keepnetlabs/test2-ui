@@ -9,23 +9,30 @@
     <div class="d-flex gap-4">
       <div class="position-relative">
         <div>
-          <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+          <VTooltip v-if="!isLocalizeReady || showRedFlags" bottom max-width="260">
             <template #activator="{ on, attrs }">
-              <VBtn
-                v-bind="attrs"
-                v-on="on"
-                class="fw-600"
-                rounded
-                outlined
-                color="#2196f3"
-                :style="getLocalizeButtonStyle"
-                @click="handleLocalizeClick"
-              >
-                <VIcon>mdi-web</VIcon>
-                <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
-              </VBtn>
+              <div v-bind="attrs" v-on="on">
+                <VBtn
+                  :ripple="false"
+                  class="fw-600"
+                  rounded
+                  outlined
+                  color="#2196f3"
+                  :style="getLocalizeButtonStyle"
+                  @click="handleLocalizeClick"
+                >
+                  <VIcon>mdi-web</VIcon>
+                  <span class="button-new__text ml-1" style="text-transform: none;">Localize</span>
+                </VBtn>
+              </div>
             </template>
-            <span>To start localization, fill in all required fields.</span>
+            <span>
+              {{
+                showRedFlags
+                  ? 'To see red flags, fill in all required fields.'
+                  : 'To start localization, fill in all required fields.'
+              }}
+            </span>
           </VTooltip>
           <VBtn
             v-else
@@ -172,17 +179,34 @@
           </div>
         </div>
       </div>
-
-      <VBtn
-        v-if="false"
-        lass="fw-600"
-        rounded
-        outlined
-        color="#2196f3"
-        @click="handleShowRedFlagsClick"
-      >
+      <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+        <template #activator="{ on, attrs }">
+          <div v-bind="attrs" v-on="on" :style="getRedFlagButtonStyle">
+            <VBtn
+              :ripple="false"
+              lass="fw-600"
+              rounded
+              outlined
+              color="#2196f3"
+              :style="isLocalizeReady ? {} : { pointerEvents: 'none' }"
+              @click="handleShowRedFlagsClick"
+            >
+              <VIcon>mdi-flag</VIcon>
+              <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                redFlagsText
+              }}</span>
+            </VBtn>
+          </div>
+        </template>
+        <span>
+          To see red flags, fill in all required fields.
+        </span>
+      </VTooltip>
+      <VBtn v-else lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
         <VIcon>mdi-flag</VIcon>
-        <span class="button-new__text ml-1" style="text-transform: none;">{{ redFlagsText }}</span>
+        <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+          redFlagsText
+        }}</span>
       </VBtn>
       <VTextField
         v-if="false"
@@ -198,19 +222,64 @@
         :disabled="isGenerateWithAIDisabled"
         @focus="handleSearchInputFocus"
       />
+      <VTooltip v-if="showRedFlags" bottom max-width="142">
+        <template #activator="{ on }">
+          <div v-on="on">
+            <VIcon
+              color="#2196f3"
+              class="executive-reports-card__right-btn"
+              small
+              :style="getEditModeIconStyle"
+              @click="handleEditModeClick"
+              >mdi-pencil</VIcon
+            >
+          </div>
+        </template>
+        <span>To use this action, first hide the Red Flag.</span>
+      </VTooltip>
       <VIcon
+        v-else
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small
         @click="handleEditModeClick"
         >mdi-pencil</VIcon
       >
-      <VMenu bottom :offset="24" nudge-bottom="40" nudge-left="40">
+      <VMenu
+        :key="showRedFlags ? 'red-flags' : 'normal'"
+        bottom
+        :offset="24"
+        nudge-bottom="40"
+        nudge-left="40"
+      >
         <template #activator="{ on }">
-          <VIcon v-on="on" color="#2196f3" class="executive-reports-card__right-btn" small
+          <VTooltip v-if="showRedFlags" bottom max-width="142">
+            <template #activator="{ on: onTooltip }">
+              <div v-on="onTooltip">
+                <VIcon
+                  v-on="on"
+                  color="#2196f3"
+                  class="executive-reports-card__right-btn"
+                  :style="getEditModeIconStyle"
+                  small
+                  >mdi-dots-vertical</VIcon
+                >
+              </div>
+            </template>
+            <span>To use this action, first hide the Red Flag.</span>
+          </VTooltip>
+
+          <VIcon
+            v-else
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            :style="getEditModeIconStyle"
+            small
             >mdi-dots-vertical</VIcon
           >
         </template>
+
         <VList>
           <VListItem class="cursor-pointer" @click="handleUploadEmailButtonClick">
             <VListItemTitle>
@@ -319,7 +388,7 @@ export default {
     },
     getLocalizeButtonStyle() {
       const style = {}
-      if (!this.isLocalizeReady) {
+      if (!this.isLocalizeReady || this.showRedFlags) {
         style.opacity = '0.5'
         style.cursor = 'default'
       }
@@ -387,6 +456,22 @@ export default {
     },
     isGenerateButtonDisabled() {
       return this.value.length <= 1 || this.isGenerateWithAIDisabled
+    },
+    getEditModeIconStyle() {
+      return {
+        opacity: this.showRedFlags ? '0.5' : '1',
+        cursor: this.showRedFlags ? 'default' : 'pointer',
+        pointerEvents: this.showRedFlags ? 'none' : 'initial'
+      }
+    },
+    getRedFlagButtonStyle() {
+      const style={}
+      if(!this.isLocalizeReady){
+        style.opacity = '0.5'
+        style.pointerEvents = 'none'
+        style.cursor = 'default'
+      }
+      return style
     }
   },
   watch: {
@@ -417,7 +502,8 @@ export default {
       if (!rec || !rec.el) return
       const removeBtn = rec.el.querySelector('.js-remove')
       if (!removeBtn) return
-      const disabled = this.isRemovingLastLocalized(value) || this.companyPreferredLanguageId === value
+      const disabled =
+        this.isRemovingLastLocalized(value) || this.companyPreferredLanguageId === value
       removeBtn.classList.toggle('is-disabled', disabled)
     },
     refreshAllConfirmRowsDisabledState() {
@@ -486,7 +572,7 @@ export default {
         : 'Updating will replace the template.'
       const primaryLabel = isRemove ? 'Remove' : 'Replace'
       const primaryClass =
-        (isRemove ? 'js-remove' : 'js-replace') + 
+        (isRemove ? 'js-remove' : 'js-replace') +
         (isLastTranslated || isCompanyPreferredLanguage ? ' is-disabled' : '')
       el.innerHTML = `
         <div class="relocalize-inline-confirm__left">
@@ -538,7 +624,10 @@ export default {
           this.$emit('input', effective)
           // Emit specific event for language removal
           if (isRemove) {
-            this.$emit('on-language-removed', { languageName: item.text, languageId: item.value })
+            this.$emit('on-language-removed', {
+              languageName: item.text,
+              languageId: item.value
+            })
             this.removeConfirmRowFor(item.value)
           } else {
             this.removeRelocalizeRowFor(item.value)

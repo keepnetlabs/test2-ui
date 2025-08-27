@@ -65,7 +65,27 @@
           "
         >
           <div v-if="!aiAssistant">
+            <VTooltip v-if="isShowRedFlags" bottom max-width="142">
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn
+                    class="white--text btn-util email-template__ai-assistant-btn"
+                    rounded
+                    :ripple="false"
+                    :style="isRedFlagButtonDisabledStyle"
+                    @click="$emit('update:aiAssistant', true)"
+                  >
+                    <VIcon class="cursor-pointer mr-1" color="#fff">
+                      mdi-creation
+                    </VIcon>
+                    USE
+                  </VBtn>
+                </div>
+              </template>
+              <span>To use this action, first hide the Red Flag.</span>
+            </VTooltip>
             <VBtn
+              v-else
               class="white--text btn-util email-template__ai-assistant-btn"
               rounded
               :ripple="false"
@@ -212,7 +232,7 @@
                 </KSelect>
               </div>
               <VTextarea
-                v-model.trim="aiTemplateText"
+                v-model="aiTemplateText"
                 class="email-template__ai-assistant-textarea"
                 id="email-template__ai-assistant-textarea"
                 outlined
@@ -268,7 +288,25 @@
                 />
               </div>
               <div class="email-template__ai-assistant-footer-right">
+                <VTooltip v-if="isShowRedFlags" bottom max-width="142">
+                  <template #activator="{ on }">
+                    <div v-on="on">
+                      <VBtn
+                        class="white--text btn-util btn-download-add-in pl-4"
+                        style="text-transform: capitalize;"
+                        color="#2196F3"
+                        rounded
+                        :style="getGenerateEmailButtonStyle"
+                        @click="handleGenerateEmail"
+                      >
+                        {{ getGenerateButtonLabel }}
+                      </VBtn>
+                    </div>
+                  </template>
+                  <span>To use this action, first hide the Red Flag.</span>
+                </VTooltip>
                 <VBtn
+                  v-else
                   class="white--text btn-util btn-download-add-in pl-4"
                   style="text-transform: capitalize;"
                   color="#2196F3"
@@ -372,7 +410,11 @@
             <InputEntityName
               ref="refInputEntityName"
               id="input--notification-template-subject"
-              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              :className="
+                redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               initialPlaceholder="Enter email subject"
               entityName="email subject"
               label="Subject"
@@ -383,8 +425,8 @@
               @input="$emit('update:subject', $event)"
             />
             <RedFlagTooltip
-              v-if="isShowRedFlags"
-              tooltipContent="The subject line uses urgency (“Action required”) and threats (“prevent suspension”)—classic phishing tactics"
+              v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
+              :tooltipContent="redFlags.subject.tooltipMessage"
             />
           </div>
         </FormGroup>
@@ -400,7 +442,11 @@
             <InputEntityName
               id="input--notification-template-sender-name"
               initialPlaceholder="Enter sender name"
-              :className="isShowRedFlags ? 'red-flag-active' : ''"
+              :className="
+                redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               entityName="sender name"
               label="From Name"
               persistent-placeholder
@@ -410,8 +456,8 @@
               @input="$emit('update:fromName', $event)"
             />
             <RedFlagTooltip
-              v-if="isShowRedFlags"
-              tooltipContent="The sender’s display name is misspelled (“M1crosoft Account Team”); the correct name is “Microsoft Account Team.”"
+              v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
+              :tooltipContent="redFlags.fromName.tooltipMessage"
             />
           </div>
         </FormGroup>
@@ -428,7 +474,11 @@
               label="From Email"
               id="input--notification-template-from-email"
               placeholder="Enter sender email address"
-              :class="isShowRedFlags ? 'red-flag-active' : ''"
+              :class="
+                redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
+                  ? 'red-flag-active'
+                  : ''
+              "
               persistent-placeholder
               :disabled="editItemsDisabled"
               :value="fromAddress"
@@ -439,8 +489,8 @@
               </template>
             </InputEmail>
             <RedFlagTooltip
-              v-if="isShowRedFlags"
-              tooltipContent="The sender’s domain is misspelled (“m1crosoft.com”); legitimate Microsoft emails come from “microsoft.com.”"
+              v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+              :tooltipContent="redFlags.fromAddress.tooltipMessage"
             />
           </div>
         </FormGroup>
@@ -588,7 +638,7 @@
             </div>
           </div>
         </div>
-        <div class="email-template-preview" style="pointer-events: none;">
+        <div :class="getEmailPreviewClasses">
           <k-email-preview
             v-if="template"
             :key="template"
@@ -728,12 +778,14 @@ export default {
     'selectedTemplateLanguages',
     'languagePreview',
     'showLanguageField',
-    'isShowRedFlags',
+    'redFlags',
     'isPlainText',
     'customHeadScripts',
     'currentPageIndex',
     'isShowHeadScripts',
-    'showEditButton'
+    'showEditButton',
+    'isRedFlagsLoading',
+    'isShowRedFlags'
   ],
   data() {
     return {
@@ -945,6 +997,7 @@ export default {
       return this.isEmailGenerating ? 'Generating Email Template...' : 'Generate Email Template'
     },
     getGenerateEmailButtonStyle() {
+      if (this.isShowRedFlags) return this.isRedFlagButtonDisabledStyle
       return this.aiTemplateText.length > 0 &&
         this.aiTemplateText.length <= 500 &&
         !this.isEmailGenerating &&
@@ -952,12 +1005,23 @@ export default {
         ? { opacity: 1, pointerEvents: '' }
         : { opacity: 0.5, pointerEvents: 'none' }
     },
+    isRedFlagButtonDisabledStyle() {
+      return this.isShowRedFlags ? { opacity: 0.5, pointerEvents: 'none' } : {}
+    },
+    getEmailPreviewClasses() {
+      return {
+        'email-template-preview email-template-preview-phishing': true,
+        'pointer-none': !this.isShowRedFlags
+      }
+    },
     getAITemplateTextAreaPlaceholder() {
       return this.templateType === 'landing'
         ? 'Describe the scenario and key details for the phishing simulation landing page you want to generate.'
         : 'Describe the scenario and key details for the phishing simulation email you want to generate.'
     },
     getLoaderTitle() {
+      if (this.isRedFlagsLoading)
+        return 'AI Ally is carefully scanning your email template for Red Flags'
       if (this.isGenerateWithAi)
         return 'The email template is being localized by AI for the selected languages.'
       return this.templateType === 'landing'
@@ -965,6 +1029,8 @@ export default {
         : 'AI Ally is carefully crafting your Email template'
     },
     getLoaderDescription() {
+      if (this.isRedFlagsLoading)
+        return 'This may take approximately 20 seconds. Please stay on the page while the scan is completed.'
       if (this.isGenerateWithAi)
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
       return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
@@ -1173,6 +1239,7 @@ export default {
     setActiveGeneratedTemplate(index) {
       this.activeGeneratedTemplateIndex = index
       this.aiTemplateText = this.generatedTemplates[index].text
+      this.isShowRedFlags = false
       this.$emit('update:isPlainText', this.generatedTemplates[index].isPlainText)
       this.$emit(
         'update:languageTypeResourceId',
