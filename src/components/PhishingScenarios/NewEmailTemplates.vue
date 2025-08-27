@@ -1143,9 +1143,15 @@ export default {
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
         } else {
           this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+          this.isFlaggedStylesEnabled = false
+          this.updateTemplateWithFlaggedStyles()
+          this.isShowRedFlags = false
         }
       } else {
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
+        this.isShowRedFlags = false
       }
       if (
         JSON.stringify(this.selectedLanguagePayloadItemBeforeSave.template.trim()) ===
@@ -1198,7 +1204,7 @@ export default {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
       this.editItemsDisabled = true
-      let differentProperties = {}
+      //let differentProperties = {}
       if (this.isShowRedFlags) {
         const responseFlags = this.compareRedFlags()
         if (
@@ -1212,51 +1218,55 @@ export default {
         //differentProperties = responseFlags
         this.isRedFlagsLoading = true
         this.$refs.refEmailTemplate.isEmailGenerating = true
-        const redFlagsPromises = this.languagesPayload.map((item) => {
-          const payload = {
-            template: item.template,
-            subject: item.subject,
-            fromName: item.fromName,
-            fromEmail: item.fromAddress,
-            cc: item.ccAddresses,
-            language:
-              this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
-                ?.text || ''
-          }
-          return checkRedFlags(payload).then((res) => {
-            const { cc, fromEmail, fromName, subject, template } = res?.data
-            const redFlags = {
-              ccAddresses: cc,
-              fromAddress: fromEmail,
-              fromName: fromName,
-              subject: subject
+        const redFlagsPromises = this.languagesPayload
+          .filter((item) => item.languageTypeResourceId === this.activeLanguage)
+          .map((item) => {
+            const payload = {
+              template: item.template,
+              subject: item.subject,
+              fromName: item.fromName,
+              fromEmail: item.fromAddress,
+              cc: item.ccAddresses,
+              language:
+                this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
+                  ?.text || ''
             }
+            return checkRedFlags(payload)
+              .then((res) => {
+                const { cc, fromEmail, fromName, subject, template } = res?.data
+                const redFlags = {
+                  ccAddresses: cc,
+                  fromAddress: fromEmail,
+                  fromName: fromName,
+                  subject: subject
+                }
 
-            // Update item template and store red flags data
-            item.template = template
-            this.lastRedFlags[item.languageTypeResourceId] = {
-              flags: JSON.parse(JSON.stringify(redFlags)),
-              templates: [],
-              textfieldValues: {
-                fromName: item.fromName,
-                fromAddress: item.fromAddress,
-                subject: item.subject
-              }
-            }
+                // Update item template and store red flags data
+                item.template = template
+                this.lastRedFlags[item.languageTypeResourceId] = {
+                  flags: JSON.parse(JSON.stringify(redFlags)),
+                  templates: [],
+                  textfieldValues: {
+                    fromName: item.fromName,
+                    fromAddress: item.fromAddress,
+                    subject: item.subject
+                  }
+                }
 
-            return {
-              languageTypeResourceId: item.languageTypeResourceId,
-              redFlags,
-              template
-            }
-          }).catch((e) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message:e?.response?.data?.detail || e?.response?.data?.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
+                return {
+                  languageTypeResourceId: item.languageTypeResourceId,
+                  redFlags,
+                  template
+                }
+              })
+              .catch((e) => {
+                this.$store.dispatch('common/createSnackBar', {
+                  message: e?.response?.data?.detail || e?.response?.data?.message,
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  icon: 'mdi-alert-circle'
+                })
+              })
           })
-        })
 
         Promise.all(redFlagsPromises)
           .then((results) => {
