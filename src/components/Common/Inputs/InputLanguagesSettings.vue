@@ -181,14 +181,14 @@
       </div>
       <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
         <template #activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" :style="getRedFlagButtonStyle">
+          <div v-bind="attrs" v-on="on">
             <VBtn
               :ripple="false"
               lass="fw-600"
               rounded
               outlined
               color="#2196f3"
-              :style="isLocalizeReady ? {} : { pointerEvents: 'none' }"
+              :style="getRedFlagButtonStyle"
               @click="handleShowRedFlagsClick"
             >
               <VIcon>mdi-flag</VIcon>
@@ -465,8 +465,8 @@ export default {
       }
     },
     getRedFlagButtonStyle() {
-      const style={}
-      if(!this.isLocalizeReady){
+      const style = {}
+      if (!this.isLocalizeReady) {
         style.opacity = '0.5'
         style.pointerEvents = 'none'
         style.cursor = 'default'
