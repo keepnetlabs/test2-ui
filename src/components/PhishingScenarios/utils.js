@@ -318,3 +318,21 @@ export const EMAIL_TEMPLATE_DIFFICULTY_ITEMS = [
     orderNumber: 3
   }
 ]
+export const defaultRedFlags = {
+  fromEmail: {
+    isRedFlagged: false,
+    tooltipMessage: ''
+  },
+  fromName: {
+    isRedFlagged: false,
+    tooltipMessage: ''
+  },
+  fromAddress: {
+    isRedFlagged: false,
+    tooltipMessage: ''
+  },
+  subject: {
+    isRedFlagged: false,
+    tooltipMessage: ''
+  }
+}

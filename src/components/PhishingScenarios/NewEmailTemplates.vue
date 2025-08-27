@@ -158,6 +158,7 @@
                         class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
                         :is-phishing-template="true"
+                        :is-red-flags-loading="isRedFlagsLoading"
                         :active-block-manager-components="activeBlockManagerComponents"
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="getSelectedLanguagePayload.fromAddress"
@@ -173,6 +174,7 @@
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-show-red-flags="isShowRedFlags"
+                        :red-flags="redFlags"
                         :is-attachment-based-scenario="isAttachmentBasedTemplate"
                         :isEmailTemplate="true"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
@@ -199,6 +201,7 @@
                         @handleInitialTemplate="handleInitialTemplate"
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
+                        @template-edit="handleGrapesModalStatus"
                         @on-generate-email-template-success="handleGenerateEmailTemplateSuccess"
                       >
                         <template #template-header-left>
@@ -219,13 +222,13 @@
                             :active-language="activeLanguage"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
                             :language-items="languageItems"
-                            :show-red-flags="isShowRedFlags"
                             :translated-language-resource-ids="translatedLanguageResourceIds"
                             :from-address="getSelectedLanguagePayload.fromAddress"
                             :from-name="getSelectedLanguagePayload.fromName"
                             :subject="getSelectedLanguagePayload.subject"
                             :is-from-address-valid="isFromAddressFieldValid"
                             :company-preferred-language-id="getCompanyPreferredLanguageId"
+                            :show-red-flags="isShowRedFlags"
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
@@ -250,10 +253,7 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{
-          nextButton: !isDefault && isSubmitDisabled,
-          submitButton: isSubmitDisabled
-        }"
+        :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
@@ -290,6 +290,7 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
+import { defaultRedFlags } from './utils'
 import {
   getEmailTemplateMethodItems,
   EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
@@ -301,6 +302,7 @@ import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { checkRedFlags } from '@/api/phishingsimulator'
 export default {
   name: 'NewEmailTemplates',
   components: {
@@ -380,6 +382,7 @@ export default {
       isRenameModalVisible: false,
       showEditLanguagesLeavingDialog: false,
       isShowRedFlags: false,
+      isRedFlagsLoading: false,
       attachmentName: '',
       languageOptions: [],
       selectedLanguages: [],
@@ -423,8 +426,61 @@ export default {
       beforeSaveLanguage: '',
       isDefault: false,
       timeoutId: null,
+      lastRedFlags: {},
       isRelocalizeOperation: false,
-      relocalizeLanguageName: ''
+      relocalizeLanguageName: '',
+      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
+      isFlaggedStylesEnabled: false,
+      flaggedAreaCss: `
+        <style>
+          .flagged-area {
+            position: relative;
+            display: inline-block;
+            border: 1px solid #e00;
+            border-radius: 4px;
+            padding-left:2em !important;
+            margin: 0.5em 0.1em;
+          }
+           .flagged-area:not(a):not(button):not(.button) {
+            background-color: rgba(255, 0, 0, 0.1);
+            padding: 0.2em 2em;
+          }
+          
+          .flagged-area::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0.5em;
+            transform: translateY(-50%);
+            width: 1em;
+            height: 1em;
+            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
+          }
+          .flagged-area:hover::after {
+            content: attr(data-flag-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            margin-top: 0.4em;
+            padding: 4px 8px;
+            background:#B83A3A;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.33;
+            font-family:"Open Sans", sans-serif;
+            white-space: normal;
+            word-break: break-word;
+            max-width: 240px;
+            min-width: 240px;
+            border-radius: 4px;
+            z-index: 9999;
+          }
+          .email-container,.container,.email-container-wrapper{
+            overflow:visible;
+          }
+        </style>
+      `
     }
   },
   computed: {
@@ -475,6 +531,12 @@ export default {
     },
     getCompanyPreferredLanguageId() {
       return this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
+    },
+    getDisabledStatuses() {
+      return {
+        nextButton: !this.isDefault && this.isSubmitDisabled,
+        submitButton: this.isSubmitDisabled || this.isRedFlagsLoading || this.isEmailGenerating
+      }
     }
   },
   watch: {
@@ -722,7 +784,9 @@ export default {
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
-
+          delete this.lastRedFlags[this.activeLanguage]
+          this.redFlags = JSON.parse(JSON.stringify(this.defaultRedFlags))
+          this.isShowRedFlags = false
           // Reset the input file so the same file can be uploaded again
           e.target.value = ''
         })
@@ -821,6 +885,11 @@ export default {
         scrollToComponent(el)
         this.isSubmitDisabled = false
         return
+      }
+      if (this.isShowRedFlags) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       let payload = {
@@ -1000,13 +1069,26 @@ export default {
             if (this.timeoutId) {
               clearTimeout(this.timeoutId)
             }
+
             this.isEverythingLocalized = true
+            const errorLanguages = []
+            const successLanguages = []
+            data.forEach((item) => {
+              if (item.error) {
+                errorLanguages.push(item)
+              } else {
+                successLanguages.push(item)
+              }
+            })
 
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
               this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
             }
-            data.forEach((item) => {
+            errorLanguages.forEach((item) => {
+              this.showLocalizationErrorMessage(item)
+            })
+            successLanguages.forEach((item) => {
               const languagePayload = this.languagesPayload.find(
                 (language) => language.languageTypeResourceId === item.languageResourceId
               )
@@ -1056,6 +1138,15 @@ export default {
       clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {
+      if (this.isShowRedFlags) {
+        if (this.lastRedFlags[value]) {
+          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
+        } else {
+          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        }
+      } else {
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+      }
       if (
         JSON.stringify(this.selectedLanguagePayloadItemBeforeSave.template.trim()) ===
         JSON.stringify(this.getSelectedLanguagePayload.template.trim())
@@ -1099,8 +1190,142 @@ export default {
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
     },
+    handleGrapesModalStatus(status) {
+      this.isFlaggedStylesEnabled = !status
+      this.updateTemplateWithFlaggedStyles()
+    },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
+      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+      this.editItemsDisabled = true
+      let differentProperties = {}
+      if (this.isShowRedFlags) {
+        const responseFlags = this.compareRedFlags()
+        if (
+          (typeof responseFlags === 'object' && Object.keys(responseFlags).length === 0) ||
+          (typeof responseFlags === 'boolean' && responseFlags)
+        ) {
+          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
+          this.updateTemplateWithFlaggedStyles()
+          return
+        }
+        //differentProperties = responseFlags
+        this.isRedFlagsLoading = true
+        this.$refs.refEmailTemplate.isEmailGenerating = true
+        const redFlagsPromises = this.languagesPayload.map((item) => {
+          const payload = {
+            template: item.template,
+            subject: item.subject,
+            fromName: item.fromName,
+            fromEmail: item.fromAddress,
+            cc: item.ccAddresses,
+            language:
+              this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
+                ?.text || ''
+          }
+          return checkRedFlags(payload).then((res) => {
+            const { cc, fromEmail, fromName, subject, template } = res?.data
+            const redFlags = {
+              ccAddresses: cc,
+              fromAddress: fromEmail,
+              fromName: fromName,
+              subject: subject
+            }
+
+            // Update item template and store red flags data
+            item.template = template
+            this.lastRedFlags[item.languageTypeResourceId] = {
+              flags: JSON.parse(JSON.stringify(redFlags)),
+              templates: [],
+              textfieldValues: {
+                fromName: item.fromName,
+                fromAddress: item.fromAddress,
+                subject: item.subject
+              }
+            }
+
+            return {
+              languageTypeResourceId: item.languageTypeResourceId,
+              redFlags,
+              template
+            }
+          })
+        })
+
+        Promise.all(redFlagsPromises)
+          .then((results) => {
+            // Set red flags for active language
+            const activeLanguageResult = results.find(
+              (result) => result.languageTypeResourceId === this.activeLanguage
+            )
+            if (activeLanguageResult) {
+              this.redFlags = JSON.parse(JSON.stringify(activeLanguageResult.redFlags))
+            }
+
+            this.updateTemplateWithFlaggedStyles()
+          })
+          .finally(() => {
+            this.$refs.refEmailTemplate.isEmailGenerating = false
+            this.isRedFlagsLoading = false
+            this.editItemsDisabled = false
+          })
+      } else {
+        // Red Flags gizlendiğinde form alanlarını enable et
+        this.editItemsDisabled = false
+
+        // CSS stillerini template'den kaldır
+        this.lastRedFlags[this.activeLanguage] = {
+          flags: JSON.parse(JSON.stringify(this.redFlags)),
+          templates: [],
+          textfieldValues: {
+            fromName: this.getSelectedLanguagePayload.fromName,
+            fromAddress: this.getSelectedLanguagePayload.fromAddress,
+            subject: this.getSelectedLanguagePayload.subject
+          }
+        }
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.updateTemplateWithFlaggedStyles()
+      }
+    },
+    compareRedFlags() {
+      let differentProperties = {}
+      if (Object.keys(this.lastRedFlags).length === 0) return false
+      const { templates = [], textfieldValues = {} } = this.lastRedFlags[this.activeLanguage] || {}
+      const { fromName, fromAddress, subject } = textfieldValues
+      const {
+        fromName: fromCurrentName,
+        fromAddress: fromCurrentAddress,
+        subject: fromCurrentSubject
+      } = this.getSelectedLanguagePayload
+
+      if (fromName !== fromCurrentName) {
+        differentProperties.fromName = fromCurrentName
+      }
+      if (fromAddress !== fromCurrentAddress) {
+        differentProperties.fromAddress = fromCurrentAddress
+      }
+      if (subject !== fromCurrentSubject) {
+        differentProperties.subject = fromCurrentSubject
+      }
+
+      const templateExists = templates.find(
+        (template) => template.trim() === this.selectedLanguagePayloadItemBeforeSave.template.trim()
+      )
+      if (!templateExists) {
+        differentProperties.template = this.getSelectedLanguagePayload.template
+      }
+      if (Object.keys(differentProperties).length === 0) {
+        return true
+      }
+
+      return differentProperties
+    },
+    showLocalizationErrorMessage(item) {
+      this.$store.dispatch('common/createSnackBar', {
+        message: `${item.error}`,
+        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+        icon: 'mdi-alert-circle'
+      })
     },
     showLocalizationSuccessMessage(data) {
       if (!data || !data.length || this.isDefault) return
@@ -1157,6 +1382,154 @@ export default {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
         icon: 'mdi-check-circle'
       })
+    },
+    updateTemplateWithFlaggedStyles() {
+      if (!Array.isArray(this.languagesPayload)) return
+
+      this.languagesPayload.forEach((languagePayload) => {
+        if (!this._isValidLanguagePayload(languagePayload)) return
+
+        if (this.isFlaggedStylesEnabled) {
+          languagePayload.template = this._addFlaggedStylesToTemplate(languagePayload.template)
+        } else {
+          languagePayload.template = this._removeFlaggedStylesFromTemplate(languagePayload.template)
+          this.lastRedFlags[this.activeLanguage]?.templates?.push(languagePayload.template)
+        }
+        if (languagePayload.languageTypeResourceId === this.activeLanguage) {
+          this.selectedLanguagePayloadItemBeforeSave.template = languagePayload.template
+          this.selectedLanguagePayloadItemBeforeSave.subject = languagePayload.subject
+        }
+      })
+    },
+
+    _isValidLanguagePayload(payload) {
+      return payload && typeof payload.template === 'string' && payload.template.trim()
+    },
+
+    _isFullHtmlTemplate(template) {
+      const htmlRegex = /<html[\s\S]*?>|<head[\s\S]*?>/i
+      return htmlRegex.test(template)
+    },
+
+    _hasHeadTag(template) {
+      return /<head[\s\S]*?>/i.test(template)
+    },
+    _addFlaggedStylesToTemplate(template) {
+      // Prevent duplicate CSS injection
+      if (template.includes(this.flaggedAreaCss.trim())) {
+        return template
+      }
+
+      if (this._isFullHtmlTemplate(template)) {
+        return this._injectCssIntoHead(template)
+      } else {
+        return this._prependCssToBodyContent(template)
+      }
+    },
+
+    _injectCssIntoHead(template) {
+      if (this._hasHeadTag(template)) {
+        // CSS'i head'e ekle, script'i body'ye ekle
+        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        return this._injectScriptIntoBody(templateWithCss)
+      }
+      // If no head tag, create one
+      let templateWithCss = template.replace(
+        /<html[\s\S]*?>/i,
+        `$&<head>${this.flaggedAreaCss}</head>`
+      )
+      return this._injectScriptIntoBody(templateWithCss)
+    },
+
+    _prependCssToBodyContent(template) {
+      // CSS'i başa ekle, script'i body'ye ekle
+      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      return this._injectScriptIntoBody(templateWithCss)
+    },
+
+    _injectScriptIntoBody(template) {
+      const script = this._getPreventClickScript()
+
+      if (template.includes('</body>')) {
+        // Body tag varsa, kapanış tag'ından önce script ekle
+        return template.replace(/<\/body>/i, `${script}</body>`)
+      } else if (template.includes('<body')) {
+        // Body tag açılıyorsa ama kapanmıyorsa, açılış tag'ından sonra script ekle
+        return template.replace(/<body[^>]*>/i, `$&${script}`)
+      } else {
+        // Body tag yoksa, en sona script ekle
+        return template + script
+      }
+    },
+
+    _removeFlaggedStylesFromTemplate(template) {
+      // Hem CSS'i hem script'i kaldır
+      const cssToRemove = this.flaggedAreaCss.trim()
+      const scriptToRemove = this._getPreventClickScript().trim()
+
+      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replace(
+        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        ''
+      )
+
+      return cleanedTemplate
+    },
+
+    _getPreventClickScript() {
+      // eslint-disable-next-line no-use-before-define
+      const method = `(function() {
+            'use strict';
+            
+            function initializeEventPrevention() {
+              // Tüm event türlerini tanımla
+              const eventTypes = [
+                'click', 'auxclick', 'dblclick', 'mousedown', 'mouseup', 'mousemove',
+                'keydown', 'keyup', 'keypress', 'submit', 'change',
+                'focus', 'blur', 'input', 'select', 'dragstart',
+                'contextmenu'
+              ];
+              
+              // Her event türü için body listener ekle
+              eventTypes.forEach(eventType => {
+                document.body.addEventListener(eventType, function(e) {
+                  const flaggedElement = e.target.closest('.flagged-area');
+                  if (flaggedElement) {
+                    // Event'i tamamen engelle
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                  }
+                }, true); // Capture phase
+              });
+              ['click', 'auxclick'].forEach(anchorEvent => {
+                document.body.addEventListener(anchorEvent, function(e) {
+                  const anchor = e.target.closest('a');
+                  if (anchor && anchor.closest('.flagged-area')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    try { anchor.setAttribute('data-blocked', 'true'); } catch (_) {}
+                    return false;
+                  }
+                }, true);
+              });
+            }
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', initializeEventPrevention);
+            } else {
+              // DOM zaten hazırsa hemen çalıştır
+              initializeEventPrevention();
+            }
+          })();`
+      //@ts-ignore
+      //eslint-disable-next-line no-use-before-define
+      return '<script>' + method + '<\/script>'
+    },
+
+    _escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     }
   }
 }
