@@ -1249,14 +1249,20 @@ export default {
               redFlags,
               template
             }
+          }).catch((e) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message:e?.response?.data?.detail || e?.response?.data?.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
           })
         })
 
         Promise.all(redFlagsPromises)
           .then((results) => {
             // Set red flags for active language
-            const activeLanguageResult = results.find(
-              (result) => result.languageTypeResourceId === this.activeLanguage
+            const activeLanguageResult = results?.find(
+              (result) => result?.languageTypeResourceId === this.activeLanguage
             )
             if (activeLanguageResult) {
               this.redFlags = JSON.parse(JSON.stringify(activeLanguageResult.redFlags))
