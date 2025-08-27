@@ -1261,8 +1261,8 @@ export default {
         Promise.all(redFlagsPromises)
           .then((results) => {
             // Set red flags for active language
-            const activeLanguageResult = results.find(
-              (result) => result.languageTypeResourceId === this.activeLanguage
+            const activeLanguageResult = results?.find(
+              (result) => result?.languageTypeResourceId === this.activeLanguage
             )
             if (activeLanguageResult) {
               this.redFlags = JSON.parse(JSON.stringify(activeLanguageResult.redFlags))
