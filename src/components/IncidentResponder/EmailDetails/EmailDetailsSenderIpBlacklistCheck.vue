@@ -29,7 +29,8 @@
               scope.row.analysisEnginePermalink &&
               scope.row.result !== 'Excluded' &&
               scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL &&
-              scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT
+              scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT &&
+              scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
             "
             :href="scope.row.analysisEnginePermalink"
             target="_blank"

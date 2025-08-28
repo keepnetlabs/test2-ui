@@ -288,7 +288,8 @@
                                 scope.row.analysisEnginePermalink &&
                                 scope.row.result !== 'Excluded' &&
                                 scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL &&
-                                scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT
+                                scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT &&
+                                scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
                               "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               class="attachments-table__link"
