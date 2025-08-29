@@ -372,7 +372,7 @@
             initialPlaceholder="Enter template name"
             entityName="template name"
             :value="name"
-            :disabled="editItemsDisabled"
+            :disabled="editItemsDisabled || isShowRedFlags"
             @input="$emit('update:name', $event)"
           />
         </FormGroup>
@@ -420,7 +420,7 @@
               label="Subject"
               persistent-placeholder
               :value="subject"
-              :disabled="editItemsDisabled"
+              :disabled="editItemsDisabled || isShowRedFlags"
               :initialRules="getSubjectRules"
               @input="$emit('update:subject', $event)"
             />
@@ -451,7 +451,7 @@
               label="From Name"
               persistent-placeholder
               :value="fromName"
-              :disabled="editItemsDisabled"
+              :disabled="editItemsDisabled || isShowRedFlags"
               :initialRules="senderNameRules"
               @input="$emit('update:fromName', $event)"
             />
@@ -480,7 +480,7 @@
                   : ''
               "
               persistent-placeholder
-              :disabled="editItemsDisabled"
+              :disabled="editItemsDisabled || isShowRedFlags"
               :value="fromAddress"
               @input="$emit('update:fromAddress', $event)"
             >
