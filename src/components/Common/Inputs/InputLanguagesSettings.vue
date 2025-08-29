@@ -391,6 +391,7 @@ export default {
       if (!this.isLocalizeReady || this.showRedFlags) {
         style.opacity = '0.5'
         style.cursor = 'default'
+        style.pointerEvents = 'none'
       }
       return style
     },

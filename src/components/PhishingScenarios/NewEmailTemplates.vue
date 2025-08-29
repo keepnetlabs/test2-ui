@@ -785,7 +785,7 @@ export default {
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
           delete this.lastRedFlags[this.activeLanguage]
-          this.redFlags = JSON.parse(JSON.stringify(this.defaultRedFlags))
+          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
           this.isShowRedFlags = false
           // Reset the input file so the same file can be uploaded again
           e.target.value = ''
@@ -1203,15 +1203,6 @@ export default {
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
-      if (!this.isShowRedFlags) {
-        this.editItemsDisabled = false
-        this.isFlaggedStylesEnabled = false
-        this.selectedLanguagePayloadItemBeforeSave.template = this.getSelectedLanguagePayload.template
-        this.selectedLanguagePayloadItemBeforeSave.subject = this.getSelectedLanguagePayload.subject
-        this.updateTemplateWithFlaggedStyles()
-        return
-      }
-      this.editItemsDisabled = true
       //let differentProperties = {}
       if (this.isShowRedFlags) {
         const responseFlags = this.compareRedFlags()
@@ -1221,7 +1212,6 @@ export default {
         ) {
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
           this.updateTemplateWithFlaggedStyles()
-          this.editItemsDisabled = false
           return
         }
         //differentProperties = responseFlags
@@ -1274,6 +1264,9 @@ export default {
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                   icon: 'mdi-alert-circle'
                 })
+                this.isShowRedFlags = false
+                this.isFlaggedStylesEnabled = false
+                this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
               })
           })
 
@@ -1292,12 +1285,8 @@ export default {
           .finally(() => {
             this.$refs.refEmailTemplate.isEmailGenerating = false
             this.isRedFlagsLoading = false
-            this.editItemsDisabled = false
           })
       } else {
-        // Red Flags gizlendiğinde form alanlarını enable et
-        this.editItemsDisabled = false
-
         // CSS stillerini template'den kaldır
         this.lastRedFlags[this.activeLanguage] = {
           flags: JSON.parse(JSON.stringify(this.redFlags)),
