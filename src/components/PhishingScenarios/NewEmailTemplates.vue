@@ -1196,7 +1196,7 @@ export default {
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
     },
-    handleGrapesModalStatus(status) {
+    handleGrapesModalStatus() {
       this.isFlaggedStylesEnabled = false
       this.updateTemplateWithFlaggedStyles()
     },
