@@ -660,8 +660,6 @@ export default {
   },
   methods: {
     handleSaveTemplate(template) {
-      console.log('handleSaveTemplate', template)
-      console.log('this.getSelectedLanguagePayload.template', this.getSelectedLanguagePayload.template)
       if (template.trim() !== this.getSelectedLanguagePayload.template.trim()) {
         delete this.lastRedFlags[this.activeLanguage]
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
