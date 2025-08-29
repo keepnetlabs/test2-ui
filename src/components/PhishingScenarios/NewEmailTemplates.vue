@@ -1471,15 +1471,24 @@ export default {
 
     _injectScriptIntoBody(template) {
       const script = this._getPreventClickScript()
+      try {
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(template, 'text/html')
+        const body = doc.querySelector('body')
 
-      if (template.includes('</body>')) {
-        // Body tag varsa, kapanış tag'ından önce script ekle
-        return template.replace(/<\/body>/i, `${script}</body>`)
-      } else if (template.includes('<body')) {
-        // Body tag açılıyorsa ama kapanmıyorsa, açılış tag'ından sonra script ekle
-        return template.replace(/<body[^>]*>/i, `$&${script}`)
-      } else {
-        // Body tag yoksa, en sona script ekle
+        if (body) {
+          body.insertAdjacentHTML('beforeend', script)
+          return doc.documentElement.outerHTML
+        } else {
+          // Body yoksa oluştur ve script'i ekle
+          const newBody = doc.createElement('body')
+          newBody.innerHTML = template
+          newBody.insertAdjacentHTML('beforeend', script)
+          doc.documentElement.appendChild(newBody)
+          return doc.documentElement.outerHTML
+        }
+      } catch (error) {
+        console.error('HTML parsing failed, falling back to string concatenation:', error)
         return template + script
       }
     },
