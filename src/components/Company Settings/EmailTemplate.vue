@@ -1324,8 +1324,8 @@ export default {
           return this.$emit('showErrorDialog')
         }
       }
-      this.$emit('update:template', template)
       this.$emit('on-save-template', template)
+      this.$emit('update:template', template)
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
