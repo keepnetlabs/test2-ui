@@ -1213,6 +1213,7 @@ export default {
         ) {
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
           this.updateTemplateWithFlaggedStyles()
+          this.editItemsDisabled = false
           return
         }
         //differentProperties = responseFlags
