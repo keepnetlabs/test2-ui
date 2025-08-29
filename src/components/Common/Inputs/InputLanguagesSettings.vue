@@ -29,7 +29,7 @@
             <span>
               {{
                 showRedFlags
-                  ? 'To see red flags, fill in all required fields.'
+                  ? 'To use this action, first hide the Red Flag.'
                   : 'To start localization, fill in all required fields.'
               }}
             </span>
