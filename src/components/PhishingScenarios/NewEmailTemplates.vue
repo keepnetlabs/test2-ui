@@ -202,6 +202,7 @@
                         @handleRenameAttachment="handleRenameAttachment"
                         @handleDeleteAttachment="handleDeleteAttachment"
                         @template-edit="handleGrapesModalStatus"
+                        @on-save-template="handleSaveTemplate"
                         @on-generate-email-template-success="handleGenerateEmailTemplateSuccess"
                       >
                         <template #template-header-left>
@@ -445,7 +446,7 @@ export default {
             background-color: rgba(255, 0, 0, 0.1);
             padding: 0.2em 2em;
           }
-          
+
           .flagged-area::before {
             content: '';
             position: absolute;
@@ -658,6 +659,15 @@ export default {
     }
   },
   methods: {
+    handleSaveTemplate(template) {
+      console.log('handleSaveTemplate', template)
+      console.log('this.getSelectedLanguagePayload.template', this.getSelectedLanguagePayload.template)
+      if (template.trim() !== this.getSelectedLanguagePayload.template.trim()) {
+        delete this.lastRedFlags[this.activeLanguage]
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.isShowRedFlags = false
+      }
+    },
     handleGenerateEmailTemplateSuccess({ template, subject }) {
       this.getSelectedLanguagePayload.isTranslated = true
       this.selectedLanguagePayloadItemBeforeSave.template = template
@@ -1494,7 +1504,7 @@ export default {
       // eslint-disable-next-line no-use-before-define
       const method = `(function() {
             'use strict';
-            
+
             function initializeEventPrevention() {
               // Tüm event türlerini tanımla
               const eventTypes = [
@@ -1503,7 +1513,7 @@ export default {
                 'focus', 'blur', 'input', 'select', 'dragstart',
                 'contextmenu'
               ];
-              
+
               // Her event türü için body listener ekle
               eventTypes.forEach(eventType => {
                 document.body.addEventListener(eventType, function(e) {
