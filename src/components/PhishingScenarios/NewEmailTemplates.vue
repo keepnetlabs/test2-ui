@@ -1196,13 +1196,21 @@ export default {
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
     },
-    handleGrapesModalStatus(status) {
-      this.isFlaggedStylesEnabled = !status
+    handleGrapesModalStatus() {
+      this.isFlaggedStylesEnabled = false
       this.updateTemplateWithFlaggedStyles()
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+      if (!this.isShowRedFlags) {
+        this.editItemsDisabled = false
+        this.isFlaggedStylesEnabled = false
+        this.selectedLanguagePayloadItemBeforeSave.template = this.getSelectedLanguagePayload.template
+        this.selectedLanguagePayloadItemBeforeSave.subject = this.getSelectedLanguagePayload.subject
+        this.updateTemplateWithFlaggedStyles()
+        return
+      }
       this.editItemsDisabled = true
       //let differentProperties = {}
       if (this.isShowRedFlags) {
@@ -1511,25 +1519,21 @@ export default {
               eventTypes.forEach(eventType => {
                 document.body.addEventListener(eventType, function(e) {
                   const flaggedElement = e.target.closest('.flagged-area');
-                  if (flaggedElement) {
                     // Event'i tamamen engelle
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return false;
-                  }
                 }, true); // Capture phase
               });
               ['click', 'auxclick'].forEach(anchorEvent => {
                 document.body.addEventListener(anchorEvent, function(e) {
                   const anchor = e.target.closest('a');
-                  if (anchor && anchor.closest('.flagged-area')) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     try { anchor.setAttribute('data-blocked', 'true'); } catch (_) {}
                     return false;
-                  }
                 }, true);
               });
             }
