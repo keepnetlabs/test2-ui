@@ -478,7 +478,7 @@ export default {
             z-index: 9999;
           }
           .email-container,.container,.email-container-wrapper{
-            overflow:visible;
+            overflow:visible !important;
           }
         </style>
       `
