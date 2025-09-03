@@ -45,6 +45,16 @@
       /></el-tab-pane>
       <el-tab-pane
         v-if="getGoogleUserProvisionGetPermissions"
+        label="Microsoft Teams Settings"
+        name="microsoft-teams-settings"
+        id="microsoft-teams-settings-content"
+      >
+        <MicrosoftTeamsSettings
+          v-if="tab === 'microsoft-teams-settings'"
+          ref="refMicrosoftTeamsSettings"
+      /></el-tab-pane>
+      <el-tab-pane
+        v-if="getGoogleUserProvisionGetPermissions"
         label="Google User Provisioning"
         name="google-user-provisioning"
         id="google-user-provisioning-content"
@@ -141,12 +151,14 @@ import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
 import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
+import MicrosoftTeamsSettings from '@/components/Company Settings/MicrosoftTeamsSettings/MicrosoftTeamsSettings'
 import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
 
 export default {
   name: 'CompanySettings',
   components: {
     GoogleUserProvisioning,
+    MicrosoftTeamsSettings,
     AIAllySettings,
     DirectEmailCreation,
     LDAP,
@@ -206,6 +218,10 @@ export default {
       {
         permission: this.getNotificationTemplatesSearchPermissions,
         name: 'notification-template'
+      },
+      {
+        permission: this.getGoogleUserProvisionGetPermissions,
+        name: 'microsoft-teams-settings'
       },
       {
         permission: this.getGoogleUserProvisionGetPermissions,
