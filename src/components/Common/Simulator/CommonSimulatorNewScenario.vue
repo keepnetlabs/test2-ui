@@ -1522,8 +1522,9 @@ export default {
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING ? createScenario : QuishingService.createScenario
         apiFunc(payload)
-          .then(() => {
+          .then((response) => {
             this.$emit('changeNewScenarioModalStatus', false, true)
+            this.$emit('on-new-item-created',response?.data?.data?.resourceId)
           })
           .finally(() => {
             this.isSubmitDisabled = false

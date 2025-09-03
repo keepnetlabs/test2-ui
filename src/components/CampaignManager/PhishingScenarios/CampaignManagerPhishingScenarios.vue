@@ -1337,7 +1337,7 @@ export default {
       if (this.type === SCENARIO_TYPES.QUISHING) {
         this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
       }
-      apiFunc(this.axiosPayload).then((response) => {
+      return apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
@@ -1355,6 +1355,7 @@ export default {
             this.phishingScenarioItems[0]
           )
         }
+        return this.phishingScenarioItems
       })
     },
     handleScroll(e) {

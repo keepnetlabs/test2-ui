@@ -41,7 +41,8 @@
           ref="commonSimulatorNewScenario"
           :status="isOpenPhishingDrawer"
           :scenario-details-lookup="scenarioDetailsLookup"
-          @on-close="handleCloseSimulatorDrawer"
+          @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
+          @on-new-item-created="handleNewScenarioCreated"
         />
       </VNavigationDrawer>
       <v-stepper v-model="step" class="k-stepper">
@@ -1029,30 +1030,32 @@ export default {
       }
     },
     handleCreatePhishingScenario() {
-      console.log('iam open')
       this.isOpenPhishingDrawer = true
     },
     handleClickOutsideSimulatorDrawer() {
-      console.log('iam click outside')
-      if(this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer || this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer) {
+      if(this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer || this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer ||
+      ) {
         return
       }
-      console.log('iam passed')
-      this.toggleSimulatorDrawer()
+      if(this.$refs.commonSimulatorNewScenario?.isEmailTemplateInEditMode || this.$refs.commonSimulatorNewScenario?.isLandingPageTemplateInEditMode){
+        return
+      }
+      this.closeSimulatorDrawer()
     },
     handleCloseSimulatorDrawer() {
-      console.log('iam close')
-        this.toggleSimulatorDrawer()
+      this.closeSimulatorDrawer()
     },
-    toggleSimulatorDrawer() {
+    closeSimulatorDrawer(status) {
         if (document.querySelector('.k-navigation-drawer--phishing'))
           document.querySelector('.k-navigation-drawer--phishing').style.right = '-100%'
       setTimeout(() => {
-          this.isOpenPhishingDrawer = !this.isOpenPhishingDrawer
+          this.isOpenPhishingDrawer = false
         }, 250)
     },
-    openSimulatorDrawer() {
-      this.isOpenPhishingDrawer = true
+    handleNewScenarioCreated(resourceId) {
+      this.$refs.refCampaignManagerPhishingScenarios?.callForPhishingScenarios(false).then((response)=>{
+        this.$refs.refCampaignManagerPhishingScenarios?.callForSelectedPhishingScenario(resourceId,response.find(item=>item.resourceId===resourceId))
+      })
     }
   }
 }
