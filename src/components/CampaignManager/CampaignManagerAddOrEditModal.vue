@@ -1,13 +1,14 @@
 <template>
-  <AppModal
-    :status="status"
-    icon-name="mdi-hook"
-    :title="getTitle"
-    class-name="add-in-configuration"
-    title-id="text--add-or-edit-company-manager-modal-title"
-    @closeOverlay="closeOverlay"
-  >
-    <template #overlay-body>
+  <div>
+    <AppModal
+      :status="status"
+      icon-name="mdi-hook"
+      :title="getTitle"
+      class-name="add-in-configuration"
+      title-id="text--add-or-edit-company-manager-modal-title"
+      @closeOverlay="closeOverlay"
+    >
+      <template #overlay-body>
       <DefaultErrorDialog
         v-if="!!createErrorMessage"
         :status="!!createErrorMessage"
@@ -23,6 +24,26 @@
         @on-close="toggleShowMissingLanguageSupportDialog"
         @on-confirm="onConfirmLanguageSupportDialog"
       />
+      <VNavigationDrawer
+        v-click-outside="handleClickOutsideSimulatorDrawer"
+        v-if="isOpenPhishingDrawer"
+        v-model="isOpenPhishingDrawer"
+        class="k-navigation-drawer k-navigation-drawer--phishing"
+        fixed
+        overlay-color="rgba(0, 0, 0, 0.17)"
+        overlay-opacity="1"
+        right
+        width="calc(100% - 72px)"
+        height="100%"
+      >
+        <CommonSimulatorNewScenario
+          v-if="isOpenPhishingDrawer"
+          ref="commonSimulatorNewScenario"
+          :status="isOpenPhishingDrawer"
+          :scenario-details-lookup="scenarioDetailsLookup"
+          @on-close="handleCloseSimulatorDrawer"
+        />
+      </VNavigationDrawer>
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -115,6 +136,7 @@
               @trainingForCategoryChanged="handleTrainingForCategoryChanged"
               @categoryFilterChanged="handleCategoryFilterChanged"
               @phishingScenarioItemsChanged="handlePhishingScenarioItemsChanged"
+              @on-create-phishing-scenario="handleCreatePhishingScenario"
             />
             <CustomError class="mb-6 ml-2" :is-valid="getIsPhishingScenariosValid" />
           </v-stepper-content>
@@ -198,7 +220,8 @@
         @on-submit="handleSubmit"
       />
     </template>
-  </AppModal>
+    </AppModal>
+  </div>
 </template>
 
 <script>
@@ -233,6 +256,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 import CampaignManagerLanguageSupportDialog from '@/components/CampaignManager/CampaignManagerLanguageSupportDialog.vue'
+import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -251,6 +275,7 @@ export default {
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
     DefaultErrorDialog,
+    CommonSimulatorNewScenario,
     AppModal
   },
   mixins: [useScenarioDetailsLookup],
@@ -1002,6 +1027,32 @@ export default {
         default:
           break
       }
+    },
+    handleCreatePhishingScenario() {
+      console.log('iam open')
+      this.isOpenPhishingDrawer = true
+    },
+    handleClickOutsideSimulatorDrawer() {
+      console.log('iam click outside')
+      if(this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer || this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer) {
+        return
+      }
+      console.log('iam passed')
+      this.toggleSimulatorDrawer()
+    },
+    handleCloseSimulatorDrawer() {
+      console.log('iam close')
+        this.toggleSimulatorDrawer()
+    },
+    toggleSimulatorDrawer() {
+        if (document.querySelector('.k-navigation-drawer--phishing'))
+          document.querySelector('.k-navigation-drawer--phishing').style.right = '-100%'
+      setTimeout(() => {
+          this.isOpenPhishingDrawer = !this.isOpenPhishingDrawer
+        }, 250)
+    },
+    openSimulatorDrawer() {
+      this.isOpenPhishingDrawer = true
     }
   }
 }
