@@ -1208,6 +1208,22 @@ export default {
       this.isFlaggedStylesEnabled = false
       this.updateTemplateWithFlaggedStyles()
     },
+    async checkRedFlagsWithRetry(payload, maxRetries = 3, delay = 5000) {
+      let lastError = null
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await checkRedFlags(payload)
+          return response
+        } catch (error) {
+          lastError = error
+          if (attempt < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, delay))
+          }
+        }
+      }
+      throw lastError
+    },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
@@ -1238,7 +1254,7 @@ export default {
                 this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
                   ?.text || ''
             }
-            return checkRedFlags(payload)
+            return this.checkRedFlagsWithRetry(payload)
               .then((res) => {
                 const { cc, fromEmail, fromName, subject, template } = res?.data
                 const redFlags = {
