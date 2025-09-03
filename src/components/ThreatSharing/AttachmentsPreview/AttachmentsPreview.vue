@@ -29,8 +29,8 @@
         Hidden by Owner
       </div>
       <div
-        v-on="on"
         v-if="isEmailTemplate"
+        v-on="on"
         id="text--attachment-email-template-preview-name"
         :class="[
           'file-name safari-hide-tooltip max-char mx-2',
@@ -38,6 +38,9 @@
         ]"
       >
         {{ getFileName }}
+      </div>
+      <div v-if="isEmailTemplate && redFlags && redFlags.attachment && redFlags.attachment.isRedFlagged">
+        <RedFlagTooltip :tooltipContent="redFlags.attachment.tooltipMessage" />
       </div>
       <v-icon
         v-if="isEmailTemplate && deletable"
@@ -57,7 +60,7 @@
 <script>
 export default {
   name: 'AttachmentsPreview',
-  props: ['att', 'isEmailTemplate', 'deletable', 'index', 'isAttachmentNameFullWidth'],
+  props: ['att', 'isEmailTemplate','redFlags', 'deletable', 'index', 'isAttachmentNameFullWidth'],
   computed: {
     getFileName() {
       return this.att.fileName || this.att.name

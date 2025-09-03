@@ -580,6 +580,7 @@
                   :index="index"
                   :isEmailTemplate="true"
                   :isAttachmentNameFullWidth="isHorizontalFormGroups"
+                  :red-flags="redFlags"
                   @on-delete="handleFileDelete"
                 />
               </div>

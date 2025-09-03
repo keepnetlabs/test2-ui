@@ -23,11 +23,31 @@
               :items="selectedLanguages"
               @input="handleLanguageChange"
             />
-            <div>
-              <span class="template-preview__text--title">From: </span>
+            <div class="d-flex align-center justify-space-between">
+              <div :class="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged ? 'red-flag-active' : ''">
+                <span class="template-preview__text--title">From: </span>
               <span class="template-preview__text--body">{{
                 emailTemplateParams.fromAddress
               }}</span>
+              <RedFlagTooltip
+              v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+              :tooltipContent="redFlags.fromAddress.tooltipMessage"
+            />
+              </div>
+               <VBtn
+              :ripple="false"
+              lass="fw-600"
+              rounded
+              outlined
+              color="#2196f3"
+              :style="getRedFlagButtonStyle"
+              @click="handleShowRedFlagsClick"
+            >
+              <VIcon>mdi-flag</VIcon>
+              <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                redFlagsText
+              }}</span>
+            </VBtn>
             </div>
             <div>
               <span class="template-preview__text--title">From Name: </span>
@@ -90,7 +110,7 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import InputLanguagePreview from '../../Inputs/InputLanguagePreview.vue'
-
+import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
 export default {
   name: 'EmailTemplateMultipleLanguagePreviewDialog',
   components: {
@@ -136,10 +156,23 @@ export default {
       isIndividualPrintoutButtonDisabled: false,
       selectedLanguages: [],
       activeLanguage: '',
-      templates: []
+      templates: [],
+      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
+      lastRedFlags: {},
+      isShowRedFlags: false,
+      isFlaggedStylesEnabled:false
     }
   },
   computed: {
+    getRedFlagButtonStyle() {
+      return {
+        opacity: this.isShowRedFlags ? 0.5 : 1,
+        pointerEvents: this.isShowRedFlags ? 'none' : ''
+      }
+    },
+    redFlagsText() {
+      return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -239,6 +272,10 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handleShowRedFlagsClick() {
+      this.isShowRedFlags = !this.isShowRedFlags
+      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
     },
     handleLanguageChange(val) {
       this.emailTemplateParams = {

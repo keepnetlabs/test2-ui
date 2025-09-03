@@ -789,6 +789,7 @@ export default {
               fileName: item.name,
               isDeletable: true
             }))
+            this.activeFileName = attachments[0].fileName
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
@@ -1253,6 +1254,7 @@ export default {
               fromName: item.fromName,
               fromEmail: item.fromAddress,
               cc: item.ccAddresses,
+              attachmentFileName: this.activeFileName,
               language:
                 this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
                   ?.text || ''
