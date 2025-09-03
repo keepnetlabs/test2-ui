@@ -8,6 +8,12 @@
       @on-copy-link="handleCopyLink"
       @on-enable="handleEnableNow"
     />
+    <DisableMicrosoftTeamsModal
+      :status="isDisableModalVisible"
+      :isActionButtonDisabled="isButtonsDisabled"
+      @on-close="handleCloseDisableModal"
+      @on-confirm="handleConfirmDisable"
+    />
     <CompanySettingsHeader
       title="Microsoft Teams Settings"
       sub-title="Manage and customize Microsoft Teams integration settings for the platform."
@@ -73,19 +79,23 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import TeamsIntegrationModal from './TeamsIntegrationModal.vue'
+import DisableMicrosoftTeamsModal from './DisableMicrosoftTeamsModal.vue'
 import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'MicrosoftTeamsSettings',
   components: {
     CompanySettingsHeader,
     FormGroup,
-    TeamsIntegrationModal
+    TeamsIntegrationModal,
+    DisableMicrosoftTeamsModal
   },
   data() {
     return {
-      isMicrosoftTeamsActive: true,
+      isMicrosoftTeamsActive: false,
       isModalVisible: false,
+      isDisableModalVisible: false,
       isButtonsDisabled: false,
       isSaveDisabled: false,
       botName:''
@@ -120,6 +130,21 @@ export default {
     },
     handleCloseModal() {
       this.isModalVisible = false
+    },
+    handleCloseDisableModal() {
+      this.isDisableModalVisible = false
+    },
+    handleDisableTeamsIntegration() {
+      this.isDisableModalVisible = true
+    },
+    handleConfirmDisable() {
+      this.isButtonsDisabled = true
+      MicrosoftTeamsSettingsService.disableMicrosoftTeamsIntegration().then(() => {
+        this.isMicrosoftTeamsActive = false
+        this.handleCloseDisableModal()
+      }).finally(() => {
+        this.isButtonsDisabled = false
+      })
     },
     handleCopyLink() {
       MicrosoftTeamsSettingsService.getMicrosoftTeamsIntegrationLink().then((res) => {
