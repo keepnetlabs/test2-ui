@@ -1033,8 +1033,7 @@ export default {
       this.isOpenPhishingDrawer = true
     },
     handleClickOutsideSimulatorDrawer() {
-      if(this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer || this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer ||
-      ) {
+      if(this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer || this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer) {
         return
       }
       if(this.$refs.commonSimulatorNewScenario?.isEmailTemplateInEditMode || this.$refs.commonSimulatorNewScenario?.isLandingPageTemplateInEditMode){
