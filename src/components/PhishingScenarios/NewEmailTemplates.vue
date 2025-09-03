@@ -1208,21 +1208,24 @@ export default {
       this.isFlaggedStylesEnabled = false
       this.updateTemplateWithFlaggedStyles()
     },
-    async checkRedFlagsWithRetry(payload, maxRetries = 3, delay = 5000) {
-      let lastError = null
-
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          const response = await checkRedFlags(payload)
-          return response
-        } catch (error) {
-          lastError = error
-          if (attempt < maxRetries) {
-            await new Promise((resolve) => setTimeout(resolve, delay))
-          }
-        }
-      }
-      throw lastError
+    checkRedFlagsWithRetry(payload, maxRetries = 5, delay = 5000, currentAttempt = 1) {
+      return new Promise((resolve, reject) => {
+        checkRedFlags(payload)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            if (currentAttempt >= maxRetries) {
+              reject(error)
+              return
+            }
+            setTimeout(() => {
+              this.checkRedFlagsWithRetry(payload, maxRetries, delay, currentAttempt + 1)
+                .then(resolve)
+                .catch(reject)
+            }, delay)
+          })
+      })
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
@@ -1504,7 +1507,6 @@ export default {
           return doc.documentElement.outerHTML
         }
       } catch (error) {
-        console.error('HTML parsing failed, falling back to string concatenation:', error)
         return template + script
       }
     },
