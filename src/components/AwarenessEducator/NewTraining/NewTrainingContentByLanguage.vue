@@ -54,7 +54,7 @@
         id="input--new-training-content-by-language-file"
         class="ml-8"
         style="width: 424px !important;"
-        :size="200"
+        :size="500"
         :hint="getHint"
         :isShowFileProgress="true"
         :is-stand-alone="true"
