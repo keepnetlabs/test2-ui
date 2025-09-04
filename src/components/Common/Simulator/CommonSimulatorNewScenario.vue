@@ -12,7 +12,7 @@
         v-click-outside="handleClickOutsideNewEmailTemplateModal"
         v-if="isOpenEmailTemplateDrawer"
         v-model="isOpenEmailTemplateDrawer"
-        class="k-navigation-drawer"
+        class="k-navigation-drawer k-navigation-drawer--email-template"
         fixed
         overlay-color="rgba(0, 0, 0, 0.17)"
         overlay-opacity="1"
@@ -37,7 +37,7 @@
         v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
         v-if="isOpenLandingPageDrawer"
         v-model="isOpenLandingPageDrawer"
-        class="k-navigation-drawer"
+        class="k-navigation-drawer k-navigation-drawer--landing-page"
         fixed
         overlay-color="rgba(0, 0, 0, 0.17)"
         overlay-opacity="1"
@@ -1173,8 +1173,8 @@ export default {
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdEmailTemplateResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer'))
-        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (document.querySelector('.k-navigation-drawer--email-template'))
+        document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
         this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
           this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
@@ -1203,8 +1203,8 @@ export default {
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer'))
-        document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      if (document.querySelector('.k-navigation-drawer--landing-page'))
+        document.querySelector('.k-navigation-drawer--landing-page').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)
@@ -1522,8 +1522,9 @@ export default {
         const apiFunc =
           this.type === SCENARIO_TYPES.PHISHING ? createScenario : QuishingService.createScenario
         apiFunc(payload)
-          .then(() => {
+          .then((response) => {
             this.$emit('changeNewScenarioModalStatus', false, true)
+            this.$emit('on-new-item-created',response?.data?.data?.resourceId)
           })
           .finally(() => {
             this.isSubmitDisabled = false

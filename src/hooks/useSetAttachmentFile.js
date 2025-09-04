@@ -3,7 +3,8 @@ export default {
     return {
       isAttachmentError: false,
       isPhishingFileModified: false,
-      isAddedNewPhishingFile: false
+      isAddedNewPhishingFile: false,
+      activeFileName: ''
     }
   },
   methods: {
@@ -36,6 +37,7 @@ export default {
         this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
         this.isAttachmentError = false
       }
+      this.activeFileName = file.name
       this.isPhishingFileModified = true
       this.isAddedNewPhishingFile = true
     }

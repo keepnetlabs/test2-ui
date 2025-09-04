@@ -437,6 +437,7 @@ export default {
           ]
         }
         this.$refs.newEmailTemplate.isPhishingFileModified = true
+        this.$refs.newEmailTemplate.activeFileName = `${attachmentName}.${fileExtension}`
       }
       this.onCloseRenameAttachmentModal()
     },

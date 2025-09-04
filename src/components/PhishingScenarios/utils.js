@@ -334,5 +334,9 @@ export const defaultRedFlags = {
   subject: {
     isRedFlagged: false,
     tooltipMessage: ''
+  },
+  attachmentFileName: {
+    isRedFlagged: false,
+    tooltipMessage: ''
   }
 }
