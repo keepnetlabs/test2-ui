@@ -789,6 +789,7 @@ export default {
               fileName: item.name,
               isDeletable: true
             }))
+            this.activeFileName = attachments[0].fileName
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
@@ -1211,10 +1212,10 @@ export default {
     checkRedFlagsWithRetry(payload, maxRetries = 5, delay = 5000, currentAttempt = 1) {
       return new Promise((resolve, reject) => {
         checkRedFlags(payload)
-          .then(response => {
+          .then((response) => {
             resolve(response)
           })
-          .catch(error => {
+          .catch((error) => {
             if (currentAttempt >= maxRetries) {
               reject(error)
               return
@@ -1253,18 +1254,20 @@ export default {
               fromName: item.fromName,
               fromEmail: item.fromAddress,
               cc: item.ccAddresses,
+              attachmentFileName: this.activeFileName,
               language:
                 this.selectedLanguages.find((lang) => lang.value === item.languageTypeResourceId)
                   ?.text || ''
             }
             return this.checkRedFlagsWithRetry(payload)
               .then((res) => {
-                const { cc, fromEmail, fromName, subject, template } = res?.data
+                const { cc, fromEmail, fromName, subject, template, attachmentFileName } = res?.data
                 const redFlags = {
                   ccAddresses: cc,
                   fromAddress: fromEmail,
                   fromName: fromName,
-                  subject: subject
+                  subject: subject,
+                  attachmentFileName: attachmentFileName
                 }
 
                 // Update item template and store red flags data
@@ -1275,7 +1278,8 @@ export default {
                   textfieldValues: {
                     fromName: item.fromName,
                     fromAddress: item.fromAddress,
-                    subject: item.subject
+                    subject: item.subject,
+                    attachmentFileName: item.attachmentFileName
                   }
                 }
 
@@ -1332,7 +1336,7 @@ export default {
       let differentProperties = {}
       if (Object.keys(this.lastRedFlags).length === 0) return false
       const { templates = [], textfieldValues = {} } = this.lastRedFlags[this.activeLanguage] || {}
-      const { fromName, fromAddress, subject } = textfieldValues
+      const { fromName, fromAddress, subject, attachmentFileName } = textfieldValues
       const {
         fromName: fromCurrentName,
         fromAddress: fromCurrentAddress,
@@ -1348,7 +1352,9 @@ export default {
       if (subject !== fromCurrentSubject) {
         differentProperties.subject = fromCurrentSubject
       }
-
+      if (attachmentFileName !== this.activeFileName) {
+        differentProperties.attachmentFileName = this.activeFileName
+      }
       const templateExists = templates.find(
         (template) => template.trim() === this.selectedLanguagePayloadItemBeforeSave.template.trim()
       )
