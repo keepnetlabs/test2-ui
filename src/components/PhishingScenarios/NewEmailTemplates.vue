@@ -1352,7 +1352,7 @@ export default {
       if (subject !== fromCurrentSubject) {
         differentProperties.subject = fromCurrentSubject
       }
-      if (attachmentFileName !== this.activeFileName) {
+      if (attachmentFileName && attachmentFileName !== this.activeFileName) {
         differentProperties.attachmentFileName = this.activeFileName
       }
       const templateExists = templates.find(
