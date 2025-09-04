@@ -1,5 +1,14 @@
 <template>
-  <v-tooltip bottom opacity="1" z-index="9999">
+  <v-tooltip
+    bottom
+    opacity="1"
+    z-index="9999"
+    :color="
+      redFlags && redFlags.attachmentFileName && redFlags.attachmentFileName.isRedFlagged
+        ? '#bb2a45'
+        : ''
+    "
+  >
     <template v-slot:activator="{ on }">
       <div
         v-if="att.isFlagged && !isEmailTemplate"
@@ -34,13 +43,20 @@
         id="text--attachment-email-template-preview-name"
         :class="[
           'file-name safari-hide-tooltip max-char mx-2',
-          isAttachmentNameFullWidth ? 'full-width' : ''
+          isAttachmentNameFullWidth ? 'full-width' : '',
+          redFlags && redFlags.attachmentFileName && redFlags.attachmentFileName.isRedFlagged
+            ? 'red-flag-preview-active'
+            : ''
         ]"
       >
+        <v-icon
+          v-if="redFlags && redFlags.attachmentFileName && redFlags.attachmentFileName.isRedFlagged"
+          color="red"
+          style="font-size: 16px; margin-right: 4px; margin-top: -3px;"
+        >
+          mdi-flag
+        </v-icon>
         {{ getFileName }}
-      </div>
-      <div v-if="isEmailTemplate && redFlags && redFlags.attachment && redFlags.attachment.isRedFlagged">
-        <RedFlagTooltip :tooltipContent="redFlags.attachment.tooltipMessage" />
       </div>
       <v-icon
         v-if="isEmailTemplate && deletable"
@@ -53,14 +69,22 @@
       >{{ !att.isHidden ? att.name : 'Hidden by Owner'
       }}{{ att.isFlagged ? ' has been reported as a malicious file' : '' }}</span
     >
-    <span id="text--attachment-preview-tooltip-email-template" v-else>{{ getFileName }}</span>
+    <span
+      id="text--attachment-preview-tooltip-email-template"
+      v-else-if="
+        isEmailTemplate &&
+        (!redFlags || !redFlags.attachmentFileName || !redFlags.attachmentFileName.isRedFlagged)
+      "
+      >{{ getFileName }}</span
+    >
+    <span v-else>{{ redFlags.attachmentFileName.tooltipMessage }}</span>
   </v-tooltip>
 </template>
 
 <script>
 export default {
   name: 'AttachmentsPreview',
-  props: ['att', 'isEmailTemplate','redFlags', 'deletable', 'index', 'isAttachmentNameFullWidth'],
+  props: ['att', 'isEmailTemplate', 'redFlags', 'deletable', 'index', 'isAttachmentNameFullWidth'],
   computed: {
     getFileName() {
       return this.att.fileName || this.att.name

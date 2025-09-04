@@ -587,7 +587,7 @@
               <div v-if="!item.isDeletable" class="attachment-delete-wrapper">
                 <v-menu bottom left offset-y transition="scale-transition">
                   <template #activator="{ on }">
-                    <v-btn v-on="on" class="btn-hover" icon outlined>
+                    <v-btn v-on="on" class="btn-hover" icon outlined :disabled="isShowRedFlags">
                       <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
