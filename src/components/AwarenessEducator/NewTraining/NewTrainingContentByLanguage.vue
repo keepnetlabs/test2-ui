@@ -159,7 +159,7 @@ export default {
     getHint() {
       return `${
         this.typeWithDisplayName ? this.typeWithDisplayName : this.scormType
-      } .zip file. Max. file size 200MB`
+      } .zip file. Max. file size 500MB`
     }
   },
   methods: {
