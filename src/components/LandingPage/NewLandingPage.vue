@@ -265,6 +265,7 @@
                           :prompt.sync="page.prompt"
                           :custom-head-scripts="customHeadScripts[index] || ''"
                           :current-page-index="index"
+                          :is-protocol-http="isProtocolHttp"
                           @on-custom-head-scripts-change="
                             (value) => onCustomHeadScriptsChange(value, index)
                           "
@@ -676,6 +677,9 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    isProtocolHttp() {
+      return this.formValues.phishingLink.urlSchemaTypeId === '1' || false
+    },
     getUrlSchemaTypes() {
       return this.landingPageData?.urlSchemaTypes || []
     },

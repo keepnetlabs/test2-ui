@@ -1325,7 +1325,8 @@ export default {
           textfieldValues: {
             fromName: this.getSelectedLanguagePayload.fromName,
             fromAddress: this.getSelectedLanguagePayload.fromAddress,
-            subject: this.getSelectedLanguagePayload.subject
+            subject: this.getSelectedLanguagePayload.subject,
+            attachmentFileName: this.activeFileName
           }
         }
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
@@ -1352,8 +1353,13 @@ export default {
       if (subject !== fromCurrentSubject) {
         differentProperties.subject = fromCurrentSubject
       }
-      if (attachmentFileName && attachmentFileName !== this.activeFileName) {
-        differentProperties.attachmentFileName = this.activeFileName
+      if (this.activeFileName) {
+        if (
+          (attachmentFileName === '' && this.activeFileName) ||
+          attachmentFileName !== this.activeFileName
+        ) {
+          differentProperties.attachmentFileName = this.activeFileName
+        }
       }
       const templateExists = templates.find(
         (template) => template.trim() === this.selectedLanguagePayloadItemBeforeSave.template.trim()

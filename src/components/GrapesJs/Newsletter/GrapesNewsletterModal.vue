@@ -1,8 +1,5 @@
 <template>
-  <div
-    style="margin-bottom: 110px !important;"
-    id="threat-sharing-post-incident-grapesjs-modal"
-  >
+  <div style="margin-bottom: 110px !important;" id="threat-sharing-post-incident-grapesjs-modal">
     <DefaultErrorDialog
       v-if="showInvalidUrlMessage"
       :status="showInvalidUrlMessage"
@@ -96,7 +93,7 @@ export default {
     isShowHeadScripts: {
       type: Boolean,
       default: false
-    },  
+    },
     blockManagerComponents: {
       type: Object,
       default() {
@@ -131,6 +128,10 @@ export default {
       default: 0
     },
     isEdit: {
+      type: Boolean,
+      default: false
+    },
+    isProtocolHttp: {
       type: Boolean,
       default: false
     }
@@ -1075,7 +1076,7 @@ export default {
                 this.openHeadScriptsEditor()
               }
             }
-            
+
             codeViewer.set({
               codeName: 'htmlmixed',
               readOnly: 0,
@@ -1270,9 +1271,11 @@ export default {
       let head = htmlDOM.querySelector('head')
       let style = document.createElement('style')
       style.innerHTML = css
-      const meta = document.createElement('meta')
-      meta.httpEquiv = 'Content-Security-Policy'
-      meta.content = 'upgrade-insecure-requests'
+      if (!this.isProtocolHttp) {
+        const meta = document.createElement('meta')
+        meta.httpEquiv = 'Content-Security-Policy'
+        meta.content = 'upgrade-insecure-requests'
+      }
       const addedScripts = []
       if (this.isEdit && this.editedCustomHeadScripts) {
         const scripts = htmlDOM.querySelectorAll('script[data-custom-landing-page-script="true"]')
@@ -1301,11 +1304,11 @@ export default {
       }
       if (head) {
         head.appendChild(style)
-        head.appendChild(meta)
+        if (!this.isProtocolHttp) head.appendChild(meta)
       } else {
         head = document.createElement('head')
         head.appendChild(style)
-        head.appendChild(meta)
+        if (!this.isProtocolHttp) head.appendChild(meta)
         const htmlElement = htmlDOM.querySelector('html')
         if (htmlElement) {
           let headOfHtmlElement = htmlElement.querySelector('head')
