@@ -1325,7 +1325,8 @@ export default {
           textfieldValues: {
             fromName: this.getSelectedLanguagePayload.fromName,
             fromAddress: this.getSelectedLanguagePayload.fromAddress,
-            subject: this.getSelectedLanguagePayload.subject
+            subject: this.getSelectedLanguagePayload.subject,
+            attachmentFileName: this.activeFileName
           }
         }
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
