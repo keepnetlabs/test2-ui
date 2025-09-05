@@ -27,6 +27,7 @@
           :isAttachmentBasedTemplate="isAttachmentBasedScenario"
           :customHeadScripts="customHeadScripts"
           :isShowHeadScripts="isShowHeadScripts"
+          :isProtocolHttp="isProtocolHttp"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
           "
@@ -785,7 +786,8 @@ export default {
     'isShowHeadScripts',
     'showEditButton',
     'isRedFlagsLoading',
-    'isShowRedFlags'
+    'isShowRedFlags',
+    'isProtocolHttp'
   ],
   data() {
     return {
