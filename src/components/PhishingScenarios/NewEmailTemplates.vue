@@ -1353,8 +1353,13 @@ export default {
       if (subject !== fromCurrentSubject) {
         differentProperties.subject = fromCurrentSubject
       }
-      if (attachmentFileName && attachmentFileName !== this.activeFileName) {
-        differentProperties.attachmentFileName = this.activeFileName
+      if (this.activeFileName) {
+        if (
+          (attachmentFileName === '' && this.activeFileName) ||
+          attachmentFileName !== this.activeFileName
+        ) {
+          differentProperties.attachmentFileName = this.activeFileName
+        }
       }
       const templateExists = templates.find(
         (template) => template.trim() === this.selectedLanguagePayloadItemBeforeSave.template.trim()
