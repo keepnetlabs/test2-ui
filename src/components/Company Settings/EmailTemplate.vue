@@ -1064,7 +1064,7 @@ export default {
         return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
       if (this.isGenerateWithAi)
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
-      return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
+      return 'This process may take some time while the email is being crafted. Please stay on the page during this time.'
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
