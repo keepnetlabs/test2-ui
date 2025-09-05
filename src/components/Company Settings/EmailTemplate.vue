@@ -637,7 +637,11 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
+      <EmailTemplatesAILoader
+        :title="getLoaderTitle"
+        :description="getLoaderDescription"
+        :loaderTime="isRedFlagsLoading ? 30 : 20"
+      />
     </div>
     <div v-else id="email-template-content" class="email-template-content">
       <div>
@@ -1050,14 +1054,14 @@ export default {
       if (this.isRedFlagsLoading)
         return 'AI Ally is carefully scanning your email template for Red Flags'
       if (this.isGenerateWithAi)
-        return 'The email template is being localized by AI for the selected languages.'
+        return `The email template is being localized by AI Ally for the selected languages.`
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
     },
     getLoaderDescription() {
       if (this.isRedFlagsLoading)
-        return 'This may take approximately 20 seconds. Please stay on the page while the scan is completed.'
+        return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
       if (this.isGenerateWithAi)
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
       return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
