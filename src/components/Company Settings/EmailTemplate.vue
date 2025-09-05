@@ -27,6 +27,7 @@
           :isAttachmentBasedTemplate="isAttachmentBasedScenario"
           :customHeadScripts="customHeadScripts"
           :isShowHeadScripts="isShowHeadScripts"
+          :isProtocolHttp="isProtocolHttp"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
           "
@@ -543,8 +544,32 @@
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
         >
+        <v-tooltip v-if="isShowRedFlags && !attachments.length" bottom>
+          <template #activator="{ on }">
+            <div v-on="on">
+              <k-file-upload
+                v-if="!attachments.length"
+                id="input--email-template-upload"
+                is-stand-alone
+                class="mb-2"
+                ref="refFileUpload"
+                :hint="fileUploadHint"
+                :extensions="attachmentExtensions"
+                :is-show-file-progress="false"
+                :value="attachmentFiles"
+                :is-preview-visible="false"
+                :size="size"
+                :hasError="!!isAttachmentError"
+                :errorText="isAttachmentError || ''"
+                :disabled="true"
+                @inputFile="onFileChanged"
+              />
+            </div>
+          </template>
+          <span>To use this action, first hide the Red Flag.</span>
+        </v-tooltip>
         <k-file-upload
-          v-if="!attachments.length"
+          v-else-if="!attachments.length"
           id="input--email-template-upload"
           is-stand-alone
           class="mb-2"
@@ -786,7 +811,8 @@ export default {
     'isShowHeadScripts',
     'showEditButton',
     'isRedFlagsLoading',
-    'isShowRedFlags'
+    'isShowRedFlags',
+    'isProtocolHttp'
   ],
   data() {
     return {
