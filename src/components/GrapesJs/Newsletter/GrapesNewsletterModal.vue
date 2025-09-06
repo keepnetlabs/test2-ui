@@ -1271,8 +1271,8 @@ export default {
       let head = htmlDOM.querySelector('head')
       let style = document.createElement('style')
       style.innerHTML = css
+      let meta = document.createElement('meta')
       if (!this.isProtocolHttp) {
-        const meta = document.createElement('meta')
         meta.httpEquiv = 'Content-Security-Policy'
         meta.content = 'upgrade-insecure-requests'
       }
