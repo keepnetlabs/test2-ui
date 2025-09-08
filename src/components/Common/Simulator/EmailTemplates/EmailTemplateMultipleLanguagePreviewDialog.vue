@@ -332,7 +332,7 @@ export default {
       return 'AI Ally is analyzing your email template for red flags'
     },
     getLoaderDescription() {
-      return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
+      return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
     }
   },
   created() {
@@ -416,13 +416,16 @@ export default {
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
       if (this.isShowRedFlags) {
         // Bu dil için red flags daha önce çağrıldı mı kontrol et
-        if (this.lastRedFlags[this.activeLanguage] && this.lastRedFlags[this.activeLanguage].flags) {
+        if (
+          this.lastRedFlags[this.activeLanguage] &&
+          this.lastRedFlags[this.activeLanguage].flags
+        ) {
           // Var olan red flags'leri restore et
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
           this.updateTemplateWithFlaggedStyles()
           return
         }
-        
+
         // İlk kez red flags çağrılıyor
         this.isRedFlagsLoading = true
         if (this.$refs.refPreview) {
