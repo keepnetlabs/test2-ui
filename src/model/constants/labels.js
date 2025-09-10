@@ -1081,7 +1081,8 @@ export const labels = {
   VerifyDomain: 'Verify Domain',
   TargetGroupSelectionRequiredError: 'At least one target group must be chosen',
   TargetGroupUserRequiredError: 'Target groups must have at least 1 user',
-  VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number'
+  VishingTargetGroupUserRequiredError: 'Target groups must have at least 1 user with phone number',
+  CannotContainDots: 'File type cannot be changed'
 }
 
 export default labels

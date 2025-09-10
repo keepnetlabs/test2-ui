@@ -302,6 +302,11 @@ export function ldapConnectionStringUrl(value, message = 'Incorrect path format'
     ) || message
   )
 }
+
+export function noDots(value, message = 'Cannot contain dots (.)') {
+  value = getValue(value)
+  return !value.includes('.') || message
+}
 export function isEmailChip(v) {
   if (v.length > 0) {
     let booReturn = true
