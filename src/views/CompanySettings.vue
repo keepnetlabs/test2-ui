@@ -304,7 +304,17 @@ export default {
     },
     changeTabByRoute() {
       const { $route: { query } = {} } = this
-      if (query?.tenant || (query?.error && (query?.error_description || query?.error_subcode))) {
+      if (
+        (query?.code && query?.state) ||
+        (query?.admin_consent && query?.error && query?.error_description && query?.state) ||
+        (query?.admin_consent && query?.tenant && query?.scope)
+      ) {
+        this.tab = 'microsoft-teams-settings'
+        return
+      } else if (
+        query?.tenant ||
+        (query?.error && (query?.error_description || query?.error_subcode))
+      ) {
         this.tab = 'direct-email-creation'
         return
       }

@@ -1,20 +1,49 @@
 import testRequest from '../utils/testRequest'
-
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+const companyId = 3673
 export function getMicrosoftTeamsSettings() {
-  return testRequest.get('/microsoft-teams-settings')
+  return testRequest.post('/companies/teams-app/check', {
+    companyId
+  })
 }
-export function getMicrosoftTeamsIntegrationLink() {
-  return testRequest.get('/microsoft-teams-integration-link')
+export function getMicrosoftTeamsOboIntegrationLink() {
+  return testRequest.post('/companies/teams-obo/authorize-link', {
+    companyId
+  })
+}
+export function callMicrosoftTeamsOboCallback(code, state) {
+  return testRequest.get(`/companies/teams-obo/callback?code=${code}&state=${state}`)
+}
+export function getMicrosoftTeamsAppAuthorizeLink() {
+  return testRequest.post(`/companies/teams-app/authorize-link`, {
+    companyId
+  })
+}
+export function callMicrosoftTeamsAppCallback(code, state) {
+  return testRequest.get(`/companies/teams-app/callback?code=${code}&state=${state}`)
 }
 export function disableMicrosoftTeamsIntegration() {
-  return testRequest.delete('/microsoft-teams-integration')
+  return testRequest.delete('/companies/teams-app/disable', {
+    companyId
+  })
 }
-export function saveMicrosoftTeamsSettings(botName) {
-  return testRequest.post('/microsoft-teams-settings', { botName })
+export function uploadMicrosoftTeamsSettings() {
+  return testRequest.post(
+    '/companies/teams-app/settings',
+    {
+      companyId
+    },
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 export default {
   getMicrosoftTeamsSettings,
-  getMicrosoftTeamsIntegrationLink,
+  getMicrosoftTeamsOboIntegrationLink,
+  callMicrosoftTeamsOboCallback,
+  callMicrosoftTeamsAppCallback,
   disableMicrosoftTeamsIntegration,
-  saveMicrosoftTeamsSettings
+  uploadMicrosoftTeamsSettings,
+  getMicrosoftTeamsAppAuthorizeLink
 }

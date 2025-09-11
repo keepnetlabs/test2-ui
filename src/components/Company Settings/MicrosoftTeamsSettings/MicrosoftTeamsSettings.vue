@@ -18,7 +18,8 @@
       title="Microsoft Teams Settings"
       sub-title="Manage and customize Microsoft Teams integration settings for the platform."
     />
-    <v-form lazy-validation ref="refForm">
+    <DatatableLoading v-if="loading" :loading="loading" />
+    <v-form v-else lazy-validation ref="refForm">
       <FormGroup
         title="1. Integrate your Microsoft Teams"
         sub-title="Enable a Microsoft account to integrate with the platform."
@@ -51,14 +52,15 @@
         sub-title="Enter a name for the bot that will represent Microsoft Teams integration."
         class="mb-3"
       >
-      <VTextField
-        v-model="botName"
-        placeholder="Enter bot name"
-        hint="*Required"
-        outlined
-        rounded
-        persistent-hint
-      />
+        <VTextField
+          v-model="botName"
+          placeholder="Enter bot name"
+          hint="*Required"
+          outlined
+          rounded
+          disabled
+          persistent-hint
+        />
       </FormGroup>
       <VBtn
         v-if="isMicrosoftTeamsActive"
@@ -82,6 +84,8 @@ import TeamsIntegrationModal from './TeamsIntegrationModal.vue'
 import DisableMicrosoftTeamsModal from './DisableMicrosoftTeamsModal.vue'
 import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
 import labels from '@/model/constants/labels'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 
 export default {
   name: 'MicrosoftTeamsSettings',
@@ -89,7 +93,8 @@ export default {
     CompanySettingsHeader,
     FormGroup,
     TeamsIntegrationModal,
-    DisableMicrosoftTeamsModal
+    DisableMicrosoftTeamsModal,
+    DatatableLoading
   },
   data() {
     return {
@@ -98,32 +103,49 @@ export default {
       isDisableModalVisible: false,
       isButtonsDisabled: false,
       isSaveDisabled: false,
-      botName:''
+      botName: '',
+      loading: false
     }
   },
-  computed:{
-    computed: {
+  computed: {
     getSaveButtonStyle() {
       const style = {}
-      if (
-        this.isSaveDisabled
-      ) {
+      if (this.isSaveDisabled) {
         style.opacity = 0.5
         style.cursor = 'auto'
         style.pointerEvents = 'none'
       }
       return style
     }
-  }
   },
   created() {
     this.getMicrosoftTeamsSettings()
+    const { $route: { query } = {} } = this
+    if (query?.code && query?.state) {
+      this.callMicrosoftTeamsOboCallback(query.code, query.state)
+    } else if (query?.admin_consent && query?.error && query?.error_description && query?.state) {
+      this.$store.dispatch('common/createSnackBar', {
+        message: `Error: ${query.error}
+        Description: ${query.error_description}`,
+        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+        icon: 'mdi-alert-circle'
+      })
+    }
   },
   methods: {
     getMicrosoftTeamsSettings() {
-      MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings().then((response) => {
-        this.isMicrosoftTeamsActive = response.data.isActive
-      })
+      this.loading = true
+      MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.isMicrosoftTeamsActive = data.isFound
+          this.botName = data?.displayName
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     handleOpenModal() {
       this.isModalVisible = true
@@ -139,39 +161,72 @@ export default {
     },
     handleConfirmDisable() {
       this.isButtonsDisabled = true
-      MicrosoftTeamsSettingsService.disableMicrosoftTeamsIntegration().then(() => {
-        this.isMicrosoftTeamsActive = false
-        this.handleCloseDisableModal()
-      }).finally(() => {
-        this.isButtonsDisabled = false
-      })
+      MicrosoftTeamsSettingsService.disableMicrosoftTeamsIntegration()
+        .then(() => {
+          this.isMicrosoftTeamsActive = false
+          this.handleCloseDisableModal()
+        })
+        .finally(() => {
+          this.isButtonsDisabled = false
+        })
     },
     handleCopyLink() {
-      MicrosoftTeamsSettingsService.getMicrosoftTeamsIntegrationLink().then((res) => {
-        if (res?.data?.data) {
-          navigator.clipboard.writeText(res.data.data)
-          this.$store.dispatch('common/setIsShowSnackbar', {
-            message: labels.CopiedToClipboard,
-            color: 'success'
-          })
-        }
-      }).finally(() => {
-        this.isButtonsDisabled = false
-      })
+      this.getMicrosoftTeamsOboIntegrationLink()
+        .then((link) => {
+          if (link) {
+            navigator.clipboard.writeText(link)
+            this.$store.dispatch('common/createSnackBar', {
+              message: labels.CopiedToClipboard,
+              icon: 'mdi-checkbox-marked-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+          }
+        })
+        .finally(() => {
+          this.isButtonsDisabled = false
+        })
     },
     handleEnableNow() {
       this.isButtonsDisabled = true
-      MicrosoftTeamsSettingsService.getMicrosoftTeamsIntegrationLink().then((res) => {
-        if (res?.data?.data) window.location = res.data.data
+      this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
+        if (link) window.location = link
       })
     },
-    handleSave(){
+    handleSave() {
       this.isSaveDisabled = true
-      MicrosoftTeamsSettingsService.saveMicrosoftTeamsSettings(this.botName).then((res) => {
-        console.log(res)
-      }).finally(() => {
-        this.isSaveDisabled = false
+      MicrosoftTeamsSettingsService.saveMicrosoftTeamsSettings(this.botName)
+        .then((res) => {
+          console.log(res)
+        })
+        .finally(() => {
+          this.isSaveDisabled = false
+        })
+    },
+    getMicrosoftTeamsOboIntegrationLink() {
+      return MicrosoftTeamsSettingsService.getMicrosoftTeamsOboIntegrationLink().then((res) => {
+        const {
+          data: { data }
+        } = res
+        console.log('data.authorizationUrl', data.authorizationUrl)
+        return data.authorizationUrl
       })
+    },
+    callMicrosoftTeamsOboCallback(code, state) {
+      MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state).then((res) => {
+        MicrosoftTeamsSettingsService.authorizeMicrosoftTeamsApp().then((res) => {
+          console.log('res', res)
+        })
+      })
+    },
+    handleSubmit() {
+      this.isSaveDisabled = true
+      MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings()
+        .then((res) => {
+          console.log('res', res)
+        })
+        .finally(() => {
+          this.isSaveDisabled = false
+        })
     }
   }
 }
