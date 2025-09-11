@@ -498,6 +498,55 @@ export default {
         this.selectedRow = null
         this.isUserDetailsDrawerOpen = false
       }, 250)
+    },
+    handleSearchChange(searchFilter) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+
+      let searchText = ''
+      if (searchFilter && searchFilter.filter && searchFilter.filter.FilterGroups) {
+        const orGroup = searchFilter.filter.FilterGroups[0]
+        if (orGroup && orGroup.FilterItems && orGroup.FilterItems.length > 0) {
+          const fullNameFilter = orGroup.FilterItems.find((item) => item.FieldName === 'fullName')
+          if (fullNameFilter) {
+            searchText = fullNameFilter.Value || ''
+          } else {
+            searchText = searchFilter.filter.FilterGroups[0].FilterItems[0].Value || ''
+          }
+        }
+      }
+
+      if (this.axiosPayload.filter.FilterGroups) {
+        const orGroup = this.axiosPayload.filter.FilterGroups.find(
+          (group) => group.Condition === 'OR'
+        )
+        if (orGroup && orGroup.FilterItems) {
+          orGroup.FilterItems = orGroup.FilterItems.filter((item) => item.FieldName !== 'fullName')
+        }
+      }
+      if (searchText && searchText.trim()) {
+        const searchTerm = searchText.trim()
+        let orFilterGroup = this.axiosPayload.filter.FilterGroups.find(
+          (group) => group.Condition === 'OR'
+        )
+
+        if (!orFilterGroup) {
+          orFilterGroup = {
+            Condition: 'OR',
+            FilterItems: []
+          }
+          this.axiosPayload.filter.FilterGroups.push(orFilterGroup)
+        }
+
+        orFilterGroup.FilterItems.push({
+          FieldName: 'fullName',
+          Operator: 'Contains',
+          Value: searchTerm
+        })
+      }
+      this.resetPageNumber()
+      this.callForData()
     }
   }
 }

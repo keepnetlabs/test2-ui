@@ -27,6 +27,7 @@
           :isAttachmentBasedTemplate="isAttachmentBasedScenario"
           :customHeadScripts="customHeadScripts"
           :isShowHeadScripts="isShowHeadScripts"
+          :isProtocolHttp="isProtocolHttp"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
           "
@@ -543,8 +544,32 @@
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
         >
+        <v-tooltip v-if="isShowRedFlags && !attachments.length" bottom>
+          <template #activator="{ on }">
+            <div v-on="on">
+              <k-file-upload
+                v-if="!attachments.length"
+                id="input--email-template-upload"
+                is-stand-alone
+                class="mb-2"
+                ref="refFileUpload"
+                :hint="fileUploadHint"
+                :extensions="attachmentExtensions"
+                :is-show-file-progress="false"
+                :value="attachmentFiles"
+                :is-preview-visible="false"
+                :size="size"
+                :hasError="!!isAttachmentError"
+                :errorText="isAttachmentError || ''"
+                :disabled="true"
+                @inputFile="onFileChanged"
+              />
+            </div>
+          </template>
+          <span>To use this action, first hide the Red Flag.</span>
+        </v-tooltip>
         <k-file-upload
-          v-if="!attachments.length"
+          v-else-if="!attachments.length"
           id="input--email-template-upload"
           is-stand-alone
           class="mb-2"
@@ -580,13 +605,14 @@
                   :index="index"
                   :isEmailTemplate="true"
                   :isAttachmentNameFullWidth="isHorizontalFormGroups"
+                  :red-flags="redFlags"
                   @on-delete="handleFileDelete"
                 />
               </div>
               <div v-if="!item.isDeletable" class="attachment-delete-wrapper">
                 <v-menu bottom left offset-y transition="scale-transition">
                   <template #activator="{ on }">
-                    <v-btn v-on="on" class="btn-hover" icon outlined>
+                    <v-btn v-on="on" class="btn-hover" icon outlined :disabled="isShowRedFlags">
                       <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
@@ -611,7 +637,11 @@
     </div>
     <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
-      <EmailTemplatesAILoader :title="getLoaderTitle" :description="getLoaderDescription" />
+      <EmailTemplatesAILoader
+        :title="getLoaderTitle"
+        :description="getLoaderDescription"
+        :loaderTime="isRedFlagsLoading ? 30 : 20"
+      />
     </div>
     <div v-else id="email-template-content" class="email-template-content">
       <div>
@@ -785,7 +815,8 @@ export default {
     'isShowHeadScripts',
     'showEditButton',
     'isRedFlagsLoading',
-    'isShowRedFlags'
+    'isShowRedFlags',
+    'isProtocolHttp'
   ],
   data() {
     return {
@@ -1023,17 +1054,17 @@ export default {
       if (this.isRedFlagsLoading)
         return 'AI Ally is carefully scanning your email template for Red Flags'
       if (this.isGenerateWithAi)
-        return 'The email template is being localized by AI for the selected languages.'
+        return `The email template is being localized by AI Ally for the selected languages.`
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
     },
     getLoaderDescription() {
       if (this.isRedFlagsLoading)
-        return 'This may take approximately 20 seconds. Please stay on the page while the scan is completed.'
+        return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
       if (this.isGenerateWithAi)
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
-      return 'This process may take approximately 20 seconds. Please stay on the page during this time.'
+      return 'This process may take some time while the email is being crafted. Please stay on the page during this time.'
     },
     attachmentExtensions() {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']

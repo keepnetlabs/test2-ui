@@ -15,6 +15,7 @@
     <CommonSimulatorAttachmentRenameDialog
       v-if="isShowRenameAttachmentDialog"
       :status="isShowRenameAttachmentDialog"
+      :default-attachment-name="attachmentName"
       @on-close="onCloseRenameAttachmentModal"
       @on-confirm="onConfirmRenameAttachment"
     />
@@ -387,7 +388,8 @@ export default {
       serverSideProps: new ServerSideProps(),
       isShowPreviewDialog: false,
       selectedTemplateHeader: null,
-      templateHTML: null
+      templateHTML: null,
+      attachmentName:''
     }
   },
   computed: {
@@ -406,6 +408,7 @@ export default {
     deleteEmailTemplate,
     bulkDeleteEmailTemplates,
     onShowRenameAttachmentModal() {
+      this.attachmentName = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split('.')[0]
       this.isShowRenameAttachmentDialog = true
     },
     onCloseRenameAttachmentModal() {
@@ -437,6 +440,7 @@ export default {
           ]
         }
         this.$refs.newEmailTemplate.isPhishingFileModified = true
+        this.$refs.newEmailTemplate.activeFileName = `${attachmentName}.${fileExtension}`
       }
       this.onCloseRenameAttachmentModal()
     },

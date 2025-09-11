@@ -261,7 +261,8 @@
               </VBtn>
             </div>
           </div>
-          <div class="px-6 pt-4">
+          <div class="px-6 pt-4 d-flex justify-space-between align-center">
+            <div>
             <ElTabs v-model="upperTab" class="phishing-campaign-tab-container">
               <ElTabPane name="scenarios" label="Scenarios" />
               <ElTabPane
@@ -286,6 +287,19 @@
                 />
               </ElTabPane>
             </ElTabs>
+            </div>
+            <div v-if="isPhishing">
+                <v-btn
+                  class="emailTemplatePreview__edit-button"
+                  color="#2196F3"
+                  outlined
+                  rounded
+                  @click="handleCreatePhishingScenarioClick"
+                >
+                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                  <span class="emailTemplatePreview__edit-button-text">Create Scenario</span>
+                </v-btn>
+              </div>
           </div>
           <multipane
             v-if="upperTab === 'scenarios'"
@@ -1103,6 +1117,9 @@ export default {
   },
   methods: {
     getItemDifficultyClass,
+    handleCreatePhishingScenarioClick() {
+      this.$emit('on-create-phishing-scenario')
+    },
     getListItemClasses(itemResourceId = '') {
       return {
         'v-list-item--active': this.scenarioDistribution === itemResourceId
@@ -1320,7 +1337,7 @@ export default {
       if (this.type === SCENARIO_TYPES.QUISHING) {
         this.axiosPayload.templateTypes = [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
       }
-      apiFunc(this.axiosPayload).then((response) => {
+      return apiFunc(this.axiosPayload).then((response) => {
         const {
           data: { data }
         } = response
@@ -1338,6 +1355,7 @@ export default {
             this.phishingScenarioItems[0]
           )
         }
+        return this.phishingScenarioItems
       })
     },
     handleScroll(e) {

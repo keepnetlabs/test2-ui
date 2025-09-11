@@ -54,7 +54,7 @@
         id="input--new-training-content-by-language-file"
         class="ml-8"
         style="width: 424px !important;"
-        :size="200"
+        :size="500"
         :hint="getHint"
         :isShowFileProgress="true"
         :is-stand-alone="true"
@@ -159,7 +159,7 @@ export default {
     getHint() {
       return `${
         this.typeWithDisplayName ? this.typeWithDisplayName : this.scormType
-      } .zip file. Max. file size 200MB`
+      } .zip file. Max. file size 500MB`
     }
   },
   methods: {

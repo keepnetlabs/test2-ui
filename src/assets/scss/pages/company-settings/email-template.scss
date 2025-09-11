@@ -539,3 +539,13 @@
   background: transparent !important;
   border: none !important;
 }
+.red-flag-preview-active {
+  display: flex;
+  gap: 4px;
+  border: 1px solid #f56c6c;
+  background: rgba(245, 108, 108, 0.1);
+  position: relative;
+  .red-flag-tooltip-trigger {
+    top: 0px !important;
+  }
+}

@@ -47,8 +47,30 @@ export default {
                   window.removeEventListener('beforeunload', window.__beforeUnloadHandler)
                 }
               }, 12000)
+              this.registerFrameChannelForQuestionExtractorProxy()
             })
         }
+      }
+    },
+    registerFrameChannelForQuestionExtractorProxy() {
+      const iframe = document.querySelector('iframe')
+      if (iframe) {
+        const channel = new MessageChannel()
+        iframe.addEventListener('load', () => {
+          try {
+            iframe.contentWindow.postMessage({ type: 'QEX_PARAMS_CHANNEL' }, '*', [channel.port2])
+            const query = new URLSearchParams(window.location.search)
+            const data = {
+              EnrollmentContentId: query.get('EnrollmentContentId') || '',
+              TargetUserResourceId: query.get('TargetUserResourceId') || ''
+            }
+            channel.port1.postMessage(data)
+          } catch (err) {
+            console.error('QEX params gönderilemedi:', err)
+          }
+        })
+      } else {
+        console.warn('Sayfada hiç iframe bulunamadı!')
       }
     }
   }

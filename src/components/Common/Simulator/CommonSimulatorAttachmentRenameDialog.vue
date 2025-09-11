@@ -35,17 +35,22 @@ export default {
     status: {
       type: Boolean,
       default: false
+    },
+    defaultAttachmentName: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      attachmentName: '',
+      attachmentName: this.defaultAttachmentName,
       commonRules: {
         hint: '*Required',
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName)),
+          (v) => Validations.noDots(v, labels.CannotContainDots)
         ]
       }
     }

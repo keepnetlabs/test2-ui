@@ -1,204 +1,228 @@
 <template>
-  <AppModal
-    :status="status"
-    icon-name="mdi-hook"
-    :title="getTitle"
-    class-name="add-in-configuration"
-    title-id="text--add-or-edit-company-manager-modal-title"
-    @closeOverlay="closeOverlay"
-  >
-    <template #overlay-body>
-      <DefaultErrorDialog
-        v-if="!!createErrorMessage"
-        :status="!!createErrorMessage"
-        :error-message="createErrorMessage"
-        @on-close="createErrorMessage = ''"
-      />
-      <CampaignManagerLanguageSupportDialog
-        v-if="isShowMissingLanguageSupportDialog"
-        :status="isShowMissingLanguageSupportDialog"
-        :target-group-resource-ids="targetGroupResourceIds"
-        :selected-target-groups="selectedTargetGroups"
-        :user-count-detail-response="userCountDetailResponse"
-        @on-close="toggleShowMissingLanguageSupportDialog"
-        @on-confirm="onConfirmLanguageSupportDialog"
-      />
-      <v-stepper v-model="step" class="k-stepper">
-        <v-stepper-header class="k-stepper__header">
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-settings"
-            class="k-stepper__step"
-            :complete="step > 1"
-            :step="1"
-            >{{ labels.CampaignSettings }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-phishing-scenarios"
-            class="k-stepper__step"
-            :complete="step > 2"
-            :step="2"
-            >{{ labels.PhishingScenarios }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-target-audience"
-            class="k-stepper__step"
-            :complete="step > 3"
-            :step="3"
-            >{{ labels.TargetAudience }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
-            class="k-stepper__step"
-            :complete="step > 4"
-            :step="4"
-            >{{ labels.DeliverySettings }}
-          </v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
-            class="k-stepper__step"
-            :complete="step > 5"
-            :step="5"
-            >{{ labels.CampaignSummary }}
-          </v-stepper-step>
-        </v-stepper-header>
-        <v-stepper-items class="k-stepper__items">
-          <v-stepper-content class="k-stepper__content" :step="1">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.PhishingCampaignSettings"
-              :subtitle="labels.PhishingCampaignSettingsSub"
-            />
-            <CampaignManagerCampaignInfo
-              ref="refCampaignManagerCampaignInfo"
-              :default-values="getDefaultValuesOfCampaignInfo"
-              :is-edit="isEdit"
-              :is-action-button-disabled.sync="isActionButtonDisabled"
-              :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
-              :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
-              :form-details="formDetails"
-              is-phishing
-              show-reply-tracking
-              :hyper-personalization="sendUserPreferredLanguage"
-              @initialFormValues="getInitialCampaignManagerCampaignInfo"
-              @smartGroupSelected="handleSmartGroupSelected"
-              @hyperPersonalizationChange="handleHyperPersonalizationChanged"
-            />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.PhishingScenarios"
-              :subtitle="labels.CampaignManagerPhishingScenariosSub"
-            />
-            <CampaignManagerPhishingScenarios
-              v-model="selectedPhishingScenarios"
-              ref="refCampaignManagerPhishingScenarios"
-              is-show-reminder
-              :campaign-manager-resource-id="getCampaignResourceId"
-              :is-edit="isEdit || isDuplicate"
-              :languages="languageOptions"
-              :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
-              :is-valid="getIsPhishingScenariosValid"
-              :form-details="formDetails"
-              :initialCategoryFilter="initialCategoryFilter"
-              :initialScenarioDistribution="initialScenarioDistribution"
-              :initialTrainingForCategory="initialTrainingForCategory"
-              :is-preferred-language="
-                sendUserPreferredLanguage === 1 || sendUserPreferredLanguage === '1'
-              "
-              @distributionChanged="handleDistributionChanged"
-              @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
-              @trainingForCategoryChanged="handleTrainingForCategoryChanged"
-              @categoryFilterChanged="handleCategoryFilterChanged"
-              @phishingScenarioItemsChanged="handlePhishingScenarioItemsChanged"
-            />
-            <CustomError class="mb-6 ml-2" :is-valid="getIsPhishingScenariosValid" />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="3">
-            <ConfigureCompanyStepHeader
-              class="mb-8"
-              :title="labels.TargetAudience"
-              :subtitle="labels.CampaignManagerTargetAudienceSub"
-            />
-            <CampaignManagerTargetAudience
-              ref="refCampaignManagerTargetAudience"
-              :is-multiple-phishing-scenarios="selectedPhishingScenarios.length > 1"
-              :is-all-groups="!isEdit"
-              :default-values="getDefaultTargetAudienceSettings"
-              :selected-target-groups.sync="selectedTargetGroups"
-              :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
-              :total-target-user-count="getTotalTargetUserCountForTargetAudience"
-              :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
-              :form-details="formDetails"
-              :is-call-api-when-created="!isEdit"
-              :isMFAScenarioSelected="isMFAScenarioSelected"
-              :target-group-resource-ids="targetGroupResourceIds"
-              :scenario-resource-ids="getSelectedScenariosResourceIds"
-              :is-phishing="true"
-              :send-user-preferred-language="sendUserPreferredLanguage"
-              :scenario-distribution="scenarioDistribution"
-              :category-filter="categoryFilter"
-            />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="4">
-            <ConfigureCompanyStepHeader
-              :title="labels.DeliverySettings"
-              :subtitle="labels.DeliverySettingsSub"
-            />
-            <CampaignManagerDeliverySettings
-              ref="refCampaignManagerDeliverySettings"
-              :default-values="getDefaultValuesDeliverySettings"
-              :form-details="formDetails"
-              :target-group-resource-ids="targetGroupResourceIds"
-              :total-target-user-count="totalTargetUserCount"
-              :user-target-audience-data="getUserTargetAudienceData"
-              :selected-phishing-scenario="getSelectedPhishingScenario"
-              :is-edit="isEdit"
-              :isDuplicate="isDuplicate"
-              :phishing-type-id="1"
-              :is-frequency-disabled="isFrequencyDisabled"
-              :frequency-disabled-text="frequencyDisabledText"
-              :targetGroupCompanyNames="targetGroupCompanyNames"
-              @set-action-button-disability="setActionButtonDisability"
-            />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="5">
-            <ConfigureCompanyStepHeader
-              :title="labels.CampaignSummary"
-              :subtitle="labels.CampaignSummarySub"
-            />
-            <CampaignManagerSummary
-              ref="refCampaignManagerSummary"
-              :isMFAScenarioSelected="isMFAScenarioSelected"
-              :show-schedule="showSchedule"
-              :form-data="getFormDataForCampaignSummary"
-              :language-options="languageOptions"
-            />
-          </v-stepper-content>
-        </v-stepper-items>
-      </v-stepper>
-    </template>
-    <template #overlay-footer>
-      <StepperFooter
-        max-step="5"
-        :ids="stepperIds"
-        :step="step"
-        :disabled-statuses="{
-          nextButton: isActionButtonDisabled,
-          submitButton: isActionButtonDisabled
-        }"
-        :save-button-text="getSaveButtonText"
-        @on-cancel="closeOverlay"
-        @on-back="changeStep(-1)"
-        @on-next="handleSubmit"
-        @on-submit="handleSubmit"
-      />
-    </template>
-  </AppModal>
+  <div>
+    <AppModal
+      :status="status"
+      icon-name="mdi-hook"
+      :title="getTitle"
+      class-name="add-in-configuration"
+      title-id="text--add-or-edit-company-manager-modal-title"
+      @closeOverlay="closeOverlay"
+    >
+      <template #overlay-body>
+        <DefaultErrorDialog
+          v-if="!!createErrorMessage"
+          :status="!!createErrorMessage"
+          :error-message="createErrorMessage"
+          @on-close="createErrorMessage = ''"
+        />
+        <CampaignManagerLanguageSupportDialog
+          v-if="isShowMissingLanguageSupportDialog"
+          :status="isShowMissingLanguageSupportDialog"
+          :target-group-resource-ids="targetGroupResourceIds"
+          :selected-target-groups="selectedTargetGroups"
+          :user-count-detail-response="userCountDetailResponse"
+          @on-close="toggleShowMissingLanguageSupportDialog"
+          @on-confirm="onConfirmLanguageSupportDialog"
+        />
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsideSimulatorDrawer"
+          v-if="isOpenPhishingDrawer"
+          v-model="isOpenPhishingDrawer"
+          class="k-navigation-drawer k-navigation-drawer--phishing"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <CommonSimulatorNewScenario
+            v-if="isOpenPhishingDrawer"
+            ref="commonSimulatorNewScenario"
+            :status="isOpenPhishingDrawer"
+            :scenario-details-lookup="scenarioDetailsLookup"
+            @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
+            @on-new-item-created="handleNewScenarioCreated"
+          />
+        </VNavigationDrawer>
+        <v-stepper v-model="step" class="k-stepper">
+          <v-stepper-header class="k-stepper__header">
+            <v-stepper-step
+              id="step--campaign-manager-add-or-edit-modal-campaign-settings"
+              class="k-stepper__step"
+              :complete="step > 1"
+              :step="1"
+              >{{ labels.CampaignSettings }}
+            </v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              id="step--campaign-manager-add-or-edit-modal-phishing-scenarios"
+              class="k-stepper__step"
+              :complete="step > 2"
+              :step="2"
+              >{{ labels.PhishingScenarios }}
+            </v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              id="step--campaign-manager-add-or-edit-modal-target-audience"
+              class="k-stepper__step"
+              :complete="step > 3"
+              :step="3"
+              >{{ labels.TargetAudience }}
+            </v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+              class="k-stepper__step"
+              :complete="step > 4"
+              :step="4"
+              >{{ labels.DeliverySettings }}
+            </v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+              class="k-stepper__step"
+              :complete="step > 5"
+              :step="5"
+              >{{ labels.CampaignSummary }}
+            </v-stepper-step>
+          </v-stepper-header>
+          <v-stepper-items class="k-stepper__items">
+            <v-stepper-content class="k-stepper__content" :step="1">
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.PhishingCampaignSettings"
+                :subtitle="labels.PhishingCampaignSettingsSub"
+              />
+              <CampaignManagerCampaignInfo
+                ref="refCampaignManagerCampaignInfo"
+                :default-values="getDefaultValuesOfCampaignInfo"
+                :is-edit="isEdit"
+                :is-action-button-disabled.sync="isActionButtonDisabled"
+                :clickedUserGroupResourceId.sync="clickedUserGroupResourceId"
+                :initialClickedUserGroupResourceId="initialClickedUserGroupResourceId"
+                :form-details="formDetails"
+                is-phishing
+                show-reply-tracking
+                :hyper-personalization="sendUserPreferredLanguage"
+                @initialFormValues="getInitialCampaignManagerCampaignInfo"
+                @smartGroupSelected="handleSmartGroupSelected"
+                @hyperPersonalizationChange="handleHyperPersonalizationChanged"
+              />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="2">
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.PhishingScenarios"
+                :subtitle="labels.CampaignManagerPhishingScenariosSub"
+              />
+              <CampaignManagerPhishingScenarios
+                v-model="selectedPhishingScenarios"
+                ref="refCampaignManagerPhishingScenarios"
+                is-show-reminder
+                :campaign-manager-resource-id="getCampaignResourceId"
+                :is-edit="isEdit || isDuplicate"
+                :languages="languageOptions"
+                :default-phishing-scenarios-values-mapped="getDefaultValuesOfPhishingScenarios"
+                :is-valid="getIsPhishingScenariosValid"
+                :form-details="formDetails"
+                :initialCategoryFilter="initialCategoryFilter"
+                :initialScenarioDistribution="initialScenarioDistribution"
+                :initialTrainingForCategory="initialTrainingForCategory"
+                :is-preferred-language="
+                  sendUserPreferredLanguage === 1 || sendUserPreferredLanguage === '1'
+                "
+                @distributionChanged="handleDistributionChanged"
+                @totalPhishingScenariosCountChange="handleTotalPhishingScenariosCountChange"
+                @trainingForCategoryChanged="handleTrainingForCategoryChanged"
+                @categoryFilterChanged="handleCategoryFilterChanged"
+                @phishingScenarioItemsChanged="handlePhishingScenarioItemsChanged"
+                @on-create-phishing-scenario="handleCreatePhishingScenario"
+              />
+              <CustomError class="mb-6 ml-2" :is-valid="getIsPhishingScenariosValid" />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="3">
+              <ConfigureCompanyStepHeader
+                class="mb-8"
+                :title="labels.TargetAudience"
+                :subtitle="labels.CampaignManagerTargetAudienceSub"
+              />
+              <CampaignManagerTargetAudience
+                ref="refCampaignManagerTargetAudience"
+                :is-multiple-phishing-scenarios="selectedPhishingScenarios.length > 1"
+                :is-all-groups="!isEdit"
+                :default-values="getDefaultTargetAudienceSettings"
+                :selected-target-groups.sync="selectedTargetGroups"
+                :selected-target-groups-mapped.sync="selectedTargetGroupsMapped"
+                :total-target-user-count="getTotalTargetUserCountForTargetAudience"
+                :default-selected-target-group-resource-ids="defaultTargetGroupResourceIds"
+                :form-details="formDetails"
+                :is-call-api-when-created="!isEdit"
+                :isMFAScenarioSelected="isMFAScenarioSelected"
+                :target-group-resource-ids="targetGroupResourceIds"
+                :scenario-resource-ids="getSelectedScenariosResourceIds"
+                :is-phishing="true"
+                :send-user-preferred-language="sendUserPreferredLanguage"
+                :scenario-distribution="scenarioDistribution"
+                :category-filter="categoryFilter"
+              />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="4">
+              <ConfigureCompanyStepHeader
+                :title="labels.DeliverySettings"
+                :subtitle="labels.DeliverySettingsSub"
+              />
+              <CampaignManagerDeliverySettings
+                ref="refCampaignManagerDeliverySettings"
+                :default-values="getDefaultValuesDeliverySettings"
+                :form-details="formDetails"
+                :target-group-resource-ids="targetGroupResourceIds"
+                :total-target-user-count="totalTargetUserCount"
+                :user-target-audience-data="getUserTargetAudienceData"
+                :selected-phishing-scenario="getSelectedPhishingScenario"
+                :is-edit="isEdit"
+                :isDuplicate="isDuplicate"
+                :phishing-type-id="1"
+                :is-frequency-disabled="isFrequencyDisabled"
+                :frequency-disabled-text="frequencyDisabledText"
+                :targetGroupCompanyNames="targetGroupCompanyNames"
+                @set-action-button-disability="setActionButtonDisability"
+              />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="5">
+              <ConfigureCompanyStepHeader
+                :title="labels.CampaignSummary"
+                :subtitle="labels.CampaignSummarySub"
+              />
+              <CampaignManagerSummary
+                ref="refCampaignManagerSummary"
+                :isMFAScenarioSelected="isMFAScenarioSelected"
+                :show-schedule="showSchedule"
+                :form-data="getFormDataForCampaignSummary"
+                :language-options="languageOptions"
+              />
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </template>
+      <template #overlay-footer>
+        <StepperFooter
+          max-step="5"
+          :ids="stepperIds"
+          :step="step"
+          :disabled-statuses="{
+            nextButton: isActionButtonDisabled,
+            submitButton: isActionButtonDisabled
+          }"
+          :save-button-text="getSaveButtonText"
+          @on-cancel="closeOverlay"
+          @on-back="changeStep(-1)"
+          @on-next="handleSubmit"
+          @on-submit="handleSubmit"
+        />
+      </template>
+    </AppModal>
+  </div>
 </template>
 
 <script>
@@ -233,6 +257,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
 import CampaignManagerLanguageSupportDialog from '@/components/CampaignManager/CampaignManagerLanguageSupportDialog.vue'
+import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario.vue'
 const EMITS = {
   ON_CLOSE: 'on-close',
   ON_SUBMIT: 'on-submit'
@@ -251,6 +276,7 @@ export default {
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
     DefaultErrorDialog,
+    CommonSimulatorNewScenario,
     AppModal
   },
   mixins: [useScenarioDetailsLookup],
@@ -1002,6 +1028,54 @@ export default {
         default:
           break
       }
+    },
+    handleCreatePhishingScenario() {
+      this.isOpenPhishingDrawer = true
+    },
+    handleClickOutsideSimulatorDrawer(event) {
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+      }
+
+      if (
+        this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer ||
+        this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer
+      ) {
+        return
+      }
+      if (
+        this.$refs.commonSimulatorNewScenario?.isEmailTemplateInEditMode ||
+        this.$refs.commonSimulatorNewScenario?.isLandingPageTemplateInEditMode
+      ) {
+        return
+      }
+      this.closeSimulatorDrawer()
+    },
+    handleCloseSimulatorDrawer() {
+      this.closeSimulatorDrawer()
+    },
+    closeSimulatorDrawer(status) {
+      if (document.querySelector('.k-navigation-drawer--phishing'))
+        document.querySelector('.k-navigation-drawer--phishing').style.right = '-100%'
+      setTimeout(() => {
+        this.isOpenPhishingDrawer = false
+      }, 250)
+    },
+    handleNewScenarioCreated(resourceId) {
+      this.$refs.refCampaignManagerPhishingScenarios
+        ?.callForPhishingScenarios(false)
+        .then((response) => {
+          this.$refs.refCampaignManagerPhishingScenarios?.callForSelectedPhishingScenario(
+            resourceId,
+            response.find((item) => item.resourceId === resourceId)
+          )
+        })
     }
   }
 }
