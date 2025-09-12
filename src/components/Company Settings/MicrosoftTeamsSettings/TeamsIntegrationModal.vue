@@ -2,6 +2,7 @@
   <AppDialog
     icon="mdi-link"
     title="Enable Microsoft Teams Integration"
+    :sub-title="isStep2 ? 'Access 2: Training Delivery' : 'Access 1: Connect to Teams'"
     :status="status"
     @changeStatus="handleClose"
   >
@@ -55,6 +56,10 @@ export default {
       default: false
     },
     isActionButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
+    isStep2: {
       type: Boolean,
       default: false
     }
