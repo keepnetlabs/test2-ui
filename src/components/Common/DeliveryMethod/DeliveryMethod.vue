@@ -27,64 +27,6 @@
         </template>
       </KSelect>
     </FormGroup>
-
-    <!-- Microsoft Teams Integration Steps -->
-    <div 
-      v-if="selectedValue === 'microsoft-teams'" 
-      class="delivery-method__teams-integration mt-4"
-    >
-      <div class="teams-integration-card">
-        <div class="teams-integration-card__header">
-          <h3 class="teams-integration-card__title">Microsoft Teams Settings</h3>
-          <p class="teams-integration-card__subtitle">
-            Configure Microsoft Teams integration to deliver training directly through Teams.
-          </p>
-        </div>
-        
-        <div class="teams-integration-card__content">
-          <div 
-            v-for="(step, stepIndex) in teamsIntegrationSteps" 
-            :key="stepIndex"
-            class="teams-step"
-            :class="{ 
-              'teams-step--disabled': step.disabled,
-              'teams-step--completed': step.completed 
-            }"
-          >
-            <div class="teams-step__header">
-              <h4 class="teams-step__title">{{ step.title }}</h4>
-              <p class="teams-step__description">{{ step.description }}</p>
-            </div>
-
-            <div class="teams-step__content">
-              <div 
-                v-for="(access, accessIndex) in step.accesses" 
-                :key="accessIndex"
-                class="teams-access"
-              >
-                <div class="teams-access__info">
-                  <h5 class="teams-access__title">{{ access.title }}</h5>
-                  <p class="teams-access__description">{{ access.description }}</p>
-                </div>
-                
-                <div class="teams-access__action">
-                  <v-btn
-                    :color="getButtonColor(access.status)"
-                    :disabled="access.disabled || step.disabled"
-                    :loading="access.loading"
-                    class="teams-access__button"
-                    rounded
-                    @click="handleTeamsAccessClick(step, access, stepIndex, accessIndex)"
-                  >
-                    {{ getButtonText(access.status) }}
-                  </v-btn>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -240,13 +182,12 @@ export default {
     async handleTeamsAccessClick(step, access, stepIndex, accessIndex) {
       try {
         this.setTeamsAccessLoading(stepIndex, accessIndex, true)
-        
+
         if (stepIndex === 0 && accessIndex === 0) {
           await this.connectToTeams()
         } else if (stepIndex === 1 && accessIndex === 0) {
           await this.enableTeamsTrainingDelivery()
         }
-        
       } catch (error) {
         this.$emit('teams-integration-error', error.message || 'An unexpected error occurred')
       } finally {
@@ -255,21 +196,24 @@ export default {
     },
     async connectToTeams() {
       await this.simulateApiCall()
-      
+
       this.updateTeamsAccessStatus(0, 0, 'enabled')
       this.updateTeamsStepStatus(0, false, true)
       this.updateTeamsStepStatus(1, false, false)
       this.updateTeamsAccessStatus(1, 0, 'pending')
-      
+
       this.$emit('teams-integration-success', 'Successfully connected to Microsoft Teams!')
     },
     async enableTeamsTrainingDelivery() {
       await this.simulateApiCall()
-      
+
       this.updateTeamsAccessStatus(1, 0, 'enabled')
       this.updateTeamsStepStatus(1, false, true)
-      
-      this.$emit('teams-integration-success', 'Training delivery has been enabled for Microsoft Teams!')
+
+      this.$emit(
+        'teams-integration-success',
+        'Training delivery has been enabled for Microsoft Teams!'
+      )
     },
     simulateApiCall() {
       return new Promise((resolve, reject) => {
@@ -291,8 +235,8 @@ export default {
     updateTeamsStepStatus(stepIndex, disabled, completed) {
       this.teamsIntegrationSteps[stepIndex].disabled = disabled
       this.teamsIntegrationSteps[stepIndex].completed = completed
-      
-      this.teamsIntegrationSteps[stepIndex].accesses.forEach(access => {
+
+      this.teamsIntegrationSteps[stepIndex].accesses.forEach((access) => {
         access.disabled = disabled
       })
     }
@@ -316,7 +260,7 @@ export default {
 
   &__header {
     padding: 24px 32px;
-    background: linear-gradient(135deg, #6264A7 0%, #5B5FC7 100%);
+    background: linear-gradient(135deg, #6264a7 0%, #5b5fc7 100%);
     color: white;
   }
 
@@ -354,7 +298,7 @@ export default {
 
   &--completed {
     background-color: #f8fff8;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid #4caf50;
   }
 
   &__header {
@@ -394,7 +338,7 @@ export default {
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-color: #6264A7;
+    border-color: #6264a7;
   }
 
   &:last-child {
