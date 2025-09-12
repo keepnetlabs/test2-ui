@@ -133,6 +133,12 @@
 .bg-aqua-light {
   background-color: #f1f8fe;
 }
+.bg-green-light {
+  background-color: rgba(67, 160, 71, 0.15);
+  .alert-box__default-content {
+    align-items: center;
+  }
+}
 .text-primary-color {
   color: #383b41;
 }

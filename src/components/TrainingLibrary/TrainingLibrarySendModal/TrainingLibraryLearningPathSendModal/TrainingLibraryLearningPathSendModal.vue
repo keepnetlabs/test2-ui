@@ -145,7 +145,7 @@ import {
 } from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendLearningPathSettings from './TrainingLibrarySendLearningPathSettings.vue'
 import TrainingLibrarySendLearningPathSummary from './TrainingLibrarySendLearningPathSummary.vue'
-
+import { DELIVERY_METHODS, getDeliveryMethodLabel } from '@/components/Common/DeliveryMethod/utils'
 export default {
   name: 'TrainingLibraryLearningPathSendModal',
   components: {
@@ -249,31 +249,50 @@ export default {
       const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-      formData.settings = {
-        'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
-          ? {
-              smsText:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
-                  ?.smsTextTemplate,
-              senderPhoneNumber:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
-            }
-          : 'Off',
-        'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
-        Schedule:
-          refSendTrainingSettings.formData.scheduleTypeId === '1'
-            ? 'Now'
-            : `${
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
-              } ${this.getTimeZoneText(
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
-              )}`,
-        'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
-        Distribution: refSendTrainingSettings.isDistributionEnabled
-          ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
-          : 'No',
-        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-        Reminder: sendReminderEvery
+      const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
+      const isDeliveryMethodSMS = deliveryMethod === DELIVERY_METHODS.SMS
+      if (isDeliveryMethodSMS) {
+        formData.settings = {
+          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          Distribution: refSendTrainingSettings.isDistributionEnabled
+            ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
+            : 'No',
+          'Sender Phone Number':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
+          Reminder: sendReminderEvery,
+          'SMS Text':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate,
+          'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+        }
+      } else {
+        formData.settings = {
+          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          Reminder: sendReminderEvery,
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Award Certificate': refSendTrainingSettings.formData.awardCertificate ? 'Yes' : 'No',
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
+          Distribution: refSendTrainingSettings.isDistributionEnabled
+            ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
+            : 'No',
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+        }
       }
       if (sendReminderEvery) {
         const reminderEndType =
@@ -588,6 +607,12 @@ export default {
         payload[
           'smsProviderNumberResourceId'
         ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsProviderNumberResourceId
+      }
+      if (
+        this.$refs?.refSendTrainingSettings?.formData?.deliveryMethod ===
+        DELIVERY_METHODS.MICROSOFT_TEAMS
+      ) {
+        payload['sendTeamsNotification'] = true
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)

@@ -138,6 +138,7 @@ import {
   enrollmentAutoEnrollDayOfWeekItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
+import { getDeliveryMethodLabel, DELIVERY_METHODS } from '@/components/Common/DeliveryMethod/utils'
 
 export default {
   name: 'TrainingLibraryTrainingSendModal',
@@ -250,71 +251,111 @@ export default {
       const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-      formData.settings = {
-        'Training Delivery for Your LMS': isProxy ? 'On' : 'Off',
-        Reminder: sendReminderEvery,
-        Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-        'Award Certificate': refSendTrainingSettings.formData.awardCertificate
-          ? awardCertificateTypes?.find?.(
-              (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
-            )?.text
-          : 'No',
-        'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
-          ? {
-              smsText:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
-                  ?.smsTextTemplate,
-              senderPhoneNumber:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
-            }
-          : 'Off',
-        'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
-        Schedule:
-          refSendTrainingSettings.formData.scheduleTypeId === '1'
-            ? 'Now'
-            : `${
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
-              } ${this.getTimeZoneText(
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
-              )}`,
-        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
-      }
-      if (sendReminderEvery) {
-        const reminderEndType =
-          endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
-        let endText = reminderEndType
-        if (enrollmentReminder.endType === 'OnDate') {
-          endText = 'on ' + enrollmentReminder.stopTime
-        } else if (enrollmentReminder.endType === 'AfterOccurrences') {
-          endText = 'after occurrences ' + enrollmentReminder.occurrenceCount + ' times'
+      if (
+        refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.EMAIL ||
+        refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
+      ) {
+        formData.settings = {
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          Reminder: sendReminderEvery,
+          'Delivery Method': getDeliveryMethodLabel(
+            refSendTrainingSettings?.formData?.deliveryMethod
+          ),
+          'Award Certificate': refSendTrainingSettings.formData.awardCertificate
+            ? awardCertificateTypes?.find?.(
+                (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
+              )?.text
+            : 'No',
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
         }
-        formData.settings.Reminder = `Every ${
-          enrollmentReminder.periodCount === '1' ? '' : enrollmentReminder.periodCount
-        } ${
-          enrollmentReminder.periodCount > 1
-            ? enrollmentReminder.periodType.toLowerCase() + 's'
-            : enrollmentReminder.periodType.toLowerCase()
-        } - Ends ${endText}`
-      } else formData.settings['Reminder'] = 'No'
-      if (refSendTrainingSettings.isAutoEnroll) {
-        const autoEnrollType =
-          enrollmentAutoEnrollTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.type)
-            ?.text || ''
-        const autoEnrollDayOfWeek =
-          enrollmentAutoEnrollDayOfWeekItems?.find?.(
-            (item) => item.value === enrollmentAutoEnroll.dayOfWeek
-          )?.text || ''
-        const autoEnrollPeriodType =
-          periodTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum)
-            ?.text || ''
-        formData.settings['Auto-enroll'] = getAutoEnrollText(
-          autoEnrollType,
-          autoEnrollDayOfWeek,
-          enrollmentAutoEnroll,
-          autoEnrollPeriodType
-        )
-      } else formData.settings['Auto-enroll'] = 'No'
-      if (!refSendTrainingSettings?.formData?.isSendSMSNotification) {
+      } else if (refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.SMS) {
+        formData.settings = {
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          Reminder: sendReminderEvery,
+          'Delivery Method': getDeliveryMethodLabel(
+            refSendTrainingSettings?.formData?.deliveryMethod
+          ),
+          'Sender Phone Number':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
+          'SMS Text':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate,
+          'Award Certificate': refSendTrainingSettings.formData.awardCertificate
+            ? awardCertificateTypes?.find?.(
+                (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
+              )?.text
+            : 'No',
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+        }
+      } else {
+        formData.settings = {
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Delivery Method': getDeliveryMethodLabel(
+            refSendTrainingSettings?.formData?.deliveryMethod
+          )
+        }
+      }
+      if (refSendTrainingSettings?.formData?.deliveryMethod !== DELIVERY_METHODS.LMS) {
+        if (sendReminderEvery) {
+          const reminderEndType =
+            endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
+          let endText = reminderEndType
+          if (enrollmentReminder.endType === 'OnDate') {
+            endText = 'on ' + enrollmentReminder.stopTime
+          } else if (enrollmentReminder.endType === 'AfterOccurrences') {
+            endText = 'after occurrences ' + enrollmentReminder.occurrenceCount + ' times'
+          }
+          formData.settings.Reminder = `Every ${
+            enrollmentReminder.periodCount === '1' ? '' : enrollmentReminder.periodCount
+          } ${
+            enrollmentReminder.periodCount > 1
+              ? enrollmentReminder.periodType.toLowerCase() + 's'
+              : enrollmentReminder.periodType.toLowerCase()
+          } - Ends ${endText}`
+        } else formData.settings['Reminder'] = 'No'
+        if (refSendTrainingSettings.isAutoEnroll) {
+          const autoEnrollType =
+            enrollmentAutoEnrollTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.type
+            )?.text || ''
+          const autoEnrollDayOfWeek =
+            enrollmentAutoEnrollDayOfWeekItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.dayOfWeek
+            )?.text || ''
+          const autoEnrollPeriodType =
+            periodTypeItems?.find?.(
+              (item) => item.value === enrollmentAutoEnroll.emailPeriodTypeEnum
+            )?.text || ''
+          formData.settings['Auto-enroll'] = getAutoEnrollText(
+            autoEnrollType,
+            autoEnrollDayOfWeek,
+            enrollmentAutoEnroll,
+            autoEnrollPeriodType
+          )
+        } else formData.settings['Auto-enroll'] = 'No'
+      }
+      if (
+        !refSendTrainingSettings?.formData?.isSendSMSNotification &&
+        refSendTrainingSettings?.formData?.deliveryMethod !== DELIVERY_METHODS.LMS
+      ) {
         delete formData.settings['Sender Phone Number']
         delete formData.settings['SMS Text']
       }
@@ -326,7 +367,9 @@ export default {
       formData.certificateData = refSendTrainingSettings.formData.awardCertificate
         ? this.certificateData
         : null
-      formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
+      if (refSendTrainingSettings?.formData?.deliveryMethod !== DELIVERY_METHODS.LMS) {
+        formData.reminderData = refSendTrainingSettings.sendReminderEvery ? this.reminderData : null
+      }
       formData.enrollmentData = this.enrollmentData
       formData.trainingData = this.trainingPreviewData
       formData.isProxy = isProxy
@@ -601,6 +644,12 @@ export default {
         payload[
           'smsProviderNumberResourceId'
         ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsProviderNumberResourceId
+      }
+      if (
+        this.$refs?.refSendTrainingSettings?.formData?.deliveryMethod ===
+        DELIVERY_METHODS.MICROSOFT_TEAMS
+      ) {
+        payload['sendTeamsNotification'] = true
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)
