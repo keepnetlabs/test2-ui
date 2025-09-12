@@ -179,20 +179,27 @@ export default {
     }
   },
   created() {
-    this.getMicrosoftTeamsSettings()
     const { $route: { query } = {} } = this
     if (query?.code && query?.state) {
       //step 2
       this.callMicrosoftTeamsOboCallback(query.code, query.state)
     } else if (query?.admin_consent && query?.tenant && query?.scope) {
       this.callMicrosoftTeamsAppCallback(query.admin_consent, query.tenant, query.scope)
-    } else if (query?.admin_consent && query?.error && query?.error_description && query?.state) {
+    } else if (
+      (query?.admin_consent && query?.error && query?.error_description && query?.state) ||
+      (query?.error && query?.error_subcode && query?.state)
+    ) {
+      this.getMicrosoftTeamsSettings()
       this.$store.dispatch('common/createSnackBar', {
         message: `Error: ${query.error}
         Description: ${query.error_description}`,
         color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
         icon: 'mdi-alert-circle'
       })
+      this.$router.replace('/company/company-settings?')
+      console.log('query', query)
+    } else {
+      this.getMicrosoftTeamsSettings()
     }
   },
   methods: {
@@ -299,28 +306,33 @@ export default {
       })
     },
     callMicrosoftTeamsOboCallback(code, state) {
-      MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state).then((res) => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'Microsoft Teams connection established successfully.',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
+        .then(() => {
+          this.getMicrosoftTeamsSettings()
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Microsoft Teams connection established successfully.',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.isModalVisible = true
         })
-        this.isModalVisible = true
-      })
+        .finally(() => {
+          this.$router.replace('/company/company-settings')
+        })
     },
     callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
-      MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(
-        admin_consent,
-        tenant,
-        scope
-      ).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'All accesses enabled. You can now deliver trainings via Microsoft Teams.',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
+        .then(() => {
+          this.getMicrosoftTeamsSettings()
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'All accesses enabled. You can now deliver trainings via Microsoft Teams.',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
         })
-        this.getMicrosoftTeamsSettings()
-      })
+        .finally(() => {
+          this.$router.replace('/company/company-settings')
+        })
     },
     getMicrosoftTeamsAppAuthorizeLink() {
       return MicrosoftTeamsSettingsService.getMicrosoftTeamsAppAuthorizeLink().then((res) => {
