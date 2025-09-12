@@ -4,6 +4,7 @@
       v-if="isModalVisible"
       :status="isModalVisible"
       :isActionButtonDisabled="isButtonsDisabled"
+      :isStep2="isStep2"
       @on-close="handleCloseModal"
       @on-cancel="handleCloseModal"
       @on-copy-link="handleCopyLink"
@@ -134,6 +135,7 @@
         class="white--text fw-600"
         color="#2196f3"
         rounded
+        :style="getUpdateActionButtonStyle"
         @click="handleSubmit"
       >
         Update Integration Version
@@ -190,6 +192,15 @@ export default {
       if (this.isLastVersion || this.isSaveDisabled) {
         style.opacity = 0.5
         style.cursor = 'auto'
+      }
+      return style
+    },
+    getUpdateActionButtonStyle() {
+      const style = { boxShadow: 'none' }
+      if (this.isSaveDisabled) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+        style.pointerEvents = 'none'
       }
       return style
     },
