@@ -307,7 +307,8 @@ export default {
       if (
         (query?.code && query?.state) ||
         (query?.admin_consent && query?.error && query?.error_description && query?.state) ||
-        (query?.admin_consent && query?.tenant && query?.scope)
+        (query?.admin_consent && query?.tenant && query?.scope) ||
+        (query?.error && query?.error_subcode && query?.state)
       ) {
         this.tab = 'microsoft-teams-settings'
         return
