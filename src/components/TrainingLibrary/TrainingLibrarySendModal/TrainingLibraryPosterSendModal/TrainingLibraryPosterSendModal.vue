@@ -142,7 +142,7 @@ import {
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
 import TrainingLibrarySendPosterSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryPosterSendModal/TrainingLibrarySendPosterSettings.vue'
-
+import { DELIVERY_METHODS, getDeliveryMethodLabel } from '@/components/Common/DeliveryMethod/utils'
 export default {
   name: 'TrainingLibraryPosterSendModal',
   components: {
@@ -252,28 +252,46 @@ export default {
       formData.userCountDetailResponse = this.userCountDetailResponse
       const isProxy = refSendTrainingSettings?.formData?.isProxy
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-      formData.settings = {
-        Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-        'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
-        'SMS Notification': refSendTrainingSettings?.formData?.isSendSMSNotification
-          ? {
-              smsText:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData
-                  ?.smsTextTemplate,
-              senderPhoneNumber:
-                refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber
-            }
-          : 'Off',
-        'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-        Schedule:
-          refSendTrainingSettings.formData.scheduleTypeId === '1'
-            ? 'Now'
-            : `${
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
-              } ${this.getTimeZoneText(
-                refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
-              )}`
+      const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
+      if (
+        deliveryMethod === DELIVERY_METHODS.EMAIL ||
+        deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
+      ) {
+        formData.settings = {
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+        }
+      } else {
+        formData.settings = {
+          Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          Schedule:
+            refSendTrainingSettings.formData.scheduleTypeId === '1'
+              ? 'Now'
+              : `${
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledDate
+                } ${this.getTimeZoneText(
+                  refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
+                )}`,
+          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          'Sender Phone Number':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
+          'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
+          'SMS Text':
+            refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate,
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+        }
       }
+
       if (refSendTrainingSettings.isAutoEnroll) {
         const autoEnrollType =
           enrollmentAutoEnrollTypeItems?.find?.((item) => item.value === enrollmentAutoEnroll.type)
@@ -579,6 +597,12 @@ export default {
         payload[
           'smsProviderNumberResourceId'
         ] = this.$refs?.refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsProviderNumberResourceId
+      }
+      if (
+        this.$refs?.refSendTrainingSettings?.formData?.deliveryMethod ===
+        DELIVERY_METHODS.MICROSOFT_TEAMS
+      ) {
+        payload['sendTeamsNotification'] = true
       }
       this.isActionButtonDisabled = true
       AwarenessEducatorService.createEnrollment(payload)

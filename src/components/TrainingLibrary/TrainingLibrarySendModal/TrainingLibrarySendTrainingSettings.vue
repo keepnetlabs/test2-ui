@@ -8,57 +8,26 @@
         entity-name="enrollment"
       />
     </FormGroup>
-    <FormGroup
-      v-if="showProxySection"
-      class="send-training-settings__lms"
-      title="Training Delivery for Your LMS"
-      sub-title="Easily use the training in your own LMS by downloading the training proxy package"
-    >
-      <div class="send-training-settings__lms-switch">
-        <VSwitch
-          v-model="formData.isProxy"
-          id="input--send-training-settings-lms"
-          hide-details
-          label="Training Delivery for Your LMS"
-          color="#2196f3"
-        />
-      </div>
-      <div class="send-training-settings__lms-helper">
-        <VIcon size="default">mdi-information</VIcon>
-        <span class="text-primary-color fs-3 ml-2"
-          >When the Training Delivery for Your LMS is activated, only the Content Language and Mark
-          as Test options are used</span
-        >
-      </div>
-    </FormGroup>
     <InputContentLanguage
       v-model="formData.languageIds"
       ref="refInputContentLanguage"
       :training-id="selectedRow.trainingId"
     />
-    <div v-if="!formData.isProxy" class="mb-6">
-      <FormGroup
-        class="send-training-settings__lms"
-        title="SMS Notification"
-        :sub-title="smsNotificationSub"
-      >
-        <AlertBox
-          class="bg-aqua-light mb-4"
-          icon-color="#2196F3"
-          icon-name="mdi-information"
-          text="Once the SMS notification is enabled, target audience will receive SMS in addition to email, only if their phone number exists in the system. "
-          :slots="{ primaryAction: false, secondaryAction: false }"
-        />
-        <div class="send-training-settings__lms-switch">
-          <VSwitch
-            v-model="formData.isSendSMSNotification"
-            id="input--send-training-settings-lms"
-            hide-details
-            label="SMS notification for your training"
-            color="#2196f3"
-          />
-        </div>
-      </FormGroup>
+    <DeliveryMethod
+      v-model="formData.deliveryMethod"
+      :isLMS="showProxySection"
+      @input="handleDeliveryMethodChange"
+    />
+    <AlertBox
+      v-if="deliveryMethodText"
+      class="bg-aqua-light mb-4 max-w-554"
+      icon-color="#2196F3"
+      icon-name="mdi-information"
+      :text="deliveryMethodText"
+      :slots="{ primaryAction: false, secondaryAction: false }"
+    />
+
+    <div v-if="isDeliveryMethodSMS" class="mb-6">
       <SendTrainingSMSSettings
         v-if="formData.isSendSMSNotification"
         ref="refSendTrainingSMSSettings"
@@ -68,7 +37,7 @@
         :phoneNumbers="phoneNumbers"
       />
     </div>
-    <FormGroup v-if="!formData.isProxy" style="max-width: 650px;" :title="labels.Schedule">
+    <FormGroup v-if="!isDeliveryMethodLMS" style="max-width: 650px;" :title="labels.Schedule">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -126,7 +95,7 @@
       </v-radio-group>
     </FormGroup>
     <FormGroup
-      v-if="!formData.isProxy"
+      v-if="!isDeliveryMethodLMS"
       class="mt-6"
       :title="labels.Reminder"
       style="max-width: 875px;"
@@ -219,7 +188,7 @@
       />
     </FormGroup>
     <FormGroup
-      v-if="!formData.isProxy && showCertificate"
+      v-if="!isDeliveryMethodLMS && showCertificate"
       class="mt-6"
       :title="labels.Certificate"
       style="max-width: 875px;"
@@ -248,7 +217,7 @@
       </div>
     </FormGroup>
     <FormGroup
-      v-if="!formData.isProxy"
+      v-if="!isDeliveryMethodLMS"
       class="mt-6"
       style="max-width: 950px;"
       :title="labels.AutoEnroll"
@@ -318,7 +287,7 @@
         />
       </div>
     </FormGroup>
-    <FormGroup :class="!formData.isProxy ? 'mt-6' : ''" title="Mark as Test">
+    <FormGroup :class="!isDeliveryMethodLMS ? 'mt-6' : ''" title="Mark as Test">
       <v-checkbox
         v-model="formData.markedAsTest"
         id="input--campaign-manager-advanced-settings-randomly-selected"
@@ -345,6 +314,7 @@ import InputContentLanguage from '@/components/Common/Inputs/InputContentLanguag
 import { getTimeByTimeZone } from '@/api/company'
 import AlertBox from '@/components/AlertBox.vue'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
+import DeliveryMethod from '@/components/Common/DeliveryMethod/DeliveryMethod.vue'
 import {
   endTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
@@ -352,6 +322,7 @@ import {
   certificateTypeItems,
   periodTypeItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
+import { DELIVERY_METHODS } from '@/components/Common/DeliveryMethod/utils'
 
 export default {
   name: 'TrainingLibrarySendTrainingSettings',
@@ -363,7 +334,8 @@ export default {
     InputDate,
     KSelect,
     FormGroup,
-    SendTrainingSMSSettings
+    SendTrainingSMSSettings,
+    DeliveryMethod
   },
   props: {
     selectedRow: {
@@ -410,6 +382,7 @@ export default {
       datePickerOptions: {
         disabledDate: this.disabledEndDates
       },
+      deliveryMethod: 'email',
       formData: {
         name: '',
         isSendSMSNotification: false,
@@ -470,6 +443,22 @@ export default {
     },
     isScheduledTimeDisabled() {
       return this.formData.scheduleTypeId !== '2'
+    },
+    deliveryMethodText() {
+      if (this.formData.deliveryMethod === DELIVERY_METHODS.LMS) {
+        return "The training will be distributed through the organization's LMS after it is downloaded and prepared. This process must be completed manually."
+      } else if (this.formData.deliveryMethod === DELIVERY_METHODS.SMS) {
+        return 'Selected users without a registered phone number will receive the training via email.'
+      } else if (this.formData.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS) {
+        return 'Selected users not found in Microsoft Teams will receive the training via email.'
+      }
+      return ''
+    },
+    isDeliveryMethodSMS() {
+      return this.formData.deliveryMethod === DELIVERY_METHODS.SMS
+    },
+    isDeliveryMethodLMS() {
+      return this.formData.deliveryMethod === DELIVERY_METHODS.LMS
     }
   },
   created() {
@@ -545,6 +534,11 @@ export default {
     },
     validateForm() {
       return this.$refs.refForm.validate()
+    },
+    handleDeliveryMethodChange(val) {
+      this.formData.deliveryMethod = val
+      this.formData.isProxy = val === DELIVERY_METHODS.LMS
+      this.formData.isSendSMSNotification = val === DELIVERY_METHODS.SMS
     }
   }
 }

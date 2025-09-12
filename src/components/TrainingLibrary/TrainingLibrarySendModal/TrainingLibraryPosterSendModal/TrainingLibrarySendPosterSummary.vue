@@ -18,7 +18,9 @@
         :items="getSettingItems"
       >
         <template #SMSNotification="{ props: { key, val } }">
-          <div class="campaign-manager-summary-card__body-item-key">{{ key }}</div>
+          <div class="campaign-manager-summary-card__body-item-key">
+            {{ key }}
+          </div>
           <div v-if="val === 'Off'" class="campaign-manager-summary-card__body-item-value">
             {{ val }}
           </div>
@@ -323,7 +325,11 @@ export default {
       return this.getSettingItems?.Reminder
     },
     isPhoneNumber() {
-      return this.getSettingItems && this.getSettingItems['SMS Notification'].senderPhoneNumber
+      return (
+        this.getSettingItems &&
+        this.getSettingItems['SMS Notification'] &&
+         this.getSettingItems['SMS Notification'].senderPhoneNumber
+      )
     },
     isRandomlyTargetUser() {
       return this?.formData?.selectedCampaign?.targetUsers?.sendRandomlyUsers
@@ -370,7 +376,9 @@ export default {
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
+        type: 'region'
+      })
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
     }
   }
