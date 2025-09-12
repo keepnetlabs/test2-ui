@@ -111,15 +111,26 @@
           persistent-hint
         />
       </FormGroup>
-      <VBtn
-        v-if="isMicrosoftTeamsActive"
-        class="k-overlay__btn-save white--text"
-        color="#2196f3"
-        rounded
-        :style="getSaveButtonStyle"
-        @click="handleSubmit"
-      >
-        SAVE
+      <VTooltip v-if="isMicrosoftTeamsActive && isLastVersion" bottom>
+        <template #activator="{ on }">
+          <div v-on="on" :style="getUpdateButtonStyle">
+            <VBtn
+              class="white--text fw-600"
+              style="pointer-events: none; box-shadow: none !important;"
+              color="#2196f3"
+              rounded
+              @click="handleSubmit"
+            >
+              Update Integration Version
+            </VBtn>
+          </div>
+        </template>
+        <span>
+          The integration is already using the latest version.
+        </span>
+      </VTooltip>
+      <VBtn v-else class="white--text fw-600" color="#2196f3" rounded @click="handleSubmit">
+        Update Integration Version
       </VBtn>
     </v-form>
   </div>
@@ -154,16 +165,25 @@ export default {
       isSaveDisabled: false,
       botName: '',
       loading: false,
-      isStep2: false
+      isStep2: false,
+      isLastVersion: false
     }
   },
   computed: {
     getSaveButtonStyle() {
-      const style = {}
+      const style = { boxShadow: 'none' }
       if (this.isSaveDisabled) {
         style.opacity = 0.5
         style.cursor = 'auto'
         style.pointerEvents = 'none'
+      }
+      return style
+    },
+    getUpdateButtonStyle() {
+      const style = { boxShadow: 'none', display: 'inline-block' }
+      if (this.isLastVersion || this.isSaveDisabled) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
       }
       return style
     },
@@ -190,12 +210,14 @@ export default {
       (query?.error && query?.error_subcode && query?.state)
     ) {
       this.getMicrosoftTeamsSettings()
-      this.$store.dispatch('common/createSnackBar', {
-        message: `Error: ${query.error}
+      if (query.error && query.error_description) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `Error: ${query.error}
         Description: ${query.error_description}`,
-        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-        icon: 'mdi-alert-circle'
-      })
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+      }
       this.$router.replace('/company/company-settings?')
       console.log('query', query)
     } else {
@@ -217,8 +239,9 @@ export default {
           ) {
             this.isStep2 = true
           }
-          this.isMicrosoftTeamsActive = false
+          this.isMicrosoftTeamsActive = this.isStep2 ? false : data?.isFound
           this.botName = data?.displayName
+          this.isLastVersion = data?.installedVersion === data?.latestAvailableVersion
         })
         .finally(() => {
           this.loading = false
@@ -286,16 +309,6 @@ export default {
         })
       }
     },
-    handleSave() {
-      this.isSaveDisabled = true
-      MicrosoftTeamsSettingsService.saveMicrosoftTeamsSettings(this.botName)
-        .then((res) => {
-          console.log(res)
-        })
-        .finally(() => {
-          this.isSaveDisabled = false
-        })
-    },
     getMicrosoftTeamsOboIntegrationLink() {
       return MicrosoftTeamsSettingsService.getMicrosoftTeamsOboIntegrationLink().then((res) => {
         const {
@@ -329,6 +342,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
+          this.handleSubmit()
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
@@ -343,14 +357,12 @@ export default {
       })
     },
     handleSubmit() {
+      if (this.isLastVersion) return
       this.isSaveDisabled = true
-      MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings()
-        .then((res) => {
-          console.log('res', res)
-        })
-        .finally(() => {
-          this.isSaveDisabled = false
-        })
+      MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings().finally(() => {
+        this.getMicrosoftTeamsSettings()
+        this.isSaveDisabled = false
+      })
     }
   }
 }
