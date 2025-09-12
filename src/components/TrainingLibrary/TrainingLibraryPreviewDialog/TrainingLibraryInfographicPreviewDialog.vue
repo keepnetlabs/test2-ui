@@ -135,7 +135,7 @@
           </div>
           <div class="training-library-preview__details-item align-baseline">
             <div>
-              <span class="training-library-preview__title">Compliances: </span>
+              <span class="training-library-preview__title">Compliance: </span>
             </div>
             <div class="d-flex flex-wrap gap-2 ml-2">
               <span

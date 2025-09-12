@@ -1,6 +1,7 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-const companyResourceId = localStorage.getItem('companyRequestId')
+const companyResourceId =
+  localStorage.getItem('companyRequestId') || localStorage.getItem('companyId')
 export function getMicrosoftTeamsSettings() {
   return testRequest.post('/companies/teams-app/check', {
     companyResourceId
