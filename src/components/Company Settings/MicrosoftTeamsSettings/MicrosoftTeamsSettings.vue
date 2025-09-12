@@ -1,6 +1,7 @@
 <template>
   <div class="microsoft-teams-settings">
     <TeamsIntegrationModal
+      v-if="isModalVisible"
       :status="isModalVisible"
       :isActionButtonDisabled="isButtonsDisabled"
       @on-close="handleCloseModal"
@@ -9,6 +10,7 @@
       @on-enable="handleEnableNow"
     />
     <DisableMicrosoftTeamsModal
+      v-if="isDisableModalVisible"
       :status="isDisableModalVisible"
       :isActionButtonDisabled="isButtonsDisabled"
       @on-close="handleCloseDisableModal"
@@ -21,29 +23,76 @@
     <DatatableLoading v-if="loading" :loading="loading" />
     <v-form v-else lazy-validation ref="refForm">
       <FormGroup
-        title="1. Integrate your Microsoft Teams"
-        sub-title="Enable a Microsoft account to integrate with the platform."
+        title="Step 1: Integrate with Microsoft Teams"
+        sub-title="Allow the platform to connect with your Microsoft Teams account."
         class="mb-6"
       >
-        <VBtn
-          v-if="!isMicrosoftTeamsActive"
-          color="#2196f3"
-          class="clustered-table-back-btn"
-          outlined
-          rounded
-          @click="handleOpenModal"
+        <div
+          class="d-flex text-primary-color align-center justify-space-between"
+          style="border-radius: 8px; background-color: #fafafa; padding: 16px;"
         >
-          <span>Enable Teams Integration</span>
-        </VBtn>
+          <div class="d-flex flex-column gap-1">
+            <span class="fw-600" style="font-size: 14px;">Access 1: Connect to Teams</span>
+            <span style="font-size: 12px;">Allows platform to link your Teams account.</span>
+          </div>
+          <VBtn
+            v-if="!isMicrosoftTeamsActive && !isStep2"
+            color="#2196f3"
+            class="fw-600 white--text"
+            rounded
+            style="box-shadow: none;"
+            @click="handleOpenModal"
+          >
+            <span>ENABLE ACCESS</span>
+          </VBtn>
+          <div v-else class="d-flex align-center">
+            <VIcon color="#43a047">mdi-check-circle</VIcon>
+            <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
+          </div>
+        </div>
+        <div
+          class="d-flex align-center text-primary-color mt-4 justify-space-between"
+          style="border-radius: 8px; background-color: #fafafa; padding: 16px;"
+        >
+          <div class="d-flex flex-column gap-1">
+            <span class="fw-600" style="font-size: 14px;">Access 2: Training Delivery</span>
+            <span style="font-size: 12px;"
+              >Enables platform to send training notifications to Teams.</span
+            >
+          </div>
+          <VBtn
+            v-if="!isMicrosoftTeamsActive || isStep2"
+            color="#2196f3"
+            class="fw-600 white--text"
+            rounded
+            :style="getEnableButtonStyle"
+            @click="handleOpenModal"
+          >
+            <span>ENABLE ACCESS</span>
+          </VBtn>
+          <div v-else class="d-flex align-center">
+            <VIcon color="#43a047">mdi-check-circle</VIcon>
+            <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
+          </div>
+        </div>
+        <AlertBox
+          v-if="isMicrosoftTeamsActive"
+          class="bg-green-light mt-2"
+          icon-color="#43a047"
+          icon-name="mdi-check-circle"
+          text="Access complete. You can now send trainings via Teams"
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        />
         <VBtn
-          v-else
+          v-if="isStep2 || isMicrosoftTeamsActive"
+          class="fw-600 mt-2"
           color="#F56C6C"
-          class="clustered-table-back-btn"
-          outlined
           rounded
+          outlined
+          :style="getSaveButtonStyle"
           @click="handleDisableTeamsIntegration"
         >
-          <span>Disable Teams Integration</span>
+          {{ isStep2 ? 'Disable Access' : 'Disable Accesses' }}
         </VBtn>
       </FormGroup>
       <FormGroup
@@ -67,7 +116,6 @@
         class="k-overlay__btn-save white--text"
         color="#2196f3"
         rounded
-        placeholder="Enter bot name"
         :style="getSaveButtonStyle"
         @click="handleSubmit"
       >
@@ -86,7 +134,7 @@ import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'MicrosoftTeamsSettings',
   components: {
@@ -94,7 +142,8 @@ export default {
     FormGroup,
     TeamsIntegrationModal,
     DisableMicrosoftTeamsModal,
-    DatatableLoading
+    DatatableLoading,
+    AlertBox
   },
   data() {
     return {
@@ -104,7 +153,8 @@ export default {
       isButtonsDisabled: false,
       isSaveDisabled: false,
       botName: '',
-      loading: false
+      loading: false,
+      isStep2: false
     }
   },
   computed: {
@@ -116,13 +166,26 @@ export default {
         style.pointerEvents = 'none'
       }
       return style
+    },
+    getEnableButtonStyle() {
+      const style = {}
+      style.boxShadow = 'none'
+      if (!this.isMicrosoftTeamsActive && !this.isStep2) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+        style.pointerEvents = 'none'
+      }
+      return style
     }
   },
   created() {
     this.getMicrosoftTeamsSettings()
     const { $route: { query } = {} } = this
     if (query?.code && query?.state) {
+      //step 2
       this.callMicrosoftTeamsOboCallback(query.code, query.state)
+    } else if (query?.admin_consent && query?.tenant && query?.scope) {
+      this.callMicrosoftTeamsAppCallback(query.admin_consent, query.tenant, query.scope)
     } else if (query?.admin_consent && query?.error && query?.error_description && query?.state) {
       this.$store.dispatch('common/createSnackBar', {
         message: `Error: ${query.error}
@@ -140,7 +203,14 @@ export default {
           const {
             data: { data }
           } = response
-          this.isMicrosoftTeamsActive = data.isFound
+          const { neededAction = '' } = data
+          if (
+            neededAction.includes('retryAppConsent') ||
+            neededAction.includes('completeAppConsent')
+          ) {
+            this.isStep2 = true
+          }
+          this.isMicrosoftTeamsActive = false
           this.botName = data?.displayName
         })
         .finally(() => {
@@ -152,6 +222,7 @@ export default {
     },
     handleCloseModal() {
       this.isModalVisible = false
+      this.isButtonsDisabled = false
     },
     handleCloseDisableModal() {
       this.isDisableModalVisible = false
@@ -171,8 +242,20 @@ export default {
         })
     },
     handleCopyLink() {
-      this.getMicrosoftTeamsOboIntegrationLink()
-        .then((link) => {
+      if (this.isStep2) {
+        this.getMicrosoftTeamsAppAuthorizeLink().then((link) => {
+          if (link) {
+            navigator.clipboard.writeText(link)
+            this.$store.dispatch('common/createSnackBar', {
+              message: labels.CopiedToClipboard,
+              icon: 'mdi-checkbox-marked-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+            this.handleCloseModal()
+          }
+        })
+      } else {
+        this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
           if (link) {
             navigator.clipboard.writeText(link)
             this.$store.dispatch('common/createSnackBar', {
@@ -182,15 +265,19 @@ export default {
             })
           }
         })
-        .finally(() => {
-          this.isButtonsDisabled = false
-        })
+      }
     },
     handleEnableNow() {
       this.isButtonsDisabled = true
-      this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
-        if (link) window.location = link
-      })
+      if (this.isStep2) {
+        this.getMicrosoftTeamsAppAuthorizeLink().then((link) => {
+          if (link) window.location = link
+        })
+      } else {
+        this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
+          if (link) window.location = link
+        })
+      }
     },
     handleSave() {
       this.isSaveDisabled = true
@@ -213,9 +300,34 @@ export default {
     },
     callMicrosoftTeamsOboCallback(code, state) {
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state).then((res) => {
-        MicrosoftTeamsSettingsService.authorizeMicrosoftTeamsApp().then((res) => {
-          console.log('res', res)
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Microsoft Teams connection established successfully.',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
         })
+        this.isModalVisible = true
+      })
+    },
+    callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+      MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(
+        admin_consent,
+        tenant,
+        scope
+      ).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'All accesses enabled. You can now deliver trainings via Microsoft Teams.',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+        this.getMicrosoftTeamsSettings()
+      })
+    },
+    getMicrosoftTeamsAppAuthorizeLink() {
+      return MicrosoftTeamsSettingsService.getMicrosoftTeamsAppAuthorizeLink().then((res) => {
+        const {
+          data: { data }
+        } = res
+        return data.authorizationUrl
       })
     },
     handleSubmit() {

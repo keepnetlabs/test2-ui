@@ -1,18 +1,16 @@
 <template>
   <AppDialog
     icon="mdi-link-off"
-    title="Disable Microsoft Teams Integration"
+    title="Confirm Disable Microsoft Teams Integration"
     :status="status"
     type="delete"
+    size="big"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
       <div class="text-primary-color">
         <div class="mb-4">
-          Disabling will revoke all access and stop Teams notifications from being sent.
-        </div>
-        <div>
-          Are you sure you want to proceed?
+          Disabling will remove all accesses and stop Teams notifications. Are you sure?
         </div>
       </div>
     </template>

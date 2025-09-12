@@ -1,14 +1,14 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-const companyId = 3673
+const companyResourceId = localStorage.getItem('companyRequestId')
 export function getMicrosoftTeamsSettings() {
   return testRequest.post('/companies/teams-app/check', {
-    companyId
+    companyResourceId
   })
 }
 export function getMicrosoftTeamsOboIntegrationLink() {
   return testRequest.post('/companies/teams-obo/authorize-link', {
-    companyId
+    companyResourceId
   })
 }
 export function callMicrosoftTeamsOboCallback(code, state) {
@@ -16,22 +16,24 @@ export function callMicrosoftTeamsOboCallback(code, state) {
 }
 export function getMicrosoftTeamsAppAuthorizeLink() {
   return testRequest.post(`/companies/teams-app/authorize-link`, {
-    companyId
+    companyResourceId
   })
 }
-export function callMicrosoftTeamsAppCallback(code, state) {
-  return testRequest.get(`/companies/teams-app/callback?code=${code}&state=${state}`)
+export function callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+  return testRequest.get(
+    `/companies/teams-app/callback?admin_consent=${admin_consent}&tenant=${tenant}&scope=${scope}`
+  )
 }
 export function disableMicrosoftTeamsIntegration() {
   return testRequest.delete('/companies/teams-app/disable', {
-    companyId
+    companyResourceId
   })
 }
 export function uploadMicrosoftTeamsSettings() {
   return testRequest.post(
-    '/companies/teams-app/settings',
+    '/companies/teams-app/upload',
     {
-      companyId
+      companyResourceId
     },
     {
       snackbar: COMMON_SNACKBAR
