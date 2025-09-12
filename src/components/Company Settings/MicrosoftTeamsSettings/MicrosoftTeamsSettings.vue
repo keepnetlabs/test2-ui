@@ -129,7 +129,13 @@
           The integration is already using the latest version.
         </span>
       </VTooltip>
-      <VBtn v-else class="white--text fw-600" color="#2196f3" rounded @click="handleSubmit">
+      <VBtn
+        v-else-if="isMicrosoftTeamsActive && !isStep2"
+        class="white--text fw-600"
+        color="#2196f3"
+        rounded
+        @click="handleSubmit"
+      >
         Update Integration Version
       </VBtn>
     </v-form>
