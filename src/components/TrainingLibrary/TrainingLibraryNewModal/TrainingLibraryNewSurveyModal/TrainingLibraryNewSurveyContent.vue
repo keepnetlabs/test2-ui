@@ -59,7 +59,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 export default {
-  name: 'TrainingLibraryNewTrainingContent',
+  name: 'TrainingLibraryNewSurveyContent',
   components: { KSelect, NewTrainingContentByLanguage, FormGroup },
   props: {
     isActionButtonDisabled: {

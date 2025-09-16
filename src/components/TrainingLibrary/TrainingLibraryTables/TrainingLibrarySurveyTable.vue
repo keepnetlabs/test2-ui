@@ -29,7 +29,7 @@
     @sortChangedEvent="sortChanged"
   >
     <template #datatable-row-actions="{ scope }">
-      <TrainingLibraryTrainingRowActions
+      <TrainingLibrarySurveyRowActions
         v-if="!isLoading"
         :scope="scope"
         @on-force-update="callForData"
@@ -47,14 +47,14 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryTrainingRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryTrainingRowActions.vue'
+import TrainingLibrarySurveyRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibrarySurveyRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
 export default {
   name: 'TrainingLibrarySurveyTable',
   components: {
-    TrainingLibraryTrainingRowActions,
+    TrainingLibrarySurveyRowActions,
     DataTable
   },
   mixins: [tableFilterMixin],
@@ -159,7 +159,6 @@ export default {
       this.axiosPayload.orderBy,
       this.axiosPayload.sortOrder ? 'ascending' : 'descending'
     )
-    console.log('mounted')
   },
   methods: {
     ...mapActions({

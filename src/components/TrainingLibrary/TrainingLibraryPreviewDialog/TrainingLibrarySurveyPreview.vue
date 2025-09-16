@@ -55,7 +55,7 @@
       >
         <template v-if="trainingParams">
           <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Training Name: </span>
+            <span class="training-library-preview__title">Survey Name: </span>
             <span class="training-library-preview__desc">{{ trainingParams.name }}</span>
           </div>
           <div class="training-library-preview__details-item">

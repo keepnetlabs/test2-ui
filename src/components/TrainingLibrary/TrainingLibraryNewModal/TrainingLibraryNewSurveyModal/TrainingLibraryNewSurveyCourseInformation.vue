@@ -1,17 +1,17 @@
 <template>
   <v-form ref="refForm">
-    <FormGroup has-hint :title="labels.TrainingName">
+    <FormGroup has-hint :title="labels.SurveyName">
       <InputEntityName
         v-model.trim="formData.name"
-        id="input--new-training-training-name"
-        entity-name="Training name"
+        id="input--new-training-survey-name"
+        entity-name="Survey name"
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionTrainingSub">
+    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionSurveySub">
       <InputDescription
         v-model.trim="formData.description"
-        id="input--new-training-training-description"
+        id="input--new-training-survey-description"
         required
         persistent-hint
         hint="*Required"
@@ -38,7 +38,7 @@
     </FormGroup>
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
-    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceSub">
+    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceSurveySub">
       <KSelect
         v-model.trim="formData.targetAudience"
         persistent-hint
@@ -53,18 +53,18 @@
         :items="getTargetAudiences"
       ></KSelect>
     </FormGroup>
-    <FormGroup :title="labels.Tags" :sub-title="labels.TagTrainingSub">
+    <FormGroup :title="labels.Tags" :sub-title="labels.TagSurveySub">
       <InputTag
         v-model="formData.tags"
         ref="refTags"
-        id="input--action-tags-new-training-course-information"
+        id="input--action-tags-new-training-survey-course-information"
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheTraining">
+    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheSurvey">
       <KFileUpload
         ref="refCoverImageFileUpload"
-        id="input--new-training-image"
+        id="input--new-training-survey-image"
         show-image-preview
         :class="['mb-6']"
         hint="Only jpg, png files. Max. file size 2MB"
@@ -80,7 +80,7 @@
       v-model="formData.availableForRequests"
       ref="refMakeAvailableFor"
       open-direction="above"
-      sub-title="Companies that will see this content in their libraries"
+      sub-title="Companies that will see this survey in their libraries"
       :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
     />
   </v-form>
@@ -101,7 +101,7 @@ import { mapGetters } from 'vuex'
 import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
 import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
 export default {
-  name: 'TrainingLibraryNewTrainingCourseInformation',
+  name: 'TrainingLibraryNewSurveyCourseInformation',
   components: {
     InputBehaviour,
     InputCompliance,

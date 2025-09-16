@@ -32,7 +32,7 @@
               :title="labels.SurveyInformation"
               :subtitle="labels.SurveyInformationSub"
             />
-            <TrainingLibraryNewTrainingCourseInformation
+            <TrainingLibraryNewSurveyCourseInformation
               ref="refTrainingCourseInformation"
               :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
             />
@@ -43,7 +43,7 @@
               :title="labels.SurveyContent"
               :subtitle="labels.SurveyContentSub"
             />
-            <TrainingLibraryNewTrainingContent
+            <TrainingLibraryNewSurveyContent
               ref="refTrainingContent"
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :resource-id="trainingId"
@@ -85,14 +85,14 @@ import StepperFooter from '@/components/Stepper/StepperFooter.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions } from 'vuex'
 import { emptyNewSurveyModalObj } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryNewTrainingCourseInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingCourseInformation.vue'
-import TrainingLibraryNewTrainingContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingContent.vue'
+import TrainingLibraryNewSurveyCourseInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewSurveyModal/TrainingLibraryNewSurveyCourseInformation.vue'
+import TrainingLibraryNewSurveyContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewSurveyModal/TrainingLibraryNewSurveyContent.vue'
 
 export default {
-  name: 'TrainingLibraryNewTrainingModal',
+  name: 'TrainingLibraryNewSurveyModal',
   components: {
-    TrainingLibraryNewTrainingContent,
-    TrainingLibraryNewTrainingCourseInformation,
+    TrainingLibraryNewSurveyContent,
+    TrainingLibraryNewSurveyCourseInformation,
     StepperFooter,
     ConfigureCompanyStepHeader,
     AppModal
@@ -122,7 +122,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewSurveyContent : labels.EditSurveyContent
+      return !this.isEdit ? labels.CreateNewSurvey : labels.EditSurvey
     }
   },
   created() {
@@ -224,7 +224,8 @@ export default {
             })),
             behaviours: behaviours.map((behaviour) => ({
               behaviourId: behaviour
-            }))
+            })),
+            hasQuiz: true
           })
             .then((response) => {
               this.trainingId = response?.data?.data?.resourceId || ''

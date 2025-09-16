@@ -57,7 +57,7 @@
               :title="labels.EnrollmentSettings"
               :subtitle="labels.EnrollmentSettingsSub"
             />
-            <TrainingLibrarySendTrainingSettings
+            <TrainingLibrarySendSurveySettings
               ref="refSendTrainingSettings"
               :selected-row="selectedRow"
               :enum-types="enumTypes"
@@ -127,10 +127,10 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibrarySendTrainingSettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSettings.vue'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
 import TrainingLibrarySendTrainingSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSummary.vue'
-import { emptyTrainingSendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
+import TrainingLibrarySendSurveySettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySendSurveySettings.vue'
+import { emptySurveySendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
 import {
   endTypeItems,
   awardCertificateTypes,
@@ -145,7 +145,7 @@ export default {
   components: {
     TrainingLibrarySendTrainingSummary,
     TrainingLibrarySendTrainingSelectUsers,
-    TrainingLibrarySendTrainingSettings,
+    TrainingLibrarySendSurveySettings,
     DefaultErrorDialog,
     ConfigureCompanyStepHeader,
     StepperFooter,
@@ -382,7 +382,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal'
+      setSurveySendModal: 'trainingLibrary/setSurveySendModal'
     }),
     getTimeZoneText(timeZoneId) {
       return (
@@ -449,7 +449,7 @@ export default {
       })
     },
     handleClose() {
-      this.setTrainingSendModal(emptyTrainingSendModalObj)
+      this.setSurveySendModal(emptySurveySendModalObj)
     },
     async changeStep(flag = 1) {
       if (this.step === 2 && flag === 1) {

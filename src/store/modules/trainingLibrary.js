@@ -219,7 +219,6 @@ const trainingLibrary = {
     },
     SET_SUB_SELECTED_TRAINING_CONTENT(state, payload) {
       if (state.selectedSubTrainingContent === payload) return
-      console.log('selected', payload)
       state.selectedSubTrainingContent = payload
     },
     SET_SORT_BY(state, payload) {
@@ -505,8 +504,8 @@ const trainingLibrary = {
     },
     SET_TRAINING_TYPE(state, payload) {
       if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
-        state.axiosPayload.trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         /*
+        state.axiosPayload.trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         state.axiosPayload.filter.FilterGroups[0].FilterItems.push({
           FieldName: 'hasQuiz',
           Value: true,
@@ -670,6 +669,9 @@ const trainingLibrary = {
     setTrainingPreviewDialog({ commit }, payload) {
       commit('SET_TRAINING_PREVIEW_DIALOG', payload)
     },
+    setSurveyPreviewDialog({ commit }, payload) {
+      commit('SET_SURVEY_PREVIEW_DIALOG', payload)
+    },
     setLearningPathPreviewDialog({ commit }, payload) {
       commit('SET_LEARNING_PATH_PREVIEW_DIALOG', payload)
     },
@@ -681,6 +683,9 @@ const trainingLibrary = {
     },
     setScreenSaverPreviewDialog({ commit }, payload) {
       commit('SET_SCREENSAVER_PREVIEW_DIALOG', payload)
+    },
+    setSurveySendModal({ commit }, payload) {
+      commit('SET_SURVEY_SEND_MODAL', payload)
     },
     setNewTrainingModal({ commit }, payload) {
       commit('SET_NEW_TRAINING_MODAL', payload)
@@ -790,7 +795,6 @@ const trainingLibrary = {
   }
 }
 const getTotalCountByType = (data, key) => {
-  console.log(data, key)
   return data.find((item) => item.trainingType === key)?.trainingCount || 0
 }
 const getTrainingSearchType = (name) => {

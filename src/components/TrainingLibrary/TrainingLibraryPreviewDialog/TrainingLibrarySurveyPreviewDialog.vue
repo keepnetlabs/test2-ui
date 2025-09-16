@@ -8,7 +8,7 @@
     className="training-preview-dialog"
     icon="mdi-eye"
     size="ultraMaximum"
-    title="Training Preview"
+    title="Survey Preview"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
@@ -38,7 +38,7 @@ import AppDialog from '@/components/AppDialog.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingLibrarySurveyPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreview.vue'
-import { emptyTrainingPreviewDialogObj } from '@/components/TrainingLibrary/utils'
+import { emptySurveyPreviewDialogObj } from '@/components/TrainingLibrary/utils'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
@@ -106,8 +106,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
-      setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
+      setSurveySendModal: 'trainingLibrary/setSurveySendModal',
       callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
     }),
     callForLanguages() {
@@ -143,12 +143,12 @@ export default {
       ) {
         this.callForTrainingLibrary()
       }
-      this.setTrainingPreviewDialog(emptyTrainingPreviewDialogObj)
+      this.setSurveyPreviewDialog(emptySurveyPreviewDialogObj)
       this.$emit('close')
     },
     handleSend() {
       this.handleClose()
-      this.setTrainingSendModal({
+      this.setSurveySendModal({
         selectedRow: this.selectedRow,
         status: true
       })
