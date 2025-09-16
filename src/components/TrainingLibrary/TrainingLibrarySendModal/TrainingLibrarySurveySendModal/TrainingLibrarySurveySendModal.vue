@@ -76,6 +76,9 @@
             <TrainingLibrarySendTrainingSelectUsers
               ref="refSendTrainingSelectUsers"
               :is-proxy="isTrainingProxy"
+              :target-users-group-sub="labels.SurveyTargetUserGroupsSub"
+              :campaign-results-sub="labels.SurveyCampaignResultsSub"
+              :target-users-subtitle="labels.SendSurveyTargetUsersSub"
               :is-sms-notification="isSmsNotification"
             />
           </v-stepper-content>
@@ -85,7 +88,7 @@
               :title="labels.Summary"
               :subtitle="labels.SendTrainingSummarySub"
             />
-            <TrainingLibrarySendTrainingSummary
+            <TrainingLibrarySendSurveySummary
               ref="refSendTrainingSummary"
               :selected-row="selectedRow"
               :form-data="getTrainingSummaryFormData"
@@ -128,7 +131,7 @@ import { getTargetGroupCountDetail } from '@/api/targetUsers'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibrarySendTrainingSelectUsers from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSelectUsers.vue'
-import TrainingLibrarySendTrainingSummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingSummary.vue'
+import TrainingLibrarySendSurveySummary from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySendSurveySummary.vue'
 import TrainingLibrarySendSurveySettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySendSurveySettings.vue'
 import { emptySurveySendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
 import {
@@ -143,7 +146,7 @@ import { getDeliveryMethodLabel, DELIVERY_METHODS } from '@/components/Common/De
 export default {
   name: 'TrainingLibrarySurveySendModal',
   components: {
-    TrainingLibrarySendTrainingSummary,
+    TrainingLibrarySendSurveySummary,
     TrainingLibrarySendTrainingSelectUsers,
     TrainingLibrarySendSurveySettings,
     DefaultErrorDialog,

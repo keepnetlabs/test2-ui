@@ -20,7 +20,7 @@
         :items="getTrainingVendors"
       />
     </FormGroup>
-    <FormGroup :title="labels.Content" :sub-title="labels.ContentSub">
+    <FormGroup :title="labels.Content" :sub-title="labels.SurveyContentSub">
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <NewTrainingContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"

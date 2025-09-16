@@ -196,7 +196,10 @@ const trainingLibraryHelpers = {
           'trainingLibrary/setFilterItems',
           {
             key: PROPERTY_STORE.LANGUAGES,
-            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+            items: response?.data?.data.map((l) => ({
+              text: l.name,
+              value: l.code
+            }))
           },
           { root: true }
         )
@@ -204,7 +207,10 @@ const trainingLibraryHelpers = {
           'learningPath/setLearningPathFilterItems',
           {
             key: PROPERTY_STORE.LANGUAGES,
-            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+            items: response?.data?.data.map((l) => ({
+              text: l.name,
+              value: l.code
+            }))
           },
           { root: true }
         )
@@ -354,6 +360,8 @@ const trainingLibraryHelpers = {
           learningPathEmailNotificationTemplateTypeResourceId = '',
           posterEmailNotificationTemplateTypeResourceId = '',
           learningPathReminderEmailNotificationTemplateTypeResourceId = '',
+          surveyEmailNotificationTemplateTypeResourceId = '',
+          surveyReminderEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {},
           canSaveVendor = false
         } = response?.data?.data || {}
@@ -381,6 +389,14 @@ const trainingLibraryHelpers = {
         commit(
           'SET_POSTER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
           posterEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_SURVEY_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          surveyEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_SURVEY_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          surveyReminderEmailNotificationTemplateTypeResourceId
         )
         commit(
           'SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',

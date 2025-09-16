@@ -24,7 +24,12 @@
           <div
             class="pane"
             :style="{
-              width: isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus() ? '100%' : isPhishing ? '50%' : '60%',
+              width:
+                isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus()
+                  ? '100%'
+                  : isPhishing
+                  ? '50%'
+                  : '60%',
               minWidth: '50%'
             }"
           >
