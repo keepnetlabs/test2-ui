@@ -16,6 +16,8 @@
     <DeliveryMethod
       v-model="formData.deliveryMethod"
       :isLMS="showProxySection"
+      type="Infographic"
+      sub-title="Select how the infographic will be delivered to the target audience."
       @input="handleDeliveryMethodChange"
     />
     <AlertBox
