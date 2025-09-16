@@ -28,12 +28,12 @@
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.totalUserOpenedCount"
+            :disabled="!items.onlyOpenedCount"
             :value="2"
           >
             <template #label
               >Only opened {{ getOnlyOpenedLabel }}
-              {{ `(${items.totalUserOpenedCount || 0})` }}</template
+              {{ `(${items.onlyOpenedCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
