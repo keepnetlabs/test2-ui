@@ -336,7 +336,7 @@ export default {
     },
     getResendDialogItems() {
       const [
-        totalUserOpenedCount = 0,
+        onlyOpenedCount = 0,
         totalUserClickedCount = 0,
         totalTargetUserCount = 0,
         emailDeliveredUserCount = 0,
@@ -348,7 +348,7 @@ export default {
       ] = this.getChartData
       return this.getChartData.length
         ? {
-            totalUserOpenedCount,
+            onlyOpenedCount,
             totalUserClickedCount,
             totalTargetUserCount,
             emailDeliveredUserCount,
