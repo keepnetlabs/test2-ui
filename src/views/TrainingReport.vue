@@ -164,7 +164,13 @@ export default {
         this.$route?.query?.trainingType || 0
       ).then((response) => {
         this.trainingSummary = response?.data?.data
-        if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
+        if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
+          this.tabItems[2].label = labels.OpenededSurvey
+          this.tabItems[3].label = labels.ClickedSurveyLink
+          this.tabItems.splice(4, 2)
+        } else if (
+          this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+        ) {
           this.tabItems[2].label = labels.OpenedPosterEmail
           this.tabItems[3].label = labels.DownloadedPoster
           this.tabItems.splice(4, 2)

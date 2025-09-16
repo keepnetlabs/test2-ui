@@ -153,7 +153,7 @@ export default {
           : [
               {
                 id: 'btn-send--row-actions-enrollments-list',
-                name: labels.SendTraining,
+                name: labels.SendSurvey,
                 icon: 'mdi-send'
               },
               {

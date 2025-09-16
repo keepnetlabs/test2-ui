@@ -62,6 +62,12 @@ const trainingLibraryHelpers = {
     getTrainingEmailNotificationTemplateTypeResourceId(state) {
       return state.trainingEmailNotificationTemplateTypeResourceId
     },
+    getSurveyEmailNotificationTemplateTypeResourceId(state) {
+      return state.surveyEmailNotificationTemplateTypeResourceId
+    },
+    getSurveyReminderEmailNotificationTemplateTypeResourceId(state) {
+      return state.surveyReminderEmailNotificationTemplateTypeResourceId
+    },
     getInfographicEmailNotificationTemplateTypeResourceId(state) {
       return state.infographicEmailNotificationTemplateTypeResourceId
     },
@@ -117,6 +123,12 @@ const trainingLibraryHelpers = {
     },
     SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.trainingEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_SURVEY_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.surveyEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_SURVEY_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.surveyReminderEmailNotificationTemplateTypeResourceId = payload
     },
     SET_LEARNING_PATH_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.learningPathEmailNotificationTemplateTypeResourceId = payload
@@ -356,12 +368,12 @@ const trainingLibraryHelpers = {
           certificateEmailNotificationTemplateTypeResourceId = '',
           reminderEmailNotificationTemplateTypeResourceId = '',
           trainingEmailNotificationTemplateTypeResourceId = '',
+          surveyEmailNotificationTemplateTypeResourceId = '',
+          surveyReminderEmailNotificationTemplateTypeResourceId = '',
           infographicEmailNotificationTemplateTypeResourceId = '',
           learningPathEmailNotificationTemplateTypeResourceId = '',
           posterEmailNotificationTemplateTypeResourceId = '',
           learningPathReminderEmailNotificationTemplateTypeResourceId = '',
-          surveyEmailNotificationTemplateTypeResourceId = '',
-          surveyReminderEmailNotificationTemplateTypeResourceId = '',
           enumNameValuePairs = {},
           canSaveVendor = false
         } = response?.data?.data || {}
