@@ -16,6 +16,7 @@
     <DeliveryMethod
       v-model="formData.deliveryMethod"
       sub-title="Select how the poster will be delivered to the target audience."
+      type="Poster"
       :isLMS="showProxySection"
       @input="handleDeliveryMethodChange"
     />

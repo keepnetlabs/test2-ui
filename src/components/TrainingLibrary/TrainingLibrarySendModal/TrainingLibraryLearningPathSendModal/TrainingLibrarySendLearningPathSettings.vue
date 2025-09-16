@@ -11,6 +11,7 @@
     <DeliveryMethod
       v-model="formData.deliveryMethod"
       sub-title="Select how the learning path will be delivered to the target audience."
+      type="Learning Path"
       :isLMS="showProxySection"
       @input="handleDeliveryMethodChange"
     />
