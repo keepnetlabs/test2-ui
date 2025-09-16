@@ -125,6 +125,9 @@ export default {
       return this.isActionButtonDisabled || !this.types.length
     }
   },
+  mounted() {
+    console.log('items', this.items)
+  },
   methods: {
     closeModal() {
       this.$emit('on-close')

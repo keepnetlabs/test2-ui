@@ -346,6 +346,7 @@ export default {
         failedExamCount = 0,
         noResponseCount = 0
       ] = this.getChartData
+      console.log('onlyOpenedCount', onlyOpenedCount)
       return this.getChartData.length
         ? {
             onlyOpenedCount,
@@ -363,6 +364,7 @@ export default {
     getChartData() {
       const defaultScenarioStatsObject = {
         totalUserOpenedCount: 0,
+        onlyOpenedCount: 0,
         totalUserClickedCount: 0,
         totalTargetUserCount: 0,
         emailDeliveredUserCount: 0,
@@ -377,6 +379,7 @@ export default {
         : defaultScenarioStatsObject
       const {
         totalUserOpenedCount = 0,
+        onlyOpenedCount = 0,
         totalUserClickedCount = 0,
         totalTargetUserCount = 0,
         emailDeliveredUserCount = 0,
@@ -388,6 +391,7 @@ export default {
       } = reportDetail
       const dataContainer = [
         totalUserOpenedCount,
+        onlyOpenedCount,
         totalUserClickedCount,
         totalTargetUserCount,
         emailDeliveredUserCount,
