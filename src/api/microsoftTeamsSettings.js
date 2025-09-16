@@ -26,9 +26,15 @@ export function callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
   )
 }
 export function disableMicrosoftTeamsIntegration() {
-  return testRequest.delete('/companies/teams-app/disable', {
-    companyResourceId
-  })
+  return testRequest.delete(
+    '/companies/teams-app/remove',
+    {
+      companyResourceId
+    },
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 export function uploadMicrosoftTeamsSettings() {
   return testRequest.post(

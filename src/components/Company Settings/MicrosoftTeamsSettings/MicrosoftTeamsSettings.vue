@@ -286,6 +286,7 @@ export default {
         })
         .finally(() => {
           this.isButtonsDisabled = false
+          this.getMicrosoftTeamsSettings()
         })
     },
     handleCopyLink() {
