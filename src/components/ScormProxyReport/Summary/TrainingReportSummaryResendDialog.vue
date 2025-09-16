@@ -20,19 +20,18 @@
             :value="1"
           >
             <template #label>
-              Email failed to send {{ `(${items.emailErrorUserCount || 0})` }}</template
+              Email failed to send
+              {{ `(${items.emailErrorUserCount || 0})` }}</template
             >
           </v-checkbox>
           <v-checkbox
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
-            :disabled="!items.totalUserOpenedCount"
+            :disabled="!items.onlyOpenedCount"
             :value="2"
           >
-            <template #label
-              >Only opened email {{ `(${items.totalUserOpenedCount || 0})` }}</template
-            >
+            <template #label>Only opened email {{ `(${items.onlyOpenedCount || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
             v-model="types"
