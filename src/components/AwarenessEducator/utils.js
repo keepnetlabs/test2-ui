@@ -247,6 +247,7 @@ export const COLUMNS = {
       { text: TRAINING_LIBRARY_TYPES.POSTER, value: 3 },
       { text: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, value: 4 },
       { text: TRAINING_LIBRARY_TYPES.SCREENSAVER, value: 5 },
+      { text: TRAINING_LIBRARY_TYPES.SURVEY, value: 6 },
       { text: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH, value: 6 }
     ]
   },

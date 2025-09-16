@@ -14,7 +14,9 @@
       <img v-if="item.coverImage" :src="item.coverImage.imageUrl" :alt="item.trainingName" />
       <div class="training-library-card__img--no-img" v-else>
         <VIcon size="82" color="#fff">mdi-image</VIcon>
-        <div class="training-library-card__img--no-img-text">No Cover Image</div>
+        <div class="training-library-card__img--no-img-text">
+          No Cover Image
+        </div>
       </div>
     </div>
     <div class="training-library-card__body">
@@ -254,6 +256,8 @@ export default {
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
       setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
       setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
+      setSurveySendModal: 'trainingLibrary/setSurveySendModal',
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
       setPosterSendModal: 'trainingLibrary/setPosterSendModal',
       setInfographicSendModal: 'trainingLibrary/setInfographicSendModal',
@@ -262,6 +266,7 @@ export default {
       setNewPosterModal: 'trainingLibrary/setNewPosterModal',
       setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
       setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
+      setNewSurveyModal: 'trainingLibrary/setNewSurveyModal',
       setDeleteDialog: 'trainingLibrary/setDeleteDialog'
     }),
     checkTooltipStasuses() {
@@ -465,6 +470,13 @@ export default {
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
         this.setNewScreensaverModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
+        this.setNewSurveyModal({
           status: true,
           isEdit: true,
           selectedRow: item,

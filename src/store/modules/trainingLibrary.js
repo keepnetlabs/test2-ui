@@ -13,10 +13,13 @@ import {
   emptyNewLearningPathModalObj,
   emptyNewPosterModalObj,
   emptyNewTrainingModalObj,
+  emptyNewSurveyModalObj,
   emptyPosterPreviewDialogObj,
   emptyScreensaverPreviewDialogObj,
   emptyTrainingDeleteDialogObj,
   emptyTrainingPreviewDialogObj,
+  emptySurveyPreviewDialogObj,
+  emptySurveySendModalObj,
   emptyNewScreensaverModalObj,
   emptyTrainingSendModalObj,
   emptyPosterSendModalObj,
@@ -80,7 +83,8 @@ const trainingLibrary = {
       { name: TRAINING_LIBRARY_TYPES.TRAINING, totalCount: 0 },
       { name: TRAINING_LIBRARY_TYPES.POSTER, totalCount: 0 },
       { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, totalCount: 0 },
-      { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 0 }
+      { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 0 },
+      { name: TRAINING_LIBRARY_TYPES.SURVEY, totalCount: 0 }
     ],
     search: '',
     searchPlaceholder: 'Search in 3490 training by name',
@@ -100,16 +104,19 @@ const trainingLibrary = {
     posterPreviewDialog: emptyPosterPreviewDialogObj,
     infographicPreviewDialog: emptyInfographicPreviewDialogObj,
     screensaverPreviewDialog: emptyScreensaverPreviewDialogObj,
+    surveyPreviewDialog: emptySurveyPreviewDialogObj,
     newTrainingModal: emptyNewTrainingModalObj,
     newLearningPathModal: emptyNewLearningPathModalObj,
     newPosterModal: emptyNewPosterModalObj,
     newInfographicModal: emptyNewInfographicModalObj,
     newScreensaverModal: emptyNewScreensaverModalObj,
+    newSurveyModal: emptyNewSurveyModalObj,
     trainingSendModal: emptyTrainingSendModalObj,
     posterSendModal: emptyPosterSendModalObj,
     infographicSendModal: emptyInfographicSendModalObj,
     screensaverSendModal: emptyScreensaverSendModalObj,
-    learningPathSendModal: emptyLearningPathSendModalObj
+    learningPathSendModal: emptyLearningPathSendModalObj,
+    surveySendModal: emptySurveySendModalObj
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -132,6 +139,8 @@ const trainingLibrary = {
     getPosterPreviewDialog: (state) => state.posterPreviewDialog,
     getInfographicPreviewDialog: (state) => state.infographicPreviewDialog,
     getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
+    getSurveyPreviewDialog: (state) => state.surveyPreviewDialog,
+    getSurveySendModal: (state) => state.surveySendModal,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
@@ -144,6 +153,7 @@ const trainingLibrary = {
     getNewPosterModal: (state) => state.newPosterModal,
     getNewInfographicModal: (state) => state.newInfographicModal,
     getNewScreensaverModal: (state) => state.newScreensaverModal,
+    getNewSurveyModal: (state) => state.newSurveyModal,
     getTrainingSendModal: (state) => state.trainingSendModal,
     getPosterSendModal: (state) => state.posterSendModal,
     getInfographicSendModal: (state) => state.infographicSendModal,
@@ -209,6 +219,7 @@ const trainingLibrary = {
     },
     SET_SUB_SELECTED_TRAINING_CONTENT(state, payload) {
       if (state.selectedSubTrainingContent === payload) return
+      console.log('selected', payload)
       state.selectedSubTrainingContent = payload
     },
     SET_SORT_BY(state, payload) {
@@ -246,6 +257,9 @@ const trainingLibrary = {
     SET_NEW_TRAINING_MODAL(state, payload) {
       state.newTrainingModal = payload
     },
+    SET_NEW_SURVEY_MODAL(state, payload) {
+      state.newSurveyModal = payload
+    },
     SET_NEW_LEARNING_PATH_MODAL(state, payload) {
       state.newLearningPathModal = payload
     },
@@ -258,6 +272,9 @@ const trainingLibrary = {
     SET_NEW_SCREENSAVER_MODAL(state, payload) {
       state.newScreensaverModal = payload
     },
+    SET_SURVEY_SEND_MODAL(state, payload) {
+      state.surveySendModal = payload
+    },
     SET_TRAINING_SEND_MODAL(state, payload) {
       state.trainingSendModal = payload
     },
@@ -269,6 +286,9 @@ const trainingLibrary = {
     },
     SET_SCREENSAVER_SEND_MODAL(state, payload) {
       state.screensaverSendModal = payload
+    },
+    SET_SURVEY_PREVIEW_DIALOG(state, payload) {
+      state.surveyPreviewDialog = payload
     },
     SET_AXIOS_PAYLOAD(state, payload) {
       state.axiosPayload = payload
@@ -484,10 +504,25 @@ const trainingLibrary = {
       state.axiosPayload.trainingSearchType = payload
     },
     SET_TRAINING_TYPE(state, payload) {
-      if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
-        state.axiosPayload.trainingType = null
+      if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
+        state.axiosPayload.trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+        /*
+        state.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+          FieldName: 'hasQuiz',
+          Value: true,
+          Operator: '='
+        })
+          */
       } else {
-        state.axiosPayload.trainingType = payload
+        const fIndex = state.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+          (f) => f.FieldName === 'hasQuiz'
+        )
+        if (fIndex !== -1) state.axiosPayload.filter.FilterGroups[0].FilterItems.splice(fIndex, 1)
+        if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
+          state.axiosPayload.trainingType = null
+        } else {
+          state.axiosPayload.trainingType = payload
+        }
       }
     }
   },
@@ -566,6 +601,10 @@ const trainingLibrary = {
             {
               name: TRAINING_LIBRARY_TYPES.SCREENSAVER,
               totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+            },
+            {
+              name: TRAINING_LIBRARY_TYPES.SURVEY,
+              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY)
             }
           ])
         })
@@ -645,6 +684,9 @@ const trainingLibrary = {
     },
     setNewTrainingModal({ commit }, payload) {
       commit('SET_NEW_TRAINING_MODAL', payload)
+    },
+    setNewSurveyModal({ commit }, payload) {
+      commit('SET_NEW_SURVEY_MODAL', payload)
     },
     setNewLearningPathModal({ commit, dispatch }, payload) {
       commit('SET_NEW_LEARNING_PATH_MODAL', payload)
@@ -732,6 +774,7 @@ const trainingLibrary = {
       commit('SET_NEW_TRAINING_MODAL', emptyNewTrainingModalObj)
       commit('SET_NEW_SCREENSAVER_MODAL', emptyNewScreensaverModalObj)
       commit('SET_NEW_POSTER_MODAL', emptyNewPosterModalObj)
+      commit('SET_NEW_SURVEY_MODAL', emptyNewSurveyModalObj)
       commit('SET_LEARNING_PATH_SEND_MODAL', emptyLearningPathSendModalObj)
       commit('SET_INFOGRAPHIC_SEND_MODAL', emptyInfographicSendModalObj)
       commit('SET_TRAINING_SEND_MODAL', emptyTrainingSendModalObj)
@@ -747,7 +790,8 @@ const trainingLibrary = {
   }
 }
 const getTotalCountByType = (data, key) => {
-  return data.find((item) => item.trainingType === key)?.trainingCount
+  console.log(data, key)
+  return data.find((item) => item.trainingType === key)?.trainingCount || 0
 }
 const getTrainingSearchType = (name) => {
   let trainingSearchType
@@ -774,6 +818,8 @@ const getTrainingType = (name) => {
     trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
   else if (name === TRAINING_LIBRARY_TYPES.SCREENSAVER)
     trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER
+  else if (name === TRAINING_LIBRARY_TYPES.SURVEY)
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY
   return trainingType
 }
 

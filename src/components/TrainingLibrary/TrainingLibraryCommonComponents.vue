@@ -55,6 +55,11 @@
       v-if="getLearningPathSendModal.status"
       v-bind="getLearningPathSendModal"
     />
+    <TrainingLibrarySurveySendModal v-if="getSurveySendModal.status" v-bind="getSurveySendModal" />
+    <TrainingLibrarySurveyPreviewDialog
+      v-if="getSurveyPreviewDialog.status"
+      v-bind="getSurveyPreviewDialog"
+    />
   </div>
 </template>
 
@@ -76,10 +81,14 @@ import TrainingLibraryPosterSendModal from '@/components/TrainingLibrary/Trainin
 import TrainingLibraryInfographicSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibraryInfographicSendModal.vue'
 import TrainingLibraryScreensaverSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibraryScreensaverSendModal.vue'
 import TrainingLibraryLearningPathSendModal from './TrainingLibrarySendModal/TrainingLibraryLearningPathSendModal/TrainingLibraryLearningPathSendModal.vue'
+import TrainingLibrarySurveySendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySurveySendModal.vue'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibrarySurveyPreviewDialog,
+    TrainingLibrarySurveySendModal,
     TrainingLibraryLearningPathSendModal,
     TrainingLibraryScreensaverSendModal,
     TrainingLibraryInfographicSendModal,
@@ -114,7 +123,9 @@ export default {
       getPosterSendModal: 'trainingLibrary/getPosterSendModal',
       getInfographicSendModal: 'trainingLibrary/getInfographicSendModal',
       getScreensaverSendModal: 'trainingLibrary/getScreensaverSendModal',
-      getLearningPathSendModal: 'trainingLibrary/getLearningPathSendModal'
+      getLearningPathSendModal: 'trainingLibrary/getLearningPathSendModal',
+      getSurveySendModal: 'trainingLibrary/getSurveySendModal',
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     })
   }
 }
