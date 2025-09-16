@@ -4,31 +4,32 @@ export const DELIVERY_METHODS = {
   MICROSOFT_TEAMS: 'microsoft-teams',
   SMS: 'sms'
 }
-export const deliveryMethodOptions = (isLMS = false) => {
+export const deliveryMethodOptions = (isLMS = false,type='Training') => {
   return [
     {
       label: 'Email',
       value: 'email',
-      description: 'Training is sent directly to target users via email'
+      description: `${type} is sent directly to target users via email`
     },
     ...(isLMS
       ? [
           {
             label: 'LMS',
             value: 'lms',
-            description: `Training is delivered through the organization's LMS (Learning Management System)`
+            description: `${type} is delivered through the organization's LMS (Learning Management System)`
           }
         ]
       : []),
     {
       label: 'Microsoft Teams',
       value: 'microsoft-teams',
-      description: 'Training is sent via SMS to users with phone numbers and via email to all'
+      description:
+        `${type} is sent via Microsoft Teams to users found there and via email to all`
     },
     {
       label: 'SMS',
       value: 'sms',
-      description: 'Training is sent via SMS to users with phone numbers and via email to all'
+      description: `${type} is sent via SMS to users with phone numbers and via email to all`
     }
   ]
 }
