@@ -86,10 +86,14 @@ export default {
     isLMS: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: 'Training'
     }
   },
   data() {
-    const deliveryOptions = deliveryMethodOptions(this.isLMS)
+    const deliveryOptions = deliveryMethodOptions(this.isLMS, this.type)
     return {
       deliveryOptions,
       selectedValue: this.value || (deliveryOptions.length > 0 ? deliveryOptions[0].value : ''),

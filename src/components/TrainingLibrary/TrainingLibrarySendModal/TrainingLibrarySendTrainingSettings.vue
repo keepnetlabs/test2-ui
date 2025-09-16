@@ -16,6 +16,7 @@
     <DeliveryMethod
       v-model="formData.deliveryMethod"
       :isLMS="showProxySection"
+      type="Training"
       @input="handleDeliveryMethodChange"
     />
     <AlertBox
