@@ -337,6 +337,7 @@ export default {
       })
     },
     callMicrosoftTeamsOboCallback(code, state) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -352,6 +353,7 @@ export default {
         })
     },
     callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
         .then(() => {
           this.getMicrosoftTeamsSettings()
