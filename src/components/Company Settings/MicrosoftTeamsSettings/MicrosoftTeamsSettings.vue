@@ -236,7 +236,6 @@ export default {
         })
       }
       this.$router.replace('/company/company-settings?')
-      console.log('query', query)
     } else {
       this.getMicrosoftTeamsSettings()
     }
@@ -335,7 +334,6 @@ export default {
         const {
           data: { data }
         } = res
-        console.log('data.authorizationUrl', data.authorizationUrl)
         return data.authorizationUrl
       })
     },
@@ -350,7 +348,8 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.isModalVisible = true
-        }).catch(() => {
+        })
+        .catch(() => {
           this.loading = false
         })
         .finally(() => {

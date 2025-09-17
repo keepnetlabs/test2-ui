@@ -26,15 +26,12 @@ export function callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
   )
 }
 export function disableMicrosoftTeamsIntegration() {
-  return testRequest.delete(
-    '/companies/teams-app/remove',
-    {
-      data:{
-        companyResourceId
-      },
-      snackbar: COMMON_SNACKBAR
-    }
-  )
+  return testRequest.delete('/companies/teams-app/remove', {
+    data: {
+      companyResourceId
+    },
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function uploadMicrosoftTeamsSettings() {
   return testRequest.post(
@@ -47,13 +44,16 @@ export function uploadMicrosoftTeamsSettings() {
     }
   )
 }
-export function installMicrosoftTeamsAppToUsers () {
-  return testRequest.post('/companies/teams-app/install-to-users', {
-    companyResourceId
-  },    
-  {
-    snackbar: COMMON_SNACKBAR
-  })
+export function installMicrosoftTeamsAppToUsers() {
+  return testRequest.post(
+    '/companies/teams-app/install-to-users',
+    {
+      companyResourceId
+    },
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export default {

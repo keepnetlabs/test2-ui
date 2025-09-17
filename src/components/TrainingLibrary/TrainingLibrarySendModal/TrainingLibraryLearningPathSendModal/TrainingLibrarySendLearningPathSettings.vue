@@ -475,9 +475,9 @@ export default {
     },
     deliveryMethodText() {
       if (this.formData.deliveryMethod === DELIVERY_METHODS.SMS) {
-        return 'Selected users without a registered phone number will receive the learning path via email.'
+        return 'Learning path is delivered in SMS and also sent by email.'
       } else if (this.formData.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS) {
-        return 'Selected users not found in Microsoft Teams will receive the learning path via email.'
+        return 'Learning path is delivered in Microsoft Teams and also sent by email.'
       }
       return ''
     },
