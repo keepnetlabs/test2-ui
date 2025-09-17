@@ -535,7 +535,8 @@ export default {
         description: this.formValues.description || '',
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
-        )
+        ),
+        languages:[]
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {

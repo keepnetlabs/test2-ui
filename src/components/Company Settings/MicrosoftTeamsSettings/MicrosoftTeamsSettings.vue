@@ -58,7 +58,7 @@
           <div class="d-flex flex-column gap-1">
             <span class="fw-600" style="font-size: 14px;">Access 2: Training Delivery</span>
             <span style="font-size: 12px;"
-              >Enables platform to send training notifications to Teams.</span
+              >Allows the platform to send training notifications to Teams users.</span
             >
           </div>
           <VBtn
@@ -98,7 +98,7 @@
       </FormGroup>
       <FormGroup
         v-if="isMicrosoftTeamsActive"
-        title="2. Bot Name"
+        title="Step 2: Bot Name"
         sub-title="Enter a name for the bot that will represent Microsoft Teams integration."
         class="mb-3"
       >
@@ -337,6 +337,7 @@ export default {
       })
     },
     callMicrosoftTeamsOboCallback(code, state) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -346,12 +347,15 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.isModalVisible = true
+        }).catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
         })
     },
     callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -361,6 +365,9 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.handleSubmit()
+        })
+        .catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
@@ -379,6 +386,7 @@ export default {
       this.isSaveDisabled = true
       MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings().finally(() => {
         this.getMicrosoftTeamsSettings()
+        MicrosoftTeamsSettingsService.installMicrosoftTeamsAppToUsers()
         this.isSaveDisabled = false
       })
     }
