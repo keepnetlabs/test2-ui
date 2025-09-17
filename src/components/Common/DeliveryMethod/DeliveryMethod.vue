@@ -151,7 +151,9 @@ export default {
     checkTeamsIntegration() {
       MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings()
         .then((response) => {
-          const { data } = response
+          const {
+            data: { data }
+          } = response
           this.isTeamsIntegrationEnabled = data?.isFound
           const teamsIntegrationOption = this.deliveryOptions.find(
             (option) => option.value === 'microsoft-teams'
