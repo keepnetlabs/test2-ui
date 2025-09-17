@@ -86,6 +86,7 @@
       <TrainingReportTrainingMaterial
         :form-data="getTrainingMaterialData"
         :isFetchingSummary="isLoading"
+        :is-survey="isSurvey"
         :selected-row="getTrainingMaterialRow"
         :languages="languages"
         :training-type="getTrainingType"
@@ -102,6 +103,7 @@
     <div v-else-if="tab === 'users'">
       <TrainingReportUsers
         is-add-training-type-key-to-payload
+        :is-survey="isSurvey"
         :id="id"
         :is-loading="isLoading"
         :custom-fields="customFields"

@@ -403,6 +403,8 @@ export const labels = {
   UploadCoverImageForTheTraining: 'Upload a cover image for the training',
   UploadCoverImageForTheSurvey: 'Upload a cover image for the survey',
   UploadCoverImageForThePoster: 'Upload a cover image for the poster',
+  SurveyMaterial: 'Survey Material',
+  EmptyTrainingReportTrainingSurveys:'You do not have any users enrolled for this survey',
   Survey: 'Survey',
   AddTraining: 'Add Training',
   ErrorMicrosoftCreationMessage: 'User declined to consent to access the app.',
