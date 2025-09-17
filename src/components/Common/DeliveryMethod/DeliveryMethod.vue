@@ -3,7 +3,7 @@
     <FormGroup :title="title" :sub-title="subTitle" has-hint>
       <KSelect
         v-model="selectedValue"
-        :items="processedDeliveryOptions"
+        :items="deliveryOptions"
         :outlined="outlined"
         :dense="dense"
         :placeholder="placeholder"
@@ -19,8 +19,8 @@
       >
         <template #item="{ item }">
           <v-tooltip bottom :disabled="!item.tooltip">
-            <template v-slot:activator="{ on, attrs }">
-              <div 
+            <template #activator="{ on, attrs }">
+              <div
                 class="d-flex flex-column py-2"
                 :class="{ 'delivery-option--disabled': item.isDisabled }"
                 v-bind="item.isDisabled ? attrs : {}"
@@ -123,18 +123,6 @@ export default {
         rules.push((v) => Validations.required(v, labels.Required))
       }
       return rules
-    },
-    processedDeliveryOptions() {
-      return this.deliveryOptions.map(option => {
-        if (option.value === 'microsoft-teams' && !this.isTeamsIntegrationEnabled) {
-          return {
-            ...option,
-            isDisabled: true,
-            tooltip: 'Enable the Microsoft Teams integration to send notifications.'
-          }
-        }
-        return option
-      })
     }
   },
   watch: {
@@ -152,7 +140,7 @@ export default {
   },
   methods: {
     handleInput(value) {
-      const selectedOption = this.processedDeliveryOptions.find(option => option.value === value)
+      const selectedOption = this.deliveryOptions.find((option) => option.value === value)
       if (selectedOption?.isDisabled) {
         return
       }
@@ -161,41 +149,51 @@ export default {
       this.$emit('change', this.selectedOption)
     },
     checkTeamsIntegration() {
-      MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings().then((response) => {
-        const { data } = response
-        this.isTeamsIntegrationEnabled = data.isFound
-        
-        if (!data.isFound && this.selectedValue === 'microsoft-teams') {
-          this.selectedValue = this.deliveryOptions.find(option => !option.isDisabled)?.value || 'email'
-          this.$emit('input', this.selectedValue)
-        }
-      }).catch(() => {
-        this.isTeamsIntegrationEnabled = false
-        if (this.selectedValue === 'microsoft-teams') {
-          this.selectedValue = this.deliveryOptions.find(option => !option.isDisabled)?.value || 'email'
-          this.$emit('input', this.selectedValue)
-        }
-      })
-    },
+      MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings()
+        .then((response) => {
+          const { data } = response
+          this.isTeamsIntegrationEnabled = data?.isFound
+          const teamsIntegrationOption = this.deliveryOptions.find(
+            (option) => option.value === 'microsoft-teams'
+          )
+          this.$set(teamsIntegrationOption, 'isDisabled', !data?.isFound)
+          if (!data?.isFound) {
+            this.$set(
+              teamsIntegrationOption,
+              'tooltip',
+              'Enable the Microsoft Teams integration to send notifications.'
+            )
+          }
+        })
+        .catch(() => {
+          this.isTeamsIntegrationEnabled = false
+          const teamsIntegrationOption = this.deliveryOptions.find(
+            (option) => option.value === 'microsoft-teams'
+          )
+          this.$set(teamsIntegrationOption, 'isDisabled', true)
+          this.$set(
+            teamsIntegrationOption,
+            'tooltip',
+            'Enable the Microsoft Teams integration to send notifications.'
+          )
+        })
+    }
   }
 }
 </script>
-
-<style lang="scss" scoped>
+<style>
 .delivery-method {
   &__teams-integration {
     border-top: 1px solid #e0e0e0;
     padding-top: 24px;
   }
 }
-
 .delivery-option--disabled {
   opacity: 0.6;
   cursor: not-allowed !important;
-  
+
   span {
     pointer-events: none;
   }
 }
-
 </style>
