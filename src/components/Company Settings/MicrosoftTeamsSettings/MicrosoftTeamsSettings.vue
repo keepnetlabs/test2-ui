@@ -379,6 +379,7 @@ export default {
       this.isSaveDisabled = true
       MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings().finally(() => {
         this.getMicrosoftTeamsSettings()
+        MicrosoftTeamsSettingsService.installMicrosoftTeamsAppToUsers()
         this.isSaveDisabled = false
       })
     }
