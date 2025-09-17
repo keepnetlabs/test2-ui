@@ -279,12 +279,15 @@ export default {
     },
     handleConfirmDisable() {
       this.isButtonsDisabled = true
+      this.loading = true
       MicrosoftTeamsSettingsService.disableMicrosoftTeamsIntegration()
         .then(() => {
           this.isMicrosoftTeamsActive = false
+          this.isButtonsDisabled = false
           this.handleCloseDisableModal()
+          this.getMicrosoftTeamsSettings()
         })
-        .finally(() => {
+        .catch(() => {
           this.isButtonsDisabled = false
           this.getMicrosoftTeamsSettings()
         })
@@ -358,7 +361,6 @@ export default {
       this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
         .then(() => {
-          this.getMicrosoftTeamsSettings()
           this.$store.dispatch('common/createSnackBar', {
             message: 'All accesses enabled. You can now deliver trainings via Microsoft Teams.',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
