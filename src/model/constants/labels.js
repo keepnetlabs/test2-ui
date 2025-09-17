@@ -16,6 +16,7 @@ export const labels = {
   ReplyTracking: 'Reply Tracking',
   ResendTheCertificate: 'Resend the Certificate',
   ReplyTrackingSub: 'Enter custom reply-to address to track replies',
+  EmptyTrainingReportTrainingSurveys: 'No one has taken the survey, yet',
   RepliedTitle: 'Users who replied to the email',
   RepliedSub: 'List of users who replied or sent an out-of-office auto-response',
   DescriptionInfographicSub: 'Describe the infographic briefly',

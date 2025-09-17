@@ -29,9 +29,9 @@ export function disableMicrosoftTeamsIntegration() {
   return testRequest.delete(
     '/companies/teams-app/remove',
     {
-      companyResourceId
-    },
-    {
+      data:{
+        companyResourceId
+      },
       snackbar: COMMON_SNACKBAR
     }
   )
@@ -48,7 +48,7 @@ export function uploadMicrosoftTeamsSettings() {
   )
 }
 export function installMicrosoftTeamsAppToUsers () {
-  return testRequest.post('/companies/teams-app/install', {
+  return testRequest.post('/companies/teams-app/install-to-users', {
     companyResourceId
   },    
   {
