@@ -2,7 +2,7 @@
   <AppDialog
     icon="mdi-link"
     title="Enable Microsoft Teams Integration"
-    :sub-title="isStep2 ? 'Access 2: Training Delivery' : 'Access 1: Connect to Teams'"
+    :subtitle="isStep2 ? 'Enable Training Notifications (Access 2)' : 'Connect to Teams (Access 1)'"
     :status="status"
     @changeStatus="handleClose"
   >
