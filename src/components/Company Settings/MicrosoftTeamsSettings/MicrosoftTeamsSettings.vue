@@ -236,7 +236,6 @@ export default {
         })
       }
       this.$router.replace('/company/company-settings?')
-      console.log('query', query)
     } else {
       this.getMicrosoftTeamsSettings()
     }
