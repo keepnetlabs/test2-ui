@@ -310,7 +310,9 @@ export default {
         (query?.admin_consent && query?.tenant && query?.scope) ||
         (query?.error && query?.error_subcode && query?.state)
       ) {
-        this.tab = 'microsoft-teams-settings'
+        this.$nextTick(() => {
+          this.tab = 'microsoft-teams-settings'
+        })
         return
       } else if (
         query?.tenant ||
