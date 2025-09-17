@@ -347,6 +347,8 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.isModalVisible = true
+        }).catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
@@ -363,6 +365,9 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.handleSubmit()
+        })
+        .catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
