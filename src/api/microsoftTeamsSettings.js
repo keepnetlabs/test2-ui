@@ -48,7 +48,7 @@ export function uploadMicrosoftTeamsSettings() {
   )
 }
 export function installMicrosoftTeamsAppToUsers () {
-  return testRequest.post('/companies/teams-app/install', {
+  return testRequest.post('/companies/teams-app/install-to-users', {
     companyResourceId
   },    
   {
