@@ -32,6 +32,7 @@
         @close="hideAudienceDetailsModal"
       />
       <TrainingReportSummaryHeader
+        :is-survey="isSurvey"
         :is-scorm-proxy="isScormProxy"
         :training-name="trainingName"
         :resend-dialog-items="getResendDialogItems"
@@ -41,12 +42,14 @@
       />
       <TrainingReportSummaryCards
         :items="getCardsData"
+        :is-survey="isSurvey"
         :is-loading="isLoading"
         :total-user-count="getTotalUsers"
         :training-type="getTrainingType"
       />
       <div class="campaign-manager-report-summary__general-info mt-6">
         <TrainingReportSummaryTrainingInfo
+          :is-survey="isSurvey"
           :items="getTrainingInfoData"
           :helper-data="getTrainingInfoHelperData"
           :is-test-training="isTestTraining"
@@ -57,6 +60,7 @@
         />
         <TrainingReportTrainingDelivery
           class="ml-4"
+          :is-survey="isSurvey"
           :items="getTrainingDeliveryData"
           :helper-data="getTrainingDeliveryHelperData"
           :isLoading="isLoading"
@@ -71,6 +75,7 @@
         :helper-data="getSMSSummaryHelperData"
       />
       <TrainingReportEnrollmentEmail
+        :is-survey="isSurvey"
         :form-data="getEnrollmentTemplateData"
         :isFetchingSummary="isLoading"
         :training-email-notification-template-type-resource-id="
@@ -179,6 +184,9 @@ export default {
     },
     awardCertificateEnrollmentId: {
       type: String
+    },
+    isSurvey:{
+      type:Boolean
     }
   },
   data() {

@@ -25,6 +25,7 @@
             :trainingSummary="trainingSummary"
             :isScormProxy="isScormProxy"
             :active-step="item.activeStep"
+            :isSurvey="isSurvey"
             :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           />
         </ElTabPane>
@@ -140,6 +141,9 @@ export default {
     },
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
+    },
+    isSurvey() {
+      return this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY || true
     }
   },
   created() {
@@ -164,7 +168,7 @@ export default {
         this.$route?.query?.trainingType || 0
       ).then((response) => {
         this.trainingSummary = response?.data?.data
-        if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
+        if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY || true) {
           this.tabItems[2].label = labels.OpenededSurvey
           this.tabItems[3].label = labels.ClickedSurveyLink
           this.tabItems.splice(4, 2)
