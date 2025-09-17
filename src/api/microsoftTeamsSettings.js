@@ -47,6 +47,15 @@ export function uploadMicrosoftTeamsSettings() {
     }
   )
 }
+export function installMicrosoftTeamsAppToUsers () {
+  return testRequest.post('/companies/teams-app/install', {
+    companyResourceId
+  },    
+  {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export default {
   getMicrosoftTeamsSettings,
   getMicrosoftTeamsOboIntegrationLink,
@@ -54,5 +63,6 @@ export default {
   callMicrosoftTeamsAppCallback,
   disableMicrosoftTeamsIntegration,
   uploadMicrosoftTeamsSettings,
-  getMicrosoftTeamsAppAuthorizeLink
+  getMicrosoftTeamsAppAuthorizeLink,
+  installMicrosoftTeamsAppToUsers
 }

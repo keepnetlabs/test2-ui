@@ -337,6 +337,7 @@ export default {
       })
     },
     callMicrosoftTeamsOboCallback(code, state) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -346,12 +347,15 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.isModalVisible = true
+        }).catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
         })
     },
     callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -361,6 +365,9 @@ export default {
             icon: 'mdi-check-circle'
           })
           this.handleSubmit()
+        })
+        .catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
@@ -379,6 +386,7 @@ export default {
       this.isSaveDisabled = true
       MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings().finally(() => {
         this.getMicrosoftTeamsSettings()
+        MicrosoftTeamsSettingsService.installMicrosoftTeamsAppToUsers()
         this.isSaveDisabled = false
       })
     }
