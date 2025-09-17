@@ -58,7 +58,7 @@
           <div class="d-flex flex-column gap-1">
             <span class="fw-600" style="font-size: 14px;">Access 2: Training Delivery</span>
             <span style="font-size: 12px;"
-              >Enables platform to send training notifications to Teams.</span
+              >Allows the platform to send training notifications to Teams users.</span
             >
           </div>
           <VBtn
