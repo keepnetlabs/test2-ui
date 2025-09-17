@@ -171,7 +171,7 @@ export default {
         if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY || true) {
           this.tabItems[2].label = labels.OpenededSurvey
           this.tabItems[3].label = labels.ClickedSurveyLink
-          this.tabItems.splice(4, 2)
+          this.tabItems.splice(5, 1)
         } else if (
           this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
         ) {

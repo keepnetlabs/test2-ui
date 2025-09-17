@@ -100,6 +100,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -205,7 +208,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-clicked-link',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -225,6 +228,7 @@ export default {
   },
   computed: {
     getHeaderTitle() {
+      if (this.isSurvey) return 'Clicked the survey link'
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Downloaded the poster'
       else if (
@@ -234,6 +238,7 @@ export default {
       return 'Clicked the training link'
     },
     getHeaderSubtitle() {
+      if (this.isSurvey) return 'Users who clicked the survey link'
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Users who downloaded the poster'
       else if (
@@ -243,6 +248,7 @@ export default {
       return 'Users who clicked the link to the course'
     },
     getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -252,6 +258,7 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -280,7 +287,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === 'Resend Training' || action.name === 'Resend Survey'
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -307,6 +314,7 @@ export default {
       this.resendItemCount = selectionCount
     },
     getEmptyTableTextMessage() {
+      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportDownloadedPoster
       else if (
@@ -377,7 +385,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Training-Clicked-Emails.${
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Clicked-Emails.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()
