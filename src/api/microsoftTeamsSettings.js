@@ -29,9 +29,9 @@ export function disableMicrosoftTeamsIntegration() {
   return testRequest.delete(
     '/companies/teams-app/remove',
     {
-      companyResourceId
-    },
-    {
+      data:{
+        companyResourceId
+      },
       snackbar: COMMON_SNACKBAR
     }
   )
