@@ -98,7 +98,7 @@
       </FormGroup>
       <FormGroup
         v-if="isMicrosoftTeamsActive"
-        title="2. Bot Name"
+        title="Step 2: Bot Name"
         sub-title="Enter a name for the bot that will represent Microsoft Teams integration."
         class="mb-3"
       >
