@@ -85,6 +85,7 @@
         :isScormProxy="isScormProxy"
         :id="id"
         :form-details="formDetails"
+        :isSurvey="isSurvey"
         :training-summary="trainingSummary"
         @on-resend="handleOnResend"
         @on-selection-text-change="handleSelectionChange"
