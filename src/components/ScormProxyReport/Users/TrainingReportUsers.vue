@@ -279,14 +279,14 @@ export default {
             property: 'deliveryType',
             align: 'left',
             editable: false,
-            label: 'Delivery Type',
+            label: 'Delivery Method',
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
             width: 180,
             filterableType: 'select',
-            filterableItems: ['Email', 'Email & SMS']
+            filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
           }
         ],
         addButton: {
@@ -374,8 +374,10 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData =
-            results.map((row) => ({ ...row, examStatus: row.examStatus || row.examStatusName })) ||
-            []
+            results.map((row) => ({
+              ...row,
+              examStatus: row.examStatus || row.examStatusName
+            })) || []
         })
         .finally(this.setLoading)
     },

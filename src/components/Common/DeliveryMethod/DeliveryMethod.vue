@@ -17,13 +17,24 @@
         :slots="{ item: true }"
         @input="handleInput"
       >
-        <template v-slot:item="{ item }">
-          <div class="d-flex flex-column py-2">
-            <span>{{ item.label }}</span>
-            <span v-if="item.description" class="tlp_subtitle">
-              {{ item.description }}
-            </span>
-          </div>
+        <template #item="{ item }">
+          <v-tooltip bottom :disabled="!item.tooltip">
+            <template #activator="{ on, attrs }">
+              <div
+                class="d-flex flex-column py-2"
+                :class="{ 'delivery-option--disabled': item.isDisabled }"
+                v-bind="item.isDisabled ? attrs : {}"
+                v-on="item.isDisabled ? on : {}"
+                @click="item.isDisabled ? $event.stopPropagation() : null"
+              >
+                <span>{{ item.label }}</span>
+                <span v-if="item.description" class="tlp_subtitle">
+                  {{ item.description }}
+                </span>
+              </div>
+            </template>
+            <span>{{ item.tooltip }}</span>
+          </v-tooltip>
         </template>
       </KSelect>
     </FormGroup>
@@ -36,6 +47,8 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import KSelect from '../Inputs/KSelect.vue'
 import { deliveryMethodOptions } from './utils'
+import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
+
 export default {
   name: 'DeliveryMethod',
   components: {
@@ -97,38 +110,7 @@ export default {
     return {
       deliveryOptions,
       selectedValue: this.value || (deliveryOptions.length > 0 ? deliveryOptions[0].value : ''),
-      teamsIntegrationSteps: [
-        {
-          title: 'Step 1: Integrate with Microsoft Teams',
-          description: 'Allow the platform to connect with your Microsoft Teams account.',
-          disabled: false,
-          completed: false,
-          accesses: [
-            {
-              title: 'Access 1: Connect to Teams',
-              description: 'Allows platform to link your Teams account.',
-              status: 'pending',
-              loading: false,
-              disabled: false
-            }
-          ]
-        },
-        {
-          title: 'Step 2: Configure Training Delivery',
-          description: 'Set up training delivery mechanisms through Microsoft Teams.',
-          disabled: true,
-          completed: false,
-          accesses: [
-            {
-              title: 'Access 2: Training Delivery',
-              description: 'Allows the platform to send training notifications to Teams users.',
-              status: 'pending',
-              loading: false,
-              disabled: true
-            }
-          ]
-        }
-      ]
+      isTeamsIntegrationEnabled: true
     }
   },
   computed: {
@@ -154,279 +136,66 @@ export default {
     if (!this.value && this.deliveryOptions.length > 0) {
       this.$emit('input', this.selectedValue)
     }
+    this.checkTeamsIntegration()
   },
   methods: {
     handleInput(value) {
+      const selectedOption = this.deliveryOptions.find((option) => option.value === value)
+      if (selectedOption?.isDisabled) {
+        return
+      }
       this.selectedValue = value
       this.$emit('input', value)
       this.$emit('change', this.selectedOption)
     },
-    getButtonColor(status) {
-      switch (status) {
-        case 'enabled':
-          return '#4CAF50'
-        case 'disabled':
-          return '#f44336'
-        case 'pending':
-        default:
-          return '#2196f3'
-      }
-    },
-    getButtonText(status) {
-      switch (status) {
-        case 'enabled':
-          return 'ENABLED'
-        case 'disabled':
-          return 'DISABLED'
-        case 'pending':
-        default:
-          return 'ENABLE ACCESS'
-      }
-    },
-    async handleTeamsAccessClick(step, access, stepIndex, accessIndex) {
-      try {
-        this.setTeamsAccessLoading(stepIndex, accessIndex, true)
-
-        if (stepIndex === 0 && accessIndex === 0) {
-          await this.connectToTeams()
-        } else if (stepIndex === 1 && accessIndex === 0) {
-          await this.enableTeamsTrainingDelivery()
-        }
-      } catch (error) {
-        this.$emit('teams-integration-error', error.message || 'An unexpected error occurred')
-      } finally {
-        this.setTeamsAccessLoading(stepIndex, accessIndex, false)
-      }
-    },
-    async connectToTeams() {
-      await this.simulateApiCall()
-
-      this.updateTeamsAccessStatus(0, 0, 'enabled')
-      this.updateTeamsStepStatus(0, false, true)
-      this.updateTeamsStepStatus(1, false, false)
-      this.updateTeamsAccessStatus(1, 0, 'pending')
-
-      this.$emit('teams-integration-success', 'Successfully connected to Microsoft Teams!')
-    },
-    async enableTeamsTrainingDelivery() {
-      await this.simulateApiCall()
-
-      this.updateTeamsAccessStatus(1, 0, 'enabled')
-      this.updateTeamsStepStatus(1, false, true)
-
-      this.$emit(
-        'teams-integration-success',
-        'Training delivery has been enabled for Microsoft Teams!'
-      )
-    },
-    simulateApiCall() {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() > 0.1) {
-            resolve()
-          } else {
-            reject(new Error('Connection failed. Please try again.'))
+    checkTeamsIntegration() {
+      MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.isTeamsIntegrationEnabled = data?.isFound
+          const teamsIntegrationOption = this.deliveryOptions.find(
+            (option) => option.value === 'microsoft-teams'
+          )
+          this.$set(teamsIntegrationOption, 'isDisabled', !data?.isFound)
+          if (!data?.isFound) {
+            this.$set(
+              teamsIntegrationOption,
+              'tooltip',
+              'Enable the Microsoft Teams integration to send notifications.'
+            )
           }
-        }, 2000)
-      })
-    },
-    setTeamsAccessLoading(stepIndex, accessIndex, loading) {
-      this.teamsIntegrationSteps[stepIndex].accesses[accessIndex].loading = loading
-    },
-    updateTeamsAccessStatus(stepIndex, accessIndex, status) {
-      this.teamsIntegrationSteps[stepIndex].accesses[accessIndex].status = status
-    },
-    updateTeamsStepStatus(stepIndex, disabled, completed) {
-      this.teamsIntegrationSteps[stepIndex].disabled = disabled
-      this.teamsIntegrationSteps[stepIndex].completed = completed
-
-      this.teamsIntegrationSteps[stepIndex].accesses.forEach((access) => {
-        access.disabled = disabled
-      })
+        })
+        .catch(() => {
+          this.isTeamsIntegrationEnabled = false
+          const teamsIntegrationOption = this.deliveryOptions.find(
+            (option) => option.value === 'microsoft-teams'
+          )
+          this.$set(teamsIntegrationOption, 'isDisabled', true)
+          this.$set(
+            teamsIntegrationOption,
+            'tooltip',
+            'Enable the Microsoft Teams integration to send notifications.'
+          )
+        })
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
+<style>
 .delivery-method {
   &__teams-integration {
     border-top: 1px solid #e0e0e0;
     padding-top: 24px;
   }
 }
+.delivery-option--disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
 
-.teams-integration-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-
-  &__header {
-    padding: 24px 32px;
-    background: linear-gradient(135deg, #6264a7 0%, #5b5fc7 100%);
-    color: white;
-  }
-
-  &__title {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-    line-height: 1.2;
-  }
-
-  &__subtitle {
-    font-size: 14px;
-    margin: 0;
-    opacity: 0.9;
-    line-height: 1.4;
-  }
-
-  &__content {
-    padding: 0;
-  }
-}
-
-.teams-step {
-  border-bottom: 1px solid #e0e0e0;
-  transition: all 0.3s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &--disabled {
-    opacity: 0.6;
-    background-color: #fafafa;
-  }
-
-  &--completed {
-    background-color: #f8fff8;
-    border-left: 4px solid #4caf50;
-  }
-
-  &__header {
-    padding: 20px 32px 12px 32px;
-    background: #f8f9fa;
-  }
-
-  &__title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 6px 0;
-  }
-
-  &__description {
-    font-size: 14px;
-    color: #666;
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  &__content {
-    padding: 0 32px 20px 32px;
-  }
-}
-
-.teams-access {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-color: #6264a7;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  &__info {
-    flex: 1;
-    margin-right: 16px;
-  }
-
-  &__title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 4px 0;
-  }
-
-  &__description {
-    font-size: 13px;
-    color: #666;
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  &__action {
-    flex-shrink: 0;
-  }
-
-  &__button {
-    min-width: 120px;
-    height: 36px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 12px;
-
-    &.v-btn--disabled {
-      box-shadow: none;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .teams-integration-card {
-    &__header {
-      padding: 20px 24px;
-    }
-
-    &__title {
-      font-size: 20px;
-    }
-
-    &__subtitle {
-      font-size: 13px;
-    }
-  }
-
-  .teams-step {
-    &__header {
-      padding: 16px 24px 10px 24px;
-    }
-
-    &__content {
-      padding: 0 24px 16px 24px;
-    }
-  }
-
-  .teams-access {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-
-    &__info {
-      margin-right: 0;
-    }
-
-    &__action {
-      align-self: stretch;
-    }
-
-    &__button {
-      width: 100%;
-    }
+  span {
+    pointer-events: none;
   }
 }
 </style>

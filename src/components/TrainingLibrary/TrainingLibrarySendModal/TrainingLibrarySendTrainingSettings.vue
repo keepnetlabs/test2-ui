@@ -449,9 +449,9 @@ export default {
       if (this.formData.deliveryMethod === DELIVERY_METHODS.LMS) {
         return "The training will be distributed through the organization's LMS after it is downloaded and prepared. This process must be completed manually."
       } else if (this.formData.deliveryMethod === DELIVERY_METHODS.SMS) {
-        return 'Selected users without a registered phone number will receive the training via email.'
+        return 'Training is delivered in SMS and also sent by email.'
       } else if (this.formData.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS) {
-        return 'Selected users not found in Microsoft Teams will receive the training via email.'
+        return 'Training is delivered in Microsoft Teams and also sent by email.'
       }
       return ''
     },

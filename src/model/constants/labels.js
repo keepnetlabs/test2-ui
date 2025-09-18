@@ -353,6 +353,7 @@ export const labels = {
   UserWhoDownloadedAttachment: 'Users who downloaded attachment',
   Delivery: 'Delivery',
   DeliveryType: 'Delivery Type',
+  DeliveryMethod: 'Delivery Method',
   TrainingDistributionSub:
     'Send trainings with selected intervals or over a specified time period. Limit number of trainings to be sent in each batch.',
   ContentLanguage: 'Content Language',

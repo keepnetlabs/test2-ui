@@ -303,14 +303,14 @@ export const COLUMNS = {
     property: PROPERTY_STORE.DELIVERY_TYPE,
     align: 'left',
     editable: false,
-    label: labels.DeliveryType,
+    label: labels.DeliveryMethod,
     fixed: false,
     sortable: true,
     show: true,
     type: 'text',
     width: 180,
     filterableType: 'select',
-    filterableItems: ['Email', 'Email & SMS']
+    filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
   },
   START_DATE: {
     property: PROPERTY_STORE.START_DATE,

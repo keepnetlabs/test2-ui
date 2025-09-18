@@ -58,7 +58,7 @@
           <div class="d-flex flex-column gap-1">
             <span class="fw-600" style="font-size: 14px;">Access 2: Training Delivery</span>
             <span style="font-size: 12px;"
-              >Enables platform to send training notifications to Teams.</span
+              >Allows the platform to send training notifications to Teams users.</span
             >
           </div>
           <VBtn
@@ -98,7 +98,7 @@
       </FormGroup>
       <FormGroup
         v-if="isMicrosoftTeamsActive"
-        title="2. Bot Name"
+        title="Step 2: Bot Name"
         sub-title="Enter a name for the bot that will represent Microsoft Teams integration."
         class="mb-3"
       >
@@ -236,7 +236,6 @@ export default {
         })
       }
       this.$router.replace('/company/company-settings?')
-      console.log('query', query)
     } else {
       this.getMicrosoftTeamsSettings()
     }
@@ -279,12 +278,15 @@ export default {
     },
     handleConfirmDisable() {
       this.isButtonsDisabled = true
+      this.loading = true
       MicrosoftTeamsSettingsService.disableMicrosoftTeamsIntegration()
         .then(() => {
           this.isMicrosoftTeamsActive = false
+          this.isButtonsDisabled = false
           this.handleCloseDisableModal()
+          this.getMicrosoftTeamsSettings()
         })
-        .finally(() => {
+        .catch(() => {
           this.isButtonsDisabled = false
           this.getMicrosoftTeamsSettings()
         })
@@ -332,11 +334,11 @@ export default {
         const {
           data: { data }
         } = res
-        console.log('data.authorizationUrl', data.authorizationUrl)
         return data.authorizationUrl
       })
     },
     callMicrosoftTeamsOboCallback(code, state) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
         .then(() => {
           this.getMicrosoftTeamsSettings()
@@ -347,20 +349,26 @@ export default {
           })
           this.isModalVisible = true
         })
+        .catch(() => {
+          this.loading = false
+        })
         .finally(() => {
           this.$router.replace('/company/company-settings')
         })
     },
     callMicrosoftTeamsAppCallback(admin_consent, tenant, scope) {
+      this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsAppCallback(admin_consent, tenant, scope)
         .then(() => {
-          this.getMicrosoftTeamsSettings()
           this.$store.dispatch('common/createSnackBar', {
             message: 'All accesses enabled. You can now deliver trainings via Microsoft Teams.',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
           this.handleSubmit()
+        })
+        .catch(() => {
+          this.loading = false
         })
         .finally(() => {
           this.$router.replace('/company/company-settings')
@@ -379,6 +387,7 @@ export default {
       this.isSaveDisabled = true
       MicrosoftTeamsSettingsService.uploadMicrosoftTeamsSettings().finally(() => {
         this.getMicrosoftTeamsSettings()
+        MicrosoftTeamsSettingsService.installMicrosoftTeamsAppToUsers()
         this.isSaveDisabled = false
       })
     }
