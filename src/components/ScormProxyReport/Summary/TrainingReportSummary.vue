@@ -37,6 +37,7 @@
       :form-data="getTrainingMaterialData"
       :isFetchingSummary="isLoading"
       :selected-row="getTrainingMaterialRow"
+      :is-survey="isSurvey"
       :languages="languages"
     />
   </div>
