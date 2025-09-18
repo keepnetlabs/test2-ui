@@ -11,8 +11,12 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="No Response"
-      subtitle="Users who had no interaction with the training email"
+      :title="isSurvey ? 'No Response' : 'No Response'"
+      :subtitle="
+        isSurvey
+          ? 'Users who had no interaction with the survey email'
+          : 'Users who had no interaction with the training email'
+      "
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -77,6 +81,9 @@ export default {
       type: String
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -190,7 +197,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -258,7 +265,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Training-No-Response.${
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-No-Response.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()

@@ -11,8 +11,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Sending Report"
-      subtitle="Training email delivery details"
+      :title="isSurvey ? 'Survey Sending Report' : 'Training Sending Report'"
+      :subtitle="isSurvey ? 'Survey email delivery details' : 'Training email delivery details'"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -94,10 +94,7 @@
             }"
           />
         </div>
-        <div
-          v-if="!getEvents.length"
-          class="training-report-no-event-message"
-        >
+        <div v-if="!getEvents.length" class="training-report-no-event-message">
           {{ getNoEventMessage }}
         </div>
       </template>
@@ -143,6 +140,9 @@ export default {
       type: Object
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -299,7 +299,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -499,7 +499,9 @@ export default {
         row.targetUserResourceId
       )
         .then((response) => {
-          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          const { data: { data = [] } = {} } = response || {
+            data: { data: [] }
+          }
           this.extendedViewValue = [data]
         })
         .catch(() => {
