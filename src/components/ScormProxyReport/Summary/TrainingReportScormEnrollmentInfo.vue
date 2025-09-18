@@ -79,6 +79,9 @@ export default {
     },
     type: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {

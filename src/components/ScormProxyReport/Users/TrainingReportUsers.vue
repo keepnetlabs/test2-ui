@@ -80,7 +80,7 @@
           title="Non-Target Users"
           subtitle="All non-target users enrolled in this platform"
         />
-        <TrainingReportUsersNonTargetUsers :form-details="formDetails" :id="id" />
+        <TrainingReportUsersNonTargetUsers :form-details="formDetails" :id="id" :is-survey="isSurvey" />
       </ElTabPane>
     </ElTabs>
   </div>
@@ -123,6 +123,9 @@ export default {
       type: Object
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -293,11 +296,13 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportSurveyUsers
+            : labels.EmptyTrainingReportUsers
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-resend--row-actions-training-report-users',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -322,7 +327,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -396,7 +401,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Users.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Users.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

@@ -13,7 +13,7 @@
     <TrainingReportSummaryInfoCard
       v-bind="getCompletedTrainingData"
       background-color="#43A047"
-      :title="labels.CompletedTraining"
+      :title="isSurvey ? labels.CompletedSurvey : labels.CompletedTraining"
       :is-loading="isLoading"
       :icon-src="noResponseIcon"
     />

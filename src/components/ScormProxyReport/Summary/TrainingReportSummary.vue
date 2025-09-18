@@ -13,9 +13,14 @@
       :trainingName="trainingName"
       :resend-dialog-items="getResendDialogItems"
       :isLoading="isLoading"
+      :isSurvey="isSurvey"
       :id="id"
     />
-    <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
+    <TrainingReportSummaryCards
+      :items="getCardsData"
+      :is-loading="isLoading"
+      :is-survey="isSurvey"
+    />
     <div class="mt-6 training-report-scorm-info">
       <TrainingReportScormEnrollmentInfo
         :items="getTrainingInfoData"
@@ -23,6 +28,7 @@
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
         :isLoading="isLoading"
+        :is-survey="isSurvey"
         @audienceClick="showAudienceDetailsModal"
       />
     </div>
@@ -67,6 +73,9 @@ export default {
       type: Object
     },
     isLoading: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -114,6 +123,9 @@ export default {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
       }
+      const proxyPackageDownloadDateKey = this.isSurvey
+        ? 'Survey Proxy Package Download Date'
+        : 'Training Proxy Package Download Date'
       return {
         'Target Users': {
           show: true,
@@ -131,7 +143,7 @@ export default {
           show: true,
           value: totalNonTargetUser
         },
-        'Training Proxy Package Download Date': {
+        [proxyPackageDownloadDateKey]: {
           show: true,
           value: startDate
         }

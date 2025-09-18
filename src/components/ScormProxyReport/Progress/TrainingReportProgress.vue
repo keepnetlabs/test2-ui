@@ -20,7 +20,11 @@
         <CampaignManagerReportHeader
           class="mb-6"
           title="Target Users Progress"
-          :subtitle="isSurvey ? 'Survey progress details of target users' : 'Training progress details of target users'"
+          :subtitle="
+            isSurvey
+              ? 'Survey progress details of target users'
+              : 'Training progress details of target users'
+          "
         />
         <DataTable
           :id="CONSTANTS.id"
@@ -58,7 +62,11 @@
           <template #datatable-custom-column="{ scope, col }">
             <div class="training-report-progress__progress-column">
               <v-btn style="display: none;" />
-              <Badge v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
+              <Badge
+                v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)"
+                :col="col"
+                size="medium"
+              />
             </div>
           </template>
         </DataTable>
@@ -71,9 +79,17 @@
         <CampaignManagerReportHeader
           class="mb-6"
           title="Non-Target Users Progress"
-          :subtitle="isSurvey ? 'Survey progress details of non-target users' : 'Training progress details of non-target users'"
+          :subtitle="
+            isSurvey
+              ? 'Survey progress details of non-target users'
+              : 'Training progress details of non-target users'
+          "
         />
-        <TrainingReportNonTargetUsersProgress :form-details="formDetails" :id="id" />
+        <TrainingReportNonTargetUsersProgress
+          :form-details="formDetails"
+          :id="id"
+          :is-survey="isSurvey"
+        />
       </ElTabPane>
     </ElTabs>
   </div>
@@ -267,7 +283,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: this.isSurvey ? labels.EmptyTrainingReportProgressSurvey : labels.EmptyTrainingReportProgress
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportProgressSurvey
+            : labels.EmptyTrainingReportProgress
         },
         rowActions: [
           {

@@ -6,7 +6,7 @@
     detailable-button-id="btn--preview-training-report-training-material"
     :isLoading="isFetchingSummary"
     :show-body-detail="false"
-    :title="labels.TrainingMaterial"
+    :title="isSurvey ? labels.SurveyMaterial : labels.TrainingMaterial"
     @previewClicked="handlePreviewClick"
   >
     <template #body>
@@ -31,7 +31,8 @@
               <template #content>
                 <v-icon size="small">mdi-web</v-icon>
                 <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }} {{ formData.languages.length - 1 > index ? '|' : '' }}
+                  >{{ language }}
+                  {{ formData.languages.length - 1 > index ? '|' : '' }}
                 </span>
               </template>
             </Badge>
@@ -77,6 +78,9 @@ export default {
     },
     languages: {
       type: Array
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {

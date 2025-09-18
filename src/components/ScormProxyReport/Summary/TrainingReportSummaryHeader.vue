@@ -11,7 +11,7 @@
     />
     <div class="training-report-summary-header__left">
       <div class="training-report-summary-header__title">
-        {{ labels.TrainingSummary }}
+        {{ isSurvey ? labels.SurveySummary : labels.TrainingSummary }}
       </div>
       <div class="training-report-summary-header__subtitle">
         Summary of this training enrollment
@@ -24,7 +24,7 @@
         rounded
         color="#2196f3"
         @click="toggleShowResendDialog"
-        >{{ labels.ResendTraining }}</v-btn
+        >{{ isSurvey ? labels.ResendSurvey : labels.ResendTraining }}</v-btn
       >
     </div>
   </div>
@@ -52,6 +52,9 @@ export default {
       type: Boolean
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -85,16 +88,16 @@ export default {
             const blob = new Blob([data])
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(blob)
-            link.download = `Training-Report.xlsx`
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Report.xlsx`
             link.click()
           } else if (response.status === 201) {
             this.$store.dispatch('common/createSnackBar', {
-              message: 'Training report will be generated',
+              message: `${this.isSurvey ? 'Survey' : 'Training'} report will be generated`,
               ...COMMON_SNACKBAR
             })
           } else if (response.status === 202) {
             this.$store.dispatch('common/createSnackBar', {
-              message: 'Training report is being generated',
+              message: `${this.isSurvey ? 'Survey' : 'Training'} report is being generated`,
               ...COMMON_SNACKBAR
             })
           }
