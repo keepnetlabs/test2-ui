@@ -99,6 +99,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -200,11 +203,11 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportOpened
+          message: this.isSurvey ? labels.EmptyTrainingReportOpenedSurvey : labels.EmptyTrainingReportOpened
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-opened-email',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -224,6 +227,7 @@ export default {
   },
   computed: {
     getHeaderTitle() {
+      if (this.isSurvey) return 'Opened the survey email'
       if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Opened the poster email'
       else if (
@@ -233,6 +237,7 @@ export default {
       return 'Opened the training email'
     },
     getHeaderSubtitle() {
+      if (this.isSurvey) return 'Users who opened the survey email'
       if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Users who opened the poster email'
       else if (
@@ -242,6 +247,7 @@ export default {
       return 'Users who opened the training email'
     },
     getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
       if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -251,6 +257,7 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
       if (this?.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -279,7 +286,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === 'Resend Training' || action.name === 'Resend Survey'
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -367,7 +374,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Training-Opened-Emails.${
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Opened-Emails.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()

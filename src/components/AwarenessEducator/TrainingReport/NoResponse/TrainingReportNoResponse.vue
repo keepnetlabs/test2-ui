@@ -84,6 +84,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -177,7 +180,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-no-response--row-actions-training-report-no-response',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -190,6 +193,7 @@ export default {
   },
   computed: {
     getHeaderSubtitle() {
+      if (this.isSurvey) return 'Users who had no interaction with the survey email'
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Users who had no interaction with the poster email'
       else if (
@@ -199,6 +203,7 @@ export default {
       return 'Users who had no interaction with the training email'
     },
     getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -208,6 +213,7 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -236,7 +242,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === 'Resend Training' || action.name === 'Resend Survey'
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -263,6 +269,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
+      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingNoResponsePoster
       else if (

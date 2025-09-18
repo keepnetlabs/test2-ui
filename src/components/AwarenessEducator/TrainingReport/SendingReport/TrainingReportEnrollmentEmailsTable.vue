@@ -137,6 +137,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -274,7 +277,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -385,7 +388,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === 'Resend Training' || action.name === 'Resend Survey'
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -412,6 +415,9 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
+      if (this.isSurvey) {
+        return labels.EmptyTrainingReportTrainingSurveys
+      }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingSendingReportPoster
       else if (
@@ -485,7 +491,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report-Enrollment-Emails.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Sending-Report-Enrollment-Emails.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

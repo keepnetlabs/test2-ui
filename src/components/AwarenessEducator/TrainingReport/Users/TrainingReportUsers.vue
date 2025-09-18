@@ -64,7 +64,7 @@
           nudge-bottom="4"
         >
           <template #activator="{ on: menu }">
-            <v-btn v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+            <v-btn v-if="!isSurvey" v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
               <span style="font-weight: 600;">show by exam status</span>
               <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
                 isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
@@ -170,6 +170,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -252,7 +255,7 @@ export default {
         filterableType: 'select',
         filterableItems: []
       },
-      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING && !this.isSurvey
         ? [
             {
               property: 'examStatus',
@@ -372,7 +375,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-resend--row-actions-training-report-users',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -414,6 +417,7 @@ export default {
   },
   computed: {
     getHeaderSubtitle() {
+      if (this.isSurvey) return 'All target users enrolled to this survey'
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'All target users enrolled to this poster'
       else if (
@@ -428,6 +432,7 @@ export default {
       return 'All target users enrolled to this training'
     },
     getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -437,6 +442,7 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -575,6 +581,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
+      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportTrainingPosters
       else if (
@@ -680,7 +687,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Users.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Users.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
