@@ -16,7 +16,7 @@
       :id="id"
     />
     <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
-    <div class="mt-6 training-report-scorm-info">
+    <div class="mt-6 training-report-scorm-info scorm-proxy-report-summary-cards">
       <TrainingReportScormEnrollmentInfo
         :items="getTrainingInfoData"
         :helper-data="getTrainingInfoHelperData"
@@ -24,6 +24,11 @@
         :type="getAudienceDetailsType"
         :isLoading="isLoading"
         @audienceClick="showAudienceDetailsModal"
+      />
+      <TrainingReportTrainingDelivery
+        class="ml-4"
+        :items="getTrainingDeliveryData"
+        :isLoading="isLoading"
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
@@ -44,6 +49,7 @@ import TrainingReportSummaryAudienceDetails from '@/components/ScormProxyReport/
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportScormEnrollmentInfo from '@/components/ScormProxyReport/Summary/TrainingReportScormEnrollmentInfo.vue'
+import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -51,7 +57,8 @@ export default {
     TrainingReportTrainingMaterial,
     TrainingReportSummaryCards,
     TrainingReportSummaryHeader,
-    TrainingReportSummaryAudienceDetails
+    TrainingReportSummaryAudienceDetails,
+    TrainingReportTrainingDelivery
   },
   props: {
     id: {
@@ -83,6 +90,15 @@ export default {
   computed: {
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
+    },
+    getTrainingDeliveryData() {
+      const obj = {
+        'Delivery Method': {
+          show: true,
+          value: 'LMS'
+        }
+      }
+      return obj
     },
     getTrainingMaterialRow() {
       const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
@@ -119,6 +135,10 @@ export default {
           show: true,
           value: totalTargetUser
         },
+        'Non-Target Users': {
+          show: true,
+          value: totalNonTargetUser
+        },
         Languages: {
           show: true,
           value: languages?.join(', ')
@@ -126,10 +146,6 @@ export default {
         targetGroupCount: {
           show: false,
           value: targetGroupCount
-        },
-        'Non-Target Users': {
-          show: true,
-          value: totalNonTargetUser
         },
         'Training Proxy Package Download Date': {
           show: true,
