@@ -19,6 +19,16 @@
       :training-summary="trainingSummary"
       @on-close="toggleIsShowInteractionsModal"
     />
+    <TrainingReportUserDetailsDialog
+      v-if="isShowDetailsDialog"
+      :status="isShowDetailsDialog"
+      :item="selectedRow"
+      :is-survey="isSurvey"
+      :show-correct-answers="!isSurvey"
+      :is-add-training-type-key-to-payload="isAddTrainingTypeKeyToPayload"
+      :training-summary="trainingSummary"
+      @on-close="toggleIsShowDetailsDialog"
+    />
     <CampaignManagerReportHeader class="mb-6" title="Users" :subtitle="getHeaderSubtitle" />
     <DataTable
       :id="CONSTANTS.id"
@@ -51,6 +61,7 @@
       @downloadEvent="exportTrainingReportUsersTable"
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
+      @on-details="handleDetails"
       @on-resend="handleOnResend"
       @on-selection-text-change="handleSelectionChange"
     >
@@ -131,6 +142,7 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import TrainingReportUserDetailsDialog from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserDetailsDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -144,6 +156,7 @@ export default {
     DataTable,
     Badge,
     TrainingReportUserInteractionsModal,
+    TrainingReportUserDetailsDialog,
     CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions, useExamStatusFilter],
@@ -352,6 +365,7 @@ export default {
       isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
+      isShowDetailsDialog: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
@@ -380,12 +394,21 @@ export default {
             icon: '$custom-resend',
             action: 'on-resend'
           },
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-interactions'
-          }
+          ...(this.isSurvey ? [
+            {
+              name: 'Details',
+              id: 'btn-details--row-actions-training-report-users',
+              icon: '$custom-details',
+              action: 'on-details'
+            }
+          ] : [
+            {
+              name: labels.Details,
+              id: 'btn-interactions--row-actions-training-report-users',
+              icon: '$custom-details',
+              action: 'on-interactions'
+            }
+          ])
           /*
           {
             name: labels.ReSend,
@@ -702,6 +725,10 @@ export default {
       this.selectedRow = row
       this.toggleIsShowInteractionsModal()
     },
+    handleDetails(row) {
+      this.selectedRow = row
+      this.toggleIsShowDetailsDialog()
+    },
     handleExclude(row) {},
     handleInclude(row) {},
     confirmResend() {},
@@ -716,6 +743,12 @@ export default {
         this.selectedRow = null
       }
       this.isShowInteractionsModal = !this.isShowInteractionsModal
+    },
+    toggleIsShowDetailsDialog() {
+      if (this.isShowDetailsDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDetailsDialog = !this.isShowDetailsDialog
     }
   }
 }

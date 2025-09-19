@@ -503,25 +503,10 @@ const trainingLibrary = {
       state.axiosPayload.trainingSearchType = payload
     },
     SET_TRAINING_TYPE(state, payload) {
-      if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
-        /*
-        state.axiosPayload.trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
-        state.axiosPayload.filter.FilterGroups[0].FilterItems.push({
-          FieldName: 'hasQuiz',
-          Value: true,
-          Operator: '='
-        })
-          */
+      if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
+        state.axiosPayload.trainingType = null
       } else {
-        const fIndex = state.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
-          (f) => f.FieldName === 'hasQuiz'
-        )
-        if (fIndex !== -1) state.axiosPayload.filter.FilterGroups[0].FilterItems.splice(fIndex, 1)
-        if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
-          state.axiosPayload.trainingType = null
-        } else {
-          state.axiosPayload.trainingType = payload
-        }
+        state.axiosPayload.trainingType = payload
       }
     }
   },

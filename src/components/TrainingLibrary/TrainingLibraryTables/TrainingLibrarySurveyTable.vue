@@ -84,8 +84,8 @@ export default {
           TRAINING_LIBRARY_COLUMNS.DATE_CREATED
         ],
         iEmpty: {
-          btn: labels.CreateNewTraining,
-          message: labels.EmptyTraining,
+          btn: labels.CreateNewSurvey,
+          message: labels.EmptySurvey,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-survey-table'
         },
@@ -137,8 +137,8 @@ export default {
         } else {
           this.$set(this.tableOptions, 'iEmpty', {
             ...this.tableOptions.iEmpty,
-            message: labels.EmptyTraining,
-            btn: labels.CreateNewTraining
+            message: labels.EmptySurvey,
+            btn: labels.CreateNewSurvey
           })
         }
       }
@@ -163,10 +163,10 @@ export default {
   methods: {
     ...mapActions({
       callForData: 'trainingLibrary/callForTrainingLibrary',
-      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal'
+      setNewSurveyModal: 'trainingLibrary/setNewSurveyModal'
     }),
     handleAddTraining() {
-      this.setNewTrainingModal({
+      this.setNewSurveyModal({
         status: true,
         isEdit: false,
         isDuplicate: false,

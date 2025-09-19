@@ -111,7 +111,7 @@ export default {
         id: 'awareness-educator-enrollments-data-table'
       },
       axiosPayload: getDefaultAxiosPayload({
-        enrollmentType: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+        enrollmentType: TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY
       }),
       tableData: [],
       serverSideProps: new ServerSideProps(),
