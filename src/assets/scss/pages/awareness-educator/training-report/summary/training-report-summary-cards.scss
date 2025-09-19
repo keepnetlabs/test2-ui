@@ -1,188 +1,189 @@
 .training-report-summary-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 
-    @media (max-width: 1300px) {
-        grid-template-columns: 1fr;
+  @media (max-width: 1300px) {
+    grid-template-columns: 1fr;
 
-        .training-report-summary-info-card {
-            max-width: 300px;
-        }
-
-        &__right {
-            margin-left: 0 !important;
-        }
-
-        @media (max-width: 620px) {
-
-            &__left,
-            &__right {
-                flex-direction: column;
-                margin-left: 0 !important;
-            }
-
-            .training-report-summary-info-card {
-                margin-left: 0 !important;
-            }
-        }
-    }
-
-    &__left {
-        display: flex;
-
-        .training-report-summary-info-card:last-child {
-            margin-left: 16px;
-        }
-
-        @media (min-width: 1201px) {
-            flex-basis: 50%;
-        }
-
-        .training-report-summary-info-card {
-            flex-basis: 50%;
-        }
+    .training-report-summary-info-card {
+      max-width: 300px;
     }
 
     &__right {
-        display: flex;
-        margin-left: 16px;
+      margin-left: 0 !important;
+    }
 
-        &>div:last-child {
-            margin-left: 16px;
-        }
+    @media (max-width: 620px) {
+      &__left,
+      &__right {
+        flex-direction: column;
+        margin-left: 0 !important;
+      }
 
-        @media (min-width: 1201px) {
-            flex-basis: 50%;
-        }
+      .training-report-summary-info-card {
+        margin-left: 0 !important;
+      }
+    }
+  }
 
-        .training-report-summary-info-card {
-            flex-basis: 50%;
+  &__left {
+    display: flex;
 
-            &:nth-child(1) {
-                .training-report-summary-info-card-body__icon {
-                    right: -10px !important;
-                    bottom: -12px !important;
-                    img {
-                        max-height: 80px;
-                        max-width: 80px;
-                    }
-                }
-            }
-        }
+    .training-report-summary-info-card:last-child {
+      margin-left: 16px;
+    }
+
+    @media (min-width: 1201px) {
+      flex-basis: 50%;
     }
 
     .training-report-summary-info-card {
-        margin-top: 24px;
-        margin-left: 16px;
-
-        &:first-child {
-            margin-left: 0 !important;
-        }
-
-        &:nth-child(2) {
-            .training-report-summary-info-card-body__icon {
-                img {
-                    max-height: 80px;
-                    max-width: 80px;
-                }
-            }
-        }
-
-        &:nth-child(3) {
-            @media (max-width: 1024px) {
-                margin-left: 0;
-            }
-
-            margin-right: 16px;
-        }
-
-        &--submitted-data {
-            &-icon {
-                background-color: #ffffff;
-                mix-blend-mode: normal;
-                opacity: 0.3;
-                border-radius: 6px;
-                height: 64px;
-                width: 64px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .training-report-summary-info-card-body__icon {
-                bottom: 4px;
-            }
-        }
+      flex-basis: 50%;
     }
+  }
+
+  &__right {
+    display: flex;
+    margin-left: 16px;
+
+    & > div:last-child {
+      margin-left: 16px;
+    }
+
+    @media (min-width: 1201px) {
+      flex-basis: 50%;
+    }
+
+    .training-report-summary-info-card {
+      flex-basis: 50%;
+
+      &:nth-child(1) {
+        .training-report-summary-info-card-body__icon {
+          right: -10px !important;
+          bottom: -12px !important;
+          img {
+            max-height: 80px;
+            max-width: 80px;
+          }
+        }
+      }
+    }
+  }
+
+  .training-report-summary-info-card {
+    margin-top: 24px;
+    margin-left: 16px;
+
+    &:first-child {
+      margin-left: 0 !important;
+    }
+
+    &:nth-child(2) {
+      .training-report-summary-info-card-body__icon {
+        img {
+          max-height: 80px;
+          max-width: 80px;
+        }
+      }
+    }
+
+    &:nth-child(3) {
+      @media (max-width: 1024px) {
+        margin-left: 0;
+      }
+
+      margin-right: 16px;
+    }
+
+    &--submitted-data {
+      &-icon {
+        background-color: #ffffff;
+        mix-blend-mode: normal;
+        opacity: 0.3;
+        border-radius: 6px;
+        height: 64px;
+        width: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .training-report-summary-info-card-body__icon {
+        bottom: 4px;
+      }
+    }
+  }
 }
-.training-report-summary-cards--poster{
+.training-report-summary-cards--poster {
   grid-template-columns: 1fr 1fr 1fr;
 }
 @media (max-width: 1024px) {
-    .training-report-summary-cards--poster{
-        grid-template-columns: 1fr 1fr;
-    }
+  .training-report-summary-cards--poster {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 @media (max-width: 768px) {
-  .training-report-summary-cards--poster{
-    grid-template-columns: 1fr ;
+  .training-report-summary-cards--poster {
+    grid-template-columns: 1fr;
   }
 }
 
-
-.training-report-summary-info-card-body__icon--file-download{
+.training-report-summary-info-card-body__icon--file-download {
   border-radius: 6px 0 0 6px;
   opacity: 0.3;
-  background: #FFF;
+  background: #fff;
   padding: 8px;
   margin-top: -61px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.vishing-report-summary-cards{
+.vishing-report-summary-cards {
   display: grid;
   grid-template-columns: 0.33fr 0.33fr 0.34fr;
   grid-column-gap: 16px;
 }
-.scorm-proxy-report-summary-cards{
-    .training-report-summary-info-card:last-child{
-        .training-report-summary-info-card-body__icon{
-            bottom:-12px;
-            right:-10px;
-        }
+.scorm-proxy-report-summary-cards {
+  .training-report-summary-info-card:last-child {
+    .training-report-summary-info-card-body__icon {
+      bottom: -12px;
+      right: -10px;
     }
-    @media (max-width: 1300px) {
-        .training-report-summary-info-card{
-            max-width:initial;
-            &:last-child{
-                margin-left: 0 !important;
-            }
-        }
+  }
+  @media (max-width: 1300px) {
+    .training-report-summary-info-card {
+      max-width: initial;
+      &:last-child {
+        margin-left: 0 !important;
+      }
     }
+  }
 }
-.training-report-scorm-info{
-    .campaign-manager-summary-card__body-container {
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        padding-bottom: 8px !important;
-        padding-top:16px !important;
-    }
-    .campaign-manager-summary-card__body-item:first-child{
-    padding-top:16px !important;
-    }
-    .campaign-manager-summary-card__body-item:first-child,.campaign-manager-summary-card__body-item:nth-child(3){
-        padding-right: 24px !important;
-        border-right:1px solid #F2F2F2;
-    }
-    .campaign-manager-summary-card__body-item:nth-child(2),.campaign-manager-summary-card__body-item:nth-child(4){
-        padding-left: 24px !important;
-    }
-    .campaign-manager-summary-card__body-item:nth-child(3),.campaign-manager-summary-card__body-item:nth-child(4){
-        border-bottom:none !important;
-    }
-    .campaign-manager-summary-card__body-item-key{
-        flex-basis:50%;
-    }
+.training-report-scorm-info {
+  .campaign-manager-summary-card__body-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding-bottom: 8px !important;
+    padding-top: 16px !important;
+  }
+  .campaign-manager-summary-card__body-item:first-child {
+    padding-top: 16px !important;
+  }
+  .campaign-manager-summary-card__body-item:nth-child(3),
+  .campaign-manager-summary-card__body-item:nth-child(4) {
+    border-bottom: none !important;
+  }
+  .campaign-manager-summary-card__body-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 8px !important;
+  }
+  .campaign-manager-summary-card__body-item-key {
+    flex-basis: 50%;
+  }
+}
 
+.scorm-proxy-report-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 16px;
 }

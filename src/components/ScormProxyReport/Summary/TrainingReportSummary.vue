@@ -31,6 +31,11 @@
         :is-survey="isSurvey"
         @audienceClick="showAudienceDetailsModal"
       />
+      <TrainingReportTrainingDelivery
+        class="ml-4"
+        :items="getTrainingDeliveryData"
+        :isLoading="isLoading"
+      />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
     <TrainingReportTrainingMaterial
@@ -51,6 +56,7 @@ import TrainingReportSummaryAudienceDetails from '@/components/ScormProxyReport/
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportScormEnrollmentInfo from '@/components/ScormProxyReport/Summary/TrainingReportScormEnrollmentInfo.vue'
+import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -58,7 +64,8 @@ export default {
     TrainingReportTrainingMaterial,
     TrainingReportSummaryCards,
     TrainingReportSummaryHeader,
-    TrainingReportSummaryAudienceDetails
+    TrainingReportSummaryAudienceDetails,
+    TrainingReportTrainingDelivery
   },
   props: {
     id: {
@@ -93,6 +100,15 @@ export default {
   computed: {
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
+    },
+    getTrainingDeliveryData() {
+      const obj = {
+        'Delivery Method': {
+          show: true,
+          value: 'LMS'
+        }
+      }
+      return obj
     },
     getTrainingMaterialRow() {
       const { languages = [], trainingDetails = {} } = this.trainingSummary || {}
@@ -131,6 +147,10 @@ export default {
         'Target Users': {
           show: true,
           value: totalTargetUser
+        },
+        'Non-Target Users': {
+          show: true,
+          value: totalNonTargetUser
         },
         Languages: {
           show: true,

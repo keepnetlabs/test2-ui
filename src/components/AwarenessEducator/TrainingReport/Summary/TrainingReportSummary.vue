@@ -321,12 +321,18 @@ export default {
       }
     },
     getTrainingDeliveryData() {
-      const { reminderDescription = 'No', startDate = '' } = this.trainingSummary || {
+      const { reminderDescription = 'No', startDate = '', deliveryMethod = '' } = this
+        .trainingSummary || {
         reminderDescription: 'No',
-        startDate: ''
+        startDate: '',
+        deliveryMethod: ''
       }
       const dateKey = this.isTrainingTypeLearningPath ? 'Delivery Start' : 'Start Date'
       const obj = {
+        'Delivery Method': {
+          show: true,
+          value: deliveryMethod
+        },
         [dateKey]: {
           show: true,
           value: startDate
