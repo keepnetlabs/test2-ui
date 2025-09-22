@@ -348,6 +348,10 @@ const getTrainingReportCertificateEmailDetails = (enrollmentId, userMailId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/email-event/${userMailId}/reminder`)
 }
 
+const getTrainingReportExamResultSessions = (enrollmentId, targetUserResourceId) => {
+  return testRequest.get(`/training-reports/${enrollmentId}/exam-result-sessions/${targetUserResourceId}`)
+}
+
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)
@@ -625,5 +629,6 @@ export default {
   addToFavorite,
   removeFromFavorite,
   getTrainingTypes,
-  getTrainingReportCertificateEmailDetails
+  getTrainingReportCertificateEmailDetails,
+  getTrainingReportExamResultSessions
 }

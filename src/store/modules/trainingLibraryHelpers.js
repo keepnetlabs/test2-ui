@@ -62,6 +62,12 @@ const trainingLibraryHelpers = {
     getTrainingEmailNotificationTemplateTypeResourceId(state) {
       return state.trainingEmailNotificationTemplateTypeResourceId
     },
+    getSurveyEmailNotificationTemplateTypeResourceId(state) {
+      return state.surveyEmailNotificationTemplateTypeResourceId
+    },
+    getSurveyReminderEmailNotificationTemplateTypeResourceId(state) {
+      return state.surveyReminderEmailNotificationTemplateTypeResourceId
+    },
     getInfographicEmailNotificationTemplateTypeResourceId(state) {
       return state.infographicEmailNotificationTemplateTypeResourceId
     },
@@ -117,6 +123,12 @@ const trainingLibraryHelpers = {
     },
     SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.trainingEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_SURVEY_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.surveyEmailNotificationTemplateTypeResourceId = payload
+    },
+    SET_SURVEY_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
+      state.surveyReminderEmailNotificationTemplateTypeResourceId = payload
     },
     SET_LEARNING_PATH_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID(state, payload) {
       state.learningPathEmailNotificationTemplateTypeResourceId = payload
@@ -196,7 +208,10 @@ const trainingLibraryHelpers = {
           'trainingLibrary/setFilterItems',
           {
             key: PROPERTY_STORE.LANGUAGES,
-            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+            items: response?.data?.data.map((l) => ({
+              text: l.name,
+              value: l.code
+            }))
           },
           { root: true }
         )
@@ -204,7 +219,10 @@ const trainingLibraryHelpers = {
           'learningPath/setLearningPathFilterItems',
           {
             key: PROPERTY_STORE.LANGUAGES,
-            items: response?.data?.data.map((l) => ({ text: l.name, value: l.code }))
+            items: response?.data?.data.map((l) => ({
+              text: l.name,
+              value: l.code
+            }))
           },
           { root: true }
         )
@@ -350,6 +368,8 @@ const trainingLibraryHelpers = {
           certificateEmailNotificationTemplateTypeResourceId = '',
           reminderEmailNotificationTemplateTypeResourceId = '',
           trainingEmailNotificationTemplateTypeResourceId = '',
+          surveyEmailNotificationTemplateTypeResourceId = '',
+          surveyReminderEmailNotificationTemplateTypeResourceId = '',
           infographicEmailNotificationTemplateTypeResourceId = '',
           learningPathEmailNotificationTemplateTypeResourceId = '',
           posterEmailNotificationTemplateTypeResourceId = '',
@@ -381,6 +401,14 @@ const trainingLibraryHelpers = {
         commit(
           'SET_POSTER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
           posterEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_SURVEY_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          surveyEmailNotificationTemplateTypeResourceId
+        )
+        commit(
+          'SET_SURVEY_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+          surveyReminderEmailNotificationTemplateTypeResourceId
         )
         commit(
           'SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',

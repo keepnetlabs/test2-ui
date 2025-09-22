@@ -5,7 +5,8 @@ export const TRAINING_LIBRARY_TYPES = {
   TRAINING: 'Training',
   POSTER: 'Poster',
   INFOGRAPHIC: 'Infographic',
-  SCREENSAVER: 'Screensaver'
+  SCREENSAVER: 'Screensaver',
+  SURVEY: 'Survey'
 }
 export const TRAINING_LIBRARY_COLUMNS = {
   SCREENSAVER_NAME: {
@@ -45,6 +46,17 @@ export const TRAINING_LIBRARY_COLUMNS = {
     property: PROPERTY_STORE.TRAINING_NAME,
     align: 'left',
     label: labels.TrainingName,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    filterableType: 'text'
+  },
+  SURVEY_NAME: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.SurveyName,
     fixed: 'left',
     sortable: true,
     show: true,
@@ -213,6 +225,10 @@ export const addTrainingItems = [
   {
     text: 'Screensaver',
     id: 'btn-add-training-library-screensaver'
+  },
+  {
+    text: 'Survey',
+    id: 'btn-add-training-library-survey'
   }
 ]
 
@@ -238,6 +254,11 @@ export const emptyLearningPathModalTrainingPreviewDialogObj = {
   showSendButton: false
 }
 export const emptyTrainingPreviewDialogObj = {
+  status: false,
+  selectedRow: null,
+  showSendButton: true
+}
+export const emptySurveyPreviewDialogObj = {
   status: false,
   selectedRow: null,
   showSendButton: true
@@ -315,6 +336,12 @@ export const emptyNewInfographicModalObj = {
   isDuplicate: false,
   selectedRow: null
 }
+export const emptyNewSurveyModalObj = {
+  status: false,
+  isEdit: false,
+  isDuplicate: false,
+  selectedRow: null
+}
 
 export const emptyNewScreensaverModalObj = {
   status: false,
@@ -340,6 +367,10 @@ export const emptyScreensaverSendModalObj = {
   selectedRow: null
 }
 export const emptyLearningPathSendModalObj = {
+  status: false,
+  selectedRow: null
+}
+export const emptySurveySendModalObj = {
   status: false,
   selectedRow: null
 }

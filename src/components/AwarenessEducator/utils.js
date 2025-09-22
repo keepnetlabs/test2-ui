@@ -79,6 +79,17 @@ export const COLUMNS = {
     type: 'text',
     width: 200
   },
+  SURVEY_NAME_UNFIXED: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.SurveyName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
   MATERIAL_NAME: {
     property: PROPERTY_STORE.MATERIAL_NAME,
     align: 'left',
@@ -247,6 +258,7 @@ export const COLUMNS = {
       { text: TRAINING_LIBRARY_TYPES.POSTER, value: 3 },
       { text: TRAINING_LIBRARY_TYPES.INFOGRAPHIC, value: 4 },
       { text: TRAINING_LIBRARY_TYPES.SCREENSAVER, value: 5 },
+      { text: TRAINING_LIBRARY_TYPES.SURVEY, value: 6 },
       { text: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH, value: 6 }
     ]
   },
@@ -309,7 +321,7 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     filterableType: 'select',
-    filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
+    filterableItems: ['Email', 'Email & SMS', 'Email & Microsoft Teams']
   },
   START_DATE: {
     property: PROPERTY_STORE.START_DATE,

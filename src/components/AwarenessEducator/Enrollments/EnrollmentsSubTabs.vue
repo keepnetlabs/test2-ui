@@ -16,6 +16,10 @@
       v-if="getInfographicPreviewDialog.status"
       v-bind="getInfographicPreviewDialog"
     />
+    <TrainingLibrarySurveyPreviewDialog
+      v-if="getSurveyPreviewDialog.status"
+      v-bind="getSurveyPreviewDialog"
+    />
     <EditEnrollmentsModal
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
@@ -134,6 +138,28 @@
           @on-download="handleDownloadPackage"
           @on-view-report="handleRouteToReport"
         />
+        <EnrollmentsSurveyTable
+          v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.SURVEY"
+          :ref="`refTable${template.name}`"
+          :is-trash="isTrash"
+          :show-download-button="!isTrash"
+          :api-func="getApiFunc"
+          :enrollment-status-enum="enrollmentStatusEnum"
+          :languages="languages"
+          :categories="categories"
+          :target-audiences="targetAudiences"
+          @on-restore="handleRestoreRowClick"
+          @on-permanent-delete="handlePermanentlyDeleteRowClick"
+          @on-stop-reminder="handleStopReminder"
+          @on-stop-auto-enroll="handleStopAutoEnroll"
+          @on-delete="handleDeleteRowClick"
+          @on-stop="handleStop"
+          @on-send="handleSend"
+          @on-edit="handleEditRowClick"
+          @on-preview="handlePreviewRowClick"
+          @on-download="handleDownloadPackage"
+          @on-view-report="handleRouteToReport"
+        />
 
         <EnrollmentsPosterTable
           v-if="tab === template.name && template.name === TRAINING_LIBRARY_TYPES.POSTER"
@@ -194,6 +220,7 @@ import EnrollmentsLearningPathTable from '@/components/AwarenessEducator/Enrollm
 import EnrollmentsTrainingTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsTrainingTable.vue'
 import EnrollmentsPosterTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsPosterTable.vue'
 import EnrollmentsInfographicTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsInfographicTable.vue'
+import EnrollmentsSurveyTable from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/EnrollmentsSurveyTable.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import EditEnrollmentsModal from '@/components/AwarenessEducator/Enrollments/EditEnrollmentsModal.vue'
 import SendEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/SendEnrollmentDialog.vue'
@@ -205,6 +232,7 @@ import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrar
 import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
 import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import TrashDeletePermanentlyDialog from '@/components/AwarenessEducator/Enrollments/TrashDeletePermanentlyDialog.vue'
@@ -216,6 +244,8 @@ export default {
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryLearningPathPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
+    TrainingLibrarySurveyPreviewDialog,
+    EnrollmentsSurveyTable,
     EnrollmentsInfographicTable,
     EnrollmentsPosterTable,
     EnrollmentsTrainingTable,
@@ -259,7 +289,8 @@ export default {
         { name: TRAINING_LIBRARY_TYPES.LEARNING_PATH },
         { name: TRAINING_LIBRARY_TYPES.TRAINING },
         { name: TRAINING_LIBRARY_TYPES.POSTER },
-        { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC }
+        { name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC },
+        { name: TRAINING_LIBRARY_TYPES.SURVEY }
       ],
       selectedRow: null,
       isShowEditEnrollmentModal: false,
@@ -281,7 +312,8 @@ export default {
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
-      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     }),
     getApiFunc() {
       return this.isTrash
@@ -299,6 +331,11 @@ export default {
         this.selectedRow.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         return 'Edit Learning Path Enrollment'
+      else if (
+        this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING &&
+        this.selectedRow.hasQuiz
+      )
+        return 'Edit Survey Enrollment'
       return 'Edit Training Enrollment'
     }
   },
@@ -308,6 +345,7 @@ export default {
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
       resetAllModals: 'trainingLibrary/resetAllModals'
     }),
     handleRestoreRowClick(row) {
@@ -367,7 +405,13 @@ export default {
           ...row,
           trainingId: response?.data?.data?.trainingId
         }
-        if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY || row.hasQuiz) {
+          this.setSurveyPreviewDialog({
+            status: true,
+            selectedRow: this.selectedRow,
+            showSendButton: false
+          })
+        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
           this.setTrainingPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,

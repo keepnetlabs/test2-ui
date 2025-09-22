@@ -79,6 +79,9 @@ export default {
     },
     type: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -107,10 +110,12 @@ export default {
       return ''
     },
     getBodyValue() {
-      return `${this.items['Target Users']?.value} users`
+      const targetUsers = this.items['Target Users']?.value || 0
+      return `${targetUsers} ${targetUsers > 1 ? 'users' : 'user'}`
     },
     getNonTargetUsersValue() {
-      return `${this.items['Non-Target Users']?.value} users`
+      const nonTargetUsers = this.items['Non-Target Users']?.value || 0
+      return `${nonTargetUsers} ${nonTargetUsers > 1 ? 'users' : 'user'}`
     }
   },
   methods: {

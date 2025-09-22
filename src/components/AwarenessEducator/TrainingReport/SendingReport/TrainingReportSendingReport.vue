@@ -16,8 +16,14 @@
       <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
-          title="Training Enrollment Sending Report"
-          subtitle="Training enrollment email delivery details"
+          :title="
+            isSurvey ? 'Survey Enrollment Sending Report' : 'Training Enrollment Sending Report'
+          "
+          :subtitle="
+            isSurvey
+              ? 'Survey enrollment email delivery details'
+              : 'Training enrollment email delivery details'
+          "
         />
         <TrainingReportEnrollmentEmailsTable
           v-if="tab === 'enrollment'"
@@ -28,6 +34,7 @@
           :id="id"
           :form-details="formDetails"
           :training-summary="trainingSummary"
+          :isSurvey="isSurvey"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />
@@ -35,8 +42,12 @@
       <ElTabPane label="Reminder Emails" name="reminder" id="reminder-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
-          title="Training Reminder Sending Report"
-          subtitle="Training reminder email delivery details"
+          :title="isSurvey ? 'Survey Reminder Sending Report' : 'Training Reminder Sending Report'"
+          :subtitle="
+            isSurvey
+              ? 'Survey reminder email delivery details'
+              : 'Training reminder email delivery details'
+          "
         />
         <TrainingReportReminderEmailsTable
           v-if="tab === 'reminder'"
@@ -55,8 +66,14 @@
       >
         <CampaignManagerReportHeader
           class="mb-6"
-          title="Training Certificate Sending Report"
-          subtitle="Training certificate email delivery details"
+          :title="
+            isSurvey ? 'Survey Certificate Sending Report' : 'Training Certificate Sending Report'
+          "
+          :subtitle="
+            isSurvey
+              ? 'Survey certificate email delivery details'
+              : 'Training certificate email delivery details'
+          "
         />
         <TrainingReportCertificateEmailsTable
           v-if="tab === 'certificate'"
@@ -66,6 +83,7 @@
           :id="id"
           :form-details="formDetails"
           :award-certificate-enrollment-id="awardCertificateEnrollmentId"
+          :isSurvey="isSurvey"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />
@@ -74,7 +92,7 @@
     <div v-else>
       <CampaignManagerReportHeader
         class="mb-6"
-        title="Sending Report"
+        :title="isSurvey ? 'Survey Sending Report' : 'Training Sending Report'"
         :subtitle="getFirstCardSubtitle"
       />
       <TrainingReportEnrollmentEmailsTable
@@ -85,6 +103,7 @@
         :isScormProxy="isScormProxy"
         :id="id"
         :form-details="formDetails"
+        :isSurvey="isSurvey"
         :training-summary="trainingSummary"
         @on-resend="handleOnResend"
         @on-selection-text-change="handleSelectionChange"
@@ -134,6 +153,9 @@ export default {
     },
     awardCertificateEnrollmentId: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -147,6 +169,9 @@ export default {
   },
   computed: {
     getResendDialogTitle() {
+      if (this.isSurvey) {
+        return labels.ResendSurvey
+      }
       if (this.isCertification) {
         return labels.ResendTheCertificate
       }
@@ -161,6 +186,9 @@ export default {
     getBodyTrainingType() {
       if (this.isCertification) {
         return labels.Certificate.toLowerCase()
+      }
+      if (this.isSurvey) {
+        return labels.Survey.toLowerCase()
       }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()

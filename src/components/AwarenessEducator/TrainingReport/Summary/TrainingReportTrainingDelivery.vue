@@ -52,6 +52,9 @@ export default {
     },
     trainingType: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -61,6 +64,7 @@ export default {
   },
   computed: {
     getCardTitle() {
+      if (this.isSurvey) return labels.SurveyDelivery
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterDelivery
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicDelivery

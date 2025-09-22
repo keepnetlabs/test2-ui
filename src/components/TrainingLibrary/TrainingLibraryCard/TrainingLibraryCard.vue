@@ -1,7 +1,7 @@
 <template>
   <div class="training-library-card">
     <div :class="['training-library-card__type', getBgColor]">
-      {{ item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ? 'Training' : item.type }}
+      {{ getTypeText }}
     </div>
     <div class="training-library-card__img">
       <TrainingLibraryNewBadge v-if="item.isNew" class="training-library-card__new-btn" />
@@ -14,7 +14,9 @@
       <img v-if="item.coverImage" :src="item.coverImage.imageUrl" :alt="item.trainingName" />
       <div class="training-library-card__img--no-img" v-else>
         <VIcon size="82" color="#fff">mdi-image</VIcon>
-        <div class="training-library-card__img--no-img-text">No Cover Image</div>
+        <div class="training-library-card__img--no-img-text">
+          No Cover Image
+        </div>
       </div>
     </div>
     <div class="training-library-card__body">
@@ -102,7 +104,7 @@
                 Preview
               </VBtn>
             </template>
-            <span>{{ item.type === 'SCORM' ? 'Training' : item.type }} Preview</span>
+            <span>{{ getTypeText }} Preview</span>
           </VTooltip>
         </div>
         <div class="training-library-card__footer-right-side">
@@ -117,7 +119,7 @@
                 >mdi-send</VIcon
               >
             </template>
-            <span>Send {{ item.type === 'SCORM' ? 'Training' : item.type }}</span>
+            <span>Send {{ getTypeText }}</span>
           </VTooltip>
           <VTooltip v-else bottom>
             <template #activator="{ on }">
@@ -130,7 +132,7 @@
                 >mdi-download</VIcon
               >
             </template>
-            <span>Download {{ item.type === 'SCORM' ? 'Training' : item.type }}</span>
+            <span>Download {{ getTypeText }}</span>
           </VTooltip>
           <VMenu bottom offset-y min-width="240" max-width="240">
             <template #activator="{ on }">
@@ -187,6 +189,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+    }),
     getActionsByType() {
       const actions = [
         {
@@ -218,12 +223,10 @@ export default {
     TRAINING_LIBRARY_PAYLOAD_TYPES() {
       return TRAINING_LIBRARY_PAYLOAD_TYPES
     },
-    ...mapGetters({
-      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
-    }),
     getBgColor() {
       let bgColorClass = ''
-      if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) bgColorClass = 'training'
+      if (this.isSurvey) bgColorClass = 'survey'
+      else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) bgColorClass = 'training'
       else if (
         this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
         this.item.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
@@ -235,6 +238,13 @@ export default {
       else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
         bgColorClass = 'screensaver'
       return `training-library-card__type--${bgColorClass}`
+    },
+    isSurvey() {
+      return true
+    },
+    getTypeText() {
+      if (this.isSurvey) return labels.Survey
+      return this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ? 'Training' : item.type
     }
   },
   mounted() {
@@ -254,6 +264,8 @@ export default {
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
       setScreenSaverPreviewDialog: 'trainingLibrary/setScreenSaverPreviewDialog',
       setTrainingSendModal: 'trainingLibrary/setTrainingSendModal',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
+      setSurveySendModal: 'trainingLibrary/setSurveySendModal',
       setLearningPathSendModal: 'trainingLibrary/setLearningPathSendModal',
       setPosterSendModal: 'trainingLibrary/setPosterSendModal',
       setInfographicSendModal: 'trainingLibrary/setInfographicSendModal',
@@ -262,6 +274,7 @@ export default {
       setNewPosterModal: 'trainingLibrary/setNewPosterModal',
       setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
       setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
+      setNewSurveyModal: 'trainingLibrary/setNewSurveyModal',
       setDeleteDialog: 'trainingLibrary/setDeleteDialog'
     }),
     checkTooltipStasuses() {
@@ -281,7 +294,13 @@ export default {
         this.callForTrainingLibrary()
     },
     handlePreviewClick(row) {
-      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+      if (this.isSurvey) {
+        this.setSurveyPreviewDialog({
+          status: true,
+          selectedRow: row,
+          showSendButton: true
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
         this.setTrainingPreviewDialog({
           status: true,
           selectedRow: row,
@@ -341,7 +360,12 @@ export default {
       }
     },
     handleFastLaunchClick(row) {
-      if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+      if (this.isSurvey) {
+        this.setSurveySendModal({
+          status: true,
+          selectedRow: row
+        })
+      } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
         this.setTrainingSendModal({
           status: true,
           selectedRow: row
@@ -432,7 +456,14 @@ export default {
       else if (text === labels.DownloadScreensaver) this.handleDownloadItem(item)
     },
     handleEditModalByType(text, item) {
-      if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+      if (this.isSurvey) {
+        this.setNewSurveyModal({
+          status: true,
+          selectedRow: item,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
         this.setNewTrainingModal({
           status: true,
           selectedRow: item,
@@ -465,6 +496,13 @@ export default {
         })
       } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) {
         this.setNewScreensaverModal({
+          status: true,
+          isEdit: true,
+          selectedRow: item,
+          isDuplicate: false
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
+        this.setNewSurveyModal({
           status: true,
           isEdit: true,
           selectedRow: item,

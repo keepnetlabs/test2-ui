@@ -11,8 +11,8 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Sending Report"
-      subtitle="Training email delivery details"
+      :title="isSurvey ? 'Survey Sending Report' : 'Training Sending Report'"
+      :subtitle="isSurvey ? 'Survey email delivery details' : 'Training email delivery details'"
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -94,10 +94,7 @@
             }"
           />
         </div>
-        <div
-          v-if="!getEvents.length"
-          class="training-report-no-event-message"
-        >
+        <div v-if="!getEvents.length" class="training-report-no-event-message">
           {{ getNoEventMessage }}
         </div>
       </template>
@@ -143,6 +140,9 @@ export default {
       type: Object
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -299,7 +299,7 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -398,7 +398,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -484,7 +484,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Sending-Report.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -499,7 +499,9 @@ export default {
         row.targetUserResourceId
       )
         .then((response) => {
-          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          const { data: { data = [] } = {} } = response || {
+            data: { data: [] }
+          }
           this.extendedViewValue = [data]
         })
         .catch(() => {

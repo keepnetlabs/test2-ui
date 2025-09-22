@@ -460,6 +460,9 @@
     &--screensaver {
       background-color: #b6791d;
     }
+    &--survey {
+      background-color: #e6a23c;
+    }
   }
   &__img {
     position: relative;
@@ -605,8 +608,8 @@
     overflow: hidden;
     white-space: nowrap;
     max-width: 198px;
-    &::after{
-      content:'';
+    &::after {
+      content: "";
       display: block;
     }
   }
@@ -694,7 +697,7 @@
     margin-bottom: 8px;
 
     &--inavailable {
-      border-color: #E6A23C;
+      border-color: #e6a23c;
 
       & .learning-path-content__training--handle {
         pointer-events: none;
@@ -703,7 +706,7 @@
     }
 
     &--disabled {
-      border-color: #F56C6C;
+      border-color: #f56c6c;
     }
 
     &:last-child {
@@ -755,7 +758,8 @@
         gap: 4px;
       }
 
-      &-created-by, &-type{
+      &-created-by,
+      &-type {
         color: #2196f3;
         font-size: 11px;
         font-weight: 600;

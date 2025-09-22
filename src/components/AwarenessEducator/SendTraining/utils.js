@@ -25,6 +25,28 @@ export const endTypeItems = [
     value: 'OnDate'
   }
 ]
+export const endTypeItemsSurvey = [
+  {
+    text: 'when user completes the survey',
+    value: 'TrainingCompleted'
+  },
+  {
+    text: 'when user completes the quiz',
+    value: 'QuizCompleted'
+  },
+  {
+    text: 'when user successfully passes the quiz',
+    value: 'QuizSuccessfullyCompleted'
+  },
+  {
+    text: 'after occurences',
+    value: 'AfterOccurrences'
+  },
+  {
+    text: 'on date',
+    value: 'OnDate'
+  }
+]
 
 export const enrollmentAutoEnrollTypeItems = [
   { text: 'on the same day', value: 'SameDay' },
@@ -46,6 +68,12 @@ export const certificateTypeItems = [
   { text: 'on any attempt', value: 'SendOnAnyAttempt' }
 ]
 export const awardCertificateTypes = [
-  { text: 'When a user completes the training on the first attempt', value: 'SendOnFirstAttempt' },
-  { text: 'When a user completes the training on any attempt', value: 'SendOnAnyAttempt' }
+  {
+    text: 'When a user completes the training on the first attempt',
+    value: 'SendOnFirstAttempt'
+  },
+  {
+    text: 'When a user completes the training on any attempt',
+    value: 'SendOnAnyAttempt'
+  }
 ]

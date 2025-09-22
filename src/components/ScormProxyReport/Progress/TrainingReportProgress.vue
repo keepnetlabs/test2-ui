@@ -20,7 +20,11 @@
         <CampaignManagerReportHeader
           class="mb-6"
           title="Target Users Progress"
-          subtitle="Training progress details of target users"
+          :subtitle="
+            isSurvey
+              ? 'Survey progress details of target users'
+              : 'Training progress details of target users'
+          "
         />
         <DataTable
           :id="CONSTANTS.id"
@@ -58,7 +62,11 @@
           <template #datatable-custom-column="{ scope, col }">
             <div class="training-report-progress__progress-column">
               <v-btn style="display: none;" />
-              <Badge v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
+              <Badge
+                v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)"
+                :col="col"
+                size="medium"
+              />
             </div>
           </template>
         </DataTable>
@@ -71,9 +79,17 @@
         <CampaignManagerReportHeader
           class="mb-6"
           title="Non-Target Users Progress"
-          subtitle="Training progress details of non-target users"
+          :subtitle="
+            isSurvey
+              ? 'Survey progress details of non-target users'
+              : 'Training progress details of non-target users'
+          "
         />
-        <TrainingReportNonTargetUsersProgress :form-details="formDetails" :id="id" />
+        <TrainingReportNonTargetUsersProgress
+          :form-details="formDetails"
+          :id="id"
+          :is-survey="isSurvey"
+        />
       </ElTabPane>
     </ElTabs>
   </div>
@@ -116,6 +132,9 @@ export default {
       type: Object
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -264,11 +283,13 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportProgress
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportSurveyProgress
+            : labels.EmptyTrainingReportProgress
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-interactions--row-actions-training-report-progress',
             icon: '$custom-resend',
             action: 'on-resend'
@@ -293,7 +314,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -362,7 +383,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Training-Progress.${
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Progress.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()

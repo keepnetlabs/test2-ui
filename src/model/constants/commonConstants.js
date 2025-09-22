@@ -354,6 +354,7 @@ export const TABLE_SETTINGS_KEYS = {
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTableSettings',
+
   ENROLLMENTS_POSTER_LIST: 'EnrollmentsPosterListSettings',
   SCHEDULED_LIST: 'ScheduledListSettings',
   ENROLLMENTS_LEARNING_PATH_LIST: 'EnrollmentsLearningPathListSettings',
@@ -536,6 +537,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   LEADERBOARD: 'LeaderboardTable',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTable',
+  TRAINING_LIBRARY_SURVEY_TABLE: 'TrainingLibrarySurveyTable',
   TRAINING_LIBRARY_INFOGRAPHIC_TABLE: 'TrainingLibraryInfographicTable',
   ENROLLMENTS_POSTER_LIST: 'EnrollmentsPosterList',
   TRAINING_LIBRARY_TRAINING_TABLE: 'TrainingLibraryTrainingTable',
