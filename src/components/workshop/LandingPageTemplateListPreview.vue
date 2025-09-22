@@ -492,6 +492,7 @@
                           <KEmailPreview
                             v-if="!!template.content"
                             is-extra-height
+                            is-landing-page
                             :key="template.content"
                             :html="template.content"
                           />
@@ -502,6 +503,7 @@
                         <KEmailPreview
                           v-if="!!getSingleTemplateDetails"
                           is-extra-height
+                          is-landing-page
                           :html="getSingleTemplateDetails"
                           :key="getLandingPageHtmlKey"
                         />
@@ -834,6 +836,7 @@
                         <KEmailPreview
                           v-if="!!template.content"
                           is-extra-height
+                          is-landing-page
                           :key="template.content"
                           :html="template.content"
                         />
@@ -844,6 +847,7 @@
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
                         is-extra-height
+                        is-landing-page
                         :html="getSingleTemplateDetails"
                         :key="getLandingPageHtmlKey"
                       />

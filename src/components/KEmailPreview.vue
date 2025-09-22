@@ -24,18 +24,22 @@ export default {
     isExtraHeight: {
       type: Boolean,
       default: false
+    },
+    isLandingPage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      height: 300,
-      defaultHeight: 300,
+      height: this.isLandingPage ? 640 : 300,
+      defaultHeight: this.isLandingPage ? 640 : 300,
       iframeKey: `key-${createRandomCryptStringNumber()}`,
       animationFrame: null,
       isBodyHeightUsed: false,
       stopCalculateFrame: false,
       isInitialResize: true,
-      numberHeight: 300
+      numberHeight: this.isLandingPage ? 640 : 300
     }
   },
   watch: {
@@ -68,6 +72,10 @@ export default {
         }
         if (this.isBodyHeightUsed) {
           height += 8
+        }
+        // Ensure minimum height for landing pages
+        if (this.isLandingPage && height < 640) {
+          height = 640
         }
         if (height > this.numberHeight && height > 300) {
           if (
