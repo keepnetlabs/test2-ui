@@ -321,7 +321,7 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     filterableType: 'select',
-    filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
+    filterableItems: ['Email', 'Email & SMS', 'Email & Microsoft Teams']
   },
   START_DATE: {
     property: PROPERTY_STORE.START_DATE,

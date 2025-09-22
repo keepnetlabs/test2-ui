@@ -307,7 +307,7 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'select',
-            filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
+            filterableItems: ['Email', 'Email & SMS', 'Email & Microsoft Teams']
           }
         ],
         addButton: {
