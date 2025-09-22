@@ -75,7 +75,14 @@
           nudge-bottom="4"
         >
           <template #activator="{ on: menu }">
-            <v-btn v-if="!isSurvey" v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+            <v-btn
+              v-if="!isSurvey"
+              v-on="menu"
+              style="margin-right: 10px;"
+              rounded
+              outlined
+              color="#2196f3"
+            >
               <span style="font-weight: 600;">show by exam status</span>
               <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
                 isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
@@ -268,7 +275,8 @@ export default {
         filterableType: 'select',
         filterableItems: []
       },
-      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING && !this.isSurvey
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING &&
+      !this.isSurvey
         ? [
             {
               property: 'examStatus',
@@ -394,21 +402,23 @@ export default {
             icon: '$custom-resend',
             action: 'on-resend'
           },
-          ...(this.isSurvey ? [
-            {
-              name: 'Details',
-              id: 'btn-details--row-actions-training-report-users',
-              icon: '$custom-details',
-              action: 'on-details'
-            }
-          ] : [
-            {
-              name: labels.Details,
-              id: 'btn-interactions--row-actions-training-report-users',
-              icon: '$custom-details',
-              action: 'on-interactions'
-            }
-          ])
+          ...(this.isSurvey
+            ? [
+                {
+                  name: 'Details',
+                  id: 'btn-details--row-actions-training-report-users',
+                  icon: '$custom-details',
+                  action: 'on-details'
+                }
+              ]
+            : [
+                {
+                  name: labels.Details,
+                  id: 'btn-interactions--row-actions-training-report-users',
+                  icon: '$custom-details',
+                  action: 'on-interactions'
+                }
+              ])
           /*
           {
             name: labels.ReSend,

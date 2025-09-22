@@ -522,7 +522,7 @@ export default {
       this.isInteractionsLoading = true
       let type = 0
       let textType = this.isAddTrainingTypeKeyToPayload
-        ? this.trainingSummary.trainingTypeName.replaceAll(' ', '')
+        ? this.trainingSummary?.trainingTypeName?.replaceAll(' ', '')
         : null
       if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
       else if (textType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2

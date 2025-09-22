@@ -327,20 +327,12 @@ export default {
           },
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: this.isSurvey
+              ? 'btn-responses--row-actions-training-report-users'
+              : 'btn-interactions--row-actions-training-report-users',
             icon: '$custom-details',
-            action: 'on-interactions'
-          },
-          ...(this.isSurvey
-            ? [
-                {
-                  name: 'Responses',
-                  id: 'btn-responses--row-actions-training-report-users',
-                  icon: '$custom-survey',
-                  action: 'on-responses'
-                }
-              ]
-            : [])
+            action: this.isSurvey ? 'on-responses' : 'on-interactions'
+          }
         ]
       },
       tableData: []
