@@ -8,7 +8,8 @@ export default {
       setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
       setNewPosterModal: 'trainingLibrary/setNewPosterModal',
       setNewInfographicModal: 'trainingLibrary/setNewInfographicModal',
-      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal'
+      setNewScreensaverModal: 'trainingLibrary/setNewScreensaverModal',
+      setNewSurveyModal: 'trainingLibrary/setNewSurveyModal'
     }),
     handleAddTrainingLibraryContent(text) {
       switch (text) {
@@ -46,6 +47,14 @@ export default {
           break
         case TRAINING_LIBRARY_TYPES.SCREENSAVER:
           this.setNewScreensaverModal({
+            status: true,
+            selectedRow: null,
+            isEdit: false,
+            isDuplicate: false
+          })
+          break
+        case TRAINING_LIBRARY_TYPES.SURVEY:
+          this.setNewSurveyModal({
             status: true,
             selectedRow: null,
             isEdit: false,

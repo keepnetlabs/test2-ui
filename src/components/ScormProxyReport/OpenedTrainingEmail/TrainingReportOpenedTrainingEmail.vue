@@ -19,8 +19,10 @@
     />
     <CampaignManagerReportHeader
       class="mb-6"
-      title="Opened the training email"
-      subtitle="Users who opened the training email"
+      :title="isSurvey ? 'Opened the survey email' : 'Opened the training email'"
+      :subtitle="
+        isSurvey ? 'Users who opened the survey email' : 'Users who opened the training email'
+      "
     />
     <DataTable
       :id="CONSTANTS.id"
@@ -87,6 +89,9 @@ export default {
       type: String
     },
     isScormProxy: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -212,7 +217,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -280,7 +285,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Training-Opened-Emails.${
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Opened-Emails.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()

@@ -6,7 +6,7 @@
     detailable-button-id="btn--preview-training-report-training-material"
     :isLoading="isFetchingSummary"
     :show-body-detail="false"
-    :title="labels.TrainingMaterial"
+    :title="isSurvey ? labels.SurveyMaterial : labels.TrainingMaterial"
     @previewClicked="handlePreviewClick"
   >
     <template #body>
@@ -15,13 +15,17 @@
           v-if="getTrainingPreviewDialog.status"
           v-bind="getTrainingPreviewDialog"
         />
+        <TrainingLibrarySurveyPreviewDialog
+          v-if="getSurveyPreviewDialog.status"
+          v-bind="getSurveyPreviewDialog"
+        />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}
           </div>
           <div class="training-report-training-material__body-header-right">
             <v-btn style="display: none;"></v-btn>
-            <Badge size="mini" color="#2196F3" text="Scorm" :outline="false" />
+            <Badge v-if="!isSurvey" size="mini" color="#2196F3" text="Scorm" :outline="false" />
             <Badge
               class-name="training-report-training-material__body-header-right-badge-language"
               size="mini"
@@ -31,7 +35,8 @@
               <template #content>
                 <v-icon size="small">mdi-web</v-icon>
                 <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }} {{ formData.languages.length - 1 > index ? '|' : '' }}
+                  >{{ language }}
+                  {{ formData.languages.length - 1 > index ? '|' : '' }}
                 </span>
               </template>
             </Badge>
@@ -55,12 +60,14 @@ import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
 import { useLoading } from '@/hooks/useLoading'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
     TrainingLibraryTrainingPreviewDialog,
+    TrainingLibrarySurveyPreviewDialog,
     Badge,
     CampaignManagerSummaryCard
   },
@@ -77,6 +84,9 @@ export default {
     },
     languages: {
       type: Array
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -87,7 +97,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     }),
     isFormData() {
       return Object.keys(this.formData).length
@@ -95,14 +106,23 @@ export default {
   },
   methods: {
     ...mapActions({
-      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog'
+      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog'
     }),
     handlePreviewClick() {
-      this.setTrainingPreviewDialog({
-        status: true,
-        selectedRow: this.selectedRow,
-        showSendButton: false
-      })
+      if (this.isSurvey) {
+        this.setSurveyPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          showSendButton: false
+        })
+      } else {
+        this.setTrainingPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          showSendButton: false
+        })
+      }
     },
     getBadgeColor(text = '') {
       if (text.toLowerCase() === 'easy') return '#217124'

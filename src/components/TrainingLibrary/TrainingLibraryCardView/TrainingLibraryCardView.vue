@@ -201,6 +201,8 @@ export default {
         return labels.EmptyPoster
       } else if (this.selectedSubTrainingContent === TRAINING_LIBRARY_TYPES.SCREENSAVER) {
         return labels.EmptyScreensaver
+      } else if (this.selectedSubTrainingContent === TRAINING_LIBRARY_TYPES.SURVEY) {
+        return labels.EmptySurvey
       } else return labels.EmptyLearningPath
     },
     getEmptyTableSubtitleText() {
@@ -223,6 +225,8 @@ export default {
         return labels.CreateNewPoster
       } else if (this.selectedSubTrainingContent === TRAINING_LIBRARY_TYPES.SCREENSAVER) {
         return labels.CreateNewScreensaver
+      } else if (this.selectedSubTrainingContent === TRAINING_LIBRARY_TYPES.SURVEY) {
+        return labels.CreateNewSurvey
       } else return labels.CreateNewLearningPath
     }
   },

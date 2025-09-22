@@ -15,6 +15,16 @@
       :item="selectedRow"
       @on-close="toggleIsShowInteractionsModal"
     />
+    <TrainingReportUserDetailsDialog
+      v-if="isShowDetailsDialog"
+      :status="isShowDetailsDialog"
+      :item="selectedRow"
+      :is-survey="isSurvey"
+      :show-correct-answers="!isSurvey"
+      :is-add-training-type-key-to-payload="true"
+      :training-summary="formDetails"
+      @on-close="toggleIsShowDetailsDialog"
+    />
     <ElTabs v-model="tab" class="k-sub-tab">
       <ElTabPane label="Target Users" name="target-users" id="training-report-target-users">
         <CampaignManagerReportHeader
@@ -52,6 +62,7 @@
           @downloadEvent="exportTrainingReportUsersTable"
           @refreshAction="callForData"
           @on-interactions="handleInteractions"
+          @on-responses="handleOnResponses"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         >
@@ -80,7 +91,11 @@
           title="Non-Target Users"
           subtitle="All non-target users enrolled in this platform"
         />
-        <TrainingReportUsersNonTargetUsers :form-details="formDetails" :id="id" />
+        <TrainingReportUsersNonTargetUsers
+          :form-details="formDetails"
+          :id="id"
+          :is-survey="isSurvey"
+        />
       </ElTabPane>
     </ElTabs>
   </div>
@@ -100,6 +115,7 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import TrainingReportUserDetailsDialog from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserDetailsDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -112,6 +128,7 @@ export default {
     DataTable,
     Badge,
     TrainingReportUserInteractionsModal,
+    TrainingReportUserDetailsDialog,
     CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions],
@@ -124,6 +141,9 @@ export default {
     },
     isScormProxy: {
       type: Boolean
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -135,6 +155,7 @@ export default {
       isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
+      isShowDetailsDialog: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
@@ -286,27 +307,31 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'select',
-            filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
+            filterableItems: ['Email', 'Email & SMS', 'Email & Microsoft Teams']
           }
         ],
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportUsers
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportSurveyUsers
+            : labels.EmptyTrainingReportUsers
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-resend--row-actions-training-report-users',
             icon: '$custom-resend',
             action: 'on-resend'
           },
           {
             name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
+            id: this.isSurvey
+              ? 'btn-responses--row-actions-training-report-users'
+              : 'btn-interactions--row-actions-training-report-users',
             icon: '$custom-details',
-            action: 'on-interactions'
+            action: this.isSurvey ? 'on-responses' : 'on-interactions'
           }
         ]
       },
@@ -322,7 +347,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -396,7 +421,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Users.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Users.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -425,6 +450,18 @@ export default {
         this.selectedRow = null
       }
       this.isShowInteractionsModal = !this.isShowInteractionsModal
+    },
+
+    toggleIsShowDetailsDialog() {
+      if (this.isShowDetailsDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDetailsDialog = !this.isShowDetailsDialog
+    },
+
+    handleOnResponses(item) {
+      this.selectedRow = item
+      this.toggleIsShowDetailsDialog()
     }
   }
 }

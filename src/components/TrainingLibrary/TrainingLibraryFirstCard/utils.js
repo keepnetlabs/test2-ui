@@ -18,7 +18,8 @@ export const TRAINING_LIBRARY_TYPES = {
   TRAINING: 'Training',
   POSTER: 'Poster',
   INFOGRAPHIC: 'Infographic',
-  SCREENSAVER: 'Screensaver'
+  SCREENSAVER: 'Screensaver',
+  SURVEY: 'Survey'
 }
 export const TRAINING_LIBRARY_PAYLOAD_TYPES = {
   ALL_TYPES: 'All Types',
@@ -26,7 +27,8 @@ export const TRAINING_LIBRARY_PAYLOAD_TYPES = {
   TRAINING: 'SCORM',
   POSTER: 'Poster',
   INFOGRAPHIC: 'Infographic',
-  SCREENSAVER: 'Screensaver'
+  SCREENSAVER: 'Screensaver',
+  SURVEY: 'Survey'
 }
 export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   TYPE: {

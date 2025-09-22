@@ -151,6 +151,10 @@ export default {
     },
     awardCertificateEnrollmentId: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -252,7 +256,9 @@ export default {
         iEmpty: {
           message: this.isLearningPath
             ? 'You do not have any certificate delivery for this learning path'
-            : `You do not have any certificate delivery for this training`
+            : `You do not have any certificate delivery for this ${
+                this.isSurvey ? 'survey' : 'training'
+              }`
         },
         rowActions: [
           {
@@ -443,7 +449,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report-Certificate-Emails.${
+          link.download = `${
+            this.isSurvey ? 'Survey' : 'Training'
+          }-Sending-Report-Certificate-Emails.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

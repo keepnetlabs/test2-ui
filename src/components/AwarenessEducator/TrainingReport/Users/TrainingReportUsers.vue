@@ -19,6 +19,16 @@
       :training-summary="trainingSummary"
       @on-close="toggleIsShowInteractionsModal"
     />
+    <TrainingReportUserDetailsDialog
+      v-if="isShowDetailsDialog"
+      :status="isShowDetailsDialog"
+      :item="selectedRow"
+      :is-survey="isSurvey"
+      :show-correct-answers="!isSurvey"
+      :is-add-training-type-key-to-payload="isAddTrainingTypeKeyToPayload"
+      :training-summary="trainingSummary"
+      @on-close="toggleIsShowDetailsDialog"
+    />
     <CampaignManagerReportHeader class="mb-6" title="Users" :subtitle="getHeaderSubtitle" />
     <DataTable
       :id="CONSTANTS.id"
@@ -51,6 +61,7 @@
       @downloadEvent="exportTrainingReportUsersTable"
       @refreshAction="callForData"
       @on-interactions="handleInteractions"
+      @on-details="handleDetails"
       @on-resend="handleOnResend"
       @on-selection-text-change="handleSelectionChange"
     >
@@ -64,7 +75,14 @@
           nudge-bottom="4"
         >
           <template #activator="{ on: menu }">
-            <v-btn v-on="menu" style="margin-right: 10px;" rounded outlined color="#2196f3">
+            <v-btn
+              v-if="!isSurvey"
+              v-on="menu"
+              style="margin-right: 10px;"
+              rounded
+              outlined
+              color="#2196f3"
+            >
               <span style="font-weight: 600;">show by exam status</span>
               <v-icon class="ml-1" style="font-size: 20px; margin-top: 1px;">{{
                 isExamStatusFilterMenuActive ? 'mdi-menu-up' : 'mdi-menu-down'
@@ -131,6 +149,7 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import TrainingReportUserDetailsDialog from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserDetailsDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -144,6 +163,7 @@ export default {
     DataTable,
     Badge,
     TrainingReportUserInteractionsModal,
+    TrainingReportUserDetailsDialog,
     CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions, useExamStatusFilter],
@@ -170,6 +190,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -252,7 +275,8 @@ export default {
         filterableType: 'select',
         filterableItems: []
       },
-      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+      ...(this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING &&
+      !this.isSurvey
         ? [
             {
               property: 'examStatus',
@@ -322,7 +346,7 @@ export default {
         type: 'text',
         width: 180,
         filterableType: 'select',
-        filterableItems: ['Email', 'Email & SMS', 'Email & Teams']
+        filterableItems: ['Email', 'Email & SMS', 'Email & Microsoft Teams']
       }
     ]
     if (
@@ -349,6 +373,7 @@ export default {
       isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
+      isShowDetailsDialog: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
@@ -372,17 +397,28 @@ export default {
         },
         rowActions: [
           {
-            name: `Resend Training`,
+            name: `Resend ${this.isSurvey ? labels.Survey : labels.Training}`,
             id: 'btn-resend--row-actions-training-report-users',
             icon: '$custom-resend',
             action: 'on-resend'
           },
-          {
-            name: labels.Details,
-            id: 'btn-interactions--row-actions-training-report-users',
-            icon: '$custom-details',
-            action: 'on-interactions'
-          }
+          ...(this.isSurvey
+            ? [
+                {
+                  name: 'Details',
+                  id: 'btn-details--row-actions-training-report-users',
+                  icon: '$custom-details',
+                  action: 'on-details'
+                }
+              ]
+            : [
+                {
+                  name: labels.Details,
+                  id: 'btn-interactions--row-actions-training-report-users',
+                  icon: '$custom-details',
+                  action: 'on-interactions'
+                }
+              ])
           /*
           {
             name: labels.ReSend,
@@ -414,6 +450,7 @@ export default {
   },
   computed: {
     getHeaderSubtitle() {
+      if (this.isSurvey) return 'All target users enrolled to this survey'
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'All target users enrolled to this poster'
       else if (
@@ -428,6 +465,7 @@ export default {
       return 'All target users enrolled to this training'
     },
     getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.ResendPoster
       else if (
@@ -437,6 +475,7 @@ export default {
       return labels.ResendTraining
     },
     getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.Poster.toLowerCase()
       else if (
@@ -575,6 +614,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
+      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportTrainingPosters
       else if (
@@ -680,7 +720,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Users.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Users.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
@@ -694,6 +734,10 @@ export default {
     handleInteractions(row) {
       this.selectedRow = row
       this.toggleIsShowInteractionsModal()
+    },
+    handleDetails(row) {
+      this.selectedRow = row
+      this.toggleIsShowDetailsDialog()
     },
     handleExclude(row) {},
     handleInclude(row) {},
@@ -709,6 +753,12 @@ export default {
         this.selectedRow = null
       }
       this.isShowInteractionsModal = !this.isShowInteractionsModal
+    },
+    toggleIsShowDetailsDialog() {
+      if (this.isShowDetailsDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDetailsDialog = !this.isShowDetailsDialog
     }
   }
 }

@@ -64,7 +64,11 @@ import TrainingReportNonTargetUsersProgressDetailDialog from '@/components/Scorm
 
 export default {
   name: 'TrainingReportNonTargetUsersProgress',
-  components: { TrainingReportNonTargetUsersProgressDetailDialog, DataTable, Badge },
+  components: {
+    TrainingReportNonTargetUsersProgressDetailDialog,
+    DataTable,
+    Badge
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     formDetails: {
@@ -72,6 +76,9 @@ export default {
     },
     id: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -190,7 +197,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyTrainingReportProgress
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportSurveyProgress
+            : labels.EmptyTrainingReportProgress
         },
         rowActions: [
           {

@@ -13,22 +13,29 @@
       :trainingName="trainingName"
       :resend-dialog-items="getResendDialogItems"
       :isLoading="isLoading"
+      :isSurvey="isSurvey"
       :id="id"
     />
-    <TrainingReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
-    <div class="mt-6 training-report-scorm-info scorm-proxy-report-summary-cards">
+    <TrainingReportSummaryCards
+      :items="getCardsData"
+      :is-loading="isLoading"
+      :is-survey="isSurvey"
+    />
+    <div class="mt-6 training-report-scorm-info">
       <TrainingReportScormEnrollmentInfo
         :items="getTrainingInfoData"
         :helper-data="getTrainingInfoHelperData"
         :is-test-training="isTestTraining"
         :type="getAudienceDetailsType"
         :isLoading="isLoading"
+        :is-survey="isSurvey"
         @audienceClick="showAudienceDetailsModal"
       />
       <TrainingReportTrainingDelivery
         class="ml-4"
         :items="getTrainingDeliveryData"
         :isLoading="isLoading"
+        :is-survey="isSurvey"
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>
@@ -36,6 +43,7 @@
       :form-data="getTrainingMaterialData"
       :isFetchingSummary="isLoading"
       :selected-row="getTrainingMaterialRow"
+      :is-survey="isSurvey"
       :languages="languages"
     />
   </div>
@@ -74,6 +82,9 @@ export default {
       type: Object
     },
     isLoading: {
+      type: Boolean
+    },
+    isSurvey: {
       type: Boolean
     }
   },
@@ -130,6 +141,9 @@ export default {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN']
       }
+      const proxyPackageDownloadDateKey = this.isSurvey
+        ? 'Survey Proxy Package Download Date'
+        : 'Training Proxy Package Download Date'
       return {
         'Target Users': {
           show: true,
@@ -147,7 +161,11 @@ export default {
           show: false,
           value: targetGroupCount
         },
-        'Training Proxy Package Download Date': {
+        'Non-Target Users': {
+          show: true,
+          value: totalNonTargetUser
+        },
+        [proxyPackageDownloadDateKey]: {
           show: true,
           value: startDate
         }

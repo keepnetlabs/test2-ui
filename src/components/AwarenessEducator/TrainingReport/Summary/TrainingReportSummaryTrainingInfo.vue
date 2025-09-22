@@ -106,6 +106,9 @@ export default {
     },
     trainingType: {
       type: String
+    },
+    isSurvey:{
+      type:Boolean
     }
   },
   data() {
@@ -116,6 +119,7 @@ export default {
   },
   computed: {
     getCardTitle() {
+      if(this.isSurvey) return labels.SurveyEnrollmentInfo
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.PosterEnrollmentInfo
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)

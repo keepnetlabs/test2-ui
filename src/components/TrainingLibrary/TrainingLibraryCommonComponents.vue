@@ -55,6 +55,12 @@
       v-if="getLearningPathSendModal.status"
       v-bind="getLearningPathSendModal"
     />
+    <TrainingLibraryNewSurveyModal v-if="getNewSurveyModal.status" v-bind="getNewSurveyModal" />
+    <TrainingLibrarySurveySendModal v-if="getSurveySendModal.status" v-bind="getSurveySendModal" />
+    <TrainingLibrarySurveyPreviewDialog
+      v-if="getSurveyPreviewDialog.status"
+      v-bind="getSurveyPreviewDialog"
+    />
   </div>
 </template>
 
@@ -71,20 +77,26 @@ import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/Tr
 import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
 import TrainingLibraryNewInfographicModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicModal.vue'
 import TrainingLibraryNewScreensaverModal from './TrainingLibraryNewModal/TrainingLibraryNewScreensaverModal/TrainingLibraryNewScreensaverModal.vue'
+import TrainingLibraryNewSurveyModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewSurveyModal/TrainingLibraryNewSurveyModal.vue'
 import TrainingLibraryTrainingSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryTrainingSendModal/TrainingLibraryTrainingSendModal.vue'
 import TrainingLibraryPosterSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryPosterSendModal/TrainingLibraryPosterSendModal.vue'
 import TrainingLibraryInfographicSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryInfographicSendModal/TrainingLibraryInfographicSendModal.vue'
 import TrainingLibraryScreensaverSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibraryScreensaverSendModal.vue'
 import TrainingLibraryLearningPathSendModal from './TrainingLibrarySendModal/TrainingLibraryLearningPathSendModal/TrainingLibraryLearningPathSendModal.vue'
+import TrainingLibrarySurveySendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySurveySendModal.vue'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
   components: {
+    TrainingLibrarySurveyPreviewDialog,
+    TrainingLibrarySurveySendModal,
     TrainingLibraryLearningPathSendModal,
     TrainingLibraryScreensaverSendModal,
     TrainingLibraryInfographicSendModal,
     TrainingLibraryPosterSendModal,
     TrainingLibraryTrainingSendModal,
+    TrainingLibraryNewSurveyModal,
     TrainingLibraryNewScreensaverModal,
     TrainingLibraryNewInfographicModal,
     TrainingLibraryNewPosterModal,
@@ -114,7 +126,10 @@ export default {
       getPosterSendModal: 'trainingLibrary/getPosterSendModal',
       getInfographicSendModal: 'trainingLibrary/getInfographicSendModal',
       getScreensaverSendModal: 'trainingLibrary/getScreensaverSendModal',
-      getLearningPathSendModal: 'trainingLibrary/getLearningPathSendModal'
+      getLearningPathSendModal: 'trainingLibrary/getLearningPathSendModal',
+      getNewSurveyModal: 'trainingLibrary/getNewSurveyModal',
+      getSurveySendModal: 'trainingLibrary/getSurveySendModal',
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     })
   }
 }

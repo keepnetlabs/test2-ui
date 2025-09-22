@@ -160,6 +160,8 @@
   }
 }
 .training-report-scorm-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   .campaign-manager-summary-card__body-container {
     display: grid;
     grid-template-columns: 1fr;

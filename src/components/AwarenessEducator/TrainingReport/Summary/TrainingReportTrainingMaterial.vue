@@ -27,6 +27,10 @@
           v-if="getLearningPathPreviewDialog.status"
           v-bind="getLearningPathPreviewDialog"
         />
+        <TrainingLibrarySurveyPreviewDialog
+          v-if="getSurveyPreviewDialog.status"
+          v-bind="getSurveyPreviewDialog"
+        />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}
@@ -34,7 +38,7 @@
           <div class="training-report-training-material__body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
-              v-if="isTrainingTypeTraining"
+              v-if="isTrainingTypeTraining && !isSurvey"
               size="mini"
               color="#2196F3"
               text="Scorm"
@@ -49,7 +53,8 @@
               <template #content>
                 <v-icon size="small">mdi-web</v-icon>
                 <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }} {{ formData.languages.length - 1 > index ? '|' : '' }}
+                  >{{ language }}
+                  {{ formData.languages.length - 1 > index ? '|' : '' }}
                 </span>
               </template>
             </Badge>
@@ -75,6 +80,7 @@ import { useLoading } from '@/hooks/useLoading'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
 import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
@@ -87,6 +93,7 @@ export default {
     TrainingLibraryTrainingPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
+    TrainingLibrarySurveyPreviewDialog,
     Badge,
     CampaignManagerSummaryCard
   },
@@ -106,6 +113,9 @@ export default {
     },
     trainingType: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -119,9 +129,11 @@ export default {
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
-      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog'
+      getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     }),
     getCardTitle() {
+      if (this.isSurvey) return labels.SurveyMaterial
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterMaterial
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicMaterial
@@ -155,6 +167,7 @@ export default {
       setPosterPreviewDialog: 'trainingLibrary/setPosterPreviewDialog',
       setInfographicPreviewDialog: 'trainingLibrary/setInfographicPreviewDialog',
       setLearningPathPreviewDialog: 'trainingLibrary/setLearningPathPreviewDialog',
+      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
       resetAllModals: 'trainingLibrary/resetAllModals'
     }),
     handlePreviewClick() {
@@ -192,6 +205,12 @@ export default {
         this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
         this.setLearningPathPreviewDialog({
+          status: true,
+          selectedRow: this.selectedRow,
+          showSendButton: false
+        })
+      } else if (this.isSurvey) {
+        this.setSurveyPreviewDialog({
           status: true,
           selectedRow: this.selectedRow,
           showSendButton: false

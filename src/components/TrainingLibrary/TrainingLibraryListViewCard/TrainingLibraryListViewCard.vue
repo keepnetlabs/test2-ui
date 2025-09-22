@@ -12,6 +12,7 @@
     <TrainingLibraryScreensaverTable
       v-else-if="selectedTab === TRAINING_LIBRARY_TYPES.SCREENSAVER"
     />
+    <TrainingLibrarySurveyTable v-else-if="selectedTab === TRAINING_LIBRARY_TYPES.SURVEY" />
   </div>
 </template>
 
@@ -24,7 +25,7 @@ import TrainingLibraryTrainingTable from '@/components/TrainingLibrary/TrainingL
 import TrainingLibraryPosterTable from '@/components/TrainingLibrary/TrainingLibraryTables/TrainingLibraryPosterTable.vue'
 import TrainingLibraryInfographicTable from '@/components/TrainingLibrary/TrainingLibraryTables/TrainingLibraryInfographicTable.vue'
 import TrainingLibraryScreensaverTable from '@/components/TrainingLibrary/TrainingLibraryTables/TrainingLibraryScreensaverTable.vue'
-
+import TrainingLibrarySurveyTable from '@/components/TrainingLibrary/TrainingLibraryTables/TrainingLibrarySurveyTable.vue'
 export default {
   name: 'TrainingLibraryListViewCard',
   components: {
@@ -33,7 +34,8 @@ export default {
     TrainingLibraryPosterTable,
     TrainingLibraryTrainingTable,
     TrainingLibraryLearningPathTable,
-    TrainingLibraryAllTypesTable
+    TrainingLibraryAllTypesTable,
+    TrainingLibrarySurveyTable
   },
   computed: {
     TRAINING_LIBRARY_TYPES() {
