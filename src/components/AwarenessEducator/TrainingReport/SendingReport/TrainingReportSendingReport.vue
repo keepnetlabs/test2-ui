@@ -16,8 +16,14 @@
       <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
-          :title="isSurvey ? 'Survey Enrollment Sending Report' : 'Training Enrollment Sending Report'"
-          :subtitle="isSurvey ? 'Survey enrollment email delivery details' : 'Training enrollment email delivery details'"
+          :title="
+            isSurvey ? 'Survey Enrollment Sending Report' : 'Training Enrollment Sending Report'
+          "
+          :subtitle="
+            isSurvey
+              ? 'Survey enrollment email delivery details'
+              : 'Training enrollment email delivery details'
+          "
         />
         <TrainingReportEnrollmentEmailsTable
           v-if="tab === 'enrollment'"
@@ -28,6 +34,7 @@
           :id="id"
           :form-details="formDetails"
           :training-summary="trainingSummary"
+          :isSurvey="isSurvey"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />
@@ -36,7 +43,11 @@
         <CampaignManagerReportHeader
           class="mb-6"
           :title="isSurvey ? 'Survey Reminder Sending Report' : 'Training Reminder Sending Report'"
-          :subtitle="isSurvey ? 'Survey reminder email delivery details' : 'Training reminder email delivery details'"
+          :subtitle="
+            isSurvey
+              ? 'Survey reminder email delivery details'
+              : 'Training reminder email delivery details'
+          "
         />
         <TrainingReportReminderEmailsTable
           v-if="tab === 'reminder'"
@@ -55,8 +66,14 @@
       >
         <CampaignManagerReportHeader
           class="mb-6"
-          :title="isSurvey ? 'Survey Certificate Sending Report' : 'Training Certificate Sending Report'"
-          :subtitle="isSurvey ? 'Survey certificate email delivery details' : 'Training certificate email delivery details'"
+          :title="
+            isSurvey ? 'Survey Certificate Sending Report' : 'Training Certificate Sending Report'
+          "
+          :subtitle="
+            isSurvey
+              ? 'Survey certificate email delivery details'
+              : 'Training certificate email delivery details'
+          "
         />
         <TrainingReportCertificateEmailsTable
           v-if="tab === 'certificate'"
@@ -66,6 +83,7 @@
           :id="id"
           :form-details="formDetails"
           :award-certificate-enrollment-id="awardCertificateEnrollmentId"
+          :isSurvey="isSurvey"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />

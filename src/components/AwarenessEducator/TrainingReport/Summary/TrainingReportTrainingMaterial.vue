@@ -38,7 +38,7 @@
           <div class="training-report-training-material__body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
-              v-if="isTrainingTypeTraining"
+              v-if="isTrainingTypeTraining && !isSurvey"
               size="mini"
               color="#2196F3"
               text="Scorm"
@@ -53,7 +53,8 @@
               <template #content>
                 <v-icon size="small">mdi-web</v-icon>
                 <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }} {{ formData.languages.length - 1 > index ? '|' : '' }}
+                  >{{ language }}
+                  {{ formData.languages.length - 1 > index ? '|' : '' }}
                 </span>
               </template>
             </Badge>
@@ -132,7 +133,7 @@ export default {
       getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     }),
     getCardTitle() {
-      if(this.isSurvey) return labels.SurveyMaterial
+      if (this.isSurvey) return labels.SurveyMaterial
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterMaterial
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicMaterial

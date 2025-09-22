@@ -98,7 +98,14 @@
 
                     <div class="answer-options">
                       <h5 class="answer-options-title">Answer Options:</h5>
-                      <div class="options-list">
+                      <!-- Choice question type için component -->
+                      <ChoiceQuestionComponent
+                        v-if="selectedQuestion.questionType === 'choice'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Diğer question type'lar için fallback -->
+                      <div v-else class="options-list">
                         <div
                           v-for="option in selectedQuestion.answerOptions"
                           :key="option.optionId || option.text"
@@ -235,6 +242,7 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
+import ChoiceQuestionComponent from './ChoiceQuestionComponent'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
@@ -247,7 +255,7 @@ import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingReportUserDetailsDialog',
-  components: { DataTable, AppDialog, Badge },
+  components: { DataTable, AppDialog, Badge, ChoiceQuestionComponent },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -446,8 +454,6 @@ export default {
           console.log('API Response:', response)
           const { data } = response
           console.log('Response data:', data)
-          // Transform API response to component data structure
-          // data.data array'ini kullanmalıyız çünkü API response'u {data: {data: [...], status: ...}} formatında
           this.responsesData = this.transformApiResponseToComponentData(data.data)
           console.log('Transformed data:', this.responsesData)
           this.selectedQuestionIndex = 0
@@ -475,7 +481,7 @@ export default {
       }
 
       // API'den gelen data formatı: data array içinde session objesi var
-      const sessionData = apiData[0] // İlk session'ı al
+      const sessionData = apiData[apiData.length - 1] // Son session'ı al (en güncel)
       console.log('Session data:', sessionData)
 
       if (!sessionData || !sessionData.interactionsHumanReadable) {
@@ -488,6 +494,7 @@ export default {
       const transformedData = sessionData.interactionsHumanReadable.map((interaction) => ({
         questionId: interaction.index + 1,
         questionText: interaction.question,
+        questionType: interaction.type,
         responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
         answerOptions: this.transformAnswerOptions(interaction.answers)
       }))

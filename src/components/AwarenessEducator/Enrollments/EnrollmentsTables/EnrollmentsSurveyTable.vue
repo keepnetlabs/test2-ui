@@ -126,7 +126,7 @@ export default {
         },
         columns: [
           COLUMNS.ENROLLMENT_NAME,
-          COLUMNS.TRAINING_NAME_UNFIXED,
+          COLUMNS.SURVEY_NAME_UNFIXED,
           COLUMNS.CATEGORY,
           COLUMNS.AUDIENCE,
           COLUMNS.LANGUAGES,

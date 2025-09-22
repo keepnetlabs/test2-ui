@@ -15,6 +15,16 @@
       :item="selectedRow"
       @on-close="toggleIsShowInteractionsModal"
     />
+    <TrainingReportUserDetailsDialog
+      v-if="isShowDetailsDialog"
+      :status="isShowDetailsDialog"
+      :item="selectedRow"
+      :is-survey="isSurvey"
+      :show-correct-answers="!isSurvey"
+      :is-add-training-type-key-to-payload="true"
+      :training-summary="formDetails"
+      @on-close="toggleIsShowDetailsDialog"
+    />
     <ElTabs v-model="tab" class="k-sub-tab">
       <ElTabPane label="Target Users" name="target-users" id="training-report-target-users">
         <CampaignManagerReportHeader
@@ -52,6 +62,7 @@
           @downloadEvent="exportTrainingReportUsersTable"
           @refreshAction="callForData"
           @on-interactions="handleInteractions"
+          @on-responses="handleOnResponses"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         >
@@ -80,7 +91,11 @@
           title="Non-Target Users"
           subtitle="All non-target users enrolled in this platform"
         />
-        <TrainingReportUsersNonTargetUsers :form-details="formDetails" :id="id" :is-survey="isSurvey" />
+        <TrainingReportUsersNonTargetUsers
+          :form-details="formDetails"
+          :id="id"
+          :is-survey="isSurvey"
+        />
       </ElTabPane>
     </ElTabs>
   </div>
@@ -100,6 +115,7 @@ import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingR
 import Badge from '@/components/Badge'
 import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import TrainingReportUserInteractionsModal from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserInteractionsModal'
+import TrainingReportUserDetailsDialog from '@/components/AwarenessEducator/TrainingReport/Users/TrainingReportUserDetailsDialog'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -112,6 +128,7 @@ export default {
     DataTable,
     Badge,
     TrainingReportUserInteractionsModal,
+    TrainingReportUserDetailsDialog,
     CampaignManagerReportHeader
   },
   mixins: [useLoading, useDefaultTableFunctions],
@@ -138,6 +155,7 @@ export default {
       isResendActionButtonDisabled: false,
       selectedRow: null,
       isShowInteractionsModal: false,
+      isShowDetailsDialog: false,
       CONSTANTS: {
         id: 'training-report-users-data-table',
         ascending: 'ascending'
@@ -312,7 +330,17 @@ export default {
             id: 'btn-interactions--row-actions-training-report-users',
             icon: '$custom-details',
             action: 'on-interactions'
-          }
+          },
+          ...(this.isSurvey
+            ? [
+                {
+                  name: 'Responses',
+                  id: 'btn-responses--row-actions-training-report-users',
+                  icon: '$custom-survey',
+                  action: 'on-responses'
+                }
+              ]
+            : [])
         ]
       },
       tableData: []
@@ -430,6 +458,18 @@ export default {
         this.selectedRow = null
       }
       this.isShowInteractionsModal = !this.isShowInteractionsModal
+    },
+
+    toggleIsShowDetailsDialog() {
+      if (this.isShowDetailsDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDetailsDialog = !this.isShowDetailsDialog
+    },
+
+    handleOnResponses(item) {
+      this.selectedRow = item
+      this.toggleIsShowDetailsDialog()
     }
   }
 }

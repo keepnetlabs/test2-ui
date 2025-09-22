@@ -35,6 +35,7 @@
         class="ml-4"
         :items="getTrainingDeliveryData"
         :isLoading="isLoading"
+        :is-survey="isSurvey"
       />
     </div>
     <div class="training-report-summary__general-info mt-4"></div>

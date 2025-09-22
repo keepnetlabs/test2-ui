@@ -416,7 +416,7 @@ export default {
     },
     getEmptyTableTextMessage() {
       if (this.isSurvey) {
-        return labels.EmptyTrainingReportTrainingSurveys
+        return labels.EmptyTrainingReportSurveyUsers
       }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingSendingReportPoster

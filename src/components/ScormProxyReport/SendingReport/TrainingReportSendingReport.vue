@@ -398,7 +398,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)
@@ -484,7 +484,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-Sending-Report.${
+          link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Sending-Report.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

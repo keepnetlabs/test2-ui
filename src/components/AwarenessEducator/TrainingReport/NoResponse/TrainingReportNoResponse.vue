@@ -269,7 +269,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
-      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
+      if (this.isSurvey) return labels.EmptyTrainingReportNoResponseSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingNoResponsePoster
       else if (

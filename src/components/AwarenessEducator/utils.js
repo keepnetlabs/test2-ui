@@ -79,6 +79,17 @@ export const COLUMNS = {
     type: 'text',
     width: 200
   },
+  SURVEY_NAME_UNFIXED: {
+    property: PROPERTY_STORE.TRAINING_NAME,
+    align: 'left',
+    label: labels.SurveyName,
+    fixed: false,
+    sortable: true,
+    show: true,
+    filterableType: 'text',
+    type: 'text',
+    width: 200
+  },
   MATERIAL_NAME: {
     property: PROPERTY_STORE.MATERIAL_NAME,
     align: 'left',

@@ -137,8 +137,10 @@ export default {
       AwarenessEducatorService.getTrainingReportSummary(this.id)
         .then((response) => {
           this.trainingSummary = response?.data?.data
-          this.isSurvey = true
+          this.isSurvey = this.trainingSummary?.trainingDetails?.hasQuiz
           if (this.isSurvey) {
+            this.tabItems[2].label = labels.OpenededSurvey
+            this.tabItems[3].label = labels.ClickedSurveyLink
             this.tabItems.splice(5, 1)
           }
           this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')

@@ -314,7 +314,7 @@ export default {
       this.resendItemCount = selectionCount
     },
     getEmptyTableTextMessage() {
-      if (this.isSurvey) return labels.EmptyTrainingReportTrainingSurveys
+      if (this.isSurvey) return labels.EmptyTrainingReportClickedSurvey
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.EmptyTrainingReportDownloadedPoster
       else if (

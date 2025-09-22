@@ -284,7 +284,7 @@ export default {
         },
         iEmpty: {
           message: this.isSurvey
-            ? labels.EmptyTrainingReportProgressSurvey
+            ? labels.EmptyTrainingReportSurveyProgress
             : labels.EmptyTrainingReportProgress
         },
         rowActions: [
@@ -314,7 +314,7 @@ export default {
       handler(val) {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
-            (action) => action.name === 'Resend Training' || action.name === 'Resend Survey'
+            (action) => action.name === `Resend ${this.isSurvey ? labels.Survey : labels.Training}`
           )
           if (resendActionIndex !== -1) {
             this.tableOptions.rowActions.splice(resendActionIndex, 1)

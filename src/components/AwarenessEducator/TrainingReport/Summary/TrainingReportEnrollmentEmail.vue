@@ -58,8 +58,8 @@ export default {
       type: String,
       default: ''
     },
-    isSurvey:{
-      type:Boolean
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -73,7 +73,7 @@ export default {
       return Object.keys(this.formData).length
     },
     getEnrollmentTextByTrainingType() {
-      if(this.isSurvey) return labels.Survey
+      if (this.isSurvey) return labels.Survey
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'Poster'
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return 'Infographic'

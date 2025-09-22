@@ -260,7 +260,7 @@ export default {
         },
         iEmpty: {
           message: this.isSurvey
-            ? labels.EmptyTrainingReportProgressSurvey
+            ? labels.EmptyTrainingReportSurveyProgress
             : labels.EmptyTrainingReportProgress
         },
         rowActions: [

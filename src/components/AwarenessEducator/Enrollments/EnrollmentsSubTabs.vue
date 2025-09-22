@@ -405,7 +405,13 @@ export default {
           ...row,
           trainingId: response?.data?.data?.trainingId
         }
-        if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+        if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY || row.hasQuiz) {
+          this.setSurveyPreviewDialog({
+            status: true,
+            selectedRow: this.selectedRow,
+            showSendButton: false
+          })
+        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
           this.setTrainingPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
@@ -447,12 +453,6 @@ export default {
             showFavoriteButton: true,
             showSendButton: false,
             icon: 'mdi-eye'
-          })
-        } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY) {
-          this.setSurveyPreviewDialog({
-            status: true,
-            selectedRow: this.selectedRow,
-            showSendButton: false
           })
         }
       })
