@@ -26,7 +26,7 @@
           </div>
         </div>
         <hr class="mt-4" v-if="!!template.content" />
-        <KEmailPreview v-if="!!template.content" :html="template.content" />
+        <KEmailPreview v-if="!!template.content" :html="template.content" is-landing-page />
       </div>
     </ElTabPane>
     <ElTabPane

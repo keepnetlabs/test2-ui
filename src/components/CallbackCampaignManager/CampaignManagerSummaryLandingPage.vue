@@ -145,6 +145,7 @@
             ref="refPreview"
             :key="getCurrentTemplate"
             :html="getCurrentTemplate"
+            is-landing-page
             is-extra-height
           />
         </div>
