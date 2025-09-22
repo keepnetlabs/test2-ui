@@ -263,43 +263,43 @@
           </div>
           <div class="px-6 pt-4 d-flex justify-space-between align-center">
             <div>
-            <ElTabs v-model="upperTab" class="phishing-campaign-tab-container">
-              <ElTabPane name="scenarios" label="Scenarios" />
-              <ElTabPane
-                v-if="
-                  scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
-                  getTrainingSearchPermission
-                "
-                name="training"
-                label="Training"
-              >
-                <CampaignManagerPhishingScenariosTrainingTab
-                  v-model="trainingForCategory"
-                  ref="categoryTrainingTab"
-                  class="pb-4"
-                  :is-show-reminder="isShowReminder"
-                  :type="type"
-                  :is-edit="isEdit"
-                  isCategory
-                  :enum-types="enumTypes"
-                  :isAttachmentBasedScenario="isAttachmentBasedScenario"
-                  @on-preview="handleCategoryTrainingPreviewButtonClick"
-                />
-              </ElTabPane>
-            </ElTabs>
+              <ElTabs v-model="upperTab" class="phishing-campaign-tab-container">
+                <ElTabPane name="scenarios" label="Scenarios" />
+                <ElTabPane
+                  v-if="
+                    scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+                    getTrainingSearchPermission
+                  "
+                  name="training"
+                  label="Training"
+                >
+                  <CampaignManagerPhishingScenariosTrainingTab
+                    v-model="trainingForCategory"
+                    ref="categoryTrainingTab"
+                    class="pb-4"
+                    :is-show-reminder="isShowReminder"
+                    :type="type"
+                    :is-edit="isEdit"
+                    isCategory
+                    :enum-types="enumTypes"
+                    :isAttachmentBasedScenario="isAttachmentBasedScenario"
+                    @on-preview="handleCategoryTrainingPreviewButtonClick"
+                  />
+                </ElTabPane>
+              </ElTabs>
             </div>
             <div v-if="isPhishing">
-                <v-btn
-                  class="emailTemplatePreview__edit-button"
-                  color="#2196F3"
-                  outlined
-                  rounded
-                  @click="handleCreatePhishingScenarioClick"
-                >
-                  <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
-                  <span class="emailTemplatePreview__edit-button-text">Create Scenario</span>
-                </v-btn>
-              </div>
+              <v-btn
+                class="emailTemplatePreview__edit-button"
+                color="#2196F3"
+                outlined
+                rounded
+                @click="handleCreatePhishingScenarioClick"
+              >
+                <v-icon left color="#2196f3" medium> mdi-plus </v-icon>
+                <span class="emailTemplatePreview__edit-button-text">Create Scenario</span>
+              </v-btn>
+            </div>
           </div>
           <multipane
             v-if="upperTab === 'scenarios'"
@@ -520,6 +520,7 @@
                       <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
+                        is-landing-page
                         :html="getSingleTemplateDetails"
                       />
                     </div>

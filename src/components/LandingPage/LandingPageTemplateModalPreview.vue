@@ -4,7 +4,8 @@
       <div>
         <div>
           <span class="template-preview__text--title"
-            >{{ type === PREVIEW_DIALOG_TYPES.PHISHING ? labels.Phishing : labels.Quishing }} URL:
+            >{{ type === PREVIEW_DIALOG_TYPES.PHISHING ? labels.Phishing : labels.Quishing }}
+            URL:
           </span>
           <span class="template-preview__text--body">{{ phishingUrl }}</span>
         </div>
@@ -23,6 +24,7 @@
       v-if="!!getCurrentLandingPageTemplate"
       ref="refPreview"
       :html="getCurrentLandingPageTemplate"
+      :is-landing-page="type === PREVIEW_DIALOG_TYPES.PHISHING"
     />
   </div>
 </template>

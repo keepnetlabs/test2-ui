@@ -114,6 +114,7 @@
             :key="getCurrentTemplate"
             :html="getCurrentTemplate"
             is-extra-height
+            is-landing-page
           />
         </div>
       </div>
