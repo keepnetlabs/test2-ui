@@ -27,7 +27,7 @@
       </div>
       <div class="learning-path-content__training--info-created-by--container">
         <div class="learning-path-content__training--info-type">
-          {{ training.type }}
+          {{ training.hasQuiz ? 'Survey' : training.type }}
         </div>
         <v-icon center size="8" color="#E0E0E0">mdi-circle</v-icon>
         <VTooltip :disabled="!isRenderCategoryTooltip" right :max-width="300">

@@ -26,6 +26,7 @@
             :isScormProxy="isScormProxy"
             :active-step="item.activeStep"
             :isSurvey="isSurvey"
+            :isMicrosoftTeams="isMicrosoftTeams"
             :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           />
         </ElTabPane>
@@ -129,7 +130,8 @@ export default {
         }
       ],
       formDetails: null,
-      awardCertificateEnrollmentId: null
+      awardCertificateEnrollmentId: null,
+      isMicrosoftTeams: false
     }
   },
   computed: {
@@ -168,6 +170,7 @@ export default {
         this.$route?.query?.trainingType || 0
       ).then((response) => {
         this.trainingSummary = response?.data?.data
+        this.isMicrosoftTeams = this.trainingSummary?.deliveryMethod?.includes('Microsoft Teams')
         if (this.trainingSummary?.trainingDetails?.hasQuiz) {
           this.tabItems[2].label = labels.OpenededSurvey
           this.tabItems[3].label = labels.ClickedSurveyLink

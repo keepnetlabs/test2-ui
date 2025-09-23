@@ -3,9 +3,9 @@
     <div v-show="isProxy" class="send-training-settings__lms-switch max-w-554">
       <div class="text-primary-color fs-5 fw-600">Target Audience</div>
       <div class="text-primary-color fs-medium">
-        When the “Training Delivery for Your LMS” is activated, training is created as a SCORM
+        When the “LMS” is selected, {{ isSurvey ? 'survey' : 'training' }} is created as a SCORM
         package and can not be launched directly. Therefore, the target audience selection can not
-        be made
+        be made.
       </div>
     </div>
     <div
@@ -159,6 +159,10 @@ export default {
     targetUsersSubtitle: {
       type: String,
       default: labels.SendTrainingTargetUsersSub
+    },
+    isSurvey: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

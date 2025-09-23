@@ -98,9 +98,15 @@
 
                     <div class="answer-options">
                       <h5
-                        v-if="selectedQuestion.questionType !== 'fill-in' && selectedQuestion.questionType !== 'numeric' && selectedQuestion.questionType !== 'long-fill-in'"
+                        v-if="
+                          selectedQuestion.questionType !== 'fill-in' &&
+                          selectedQuestion.questionType !== 'numeric' &&
+                          selectedQuestion.questionType !== 'long-fill-in'
+                        "
                         class="answer-options-title"
-                      >Answer Options:</h5>
+                      >
+                        Answer Options:
+                      </h5>
                       <!-- Choice Single question type için component -->
                       <ChoiceQuestionComponent
                         v-if="selectedQuestion.questionType === 'choice-single'"
@@ -547,11 +553,8 @@ export default {
         this.item.targetUserResourceId
       )
         .then((response) => {
-          console.log('API Response:', response)
           const { data } = response
-          console.log('Response data:', data)
           this.responsesData = this.transformApiResponseToComponentData(data.data)
-          console.log('Transformed data:', this.responsesData)
           this.selectedQuestionIndex = 0
         })
         .catch((error) => {
@@ -579,9 +582,7 @@ export default {
       if (!sessionData || !sessionData.interactionsHumanReadable) {
         return []
       }
-      console.log
       const transformedData = sessionData.interactionsHumanReadable.map((interaction) => {
-        console.log('interaction.type', interaction.type)
         return {
           questionId: interaction.index + 1,
           questionText: interaction.question,
@@ -590,8 +591,6 @@ export default {
           answerOptions: this.transformAnswerOptions(interaction.answers)
         }
       })
-
-      console.log('Final transformed data:', transformedData)
       return transformedData
     },
 

@@ -240,11 +240,13 @@ export default {
       return `training-library-card__type--${bgColorClass}`
     },
     isSurvey() {
-      return true
+      return this.item.hasQuiz
     },
     getTypeText() {
       if (this.isSurvey) return labels.Survey
-      return this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ? 'Training' : item.type
+      return this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+        ? 'Training'
+        : this.item.type
     }
   },
   mounted() {
