@@ -582,15 +582,17 @@ export default {
       if (!sessionData || !sessionData.interactionsHumanReadable) {
         return []
       }
-      const transformedData = sessionData.interactionsHumanReadable.map((interaction) => {
-        return {
-          questionId: interaction.index + 1,
-          questionText: interaction.question,
-          questionType: interaction.type.toLowerCase(),
-          responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
-          answerOptions: this.transformAnswerOptions(interaction.answers)
-        }
-      })
+      const transformedData = sessionData.interactionsHumanReadable
+        .filter((interaction) => interaction.source === 'Qex')
+        .map((interaction) => {
+          return {
+            questionId: interaction.index + 1,
+            questionText: interaction.question,
+            questionType: interaction.type.toLowerCase(),
+            responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
+            answerOptions: this.transformAnswerOptions(interaction.answers)
+          }
+        })
       return transformedData
     },
 
@@ -641,46 +643,6 @@ export default {
         .finally(() => {
           this.isInteractionsLoading = false
         })
-    },
-
-    // Responses table methods
-    responsesColumnFilterChanged(filter) {
-      // Implement if needed
-    },
-    responsesColumnFilterCleared() {
-      // Implement if needed
-    },
-    responsesServerSidePageNumberChanged(pageNumber) {
-      // Implement if needed
-    },
-    responsesServerSideSizeChanged(size) {
-      // Implement if needed
-    },
-    responsesSortChanged(sort) {
-      // Implement if needed
-    },
-    responsesHandleSearchChange(search) {
-      // Implement if needed
-    },
-
-    // Interactions table methods
-    interactionsColumnFilterChanged(filter) {
-      // Implement if needed
-    },
-    interactionsColumnFilterCleared() {
-      // Implement if needed
-    },
-    interactionsServerSidePageNumberChanged(pageNumber) {
-      // Implement if needed
-    },
-    interactionsServerSideSizeChanged(size) {
-      // Implement if needed
-    },
-    interactionsSortChanged(sort) {
-      // Implement if needed
-    },
-    interactionsHandleSearchChange(search) {
-      // Implement if needed
     },
 
     handleClose() {
