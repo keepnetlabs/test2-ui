@@ -116,8 +116,8 @@ export default {
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_TRAINING_LIST,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ENROLLMENTS_TRAINING_LIST,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_SURVEY_LIST,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ENROLLMENTS_SURVEY_LIST,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -139,7 +139,7 @@ export default {
           COLUMNS.ENROLLMENT_TAGS
         ],
         iEmpty: {
-          message: labels.EmptyEnrollmentTraining
+          message: labels.EmptyEnrollmentSurvey
         },
         addButton: {
           show: false
@@ -220,7 +220,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Training-List.${
+          link.download = ` -List.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

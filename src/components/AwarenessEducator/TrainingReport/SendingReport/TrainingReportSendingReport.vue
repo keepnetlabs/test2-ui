@@ -12,7 +12,38 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <ElTabs v-if="isTypeTraining" v-model="tab" class="k-sub-tab">
+    <ElTabs v-if="isTypeTraining || isSurvey" v-model="tab" class="k-sub-tab">
+      <ElTabPane
+        v-if="isMicrosoftTeams"
+        label="Microsoft Teams Notifications"
+        name="teams-notifications"
+        id="teams-notifications-content"
+      >
+        <CampaignManagerReportHeader
+          class="mb-6"
+          :title="
+            isSurvey
+              ? 'Survey Notification Sending Report (Microsoft Teams)'
+              : 'Training Notification Sending Report (Microsoft Teams)'
+          "
+          :subtitle="`Details of ${
+            isSurvey ? 'survey' : 'training'
+          } notification delivery in Microsoft Teams`"
+        />
+        <TrainingReportMicrosoftTeamsTable
+          v-if="tab === 'teams-notifications'"
+          ref="refTeamsTable"
+          class="mt-6"
+          :customFields="customFields"
+          :isScormProxy="isScormProxy"
+          :id="id"
+          :form-details="formDetails"
+          :training-summary="trainingSummary"
+          :isSurvey="isSurvey"
+          @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
+        />
+      </ElTabPane>
       <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
         <CampaignManagerReportHeader
           class="mb-6"
@@ -120,6 +151,7 @@ import TrainingReportEnrollmentEmailsTable from '@/components/AwarenessEducator/
 import TrainingReportReminderEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportReminderEmailsTable'
 import TrainingReportCertificateEmailsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportCertificateEmailsTable'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import TrainingReportMicrosoftTeamsTable from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportMicrosoftTeamsTable'
 import labels from '@/model/constants/labels'
 
 export default {
@@ -129,7 +161,8 @@ export default {
     CampaignManagerReportHeader,
     TrainingReportEnrollmentEmailsTable,
     TrainingReportReminderEmailsTable,
-    TrainingReportCertificateEmailsTable
+    TrainingReportCertificateEmailsTable,
+    TrainingReportMicrosoftTeamsTable
   },
   props: {
     id: {
@@ -156,12 +189,15 @@ export default {
     },
     isSurvey: {
       type: Boolean
+    },
+    isMicrosoftTeams: {
+      type: Boolean
     }
   },
   data() {
     return {
       resendItemCount: 0,
-      tab: 'enrollment',
+      tab: this.isMicrosoftTeams ? 'teams-notifications' : 'enrollment',
       isShowResendDialog: false,
       isResendActionButtonDisabled: false,
       resendPayload: null
@@ -240,10 +276,15 @@ export default {
         AwarenessEducatorService.resendTrainingSendingReportList(this.resendPayload, this.id)
           .then(() => {
             this.toggleIsShowResendDialog()
-            this.$refs?.refEnrollmentTable?.$refs?.refTable?.resetSelectableParams?.()
-            this.$refs?.refReminderTable?.$refs?.refTable?.resetSelectableParams?.()
-            this.$refs?.refEnrollmentTable?.callForData?.()
-            this.$refs?.refReminderTable?.callForData?.()
+            if (this.tab === 'enrollment') {
+              this.$refs?.refEnrollmentTable?.$refs?.refTable?.resetSelectableParams?.()
+              this.$refs?.refReminderTable?.$refs?.refTable?.resetSelectableParams?.()
+              this.$refs?.refEnrollmentTable?.callForData?.()
+              this.$refs?.refReminderTable?.callForData?.()
+            } else if (this.tab === 'teams-notifications') {
+              this.$refs?.refTeamsTable?.$refs?.refTable?.resetSelectableParams?.()
+              this.$refs?.refTeamsTable?.callForData?.()
+            }
           })
           .finally(() => {
             this.isResendActionButtonDisabled = false

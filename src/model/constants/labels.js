@@ -90,6 +90,7 @@ export const labels = {
   ScreensaverLanguage: 'Screensaver Language',
   InfographicLanguage: 'Infographic Language',
   EmptyEnrollmentTraining: 'You do not have any training enrollments',
+  EmptyEnrollmentSurvey: 'You do not have any survey enrollments',
   SMSNotificationSub:
     'In addition to the training enrollment, send an SMS notification with the selected phone number',
   PosterSMSNotificationSub:
