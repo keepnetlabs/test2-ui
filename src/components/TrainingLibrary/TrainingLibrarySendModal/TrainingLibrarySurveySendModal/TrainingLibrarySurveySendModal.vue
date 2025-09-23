@@ -75,6 +75,7 @@
             />
             <TrainingLibrarySendTrainingSelectUsers
               ref="refSendTrainingSelectUsers"
+              is-survey
               :is-proxy="isTrainingProxy"
               :target-users-group-sub="labels.SurveyTargetUserGroupsSub"
               :campaign-results-sub="labels.SurveyCampaignResultsSub"
@@ -203,6 +204,10 @@ export default {
         'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
       trainingEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId',
+      surveyEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getSurveyEmailNotificationTemplateTypeResourceId',
+      surveyReminderEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getSurveyReminderEmailNotificationTemplateTypeResourceId',
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
     isSmsNotification() {

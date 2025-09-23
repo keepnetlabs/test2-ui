@@ -1240,7 +1240,6 @@ export default {
     getTrainingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
         const type = this.$store?.state?.common?.activeTrainingType
-        console.log('type', type)
         return `${type.startsWith('SCORM') ? 'Training' : type} Report - ${
           this.$store?.state?.common?.activePageRouterName
         }`
