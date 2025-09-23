@@ -97,10 +97,79 @@
                     </div>
 
                     <div class="answer-options">
-                      <h5 class="answer-options-title">Answer Options:</h5>
-                      <!-- Choice question type için component -->
+                      <h5
+                        v-if="selectedQuestion.questionType !== 'fill-in' && selectedQuestion.questionType !== 'numeric' && selectedQuestion.questionType !== 'long-fill-in'"
+                        class="answer-options-title"
+                      >Answer Options:</h5>
+                      <!-- Choice Single question type için component -->
                       <ChoiceQuestionComponent
-                        v-if="selectedQuestion.questionType === 'choice'"
+                        v-if="selectedQuestion.questionType === 'choice-single'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Choice Multi question type için component -->
+                      <MultipleResponseComponent
+                        v-else-if="selectedQuestion.questionType === 'choice-multi'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- TrueFalse question type için component -->
+                      <TrueFalseComponent
+                        v-else-if="selectedQuestion.questionType === 'true-false'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Fill-In question type için component -->
+                      <FillInComponent
+                        v-else-if="selectedQuestion.questionType === 'fill-in'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Numeric question type için component -->
+                      <NumericComponent
+                        v-else-if="selectedQuestion.questionType === 'numeric'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Sequence question type için component -->
+                      <SequenceComponent
+                        v-else-if="selectedQuestion.questionType === 'sequence'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Matching question type için component -->
+                      <MatchingComponent
+                        v-else-if="selectedQuestion.questionType === 'matching'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Dropdown question type için component -->
+                      <DropdownComponent
+                        v-else-if="selectedQuestion.questionType === 'dropdown'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Word Bank question type için component -->
+                      <WordBankComponent
+                        v-else-if="selectedQuestion.questionType === 'word-bank'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Hotspot question type için component -->
+                      <HotspotComponent
+                        v-else-if="selectedQuestion.questionType === 'hotspot'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Likert question type için component -->
+                      <LikertComponent
+                        v-else-if="selectedQuestion.questionType === 'likert'"
+                        :answer-options="selectedQuestion.answerOptions"
+                        :show-correct-answers="showCorrectAnswers"
+                      />
+                      <!-- Long Fill In (Essay) question type için component -->
+                      <LongFillInComponent
+                        v-else-if="selectedQuestion.questionType === 'long-fill-in'"
                         :answer-options="selectedQuestion.answerOptions"
                         :show-correct-answers="showCorrectAnswers"
                       />
@@ -243,6 +312,17 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import ChoiceQuestionComponent from './ChoiceQuestionComponent'
+import MultipleResponseComponent from './MultipleResponseComponent'
+import TrueFalseComponent from './TrueFalseComponent'
+import FillInComponent from './FillInComponent'
+import NumericComponent from './NumericComponent'
+import SequenceComponent from './SequenceComponent'
+import MatchingComponent from './MatchingComponent'
+import DropdownComponent from './DropdownComponent'
+import WordBankComponent from './WordBankComponent'
+import HotspotComponent from './HotspotComponent'
+import LikertComponent from './LikertComponent'
+import LongFillInComponent from './LongFillInComponent'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
@@ -255,7 +335,23 @@ import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingReportUserDetailsDialog',
-  components: { DataTable, AppDialog, Badge, ChoiceQuestionComponent },
+  components: {
+    DataTable,
+    AppDialog,
+    Badge,
+    ChoiceQuestionComponent,
+    MultipleResponseComponent,
+    TrueFalseComponent,
+    FillInComponent,
+    NumericComponent,
+    SequenceComponent,
+    MatchingComponent,
+    DropdownComponent,
+    WordBankComponent,
+    HotspotComponent,
+    LikertComponent,
+    LongFillInComponent
+  },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     status: {
@@ -473,31 +569,27 @@ export default {
     },
 
     transformApiResponseToComponentData(apiData) {
-      console.log('Transform input:', apiData)
-
       if (!apiData || !Array.isArray(apiData)) {
-        console.log('No data or not array')
         return []
       }
 
       // API'den gelen data formatı: data array içinde session objesi var
       const sessionData = apiData[apiData.length - 1] // Son session'ı al (en güncel)
-      console.log('Session data:', sessionData)
 
       if (!sessionData || !sessionData.interactionsHumanReadable) {
-        console.log('No session data or interactionsHumanReadable')
         return []
       }
-
-      console.log('interactionsHumanReadable:', sessionData.interactionsHumanReadable)
-
-      const transformedData = sessionData.interactionsHumanReadable.map((interaction) => ({
-        questionId: interaction.index + 1,
-        questionText: interaction.question,
-        questionType: interaction.type,
-        responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
-        answerOptions: this.transformAnswerOptions(interaction.answers)
-      }))
+      console.log
+      const transformedData = sessionData.interactionsHumanReadable.map((interaction) => {
+        console.log('interaction.type', interaction.type)
+        return {
+          questionId: interaction.index + 1,
+          questionText: interaction.question,
+          questionType: interaction.type.toLowerCase(),
+          responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
+          answerOptions: this.transformAnswerOptions(interaction.answers)
+        }
+      })
 
       console.log('Final transformed data:', transformedData)
       return transformedData
@@ -598,4 +690,3 @@ export default {
   }
 }
 </script>
-
