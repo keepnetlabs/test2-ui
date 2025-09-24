@@ -2107,6 +2107,13 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  MICROSOFT_TEAMS_SETTINGS_PERMISSIONS: {
+    GET: {
+      url: `companies/teams-app/check`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   SCIM_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SCIM.ROOT_URL}`,
