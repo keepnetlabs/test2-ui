@@ -3,8 +3,8 @@
     <FormGroup
       v-if="canSaveVendor"
       has-hint
-      :title="labels.TrainingVendor"
-      :sub-title="labels.TrainingVendorSub"
+      :title="labels.SurveyVendor"
+      :sub-title="labels.SurveyVendorSub"
     >
       <KSelect
         v-model.trim="formData.vendorId"
@@ -15,7 +15,7 @@
         item-text="text"
         item-value="value"
         hint="*Required"
-        placeholder="Select training vendor"
+        placeholder="Select survey vendor"
         :rules="[(v) => Validations.required(v, labels.Required)]"
         :items="getTrainingVendors"
       />
