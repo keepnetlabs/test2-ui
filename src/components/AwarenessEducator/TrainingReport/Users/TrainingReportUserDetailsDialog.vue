@@ -109,7 +109,7 @@
                       </h5>
                       <!-- Choice Single question type için component -->
                       <ChoiceQuestionComponent
-                        v-if="selectedQuestion.questionType === 'choice-single'"
+                        v-if="selectedQuestion.questionType === 'choice-single' || selectedQuestion.questionType === 'true-false'"
                         :answer-options="selectedQuestion.answerOptions"
                         :show-correct-answers="showCorrectAnswers"
                       />
