@@ -13,6 +13,7 @@
         v-model.trim="formData.description"
         id="input--new-training-training-description"
         required
+        hint="*Required"
         rows="2"
         height="100"
         :max-length="300"

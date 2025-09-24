@@ -153,7 +153,7 @@ export default {
             const blob = new Blob([data])
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(blob)
-            link.download = `Training-Material.xlsx`
+            link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Material.xlsx`
             link.click()
           } else if (response.status === 201) {
             this.$store.dispatch('common/createSnackBar', {

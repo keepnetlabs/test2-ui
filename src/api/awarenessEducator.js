@@ -302,7 +302,9 @@ const exportSendingReport = (payload, resourceId) => {
 const noResponseTrainingReportEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/no-response/search`, payload)
 }
-
+const searchMicrosoftTeamsSendingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/notifications/${resourceId}/search`, payload)
+}
 const searchSendingReportEnrollmentEmails = (payload, resourceId) => {
   return testRequest.post(`/training-reports/${resourceId}/sending-report/search`, payload)
 }
@@ -311,6 +313,11 @@ const searchSendingReportReminderEmails = (payload, resourceId) => {
 }
 const searchSendingReportCertificateEmails = (payload, resourceId) => {
   return testRequest.post(`/enrollments/${resourceId}/certificates/search`, payload)
+}
+const resendMicrosoftTeamsSendingReportEmails = (payload, resourceId) => {
+  return testRequest.post(`/enrollments/resend-teams`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 const getTrainingReportInteractions = (enrollmentId, resourceId, interactionType, trainingType) => {
@@ -630,5 +637,7 @@ export default {
   removeFromFavorite,
   getTrainingTypes,
   getTrainingReportCertificateEmailDetails,
-  getTrainingReportExamResultSessions
+  getTrainingReportExamResultSessions,
+  searchMicrosoftTeamsSendingReportEmails,
+  resendMicrosoftTeamsSendingReportEmails
 }

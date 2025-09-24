@@ -52,6 +52,7 @@ const {
   SAML_INTEGRATION_PERMISSIONS,
   GOOGLE_USER_PROVISION_PERMISSIONS,
   SCIM_SETTINGS_PERMISSIONS,
+  MICROSOFT_TEAMS_SETTINGS_PERMISSIONS,
   SIEM_INTEGRATION_PERMISSIONS,
   SYSTEM_USERS_PERMISSIONS,
   ROLES_PERMISSIONS,
@@ -142,6 +143,7 @@ const defaultState = {
   samlIntegrationPermissions: SAML_INTEGRATION_PERMISSIONS,
   googleUserProvisionPermissions: GOOGLE_USER_PROVISION_PERMISSIONS,
   scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
+  microsoftTeamsSettingsPermissions: MICROSOFT_TEAMS_SETTINGS_PERMISSIONS,
   siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS,
@@ -1148,6 +1150,9 @@ const store = {
     getSCIMSettingsSearchPermissions(state) {
       return state?.scimSettingsPermissions?.SEARCH?.hasPermission
     },
+    getMicrosoftTeamsSettingsGetPermissions(state) {
+      return state?.microsoftTeamsSettingsPermissions?.GET?.hasPermission
+    },
     getSCIMSettingsCreatePermissions(state) {
       return state?.scimSettingsPermissions?.CREATE?.hasPermission
     },
@@ -1629,6 +1634,7 @@ const store = {
         'samlIntegrationPermissions',
         'googleUserProvisionPermissions',
         'scimSettingsPermissions',
+        'microsoftTeamsSettingsPermissions',
         'siemIntegrationPermissions',
         'systemUsersPermissions',
         'systemRolesPermissions',

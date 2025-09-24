@@ -40,6 +40,8 @@
           :form-details="formDetails"
           :training-summary="trainingSummary"
           :isSurvey="isSurvey"
+          :resendDialogTitle="getResendDialogTitle"
+          :bodyTrainingType="getBodyTrainingType"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />
