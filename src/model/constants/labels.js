@@ -11,6 +11,8 @@ export const labels = {
   UserWhoDidNotReport: 'Users Who Did Not Report',
   UserWhoClickedAndReported: 'Users Who Clicked And Reported',
   ScreenSaverName: 'Screensaver Name',
+  SurveyVendor: 'Survey Vendor',
+  SurveyVendorSub: 'Define vendor for the survey',
   InfoGraphicName: 'Infographic Name',
   RepeatOffenders: 'Repeat Offenders',
   ReplyTracking: 'Reply Tracking',
