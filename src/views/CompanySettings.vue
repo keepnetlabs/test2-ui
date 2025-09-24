@@ -197,7 +197,8 @@ export default {
       getDirectEmailCreationSearchPermissions:
         'permissions/getDirectEmailCreationSearchPermissions',
       getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
-      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions',
+      getMicrosoftTeamsSettingsGetPermissions: 'permissions/getMicrosoftTeamsSettingsGetPermissions'
     })
   },
   created() {
@@ -220,7 +221,7 @@ export default {
         name: 'notification-template'
       },
       {
-        permission: this.getGoogleUserProvisionGetPermissions,
+        permission: this.getMicrosoftTeamsSettingsGetPermissions,
         name: 'microsoft-teams-settings'
       },
       {

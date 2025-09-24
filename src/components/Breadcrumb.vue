@@ -14,7 +14,13 @@
             'Vishing Simulator',
             'Smishing Simulator',
             'Quishing Simulator',
-            'Campaign Reports'
+            'Campaign Reports',
+            'Training Report',
+            'Survey Report',
+            'Poster Report',
+            'Infographic Report',
+            'Learning Path Report',
+            'Screensaver Report'
           ].includes(item) && {
             pointerEvents: 'none',
             opacity: 0.7
@@ -35,6 +41,7 @@
 
 <script>
 import { mdiChevronRight } from '@mdi/js'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Breadcrumb',
   props: {
@@ -54,11 +61,19 @@ export default {
   },
   watch: {
     // call again the method if the route changes
-    $route: 'generate'
+    $route: 'generate',
+    '$store.state.common.activeTrainingType': 'generate'
   },
   methods: {
     generate() {
-      this.breadcrumb = [this.$route.name]
+      const type = this.$store?.state?.common?.activeTrainingType
+      const routeName =
+        this.$route.name === 'Training Report'
+          ? type.startsWith('SCORM')
+            ? 'Training Report'
+            : type + ' Report'
+          : this.$route.name
+      this.breadcrumb = [routeName]
       let parent = this.$route.meta.parentName
       while (parent) {
         parent && this.breadcrumb.unshift(parent)
