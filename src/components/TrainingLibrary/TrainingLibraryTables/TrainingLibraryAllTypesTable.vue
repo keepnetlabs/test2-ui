@@ -68,8 +68,13 @@
       </div>
     </template>
     <template #datatable-row-actions="{ scope }">
+      <TrainingLibrarySurveyRowActions
+        v-if="scope.row.hasQuiz && !isLoading"
+        :scope="scope"
+        @on-force-update="callForData"
+      />
       <TrainingLibraryTrainingRowActions
-        v-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING && !isLoading"
+        v-else-if="scope.row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING && !isLoading"
         :scope="scope"
         @on-force-update="callForData"
       />
@@ -111,6 +116,7 @@ import TrainingLibraryLearningPathRowActions from '@/components/TrainingLibrary/
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
 import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
+import TrainingLibrarySurveyRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibrarySurveyRowActions.vue'
 import { mapActions, mapGetters } from 'vuex'
 import {
   TRAINING_LIBRARY_MAIN_TABS,
@@ -128,6 +134,7 @@ export default {
     TrainingLibraryScreensaverRowActions,
     TrainingLibraryLearningPathRowActions,
     TrainingLibraryTrainingRowActions,
+    TrainingLibrarySurveyRowActions,
     DataTable
   },
   mixins: [useAddTrainingLibraryContent, tableFilterMixin],
