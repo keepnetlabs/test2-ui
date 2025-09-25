@@ -30,6 +30,7 @@
         :form-details="formDetails"
         :trainingSummary="selectedTrainingSummary"
         :isScormProxy="isScormProxy"
+        :isMicrosoftTeams="isMicrosoftTeams"
         isLearningPath
       />
     </ElTabPane>
@@ -78,6 +79,7 @@ export default {
     return {
       selectedTrainingSummary: null,
       isLoading: false,
+      isMicrosoftTeams: false,
       tab: labels.Summary,
       tabItems: [
         {
@@ -178,6 +180,9 @@ export default {
           } = response || {}
           data.trainingTypeName = this.activeTrainingStepType
           this.selectedTrainingSummary = data
+          this.isMicrosoftTeams = this.selectedTrainingSummary?.deliveryMethod?.includes(
+            'Microsoft Teams'
+          )
           if (
             this.selectedTrainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
           ) {
