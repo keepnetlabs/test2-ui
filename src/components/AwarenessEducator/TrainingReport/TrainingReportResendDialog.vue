@@ -54,6 +54,9 @@ export default {
     resendItemCount: {
       type: Number,
       default: 0
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -78,7 +81,9 @@ export default {
         } user${this.payload.selectedItems.length > 1 ? 's' : ''} you’ve selected. Are you sure?`
       }
 
-      return `You are about to re-send this ${this.bodyTrainingType} to the users you selected. Are you sure?`
+      return `You are about to re-send this ${
+        this.isSurvey ? 'survey' : this.bodyTrainingType
+      } to the users you selected. Are you sure?`
     }
   },
   methods: {

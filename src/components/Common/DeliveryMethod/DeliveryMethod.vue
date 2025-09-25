@@ -184,18 +184,14 @@ export default {
 }
 </script>
 <style>
-.delivery-method {
-  &__teams-integration {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 24px;
-  }
-}
 .delivery-option--disabled {
   opacity: 0.6;
   cursor: not-allowed !important;
-
-  span {
-    pointer-events: none;
-  }
+  position: absolute;
+  padding: 0 16px;
+  left: 0;
+  min-height: 40px;
+  z-index: 111;
+  width: 100%;
 }
 </style>

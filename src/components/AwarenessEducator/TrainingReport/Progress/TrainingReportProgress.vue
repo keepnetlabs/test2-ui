@@ -6,6 +6,9 @@
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
       :resendItemCount="resendItemCount"
+      :isSurvey="isSurvey"
+      :title="getResendDialogTitle"
+      :bodyTrainingType="getBodyTrainingType"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
@@ -87,6 +90,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import { getTrainingReportProgressStatusBadgeProps } from './utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 export default {
   name: 'TrainingReportClickedTrainingLink',
   components: {
@@ -283,6 +287,29 @@ export default {
   },
   created() {
     this.callForData()
+  },
+  computed: {
+    getResendDialogTitle() {
+      if (this.isSurvey) return labels.ResendSurvey
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.ResendPoster
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
+        return labels.ResendInfographic
+      return labels.ResendTraining
+    },
+
+    getBodyTrainingType() {
+      if (this.isSurvey) return labels.Survey.toLowerCase()
+      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return labels.Poster.toLowerCase()
+      else if (
+        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      )
+        return labels.Infographic.toLowerCase()
+      return labels.Training.toLowerCase()
+    }
   },
   watch: {
     customFields: {
