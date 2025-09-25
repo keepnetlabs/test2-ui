@@ -669,10 +669,11 @@
           </div>
         </div>
         <div :class="getEmailPreviewClasses">
-          <k-email-preview
+          <KEmailPreview
             v-if="template"
             :key="template"
             ref="refPreview"
+            :is-landing-page="templateType === 'landing'"
             :html="previewTemplate"
           />
           <template v-else>

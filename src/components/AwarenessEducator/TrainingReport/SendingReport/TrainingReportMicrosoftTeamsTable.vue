@@ -30,6 +30,7 @@
       :axios-payload.sync="axiosPayload"
       :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
       :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :download-button="tableOptions.downloadButton"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -243,10 +244,13 @@ export default {
           {
             name: `Resend ${this.bodyTrainingType}`,
             id: 'btn-interactions--row-actions-training-report-sending-report',
-            icon: '$custom-resend',
+            icon: '$microsoft-teams-resend',
             action: 'on-resend'
           }
-        ]
+        ],
+        downloadButton: {
+          show: false
+        }
       },
       tableData: []
     }
@@ -297,16 +301,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
-      if (this.isSurvey) {
-        return labels.EmptyTrainingReportSurveyUsers
-      }
-      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-        return labels.EmptyTrainingSendingReportPoster
-      else if (
-        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
-      )
-        return labels.EmptyTrainingSendingReportInfographic
-      return labels.EmptyTrainingReportUsers
+      return 'No notification delivered through Microsoft Teams, yet'
     },
     handleOnResend(row) {
       this.selectedRow = row
