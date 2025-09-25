@@ -89,6 +89,7 @@
           :customFields="customFields"
           :id="id"
           :form-details="formDetails"
+          :isSurvey="isSurvey"
         />
       </ElTabPane>
       <ElTabPane
@@ -117,6 +118,61 @@
           :form-details="formDetails"
           :award-certificate-enrollment-id="awardCertificateEnrollmentId"
           :isSurvey="isSurvey"
+          @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
+        />
+      </ElTabPane>
+    </ElTabs>
+    <ElTabs v-else-if="isMicrosoftTeams" v-model="tab" class="k-sub-tab">
+      <ElTabPane
+        v-if="isMicrosoftTeams"
+        label="Microsoft Teams Notifications"
+        name="teams-notifications"
+        id="teams-notifications-content"
+      >
+        <CampaignManagerReportHeader
+          class="mb-6"
+          :title="
+            isSurvey
+              ? 'Survey Notification Sending Report (Microsoft Teams)'
+              : 'Training Notification Sending Report (Microsoft Teams)'
+          "
+          :subtitle="`Details of ${
+            isSurvey ? 'survey' : 'training'
+          } notification delivery in Microsoft Teams`"
+        />
+        <TrainingReportMicrosoftTeamsTable
+          v-if="tab === 'teams-notifications'"
+          ref="refTeamsTable"
+          class="mt-6"
+          :customFields="customFields"
+          :isScormProxy="isScormProxy"
+          :id="id"
+          :form-details="formDetails"
+          :training-summary="trainingSummary"
+          :isSurvey="isSurvey"
+          :resendDialogTitle="getResendDialogTitle"
+          :bodyTrainingType="getBodyTrainingType"
+          @on-resend="handleOnResend"
+          @on-selection-text-change="handleSelectionChange"
+        />
+      </ElTabPane>
+      <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
+        <CampaignManagerReportHeader
+          class="mb-6"
+          :title="isSurvey ? 'Survey Sending Report' : 'Training Sending Report'"
+          :subtitle="getFirstCardSubtitle"
+        />
+        <TrainingReportEnrollmentEmailsTable
+          v-if="tab === 'enrollment'"
+          ref="refEnrollmentTable"
+          class="mt-6"
+          :customFields="customFields"
+          :isScormProxy="isScormProxy"
+          :id="id"
+          :form-details="formDetails"
+          :isSurvey="isSurvey"
+          :training-summary="trainingSummary"
           @on-resend="handleOnResend"
           @on-selection-text-change="handleSelectionChange"
         />
@@ -197,6 +253,7 @@ export default {
     }
   },
   data() {
+    console.log('this.isMicrosoftTeams', this.isMicrosoftTeams)
     return {
       resendItemCount: 0,
       tab: this.isMicrosoftTeams ? 'teams-notifications' : 'enrollment',

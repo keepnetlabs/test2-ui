@@ -48,7 +48,7 @@
                       <h5 class="answer-options-title">Answer Options:</h5>
                       <div class="options-list">
                         <div
-                          v-for="n in 4"
+                          v-for="n in 2"
                           :key="'skeleton-a-' + n"
                           class="option-item skeleton-option"
                         >
@@ -109,7 +109,10 @@
                       </h5>
                       <!-- Choice Single question type için component -->
                       <ChoiceQuestionComponent
-                        v-if="selectedQuestion.questionType === 'choice-single' || selectedQuestion.questionType === 'true-false'"
+                        v-if="
+                          selectedQuestion.questionType === 'choice-single' ||
+                          selectedQuestion.questionType === 'true-false'
+                        "
                         :answer-options="selectedQuestion.answerOptions"
                         :show-correct-answers="showCorrectAnswers"
                       />
@@ -229,12 +232,6 @@
                 :download-button="interactionsTableOptions.downloadButton"
                 :axios-payload.sync="interactionsAxiosPayload"
                 :count-row="5"
-                @columnFilterChanged="interactionsColumnFilterChanged"
-                @columnFilterCleared="interactionsColumnFilterCleared"
-                @server-side-page-number-changed="interactionsServerSidePageNumberChanged"
-                @server-side-size-changed="interactionsServerSideSizeChanged"
-                @sortChangedEvent="interactionsSortChanged"
-                @searchChangedEvent="interactionsHandleSearchChange"
                 @refreshAction="callForInteractionsData"
               >
                 <template v-slot:datatable-custom-column="{ scope, col }">
@@ -274,12 +271,6 @@
           :download-button="interactionsTableOptions.downloadButton"
           :axios-payload.sync="interactionsAxiosPayload"
           :count-row="5"
-          @columnFilterChanged="interactionsColumnFilterChanged"
-          @columnFilterCleared="interactionsColumnFilterCleared"
-          @server-side-page-number-changed="interactionsServerSidePageNumberChanged"
-          @server-side-size-changed="interactionsServerSideSizeChanged"
-          @sortChangedEvent="interactionsSortChanged"
-          @searchChangedEvent="interactionsHandleSearchChange"
           @refreshAction="callForInteractionsData"
         >
           <template v-slot:datatable-custom-column="{ scope, col }">

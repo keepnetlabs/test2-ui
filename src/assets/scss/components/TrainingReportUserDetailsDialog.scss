@@ -92,9 +92,10 @@
 
   // Answer details container
   .answer-details {
-    max-height: 550px;
+    max-height: 278px;
     overflow-y: auto;
     margin-top: 40px;
+    min-height: 278px;
     border: 1px solid #f2f2f2;
     border-radius: 8px;
     padding: 24px;
@@ -107,6 +108,7 @@
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 20px;
+    height: 64px;
     border-bottom: 1px solid #f2f2f2;
   }
 
@@ -227,7 +229,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    height: 316px;
     color: #383b41;
     font-size: 24px;
     font-style: normal;
