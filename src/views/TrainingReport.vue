@@ -241,6 +241,7 @@ export default {
           this.$route?.query?.trainingType || 0
         ).then((response) => {
           this.trainingSummary = response?.data?.data
+          this.isSurvey = this.trainingSummary?.trainingDetails?.hasQuiz
         })
       }
     }

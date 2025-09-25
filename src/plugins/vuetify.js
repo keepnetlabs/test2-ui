@@ -18,6 +18,7 @@ import QrCodeSelected from '@/components/CustomIcons/QrCodeSelected'
 import PlayFile from '@/components/CustomIcons/PlayFile'
 import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
 import PDFFile from '@/components/CustomIcons/PDFFile.vue'
+import MicrosoftTeamsResend from '@/components/CustomIcons/MicrosoftTeamsResend'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -79,6 +80,9 @@ export default new Vuetify({
       },
       'pdf-file': {
         component: PDFFile
+      },
+      'microsoft-teams-resend': {
+        component: MicrosoftTeamsResend
       }
     }
   }
