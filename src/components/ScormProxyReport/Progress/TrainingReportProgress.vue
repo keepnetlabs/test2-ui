@@ -6,6 +6,7 @@
       :is-action-button-disabled="isResendActionButtonDisabled"
       :payload="resendPayload"
       :resendItemCount="resendItemCount"
+      :isSurvey="isSurvey"
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
