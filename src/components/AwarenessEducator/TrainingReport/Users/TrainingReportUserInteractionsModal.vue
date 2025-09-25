@@ -4,7 +4,7 @@
     title="Details"
     subtitle-id="text--training-report-user-interactions-popup-subtitle"
     maxHeightSize="665"
-    :custom-size="'800'"
+    :custom-size="'850'"
     :icon="CONSTANTS.icon"
     :subtitle="getSubtitle"
     :status="status"
@@ -115,7 +115,7 @@ export default {
         label: this.firstColumnLabel,
         show: true,
         type: 'text',
-        width: 200,
+        width: 160,
         hideSort: true
       },
       {
@@ -179,7 +179,7 @@ export default {
         hideSort: true
       })
     else {
-      columns[columns.length - 1].width = 325
+      columns[columns.length - 1].width = 160
     }
     if (
       this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||

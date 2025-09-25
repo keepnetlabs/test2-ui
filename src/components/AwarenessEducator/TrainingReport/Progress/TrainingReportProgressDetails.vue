@@ -34,7 +34,11 @@
         <template v-slot:datatable-custom-column="{ scope, col }">
           <div class="training-report-progress__progress-column">
             <v-btn style="display: none;" />
-            <Badge v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)" :col="col" size="medium" />
+            <Badge
+              v-bind="getTrainingReportProgressStatusBadgeProps(scope.row.progress)"
+              :col="col"
+              size="medium"
+            />
           </div>
         </template>
       </DataTable>
@@ -168,7 +172,7 @@ export default {
             hideSort: true,
             show: true,
             type: 'text',
-            width: 200
+            width: 160
           }
         ],
         addButton: {
