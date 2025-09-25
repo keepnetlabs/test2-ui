@@ -31,6 +31,7 @@
         :trainingSummary="selectedTrainingSummary"
         :isScormProxy="isScormProxy"
         :isMicrosoftTeams="isMicrosoftTeams"
+        :isSurvey="isSurvey"
         isLearningPath
       />
     </ElTabPane>
@@ -156,6 +157,9 @@ export default {
     },
     isScormProxy() {
       return this.selectedTrainingSummary?.isScormProxy || false
+    },
+    isSurvey() {
+      return this.selectedTrainingSummary?.trainingDetails?.hasQuiz
     }
   },
   created() {

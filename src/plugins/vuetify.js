@@ -19,6 +19,7 @@ import PlayFile from '@/components/CustomIcons/PlayFile'
 import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
 import PDFFile from '@/components/CustomIcons/PDFFile.vue'
 import MicrosoftTeamsResend from '@/components/CustomIcons/MicrosoftTeamsResend'
+import MicrosoftTeamsResendWhite from '@/components/CustomIcons/MicrosoftTeamsResendWhite'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -83,6 +84,9 @@ export default new Vuetify({
       },
       'microsoft-teams-resend': {
         component: MicrosoftTeamsResend
+      },
+      'microsoft-teams-resend-white': {
+        component: MicrosoftTeamsResendWhite
       }
     }
   }
