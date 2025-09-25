@@ -67,58 +67,58 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import Badge from "@/components/Badge";
-import { useLoading } from "@/hooks/useLoading";
-import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import DataTable from '@/components/DataTable'
+import Badge from '@/components/Badge'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
-import { getDefaultAxiosPayload, getBtnStatusColor } from "@/utils/functions";
-import AwarenessEducatorService from "@/api/awarenessEducator";
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
-import { createCustomFieldColumns } from "@/utils/helperFunctions";
-import TrainingReportResendDialog from "@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
+import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { createCustomFieldColumns } from '@/utils/helperFunctions'
+import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 export default {
-  name: "TrainingReportMicrosoftTeamsTable",
+  name: 'TrainingReportMicrosoftTeamsTable',
   components: {
     DataTable,
     Badge,
-    TrainingReportResendDialog,
+    TrainingReportResendDialog
   },
   mixins: [useLoading, useDefaultTableFunctions],
   props: {
     id: {
-      type: String,
+      type: String
     },
     lastSendingStatusItems: {
-      type: Array,
+      type: Array
     },
     isScormProxy: {
-      type: Boolean,
+      type: Boolean
     },
     formDetails: {
-      type: Object,
+      type: Object
     },
     trainingSummary: {
-      type: Object,
+      type: Object
     },
     customFields: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     isSurvey: {
-      type: Boolean,
+      type: Boolean
     },
     resendDialogTitle: {
-      type: String,
+      type: String
     },
     bodyTrainingType: {
-      type: String,
-    },
+      type: String
+    }
   },
   data() {
     return {
@@ -127,10 +127,10 @@ export default {
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
-        id: "training-report-users-data-table",
-        ascending: "ascending",
+        id: 'training-report-users-data-table',
+        ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: "email" }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'email' }),
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
@@ -139,135 +139,131 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true,
-          clipboard: true,
+          clipboard: true
         },
         columns: [
           {
-            property: "firstName",
-            align: "left",
+            property: 'firstName',
+            align: 'left',
             editable: false,
-            label: "First Name",
-            fixed: "left",
+            label: 'First Name',
+            fixed: 'left',
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "lastName",
-            align: "left",
+            property: 'lastName',
+            align: 'left',
             editable: false,
-            label: "Last Name",
+            label: 'Last Name',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "email",
-            align: "left",
+            property: 'email',
+            align: 'left',
             editable: false,
-            label: "Email",
+            label: 'Email',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "department",
-            align: "left",
+            property: 'department',
+            align: 'left',
             editable: false,
-            label: "Department",
+            label: 'Department',
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
-            property: "firstSendDate",
-            align: "left",
+            property: 'firstSendDate',
+            align: 'left',
             editable: false,
-            label: "Date First Sent",
+            label: 'Date First Sent',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
-            width: 160,
+            type: 'text',
+            filterableType: 'date',
+            width: 160
           },
           {
-            property: "lastSendDate",
-            align: "left",
+            property: 'lastSendDate',
+            align: 'left',
             editable: false,
-            label: "Date Last Sent",
+            label: 'Date Last Sent',
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
-            width: 180,
+            type: 'text',
+            filterableType: 'date',
+            width: 180
           },
           {
-            property: "lastSendingStatus",
-            align: "center",
+            property: 'lastSendingStatus',
+            align: 'center',
             editable: false,
             fixed: false,
-            label: "Last Sending Status",
+            label: 'Last Sending Status',
             sortable: true,
             show: true,
-            type: "slot",
+            type: 'slot',
             minWidth: 220,
             props: {
               style: {
-                maxWidth: "110px !important",
-              },
+                maxWidth: '110px !important'
+              }
             },
             overrideWidth: true,
-            filterableType: "select",
-            filterableItems:
-              this?.formDetails?.emailStatusEnum.map((status) => ({
-                text: status.displayName || status.name,
-                value: status.name,
-              })) || [],
-          },
+            filterableType: 'select',
+            filterableItems: ['Success', 'Failed']
+          }
         ],
         addButton: {
-          show: false,
+          show: false
         },
         iEmpty: {
-          message: this.getEmptyTableTextMessage(),
+          message: this.getEmptyTableTextMessage()
         },
         rowActions: [
           {
             name: `Resend ${this.bodyTrainingType}`,
-            id: "btn-interactions--row-actions-training-report-sending-report",
-            icon: "$custom-resend",
-            action: "on-resend",
-          },
-        ],
+            id: 'btn-interactions--row-actions-training-report-sending-report',
+            icon: '$custom-resend',
+            action: 'on-resend'
+          }
+        ]
       },
-      tableData: [],
-    };
+      tableData: []
+    }
   },
   watch: {
     customFields: {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = createCustomFieldColumns(val, false);
+        const fields = createCustomFieldColumns(val, false)
         const departmentIndex = this.tableOptions.columns.findIndex(
-          (column) => column.property === "department"
-        );
+          (column) => column.property === 'department'
+        )
         if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields);
+          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
         }
-      },
+      }
     },
     isScormProxy: {
       immediate: true,
@@ -275,86 +271,86 @@ export default {
         if (val) {
           const resendActionIndex = this.tableOptions.rowActions.findIndex(
             (action) => action.name === `Resend ${this.bodyTrainingType}`
-          );
+          )
           if (resendActionIndex !== -1) {
-            this.tableOptions.rowActions.splice(resendActionIndex, 1);
+            this.tableOptions.rowActions.splice(resendActionIndex, 1)
           }
         }
-      },
-    },
+      }
+    }
   },
   created() {
-    this.callForData();
+    this.callForData()
   },
   methods: {
     handleSelectionChange(selectionCount) {
-      this.$emit("on-selection-text-change", selectionCount);
+      this.$emit('on-selection-text-change', selectionCount)
     },
     handleSearchChange(searchFilter = {}) {
-      const customFieldNames = this.customFields?.map?.((field) => field.name);
+      const customFieldNames = this.customFields?.map?.((field) => field.name)
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
           (field) => !customFieldNames.includes(field.FieldName)
-        ),
-      ];
-      this.resetPageNumber();
-      this.callForData();
+        )
+      ]
+      this.resetPageNumber()
+      this.callForData()
     },
     getEmptyTableTextMessage() {
       if (this.isSurvey) {
-        return labels.EmptyTrainingReportSurveyUsers;
+        return labels.EmptyTrainingReportSurveyUsers
       }
       if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-        return labels.EmptyTrainingSendingReportPoster;
+        return labels.EmptyTrainingSendingReportPoster
       else if (
         this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
       )
-        return labels.EmptyTrainingSendingReportInfographic;
-      return labels.EmptyTrainingReportUsers;
+        return labels.EmptyTrainingSendingReportInfographic
+      return labels.EmptyTrainingReportUsers
     },
     handleOnResend(row) {
-      this.selectedRow = row;
-      this.toggleIsShowResendDialog();
+      this.selectedRow = row
+      this.toggleIsShowResendDialog()
     },
     resendItem() {
-      this.isResendActionButtonDisabled = true;
+      this.isResendActionButtonDisabled = true
       AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails({
-        notificationActivityLogId: this.selectedRow.id,
+        notificationActivityLogId: this.selectedRow.id
       })
         .then(() => {
-          this.$refs.refTable.resetSelectableParams();
-          this.callForData();
+          this.$refs.refTable.resetSelectableParams()
+          this.callForData()
         })
         .finally(() => {
-          this.isResendActionButtonDisabled = false;
-          this.isShowResendDialog = false;
-          this.selectedRow = null;
-        });
+          this.isResendActionButtonDisabled = false
+          this.isShowResendDialog = false
+          this.selectedRow = null
+        })
     },
     getBtnStatusColor(type) {
-      return getBtnStatusColor(type);
+      return getBtnStatusColor(type)
     },
     callForData() {
-      this.setLoading(true);
+      this.setLoading(true)
       AwarenessEducatorService.searchMicrosoftTeamsSendingReportEmails(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber },
-            },
-          } = response;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => {
-            let customFields = {};
+            let customFields = {}
             row?.customFieldValues?.forEach?.((field) => {
-              customFields[`${field.name}`] = field?.value;
-            });
-            return { ...row, ...customFields };
-          });
+              customFields[`${field.name}`] = field?.value
+            })
+            return { ...row, ...customFields }
+          })
         })
-        .finally(this.setLoading);
+        .finally(this.setLoading)
     },
     exportTrainingReportSendingReportTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -364,29 +360,26 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === "XLS" ? "Excel" : item,
-          filter: this.axiosPayload.filter,
-        };
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
         AwarenessEducatorService.exportSendingReport(payload, this.id).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
-          link.download = `${
-            this.bodyTrainingType
-          }-Sending-Report-Enrollment-Emails.${
-            item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `${this.bodyTrainingType}-Sending-Report-Enrollment-Emails.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     toggleIsShowResendDialog() {
       if (this.isShowResendDialog) {
         this.selectedRow = null
       }
-      this.isShowResendDialog = !this.isShowResendDialog;
-    },
-  },
-};
+      this.isShowResendDialog = !this.isShowResendDialog
+    }
+  }
+}
 </script>
-
