@@ -45,11 +45,11 @@
             :value="4"
           >
             <template #label
-              >Didn't complete training
+              >Didn't complete {{ isSurvey ? 'survey' : 'training' }}
               {{ `(${items.didNotCompleteTrainingCount || 0})` }}</template
             > </v-checkbox
           ><v-checkbox
-            v-if="isTrainingTypeTraining"
+            v-if="isTrainingTypeTraining && !isSurvey"
             v-model="types"
             id="input--training-report-email-failed-to-send"
             color="#2196f3"
@@ -110,6 +110,9 @@ export default {
     },
     trainingType: {
       type: String
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -123,6 +126,7 @@ export default {
   },
   computed: {
     getTypeText() {
+      if (this.isSurvey) return 'survey'
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'poster'
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return 'infographic'

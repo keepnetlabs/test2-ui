@@ -89,6 +89,7 @@
           :customFields="customFields"
           :id="id"
           :form-details="formDetails"
+          :isSurvey="isSurvey"
         />
       </ElTabPane>
       <ElTabPane

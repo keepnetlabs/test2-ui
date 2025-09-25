@@ -129,6 +129,9 @@ export default {
     customFields: {
       type: Array,
       default: () => []
+    },
+    isSurvey: {
+      type: Boolean
     }
   },
   data() {
@@ -226,7 +229,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: `No reminder has been enabled for this campaign yet`
+          message: `No reminder has been enabled for this ${
+            this.isSurvey ? 'survey' : 'campaign'
+          } yet`
         },
         rowActions: [
           {
