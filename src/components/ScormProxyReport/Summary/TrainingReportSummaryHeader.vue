@@ -6,6 +6,7 @@
       :items="resendDialogItems"
       :trainingName="trainingName"
       :is-action-button-disabled="isActionButtonDisabled"
+      :is-survey="isSurvey"
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />

@@ -9,6 +9,7 @@
         :is-action-button-disabled="isActionButtonDisabled"
         :title="getResendButtonText"
         :training-type="trainingType"
+        :is-survey="isSurvey"
         @on-close="toggleShowResendDialog"
         @on-confirm="handleOnConfirmResend"
       />
