@@ -453,6 +453,21 @@
               </template>
               <span class="tooltip-span">Resend</span>
             </v-tooltip>
+            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.microsoftResend">
+              <template #activator="{ on }">
+                <v-btn
+                  v-on="on"
+                  class="btn-selected-hover mr-1"
+                  icon
+                  @click="handleResend(multipleSelection)"
+                >
+                  <v-icon class="selection-icons" color="white"
+                    >$microsoft-teams-resend-white</v-icon
+                  >
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Resend</span>
+            </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.deleteAndNotify">
               <template #activator="{ on }">
                 <v-btn

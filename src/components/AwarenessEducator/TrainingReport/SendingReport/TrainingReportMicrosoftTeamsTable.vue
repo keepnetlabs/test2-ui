@@ -16,7 +16,6 @@
       selectable
       filterable
       options
-      is-server-side-selection
       is-server-side
       :loading="isLoading"
       :table="tableData"
@@ -77,10 +76,8 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload, getBtnStatusColor } from '@/utils/functions'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import TrainingReportResendDialog from '@/components/AwarenessEducator/TrainingReport/TrainingReportResendDialog'
 export default {
@@ -139,7 +136,7 @@ export default {
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true,
+          microsoftResend: true,
           clipboard: true
         },
         columns: [
@@ -309,18 +306,39 @@ export default {
     },
     resendItem() {
       this.isResendActionButtonDisabled = true
-      AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails({
-        notificationActivityLogId: this.selectedRow.id
-      })
-        .then(() => {
-          this.$refs.refTable.resetSelectableParams()
-          this.callForData()
+      if (Array.isArray(this.selectedRow)) {
+        const promises = []
+        this.selectedRow.forEach((item) => {
+          promises.push(
+            AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails({
+              notificationActivityLogId: item.id
+            })
+          )
         })
-        .finally(() => {
-          this.isResendActionButtonDisabled = false
-          this.isShowResendDialog = false
-          this.selectedRow = null
+        Promise.all(promises)
+          .then(() => {
+            this.$refs.refTable.resetSelectableParams()
+            this.callForData()
+          })
+          .finally(() => {
+            this.isResendActionButtonDisabled = false
+            this.isShowResendDialog = false
+            this.selectedRow = null
+          })
+      } else {
+        AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails({
+          notificationActivityLogId: this.selectedRow.id
         })
+          .then(() => {
+            this.$refs.refTable.resetSelectableParams()
+            this.callForData()
+          })
+          .finally(() => {
+            this.isResendActionButtonDisabled = false
+            this.isShowResendDialog = false
+            this.selectedRow = null
+          })
+      }
     },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
