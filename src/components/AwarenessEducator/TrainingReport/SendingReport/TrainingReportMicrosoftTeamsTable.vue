@@ -297,16 +297,7 @@ export default {
       this.callForData()
     },
     getEmptyTableTextMessage() {
-      if (this.isSurvey) {
-        return labels.EmptyTrainingReportSurveyUsers
-      }
-      if (this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-        return labels.EmptyTrainingSendingReportPoster
-      else if (
-        this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
-      )
-        return labels.EmptyTrainingSendingReportInfographic
-      return labels.EmptyTrainingReportUsers
+      return 'No notification delivered through Microsoft Teams, yet'
     },
     handleOnResend(row) {
       this.selectedRow = row
