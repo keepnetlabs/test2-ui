@@ -169,7 +169,7 @@ export default {
             hideSort: true,
             show: true,
             type: 'text',
-            width: 200
+            width: 160
           }
         ],
         addButton: {

@@ -203,7 +203,9 @@ export default {
           show: false
         },
         iEmpty: {
-          message: this.isSurvey ? labels.EmptyTrainingReportOpenedSurvey : labels.EmptyTrainingReportOpened
+          message: this.isSurvey
+            ? labels.EmptyTrainingReportOpenedSurvey
+            : labels.EmptyTrainingReportOpened
         },
         rowActions: [
           {
