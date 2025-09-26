@@ -184,6 +184,11 @@ export default {
           } = response || {}
           data.trainingTypeName = this.activeTrainingStepType
           this.selectedTrainingSummary = data
+          if (this.selectedTrainingSummary?.trainingDetails?.hasQuiz) {
+            this.tabItems[2].label = labels.OpenededSurvey
+            this.tabItems[3].label = labels.ClickedSurveyLink
+            this.tabItems.splice(5, 1)
+          }
           this.isMicrosoftTeams = this.selectedTrainingSummary?.deliveryMethod?.includes(
             'Microsoft Teams'
           )
