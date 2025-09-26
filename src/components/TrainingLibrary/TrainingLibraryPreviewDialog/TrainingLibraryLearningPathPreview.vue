@@ -338,6 +338,7 @@ export default {
   data() {
     return {
       labels,
+      isSurvey: false,
       TRAINING_LIBRARY_PAYLOAD_TYPES,
       tab: 'details',
       isPdf: true,
@@ -382,6 +383,9 @@ export default {
       return style
     },
     getActiveMaterialNameLabel() {
+      if (this.isSurvey) {
+        return labels.SurveyName + ':'
+      }
       if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
         return labels.PosterName + ':'
       } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
@@ -392,6 +396,9 @@ export default {
       return labels.TrainingName + ':'
     },
     getActiveMaterialNameLanguageLabel() {
+      if (this.isSurvey) {
+        return labels.SurveyLanguage + ':'
+      }
       if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
         return labels.PosterLanguage + ':'
       } else if (this.activeTrainingContentType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
@@ -409,6 +416,7 @@ export default {
       if (trainingGroupIndex < 0) return
       const trainingGroup = this.getTrainingGroups?.[trainingGroupIndex] || {}
       this.activeTrainingContentId = trainingGroup.detailTrainingId
+      console.log('trainingGroup', trainingGroup)
       this.activeTrainingContentType = trainingGroup.type
       this.activeTrainingContentLanguageCodes = trainingGroup.languages
       this.callForActiveTrainingDetail()
@@ -417,6 +425,7 @@ export default {
       this.isTemplateLoading = true
       AwarenessEducatorService.getTraining(this.activeTrainingContentId).then((response) => {
         this.activeTrainingContentParams = response?.data?.data
+        this.isSurvey = this.activeTrainingContentParams?.hasQuiz
         this.activeTrainingContentButtonKey = `key-${createRandomCryptStringNumber()}`
         this.activeTrainingContentLanguages = this.activeTrainingContentLanguageCodes
           .reduce((acc, lang) => {
