@@ -76,6 +76,7 @@ export const labels = {
   PosterSummary: 'Poster Summary',
   PosterSummarySub: 'Summary of this poster enrollment',
   InfographicSummarySub: 'Summary of this infographic enrollment',
+  SurveyLanguage: 'Survey Language',
   LearningPathSummarySub: 'Summary of this learning path enrollment',
   TrainingSummarySub: 'Summary of this training enrollment',
   LearningPathEnrollmentInfo: 'Learning Path Enrollment Info',
