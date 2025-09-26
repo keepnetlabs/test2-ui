@@ -6,7 +6,7 @@
       isTrainingTypePosterOrInfographic ? 'training-report-summary-cards--poster' : ''
     ]"
   >
-    <template v-if="isTrainingLibraryTypeTraining">
+    <template v-if="isTrainingLibraryTypeTraining || isSurvey">
       <div class="training-report-summary-cards__left">
         <TrainingReportSummaryInfoCard
           v-bind="getOpenedData"
