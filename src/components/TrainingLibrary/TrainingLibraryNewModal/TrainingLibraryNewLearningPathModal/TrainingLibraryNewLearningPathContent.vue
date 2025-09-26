@@ -9,6 +9,14 @@
       v-bind="getLearningPathModalTrainingPreviewDialog"
       @close="onClosePreviewModal"
     />
+    <TrainingLibrarySurveyPreviewDialog
+      v-if="
+        getLearningPathModalTrainingPreviewDialog.status &&
+        getLearningPathModalTrainingPreviewDialog.type === 'Survey'
+      "
+      v-bind="getLearningPathModalTrainingPreviewDialog"
+      @close="onClosePreviewModal"
+    />
     <TrainingLibraryPosterPreviewDialog
       v-if="
         getLearningPathModalTrainingPreviewDialog.status &&
@@ -115,6 +123,7 @@ import { Fragment } from 'vue-frag'
 import useDebounce from '@/hooks/useDebounce'
 import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
 import { isInavailable } from '../../utils'
+import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
@@ -122,6 +131,7 @@ export default {
     ConfigureCompanyStepHeader,
     TrainingLibraryNewLearningPathFilterBadges,
     TrainingLibraryNewLearningPathFilters,
+    TrainingLibrarySurveyPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
     TrainingLibraryTrainingPreviewDialog,
