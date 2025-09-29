@@ -20,9 +20,23 @@
     gap: 16px;
   }
 
+  // Toolbar row above Q/A columns
+  .responses-toolbar {
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+
   // Questions panel (left side)
   .questions-panel {
     flex: 0 0 450px;
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #383b41;
+    }
+  }
+  .answers-panel {
     .panel-title {
       font-size: 16px;
       font-weight: 600;
@@ -94,7 +108,6 @@
   .answer-details {
     max-height: 278px;
     overflow-y: auto;
-    margin-top: 40px;
     min-height: 278px;
     border: 1px solid #f2f2f2;
     border-radius: 8px;
