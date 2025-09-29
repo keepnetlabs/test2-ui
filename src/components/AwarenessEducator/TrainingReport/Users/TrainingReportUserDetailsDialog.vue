@@ -12,7 +12,7 @@
   >
     <template #app-dialog-body>
       <div v-if="item && isSurvey" class="training-report-user-details-dialog">
-        <el-tabs v-model="activeTab" ref="refTabContainer">
+        <el-tabs v-model="activeTab" ref="refTabContainer" class="mt-n2">
           <el-tab-pane label="Responses" name="responses" id="responses-content">
             <div v-if="activeTab === 'responses'" class="tab-content">
               <div v-if="isResponsesLoading" class="responses-layout">
@@ -62,147 +62,155 @@
               <div v-else-if="responsesData.length === 0" class="empty-state">
                 <p>You do not have any survey data available.</p>
               </div>
-              <div v-else class="responses-layout">
-                <!-- Questions List (Left Side) -->
-                <div class="questions-panel">
-                  <h3 class="panel-title">Questions</h3>
-                  <div class="questions-list">
-                    <div
-                      v-for="(question, index) in responsesData"
-                      :key="question.questionId || index"
-                      class="question-item"
-                      :class="{ active: selectedQuestionIndex === index }"
-                      @click="selectQuestion(index)"
-                    >
-                      <div class="question-number">{{ index + 1 }}</div>
-                      <div class="question-text">
-                        {{ question.questionText }}
+              <div v-else>
+                <div class="responses-toolbar" v-if="sessionSelectItems.length > 1">
+                  <KSelect
+                    v-model="selectedSessionIndex"
+                    :items="sessionSelectItems"
+                    outlined
+                    dense
+                    hide-details
+                    placeholder="Response"
+                    style="max-width: 380px;"
+                  />
+                </div>
+                <div class="responses-layout">
+                  <!-- Questions List (Left Side) -->
+                  <div class="questions-panel">
+                    <h3 class="panel-title">Questions</h3>
+                    <div class="questions-list">
+                      <div
+                        v-for="(question, index) in responsesData"
+                        :key="question.questionId || index"
+                        class="question-item"
+                        :class="{ active: selectedQuestionIndex === index }"
+                        @click="selectQuestion(index)"
+                      >
+                        <div class="question-number">{{ index + 1 }}</div>
+                        <div class="question-text">
+                          {{ question.questionText }}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Answer Details (Right Side) -->
-                <div class="answers-panel">
-                  <div v-if="selectedQuestion" class="answer-details">
-                    <div class="selected-question">
-                      <div class="question-header">
-                        <div class="question-number-badge">
-                          {{ selectedQuestionIndex + 1 }}
+                  <!-- Answer Details (Right Side) -->
+                  <div class="answers-panel">
+                    <h3 class="panel-title">Answer Details</h3>
+                    <div v-if="selectedQuestion" class="answer-details">
+                      <div class="selected-question">
+                        <div class="question-header">
+                          <div class="question-number-badge">
+                            {{ selectedQuestionIndex + 1 }}
+                          </div>
+                          <h4 class="question-title">
+                            {{ selectedQuestion.questionText }}
+                          </h4>
                         </div>
-                        <h4 class="question-title">
-                          {{ selectedQuestion.questionText }}
-                        </h4>
                       </div>
-                    </div>
 
-                    <div class="answer-options">
-                      <h5
-                        v-if="
-                          selectedQuestion.questionType !== 'fill-in' &&
-                          selectedQuestion.questionType !== 'numeric' &&
-                          selectedQuestion.questionType !== 'long-fill-in'
-                        "
-                        class="answer-options-title"
-                      >
-                        Answer Options:
-                      </h5>
-                      <!-- Choice Single question type için component -->
-                      <ChoiceQuestionComponent
-                        v-if="
-                          selectedQuestion.questionType === 'choice-single' ||
-                          selectedQuestion.questionType === 'true-false'
-                        "
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Choice Multi question type için component -->
-                      <MultipleResponseComponent
-                        v-else-if="selectedQuestion.questionType === 'choice-multi'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- TrueFalse question type için component -->
-                      <TrueFalseComponent
-                        v-else-if="selectedQuestion.questionType === 'true-false'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Fill-In question type için component -->
-                      <FillInComponent
-                        v-else-if="selectedQuestion.questionType === 'fill-in'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Numeric question type için component -->
-                      <NumericComponent
-                        v-else-if="selectedQuestion.questionType === 'numeric'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Sequence question type için component -->
-                      <SequenceComponent
-                        v-else-if="selectedQuestion.questionType === 'sequence'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Matching question type için component -->
-                      <MatchingComponent
-                        v-else-if="selectedQuestion.questionType === 'matching'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Dropdown question type için component -->
-                      <DropdownComponent
-                        v-else-if="selectedQuestion.questionType === 'dropdown'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Word Bank question type için component -->
-                      <WordBankComponent
-                        v-else-if="selectedQuestion.questionType === 'word-bank'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Hotspot question type için component -->
-                      <HotspotComponent
-                        v-else-if="selectedQuestion.questionType === 'hotspot'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Likert question type için component -->
-                      <LikertComponent
-                        v-else-if="selectedQuestion.questionType === 'likert'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Long Fill In (Essay) question type için component -->
-                      <LongFillInComponent
-                        v-else-if="selectedQuestion.questionType === 'long-fill-in'"
-                        :answer-options="selectedQuestion.answerOptions"
-                        :show-correct-answers="showCorrectAnswers"
-                      />
-                      <!-- Diğer question type'lar için fallback -->
-                      <div v-else class="options-list">
-                        <div
-                          v-for="option in selectedQuestion.answerOptions"
-                          :key="option.optionId || option.text"
-                          class="option-item"
-                          :class="{
-                            selected: option.isUserAnswer,
-                            correct: option.isCorrect && showCorrectAnswers
-                          }"
+                      <div class="answer-options">
+                        <h5
+                          v-if="
+                            selectedQuestion.questionType !== 'fill-in' &&
+                            selectedQuestion.questionType !== 'numeric' &&
+                            selectedQuestion.questionType !== 'long-fill-in'
+                          "
+                          class="answer-options-title"
                         >
-                          <span class="option-text">{{ option.text }}</span>
-                          <div class="option-badges">
-                            <span v-if="option.isUserAnswer" class="badge badge-selected"
-                              >Selected</span
-                            >
-                            <span
-                              v-if="option.isCorrect && showCorrectAnswers"
-                              class="badge badge-correct"
-                              >Correct</span
-                            >
+                          Answer Options:
+                        </h5>
+                        <!-- Choice Single question type için component -->
+                        <ChoiceQuestionComponent
+                          v-if="
+                            selectedQuestion.questionType === 'choice-single' ||
+                            selectedQuestion.questionType === 'true-false'
+                          "
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Choice Multi question type için component -->
+                        <MultipleResponseComponent
+                          v-else-if="selectedQuestion.questionType === 'choice-multi'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Fill-In question type için component -->
+                        <FillInComponent
+                          v-else-if="selectedQuestion.questionType === 'fill-in'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Numeric question type için component -->
+                        <NumericComponent
+                          v-else-if="selectedQuestion.questionType === 'numeric'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Sequence question type için component -->
+                        <SequenceComponent
+                          v-else-if="selectedQuestion.questionType === 'sequence'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Matching question type için component -->
+                        <MatchingComponent
+                          v-else-if="selectedQuestion.questionType === 'matching'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Dropdown question type için component -->
+                        <DropdownComponent
+                          v-else-if="selectedQuestion.questionType === 'dropdown'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Word Bank question type için component -->
+                        <WordBankComponent
+                          v-else-if="selectedQuestion.questionType === 'word-bank'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Hotspot question type için component -->
+                        <HotspotComponent
+                          v-else-if="selectedQuestion.questionType === 'hotspot'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Likert question type için component -->
+                        <LikertComponent
+                          v-else-if="selectedQuestion.questionType === 'likert'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Long Fill In (Essay) question type için component -->
+                        <LongFillInComponent
+                          v-else-if="selectedQuestion.questionType === 'long-fill-in'"
+                          :answer-options="selectedQuestion.answerOptions"
+                          :show-correct-answers="showCorrectAnswers"
+                        />
+                        <!-- Diğer question type'lar için fallback -->
+                        <div v-else class="options-list">
+                          <div
+                            v-for="option in selectedQuestion.answerOptions"
+                            :key="option.optionId || option.text"
+                            class="option-item"
+                            :class="{
+                              selected: option.isUserAnswer,
+                              correct: option.isCorrect && showCorrectAnswers
+                            }"
+                          >
+                            <span class="option-text">{{ option.text }}</span>
+                            <div class="option-badges">
+                              <span v-if="option.isUserAnswer" class="badge badge-selected"
+                                >Selected</span
+                              >
+                              <span
+                                v-if="option.isCorrect && showCorrectAnswers"
+                                class="badge badge-correct"
+                                >Correct</span
+                              >
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -309,8 +317,8 @@ import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import ChoiceQuestionComponent from './ChoiceQuestionComponent'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import MultipleResponseComponent from './MultipleResponseComponent'
-import TrueFalseComponent from './TrueFalseComponent'
 import FillInComponent from './FillInComponent'
 import NumericComponent from './NumericComponent'
 import SequenceComponent from './SequenceComponent'
@@ -336,9 +344,9 @@ export default {
     DataTable,
     AppDialog,
     Badge,
+    KSelect,
     ChoiceQuestionComponent,
     MultipleResponseComponent,
-    TrueFalseComponent,
     FillInComponent,
     NumericComponent,
     SequenceComponent,
@@ -470,6 +478,7 @@ export default {
       isResponsesLoading: false,
       isInteractionsLoading: false,
       selectedQuestionIndex: 0,
+      selectedSessionIndex: null,
       CONSTANTS: {
         icon: 'mdi-text-box',
         interactionsTableId: 'training-report-user-interactions-data-table'
@@ -491,7 +500,9 @@ export default {
         }
       },
       responsesData: [],
-      interactionsTableData: []
+      interactionsTableData: [],
+      allSessions: [],
+      sessionSelectItems: []
     }
   },
   computed: {
@@ -510,6 +521,17 @@ export default {
         } else if (newTab === 'interactions' && this.item) {
           this.callForInteractionsData()
         }
+      }
+    },
+    selectedSessionIndex(newIndex) {
+      if (
+        newIndex !== null &&
+        Array.isArray(this.allSessions) &&
+        this.allSessions.length > 0 &&
+        this.allSessions[newIndex]
+      ) {
+        this.responsesData = this.transformSessionToQuestions(this.allSessions[newIndex])
+        this.selectedQuestionIndex = 0
       }
     },
     item: {
@@ -545,13 +567,26 @@ export default {
       )
         .then((response) => {
           const { data } = response
-          this.responsesData = this.transformApiResponseToComponentData(data.data)
+          this.allSessions = Array.isArray(data?.data) ? data.data : []
+          // Build select items like: Response 1..N
+          this.sessionSelectItems = this.allSessions.map((_, idx) => ({
+            text: `Completion ${idx + 1}`,
+            value: idx
+          }))
+          // Default to latest session
+          const lastIndex = this.allSessions.length > 0 ? this.allSessions.length - 1 : null
+          this.selectedSessionIndex = lastIndex
+          this.responsesData =
+            lastIndex !== null ? this.transformSessionToQuestions(this.allSessions[lastIndex]) : []
           this.selectedQuestionIndex = 0
         })
         .catch((error) => {
           console.error('Error fetching exam result sessions:', error)
           // Fallback to empty data on error
+          this.allSessions = []
+          this.sessionSelectItems = []
           this.responsesData = []
+          this.selectedSessionIndex = null
         })
         .finally(() => {
           this.isResponsesLoading = false
@@ -563,23 +598,21 @@ export default {
     },
 
     transformApiResponseToComponentData(apiData) {
-      if (!apiData || !Array.isArray(apiData)) {
-        return []
-      }
+      // Kept for backward compatibility; now unused
+      if (!apiData || !Array.isArray(apiData)) return []
+      const sessionData = apiData[apiData.length - 1]
+      return this.transformSessionToQuestions(sessionData)
+    },
 
-      // API'den gelen data formatı: data array içinde session objesi var
-      const sessionData = apiData[apiData.length - 1] // Son session'ı al (en güncel)
-
-      if (!sessionData || !sessionData.interactionsHumanReadable) {
-        return []
-      }
+    transformSessionToQuestions(sessionData) {
+      if (!sessionData || !sessionData.interactionsHumanReadable) return []
       const transformedData = sessionData.interactionsHumanReadable
         .filter((interaction) => interaction.source === 'Qex')
         .map((interaction) => {
           return {
             questionId: interaction.index + 1,
             questionText: interaction.question,
-            questionType: interaction.type.toLowerCase(),
+            questionType: String(interaction.type || '').toLowerCase(),
             responseDate: `${sessionData.enrollmentSessionCreatedAt} ${interaction.time}`,
             answerOptions: this.transformAnswerOptions(interaction.answers)
           }

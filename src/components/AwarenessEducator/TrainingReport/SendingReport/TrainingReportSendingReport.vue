@@ -253,7 +253,6 @@ export default {
     }
   },
   data() {
-    console.log('this.isMicrosoftTeams', this.isMicrosoftTeams)
     return {
       resendItemCount: 0,
       tab: this.isMicrosoftTeams ? 'teams-notifications' : 'enrollment',
