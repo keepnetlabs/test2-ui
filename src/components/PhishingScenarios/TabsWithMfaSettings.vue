@@ -26,7 +26,12 @@
           </div>
         </div>
         <hr class="mt-4" v-if="!!template.content" />
-        <KEmailPreview v-if="!!template.content" :html="template.content" is-landing-page />
+        <KEmailPreview
+          v-if="!!template.content"
+          is-landing-page
+          :html="template.content"
+          :is-red-flagged-template="checkIsRedFlaggedTemplate(template.content)"
+        />
       </div>
     </ElTabPane>
     <ElTabPane
@@ -159,6 +164,11 @@ export default {
   watch: {
     landingPageTemplates() {
       this.landingPageTab = '1'
+    }
+  },
+  methods: {
+    checkIsRedFlaggedTemplate(html) {
+      return typeof html === 'string' && html.includes('data-redflag')
     }
   }
 }

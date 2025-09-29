@@ -14,7 +14,8 @@
       <template #app-dialog-body>
         <KEmailPreview
           v-if="!!getSelectedTemplateDetails"
-          :html="getSelectedTemplateDetails"
+          :html="getPreviewLandingHtml(getSelectedTemplateDetails)"
+          :is-red-flagged-template="checkIsRedFlaggedTemplate(getSelectedTemplateDetails)"
           :key="getSelectedTemplateDetails"
         />
       </template>
@@ -494,7 +495,8 @@
                             is-extra-height
                             is-landing-page
                             :key="template.content"
-                            :html="template.content"
+                            :html="getPreviewLandingHtml(template.content)"
+                            :is-red-flagged-template="checkIsRedFlaggedTemplate(template.content)"
                           />
                         </ElTabPane>
                       </ElTabs>
@@ -848,7 +850,10 @@
                         v-if="!!getSingleTemplateDetails"
                         is-extra-height
                         is-landing-page
-                        :html="getSingleTemplateDetails"
+                        :html="getPreviewLandingHtml(getSingleTemplateDetails)"
+                        :is-red-flagged-template="
+                          checkIsRedFlaggedTemplate(getSingleTemplateDetails)
+                        "
                         :key="getLandingPageHtmlKey"
                       />
                     </template>
@@ -1437,6 +1442,16 @@ export default {
         this.loadingTemplates = true
         this.getTemplates()
       }
+    },
+    checkIsRedFlaggedTemplate(html) {
+      return typeof html === 'string' && html.includes('data-redflag')
+    },
+    getPreviewLandingHtml(html) {
+      if (typeof html === 'string' && html.includes('data-redflag')) {
+        const logo = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        return html.replace(/\{COMPANYLOGO\}/g, logo)
+      }
+      return html
     },
     setSelectedTemplate(item, index, isInitial = false) {
       if (this.isSaving) return

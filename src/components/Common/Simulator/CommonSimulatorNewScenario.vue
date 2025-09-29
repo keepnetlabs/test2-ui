@@ -657,6 +657,9 @@
                         <KEmailPreview
                           v-if="!!getCurrentLandingPageTemplate"
                           :html="getCurrentLandingPageTemplate"
+                          :is-red-flagged-template="
+                            isPhishing && checkIsRedFlaggedTemplate(getCurrentLandingPageTemplate)
+                          "
                           :key="getCurrentLandingPageTemplate"
                           is-extra-height
                         />
@@ -1155,6 +1158,10 @@ export default {
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
   methods: {
+    checkIsRedFlaggedTemplate(html) {
+      if (typeof html !== 'string') return false
+      return html.includes('data-redflag')
+    },
     getDifficultyColor,
     handleTemplateEdit(val) {
       this.isTemplateEditing = val
@@ -1524,7 +1531,7 @@ export default {
         apiFunc(payload)
           .then((response) => {
             this.$emit('changeNewScenarioModalStatus', false, true)
-            this.$emit('on-new-item-created',response?.data?.data?.resourceId)
+            this.$emit('on-new-item-created', response?.data?.data?.resourceId)
           })
           .finally(() => {
             this.isSubmitDisabled = false

@@ -6,7 +6,10 @@
     width="100%"
     title="Email Preview"
     :srcdoc="html"
-    :style="{ height }"
+    :style="{
+      height,
+      pointerEvents: isRedFlaggedTemplate ? 'auto !important' : 'none'
+    }"
     :height="height"
     @load="resizeIframe"
   />
@@ -26,6 +29,10 @@ export default {
       default: false
     },
     isLandingPage: {
+      type: Boolean,
+      default: false
+    },
+    isRedFlaggedTemplate: {
       type: Boolean,
       default: false
     }
