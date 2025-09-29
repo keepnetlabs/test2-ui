@@ -23,8 +23,9 @@
     <KEmailPreview
       v-if="!!getCurrentLandingPageTemplate"
       ref="refPreview"
-      :html="getCurrentLandingPageTemplate"
+      :html="previewHtml"
       :is-landing-page="type === PREVIEW_DIALOG_TYPES.PHISHING"
+      :is-red-flagged-template="isRedFlaggedTemplate"
     />
   </div>
 </template>
@@ -70,6 +71,18 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this?.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    previewHtml() {
+      const html = this.getCurrentLandingPageTemplate || ''
+      if (this.isRedFlaggedTemplate && typeof html === 'string') {
+        const logo = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        return html.replace(/\{COMPANYLOGO\}/g, logo)
+      }
+      return html
+    },
+    isRedFlaggedTemplate() {
+      const html = this.getCurrentLandingPageTemplate || ''
+      return typeof html === 'string' && html.includes('data-redflag')
     },
     hasNextTemplate() {
       return this?.landingPageTemplates?.length - 1 > this.selectedLandingPageIndex

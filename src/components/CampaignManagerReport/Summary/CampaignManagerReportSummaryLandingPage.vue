@@ -112,9 +112,10 @@
             v-else
             ref="refPreview"
             :key="getCurrentTemplate"
-            :html="getCurrentTemplate"
+            :html="previewHtml"
             is-extra-height
             is-landing-page
+            :is-red-flagged-template="isRedFlaggedTemplate"
           />
         </div>
       </div>
@@ -188,6 +189,18 @@ export default {
       return this.templates?.length > 1
         ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ''
         : this.templates?.[0]?.content || ''
+    },
+    isRedFlaggedTemplate() {
+      const html = this.getCurrentTemplate || ''
+      return typeof html === 'string' && html.includes('data-redflag')
+    },
+    previewHtml() {
+      const html = this.getCurrentTemplate || ''
+      if (this.isRedFlaggedTemplate && typeof html === 'string') {
+        const logo = this?.$store?.state?.whitelabel?.emailTemplateLogoUrl || ''
+        return html.replace(/\{COMPANYLOGO\}/g, logo)
+      }
+      return html
     },
     getLandingPageUrlText() {
       return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
