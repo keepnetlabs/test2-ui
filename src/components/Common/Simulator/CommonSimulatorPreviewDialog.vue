@@ -122,6 +122,7 @@
           id="campaign-manager-info--landing-content"
         >
           <TabsWithMfaSettings
+            :key="getLandingPageKey"
             class="tabs-with-mfa-settings"
             :type="type"
             :is-method-mfa="isMethodMfa"
@@ -150,6 +151,7 @@ import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import QuishingService from '@/api/quishing'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 export default {
   name: 'CommonSimulatorPreviewDialog',
@@ -244,6 +246,9 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+    },
+    getLandingPageKey() {
+      return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
     }
   },
   created() {

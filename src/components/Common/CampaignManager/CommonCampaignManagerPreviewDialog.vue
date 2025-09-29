@@ -134,6 +134,7 @@
           id="campaign-manager-info--landing-content"
         >
           <TabsWithMfaSettings
+            :key="getLandingPageKey"
             :type="type"
             :is-method-mfa="isMethodMfa"
             :landing-page-params="landingPageParams"
@@ -282,6 +283,9 @@ export default {
     },
     getTrainingId() {
       return this?.trainingParams?.trainingId || ''
+    },
+    getLandingPageKey() {
+      return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
     }
   },
   created() {
