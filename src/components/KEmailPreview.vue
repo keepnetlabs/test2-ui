@@ -67,7 +67,7 @@ export default {
       if (handleIsSafari()) {
         setTimeout(() => {
           this.resizeIframe()
-        }, 300)
+        }, 500)
       } else {
         this.resizeIframe()
       }
@@ -79,13 +79,11 @@ export default {
         cancelAnimationFrame(this.animationFrame)
         this.animationFrame = null
         this.resizeIframe()
-        if (handleIsSafari()) {
-          // Safari may under-measure iframe height; add small bump
-          const iframe = this.$refs.iframe
-          if (iframe && typeof this.height === 'string' && this.height.endsWith('px')) {
-            const current = parseInt(this.height.replace('px', ''), 10) || 0
-            this.height = current + 30 + 'px'
-          }
+        // Safari may under-measure iframe height; add small bump
+        const iframe = this.$refs.iframe
+        if (iframe && typeof this.height === 'string' && this.height.endsWith('px')) {
+          const current = parseInt(this.height.replace('px', ''), 10) || 0
+          this.height = current + 30 + 'px'
         }
       }
     },
@@ -138,7 +136,6 @@ export default {
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = window.requestAnimationFrame(() => this.resizeIframe())
         }
-        console.log(this.height)
       }
     },
     setDefaultHeight(height) {
