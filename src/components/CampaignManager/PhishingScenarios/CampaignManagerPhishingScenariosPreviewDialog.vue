@@ -11,7 +11,11 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
+      <KEmailPreview
+        v-if="!!getTemplatePreviewContent"
+        :html="getTemplatePreviewContent"
+        :is-red-flagged-template="isRedFlaggedTemplate"
+      />
     </template>
     <template #app-dialog-footer>
       <AppDialogFooterWithClose @on-close="handleClose" />
@@ -76,6 +80,10 @@ export default {
       return this.landingPageTemplates?.length > 1
         ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
         : this.landingPageTemplates?.[0]?.content || ''
+    },
+    isRedFlaggedTemplate() {
+      const html = this.getTemplatePreviewContent || ''
+      return typeof html === 'string' && html.includes('data-redflag')
     }
   },
   methods: {
