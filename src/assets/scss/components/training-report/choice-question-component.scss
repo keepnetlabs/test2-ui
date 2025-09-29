@@ -12,11 +12,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 8px 16px;
   border-radius: 8px;
   background: #f2f2f2;
   transition: all 0.2s ease;
   cursor: default;
+  height: 40px;
 }
 
 .choice-option-item--selected {
@@ -30,15 +31,20 @@
 .choice-option-item--selected.choice-option-item--correct {
   background-color: #e1f5fe;
 }
-
+.choice-option-item--selected .choice-option-text {
+  font-size: 12px;
+  color: #2196f3;
+  font-weight: 600;
+}
 .choice-option-content {
   display: flex;
   align-items: center;
   flex: 1;
+  margin-right: 8px;
 }
 
 .choice-option-text {
-  font-size: 14px;
+  font-size: 12px;
   color: #383b41;
   line-height: 1.4;
   flex: 1;
@@ -52,12 +58,16 @@
 }
 
 .choice-badge {
-  padding: 4px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   text-transform: capitalize;
   white-space: nowrap;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .choice-badge--selected {

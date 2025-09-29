@@ -416,7 +416,6 @@ export default {
       if (trainingGroupIndex < 0) return
       const trainingGroup = this.getTrainingGroups?.[trainingGroupIndex] || {}
       this.activeTrainingContentId = trainingGroup.detailTrainingId
-      console.log('trainingGroup', trainingGroup)
       this.activeTrainingContentType = trainingGroup.type
       this.activeTrainingContentLanguageCodes = trainingGroup.languages
       this.callForActiveTrainingDetail()

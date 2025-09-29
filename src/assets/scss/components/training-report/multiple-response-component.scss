@@ -12,11 +12,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 8px 16px;
   border-radius: 8px;
   background: #f2f2f2;
   transition: all 0.2s ease;
   cursor: default;
+  height: 40px;
 }
 
 .multiple-response-option-item--selected {
@@ -30,12 +31,17 @@
 .multiple-response-option-item--selected.multiple-response-option-item--correct {
   background-color: #e1f5fe;
 }
-
+.multiple-response-option-item--selected .multiple-response-option-text {
+  font-size: 12px;
+  color: #2196f3;
+  font-weight: 600;
+}
 .multiple-response-option-content {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
+  margin-right: 8px;
 }
 
 .multiple-response-checkbox-icon {
@@ -49,7 +55,7 @@
 }
 
 .multiple-response-option-text {
-  font-size: 14px;
+  font-size: 12px;
   color: #383b41;
   line-height: 1.4;
   flex: 1;
@@ -63,12 +69,16 @@
 }
 
 .multiple-response-badge {
-  padding: 4px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   text-transform: capitalize;
   white-space: nowrap;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .multiple-response-badge--selected {
