@@ -11,13 +11,13 @@
       pointerEvents: isRedFlaggedTemplate ? 'auto !important' : 'none'
     }"
     :height="height"
-    @load="resizeIframe"
+    @load="handleLoad"
   />
 </template>
 
 <script>
 import { createRandomCryptStringNumber } from '@/utils/functions'
-
+import { handleIsSafari } from '@/utils/functions'
 export default {
   name: 'KEmailPreview',
   props: {
@@ -63,15 +63,30 @@ export default {
     window.removeEventListener('message', this.handleWindowMessage)
   },
   methods: {
+    handleLoad() {
+      if (handleIsSafari()) {
+        setTimeout(() => {
+          this.resizeIframe()
+        }, 300)
+      } else {
+        this.resizeIframe()
+      }
+    },
     handleWindowMessage(e) {
       if (e && e.data && e.data.type === 'redflag:languageChanged') {
         this.stopCalculateFrame = false
         this.isInitialResize = true
         cancelAnimationFrame(this.animationFrame)
         this.animationFrame = null
-        this.numberHeight = this.isLandingPage ? 640 : 300
         this.resizeIframe()
-        console.log('redflag:languageChanged')
+        if (handleIsSafari()) {
+          // Safari may under-measure iframe height; add small bump
+          const iframe = this.$refs.iframe
+          if (iframe && typeof this.height === 'string' && this.height.endsWith('px')) {
+            const current = parseInt(this.height.replace('px', ''), 10) || 0
+            this.height = current + 30 + 'px'
+          }
+        }
       }
     },
     resizeIframe() {
@@ -108,15 +123,22 @@ export default {
             height += 20
           }
           height = height + 18
+          if (handleIsSafari()) {
+            height = height + 30
+          }
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)
         }
         if (!this.stopCalculateFrame) {
           this.numberHeight = height
+          if (handleIsSafari()) {
+            height = height + 30
+          }
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = window.requestAnimationFrame(() => this.resizeIframe())
         }
+        console.log(this.height)
       }
     },
     setDefaultHeight(height) {
