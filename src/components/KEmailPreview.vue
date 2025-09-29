@@ -69,7 +69,6 @@ export default {
           this.resizeIframe()
         }, 500)
       } else {
-        console.log('not safari')
         this.resizeIframe()
       }
     },
@@ -137,7 +136,6 @@ export default {
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = window.requestAnimationFrame(() => this.resizeIframe())
         }
-        console.log(this.height)
       }
     },
     setDefaultHeight(height) {
