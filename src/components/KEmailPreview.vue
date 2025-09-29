@@ -55,10 +55,25 @@ export default {
       this.resizeIframe()
     }
   },
+  mounted() {
+    window.addEventListener('message', this.handleWindowMessage)
+  },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
+    window.removeEventListener('message', this.handleWindowMessage)
   },
   methods: {
+    handleWindowMessage(e) {
+      if (e && e.data && e.data.type === 'redflag:languageChanged') {
+        this.stopCalculateFrame = false
+        this.isInitialResize = true
+        cancelAnimationFrame(this.animationFrame)
+        this.animationFrame = null
+        this.numberHeight = this.isLandingPage ? 640 : 300
+        this.resizeIframe()
+        console.log('redflag:languageChanged')
+      }
+    },
     resizeIframe() {
       const iframe = this.$refs.iframe
       if (
