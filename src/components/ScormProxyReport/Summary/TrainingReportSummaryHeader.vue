@@ -15,7 +15,7 @@
         {{ isSurvey ? labels.SurveySummary : labels.TrainingSummary }}
       </div>
       <div class="training-report-summary-header__subtitle">
-        Summary of this training enrollment
+        {{ isSurvey ? labels.SurveySummarySub : labels.TrainingSummarySub }}
       </div>
     </div>
     <div class="training-report-summary-header__right">
