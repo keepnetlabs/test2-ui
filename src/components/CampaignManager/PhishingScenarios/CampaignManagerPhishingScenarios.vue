@@ -521,7 +521,8 @@
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
                         is-landing-page
-                        :html="getSingleTemplateDetails"
+                        :html="previewLandingHtml"
+                        :is-red-flagged-template="isSelectedLandingTemplateRedFlagged"
                       />
                     </div>
                   </ElTabPane>
@@ -824,6 +825,18 @@ export default {
     },
     getSingleTemplateDetails() {
       return this.landingPageTemplates?.[0]?.content || ''
+    },
+    isSelectedLandingTemplateRedFlagged() {
+      const html = this.getSingleTemplateDetails || ''
+      return typeof html === 'string' && html.includes('data-redflag')
+    },
+    previewLandingHtml() {
+      const html = this.getSingleTemplateDetails || ''
+      if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
+        const logo = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        return html.replace(/\{COMPANYLOGO\}/g, logo)
+      }
+      return html
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING

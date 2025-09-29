@@ -569,7 +569,7 @@ export default {
           const { data } = response
           this.allSessions = Array.isArray(data?.data) ? data.data : []
           // Build select items like: Response 1..N
-          this.sessionSelectItems = this.allSessions.map((_, idx) => ({
+          this.sessionSelectItems = this.allSessions.reverse().map((_, idx) => ({
             text: `Completion ${idx + 1}`,
             value: idx
           }))
