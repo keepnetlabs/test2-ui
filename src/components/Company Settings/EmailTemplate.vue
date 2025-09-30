@@ -1333,7 +1333,6 @@ export default {
       this.$emit('handleInitialTemplate', this.defaultTemplate)
     },
     toggleShowGrapesModal(isSubmitted = false) {
-      console.log('toggleShowGrapesModal', this.showGrapesModal)
       if (!this.showGrapesModal) {
         this.changeGrapesModalStatus()
         this.setInitialTemplateData()
