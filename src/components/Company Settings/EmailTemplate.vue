@@ -1004,7 +1004,7 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
     editorHtml() {
-      if(this.templateType !== 'landing') {
+      if (this.templateType !== 'landing') {
         return this.template
       }
       return this.injectLogo(this.template)
@@ -1133,11 +1133,16 @@ export default {
     },
     template: {
       handler(val) {
-        this.previewTemplate =
-          val?.replace(
-            /{COMPANYLOGO}/g,
-            this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
-          ) || ''
+        let url = ''
+        if (this.templateType !== 'landing') {
+          url = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        } else {
+          url =
+            localStorage.getItem('isSelectCompany') === 'true'
+              ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+              : this.$store.state.auth.logoUrl || ''
+        }
+        this.previewTemplate = val?.replace(/{COMPANYLOGO}/g, url) || ''
       },
       immediate: true
     },
@@ -1160,11 +1165,27 @@ export default {
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     injectLogo(html = '') {
-      const logo = this.emailTemplateLogo || ''
+      let logo = ''
+      if (this.templateType !== 'landing') {
+        logo = this.emailTemplateLogo || ''
+      } else {
+        logo =
+          localStorage.getItem('isSelectCompany') === 'true'
+            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+            : this.$store.state.auth.logoUrl || ''
+      }
       return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
     },
     restoreLogo(html = '') {
-      const logo = this.emailTemplateLogo || ''
+      let logo = ''
+      if (this.templateType !== 'landing') {
+        logo = this.emailTemplateLogo || ''
+      } else {
+        logo =
+          localStorage.getItem('isSelectCompany') === 'true'
+            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+            : this.$store.state.auth.logoUrl || ''
+      }
       if (!logo) return html || ''
       const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
@@ -1371,10 +1392,10 @@ export default {
         if (!template.includes(qrCodeString)) {
           return this.$emit('showErrorDialog')
         }
-      } 
-      if(this.templateType !== 'landing') {
+      }
+      if (this.templateType !== 'landing') {
         this.$emit('update:template', template)
-        this.$emit('on-save-template', template)  
+        this.$emit('on-save-template', template)
       } else {
         const htmlToSave = this.restoreLogo(template)
         this.$emit('on-save-template', htmlToSave)

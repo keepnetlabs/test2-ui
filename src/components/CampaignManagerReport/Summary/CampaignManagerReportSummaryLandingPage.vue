@@ -197,7 +197,10 @@ export default {
     previewHtml() {
       const html = this.getCurrentTemplate || ''
       if (this.isRedFlaggedTemplate && typeof html === 'string') {
-        const logo = this?.$store?.state?.whitelabel?.emailTemplateLogoUrl || ''
+        const logo =
+          localStorage.getItem('isSelectCompany') === 'true'
+            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+            : this.$store.state.auth.logoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html

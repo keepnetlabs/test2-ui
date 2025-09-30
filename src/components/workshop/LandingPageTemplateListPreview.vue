@@ -1448,7 +1448,10 @@ export default {
     },
     getPreviewLandingHtml(html) {
       if (typeof html === 'string' && html.includes('data-redflag')) {
-        const logo = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        const logo =
+          localStorage.getItem('isSelectCompany') === 'true'
+            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+            : this.$store.state.auth.logoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html
