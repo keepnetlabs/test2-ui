@@ -1004,6 +1004,9 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
     editorHtml() {
+      if(this.templateType !== 'landing') {
+        return this.template
+      }
       return this.injectLogo(this.template)
     },
     getEmailTemplateCCSelectClasses() {
