@@ -20,7 +20,7 @@
           v-if="showGrapesModal"
           ref="grapesJsPostIncident"
           :isEdit="isEdit"
-          :htmlData="template"
+          :htmlData="editorHtml"
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
@@ -1003,6 +1003,12 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
+    editorHtml() {
+      if(this.templateType !== 'landing') {
+        return this.template
+      }
+      return this.injectLogo(this.template)
+    },
     getEmailTemplateCCSelectClasses() {
       return {
         'email-template__cc-select': true,
@@ -1153,6 +1159,16 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
+    injectLogo(html = '') {
+      const logo = this.emailTemplateLogo || ''
+      return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
+    },
+    restoreLogo(html = '') {
+      const logo = this.emailTemplateLogo || ''
+      if (!logo) return html || ''
+      const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
+    },
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)
     },
@@ -1355,9 +1371,15 @@ export default {
         if (!template.includes(qrCodeString)) {
           return this.$emit('showErrorDialog')
         }
+      } 
+      if(this.templateType !== 'landing') {
+        this.$emit('update:template', template)
+        this.$emit('on-save-template', template)  
+      } else {
+        const htmlToSave = this.restoreLogo(template)
+        this.$emit('on-save-template', htmlToSave)
+        this.$emit('update:template', htmlToSave)
       }
-      this.$emit('on-save-template', template)
-      this.$emit('update:template', template)
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
