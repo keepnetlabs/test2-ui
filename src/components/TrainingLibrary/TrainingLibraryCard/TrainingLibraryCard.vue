@@ -518,7 +518,19 @@ export default {
       })
     },
     handleDeleteModalByType(text, item) {
-      if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
+      if (item.hasQuiz) {
+        this.setDeleteDialog({
+          status: true,
+          title: 'Delete Survey Material?',
+          body: 'Are you sure you want to delete this survey material?',
+          selectedRow: item,
+          type: 'training',
+          apiFunc: AwarenessEducatorService.deleteTraining,
+          onClose: (forceUpdate) => {
+            if (forceUpdate) this.callForTrainingLibrary()
+          }
+        })
+      } else if (item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
         this.setDeleteDialog({
           status: true,
           title: 'Delete Training Material?',
