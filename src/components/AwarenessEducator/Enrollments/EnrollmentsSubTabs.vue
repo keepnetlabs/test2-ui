@@ -322,6 +322,7 @@ export default {
     },
 
     getEditEnrollmentsModalTitle() {
+      if (this.selectedRow.hasQuiz) return 'Edit Survey Enrollment'
       if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return 'Edit Poster Enrollment'
       else if (this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
@@ -331,11 +332,6 @@ export default {
         this.selectedRow.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         return 'Edit Learning Path Enrollment'
-      else if (
-        this.selectedRow.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING &&
-        this.selectedRow.hasQuiz
-      )
-        return 'Edit Survey Enrollment'
       return 'Edit Training Enrollment'
     }
   },
