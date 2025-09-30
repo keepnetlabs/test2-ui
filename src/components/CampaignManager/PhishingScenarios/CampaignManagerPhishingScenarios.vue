@@ -837,7 +837,10 @@ export default {
     previewLandingHtml() {
       const html = this.getSingleTemplateDetails || ''
       if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
-        const logo = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        const logo = 
+          localStorage.getItem('isSelectCompany') === 'true'
+            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+            : this.$store.state.auth.logoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html
