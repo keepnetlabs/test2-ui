@@ -191,6 +191,7 @@
                     <FormGroup title="Landing Page Template"></FormGroup>
                     <el-tabs
                       v-model="tab"
+                      :key="getLandingPageKey"
                       class="landing-page-tab-content"
                       id="landing-page-tab-content"
                     >
@@ -353,7 +354,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -677,6 +678,9 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getLandingPageKey() {
+      return this.step === 2 ? `key-${createRandomCryptStringNumber()}` : ''
+    },
     isProtocolHttp() {
       return this.formValues.phishingLink.urlSchemaTypeId === '1' || false
     },
