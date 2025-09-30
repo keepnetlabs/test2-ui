@@ -1372,10 +1372,15 @@ export default {
         if (!template.includes(qrCodeString)) {
           return this.$emit('showErrorDialog')
         }
+      } 
+      if(this.templateType !== 'landing') {
+        this.$emit('update:template', template)
+        this.$emit('on-save-template', template)  
+      } else {
+        const htmlToSave = this.restoreLogo(template)
+        this.$emit('on-save-template', htmlToSave)
+        this.$emit('update:template', htmlToSave)
       }
-      const htmlToSave = this.restoreLogo(template)
-      this.$emit('on-save-template', htmlToSave)
-      this.$emit('update:template', htmlToSave)
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {
         this.toggleShowGrapesModal(true)
