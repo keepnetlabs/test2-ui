@@ -228,7 +228,7 @@ export default {
             },
             overrideWidth: true,
             filterableType: 'select',
-            filterableItems: ['Success', 'Failed']
+            filterableItems: ['Successful', 'Not Delivered']
           }
         ],
         addButton: {
