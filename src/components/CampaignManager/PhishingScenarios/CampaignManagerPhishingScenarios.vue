@@ -470,6 +470,7 @@
                   </ElTabPane>
                   <ElTabPane
                     v-if="!isAttachmentBasedScenario"
+                    :key="getLandingPageKey"
                     :label="labels.LandingPage"
                     name="landing-page"
                     id="campaign-manager-info--landing-content"
@@ -582,7 +583,7 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import useDebounce from '@/hooks/useDebounce'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
@@ -716,6 +717,9 @@ export default {
     ...mapGetters({
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
+    getLandingPageKey() {
+      return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
+    },
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
         this.selectedTemplateLanguages.length > 1 ? 's' : ''
