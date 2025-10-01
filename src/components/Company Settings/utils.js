@@ -79,6 +79,14 @@ import status2 from '@/components/GrapesJs/Newsletter/mergedTexts/status2'
 import manuelCheckUrl from '@/components/GrapesJs/Newsletter/mergedTexts/manuelCheckUrl'
 import fileName from '@/components/GrapesJs/Newsletter/mergedTexts/fileName'
 import enrollmentName from '@/components/GrapesJs/Newsletter/mergedTexts/enrollmentName'
+import surveyName from '@/components/GrapesJs/Newsletter/mergedTexts/surveyName'
+import surveyDescription from '@/components/GrapesJs/Newsletter/mergedTexts/surveyDescription'
+import surveyUrl from '@/components/GrapesJs/Newsletter/mergedTexts/surveyUrl'
+import surveyLanguageSelection from '@/components/GrapesJs/Newsletter/mergedTexts/surveyLanguageSelection'
+import surveyEnrollDate from '@/components/GrapesJs/Newsletter/mergedTexts/surveyEnrollDate'
+import surveyReminderCount from '@/components/GrapesJs/Newsletter/mergedTexts/surveyReminderCount'
+import surveyCompleteDate from '@/components/GrapesJs/Newsletter/mergedTexts/surveyCompleteDate'
+import surveyCoverImageUrl from '@/components/GrapesJs/Newsletter/mergedTexts/surveyCoverImageUrl'
 export const MERGED_TEXTS_MAP = {
   '{FULLNAME}': fullName,
   '{FIRSTNAME}': firstName,
@@ -160,7 +168,15 @@ export const MERGED_TEXTS_MAP = {
   '{Status}': status2,
   '{Manuel_Check_Url}': manuelCheckUrl,
   '{File_Name}': fileName,
-  '{ENROLLMENT_NAME}': enrollmentName
+  '{ENROLLMENT_NAME}': enrollmentName,
+  '{SURVEYNAME}': surveyName,
+  '{SURVEYDESCRIPTION}': surveyDescription,
+  '{SURVEYURL}': surveyUrl,
+  '{SURVEYLANGUAGESELECTION}': surveyLanguageSelection,
+  '{SURVEYENROLLDATE}': surveyEnrollDate,
+  '{SURVEYREMINDERCOUNT}': surveyReminderCount,
+  '{SURVEYCOMPLETEDATE}': surveyCompleteDate,
+  '{SURVEYCOVERIMAGEURL}': surveyCoverImageUrl
 }
 export const scrollToEmailTemplateContent = () => {
   document?.querySelector('#email-template-content')?.scrollIntoView({

@@ -23,7 +23,9 @@ const trainingLibraryHelpers = {
     infographicEmailNotificationTemplateTypeResourceId: '',
     learningPathEmailNotificationTemplateTypeResourceId: '',
     posterEmailNotificationTemplateTypeResourceId: '',
-    learningPathReminderEmailNotificationTemplateTypeResourceId: ''
+    learningPathReminderEmailNotificationTemplateTypeResourceId: '',
+    surveyEmailNotificationTemplateTypeResourceId: '',
+    surveyReminderEmailNotificationTemplateTypeResourceId: ''
   },
   getters: {
     getCategories(state) {
