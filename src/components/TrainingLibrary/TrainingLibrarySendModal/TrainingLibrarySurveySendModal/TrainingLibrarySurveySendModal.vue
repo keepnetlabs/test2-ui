@@ -201,13 +201,9 @@ export default {
       certificateEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getCertificateEmailNotificationTemplateTypeResourceId',
       reminderEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getReminderEmailNotificationTemplateTypeResourceId',
-      trainingEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getTrainingEmailNotificationTemplateTypeResourceId',
-      surveyEmailNotificationTemplateTypeResourceId:
-        'trainingLibraryHelpers/getSurveyEmailNotificationTemplateTypeResourceId',
-      surveyReminderEmailNotificationTemplateTypeResourceId:
         'trainingLibraryHelpers/getSurveyReminderEmailNotificationTemplateTypeResourceId',
+      trainingEmailNotificationTemplateTypeResourceId:
+        'trainingLibraryHelpers/getSurveyEmailNotificationTemplateTypeResourceId',
       languages: 'trainingLibraryHelpers/getLanguages'
     }),
     isSmsNotification() {
