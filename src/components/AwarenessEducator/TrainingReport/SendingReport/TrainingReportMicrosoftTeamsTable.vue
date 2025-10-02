@@ -104,10 +104,12 @@ export default {
     trainingSummary: {
       type: Object
     },
+    /*
     customFields: {
       type: Array,
       default: () => []
     },
+    */
     isSurvey: {
       type: Boolean
     },
