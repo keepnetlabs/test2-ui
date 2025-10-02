@@ -309,7 +309,8 @@ export default {
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnPreview(row) {
-      this.selectedRow = row
+      console.log('selectedParentItem', this.selectedParentItem)
+      this.selectedRow = this.selectedParentItem
       this.toggleShowPreviewDialog()
     },
     handleItemOnDelete(row) {
