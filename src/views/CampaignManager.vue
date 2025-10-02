@@ -86,6 +86,7 @@
       @on-stop="handleStop"
       @on-start="handleStart"
       @on-launch="handleLaunch"
+      @on-preview="handleItemOnPreview"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"

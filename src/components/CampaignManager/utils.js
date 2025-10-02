@@ -324,7 +324,8 @@ export const ACTION_STATUSES = {
   CANCEL: 'Canceled',
   IDLE: 'Idle',
   ERROR: 'Error',
-  INDIVIDUAL: 'Individual Printout'
+  INDIVIDUAL: 'Individual Printout',
+  SCHEDULED: 'Scheduled'
 }
 
 export function getStatusBadgeProps(status) {
