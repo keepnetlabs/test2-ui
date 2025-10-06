@@ -116,7 +116,13 @@ const trainingLibrary = {
     infographicSendModal: emptyInfographicSendModalObj,
     screensaverSendModal: emptyScreensaverSendModalObj,
     learningPathSendModal: emptyLearningPathSendModalObj,
-    surveySendModal: emptySurveySendModalObj
+    surveySendModal: emptySurveySendModalObj,
+    lightbox: {
+      status: false,
+      previewData: null,
+      isLoading: false,
+      type: null
+    }
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -141,6 +147,7 @@ const trainingLibrary = {
     getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
     getSurveyPreviewDialog: (state) => state.surveyPreviewDialog,
     getSurveySendModal: (state) => state.surveySendModal,
+    getLightbox: (state) => state.lightbox,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
@@ -273,6 +280,9 @@ const trainingLibrary = {
     },
     SET_SURVEY_SEND_MODAL(state, payload) {
       state.surveySendModal = payload
+    },
+    SET_LIGHTBOX(state, payload) {
+      state.lightbox = payload
     },
     SET_TRAINING_SEND_MODAL(state, payload) {
       state.trainingSendModal = payload

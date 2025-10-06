@@ -300,13 +300,15 @@ export default {
         this.setSurveyPreviewDialog({
           status: true,
           selectedRow: row,
-          showSendButton: true
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.SURVEY
         })
       } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
         this.setTrainingPreviewDialog({
           status: true,
           selectedRow: row,
-          showSendButton: true
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
         })
       } else if (
         row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
@@ -315,13 +317,14 @@ export default {
         this.setLearningPathPreviewDialog({
           status: true,
           selectedRow: row,
-          showSendButton: true
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.LEARNING_PATH
         })
       } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
         this.setPosterPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'poster',
+          type: TRAINING_LIBRARY_TYPES.POSTER,
           title: labels.PosterPreview,
           subtitle: '',
           showDetails: true,
@@ -335,7 +338,7 @@ export default {
         this.setInfographicPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'infographic',
+          type: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
           title: labels.InfographicPreview,
           subtitle: '',
           showDetails: true,
@@ -349,7 +352,7 @@ export default {
         this.setScreenSaverPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'screensaver',
+          type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
           title: labels.ScreensaverPreview,
           subtitle: '',
           showDetails: true,
@@ -394,7 +397,7 @@ export default {
         this.setScreenSaverPreviewDialog({
           status: true,
           selectedRow: row,
-          type: 'screensaver',
+          type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
           title: labels.ScreensaverPreview,
           subtitle: '',
           showDetails: true,

@@ -5,8 +5,14 @@
       :type="type"
       @delete-success="$emit('delete-success')"
       @duplicate-success="$emit('duplicate-success')"
+      @send-clicked="$emit('send-clicked')"
+      @category-ready="handleCategoryReady"
     />
-    <TrainingLibraryDrawerContentRelated :training-data="trainingData" />
+    <TrainingLibraryDrawerContentRelated
+      :training-data="trainingData"
+      :type="type"
+      :category="category"
+    />
   </div>
 </template>
 
@@ -27,7 +33,18 @@ export default {
     },
     type: {
       type: String,
-      default: 'Training Library'
+      default: 'Training'
+    }
+  },
+  data() {
+    return {
+      category: ''
+    }
+  },
+  methods: {
+    handleCategoryReady(category) {
+      console.log('📦 Category ready in parent:', category)
+      this.category = category
     }
   }
 }

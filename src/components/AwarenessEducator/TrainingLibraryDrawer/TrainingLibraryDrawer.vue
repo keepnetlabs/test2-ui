@@ -32,6 +32,7 @@
           :type="type"
           @delete-success="handleDeleteSuccess"
           @duplicate-success="handleDuplicateSuccess"
+          @send-clicked="handleSendClicked"
         />
       </div>
     </VNavigationDrawer>
@@ -59,7 +60,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'Training Library'
+      default: TRAINING_LIBRARY_TYPES.TRAINING
     },
     trainingData: {
       type: Object,
@@ -83,6 +84,8 @@ export default {
   },
   mounted() {
     console.log('🎬 TrainingLibraryDrawer mounted with value:', this.value)
+    console.log('📦 TrainingLibraryDrawer type prop:', this.type)
+    console.log('📦 TrainingLibraryDrawer trainingData:', this.trainingData)
     // Drawer açıldığında animasyon için
     if (this.value) {
       this.isVisible = true
@@ -131,6 +134,18 @@ export default {
     handleDuplicateSuccess() {
       this.$emit('duplicate-success')
       this.closeDrawer()
+    },
+    handleSendClicked() {
+      // Send modal açıldığında drawer'ı kapat ama store'u reset etme
+      const drawerElement = document.querySelector('.training-library-drawer')
+      if (drawerElement) {
+        drawerElement.style.right = '-100%'
+      }
+
+      setTimeout(() => {
+        this.isVisible = false
+        this.$emit('input', false)
+      }, 250)
     },
     openDrawer() {
       // Drawer'ı başta ekranın dışında başlat
