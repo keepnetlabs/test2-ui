@@ -283,6 +283,8 @@ export default {
         .then(() => {
           this.isMicrosoftTeamsActive = false
           this.isButtonsDisabled = false
+          this.isStep2 = false
+          this.isMicrosoftTeamsActive = false
           this.handleCloseDisableModal()
           this.getMicrosoftTeamsSettings()
         })
