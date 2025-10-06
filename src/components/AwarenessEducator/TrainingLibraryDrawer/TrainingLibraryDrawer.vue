@@ -27,7 +27,12 @@
         </VIcon>
       </div>
       <div class="training-library-drawer__content">
-        <TrainingLibraryDrawerContent :training-data="trainingData" :type="type" />
+        <TrainingLibraryDrawerContent
+          :training-data="trainingData"
+          :type="type"
+          @delete-success="handleDeleteSuccess"
+          @duplicate-success="handleDuplicateSuccess"
+        />
       </div>
     </VNavigationDrawer>
   </div>
@@ -117,6 +122,14 @@ export default {
       this.closeDrawer()
     },
     handleClose() {
+      this.closeDrawer()
+    },
+    handleDeleteSuccess() {
+      this.$emit('delete-success')
+      this.closeDrawer()
+    },
+    handleDuplicateSuccess() {
+      this.$emit('duplicate-success')
       this.closeDrawer()
     },
     openDrawer() {

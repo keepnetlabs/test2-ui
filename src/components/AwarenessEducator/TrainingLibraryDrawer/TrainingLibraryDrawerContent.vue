@@ -1,6 +1,11 @@
 <template>
   <div class="training-library-drawer-content">
-    <TrainingLibraryDrawerContentSummary :training-data="trainingData" :type="type" />
+    <TrainingLibraryDrawerContentSummary
+      :training-data="trainingData"
+      :type="type"
+      @delete-success="$emit('delete-success')"
+      @duplicate-success="$emit('duplicate-success')"
+    />
     <TrainingLibraryDrawerContentRelated :training-data="trainingData" />
   </div>
 </template>

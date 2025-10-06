@@ -6,6 +6,7 @@
     icon="mdi-delete"
     :title="title"
     :status="status"
+    class="training-library-delete-dialog"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
@@ -83,3 +84,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.training-library-delete-dialog {
+  z-index: 252 !important;
+
+  .v-overlay {
+    z-index: 252 !important;
+  }
+}
+</style>

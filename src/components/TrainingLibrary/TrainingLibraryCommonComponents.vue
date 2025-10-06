@@ -11,6 +11,8 @@
       :type="getTrainingPreviewDialog.type"
       :training-data="getTrainingPreviewDialog.selectedRow"
       @input="handleDrawerClose"
+      @delete-success="handleDeleteSuccess"
+      @duplicate-success="handleDuplicateSuccess"
     />
     <TrainingLibraryLearningPathPreviewDialog
       v-if="getLearningPathPreviewDialog.status"
@@ -131,6 +133,14 @@ export default {
           type: TRAINING_LIBRARY_TYPES.TRAINING
         })
       }
+    },
+    handleDeleteSuccess() {
+      console.log('✅ Delete success - refreshing list')
+      this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
+    },
+    handleDuplicateSuccess() {
+      console.log('✅ Duplicate success - refreshing list')
+      this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
     }
   },
   computed: {

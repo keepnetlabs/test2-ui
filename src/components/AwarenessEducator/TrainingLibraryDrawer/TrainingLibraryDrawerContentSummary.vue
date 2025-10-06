@@ -55,14 +55,25 @@
         >
           <VIcon color="#757575" style="font-size: 20px;">mdi-bookmark-outline</VIcon>
         </VBtn>
-        <VBtn
-          icon
-          color="#fff"
-          :ripple="false"
-          class="training-library-drawer-content-summary__action-icon"
+        <TrainingLibraryDrawerActionsMenu
+          :type="type"
+          :is-deletable="isDeletable"
+          @edit="handleEdit"
+          @duplicate="handleDuplicate"
+          @delete="handleDelete"
+          @download="handleDownload"
         >
-          <VIcon color="#757575" style="font-size: 20px;">mdi-dots-vertical</VIcon>
-        </VBtn>
+          <template #activator>
+            <VBtn
+              icon
+              color="#fff"
+              :ripple="false"
+              class="training-library-drawer-content-summary__action-icon"
+            >
+              <VIcon color="#757575" style="font-size: 20px;">mdi-dots-vertical</VIcon>
+            </VBtn>
+          </template>
+        </TrainingLibraryDrawerActionsMenu>
       </div>
     </div>
 
@@ -97,6 +108,7 @@
 <script>
 import TrainingLibraryDrawerInfoCard from './TrainingLibraryDrawerInfoCard.vue'
 import TrainingLibraryDrawerLanguageMenu from './TrainingLibraryDrawerLanguageMenu.vue'
+import TrainingLibraryDrawerActionsMenu from './TrainingLibraryDrawerActionsMenu.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 
@@ -104,7 +116,8 @@ export default {
   name: 'TrainingLibraryDrawerContentSummary',
   components: {
     TrainingLibraryDrawerInfoCard,
-    TrainingLibraryDrawerLanguageMenu
+    TrainingLibraryDrawerLanguageMenu,
+    TrainingLibraryDrawerActionsMenu
   },
   props: {
     trainingData: {
@@ -114,6 +127,10 @@ export default {
     type: {
       type: String,
       default: 'Training Library'
+    },
+    isDeletable: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -305,6 +322,51 @@ export default {
         language,
         trainingData: this.trainingData
       })
+    },
+    handleEdit() {
+      this.$emit('edit', this.trainingData)
+    },
+    handleDuplicate() {
+      const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
+      if (!trainingId) {
+        console.error('❌ No trainingId found for duplicate')
+        return
+      }
+
+      AwarenessEducatorService.duplicateTraining(trainingId).then(() => {
+        // Drawer'ı kapat ve listeyi yenile
+        this.$emit('duplicate-success')
+      })
+    },
+    handleDelete() {
+      this.$store.commit('trainingLibrary/SET_DELETE_DIALOG', {
+        status: true,
+        title: 'Delete Training',
+        body: 'Are you sure you want to delete this training material?',
+        selectedRow: this.trainingData,
+        type: this.type,
+        apiFunc: (trainingId) => {
+          return AwarenessEducatorService.deleteTraining(trainingId)
+        },
+        onClose: (forceUpdate) => {
+          this.$store.commit('trainingLibrary/SET_DELETE_DIALOG', {
+            status: false,
+            title: '',
+            body: '',
+            selectedRow: null,
+            type: '',
+            onClose: () => {}
+          })
+
+          // Silme başarılı olduysa drawer'ı kapat
+          if (forceUpdate) {
+            this.$emit('delete-success')
+          }
+        }
+      })
+    },
+    handleDownload() {
+      this.$emit('download', this.trainingData)
     }
   }
 }
