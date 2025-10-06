@@ -5,12 +5,13 @@
       v-if="getTrainingPreviewDialog.status"
       v-bind="getTrainingPreviewDialog"
     /> -->
-    <TrainingLibraryDrawer v-model="drawerOpen" type="TrainingPreview">
-      <div style="padding: 24px;">
-        <h2>Test Content</h2>
-        <p>Bu bizim yeni drawer component'i!</p>
-      </div>
-    </TrainingLibraryDrawer>
+    <TrainingLibraryDrawer
+      v-if="getTrainingPreviewDialog.status"
+      :value="getTrainingPreviewDialog.status"
+      :type="getTrainingPreviewDialog.type"
+      :training-data="getTrainingPreviewDialog.selectedRow"
+      @input="handleDrawerClose"
+    />
     <TrainingLibraryLearningPathPreviewDialog
       v-if="getLearningPathPreviewDialog.status"
       v-bind="getLearningPathPreviewDialog"
@@ -75,7 +76,7 @@ import TrainingLibraryDeleteDialog from '@/components/TrainingLibrary/TrainingLi
 import { mapGetters } from 'vuex'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import TrainingLibraryDrawer from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue'
-import TrainingLibraryDrawerContent from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawerContent.vue'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
 import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
 import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
@@ -118,9 +119,18 @@ export default {
     TrainingLibraryDeleteDialog,
     TrainingLibraryDrawer
   },
-  data() {
-    return {
-      drawerOpen: true
+  methods: {
+    handleDrawerClose(value) {
+      console.log('📦 handleDrawerClose called with value:', value)
+      if (!value) {
+        console.log('🔄 Resetting store...')
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      }
     }
   },
   computed: {

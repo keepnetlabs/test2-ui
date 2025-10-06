@@ -16,18 +16,26 @@
           </div>
         </div>
       </div>
-      <VBtn
-        block
-        color="#2196F3"
-        class="training-library-drawer-content-summary__preview-btn"
-        dark
-        rounded
-        depressed
-        :ripple="false"
+      <TrainingLibraryDrawerLanguageMenu
+        :languages="availableLanguages"
+        :is-loading="isLoadingLanguages"
+        @language-selected="handlePreviewClick"
       >
-        <VIcon left>mdi-eye</VIcon>
-        {{ getPreviewButtonText }}
-      </VBtn>
+        <template #activator>
+          <VBtn
+            block
+            color="#2196F3"
+            class="training-library-drawer-content-summary__preview-btn"
+            dark
+            rounded
+            depressed
+            :ripple="false"
+          >
+            <VIcon left>mdi-eye</VIcon>
+            {{ getPreviewButtonText }}
+          </VBtn>
+        </template>
+      </TrainingLibraryDrawerLanguageMenu>
       <div class="training-library-drawer-content-summary__send-wrapper">
         <VBtn
           outlined
@@ -62,7 +70,7 @@
     <div class="training-library-drawer-content-summary__details-section">
       <!-- Training Name -->
       <h2 class="training-library-drawer-content-summary__title">
-        {{ trainingData.trainingName || 'Training Name' }}
+        {{ getCurrentTrainingData.trainingName || 'Training Name' }}
       </h2>
 
       <!-- Info Cards Grid -->
@@ -78,7 +86,7 @@
       <!-- Description -->
       <p class="training-library-drawer-content-summary__description">
         {{
-          trainingData.description ||
+          getCurrentTrainingData.description ||
           'This comprehensive training provides employees with the knowledge and skills needed to protect against phishing attacks. Supported by real-world examples and interactive simulations, the training content enhances security awareness.'
         }}
       </p>
@@ -88,12 +96,15 @@
 
 <script>
 import TrainingLibraryDrawerInfoCard from './TrainingLibraryDrawerInfoCard.vue'
+import TrainingLibraryDrawerLanguageMenu from './TrainingLibraryDrawerLanguageMenu.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 export default {
   name: 'TrainingLibraryDrawerContentSummary',
   components: {
-    TrainingLibraryDrawerInfoCard
+    TrainingLibraryDrawerInfoCard,
+    TrainingLibraryDrawerLanguageMenu
   },
   props: {
     trainingData: {
@@ -105,9 +116,39 @@ export default {
       default: 'Training Library'
     }
   },
+  data() {
+    return {
+      availableLanguages: [],
+      isLoadingLanguages: false,
+      trainingDetails: null
+    }
+  },
+  mounted() {
+    console.log('📦 TrainingData received:', this.trainingData)
+    console.log('🌍 trainingData.languages:', this.trainingData.languages)
+    console.log('🔢 trainingData.trainingLanguageIds:', this.trainingData.trainingLanguageIds)
+
+    if (this.trainingData.trainingId || this.trainingData.resourceId) {
+      this.callForLanguages()
+    }
+  },
+  watch: {
+    trainingData: {
+      deep: true,
+      handler(newVal) {
+        console.log('🔄 TrainingData changed:', newVal)
+        if (newVal && (newVal.trainingId || newVal.resourceId)) {
+          this.callForLanguages()
+        }
+      }
+    }
+  },
   computed: {
+    getCurrentTrainingData() {
+      return this.trainingDetails || this.trainingData
+    },
     getTrainingImage() {
-      return this.trainingData.coverImage
+      return this.getCurrentTrainingData.coverImage
     },
     getPreviewButtonText() {
       if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return 'PREVIEW LEARNING PATH'
@@ -125,33 +166,145 @@ export default {
       if (this.type === TRAINING_LIBRARY_TYPES.SURVEY) return 'SEND SURVEY'
       return 'SEND TRAINING'
     },
+    getLanguagesText() {
+      // API'den dil isimleri geldiyse onları kullan
+      if (this.availableLanguages && this.availableLanguages.length > 0) {
+        if (this.availableLanguages.length === 1) {
+          return this.availableLanguages[0].text
+        }
+        return `${this.availableLanguages.length} languages`
+      }
+
+      // Yoksa trainingData'dan gelen kodları kullan
+      const languageCodes = this.trainingData.languages
+      if (languageCodes && Array.isArray(languageCodes)) {
+        if (languageCodes.length === 1) {
+          return languageCodes[0] // Kod göster (örn: "AR")
+        }
+        return `${languageCodes.length} languages`
+      }
+
+      return 'No languages'
+    },
     getInfoCards() {
+      const data = this.getCurrentTrainingData
       return [
         {
           icon: 'mdi-email-outline',
-          text: this.trainingData.category || 'Email Security'
+          text: data.categoryName || data.category || 'No category'
         },
         {
           icon: 'mdi-chart-bar',
-          text: this.trainingData.difficulty || 'Beginner'
+          text: data.difficulty || 'No difficulty'
         },
         {
           icon: 'mdi-account-group-outline',
-          text: this.trainingData.targetAudience || 'All Employees'
+          text: data.targetAudienceName || data.targetAudience || 'No target audience'
         },
         {
           icon: 'mdi-clock-outline',
-          text: this.trainingData.duration || '5 minutes'
+          text: data.duration || 'No duration'
         },
         {
           icon: 'mdi-shield-check-outline',
-          text: this.trainingData.compliance || '2 compliance'
+          text: this.getComplianceText(data)
         },
         {
           icon: 'mdi-web',
-          text: this.trainingData.languages || '5 languages'
+          text: this.getLanguagesText
         }
       ]
+    }
+  },
+  methods: {
+    getComplianceText(data) {
+      // compliances array ise
+      if (data.compliances && Array.isArray(data.compliances)) {
+        const filtered = data.compliances.filter((c) => c && typeof c === 'string' && c.trim() !== '')
+        if (filtered.length === 0) return 'No compliance'
+        if (filtered.length === 1) return filtered[0]
+        return `${filtered.length} compliances`
+      }
+      // compliance string ise
+      if (data.compliance) {
+        return data.compliance
+      }
+      return 'No compliance'
+    },
+    callForLanguages() {
+      console.log('🔍 Fetching languages for training:', this.trainingData)
+      console.log('🌍 Language codes from training:', this.trainingData.languages)
+
+      this.isLoadingLanguages = true
+      AwarenessEducatorService.getLanguages()
+        .then((res) => {
+          console.log('✅ Languages API response:', res?.data?.data)
+
+          const languageCodes = this.trainingData.languages || []
+          this.availableLanguages = []
+
+          languageCodes.forEach((langCode) => {
+            // API'den gelen dillerde shortCode veya code field'ı ile eşleştir
+            const language = res?.data?.data?.find(
+              (item) => item.shortCode === langCode || item.code === langCode || item.id === langCode
+            )
+            if (language) {
+              this.availableLanguages.push({
+                text: language.name,
+                value: language.id
+              })
+              console.log(`✅ Matched ${langCode} → ${language.name}`)
+            } else {
+              console.warn(`⚠️ Language code not found in API: ${langCode}`)
+            }
+          })
+
+          console.log('🌐 Available languages:', this.availableLanguages)
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching languages:', error)
+        })
+        .finally(() => {
+          this.callForTrainingDetail()
+        })
+    },
+    callForTrainingDetail() {
+      const trainingId = this.trainingData.trainingId
+      if (!trainingId) {
+        console.warn('⚠️ No trainingId found')
+        this.isLoadingLanguages = false
+        return
+      }
+
+      console.log('📥 Fetching training details for ID:', trainingId)
+
+      AwarenessEducatorService.getTraining(trainingId)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+
+          console.log('✅ Training details:', data)
+
+          this.trainingDetails = {
+            ...data,
+            languages: this.availableLanguages.map((lang) => lang.text).join(', ')
+          }
+
+          console.log('📦 Training details with languages:', this.trainingDetails)
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching training details:', error)
+        })
+        .finally(() => {
+          this.isLoadingLanguages = false
+        })
+    },
+    handlePreviewClick(language) {
+      this.$emit('preview-clicked', {
+        language,
+        trainingData: this.trainingData
+      })
     }
   }
 }

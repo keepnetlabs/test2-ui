@@ -256,7 +256,8 @@ export const emptyLearningPathModalTrainingPreviewDialogObj = {
 export const emptyTrainingPreviewDialogObj = {
   status: false,
   selectedRow: null,
-  showSendButton: true
+  showSendButton: true,
+  type: TRAINING_LIBRARY_TYPES.TRAINING
 }
 export const emptySurveyPreviewDialogObj = {
   status: false,

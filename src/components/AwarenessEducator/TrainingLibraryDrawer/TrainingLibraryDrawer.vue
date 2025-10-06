@@ -1,8 +1,8 @@
 <template>
-  <div v-if="value">
+  <div v-if="isVisible">
     <div class="training-library-drawer-overlay" @click="handleOverlayClick"></div>
     <VNavigationDrawer
-      :value="value"
+      :value="isVisible"
       class="k-navigation-drawer training-library-drawer"
       fixed
       :overlay-color="null"
@@ -61,6 +61,11 @@ export default {
       default: () => ({})
     }
   },
+  data() {
+    return {
+      isVisible: false
+    }
+  },
   computed: {
     getTitle() {
       if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return labels.LearningPathPreview
@@ -72,26 +77,40 @@ export default {
     }
   },
   mounted() {
+    console.log('🎬 TrainingLibraryDrawer mounted with value:', this.value)
     // Drawer açıldığında animasyon için
     if (this.value) {
-      this.openDrawer()
-      this.disableBodyScroll()
+      this.isVisible = true
+      this.$nextTick(() => {
+        this.openDrawer()
+        this.disableBodyScroll()
+      })
     }
   },
   watch: {
-    value(newVal) {
-      if (newVal) {
-        this.$nextTick(() => {
-          this.openDrawer()
-          this.disableBodyScroll()
-        })
-      } else {
-        this.enableBodyScroll()
-      }
+    value: {
+      handler(newVal, oldVal) {
+        console.log('👁️ Value changed:', { old: oldVal, new: newVal, isVisible: this.isVisible })
+
+        if (newVal && !this.isVisible) {
+          // Açılma
+          this.isVisible = true
+          this.$nextTick(() => {
+            this.openDrawer()
+            this.disableBodyScroll()
+          })
+        } else if (!newVal && this.isVisible) {
+          // Kapanma (dışarıdan kapatılırsa)
+          this.isVisible = false
+          this.enableBodyScroll()
+        }
+      },
+      immediate: false
     }
   },
   beforeDestroy() {
     this.enableBodyScroll()
+    this.isVisible = false
   },
   methods: {
     handleOverlayClick() {
@@ -112,14 +131,17 @@ export default {
       }
     },
     closeDrawer() {
+      console.log('🚪 Closing drawer...')
       // Drawer'ı animasyonla kaydır
       const drawerElement = document.querySelector('.training-library-drawer')
       if (drawerElement) {
         drawerElement.style.right = '-100%'
       }
 
-      // Animasyon bitince drawer'ı kapat
+      // Animasyon bitince drawer'ı ve overlay'i kapat
       setTimeout(() => {
+        console.log('✅ Drawer closed, emitting events')
+        this.isVisible = false
         this.$emit('input', false)
         this.$emit('close')
       }, 250)
