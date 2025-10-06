@@ -1,10 +1,16 @@
 <template>
   <div>
     <TrainingLibraryDeleteDialog v-bind="getDeleteDialog" />
-    <TrainingLibraryTrainingPreviewDialog
+    <!-- <TrainingLibraryTrainingPreviewDialog
       v-if="getTrainingPreviewDialog.status"
       v-bind="getTrainingPreviewDialog"
-    />
+    /> -->
+    <TrainingLibraryDrawer v-model="drawerOpen" type="TrainingPreview">
+      <div style="padding: 24px;">
+        <h2>Test Content</h2>
+        <p>Bu bizim yeni drawer component'i!</p>
+      </div>
+    </TrainingLibraryDrawer>
     <TrainingLibraryLearningPathPreviewDialog
       v-if="getLearningPathPreviewDialog.status"
       v-bind="getLearningPathPreviewDialog"
@@ -68,6 +74,8 @@
 import TrainingLibraryDeleteDialog from '@/components/TrainingLibrary/TrainingLibraryDeleteDialog/TrainingLibraryDeleteDialog.vue'
 import { mapGetters } from 'vuex'
 import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
+import TrainingLibraryDrawer from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue'
+import TrainingLibraryDrawerContent from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawerContent.vue'
 import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
 import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
 import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
@@ -106,8 +114,14 @@ export default {
     TrainingLibraryScreensaverPreviewDialog,
     TrainingLibraryInfographicPreviewDialog,
     TrainingLibraryPosterPreviewDialog,
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibraryDeleteDialog
+    //TrainingLibraryTrainingPreviewDialog,
+    TrainingLibraryDeleteDialog,
+    TrainingLibraryDrawer
+  },
+  data() {
+    return {
+      drawerOpen: true
+    }
   },
   computed: {
     ...mapGetters({
