@@ -317,7 +317,7 @@ export default {
       ) {
         this.timeoutId = setTimeout(() => {
           this.tab = 'microsoft-teams-settings'
-        }, 1000)
+        }, 750)
         return
       } else if (
         query?.tenant ||
@@ -330,10 +330,7 @@ export default {
       if (query?.tab === 'google-user-provisioning' && query?.state && query?.code) {
         this.timeoutId = setTimeout(() => {
           this.tab = 'google-user-provisioning'
-          this.$nextTick(() => {
-            this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
-          })
-        }, 1000)
+        }, 750)
         return
       }
       this.tab = query.tab
