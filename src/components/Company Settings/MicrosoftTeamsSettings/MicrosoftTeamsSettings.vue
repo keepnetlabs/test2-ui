@@ -244,7 +244,7 @@ export default {
     }
   },
   methods: {
-    getMicrosoftTeamsSettings() {
+    getMicrosoftTeamsSettings(isCallback = false) {
       this.loading = true
       MicrosoftTeamsSettingsService.getMicrosoftTeamsSettings()
         .then((response) => {
@@ -261,6 +261,9 @@ export default {
           this.isMicrosoftTeamsActive = this.isStep2 ? false : data?.isFound
           this.botName = data?.displayName
           this.isLastVersion = data?.installedVersion === data?.latestAvailableVersion
+          if (isCallback) {
+            this.isModalVisible = true
+          }
         })
         .finally(() => {
           this.loading = false
@@ -346,13 +349,12 @@ export default {
       this.loading = true
       MicrosoftTeamsSettingsService.callMicrosoftTeamsOboCallback(code, state)
         .then(() => {
-          this.getMicrosoftTeamsSettings()
+          this.getMicrosoftTeamsSettings(true)
           this.$store.dispatch('common/createSnackBar', {
             message: 'Microsoft Teams connection established successfully.',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
-          this.isModalVisible = true
         })
         .catch(() => {
           this.loading = false
