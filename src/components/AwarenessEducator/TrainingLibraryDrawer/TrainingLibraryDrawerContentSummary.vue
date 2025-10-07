@@ -66,6 +66,7 @@
           </div>
         </div>
         <TrainingLibraryDrawerLanguageMenu
+          v-if="!isLearningPath"
           :languages="availableLanguages"
           :is-loading="isLoadingLanguages"
           @language-selected="handlePreviewClick"
@@ -85,7 +86,24 @@
             </VBtn>
           </template>
         </TrainingLibraryDrawerLanguageMenu>
-        <div v-if="!onlyPreview" class="training-library-drawer-content-summary__send-wrapper">
+        <VBtn
+          v-else
+          block
+          color="#2196F3"
+          class="training-library-drawer-content-summary__preview-btn"
+          dark
+          rounded
+          depressed
+          :ripple="false"
+          @click="handleSend"
+        >
+          <VIcon left>mdi-send</VIcon>
+          {{ getPreviewButtonText }}
+        </VBtn>
+        <div
+          v-if="!onlyPreview && !isLearningPath"
+          class="training-library-drawer-content-summary__send-wrapper"
+        >
           <!-- Screensaver: open language select like preview, then download -->
           <template v-if="isScreensaver">
             <TrainingLibraryDrawerLanguageMenu
@@ -249,6 +267,9 @@ export default {
     isScreensaver() {
       return this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER
     },
+    isLearningPath() {
+      return this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+    },
     getCurrentTrainingData() {
       return this.trainingDetails || this.trainingData
     },
@@ -259,7 +280,7 @@ export default {
       return typeof coverImage === 'string' ? coverImage : coverImage.imageUrl
     },
     getPreviewButtonText() {
-      if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return 'PREVIEW LEARNING PATH'
+      if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return 'SEND LEARNING PATH'
       if (this.type === TRAINING_LIBRARY_TYPES.POSTER) return 'PREVIEW POSTER'
       if (this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC) return 'PREVIEW INFOGRAPHIC'
       if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) return 'PREVIEW SCREENSAVER'
@@ -489,6 +510,12 @@ export default {
         })
     },
     handlePreviewClick(language) {
+      // Learning Path ise send modal aç
+      if (this.isLearningPath) {
+        this.handleSend()
+        return
+      }
+
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       const languageId = language.value
 

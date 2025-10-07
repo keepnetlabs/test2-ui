@@ -34,10 +34,6 @@
       />
     </TrainingLibraryLightbox>
 
-    <TrainingLibraryLearningPathPreviewDialog
-      v-if="getLearningPathPreviewDialog.status"
-      v-bind="getLearningPathPreviewDialog"
-    />
     <TrainingLibraryNewTrainingModal
       v-if="getNewTrainingModal.status"
       v-bind="getNewTrainingModal"
@@ -82,7 +78,6 @@ import TrainingLibraryDeleteDialog from '@/components/TrainingLibrary/TrainingLi
 import { mapGetters } from 'vuex'
 import TrainingLibraryDrawer from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
 import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingModal.vue'
 import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathModal.vue'
 import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
@@ -118,7 +113,6 @@ export default {
     TrainingLibraryNewPosterModal,
     TrainingLibraryNewLearningPathModal,
     TrainingLibraryNewTrainingModal,
-    TrainingLibraryLearningPathPreviewDialog,
     TrainingLibraryDeleteDialog,
     TrainingLibraryDrawer,
     TrainingLibraryLightbox,
@@ -160,6 +154,11 @@ export default {
           })
         } else if (this.currentDrawer.dialogType === 'survey') {
           this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'learningPath') {
+          this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
             status: false,
             selectedRow: null
           })
@@ -234,6 +233,11 @@ export default {
           status: false,
           selectedRow: null
         })
+      } else if (this.currentDrawer.dialogType === 'learningPath') {
+        this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
       }
     }
   },
@@ -278,6 +282,14 @@ export default {
           type: TRAINING_LIBRARY_TYPES.SURVEY,
           selectedRow: this.getSurveyPreviewDialog.selectedRow,
           dialogType: 'survey'
+        }
+      }
+      if (this.getLearningPathPreviewDialog.status) {
+        return {
+          status: this.getLearningPathPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+          selectedRow: this.getLearningPathPreviewDialog.selectedRow,
+          dialogType: 'learningPath'
         }
       }
       return {

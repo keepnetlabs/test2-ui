@@ -191,7 +191,12 @@ export default {
           ]
         },
         trainingSearchType: 1,
-        trainingType: this.type === TRAINING_LIBRARY_TYPES.TRAINING ? 'SCORM' : this.type
+        trainingType:
+          this.type === TRAINING_LIBRARY_TYPES.TRAINING
+            ? 'SCORM'
+            : this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+              ? 'LearningPath'
+              : this.type
       }
 
       AwarenessEducatorService.searchTraining(payload)
