@@ -309,6 +309,12 @@ export default {
     },
     changeTabByRoute() {
       const { $route: { query } = {} } = this
+      if (query?.tab === 'google-user-provisioning' && query?.state && query?.code) {
+        this.timeoutId = setTimeout(() => {
+          this.tab = 'google-user-provisioning'
+        }, 750)
+        return
+      }
       if (
         (query?.code && query?.state) ||
         (query?.admin_consent && query?.error && query?.error_description && query?.state) ||
@@ -327,12 +333,6 @@ export default {
         return
       }
       if (!query || !query.tab) return
-      if (query?.tab === 'google-user-provisioning' && query?.state && query?.code) {
-        this.timeoutId = setTimeout(() => {
-          this.tab = 'google-user-provisioning'
-        }, 750)
-        return
-      }
       this.tab = query.tab
       this.$nextTick(() => {
         this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
