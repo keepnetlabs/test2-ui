@@ -56,9 +56,18 @@
           </template>
         </div>
         <div class="training-library-drawer-content-related__card-body">
-          <div class="training-library-drawer-content-related__card-title">
-            {{ card.title }}
-          </div>
+          <VTooltip bottom :disabled="!isTitleOverflowing(card.title)">
+            <template #activator="{ on }">
+              <div
+                class="training-library-drawer-content-related__card-title"
+                v-on="on"
+                :ref="`title-${index}`"
+              >
+                {{ card.title }}
+              </div>
+            </template>
+            <span>{{ card.title }}</span>
+          </VTooltip>
           <div class="training-library-drawer-content-related__card-meta">
             <span>{{ card.targetAudienceDisplay }}</span>
             <span class="dot">•</span>
@@ -261,6 +270,11 @@ export default {
     getRemainingLanguages(languageCodes) {
       const languageNames = this.getLanguageNames(languageCodes)
       return languageNames.slice(3).join(', ')
+    },
+    isTitleOverflowing(title) {
+      // Title'ın belirli bir karakter sayısını aşıp aşmadığını kontrol et
+      // Daha hassas bir kontrol için DOM'u kullanabilirsin ama performans için basit karakter kontrolü yeterli
+      return title && title.length > 40
     },
     getCoverImage(coverImage) {
       if (!coverImage) return null

@@ -201,6 +201,7 @@
         <TrainingLibraryDrawerContentSteps
           v-if="isLearningPath && learningPathSteps.length > 0"
           :steps="learningPathSteps"
+          @preview-step="handlePreviewStep"
         />
       </div>
     </div>
@@ -384,9 +385,28 @@ export default {
         .sort((a, b) => (a.trainingOrder || 0) - (b.trainingOrder || 0))
         .map((step) => ({
           title: step.name,
-          type: step.type === 'SCORM' ? 'Training' : step.type
+          type: step.type === 'SCORM' ? 'Training' : step.type,
+          detailTrainingId: step.detailTrainingId,
+          languages: step.languages,
+          coverImage: step.coverImage
         }))
       console.log('learningPathSteps', this.learningPathSteps)
+    },
+    handlePreviewStep(step) {
+      console.log('🔍 Preview step:', step)
+      // Nested drawer açmak için store'u kullan
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: true,
+        selectedRow: {
+          trainingId: step.detailTrainingId,
+          resourceId: step.detailTrainingId,
+          name: step.title,
+          trainingName: step.title,
+          languages: step.languages,
+          coverImage: step.coverImage
+        },
+        type: step.type === 'Training' ? 'Training' : step.type
+      })
     },
     handleDownloadByLanguage(language) {
       // Map to ID if structure is { text, value }

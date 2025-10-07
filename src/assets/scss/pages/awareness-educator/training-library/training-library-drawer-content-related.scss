@@ -102,6 +102,9 @@
     font-style: normal;
     font-weight: 600;
     margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__card-meta {
@@ -112,7 +115,10 @@
     font-weight: 600;
     line-height: 21px;
     margin-bottom: 6px;
-
+    flex-wrap: wrap;
+    span:first-child {
+      flex-shrink: 0;
+    }
     .dot {
       color: #d9d9d9;
       margin: 0 6px;

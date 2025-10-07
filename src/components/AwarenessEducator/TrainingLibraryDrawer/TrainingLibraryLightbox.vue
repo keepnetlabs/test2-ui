@@ -58,10 +58,10 @@ export default {
     },
     enableBodyScroll() {
       if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'auto'
+        document.querySelector('html').style.overflowY = ''
       }
       if (document.querySelector('body')) {
-        document.querySelector('body').style.overflowY = 'auto'
+        document.querySelector('body').style.overflowY = ''
       }
     }
   }
