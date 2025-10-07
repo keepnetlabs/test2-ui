@@ -13,6 +13,18 @@
       @duplicate-success="handleDuplicateSuccess"
     />
 
+    <!-- Nested Drawer (Related Preview) -->
+    <TrainingLibraryDrawer
+      v-if="getNestedDrawer.status"
+      :value="getNestedDrawer.status"
+      :type="getNestedDrawer.type"
+      :training-data="getNestedDrawer.selectedRow"
+      :is-nested="true"
+      width="calc(100% - 144px)"
+      @input="handleNestedDrawerClose"
+      @close-parent="handleCloseParentDrawer"
+    />
+
     <!-- Lightbox for Preview -->
     <TrainingLibraryLightbox :value="getLightbox.status" @input="handleLightboxClose">
       <TrainingLibraryLightboxContent
@@ -172,6 +184,57 @@ export default {
           type: null
         })
       }
+    },
+    handleNestedDrawerClose(value) {
+      console.log('📦 handleNestedDrawerClose called with value:', value)
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+          status: false,
+          selectedRow: null,
+          type: null
+        })
+      }
+    },
+    handleCloseParentDrawer() {
+      console.log('📦 handleCloseParentDrawer called - closing both drawers')
+
+      // Animasyon zaten 250ms içinde bitmiş, direkt reset et
+      // Nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Parent drawer'ı da kapat
+      if (this.currentDrawer.dialogType === 'training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      } else if (this.currentDrawer.dialogType === 'poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'screensaver') {
+        this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      }
     }
   },
   computed: {
@@ -244,7 +307,8 @@ export default {
       getNewSurveyModal: 'trainingLibrary/getNewSurveyModal',
       getSurveySendModal: 'trainingLibrary/getSurveySendModal',
       getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog',
-      getLightbox: 'trainingLibrary/getLightbox'
+      getLightbox: 'trainingLibrary/getLightbox',
+      getNestedDrawer: 'trainingLibrary/getNestedDrawer'
     })
   }
 }

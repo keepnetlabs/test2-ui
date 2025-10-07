@@ -1,15 +1,20 @@
 <template>
-  <div class="training-library-lightbox-content">
-    <div class="training-library-lightbox-content__iframe-wrapper">
+  <div class="training-library-lightbox-content" :class="{ 'is-pdf': isPdf }">
+    <div class="training-library-lightbox-content__iframe-wrapper" :class="{ 'is-pdf': isPdf }">
       <div v-if="isLoading" class="training-library-lightbox-content__loading">
         <VProgressCircular indeterminate size="64" color="primary" />
       </div>
       <template v-else-if="previewUrl">
         <img
-          v-if="isImageType"
+          v-if="isImageType && !isPdf"
           :src="previewUrl"
           class="training-library-lightbox-content__image"
           alt="Preview"
+        />
+        <pdf
+          v-else-if="isPdf"
+          :src="pdfSrc"
+          class="training-library-lightbox-content__pdf"
         />
         <iframe
           v-else
@@ -33,9 +38,12 @@ import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingLibraryLightboxContent',
+  components: {
+    pdf: () => import('vue-pdf')
+  },
   props: {
     previewData: {
-      type: Object,
+      type: [Object, String],
       default: null
     },
     isLoading: {
@@ -54,6 +62,17 @@ export default {
         this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC ||
         this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER
       )
+    },
+    isPdf() {
+      if (!this.previewUrl) return false
+      // URL .pdf ile bitiyorsa veya blob URL ise PDF olarak kabul et
+      const isPdf = this.previewUrl.toLowerCase().includes('.pdf') || this.previewUrl.startsWith('blob:')
+      console.log('🔍 LightboxContent isPdf:', isPdf, 'URL:', this.previewUrl)
+      return isPdf
+    },
+    pdfSrc() {
+      console.log('🔍 LightboxContent pdfSrc:', this.previewUrl)
+      return this.previewUrl
     },
     previewUrl() {
       if (!this.previewData) return null

@@ -7,6 +7,11 @@
   background-color: rgba(0, 0, 0, 0.17);
   z-index: 250;
   cursor: pointer;
+
+  &.nested-overlay {
+    z-index: 260;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 }
 
 .training-library-drawer {
@@ -15,6 +20,10 @@
   box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1);
   transition: right 0.25s ease-in-out;
   z-index: 251 !important;
+
+  &.nested-drawer {
+    z-index: 261 !important;
+  }
 
   &__header {
     display: flex;

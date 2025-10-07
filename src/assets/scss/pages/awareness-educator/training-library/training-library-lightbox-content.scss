@@ -4,6 +4,10 @@
   display: flex;
   flex-direction: column;
 
+  &.is-pdf {
+    height: auto;
+  }
+
   &__iframe-wrapper {
     flex: 1;
     width: 100%;
@@ -12,6 +16,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &.is-pdf {
+      height: auto;
+      flex: initial;
+    }
   }
 
   &__iframe {
@@ -24,6 +33,11 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+  }
+
+  &__pdf {
+    width: 100%;
+    max-width: 100%;
   }
 
   &__loading,

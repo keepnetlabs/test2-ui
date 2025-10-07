@@ -122,6 +122,11 @@ const trainingLibrary = {
       previewData: null,
       isLoading: false,
       type: null
+    },
+    nestedDrawer: {
+      status: false,
+      selectedRow: null,
+      type: null
     }
   },
   getters: {
@@ -147,6 +152,7 @@ const trainingLibrary = {
     getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
     getSurveyPreviewDialog: (state) => state.surveyPreviewDialog,
     getSurveySendModal: (state) => state.surveySendModal,
+    getNestedDrawer: (state) => state.nestedDrawer,
     getLightbox: (state) => state.lightbox,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
@@ -283,6 +289,9 @@ const trainingLibrary = {
     },
     SET_LIGHTBOX(state, payload) {
       state.lightbox = payload
+    },
+    SET_NESTED_DRAWER(state, payload) {
+      state.nestedDrawer = payload
     },
     SET_TRAINING_SEND_MODAL(state, payload) {
       state.trainingSendModal = payload

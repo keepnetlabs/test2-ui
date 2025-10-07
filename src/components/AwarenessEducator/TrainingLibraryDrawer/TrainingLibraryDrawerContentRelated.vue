@@ -34,7 +34,15 @@
         outlined
       >
         <div class="training-library-drawer-content-related__card-image">
-          <VChip v-if="card.isNew" small color="#00BCD4" text-color="#fff">New</VChip>
+          <TrainingLibraryNewBadge
+            v-if="card.isNew"
+            class="training-library-drawer-content-related__card-new-badge"
+          />
+          <TrainingLibraryFavoriteButton
+            class="training-library-drawer-content-related__card-favorite-btn"
+            :is-default-favourite="card.isFavourite"
+            :training-id="card.trainingId || card.resourceId"
+          />
           <template v-if="card.coverImage">
             <img :src="card.coverImage" :alt="card.title" />
           </template>
@@ -52,16 +60,32 @@
             {{ card.title }}
           </div>
           <div class="training-library-drawer-content-related__card-meta">
-            <span>Role</span>
+            <span>{{ card.targetAudienceDisplay }}</span>
             <span class="dot">•</span>
             <span>{{ card.category }}</span>
           </div>
-          <div class="training-library-drawer-content-related__card-langs">
+          <VTooltip v-if="getLanguagesTooltip(card.languages)" bottom>
+            <template #activator="{ on }">
+              <div v-on="on" class="training-library-drawer-content-related__card-langs">
+                <VIcon small class="mr-1">mdi-web</VIcon>
+                <span>{{ card.languagesFormatted }}</span>
+              </div>
+            </template>
+            <span>{{ getLanguagesTooltip(card.languages) }}</span>
+          </VTooltip>
+          <div v-else class="training-library-drawer-content-related__card-langs">
             <VIcon small class="mr-1">mdi-web</VIcon>
-            <span>{{ card.languages }}</span>
+            <span>{{ card.languagesFormatted }}</span>
           </div>
           <div class="training-library-drawer-content-related__card-actions">
-            <VBtn class="w-100" rounded outlined color="#2196F3" :ripple="false">
+            <VBtn
+              class="w-100 fw-600"
+              rounded
+              outlined
+              color="#2196F3"
+              :ripple="false"
+              @click="handlePreviewClick(card)"
+            >
               <VIcon left small class="mr-1">mdi-eye</VIcon>
               Preview
             </VBtn>
@@ -75,9 +99,15 @@
 <script>
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
+import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 
 export default {
   name: 'TrainingLibraryDrawerContentRelated',
+  components: {
+    TrainingLibraryNewBadge,
+    TrainingLibraryFavoriteButton
+  },
   props: {
     trainingData: {
       type: Object,
@@ -95,8 +125,12 @@ export default {
   data() {
     return {
       isLoading: true,
-      relatedItems: []
+      relatedItems: [],
+      allLanguages: []
     }
+  },
+  mounted() {
+    this.fetchLanguages()
   },
   computed: {
     getRelatedTitle() {
@@ -115,14 +149,20 @@ export default {
     }
   },
   methods: {
+    fetchLanguages() {
+      AwarenessEducatorService.getLanguages()
+        .then((res) => {
+          this.allLanguages = res?.data?.data || []
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching languages:', error)
+        })
+    },
     fetchRelatedTrainings() {
-      console.log('🔍 Fetching related trainings')
-      console.log('🔍 category prop:', this.category)
       // Prop'tan gelen category'yi kullan
       const category = this.category
-      console.log('🔍 Selected Category:', category)
+
       if (!category) {
-        console.warn('⚠️ No category found for related trainings')
         this.isLoading = false
         return
       }
@@ -154,17 +194,12 @@ export default {
         trainingType: this.type === TRAINING_LIBRARY_TYPES.TRAINING ? 'SCORM' : this.type
       }
 
-      console.log('📥 Fetching related trainings with payload:', payload)
-
       AwarenessEducatorService.searchTraining(payload)
         .then((response) => {
-          console.log('✅ Full response:', response)
           const data = response?.data?.data?.results || response?.data?.data || []
-          console.log('✅ Related trainings data:', data)
 
           // Array kontrolü
           if (!Array.isArray(data)) {
-            console.warn('⚠️ Data is not an array:', data)
             this.relatedItems = []
             return
           }
@@ -180,12 +215,12 @@ export default {
             .map((item) => ({
               ...item,
               title: item.name || item.trainingName,
+              targetAudienceDisplay: item.targetAudience || 'All Users',
               category: item.categoryName || item.category,
-              languages: this.formatLanguages(item.languages),
+              languagesFormatted: this.formatLanguages(item.languages),
+              languages: item.languages, // Keep original array for nested drawer
               coverImage: this.getCoverImage(item.coverImage)
             }))
-
-          console.log('🔗 Related items:', this.relatedItems)
         })
         .catch((error) => {
           console.error('❌ Error fetching related trainings:', error)
@@ -194,15 +229,45 @@ export default {
           this.isLoading = false
         })
     },
-    formatLanguages(languages) {
-      if (!languages || languages.length === 0) return 'No languages'
-      if (languages.length === 1) return languages[0]
-      if (languages.length <= 3) return languages.join(', ')
-      return `${languages.slice(0, 3).join(', ')}, +${languages.length - 3}`
+    formatLanguages(languageCodes) {
+      if (!languageCodes || languageCodes.length === 0) return 'No languages'
+
+      // Dil kodlarını dil isimlerine çevir
+      const languageNames = languageCodes.map((code) => {
+        const lang = this.allLanguages.find(
+          (item) => item.shortCode === code || item.code === code || item.id === code
+        )
+        return lang ? lang.name : code
+      })
+
+      if (languageNames.length === 1) return languageNames[0]
+      if (languageNames.length === 2) return languageNames.join(', ')
+      if (languageNames.length === 3) return languageNames.join(', ')
+      return `${languageNames.slice(0, 3).join(', ')}, +${languageNames.length - 3}`
+    },
+    getLanguagesTooltip(languageCodes) {
+      if (!languageCodes || languageCodes.length <= 3) return ''
+
+      const languageNames = languageCodes.map((code) => {
+        const lang = this.allLanguages.find(
+          (item) => item.shortCode === code || item.code === code || item.id === code
+        )
+        return lang ? lang.name : code
+      })
+
+      return languageNames.join(', ')
     },
     getCoverImage(coverImage) {
       if (!coverImage) return null
       return typeof coverImage === 'string' ? coverImage : coverImage.imageUrl
+    },
+    handlePreviewClick(card) {
+      // Nested drawer'ı aç
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: true,
+        selectedRow: card,
+        type: this.type
+      })
     }
   }
 }

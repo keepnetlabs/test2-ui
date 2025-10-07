@@ -6,9 +6,11 @@
       @delete-success="$emit('delete-success')"
       @duplicate-success="$emit('duplicate-success')"
       @send-clicked="$emit('send-clicked')"
+      @edit-clicked="$emit('edit-clicked')"
       @category-ready="handleCategoryReady"
     />
     <TrainingLibraryDrawerContentRelated
+      v-if="!isNested"
       :training-data="trainingData"
       :type="type"
       :category="category"
@@ -34,6 +36,10 @@ export default {
     type: {
       type: String,
       default: 'Training'
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -43,7 +49,6 @@ export default {
   },
   methods: {
     handleCategoryReady(category) {
-      console.log('📦 Category ready in parent:', category)
       this.category = category
     }
   }

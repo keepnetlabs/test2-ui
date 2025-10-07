@@ -208,6 +208,7 @@ export const labels = {
   ScenariosOfInstance: 'Scenarios Of Instance',
   TrainingPreview: 'Training Preview',
   EmailTemplate: 'Email Template',
+  SurveyPreview: 'Survey Preview',
   Score: 'Score',
   EnrollmentSettings: 'Enrollment Settings',
   EnrollmentSettingsSub: 'Define enrollment settings',

@@ -1,9 +1,14 @@
 <template>
-  <div v-if="isVisible">
-    <div class="training-library-drawer-overlay" @click="handleOverlayClick"></div>
+  <div v-if="isVisible" :class="{ 'nested-drawer-wrapper': isNested }">
+    <div
+      class="training-library-drawer-overlay"
+      :class="{ 'nested-overlay': isNested }"
+      @click="handleOverlayClick"
+    ></div>
     <VNavigationDrawer
       :value="isVisible"
-      class="k-navigation-drawer training-library-drawer"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
       fixed
       :overlay-color="null"
       right
@@ -30,9 +35,11 @@
         <TrainingLibraryDrawerContent
           :training-data="trainingData"
           :type="type"
+          :is-nested="isNested"
           @delete-success="handleDeleteSuccess"
           @duplicate-success="handleDuplicateSuccess"
           @send-clicked="handleSendClicked"
+          @edit-clicked="handleEditClicked"
         />
       </div>
     </VNavigationDrawer>
@@ -65,59 +72,72 @@ export default {
     trainingData: {
       type: Object,
       default: () => ({})
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      isVisible: false
+      isVisible: false,
+      drawerId: `drawer-${Math.random().toString(36).substr(2, 9)}`,
+      skipBodyScrollOnClose: false
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer training-library-drawer': true,
+        'nested-drawer': this.isNested
+      }
+    },
     getTitle() {
+      console.log('🔍 trainingData?.hasQuiz:', this.trainingData?.hasQuiz)
       if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return labels.LearningPathPreview
       if (this.type === TRAINING_LIBRARY_TYPES.POSTER) return labels.PosterPreview
       if (this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC) return labels.InfographicPreview
       if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) return labels.ScreensaverPreview
-      if (this.type === TRAINING_LIBRARY_TYPES.SURVEY) return labels.SurveyPreview
+      if (this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz)
+        return labels.SurveyPreview
+      console.log(
+        'this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz:',
+        this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz
+      )
       return labels.TrainingPreview
     }
   },
   mounted() {
-    console.log('🎬 TrainingLibraryDrawer mounted with value:', this.value)
-    console.log('📦 TrainingLibraryDrawer type prop:', this.type)
-    console.log('📦 TrainingLibraryDrawer trainingData:', this.trainingData)
     // Drawer açıldığında animasyon için
     if (this.value) {
       this.isVisible = true
       this.$nextTick(() => {
         this.openDrawer()
-        this.disableBodyScroll()
+        if (!this.isNested) this.disableBodyScroll()
       })
     }
   },
   watch: {
     value: {
       handler(newVal, oldVal) {
-        console.log('👁️ Value changed:', { old: oldVal, new: newVal, isVisible: this.isVisible })
-
         if (newVal && !this.isVisible) {
           // Açılma
           this.isVisible = true
           this.$nextTick(() => {
             this.openDrawer()
-            this.disableBodyScroll()
+            if (!this.isNested) this.disableBodyScroll()
           })
         } else if (!newVal && this.isVisible) {
           // Kapanma (dışarıdan kapatılırsa)
           this.isVisible = false
-          this.enableBodyScroll()
+          if (!this.isNested && !this.skipBodyScrollOnClose) this.enableBodyScroll()
         }
       },
       immediate: false
     }
   },
   beforeDestroy() {
-    this.enableBodyScroll()
+    if (!this.isNested && !this.skipBodyScrollOnClose) this.enableBodyScroll()
     this.isVisible = false
   },
   methods: {
@@ -135,21 +155,52 @@ export default {
       this.$emit('duplicate-success')
       this.closeDrawer()
     },
-    handleSendClicked() {
-      // Send modal açıldığında drawer'ı kapat ama store'u reset etme
-      const drawerElement = document.querySelector('.training-library-drawer')
-      if (drawerElement) {
-        drawerElement.style.right = '-100%'
-      }
+    handleEditClicked() {
+      // Edit modal açılırken drawer kapanır
+      this.skipBodyScrollOnClose = true
 
-      setTimeout(() => {
+      if (this.isNested) {
+        // Nested drawer'daysa hem nested hem parent drawer'ı kapat
         this.isVisible = false
         this.$emit('input', false)
-      }, 250)
+        this.$emit('close-parent')
+      } else {
+        // Parent drawer
+        const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
+        if (drawerElement) {
+          drawerElement.style.right = '-100%'
+        }
+        setTimeout(() => {
+          this.isVisible = false
+          this.$emit('input', false)
+        }, 250)
+      }
+    },
+    handleSendClicked() {
+      // Send modal açıldığında drawer'ı kapat ama store'u reset etme
+      this.skipBodyScrollOnClose = true
+
+      if (this.isNested) {
+        // Nested drawer'daysa hem nested hem parent drawer'ı kapat
+        this.isVisible = false
+        this.$emit('input', false)
+        this.$emit('close-parent')
+      } else {
+        // Parent drawer
+        const drawerElement = document.querySelector('.training-library-drawer')
+        if (drawerElement) {
+          drawerElement.style.right = '-100%'
+        }
+
+        setTimeout(() => {
+          this.isVisible = false
+          this.$emit('input', false)
+        }, 250)
+      }
     },
     openDrawer() {
       // Drawer'ı başta ekranın dışında başlat
-      const drawerElement = document.querySelector('.training-library-drawer')
+      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
       if (drawerElement) {
         drawerElement.style.right = '-100%'
         // Bir sonraki frame'de animasyonla içeri getir
@@ -159,16 +210,14 @@ export default {
       }
     },
     closeDrawer() {
-      console.log('🚪 Closing drawer...')
       // Drawer'ı animasyonla kaydır
-      const drawerElement = document.querySelector('.training-library-drawer')
+      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
       if (drawerElement) {
         drawerElement.style.right = '-100%'
       }
 
-      // Animasyon bitince drawer'ı ve overlay'i kapat
+      // Animasyon bitince drawer'ı kapat
       setTimeout(() => {
-        console.log('✅ Drawer closed, emitting events')
         this.isVisible = false
         this.$emit('input', false)
         this.$emit('close')

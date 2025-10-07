@@ -86,17 +86,40 @@
           </template>
         </TrainingLibraryDrawerLanguageMenu>
         <div class="training-library-drawer-content-summary__send-wrapper">
-          <VBtn
-            outlined
-            color="#fff"
-            class="training-library-drawer-content-summary__send-btn"
-            rounded
-            :ripple="false"
-            @click="handleSend"
-          >
-            <VIcon left color="#757575">mdi-send</VIcon>
-            {{ getSendButtonText }}
-          </VBtn>
+          <!-- Screensaver: open language select like preview, then download -->
+          <template v-if="isScreensaver">
+            <TrainingLibraryDrawerLanguageMenu
+              :languages="availableLanguages"
+              :is-loading="isLoadingLanguages"
+              @language-selected="handleDownloadByLanguage"
+            >
+              <template #activator>
+                <VBtn
+                  outlined
+                  color="#fff"
+                  class="training-library-drawer-content-summary__send-btn"
+                  rounded
+                  :ripple="false"
+                >
+                  <VIcon left color="#757575">mdi-download</VIcon>
+                  {{ getSendButtonText }}
+                </VBtn>
+              </template>
+            </TrainingLibraryDrawerLanguageMenu>
+          </template>
+          <template v-else>
+            <VBtn
+              outlined
+              color="#fff"
+              class="training-library-drawer-content-summary__send-btn"
+              rounded
+              :ripple="false"
+              @click="handleSend"
+            >
+              <VIcon left color="#757575">mdi-send</VIcon>
+              {{ getSendButtonText }}
+            </VBtn>
+          </template>
           <VBtn
             icon
             color="#fff"
@@ -104,17 +127,18 @@
             class="training-library-drawer-content-summary__action-icon"
             @click="handleFavoriteToggle"
           >
-            <VIcon :color="isFavorite ? '#FFC107' : '#757575'" style="font-size: 20px;">
+            <VIcon :color="isFavorite ? '#757575' : '#757575'" style="font-size: 20px;">
               {{ isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
             </VIcon>
           </VBtn>
           <TrainingLibraryDrawerActionsMenu
             :type="type"
             :is-deletable="isDeletable"
+            :languages="availableLanguages"
             @edit="handleEdit"
             @duplicate="handleDuplicate"
             @delete="handleDelete"
-            @download="handleDownload"
+            @download="openScreensaverDownloadDialog"
           >
             <template #activator>
               <VBtn
@@ -144,6 +168,7 @@
             :key="index"
             :icon="card.icon"
             :text="card.text"
+            :tooltip="card.tooltip"
           />
         </div>
 
@@ -193,10 +218,6 @@ export default {
     }
   },
   mounted() {
-    console.log('📦 TrainingData received:', this.trainingData)
-    console.log('🌍 trainingData.languages:', this.trainingData.languages)
-    console.log('🔢 trainingData.trainingLanguageIds:', this.trainingData.trainingLanguageIds)
-
     this.isFavorite = this.trainingData.isFavourite || false
 
     if (this.trainingData.trainingId || this.trainingData.resourceId) {
@@ -207,7 +228,6 @@ export default {
     trainingData: {
       deep: true,
       handler(newVal) {
-        console.log('🔄 TrainingData changed:', newVal)
         this.isFavorite = newVal.isFavourite || false
         if (newVal && (newVal.trainingId || newVal.resourceId)) {
           this.callForLanguages()
@@ -216,6 +236,9 @@ export default {
     }
   },
   computed: {
+    isScreensaver() {
+      return this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER
+    },
     getCurrentTrainingData() {
       return this.trainingDetails || this.trainingData
     },
@@ -282,22 +305,117 @@ export default {
         },
         {
           icon: 'mdi-shield-check-outline',
-          text: this.getComplianceText(data)
+          text: this.getComplianceText(data),
+          tooltip: this.getComplianceTooltip(data)
         },
         {
           icon: 'mdi-web',
-          text: this.getLanguagesText
+          text: this.getLanguagesText,
+          tooltip: this.getLanguagesTooltip()
         }
       ]
     }
   },
   methods: {
-    getComplianceText(data) {
-      // compliances array ise
-      if (data.compliances && Array.isArray(data.compliances)) {
-        const filtered = data.compliances.filter(
+    handleDownloadByLanguage(language) {
+      // Map to ID if structure is { text, value }
+      const languageId = language?.value || language?.id || language
+      const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
+      if (!trainingId || !languageId) return
+      // Use blob download endpoint (same used by legacy screensaver preview dialog)
+      AwarenessEducatorService.downloadPoster({ trainingId, languageId })
+        .then((response) => {
+          const blob = response?.data
+          // Try to resolve filename from headers; fallback to training name
+          const disposition =
+            response?.headers &&
+            (response.headers['content-disposition'] || response.headers['Content-Disposition'])
+
+          let filename = this.trainingData.name || this.trainingData.trainingName || 'screensaver'
+
+          if (disposition) {
+            const match = /filename\*=UTF-8''([^;]+)|filename=\"?([^;\"]+)/i.exec(disposition)
+            if (match) {
+              filename = decodeURIComponent(match[1] || match[2])
+            }
+          }
+
+          // Eğer filename'de uzantı yoksa veya .jfif gibi istenmeyen uzantı varsa, content-type'dan al
+          if (!filename.match(/\.(jpg|jpeg|png|gif|pdf)$/i) || filename.includes('.jfif')) {
+            const contentType = response?.headers &&
+              (response.headers['content-type'] || response.headers['Content-Type'])
+
+            const extensionMap = {
+              'image/jpeg': '.jpg',
+              'image/jpg': '.jpg',
+              'image/png': '.png',
+              'image/gif': '.gif',
+              'application/pdf': '.pdf'
+            }
+
+            const extension = extensionMap[contentType] || '.jpg'
+            // .jfif varsa değiştir, yoksa ekle
+            if (filename.includes('.jfif')) {
+              filename = filename.replace(/\.jfif$/i, extension)
+            } else if (!filename.match(/\.(jpg|jpeg|png|gif|pdf)$/i)) {
+              filename = filename + extension
+            }
+          }
+
+          this.downloadBlob(blob, filename)
+        })
+        .catch(() => {})
+    },
+    openScreensaverDownloadDialog() {
+      this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+        status: true,
+        selectedRow: this.trainingData,
+        type: 'downloadScreensaver',
+        title: 'Download Screensaver',
+        showSendButton: false,
+        subtitle: '',
+        showDetails: false,
+        showTabs: false,
+        showFavoriteButton: false,
+        icon: 'mdi-download'
+      })
+    },
+    downloadBlob(blob, filename) {
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    },
+    getLanguagesTooltip() {
+      if (this.availableLanguages && this.availableLanguages.length > 1) {
+        return this.availableLanguages.map((l) => l.text).join(', ')
+      }
+      const languageCodes = this.trainingData.languages
+      if (Array.isArray(languageCodes) && languageCodes.length > 1) {
+        return languageCodes.join(', ')
+      }
+      return ''
+    },
+    getComplianceTooltip(data) {
+      if (data && Array.isArray(data.complianceNames)) {
+        const filtered = data.complianceNames.filter(
           (c) => c && typeof c === 'string' && c.trim() !== ''
         )
+        if (filtered.length > 1) return filtered.join(', ')
+      }
+      return ''
+    },
+    getComplianceText(data) {
+      console.log('data', data)
+      if (data.complianceNames && Array.isArray(data.complianceNames)) {
+        const filtered = data.complianceNames.filter(
+          (c) => c && typeof c === 'string' && c.trim() !== ''
+        )
+
         if (filtered.length === 0) return 'No compliance'
         if (filtered.length === 1) return filtered[0]
         return `${filtered.length} compliances`
@@ -309,17 +427,16 @@ export default {
       return 'No compliance'
     },
     callForLanguages() {
-      console.log('🔍 Fetching languages for training:', this.trainingData)
-      console.log('🌍 Language codes from training:', this.trainingData.languages)
-
       this.isLoadingLanguages = true
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          console.log('✅ Languages API response:', res?.data?.data)
-
           const languageCodes = this.trainingData.languages || []
           this.availableLanguages = []
-
+          // Array kontrolü
+          if (!Array.isArray(languageCodes)) {
+            this.isLoadingLanguages = false
+            return
+          }
           languageCodes.forEach((langCode) => {
             // API'den gelen dillerde shortCode veya code field'ı ile eşleştir
             const language = res?.data?.data?.find(
@@ -331,13 +448,8 @@ export default {
                 text: language.name,
                 value: language.id
               })
-              console.log(`✅ Matched ${langCode} → ${language.name}`)
-            } else {
-              console.warn(`⚠️ Language code not found in API: ${langCode}`)
             }
           })
-
-          console.log('🌐 Available languages:', this.availableLanguages)
         })
         .catch((error) => {
           console.error('❌ Error fetching languages:', error)
@@ -349,43 +461,28 @@ export default {
     callForTrainingDetail() {
       const trainingId = this.trainingData.trainingId
       if (!trainingId) {
-        console.warn('⚠️ No trainingId found')
         this.isLoadingLanguages = false
         return
       }
-
-      console.log('📥 Fetching training details for ID:', trainingId)
-
       AwarenessEducatorService.getTraining(trainingId)
         .then((response) => {
           const {
             data: { data }
           } = response
-
-          console.log('✅ Training details:', data)
-          console.log('🔍 Original trainingData.category:', this.trainingData.category)
-          console.log('🔍 Original trainingData.categoryName:', this.trainingData.categoryName)
-          console.log('🔍 API data.category:', data.category)
-          console.log('🔍 API data.categoryName:', data.categoryName)
-
           this.trainingDetails = {
             ...data,
             category: data.category || this.trainingData.category,
             categoryName: data.categoryName || this.trainingData.categoryName,
-            languages: this.availableLanguages.map((lang) => lang.text).join(', ')
+            languages: this.availableLanguages.map((lang) => lang.text).join(', '),
+            // Prefer API compliances; fallback to selectedRow.compliances
+            compliances: Array.isArray(data.complianceNames)
+              ? data.complianceNames
+              : this.trainingData.complianceNames || []
           }
-
-          console.log('✅ Merged trainingDetails.category:', this.trainingDetails.category)
-          console.log('✅ Merged trainingDetails.categoryName:', this.trainingDetails.categoryName)
-
           // isFavorite'i training details'den güncelle
           this.isFavorite = data.isFavourite || false
-
           // Category'yi parent'a emit et (boşluksuz versiyonu)
           this.$emit('category-ready', this.trainingDetails.category)
-
-          console.log('📦 Training details with languages:', this.trainingDetails)
-          console.log('⭐ isFavorite:', this.isFavorite)
         })
         .catch((error) => {
           console.error('❌ Error fetching training details:', error)
@@ -395,44 +492,71 @@ export default {
         })
     },
     handlePreviewClick(language) {
-      console.log('👁️ Preview clicked with language:', language)
-
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       const languageId = language.value
 
-      // Store'da lightbox'ı aç ve loading göster
-      this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
-        status: true,
-        previewData: null,
-        isLoading: true,
-        type: this.type
-      })
-
-      console.log('📥 Fetching preview URL for:', {
-        trainingId,
-        languageId,
-        type: this.type
-      })
-
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
-          console.log('✅ Full response:', response)
           const previewData = response?.data?.data || response?.data
+          const previewUrl = previewData?.trainingUrl || previewData
 
-          console.log('✅ Preview data:', previewData)
+          console.log('📥 Preview URL:', previewUrl)
 
-          // Preview data'yı store'a set et
-          this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
-            status: true,
-            previewData: previewData,
-            isLoading: false,
-            type: this.type
-          })
+          // Filename'i al
+          const splittedUrl = previewUrl.split('/')
+          const fileName = splittedUrl[splittedUrl.length - 1]
+          const isPdf = fileName.includes('.pdf')
+
+          console.log('📄 File name:', fileName)
+          console.log('📄 Is PDF:', isPdf)
+
+          if (isPdf) {
+            console.log('📥 Downloading PDF as blob...')
+            // Store'da lightbox'ı aç ve loading göster
+            this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+              status: true,
+              previewData: null,
+              isLoading: true,
+              type: this.type
+            })
+
+            // PDF ise blob olarak indir
+            AwarenessEducatorService.downloadPoster({ trainingId, languageId })
+              .then((blobResponse) => {
+                console.log('✅ Blob response:', blobResponse)
+                const blobUrl = window.URL.createObjectURL(blobResponse.data)
+                console.log('✅ Blob URL created:', blobUrl)
+
+                // Download tamamlandı, şimdi lightbox'ı aç
+                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+                  status: true,
+                  previewData: blobUrl,
+                  isLoading: false,
+                  type: this.type
+                })
+                console.log('✅ Lightbox updated with blob URL')
+              })
+              .catch((error) => {
+                console.error('❌ Error downloading PDF:', error)
+                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+                  status: false,
+                  previewData: null,
+                  isLoading: false,
+                  type: null
+                })
+              })
+          } else {
+            // Image ise direkt URL'i göster
+            this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+              status: true,
+              previewData: previewUrl,
+              isLoading: false,
+              type: this.type
+            })
+          }
         })
         .catch((error) => {
           console.error('❌ Error fetching preview URL:', error)
-
-          // Hata durumunda lightbox'ı kapat
           this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
             status: false,
             previewData: null,
@@ -442,7 +566,53 @@ export default {
         })
     },
     handleEdit() {
-      this.$emit('edit', this.trainingData)
+      // Open corresponding edit modal based on type
+      const selectedRow = this.trainingData
+      if (this.type === TRAINING_LIBRARY_TYPES.TRAINING) {
+        this.$store.dispatch('trainingLibrary/setNewTrainingModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) {
+        this.$store.dispatch('trainingLibrary/setNewLearningPathModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (this.type === TRAINING_LIBRARY_TYPES.POSTER) {
+        this.$store.dispatch('trainingLibrary/setNewPosterModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC) {
+        this.$store.dispatch('trainingLibrary/setNewInfographicModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) {
+        this.$store.dispatch('trainingLibrary/setNewScreensaverModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      } else if (this.type === TRAINING_LIBRARY_TYPES.SURVEY) {
+        this.$store.dispatch('trainingLibrary/setNewSurveyModal', {
+          status: true,
+          selectedRow,
+          isEdit: true,
+          isDuplicate: false
+        })
+      }
+      // Edit modal açıldı, drawer kapanmalı
+      this.$emit('edit-clicked')
     },
     handleDuplicate() {
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
@@ -499,18 +669,19 @@ export default {
 
       apiCall.then(() => {
         this.isFavorite = !this.isFavorite
-        console.log(`✅ ${this.isFavorite ? 'Added to' : 'Removed from'} favorites`)
       })
     },
     handleSend() {
-      console.log('📤 Send button clicked')
-      console.log('📦 Current type:', this.type)
-      console.log('📦 TRAINING_LIBRARY_TYPES:', TRAINING_LIBRARY_TYPES)
-      console.log('📦 Training data:', this.trainingData)
-
-      // Type'a göre ilgili send modal'ını aç
+      // Screensaver: open download flow instead of send
+      if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) {
+        const firstLang = this.availableLanguages[0]
+        if (!firstLang) return
+        this.handleDownloadByLanguage(firstLang)
+        // Drawer should remain open for Screensaver downloads
+        return
+      }
+      // Other types: open related send modal
       if (this.type === TRAINING_LIBRARY_TYPES.TRAINING) {
-        console.log('✅ Opening Training Send Modal')
         this.$store.commit('trainingLibrary/SET_TRAINING_SEND_MODAL', {
           status: true,
           selectedRow: this.trainingData
@@ -530,18 +701,12 @@ export default {
           status: true,
           selectedRow: this.trainingData
         })
-      } else if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) {
-        this.$store.commit('trainingLibrary/SET_SCREENSAVER_SEND_MODAL', {
-          status: true,
-          selectedRow: this.trainingData
-        })
       } else if (this.type === TRAINING_LIBRARY_TYPES.SURVEY) {
         this.$store.commit('trainingLibrary/SET_SURVEY_SEND_MODAL', {
           status: true,
           selectedRow: this.trainingData
         })
       }
-
       // Drawer store'unu temizle
       this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
         status: false,
@@ -549,7 +714,6 @@ export default {
         showSendButton: true,
         type: TRAINING_LIBRARY_TYPES.TRAINING
       })
-
       // Modal açıldıktan sonra drawer'ı kapat
       this.$emit('send-clicked')
     }

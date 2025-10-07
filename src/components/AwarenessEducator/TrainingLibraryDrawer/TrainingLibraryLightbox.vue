@@ -1,17 +1,11 @@
 <template>
   <div v-if="isVisible" class="training-library-lightbox">
     <div class="training-library-lightbox__overlay" @click="handleClose"></div>
-    <VBtn
-      icon
-      class="training-library-lightbox__close"
-      @click="handleClose"
-    >
+    <VBtn icon class="training-library-lightbox__close" @click="handleClose">
       <VIcon size="32">mdi-close</VIcon>
     </VBtn>
     <div class="training-library-lightbox__container" @click.stop>
-      <div class="training-library-lightbox__content">
-        <slot></slot>
-      </div>
+      <slot></slot>
     </div>
   </div>
 </template>
