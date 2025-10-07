@@ -180,7 +180,9 @@ export default {
       } else if (act.action === ACTION_STATUSES.RUNNING) {
         eventName = 'on-stop'
       }
-
+      else if (eventName === ACTION_STATUSES.SCHEDULED) {
+        eventName = 'on-preview'
+      }
       this.$emit(eventName, this.scope.row)
     }
   }

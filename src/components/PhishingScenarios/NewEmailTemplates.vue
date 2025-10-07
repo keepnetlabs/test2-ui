@@ -442,7 +442,7 @@ export default {
             padding-left:2em !important;
             margin: 0.5em 0.1em;
           }
-           .flagged-area:not(a):not(button):not(.button) {
+           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
             background-color: rgba(255, 0, 0, 0.1);
             padding: 0.2em 2em;
           }
