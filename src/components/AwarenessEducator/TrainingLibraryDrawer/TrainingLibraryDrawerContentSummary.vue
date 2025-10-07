@@ -196,6 +196,12 @@
         <p class="training-library-drawer-content-summary__description">
           {{ getCurrentTrainingData.description }}
         </p>
+
+        <!-- Learning Path Steps -->
+        <TrainingLibraryDrawerContentSteps
+          v-if="isLearningPath && learningPathSteps.length > 0"
+          :steps="learningPathSteps"
+        />
       </div>
     </div>
   </div>
@@ -205,6 +211,7 @@
 import TrainingLibraryDrawerInfoCard from './TrainingLibraryDrawerInfoCard.vue'
 import TrainingLibraryDrawerLanguageMenu from './TrainingLibraryDrawerLanguageMenu.vue'
 import TrainingLibraryDrawerActionsMenu from './TrainingLibraryDrawerActionsMenu.vue'
+import TrainingLibraryDrawerContentSteps from './TrainingLibraryDrawerContentSteps.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 
@@ -213,7 +220,8 @@ export default {
   components: {
     TrainingLibraryDrawerInfoCard,
     TrainingLibraryDrawerLanguageMenu,
-    TrainingLibraryDrawerActionsMenu
+    TrainingLibraryDrawerActionsMenu,
+    TrainingLibraryDrawerContentSteps
   },
   props: {
     trainingData: {
@@ -242,7 +250,8 @@ export default {
       availableLanguages: [],
       isLoadingLanguages: true,
       trainingDetails: null,
-      isFavorite: false
+      isFavorite: false,
+      learningPathSteps: []
     }
   },
   mounted() {
@@ -250,6 +259,12 @@ export default {
 
     if (this.trainingData.trainingId || this.trainingData.resourceId) {
       this.callForLanguages()
+    }
+    console.log('isLearningPath', this.isLearningPath)
+    console.log('trainingData.trainingGroups', this.trainingData.trainingGroups)
+    // Learning Path ise steps'i al
+    if (this.isLearningPath && this.trainingData.trainingGroups) {
+      this.processLearningPathSteps()
     }
   },
   watch: {
@@ -259,6 +274,10 @@ export default {
         this.isFavorite = newVal.isFavourite || false
         if (newVal && (newVal.trainingId || newVal.resourceId)) {
           this.callForLanguages()
+        }
+        // Learning Path ise steps'i güncelle
+        if (this.isLearningPath && newVal.trainingGroups) {
+          this.processLearningPathSteps()
         }
       }
     }
@@ -348,6 +367,27 @@ export default {
     }
   },
   methods: {
+    processLearningPathSteps() {
+      // trainingDetails'den veya trainingData'dan al
+      const trainingGroups =
+        this.trainingDetails?.trainingGroups || this.trainingData.trainingGroups
+
+      console.log('processLearningPathSteps', trainingGroups)
+
+      if (!trainingGroups || !Array.isArray(trainingGroups)) {
+        this.learningPathSteps = []
+        return
+      }
+
+      // trainingOrder'a göre sırala ve map et
+      this.learningPathSteps = [...trainingGroups]
+        .sort((a, b) => (a.trainingOrder || 0) - (b.trainingOrder || 0))
+        .map((step) => ({
+          title: step.name,
+          type: step.type === 'SCORM' ? 'Training' : step.type
+        }))
+      console.log('learningPathSteps', this.learningPathSteps)
+    },
     handleDownloadByLanguage(language) {
       // Map to ID if structure is { text, value }
       const languageId = language?.value || language?.id || language
@@ -501,6 +541,12 @@ export default {
           this.isFavorite = data.isFavourite || false
           // Category'yi parent'a emit et (boşluksuz versiyonu)
           this.$emit('category-ready', this.trainingDetails.category)
+
+          // Learning Path ise ve trainingGroups API'den geldiyse steps'i işle
+          if (this.isLearningPath && data.trainingGroups) {
+            this.trainingDetails.trainingGroups = data.trainingGroups
+            this.processLearningPathSteps()
+          }
         })
         .catch((error) => {
           console.error('❌ Error fetching training details:', error)
