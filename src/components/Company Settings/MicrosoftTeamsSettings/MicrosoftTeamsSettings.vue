@@ -220,8 +220,10 @@ export default {
     if (query?.code && query?.state) {
       //step 2
       this.callMicrosoftTeamsOboCallback(query.code, query.state)
+      return
     } else if (query?.admin_consent && query?.tenant && query?.scope) {
       this.callMicrosoftTeamsAppCallback(query.admin_consent, query.tenant, query.scope)
+      return
     } else if (
       (query?.admin_consent && query?.error && query?.error_description && query?.state) ||
       (query?.error && query?.error_subcode && query?.state)
@@ -236,6 +238,7 @@ export default {
         })
       }
       this.$router.replace('/company/company-settings?')
+      return
     } else {
       this.getMicrosoftTeamsSettings()
     }
