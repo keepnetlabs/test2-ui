@@ -48,7 +48,7 @@
           </template>
           <template v-else>
             <div class="training-library-drawer-content-related__card-no-image">
-              <VIcon size="48" color="#fff">mdi-image</VIcon>
+              <VIcon size="36" color="#fff">mdi-image</VIcon>
               <div class="training-library-drawer-content-related__card-no-image-text">
                 No Cover Image
               </div>
@@ -64,18 +64,18 @@
             <span class="dot">•</span>
             <span>{{ card.category }}</span>
           </div>
-          <VTooltip v-if="getLanguagesTooltip(card.languages)" bottom>
-            <template #activator="{ on }">
-              <div v-on="on" class="training-library-drawer-content-related__card-langs">
-                <VIcon small class="mr-1">mdi-web</VIcon>
-                <span>{{ card.languagesFormatted }}</span>
-              </div>
-            </template>
-            <span>{{ getLanguagesTooltip(card.languages) }}</span>
-          </VTooltip>
-          <div v-else class="training-library-drawer-content-related__card-langs">
+          <div class="training-library-drawer-content-related__card-langs">
             <VIcon small class="mr-1">mdi-web</VIcon>
-            <span>{{ card.languagesFormatted }}</span>
+            <span v-if="card.languages.length <= 3">{{ card.languagesFormatted }}</span>
+            <span v-else>
+              {{ getFirstThreeLanguages(card.languages) }}
+              <VTooltip bottom>
+                <template #activator="{ on }">
+                  <span v-on="on" style="cursor: pointer;">, +{{ card.languages.length - 3 }}</span>
+                </template>
+                <span>{{ getRemainingLanguages(card.languages) }}</span>
+              </VTooltip>
+            </span>
           </div>
           <div class="training-library-drawer-content-related__card-actions">
             <VBtn
@@ -229,33 +229,33 @@ export default {
           this.isLoading = false
         })
     },
-    formatLanguages(languageCodes) {
-      if (!languageCodes || languageCodes.length === 0) return 'No languages'
+    getLanguageNames(languageCodes) {
+      if (!languageCodes || languageCodes.length === 0) return []
 
-      // Dil kodlarını dil isimlerine çevir
-      const languageNames = languageCodes.map((code) => {
+      return languageCodes.map((code) => {
         const lang = this.allLanguages.find(
           (item) => item.shortCode === code || item.code === code || item.id === code
         )
         return lang ? lang.name : code
       })
+    },
+    formatLanguages(languageCodes) {
+      if (!languageCodes || languageCodes.length === 0) return 'No languages'
+
+      const languageNames = this.getLanguageNames(languageCodes)
 
       if (languageNames.length === 1) return languageNames[0]
       if (languageNames.length === 2) return languageNames.join(', ')
       if (languageNames.length === 3) return languageNames.join(', ')
       return `${languageNames.slice(0, 3).join(', ')}, +${languageNames.length - 3}`
     },
-    getLanguagesTooltip(languageCodes) {
-      if (!languageCodes || languageCodes.length <= 3) return ''
-
-      const languageNames = languageCodes.map((code) => {
-        const lang = this.allLanguages.find(
-          (item) => item.shortCode === code || item.code === code || item.id === code
-        )
-        return lang ? lang.name : code
-      })
-
-      return languageNames.join(', ')
+    getFirstThreeLanguages(languageCodes) {
+      const languageNames = this.getLanguageNames(languageCodes)
+      return languageNames.slice(0, 3).join(', ')
+    },
+    getRemainingLanguages(languageCodes) {
+      const languageNames = this.getLanguageNames(languageCodes)
+      return languageNames.slice(3).join(', ')
     },
     getCoverImage(coverImage) {
       if (!coverImage) return null

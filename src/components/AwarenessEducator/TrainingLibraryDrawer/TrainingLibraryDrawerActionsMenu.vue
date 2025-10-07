@@ -90,6 +90,10 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -115,12 +119,14 @@ export default {
     otherItems() {
       const items = []
       items.push({ action: 'edit', icon: 'mdi-pencil', text: 'Edit' })
-      items.push({
-        action: 'duplicate',
-        icon: 'mdi-content-copy',
-        text: 'Duplicate'
-      })
-      if (this.isDeletable) items.push({ action: 'delete', icon: 'mdi-delete', text: 'Delete' })
+      if (!this.isNested) {
+        items.push({
+          action: 'duplicate',
+          icon: 'mdi-content-copy',
+          text: 'Duplicate'
+        })
+        if (this.isDeletable) items.push({ action: 'delete', icon: 'mdi-delete', text: 'Delete' })
+      }
       return items
     },
     menuWidth() {

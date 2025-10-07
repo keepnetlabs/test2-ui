@@ -1,25 +1,44 @@
 <template>
   <div>
-    <TrainingLibraryTrainingPreviewDialog
-      v-if="getTrainingPreviewDialog.status"
-      v-bind="getTrainingPreviewDialog"
+    <!-- Unified Drawer for Training, Poster, Infographic, Survey -->
+    <TrainingLibraryDrawer
+      v-if="currentDrawer.status"
+      :value="currentDrawer.status"
+      :type="currentDrawer.type"
+      :training-data="currentDrawer.selectedRow"
+      :only-preview="true"
+      @input="handleDrawerClose"
+      @delete-success="handleDeleteSuccess"
+      @duplicate-success="handleDuplicateSuccess"
     />
+
+    <!-- Nested Drawer (Related Preview) -->
+    <TrainingLibraryDrawer
+      v-if="getNestedDrawer.status"
+      :value="getNestedDrawer.status"
+      :type="getNestedDrawer.type"
+      :training-data="getNestedDrawer.selectedRow"
+      :is-nested="true"
+      :only-preview="true"
+      width="calc(100% - 144px)"
+      @input="handleNestedDrawerClose"
+      @close-parent="handleCloseParentDrawer"
+    />
+
+    <!-- Keep Learning Path dialog (drawer is not used for it here) -->
     <TrainingLibraryLearningPathPreviewDialog
       v-if="getLearningPathPreviewDialog.status"
       v-bind="getLearningPathPreviewDialog"
     />
-    <TrainingLibraryPosterPreviewDialog
-      v-if="getPosterPreviewDialog.status"
-      v-bind="getPosterPreviewDialog"
-    />
-    <TrainingLibraryInfographicPreviewDialog
-      v-if="getInfographicPreviewDialog.status"
-      v-bind="getInfographicPreviewDialog"
-    />
-    <TrainingLibrarySurveyPreviewDialog
-      v-if="getSurveyPreviewDialog.status"
-      v-bind="getSurveyPreviewDialog"
-    />
+
+    <!-- Lightbox for Preview -->
+    <TrainingLibraryLightbox :value="getLightbox.status" @input="handleLightboxClose">
+      <TrainingLibraryLightboxContent
+        :preview-data="getLightbox.previewData"
+        :is-loading="getLightbox.isLoading"
+        :type="getLightbox.type"
+      />
+    </TrainingLibraryLightbox>
     <EditEnrollmentsModal
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
@@ -228,11 +247,10 @@ import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/Sto
 import DeleteEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/DeleteEnrollmentDialog.vue'
 import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog.vue'
 import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog.vue'
-import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
 import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
-import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
+import TrainingLibraryDrawer from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue'
+import TrainingLibraryLightbox from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightbox.vue'
+import TrainingLibraryLightboxContent from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightboxContent.vue'
 import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import TrashDeletePermanentlyDialog from '@/components/AwarenessEducator/Enrollments/TrashDeletePermanentlyDialog.vue'
@@ -240,11 +258,10 @@ export default {
   name: 'EnrollmentsSubTabs',
   components: {
     TrashDeletePermanentlyDialog,
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibraryPosterPreviewDialog,
     TrainingLibraryLearningPathPreviewDialog,
-    TrainingLibraryInfographicPreviewDialog,
-    TrainingLibrarySurveyPreviewDialog,
+    TrainingLibraryDrawer,
+    TrainingLibraryLightbox,
+    TrainingLibraryLightboxContent,
     EnrollmentsSurveyTable,
     EnrollmentsInfographicTable,
     EnrollmentsPosterTable,
@@ -312,9 +329,60 @@ export default {
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
+      getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog',
       getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
-      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog',
+      getLightbox: 'trainingLibrary/getLightbox',
+      getNestedDrawer: 'trainingLibrary/getNestedDrawer'
     }),
+    currentDrawer() {
+      if (this.getTrainingPreviewDialog.status) {
+        return {
+          status: this.getTrainingPreviewDialog.status,
+          type: this.getTrainingPreviewDialog.type,
+          selectedRow: this.getTrainingPreviewDialog.selectedRow,
+          dialogType: 'training'
+        }
+      }
+      if (this.getPosterPreviewDialog.status) {
+        return {
+          status: this.getPosterPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.POSTER,
+          selectedRow: this.getPosterPreviewDialog.selectedRow,
+          dialogType: 'poster'
+        }
+      }
+      if (this.getInfographicPreviewDialog.status) {
+        return {
+          status: this.getInfographicPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
+          selectedRow: this.getInfographicPreviewDialog.selectedRow,
+          dialogType: 'infographic'
+        }
+      }
+      if (this.getScreensaverPreviewDialog && this.getScreensaverPreviewDialog.status) {
+        return {
+          status: this.getScreensaverPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
+          selectedRow: this.getScreensaverPreviewDialog.selectedRow,
+          dialogType: 'screensaver'
+        }
+      }
+      if (this.getSurveyPreviewDialog.status) {
+        return {
+          status: this.getSurveyPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.SURVEY,
+          selectedRow: this.getSurveyPreviewDialog.selectedRow,
+          dialogType: 'survey'
+        }
+      }
+      return {
+        status: false,
+        type: null,
+        selectedRow: null,
+        dialogType: null
+      }
+    },
     getApiFunc() {
       return this.isTrash
         ? AwarenessEducatorService.searchTrash
@@ -344,6 +412,102 @@ export default {
       setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
       resetAllModals: 'trainingLibrary/resetAllModals'
     }),
+    handleLightboxClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+          status: false,
+          previewData: null,
+          isLoading: false,
+          type: null
+        })
+      }
+    },
+    handleDrawerClose(value) {
+      if (!value) {
+        if (this.currentDrawer.dialogType === 'training') {
+          this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null,
+            showSendButton: true,
+            type: TRAINING_LIBRARY_TYPES.TRAINING
+          })
+        } else if (this.currentDrawer.dialogType === 'poster') {
+          this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'infographic') {
+          this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'screensaver') {
+          this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'survey') {
+          this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        }
+      }
+    },
+    handleNestedDrawerClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+          status: false,
+          selectedRow: null,
+          type: null
+        })
+      }
+    },
+    handleCloseParentDrawer() {
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+      if (this.currentDrawer.dialogType === 'training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      } else if (this.currentDrawer.dialogType === 'poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'screensaver') {
+        this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      }
+    },
+    handleDeleteSuccess() {
+      if (this.$refs && this.$refs[`refTable${this.tab}`] && this.$refs[`refTable${this.tab}`][0]) {
+        this.$refs[`refTable${this.tab}`][0].callForData()
+      }
+    },
+    handleDuplicateSuccess() {
+      if (this.$refs && this.$refs[`refTable${this.tab}`] && this.$refs[`refTable${this.tab}`][0]) {
+        this.$refs[`refTable${this.tab}`][0].callForData()
+      }
+    },
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
         this.$refs[`refTable${this.tab}`][0].callForData()

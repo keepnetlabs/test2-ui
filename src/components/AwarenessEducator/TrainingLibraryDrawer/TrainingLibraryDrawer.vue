@@ -36,6 +36,7 @@
           :training-data="trainingData"
           :type="type"
           :is-nested="isNested"
+          :only-preview="onlyPreview"
           @delete-success="handleDeleteSuccess"
           @duplicate-success="handleDuplicateSuccess"
           @send-clicked="handleSendClicked"
@@ -74,6 +75,10 @@ export default {
       default: () => ({})
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    onlyPreview: {
       type: Boolean,
       default: false
     }
@@ -233,10 +238,10 @@ export default {
     },
     enableBodyScroll() {
       if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'auto'
+        document.querySelector('html').style.overflowY = ''
       }
       if (document.querySelector('body')) {
-        document.querySelector('body').style.overflowY = 'auto'
+        document.querySelector('body').style.overflowY = ''
       }
     }
   }

@@ -85,7 +85,7 @@
             </VBtn>
           </template>
         </TrainingLibraryDrawerLanguageMenu>
-        <div class="training-library-drawer-content-summary__send-wrapper">
+        <div v-if="!onlyPreview" class="training-library-drawer-content-summary__send-wrapper">
           <!-- Screensaver: open language select like preview, then download -->
           <template v-if="isScreensaver">
             <TrainingLibraryDrawerLanguageMenu
@@ -132,13 +132,15 @@
             </VIcon>
           </VBtn>
           <TrainingLibraryDrawerActionsMenu
+            v-if="!onlyPreview"
             :type="type"
             :is-deletable="isDeletable"
+            :is-nested="isNested"
             :languages="availableLanguages"
             @edit="handleEdit"
             @duplicate="handleDuplicate"
             @delete="handleDelete"
-            @download="openScreensaverDownloadDialog"
+            @download="handleDownloadByLanguage"
           >
             <template #activator>
               <VBtn
@@ -207,6 +209,14 @@ export default {
     isDeletable: {
       type: Boolean,
       default: true
+    },
+    isNested: {
+      type: Boolean,
+      default: false
+    },
+    onlyPreview: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -288,7 +298,7 @@ export default {
       const data = this.getCurrentTrainingData
       return [
         {
-          icon: 'mdi-email-outline',
+          icon: 'mdi-shape-outline',
           text: data.categoryName || data.category || 'No category'
         },
         {
@@ -296,7 +306,7 @@ export default {
           text: data.difficulty || 'No difficulty'
         },
         {
-          icon: 'mdi-account-group-outline',
+          icon: 'mdi-account-outline',
           text: data.targetAudienceName || data.targetAudience || 'No target audience'
         },
         {
@@ -342,7 +352,8 @@ export default {
 
           // Eğer filename'de uzantı yoksa veya .jfif gibi istenmeyen uzantı varsa, content-type'dan al
           if (!filename.match(/\.(jpg|jpeg|png|gif|pdf)$/i) || filename.includes('.jfif')) {
-            const contentType = response?.headers &&
+            const contentType =
+              response?.headers &&
               (response.headers['content-type'] || response.headers['Content-Type'])
 
             const extensionMap = {
@@ -365,20 +376,6 @@ export default {
           this.downloadBlob(blob, filename)
         })
         .catch(() => {})
-    },
-    openScreensaverDownloadDialog() {
-      this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
-        status: true,
-        selectedRow: this.trainingData,
-        type: 'downloadScreensaver',
-        title: 'Download Screensaver',
-        showSendButton: false,
-        subtitle: '',
-        showDetails: false,
-        showTabs: false,
-        showFavoriteButton: false,
-        icon: 'mdi-download'
-      })
     },
     downloadBlob(blob, filename) {
       const url = window.URL.createObjectURL(blob)

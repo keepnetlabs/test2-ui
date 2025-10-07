@@ -3,6 +3,8 @@
     <TrainingLibraryDrawerContentSummary
       :training-data="trainingData"
       :type="type"
+      :is-nested="isNested"
+      :only-preview="onlyPreview"
       @delete-success="$emit('delete-success')"
       @duplicate-success="$emit('duplicate-success')"
       @send-clicked="$emit('send-clicked')"
@@ -10,7 +12,7 @@
       @category-ready="handleCategoryReady"
     />
     <TrainingLibraryDrawerContentRelated
-      v-if="!isNested"
+      v-if="!isNested && !onlyPreview"
       :training-data="trainingData"
       :type="type"
       :category="category"
@@ -38,6 +40,10 @@ export default {
       default: 'Training'
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    onlyPreview: {
       type: Boolean,
       default: false
     }
