@@ -743,7 +743,19 @@ export default {
     if (this.isEdit) {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
         const { data: { data = {} } = {} } = response || {}
-        const phishingLink = {
+        let phishingLink = {}
+        if(typeof data.phishingLink === 'object') {
+          phishingLink= {
+            subDomain: data?.phishingLink.subDomain || data.subDomain || '',
+            urlSchemaTypeId: data?.phishingLink?.urlSchemaTypeId?.toString() || data.urlSchemaTypeId.toString() || '',
+            pathTypeId: data?.phishingLink?.pathTypeId?.toString() || data.pathTypeId.toString() || '',
+            extensionTypeId: data?.phishingLink?.extensionTypeId?.toString() || data.extensionTypeId.toString() || '',
+            parameterTypeId: data?.phishingLink?.parameterTypeId?.toString() || data.parameterTypeId.toString() || '',
+            domainRecordId: data?.phishingLink?.domainRecordId?.toString() || data.domainRecordId.toString() || ''
+          }
+        }
+         else {
+          phishingLink = {
           subDomain: data.subDomain,
           urlSchemaTypeId: data.urlSchemaTypeId.toString(),
           pathTypeId: data.pathTypeId.toString(),
@@ -751,6 +763,7 @@ export default {
           parameterTypeId: data.parameterTypeId.toString(),
           domainRecordId: data.domainRecordId.toString()
         }
+         }
         this.isAssistedByAI = data.isAssistedByAI
         this.aiAssistant = this.isAssistedByAI || false
         delete data.urlSchemaTypeId
