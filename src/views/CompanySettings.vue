@@ -317,7 +317,7 @@ export default {
       ) {
         this.timeoutId = setTimeout(() => {
           this.tab = 'microsoft-teams-settings'
-        }, 5000)
+        }, 1000)
         return
       } else if (
         query?.tenant ||
