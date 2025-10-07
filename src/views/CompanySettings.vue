@@ -177,7 +177,8 @@ export default {
   data() {
     return {
       tab: 'smtp-settings',
-      labels
+      labels,
+      timeoutId: null
     }
   },
   computed: {
@@ -299,6 +300,9 @@ export default {
       next()
     }
   },
+  beforeDestroy() {
+    if (this.timeoutId) clearTimeout(this.timeoutId)
+  },
   methods: {
     changeTabStatus(status) {
       this.tab = status
@@ -311,9 +315,9 @@ export default {
         (query?.admin_consent && query?.tenant && query?.scope) ||
         (query?.error && query?.error_subcode && query?.state)
       ) {
-        setTimeout(() => {
+        this.timeoutId = setTimeout(() => {
           this.tab = 'microsoft-teams-settings'
-        }, 500)
+        }, 5000)
         return
       } else if (
         query?.tenant ||
@@ -323,6 +327,15 @@ export default {
         return
       }
       if (!query || !query.tab) return
+      if (query?.tab === 'google-user-provisioning' && query?.state && query?.code) {
+        this.timeoutId = setTimeout(() => {
+          this.tab = 'google-user-provisioning'
+          this.$nextTick(() => {
+            this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
+          })
+        }, 1000)
+        return
+      }
       this.tab = query.tab
       this.$nextTick(() => {
         this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
