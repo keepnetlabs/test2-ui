@@ -97,6 +97,7 @@
       @on-launch="handleLaunch"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
+      @on-preview="handleItemOnPreview"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
     />
     <CampaignManagerFrequencyTable
@@ -298,7 +299,7 @@ export default {
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnPreview(row) {
-      this.selectedRow = row
+      this.selectedRow = this.selectedParentItem || row
       this.toggleShowPreviewDialog()
     },
     handleItemOnDelete(row) {

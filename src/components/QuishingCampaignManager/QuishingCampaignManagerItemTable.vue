@@ -101,6 +101,7 @@
           @on-delete="handleDelete"
           @on-stop="handleStop"
           @on-launch="handleLaunch"
+          @on-preview="handlePreview"
         />
         <template v-else>
           <DefaultButtonRowAction
@@ -453,6 +454,9 @@ export default {
       ).then(() => {
         this.callForData()
       })
+    },
+    handlePreview(row = {}) {
+      this.$emit('on-preview', row)
     },
     getErrorMessage(row = {}) {
       if (row.status === 'Error') {

@@ -82,6 +82,7 @@
       :status-items="getStatusItems"
       :is-quishing-type-printout="isSelectedItemQuishingPrintout"
       @on-launch="handleLaunch"
+      @on-preview="handleItemOnPreview"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
@@ -289,7 +290,7 @@ export default {
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnPreview(row) {
-      this.selectedRow = row
+      this.selectedRow = this.selectedParentItem || row
       this.toggleShowPreviewDialog()
     },
     handleItemOnDelete(row) {

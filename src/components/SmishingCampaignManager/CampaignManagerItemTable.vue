@@ -98,6 +98,7 @@
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
           @on-stop="handleStop"
+          @on-preview="handlePreview"
           @on-launch="handleLaunch"
         />
       </template>
@@ -345,6 +346,9 @@ export default {
       SmishingService.startSmishingCampaign(this.item.resourceId, row.instanceGroup).then(() => {
         this.callForData()
       })
+    },
+    handlePreview(row = {}) {
+      this.$emit('on-preview', row)
     },
     getErrorMessage(row = {}) {
       if (row.status === 'Error') {
