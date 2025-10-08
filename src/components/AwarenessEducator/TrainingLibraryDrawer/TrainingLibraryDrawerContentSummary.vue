@@ -10,11 +10,6 @@
       <div class="training-library-drawer-content-summary__details-section">
         <div class="d-flex justify-space-between align-center mb-4">
           <div class="skeleton skeleton--heading" style="width: 60%;"></div>
-          <div class="d-flex gap-2">
-            <div class="skeleton skeleton--avatar"></div>
-            <div class="skeleton skeleton--avatar"></div>
-            <div class="skeleton skeleton--avatar"></div>
-          </div>
         </div>
         <div class="training-library-drawer-content-summary__info-grid">
           <div class="skeleton skeleton--info-card">
@@ -87,7 +82,7 @@
           </template>
         </TrainingLibraryDrawerLanguageMenu>
         <VBtn
-          v-else
+          v-else-if="!onlyPreview"
           block
           color="#2196F3"
           class="training-library-drawer-content-summary__preview-btn"
@@ -154,6 +149,7 @@
             :type="type"
             :is-deletable="isDeletable"
             :is-nested="isNested"
+            :is-deep-nested="isDeepNested"
             :languages="availableLanguages"
             @edit="handleEdit"
             @duplicate="handleDuplicate"
@@ -238,6 +234,10 @@ export default {
       default: true
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    isDeepNested: {
       type: Boolean,
       default: false
     },
@@ -342,18 +342,22 @@ export default {
           icon: 'mdi-shape-outline',
           text: data.categoryName || data.category || 'No category'
         },
+        /*
         {
           icon: 'mdi-chart-bar',
           text: data.difficulty || 'No difficulty'
         },
+        */
         {
           icon: 'mdi-account-outline',
           text: data.targetAudienceName || data.targetAudience || 'No target audience'
         },
+        /*
         {
           icon: 'mdi-clock-outline',
           text: data.duration || 'No duration'
         },
+        */
         {
           icon: 'mdi-shield-check-outline',
           text: this.getComplianceText(data),
@@ -393,20 +397,48 @@ export default {
       console.log('learningPathSteps', this.learningPathSteps)
     },
     handlePreviewStep(step) {
-      console.log('🔍 Preview step:', step)
-      // Nested drawer açmak için store'u kullan
-      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
-        status: true,
-        selectedRow: {
-          trainingId: step.detailTrainingId,
-          resourceId: step.detailTrainingId,
-          name: step.title,
-          trainingName: step.title,
-          languages: step.languages,
-          coverImage: step.coverImage
-        },
-        type: step.type === 'Training' ? 'Training' : step.type
-      })
+      console.log(
+        '🔍 Preview step:',
+        step,
+        'isNested:',
+        this.isNested,
+        'isDeepNested:',
+        this.isDeepNested,
+        'onlyPreview:',
+        this.onlyPreview
+      )
+
+      // Eğer zaten nested içindeysek, deep nested drawer açmalıyız
+      if (this.isNested) {
+        this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
+          status: true,
+          selectedRow: {
+            trainingId: step.detailTrainingId,
+            resourceId: step.detailTrainingId,
+            name: step.title,
+            trainingName: step.title,
+            languages: step.languages,
+            coverImage: step.coverImage
+          },
+          type: step.type === 'Training' ? 'Training' : step.type,
+          onlyPreview: this.onlyPreview
+        })
+      } else {
+        // Normal nested drawer açılacak
+        this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+          status: true,
+          selectedRow: {
+            trainingId: step.detailTrainingId,
+            resourceId: step.detailTrainingId,
+            name: step.title,
+            trainingName: step.title,
+            languages: step.languages,
+            coverImage: step.coverImage
+          },
+          type: step.type === 'Training' ? 'Training' : step.type,
+          onlyPreview: this.onlyPreview
+        })
+      }
     },
     handleDownloadByLanguage(language) {
       // Map to ID if structure is { text, value }

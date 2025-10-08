@@ -207,7 +207,9 @@ export default {
     },
     getTrainingInfo() {
       if (this.isCategoryBasedDistribution) {
-        return this.campaignSummary?.trainingInfoForCategory || null
+        return (
+          this.campaignSummary?.trainingInfoForCategory || this?.getActiveScenario?.trainingInfo
+        )
       }
       return this?.getActiveScenario?.trainingInfo
     },

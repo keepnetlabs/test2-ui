@@ -74,6 +74,14 @@
         :items="getSMSSummaryData"
         :helper-data="getSMSSummaryHelperData"
       />
+      <TrainingReportTrainingMaterial
+        :form-data="getTrainingMaterialData"
+        :isFetchingSummary="isLoading"
+        :is-survey="getIsSurvey"
+        :selected-row="getTrainingMaterialRow"
+        :languages="languages"
+        :training-type="getTrainingType"
+      />
       <TrainingReportEnrollmentEmail
         :is-survey="getIsSurvey"
         :form-data="getEnrollmentTemplateData"
@@ -81,14 +89,6 @@
         :training-email-notification-template-type-resource-id="
           getTrainingEmailNotificationTemplateTypeResourceId
         "
-        :training-type="getTrainingType"
-      />
-      <TrainingReportTrainingMaterial
-        :form-data="getTrainingMaterialData"
-        :isFetchingSummary="isLoading"
-        :is-survey="getIsSurvey"
-        :selected-row="getTrainingMaterialRow"
-        :languages="languages"
         :training-type="getTrainingType"
       />
       <TrainingReportCertificate

@@ -29,40 +29,17 @@ export default {
       handler(newVal) {
         if (newVal && !this.isVisible) {
           this.isVisible = true
-          this.$nextTick(() => {
-            this.disableBodyScroll()
-          })
         } else if (!newVal && this.isVisible) {
           this.isVisible = false
-          this.enableBodyScroll()
         }
       },
       immediate: true
     }
   },
-  beforeDestroy() {
-    this.enableBodyScroll()
-  },
   methods: {
     handleClose() {
       this.$emit('input', false)
       this.$emit('close')
-    },
-    disableBodyScroll() {
-      if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'hidden'
-      }
-      if (document.querySelector('body')) {
-        document.querySelector('body').style.overflowY = 'hidden'
-      }
-    },
-    enableBodyScroll() {
-      if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = ''
-      }
-      if (document.querySelector('body')) {
-        document.querySelector('body').style.overflowY = ''
-      }
     }
   }
 }

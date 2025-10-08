@@ -1,38 +1,5 @@
 <template>
   <Fragment>
-    <TrainingLibraryTrainingPreviewDialog
-      v-if="
-        getLearningPathModalTrainingPreviewDialog.status &&
-        (getLearningPathModalTrainingPreviewDialog.type === 'SCORM' ||
-          getLearningPathModalTrainingPreviewDialog.type === 'SCORM12')
-      "
-      v-bind="getLearningPathModalTrainingPreviewDialog"
-      @close="onClosePreviewModal"
-    />
-    <TrainingLibrarySurveyPreviewDialog
-      v-if="
-        getLearningPathModalTrainingPreviewDialog.status &&
-        getLearningPathModalTrainingPreviewDialog.type === 'Survey'
-      "
-      v-bind="getLearningPathModalTrainingPreviewDialog"
-      @close="onClosePreviewModal"
-    />
-    <TrainingLibraryPosterPreviewDialog
-      v-if="
-        getLearningPathModalTrainingPreviewDialog.status &&
-        getLearningPathModalTrainingPreviewDialog.type === 'Poster'
-      "
-      v-bind="getLearningPathModalTrainingPreviewDialog"
-      @close="onClosePreviewModal"
-    />
-    <TrainingLibraryInfographicPreviewDialog
-      v-if="
-        getLearningPathModalTrainingPreviewDialog.status &&
-        getLearningPathModalTrainingPreviewDialog.type === 'Infographic'
-      "
-      v-bind="getLearningPathModalTrainingPreviewDialog"
-      @close="onClosePreviewModal"
-    />
     <div class="learning-path-content__container">
       <div class="learning-path-content__training-contents-container">
         <ConfigureCompanyStepHeader
@@ -115,15 +82,11 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import TrainingLibraryNewLearningPathFilters from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathFilters'
 import TrainingLibraryNewLearningPathFilterBadges from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathFilterBadges'
 import { mapActions, mapGetters } from 'vuex'
-import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
-import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
 import Draggable from 'vuedraggable'
 import { Fragment } from 'vue-frag'
 import useDebounce from '@/hooks/useDebounce'
 import TrainingLibraryNewLearningPathTraining from './TrainingLibraryNewLearningPathTraining'
 import { isInavailable } from '../../utils'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
 
 export default {
   name: 'TrainingLibraryNewLearningPathContent',
@@ -131,10 +94,6 @@ export default {
     ConfigureCompanyStepHeader,
     TrainingLibraryNewLearningPathFilterBadges,
     TrainingLibraryNewLearningPathFilters,
-    TrainingLibrarySurveyPreviewDialog,
-    TrainingLibraryInfographicPreviewDialog,
-    TrainingLibraryPosterPreviewDialog,
-    TrainingLibraryTrainingPreviewDialog,
     TrainingLibraryNewLearningPathTraining,
     Draggable,
     Fragment
@@ -246,20 +205,31 @@ export default {
       )
     },
     onClickPreview(training) {
-      this.setLearningPathModalTrainingPreviewDialog({
-        status: true,
-        selectedRow: training,
-        type: training.type,
-        showSendButton: false
-      })
-    },
-    onClosePreviewModal() {
-      this.setLearningPathModalTrainingPreviewDialog({
-        status: false,
-        selectedRow: null,
-        type: 'Training',
-        showSendButton: false
-      })
+      const type = training.type
+      if (type === 'SCORM' || type === 'SCORM12' || type === 'Training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: training,
+          showSendButton: true,
+          type: 'Training',
+          onlyPreview: true
+        })
+      } else if (type === 'Survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: training
+        })
+      } else if (type === 'Poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: training
+        })
+      } else if (type === 'Infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: training
+        })
+      }
     },
     onSelectTraining(training, index) {
       this.selectLearningPathTraining({ training, index })

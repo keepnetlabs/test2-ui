@@ -12,11 +12,37 @@
 @keyframes drawerRight {
   from {
     right: 0;
-    left:100%
+    left: 100%;
   }
   to {
     left: 72px;
-    right:auto;
+    right: auto;
+  }
+}
+@keyframes drawerRight-nested {
+  from {
+    right: 0;
+    left: 100%;
+  }
+  to {
+    left: 144px;
+    right: auto;
+  }
+}
+@keyframes drawerRight-deep-nested {
+  from {
+    right: 0;
+    left: 100%;
+  }
+  to {
+    left: 216px;
+    right: auto;
   }
 }
 
+.drawer-right-nested-animation {
+  animation: drawerRight-nested 0.25s ease-in-out !important;
+}
+.drawer-right-deep-nested-animation {
+  animation: drawerRight-deep-nested 0.25s ease-in-out !important;
+}

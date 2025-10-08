@@ -8,6 +8,7 @@
       :value="currentDrawer.status"
       :type="currentDrawer.type"
       :training-data="currentDrawer.selectedRow"
+      :only-preview="currentDrawer.onlyPreview"
       @input="handleDrawerClose"
       @delete-success="handleDeleteSuccess"
       @duplicate-success="handleDuplicateSuccess"
@@ -20,9 +21,23 @@
       :type="getNestedDrawer.type"
       :training-data="getNestedDrawer.selectedRow"
       :is-nested="true"
+      :only-preview="getNestedDrawer.onlyPreview || false"
       width="calc(100% - 144px)"
       @input="handleNestedDrawerClose"
       @close-parent="handleCloseParentDrawer"
+    />
+
+    <!-- Deep Nested Drawer (Related Preview in Nested) -->
+    <TrainingLibraryDrawer
+      v-if="getDeepNestedDrawer.status"
+      :value="getDeepNestedDrawer.status"
+      :type="getDeepNestedDrawer.type"
+      :training-data="getDeepNestedDrawer.selectedRow"
+      :is-deep-nested="true"
+      :only-preview="getDeepNestedDrawer.onlyPreview || false"
+      width="calc(100% - 216px)"
+      @input="handleDeepNestedDrawerClose"
+      @close-parent="handleCloseAllDrawers"
     />
 
     <!-- Lightbox for Preview -->
@@ -239,6 +254,68 @@ export default {
           selectedRow: null
         })
       }
+    },
+    handleDeepNestedDrawerClose(value) {
+      console.log('📦 handleDeepNestedDrawerClose called with value:', value)
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
+          status: false,
+          selectedRow: null,
+          type: null
+        })
+      }
+    },
+    handleCloseAllDrawers() {
+      console.log('📦 handleCloseAllDrawers called - closing all three drawers')
+
+      // Deep nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Parent drawer'ı da kapat
+      if (this.currentDrawer.dialogType === 'training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      } else if (this.currentDrawer.dialogType === 'poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'screensaver') {
+        this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'learningPath') {
+        this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      }
     }
   },
   computed: {
@@ -249,6 +326,7 @@ export default {
           status: this.getTrainingPreviewDialog.status,
           type: this.getTrainingPreviewDialog.type,
           selectedRow: this.getTrainingPreviewDialog.selectedRow,
+          onlyPreview: this.getTrainingPreviewDialog.onlyPreview || false,
           dialogType: 'training'
         }
       }
@@ -257,6 +335,7 @@ export default {
           status: this.getPosterPreviewDialog.status,
           type: TRAINING_LIBRARY_TYPES.POSTER,
           selectedRow: this.getPosterPreviewDialog.selectedRow,
+          onlyPreview: this.getPosterPreviewDialog.onlyPreview || false,
           dialogType: 'poster'
         }
       }
@@ -265,6 +344,7 @@ export default {
           status: this.getInfographicPreviewDialog.status,
           type: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
           selectedRow: this.getInfographicPreviewDialog.selectedRow,
+          onlyPreview: this.getInfographicPreviewDialog.onlyPreview || false,
           dialogType: 'infographic'
         }
       }
@@ -273,6 +353,7 @@ export default {
           status: this.getScreensaverPreviewDialog.status,
           type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
           selectedRow: this.getScreensaverPreviewDialog.selectedRow,
+          onlyPreview: this.getScreensaverPreviewDialog.onlyPreview || false,
           dialogType: 'screensaver'
         }
       }
@@ -281,6 +362,7 @@ export default {
           status: this.getSurveyPreviewDialog.status,
           type: TRAINING_LIBRARY_TYPES.SURVEY,
           selectedRow: this.getSurveyPreviewDialog.selectedRow,
+          onlyPreview: this.getSurveyPreviewDialog.onlyPreview || false,
           dialogType: 'survey'
         }
       }
@@ -289,6 +371,7 @@ export default {
           status: this.getLearningPathPreviewDialog.status,
           type: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
           selectedRow: this.getLearningPathPreviewDialog.selectedRow,
+          onlyPreview: this.getLearningPathPreviewDialog.onlyPreview || false,
           dialogType: 'learningPath'
         }
       }
@@ -320,7 +403,8 @@ export default {
       getSurveySendModal: 'trainingLibrary/getSurveySendModal',
       getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog',
       getLightbox: 'trainingLibrary/getLightbox',
-      getNestedDrawer: 'trainingLibrary/getNestedDrawer'
+      getNestedDrawer: 'trainingLibrary/getNestedDrawer',
+      getDeepNestedDrawer: 'trainingLibrary/getDeepNestedDrawer'
     })
   }
 }

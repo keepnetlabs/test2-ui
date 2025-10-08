@@ -121,19 +121,6 @@
             </template>
             <span>Send {{ getTypeText }}</span>
           </VTooltip>
-          <VTooltip v-else bottom>
-            <template #activator="{ on }">
-              <VIcon
-                v-on="on"
-                color="#2196f3"
-                class="training-library-card__footer-btn"
-                small
-                @click="handleDownloadItem(item)"
-                >mdi-download</VIcon
-              >
-            </template>
-            <span>Download {{ getTypeText }}</span>
-          </VTooltip>
           <VMenu bottom offset-y min-width="240" max-width="240">
             <template #activator="{ on }">
               <VIcon v-on="on" color="#2196f3" class="training-library-card__footer-btn" small
@@ -207,17 +194,6 @@ export default {
           icon: 'mdi-delete'
         }
       ]
-      if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
-        actions.unshift({
-          text: labels.DownloadInfographic,
-          icon: 'mdi-download'
-        })
-      } else if (this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
-        actions.unshift({
-          text: labels.DownloadPoster,
-          icon: 'mdi-download'
-        })
-      }
       return actions
     },
     TRAINING_LIBRARY_PAYLOAD_TYPES() {

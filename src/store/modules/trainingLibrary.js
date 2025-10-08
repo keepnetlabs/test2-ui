@@ -127,6 +127,11 @@ const trainingLibrary = {
       status: false,
       selectedRow: null,
       type: null
+    },
+    deepNestedDrawer: {
+      status: false,
+      selectedRow: null,
+      type: null
     }
   },
   getters: {
@@ -153,6 +158,7 @@ const trainingLibrary = {
     getSurveyPreviewDialog: (state) => state.surveyPreviewDialog,
     getSurveySendModal: (state) => state.surveySendModal,
     getNestedDrawer: (state) => state.nestedDrawer,
+    getDeepNestedDrawer: (state) => state.deepNestedDrawer,
     getLightbox: (state) => state.lightbox,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
@@ -292,6 +298,9 @@ const trainingLibrary = {
     },
     SET_NESTED_DRAWER(state, payload) {
       state.nestedDrawer = payload
+    },
+    SET_DEEP_NESTED_DRAWER(state, payload) {
+      state.deepNestedDrawer = payload
     },
     SET_TRAINING_SEND_MODAL(state, payload) {
       state.trainingSendModal = payload

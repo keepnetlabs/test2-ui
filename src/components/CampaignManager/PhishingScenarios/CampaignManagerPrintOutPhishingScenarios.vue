@@ -10,12 +10,7 @@
       :landing-page-templates="landingPageTemplates"
       @on-close="toggleTemplateDialog"
     />
-    <TrainingLibraryPreviewDialog
-      v-if="isShowTrainingDialog"
-      :status="isShowTrainingDialog"
-      :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      @on-close="toggleShowTrainingDialog"
-    />
+    <TrainingLibraryCommonComponents />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -300,7 +295,8 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
-import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
@@ -311,7 +307,7 @@ import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/Phis
 export default {
   name: 'CampaignManagerPrintOutPhishingScenarios',
   components: {
-    TrainingLibraryPreviewDialog,
+    TrainingLibraryCommonComponents,
     CampaignManagerPhishingScenariosPreviewDialog,
     CampaignManagerPhishingScenariosTrainingTab,
     TabsWithMfaSettings,
@@ -385,7 +381,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -750,7 +747,39 @@ export default {
       this.toggleShowTrainingDialog()
     },
     toggleShowTrainingDialog() {
+      if (this.isShowTrainingDialog) {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: false
+        })
+      } else {
+        const selectedTraining = this.trainingTabModel[this.selectedTemplateResourceId]
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: {
+            ...selectedTraining,
+            trainingId: selectedTraining.trainingId,
+            name: selectedTraining.trainingName,
+            languages: selectedTraining.trainingLanguageIds || []
+          },
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: true
+        })
+      }
       this.isShowTrainingDialog = !this.isShowTrainingDialog
+    }
+  },
+  watch: {
+    'getTrainingPreviewDialog.status': {
+      handler(newVal) {
+        if (newVal === false) {
+          this.isShowTrainingDialog = false
+        }
+      }
     }
   }
 }

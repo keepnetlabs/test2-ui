@@ -11,14 +11,7 @@
   >
     <template #body>
       <div v-if="isFormData" class="training-report-training-material__body pb-4">
-        <TrainingLibraryTrainingPreviewDialog
-          v-if="getTrainingPreviewDialog.status"
-          v-bind="getTrainingPreviewDialog"
-        />
-        <TrainingLibrarySurveyPreviewDialog
-          v-if="getSurveyPreviewDialog.status"
-          v-bind="getSurveyPreviewDialog"
-        />
+        <TrainingLibraryCommonComponents />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}
@@ -59,15 +52,14 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
 import { useLoading } from '@/hooks/useLoading'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
-import { mapActions, mapGetters } from 'vuex'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
+import { mapGetters } from 'vuex'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibrarySurveyPreviewDialog,
+    TrainingLibraryCommonComponents,
     Badge,
     CampaignManagerSummaryCard
   },
@@ -105,22 +97,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      setTrainingPreviewDialog: 'trainingLibrary/setTrainingPreviewDialog',
-      setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog'
-    }),
     handlePreviewClick() {
       if (this.isSurvey) {
-        this.setSurveyPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
           status: true,
-          selectedRow: this.selectedRow,
-          showSendButton: false
+          selectedRow: this.selectedRow
         })
       } else {
-        this.setTrainingPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: true
         })
       }
     },

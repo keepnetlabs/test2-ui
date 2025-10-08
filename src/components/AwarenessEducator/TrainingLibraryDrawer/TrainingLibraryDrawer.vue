@@ -1,8 +1,17 @@
 <template>
-  <div v-if="isVisible" :class="{ 'nested-drawer-wrapper': isNested }">
+  <div
+    v-if="isVisible"
+    :class="{
+      'nested-drawer-wrapper': isNested,
+      'deep-nested-drawer-wrapper': isDeepNested
+    }"
+  >
     <div
       class="training-library-drawer-overlay"
-      :class="{ 'nested-overlay': isNested }"
+      :class="{
+        'nested-overlay': isNested,
+        'deep-nested-overlay': isDeepNested
+      }"
       @click="handleOverlayClick"
     ></div>
     <VNavigationDrawer
@@ -36,6 +45,7 @@
           :training-data="trainingData"
           :type="type"
           :is-nested="isNested"
+          :is-deep-nested="isDeepNested"
           :only-preview="onlyPreview"
           @delete-success="handleDeleteSuccess"
           @duplicate-success="handleDuplicateSuccess"
@@ -78,6 +88,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isDeepNested: {
+      type: Boolean,
+      default: false
+    },
     onlyPreview: {
       type: Boolean,
       default: false
@@ -94,7 +108,10 @@ export default {
     getNavigationDrawerClass() {
       return {
         'k-navigation-drawer training-library-drawer': true,
-        'nested-drawer': this.isNested
+        'nested-drawer': this.isNested,
+        'deep-nested-drawer': this.isDeepNested,
+        'drawer-right-nested-animation': this.isNested,
+        'drawer-right-deep-nested-animation': this.isDeepNested
       }
     },
     getTitle() {
@@ -118,7 +135,7 @@ export default {
       this.isVisible = true
       this.$nextTick(() => {
         this.openDrawer()
-        if (!this.isNested) this.disableBodyScroll()
+        if (!this.isNested && !this.isDeepNested && !this.onlyPreview) this.disableBodyScroll()
       })
     }
   },
@@ -130,19 +147,26 @@ export default {
           this.isVisible = true
           this.$nextTick(() => {
             this.openDrawer()
-            if (!this.isNested) this.disableBodyScroll()
+            if (!this.isNested && !this.isDeepNested && !this.onlyPreview) this.disableBodyScroll()
           })
         } else if (!newVal && this.isVisible) {
           // Kapanma (dışarıdan kapatılırsa)
           this.isVisible = false
-          if (!this.isNested && !this.skipBodyScrollOnClose) this.enableBodyScroll()
+          if (
+            !this.isNested &&
+            !this.isDeepNested &&
+            !this.skipBodyScrollOnClose &&
+            !this.onlyPreview
+          )
+            this.enableBodyScroll()
         }
       },
       immediate: false
     }
   },
   beforeDestroy() {
-    if (!this.isNested && !this.skipBodyScrollOnClose) this.enableBodyScroll()
+    if (!this.isNested && !this.isDeepNested && !this.skipBodyScrollOnClose && !this.onlyPreview)
+      this.enableBodyScroll()
     this.isVisible = false
   },
   methods: {

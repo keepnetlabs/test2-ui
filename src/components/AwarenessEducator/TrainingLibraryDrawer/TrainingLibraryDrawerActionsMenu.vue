@@ -94,6 +94,10 @@ export default {
     isNested: {
       type: Boolean,
       default: false
+    },
+    isDeepNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -119,7 +123,7 @@ export default {
     otherItems() {
       const items = []
       items.push({ action: 'edit', icon: 'mdi-pencil', text: 'Edit' })
-      if (!this.isNested) {
+      if (!this.isNested && !this.isDeepNested) {
         items.push({
           action: 'duplicate',
           icon: 'mdi-content-copy',

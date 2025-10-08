@@ -4,6 +4,7 @@
       :training-data="trainingData"
       :type="type"
       :is-nested="isNested"
+      :is-deep-nested="isDeepNested"
       :only-preview="onlyPreview"
       @delete-success="$emit('delete-success')"
       @duplicate-success="$emit('duplicate-success')"
@@ -12,7 +13,7 @@
       @category-ready="handleCategoryReady"
     />
     <TrainingLibraryDrawerContentRelated
-      v-if="!isNested && !onlyPreview"
+      v-if="!isNested && !isDeepNested && !onlyPreview"
       :training-data="trainingData"
       :type="type"
       :category="category"
@@ -40,6 +41,10 @@ export default {
       default: 'Training'
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    isDeepNested: {
       type: Boolean,
       default: false
     },

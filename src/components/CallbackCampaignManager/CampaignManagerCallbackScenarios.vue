@@ -18,12 +18,6 @@
         <AppDialogFooterWithClose @on-close="toggleTemplateDialog" />
       </template>
     </AppDialog>
-    <TrainingLibraryPreviewDialog
-      v-if="isShowTrainingDialog"
-      :status="isShowTrainingDialog"
-      :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      @on-close="toggleShowTrainingDialog"
-    />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -271,13 +265,11 @@ import useDebounce from '@/hooks/useDebounce'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
-import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 export default {
   name: 'CampaignManagerCallbackScenarios',
   components: {
-    TrainingLibraryPreviewDialog,
     AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
@@ -377,7 +369,6 @@ export default {
       callbackTemplate: null,
       phishingScenarioItems: [],
       isMethodMfa: false,
-      isShowTrainingDialog: false,
       isTextToSpeechCompatible: false
     }
   },
@@ -749,12 +740,6 @@ export default {
         }
       }
       this.callForPhishingScenarios(false)
-    },
-    handleTrainingPreviewButtonClick() {
-      this.toggleShowTrainingDialog()
-    },
-    toggleShowTrainingDialog() {
-      this.isShowTrainingDialog = !this.isShowTrainingDialog
     }
   }
 }
