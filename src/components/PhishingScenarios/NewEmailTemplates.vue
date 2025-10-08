@@ -586,7 +586,6 @@ export default {
     }
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
-        console.log('response', response)
         this.formValues = {
           ...response.data.data,
           description: response.data.data.description || '',
