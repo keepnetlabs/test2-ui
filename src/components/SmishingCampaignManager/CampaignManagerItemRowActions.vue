@@ -174,7 +174,10 @@ export default {
       ) {
         return this.$router.push({
           name: 'Smishing Report',
-          params: { id: this.campaignResourceId, instanceGroup: this.scope.row.instanceGroup }
+          params: {
+            id: this.campaignResourceId,
+            instanceGroup: this.scope.row.instanceGroup
+          }
         })
       }
       let eventName = act.action
@@ -183,6 +186,8 @@ export default {
         eventName = 'on-launch'
       } else if (act.action === ACTION_STATUSES.RUNNING) {
         eventName = 'on-stop'
+      } else if (eventName === ACTION_STATUSES.SCHEDULED) {
+        eventName = 'on-preview'
       }
 
       this.$emit(eventName, this.scope.row)
