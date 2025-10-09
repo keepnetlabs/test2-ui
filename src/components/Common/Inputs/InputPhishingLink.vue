@@ -286,10 +286,8 @@ export default {
     checkSchemaTypes(value) {
       this.$nextTick(() => {
         const domainRecord = this.domainRecords.find((item) => item.value === value)
-        console.log('urlSchemaTypesModified', this.urlSchemaTypesModified)
         this.urlSchemaTypesModified = this.getUrlSchemaTypesModified.map((schema) => {
           const activeVal = domainRecord?.extraDatas[0]?.value
-          console.log('activeVal', activeVal)
           if (activeVal === '3' || activeVal === '2') {
             schema.disabled = false
           } else {

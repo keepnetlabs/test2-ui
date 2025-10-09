@@ -252,7 +252,10 @@ export default {
               return [
                 {
                   text: Array.from(
-                    labels.SimulatedUsers + labels.SimulatedUsers + data.datasets[0].data[0] + '  '
+                    labels.SimulatedUsers +
+                      labels.SimulatedUsers +
+                      data.datasets[0].data[0] +
+                      '           '
                   )
                     .fill('')
                     .join(' '),

@@ -540,6 +540,7 @@ export default {
   watch: {
     '$route.query': {
       deep: true,
+      immediate: true,
       handler(val) {
         if (!!val?.code && !!val?.state) {
           const { code, state } = val
