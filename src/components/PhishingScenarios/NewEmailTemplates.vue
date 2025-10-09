@@ -542,7 +542,8 @@ export default {
     activeFileName() {
       // Get first attachment file name from either attachmentFiles or importedEmailAttachments
       if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length > 0) {
-        return this.formValues.attachmentFiles[0]?.fileName || ''
+        const firstFile = this.formValues.attachmentFiles[0]
+        return firstFile?.fileName || firstFile?.name || ''
       }
       if (
         this.formValues.importedEmailAttachments &&
