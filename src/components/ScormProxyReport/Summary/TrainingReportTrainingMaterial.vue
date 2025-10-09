@@ -11,7 +11,7 @@
   >
     <template #body>
       <div v-if="isFormData" class="training-report-training-material__body pb-4">
-        <TrainingLibraryCommonComponents />
+        <TrainingLibraryCommonComponents :should-control-body-scroll="true" />
         <div class="training-report-training-material__body-header">
           <div class="training-report-training-material__template-name">
             {{ formData.name }}

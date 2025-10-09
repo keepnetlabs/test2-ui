@@ -9,6 +9,7 @@
       :type="currentDrawer.type"
       :training-data="currentDrawer.selectedRow"
       :only-preview="currentDrawer.onlyPreview"
+      :should-control-body-scroll="shouldControlBodyScroll"
       @input="handleDrawerClose"
       @delete-success="handleDeleteSuccess"
       @duplicate-success="handleDuplicateSuccess"
@@ -22,6 +23,7 @@
       :training-data="getNestedDrawer.selectedRow"
       :is-nested="true"
       :only-preview="getNestedDrawer.onlyPreview || false"
+      :should-control-body-scroll="shouldControlBodyScroll"
       width="calc(100% - 144px)"
       @input="handleNestedDrawerClose"
       @close-parent="handleCloseParentDrawer"
@@ -35,6 +37,7 @@
       :training-data="getDeepNestedDrawer.selectedRow"
       :is-deep-nested="true"
       :only-preview="getDeepNestedDrawer.onlyPreview || false"
+      :should-control-body-scroll="shouldControlBodyScroll"
       width="calc(100% - 216px)"
       @input="handleDeepNestedDrawerClose"
       @close-parent="handleCloseAllDrawers"
@@ -110,6 +113,12 @@ import TrainingLibraryLightboxContent from '@/components/AwarenessEducator/Train
 
 export default {
   name: 'TrainingLibraryCommonComponents',
+  props: {
+    shouldControlBodyScroll: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       TRAINING_LIBRARY_TYPES

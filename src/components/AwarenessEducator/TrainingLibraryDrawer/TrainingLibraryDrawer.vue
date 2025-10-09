@@ -95,6 +95,10 @@ export default {
     onlyPreview: {
       type: Boolean,
       default: false
+    },
+    shouldControlBodyScroll: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -135,7 +139,9 @@ export default {
       this.isVisible = true
       this.$nextTick(() => {
         this.openDrawer()
-        if (!this.isNested && !this.isDeepNested && !this.onlyPreview) this.disableBodyScroll()
+        if (!this.isNested && !this.isDeepNested && (!this.onlyPreview || this.shouldControlBodyScroll)) {
+          this.disableBodyScroll()
+        }
       })
     }
   },
@@ -147,7 +153,9 @@ export default {
           this.isVisible = true
           this.$nextTick(() => {
             this.openDrawer()
-            if (!this.isNested && !this.isDeepNested && !this.onlyPreview) this.disableBodyScroll()
+            if (!this.isNested && !this.isDeepNested && (!this.onlyPreview || this.shouldControlBodyScroll)) {
+              this.disableBodyScroll()
+            }
           })
         } else if (!newVal && this.isVisible) {
           // Kapanma (dışarıdan kapatılırsa)
@@ -156,17 +164,24 @@ export default {
             !this.isNested &&
             !this.isDeepNested &&
             !this.skipBodyScrollOnClose &&
-            !this.onlyPreview
-          )
+            (!this.onlyPreview || this.shouldControlBodyScroll)
+          ) {
             this.enableBodyScroll()
+          }
         }
       },
       immediate: false
     }
   },
   beforeDestroy() {
-    if (!this.isNested && !this.isDeepNested && !this.skipBodyScrollOnClose && !this.onlyPreview)
+    if (
+      !this.isNested &&
+      !this.isDeepNested &&
+      !this.skipBodyScrollOnClose &&
+      (!this.onlyPreview || this.shouldControlBodyScroll)
+    ) {
       this.enableBodyScroll()
+    }
     this.isVisible = false
   },
   methods: {

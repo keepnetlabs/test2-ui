@@ -12,7 +12,7 @@
   >
     <template #body>
       <div v-if="isFormData">
-        <TrainingLibraryCommonComponents />
+        <TrainingLibraryCommonComponents :should-control-body-scroll="true" />
       </div>
     </template>
   </CampaignManagerSummaryCard>
