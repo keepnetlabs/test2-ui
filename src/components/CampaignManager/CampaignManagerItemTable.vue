@@ -91,6 +91,7 @@
           @on-delete="handleDelete"
           @on-stop="handleStop"
           @on-launch="handleLaunch"
+          @on-preview="handlePreview"
         />
       </template>
       <template #table-all-records>
@@ -346,6 +347,9 @@ export default {
         resourceId: this.item.resourceId,
         instanceGroup: row.instanceGroup
       })
+    },
+    handlePreview(row) {
+      this.$emit('on-preview', row)
     },
     getErrorMessage(row = {}) {
       if (row.status === 'Error') {

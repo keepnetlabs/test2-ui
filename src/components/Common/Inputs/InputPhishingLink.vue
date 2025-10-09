@@ -182,7 +182,10 @@ export default {
   },
   computed: {
     getUrlSchemaTypesModified() {
-      return this.urlSchemaTypesModified.length ? this.urlSchemaTypesModified : this.urlSchemaTypes
+      const baseList = this.urlSchemaTypesModified.length
+        ? this.urlSchemaTypesModified
+        : this.urlSchemaTypes
+      return baseList
     }
   },
   watch: {
@@ -212,8 +215,9 @@ export default {
         })
       }
     },
-    'value.domainRecordId'() {
+    'value.domainRecordId'(val) {
       this.changeDisabledLabel()
+      if (val) this.checkSchemaTypes(val)
     },
     'value.parameterTypeId'() {
       this.changeDisabledLabel()
@@ -227,6 +231,9 @@ export default {
   },
   mounted() {
     if (!this.isEdit) this.setDefaultValue()
+    if (this.isEdit && this.value?.domainRecordId) {
+      this.checkSchemaTypes(this.value.domainRecordId)
+    }
   },
   methods: {
     handleInputChange(value, key) {
@@ -247,6 +254,7 @@ export default {
       })
       this.$emit('invisible-captcha', !this.domainRecords[0]?.extraDatas[1]?.value)
       this.$emit('captcha-default-value', this.domainRecords[0]?.extraDatas[1]?.value)
+      this.checkSchemaTypes(this.domainRecords[0]?.value)
     },
     changeDisabledLabel() {
       this.disabledLabel = `${
@@ -275,22 +283,29 @@ export default {
       this.checkSchemaTypes(value)
       this.changeDisabledLabel()
     },
-    checkSchemaTypes(value, isEdit = false) {
+    checkSchemaTypes(value) {
       this.$nextTick(() => {
         const domainRecord = this.domainRecords.find((item) => item.value === value)
-        this.urlSchemaTypesModified = this.urlSchemaTypesModified.map((schema) => {
+        this.urlSchemaTypesModified = this.getUrlSchemaTypesModified.map((schema) => {
           const activeVal = domainRecord?.extraDatas[0]?.value
-          if (activeVal === '3') {
+          if (activeVal === '3' || activeVal === '2') {
             schema.disabled = false
           } else {
             schema.disabled = domainRecord?.extraDatas[0]?.value !== schema.value
           }
           return schema
         })
-        this.handleInputChange(
-          domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value,
-          'urlSchemaTypeId'
-        )
+        // Edit mode: if domain is HTTP-only, force schema to HTTP
+        const activeVal = domainRecord?.extraDatas[0]?.value
+        if (this.isEdit && activeVal === '1' && this.value?.urlSchemaTypeId?.toString() !== '1') {
+          this.handleInputChange('1', 'urlSchemaTypeId')
+        }
+        if (!this.isEdit) {
+          this.handleInputChange(
+            domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value,
+            'urlSchemaTypeId'
+          )
+        }
         if (this.isEdit) return
         this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
         this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)

@@ -442,7 +442,7 @@ export default {
             padding-left:2em !important;
             margin: 0.5em 0.1em;
           }
-           .flagged-area:not(a):not(button):not(.button) {
+           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
             background-color: rgba(255, 0, 0, 0.1);
             padding: 0.2em 2em;
           }
@@ -538,6 +538,19 @@ export default {
         nextButton: !this.isDefault && this.isSubmitDisabled,
         submitButton: this.isSubmitDisabled || this.isRedFlagsLoading || this.isEmailGenerating
       }
+    },
+    activeFileName() {
+      // Get first attachment file name from either attachmentFiles or importedEmailAttachments
+      if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length > 0) {
+        return this.formValues.attachmentFiles[0]?.fileName || ''
+      }
+      if (
+        this.formValues.importedEmailAttachments &&
+        this.formValues.importedEmailAttachments.length > 0
+      ) {
+        return this.formValues.importedEmailAttachments[0]?.fileName || ''
+      }
+      return ''
     }
   },
   watch: {
@@ -789,7 +802,6 @@ export default {
               fileName: item.name,
               isDeletable: true
             }))
-            this.activeFileName = attachments[0].fileName
             this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
@@ -1279,7 +1291,7 @@ export default {
                     fromName: item.fromName,
                     fromAddress: item.fromAddress,
                     subject: item.subject,
-                    attachmentFileName: item.attachmentFileName
+                    attachmentFileName: this.activeFileName
                   }
                 }
 
@@ -1524,15 +1536,31 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
-      // Hem CSS'i hem script'i kaldır
-      const cssToRemove = this.flaggedAreaCss.trim()
-      const scriptToRemove = this._getPreventClickScript().trim()
+      let cleanedTemplate = template
 
-      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      // Remove <style> tags containing flagged-area CSS
       cleanedTemplate = cleanedTemplate.replace(
-        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        /<style[^>]*>[\s\S]*?\.flagged-area[\s\S]*?<\/style>/gi,
         ''
       )
+
+      // Remove flagged-area and flagged-area-img classes from elements
+      cleanedTemplate = cleanedTemplate.replace(
+        /\s*class=["']([^"']*)?["']/gi,
+        (match, classContent) => {
+          if (!classContent) return match
+          // Remove flagged-area and flagged-area-img but keep other classes
+          const cleanedClasses = classContent
+            .split(/\s+/)
+            .filter((cls) => cls !== 'flagged-area' && cls !== 'flagged-area-img')
+            .join(' ')
+            .trim()
+          return cleanedClasses ? ` class="${cleanedClasses}"` : ''
+        }
+      )
+
+      // Remove data-flag-tooltip attributes
+      cleanedTemplate = cleanedTemplate.replace(/\s*data-flag-tooltip=["'][^"']*["']/gi, '')
 
       return cleanedTemplate
     },

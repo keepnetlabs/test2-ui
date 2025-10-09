@@ -1394,8 +1394,8 @@ export default {
         }
       }
       if (this.templateType !== 'landing') {
-        this.$emit('update:template', template)
         this.$emit('on-save-template', template)
+        this.$emit('update:template', template)
       } else {
         const htmlToSave = this.restoreLogo(template)
         this.$emit('on-save-template', htmlToSave)
