@@ -381,8 +381,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
-      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -771,15 +770,6 @@ export default {
         })
       }
       this.isShowTrainingDialog = !this.isShowTrainingDialog
-    }
-  },
-  watch: {
-    'getTrainingPreviewDialog.status': {
-      handler(newVal) {
-        if (newVal === false) {
-          this.isShowTrainingDialog = false
-        }
-      }
     }
   }
 }

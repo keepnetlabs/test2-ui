@@ -382,6 +382,7 @@ export default {
     },
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
+      console.log('this', this.selectedRowFormData)
       if (!keys.length) return {}
       let {
         distributionDelayEvery,
@@ -398,7 +399,8 @@ export default {
         distributionStartTime,
         distributionEndTime,
         distributionStartTypeId,
-        frequency
+        frequency,
+        smsNumbers
       } = this.selectedRowFormData
       distributionTypeId = 3
       return {
@@ -417,7 +419,8 @@ export default {
         distributionEndTime: distributionEndTime || '17:00',
         distributionStartTypeId,
         sendCallsOnDays: getSendCallOnDays(distributionDays),
-        frequency
+        frequency,
+        smsProviderNumberResourceIds: smsNumbers?.map((sms) => sms.value)
       }
     },
     getUserTargetAudienceData() {

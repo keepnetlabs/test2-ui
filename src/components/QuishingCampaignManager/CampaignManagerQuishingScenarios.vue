@@ -422,8 +422,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
-      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
     }),
     getMethodItems() {
       if (this.type === SCENARIO_TYPES.QUISHING) {
@@ -833,15 +832,6 @@ export default {
         })
       }
       this.isShowTrainingDialog = !this.isShowTrainingDialog
-    }
-  },
-  watch: {
-    'getTrainingPreviewDialog.status': {
-      handler(newVal) {
-        if (newVal === false) {
-          this.isShowTrainingDialog = false
-        }
-      }
     }
   }
 }
