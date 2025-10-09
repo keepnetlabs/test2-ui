@@ -1363,8 +1363,9 @@ export default {
                 ...response.data.data,
                 languageShortCode: this.languageOptions.find(
                   (language) => language.value === response?.data?.data?.languageTypeResourceId
-                )?.description
+                )?.text
               }
+              console.log('emailTemplateData', emailTemplateData)
               if (this.selectedEmailTemplate) {
                 this.generalDifficultyTypeId =
                   this.scenarioDetailsLookup['difficultyTypes']
@@ -1379,6 +1380,7 @@ export default {
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
+              console.log('this.summaryData', this.summaryData)
               this.setPhishingEmailTemplates(this.summaryData)
               this.step += 1
             })
@@ -1419,14 +1421,23 @@ export default {
               }
               data.emailTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.emailTemplate?.languageTypeResourceId
-              )?.description
+              )?.text
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
-              )?.description
+              )?.text
+              console.log(
+                'Landing page languageShortCode set to:',
+                data.landingPageTemplate.languageShortCode
+              )
               this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate?.difficultyName || ''
               )
               this.summaryData = data
+              console.log('this.summaryData2', this.summaryData)
+              console.log(
+                'summaryData landing page languageShortCode:',
+                this.summaryData.landingPageTemplate.languageShortCode
+              )
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
@@ -1564,6 +1575,8 @@ export default {
         languageShortCode: data.emailTemplate.languageShortCode
       })
       data.emailTemplate.languages.forEach((item) => {
+        console.log('item', item)
+        console.log('data', data)
         this.phishingEmailTemplates.push({
           fromName: item.fromName,
           subject: item.subject,
@@ -1574,7 +1587,7 @@ export default {
           languageType: item.languageTypeResourceId,
           languageShortCode: this.languageOptions.find(
             (language) => language.value === item.languageTypeResourceId
-          )?.description
+          )?.text
         })
         this.selectedTemplateLanguages.push({
           text: item.languageTypeName,

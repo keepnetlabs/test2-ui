@@ -558,6 +558,7 @@ const trainingLibrary = {
             totalNumberOfPages = 0,
             pageNumber = 1
           } = data
+          console.log('results', results)
           commit('SET_TABLE_DATA', results)
           commit('SET_SERVER_SIDE_PROPS', {
             totalNumberOfRecords,

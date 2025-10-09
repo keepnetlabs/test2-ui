@@ -460,7 +460,7 @@ export default {
     getLanguageShortCode() {
       return typeof this.emailTemplateParams.languageShortCode === 'string'
         ? [this.emailTemplateParams.languageShortCode || '']
-        : this.emailTemplateParams.languageShortCode
+        : this.emailTemplateParams.languageShortCode || []
     },
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
@@ -929,6 +929,7 @@ export default {
             isAssistedByAI,
             cc: emailTemplate?.ccAddresses.join(',')
           }
+          console.log(this.languageOptions)
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
           )?.text
@@ -970,13 +971,14 @@ export default {
                   ccAddresses: item.ccAddresses.join(','),
                   languageShortCode: this.languageOptions.find(
                     (language) => language.value === item.languageTypeResourceId
-                  )?.description
+                  )?.text
                 }
               }) || [])
             )
             this.emailTemplateParams.languageShortCode = [
-              ...this.phishingEmailTemplates.map((item) => item.languageShortCode)
+              ...this.phishingEmailTemplates.map((item) => item.languageTypeName)
             ]
+            console.log(this.emailTemplateParams.languageShortCode)
           }
           const {
             name: landingPageName = '',

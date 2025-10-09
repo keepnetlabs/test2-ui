@@ -41,6 +41,9 @@ export default {
       type: Array,
       required: true
     }
+  },
+  created() {
+    console.log('languageShortCode', this.languageShortCode)
   }
 }
 </script>
