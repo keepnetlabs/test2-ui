@@ -911,6 +911,14 @@ export default {
         this.isShowRedFlags = false
         this.isFlaggedStylesEnabled = false
         this.updateTemplateWithFlaggedStyles()
+        // Remove red flag classes and attributes before submit
+        this.languagesPayload.forEach((languagePayload) => {
+          if (this._isValidLanguagePayload(languagePayload)) {
+            languagePayload.template = this._removeRedFlagClassesAndAttributes(
+              languagePayload.template
+            )
+          }
+        })
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       let payload = {
@@ -1536,6 +1544,19 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
+      const cssToRemove = this.flaggedAreaCss.trim()
+      const scriptToRemove = this._getPreventClickScript().trim()
+
+      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replace(
+        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        ''
+      )
+
+      return cleanedTemplate
+    },
+
+    _removeRedFlagClassesAndAttributes(template) {
       let cleanedTemplate = template
 
       // Remove <style> tags containing flagged-area CSS
@@ -1549,7 +1570,6 @@ export default {
         /\s*class=["']([^"']*)?["']/gi,
         (match, classContent) => {
           if (!classContent) return match
-          // Remove flagged-area and flagged-area-img but keep other classes
           const cleanedClasses = classContent
             .split(/\s+/)
             .filter((cls) => cls !== 'flagged-area' && cls !== 'flagged-area-img')
