@@ -555,6 +555,15 @@ export default {
     }
   },
   watch: {
+    activeFileName(newVal, oldVal) {
+      // Attachment değiştiğinde mevcut red flag gösterimini kapat, stilleri kaldır ve cache'i temizle
+      if (newVal !== oldVal) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
+        this.lastRedFlags = {}
+      }
+    },
     selectedLanguages(val) {
       if (!val.length) {
         this.activeLanguage = ''
