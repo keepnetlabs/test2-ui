@@ -223,8 +223,8 @@ export const COLUMNS = {
     label: labels.Languages,
     sortable: true,
     show: true,
-    width: 160,
-    type: 'smallBadge',
+    width: 175,
+    type: 'multiText',
     hasTooltip: true,
     filterableType: 'select',
     filterableItems: []

@@ -654,7 +654,8 @@ export default {
         this.languageOptions =
           response?.map((language) => ({
             name: language.name,
-            text: language.name,
+            languageTypeName: language.name,
+            text: language.isoFriendlyName || language.name,
             description: language.description,
             value: language.resourceId
           })) || []

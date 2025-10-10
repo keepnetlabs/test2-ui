@@ -316,7 +316,11 @@ export default {
               this.listData = response.data.data.results.map((item) => {
                 return {
                   ...item,
-                  selected: item.resourceId === this.templateResourceId
+                  selected: item.resourceId === this.templateResourceId,
+                  languageTypeName:
+                    this.languageOptions.find(
+                      (lang) => lang.languageTypeName === item.languageTypeName
+                    )?.text || item.languageTypeName
                 }
               })
             }
@@ -363,7 +367,14 @@ export default {
             this.template = null
           } else {
             data.data.results = data.data.results.map((item) => {
-              return { ...item, selected: false }
+              return {
+                ...item,
+                selected: false,
+                languageTypeName:
+                  this.languageOptions.find(
+                    (lang) => lang.languageTypeName === item.languageTypeName
+                  )?.text || item.languageTypeName
+              }
             })
             if (isSearch) {
               this.listData = data.data.results

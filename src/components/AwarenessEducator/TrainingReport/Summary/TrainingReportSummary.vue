@@ -74,6 +74,14 @@
         :items="getSMSSummaryData"
         :helper-data="getSMSSummaryHelperData"
       />
+      <TrainingReportTrainingMaterial
+        :form-data="getTrainingMaterialData"
+        :isFetchingSummary="isLoading"
+        :is-survey="getIsSurvey"
+        :selected-row="getTrainingMaterialRow"
+        :languages="languages"
+        :training-type="getTrainingType"
+      />
       <TrainingReportEnrollmentEmail
         :is-survey="getIsSurvey"
         :form-data="getEnrollmentTemplateData"
@@ -81,14 +89,6 @@
         :training-email-notification-template-type-resource-id="
           getTrainingEmailNotificationTemplateTypeResourceId
         "
-        :training-type="getTrainingType"
-      />
-      <TrainingReportTrainingMaterial
-        :form-data="getTrainingMaterialData"
-        :isFetchingSummary="isLoading"
-        :is-survey="getIsSurvey"
-        :selected-row="getTrainingMaterialRow"
-        :languages="languages"
         :training-type="getTrainingType"
       />
       <TrainingReportCertificate
@@ -271,6 +271,15 @@ export default {
         languages: ['EN'],
         targetGroupNames: []
       }
+
+      // Map language codes to friendly names
+      const languageNames = languages.map((langCode) => {
+        const lang = this.languages.find(
+          (l) => l.code === langCode || l.shortCode === langCode || l.languageShortCode === langCode
+        )
+        return lang?.isoFriendlyName || lang?.name || langCode
+      })
+
       return {
         'Target Groups': {
           show: true,
@@ -290,7 +299,7 @@ export default {
         },
         Languages: {
           show: true,
-          value: languages?.join(', ')
+          value: languageNames?.join(', ')
         }
       }
     },

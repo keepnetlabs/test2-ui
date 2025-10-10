@@ -652,7 +652,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId
           })) || []
       })
@@ -744,26 +745,36 @@ export default {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
         const { data: { data = {} } = {} } = response || {}
         let phishingLink = {}
-        if(typeof data.phishingLink === 'object') {
-          phishingLink= {
+        if (typeof data.phishingLink === 'object') {
+          phishingLink = {
             subDomain: data?.phishingLink.subDomain || data.subDomain || '',
-            urlSchemaTypeId: data?.phishingLink?.urlSchemaTypeId?.toString() || data.urlSchemaTypeId.toString() || '',
-            pathTypeId: data?.phishingLink?.pathTypeId?.toString() || data.pathTypeId.toString() || '',
-            extensionTypeId: data?.phishingLink?.extensionTypeId?.toString() || data.extensionTypeId.toString() || '',
-            parameterTypeId: data?.phishingLink?.parameterTypeId?.toString() || data.parameterTypeId.toString() || '',
-            domainRecordId: data?.phishingLink?.domainRecordId?.toString() || data.domainRecordId.toString() || ''
+            urlSchemaTypeId:
+              data?.phishingLink?.urlSchemaTypeId?.toString() ||
+              data.urlSchemaTypeId.toString() ||
+              '',
+            pathTypeId:
+              data?.phishingLink?.pathTypeId?.toString() || data.pathTypeId.toString() || '',
+            extensionTypeId:
+              data?.phishingLink?.extensionTypeId?.toString() ||
+              data.extensionTypeId.toString() ||
+              '',
+            parameterTypeId:
+              data?.phishingLink?.parameterTypeId?.toString() ||
+              data.parameterTypeId.toString() ||
+              '',
+            domainRecordId:
+              data?.phishingLink?.domainRecordId?.toString() || data.domainRecordId.toString() || ''
+          }
+        } else {
+          phishingLink = {
+            subDomain: data.subDomain,
+            urlSchemaTypeId: data.urlSchemaTypeId.toString(),
+            pathTypeId: data.pathTypeId.toString(),
+            extensionTypeId: data.extensionTypeId.toString(),
+            parameterTypeId: data.parameterTypeId.toString(),
+            domainRecordId: data.domainRecordId.toString()
           }
         }
-         else {
-          phishingLink = {
-          subDomain: data.subDomain,
-          urlSchemaTypeId: data.urlSchemaTypeId.toString(),
-          pathTypeId: data.pathTypeId.toString(),
-          extensionTypeId: data.extensionTypeId.toString(),
-          parameterTypeId: data.parameterTypeId.toString(),
-          domainRecordId: data.domainRecordId.toString()
-        }
-         }
         this.isAssistedByAI = data.isAssistedByAI
         this.aiAssistant = this.isAssistedByAI || false
         delete data.urlSchemaTypeId

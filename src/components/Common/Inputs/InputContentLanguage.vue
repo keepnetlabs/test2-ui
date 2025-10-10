@@ -83,6 +83,10 @@ export default {
     isAddDefaultValue: {
       type: Boolean,
       default: true
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -118,7 +122,9 @@ export default {
       AwarenessEducatorService.getContentLanguageItems(this?.trainingId).then((response) => {
         this.contentLanguageItems =
           response?.data?.data?.map((lang) => ({
-            text: lang.name,
+            text:
+              this.languageOptions.find((option) => option.code === lang.code)?.isoFriendlyName ||
+              lang.name,
             value: lang.id
           })) || []
         this.contentLanguageItems.unshift({

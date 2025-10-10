@@ -1036,7 +1036,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageFilterOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName,
+            name: language.name,
             value: language.resourceId
           })) || []
         this.$set(
@@ -1284,9 +1285,22 @@ export default {
                 }
               }
             })
+            // Map preferredLanguage to friendly name
+            if (item.preferredLanguage) {
+              if (Array.isArray(item.preferredLanguage)) {
+                item.preferredLanguage = item.preferredLanguage.map((lang) => {
+                  const language = _this.languageFilterOptions.find((opt) => opt.name === lang)
+                  return language?.text || lang
+                })
+              } else if (typeof item.preferredLanguage === 'string') {
+                const language = _this.languageFilterOptions.find((opt) => opt.name === item.preferredLanguage)
+                item.preferredLanguage = language?.text || item.preferredLanguage
+              }
+            }
             return item
           })
           _this.tableData = data || []
+          
           _this.tableOptions.columns.push(...customFields)
           _this.tableOptions.columns.push({
             property: PROPERTY_STORE.STATUS,

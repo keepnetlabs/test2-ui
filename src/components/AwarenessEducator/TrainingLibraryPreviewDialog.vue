@@ -37,7 +37,12 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 export default {
   name: 'TrainingLibraryPreviewDialog',
-  components: { AppDialogFooterWithClose, TrainingLibraryPreview, AppDialog, DatatableLoading },
+  components: {
+    AppDialogFooterWithClose,
+    TrainingLibraryPreview,
+    AppDialog,
+    DatatableLoading
+  },
   props: {
     status: {
       type: Boolean
@@ -90,7 +95,7 @@ export default {
             const language = res?.data?.data?.find((item) => item.id === lang)
             if (language)
               this.selectedLanguages.push({
-                text: language.name,
+                text: language.isoFriendlyName,
                 value: language.id
               })
           })

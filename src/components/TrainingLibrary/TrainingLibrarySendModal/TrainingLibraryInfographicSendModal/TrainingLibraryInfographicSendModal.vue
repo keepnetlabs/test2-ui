@@ -67,6 +67,7 @@
               :distribution-delay-time-types="distributionDelayTimeTypes"
               :total-phone-number-user-count="totalPhoneNumberUserCount"
               :phone-number-items="phoneNumberItems"
+              :language-options="languages"
               :phone-numbers="phoneNumbers"
             />
           </v-stepper-content>
@@ -400,7 +401,11 @@ export default {
       const languages = this.languages || []
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
-        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
+        languages.find(
+          (lang) =>
+            lang.isoFriendlyName === this.selectedRow.languages[0] ||
+            lang.code === this.selectedRow.languages[0]
+        ).id
       ).then((response) => {
         const {
           data: { data }

@@ -116,7 +116,23 @@ const trainingLibrary = {
     infographicSendModal: emptyInfographicSendModalObj,
     screensaverSendModal: emptyScreensaverSendModalObj,
     learningPathSendModal: emptyLearningPathSendModalObj,
-    surveySendModal: emptySurveySendModalObj
+    surveySendModal: emptySurveySendModalObj,
+    lightbox: {
+      status: false,
+      previewData: null,
+      isLoading: false,
+      type: null
+    },
+    nestedDrawer: {
+      status: false,
+      selectedRow: null,
+      type: null
+    },
+    deepNestedDrawer: {
+      status: false,
+      selectedRow: null,
+      type: null
+    }
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -141,6 +157,9 @@ const trainingLibrary = {
     getScreensaverPreviewDialog: (state) => state.screensaverPreviewDialog,
     getSurveyPreviewDialog: (state) => state.surveyPreviewDialog,
     getSurveySendModal: (state) => state.surveySendModal,
+    getNestedDrawer: (state) => state.nestedDrawer,
+    getDeepNestedDrawer: (state) => state.deepNestedDrawer,
+    getLightbox: (state) => state.lightbox,
     getTableData: (state) => state.tableData,
     getServerSideProps: (state) => state.serverSideProps,
     getAxiosPayload: (state) => state.axiosPayload,
@@ -273,6 +292,15 @@ const trainingLibrary = {
     },
     SET_SURVEY_SEND_MODAL(state, payload) {
       state.surveySendModal = payload
+    },
+    SET_LIGHTBOX(state, payload) {
+      state.lightbox = payload
+    },
+    SET_NESTED_DRAWER(state, payload) {
+      state.nestedDrawer = payload
+    },
+    SET_DEEP_NESTED_DRAWER(state, payload) {
+      state.deepNestedDrawer = payload
     },
     SET_TRAINING_SEND_MODAL(state, payload) {
       state.trainingSendModal = payload
@@ -511,7 +539,7 @@ const trainingLibrary = {
     }
   },
   actions: {
-    callForTableData({ commit, state }) {
+    callForTableData({ commit, state, rootGetters }) {
       commit('SET_IS_LOADING', true)
       let isAborted = false
       cancellableDataRequest(state.axiosPayload)
@@ -530,7 +558,18 @@ const trainingLibrary = {
             totalNumberOfPages = 0,
             pageNumber = 1
           } = data
-          commit('SET_TABLE_DATA', results)
+          const languages = rootGetters['trainingLibraryHelpers/getLanguages'] || []
+          const enrichedResults = results.map((item) => {
+            return {
+              ...item,
+              languageCodes: item.languages, // Orijinal kodları sakla
+              languages: item.languages.map((code) => {
+                const language = languages.find((lang) => lang.code === code)
+                return language?.isoFriendlyName || code
+              })
+            }
+          })
+          commit('SET_TABLE_DATA', enrichedResults)
           commit('SET_SERVER_SIDE_PROPS', {
             totalNumberOfRecords,
             totalNumberOfPages,

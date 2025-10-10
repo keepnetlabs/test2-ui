@@ -35,6 +35,7 @@
       v-model="formData.languageIds"
       ref="refInputContentLanguage"
       :training-id="selectedRow.trainingId"
+      :language-options="languageOptions"
     />
     <div v-if="!formData.isProxy" class="mb-6">
       <FormGroup

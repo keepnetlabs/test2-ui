@@ -599,7 +599,10 @@ export default {
     formData: {
       handler(val) {
         this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
-        this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        this.callForScenarioDetail({
+          name: this.selectedScenarioResourceId,
+          index: 0
+        })
       },
       deep: true,
       immediate: true

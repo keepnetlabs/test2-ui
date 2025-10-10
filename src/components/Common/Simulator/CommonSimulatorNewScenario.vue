@@ -201,6 +201,7 @@
                     v-if="step === 2"
                     ref="refEmailTemplateListPreview"
                     show-language-field
+                    select-language-width="250px"
                     :show-email-template-edit-button="isPhishing"
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
@@ -1301,7 +1302,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId,
             description: language.description
           })) || []
@@ -1363,7 +1365,7 @@ export default {
                 ...response.data.data,
                 languageShortCode: this.languageOptions.find(
                   (language) => language.value === response?.data?.data?.languageTypeResourceId
-                )?.description
+                )?.text
               }
               if (this.selectedEmailTemplate) {
                 this.generalDifficultyTypeId =
@@ -1419,10 +1421,11 @@ export default {
               }
               data.emailTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.emailTemplate?.languageTypeResourceId
-              )?.description
+              )?.text
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
-              )?.description
+              )?.text
+
               this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate?.difficultyName || ''
               )
@@ -1546,9 +1549,26 @@ export default {
       this.emailTemplateResourceId = null
     },
     setPhishingEmailTemplates(data) {
-      if (!this.isPhishing) return
+      if (!this.isPhishing) {
+        if (this.isQuishing) {
+          // Array'i temizle, tekrar dolduracağız
+          this.selectedTemplateLanguages = []
+          this.languagePreview = data.emailTemplate.languageTypeResourceId
+          this.selectedTemplateLanguages.push({
+            text:
+              this.languageOptions.find(
+                (language) => language.value === data.emailTemplate.languageTypeResourceId
+              )?.text || data.emailTemplate.languageTypeName,
+            value: data.emailTemplate.languageTypeResourceId
+          })
+        }
+        return
+      }
       this.selectedTemplateLanguages.push({
-        text: data.emailTemplate.languageTypeName,
+        text:
+          this.languageOptions.find(
+            (language) => language.value === data.emailTemplate.languageTypeResourceId
+          )?.text || data.emailTemplate.languageTypeName,
         value: data.emailTemplate.languageTypeResourceId
       })
       this.languagePreview = this.selectedTemplateLanguages[0].value
@@ -1559,7 +1579,10 @@ export default {
         fromEmailAddress: data.emailTemplate.fromAddress,
         cc: data.emailTemplate.ccAddresses,
         template: data.emailTemplate.template,
-        language: data.emailTemplate.languageTypeName,
+        language:
+          this.languageOptions.find(
+            (language) => language.value === data.emailTemplate.languageTypeResourceId
+          )?.text || data.emailTemplate.languageTypeName,
         languageType: data.emailTemplate.languageTypeResourceId,
         languageShortCode: data.emailTemplate.languageShortCode
       })
@@ -1570,14 +1593,18 @@ export default {
           fromEmailAddress: item.fromAddress,
           cc: item.ccAddresses,
           template: item.template,
-          language: item.languageTypeName,
+          language:
+            this.languageOptions.find((language) => language.value === item.languageTypeResourceId)
+              ?.text || item.languageTypeName,
           languageType: item.languageTypeResourceId,
           languageShortCode: this.languageOptions.find(
             (language) => language.value === item.languageTypeResourceId
-          )?.description
+          )?.text
         })
         this.selectedTemplateLanguages.push({
-          text: item.languageTypeName,
+          text:
+            this.languageOptions.find((language) => language.value === item.languageTypeResourceId)
+              ?.text || item.languageTypeName,
           value: item.languageTypeResourceId
         })
       })

@@ -43,6 +43,7 @@
       :status="isShowPreviewDialog"
       :selected-row="selectedPhishingScenario"
       :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
+      :languages="languageFilterOptions"
       @on-close="toggleShowPreviewDialog"
     />
     <data-table
@@ -215,7 +216,6 @@ export default {
   },
   data() {
     return {
-      languageFilterOptions: [],
       isShowScenarioStatistics: false,
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
@@ -369,7 +369,28 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            const enrichedResults = results?.map((item) => {
+              if (Array.isArray(item.languageTypeName)) {
+                return {
+                  ...item,
+                  languageTypeName: item.languageTypeName?.map((code) => {
+                    const language = this.languageFilterOptions.find(
+                      (lang) => lang.languageName === code
+                    )
+                    return language?.text || code
+                  })
+                }
+              } else {
+                const language = this.languageFilterOptions.find(
+                  (lang) => lang.languageName === item.languageTypeName
+                )
+                return {
+                  ...item,
+                  languageTypeName: language?.text || item.languageTypeName
+                }
+              }
+            })
+            this.tableData = enrichedResults
           })
           .catch(() => {
             this.tableData = []

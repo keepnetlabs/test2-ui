@@ -101,6 +101,7 @@
                     :apiFuncs="getEmailTemplateApiFuncs"
                     :defaultBodyData="defaultEmailTemplateBodyData"
                     :languages="languageOptions"
+                    selectLanguageWidth="250px"
                     isCallback
                     :type="SCENARIO_TYPES.CALLBACK"
                     @initialEmailTemplateId="getInitialEmailTemplateId"
@@ -118,19 +119,15 @@
                 title="Select Callback Template"
                 subtitle="Choose your callback template"
               />
-              <v-list-item style="margin-top: -10px;">
-                <v-list-item-content>
-                  <CallbackTemplateSelectList
-                    v-if="step === 3"
-                    ref="refCallbackTemplateSelectList"
-                    :templateResourceId="formValues.callbackTemplateResourceId"
-                    :languages="languages"
-                    @initialTemplateId="handleInitialTemplate"
-                    @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
-                    @selectedTemplateChange="handleSelectedTemplateChange"
-                  />
-                </v-list-item-content>
-              </v-list-item>
+              <CallbackTemplateSelectList
+                v-if="step === 3"
+                ref="refCallbackTemplateSelectList"
+                :templateResourceId="formValues.callbackTemplateResourceId"
+                :languages="languages"
+                @initialTemplateId="handleInitialTemplate"
+                @selectedTemplateResourceId="handleSelectedTemplateResourceIdChange"
+                @selectedTemplateChange="handleSelectedTemplateChange"
+              />
             </div>
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content summary-step" :step="4">
@@ -653,7 +650,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId,
             description: language.description
           })) || []
@@ -701,7 +699,7 @@ export default {
             .then((response) => {
               const languageShortCode = this.languageOptions.find(
                 (language) => language.value === response?.data?.data?.languageTypeResourceId
-              )?.description
+              )?.text
               const emailTemplateData = {
                 ...response.data.data,
                 languageShortCode

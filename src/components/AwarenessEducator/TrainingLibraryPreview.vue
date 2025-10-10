@@ -15,7 +15,7 @@
           </div>
           <FormGroupHorizontalContent
             class="mt-4"
-            style="max-width: 500px;"
+            style="max-width: 600px;"
             label="Selected Training Languages:"
           >
             <KSelect

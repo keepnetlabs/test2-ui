@@ -75,7 +75,7 @@ import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants
 import { cancellableAxiosRequest, getDefaultAxiosPayload } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
 import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
-
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerTargetGroupUsersTable',
   components: { DataTable, AlertBox },
@@ -438,106 +438,141 @@ export default {
     callForData() {
       if (!this.resourceId) return
       this.setLoading(true)
-      this.cancellableSearchTargetGroupUsers(this.resourceId, this.axiosPayload)
-        .then((response) => {
-          if (!Object.keys(response).length) return
-          const {
-            data: { data }
-          } = response
-          this.tableData = data.results || []
-        })
-        .then(() => {
-          const isCallingPreferred =
-            this.isPhishing && parseInt(this.sendUserPreferredLanguage) === 1
-          const method = isCallingPreferred
-            ? getTargetGroupCountDetailExt
-            : getTargetGroupCountDetail
-          const payload = isCallingPreferred
-            ? {
-                targetGroupResourceIds: [this.resourceId],
-                scenarioResourceIds: this.scenarioResourceIds || [],
-                sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+      LookupLocalStorage.getSingle(21).then((response) => {
+        const languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId
+          })) || []
+        this.cancellableSearchTargetGroupUsers(this.resourceId, this.axiosPayload)
+          .then((response) => {
+            if (!Object.keys(response).length) return
+            const {
+              data: { data }
+            } = response
+            this.tableData =
+              data.results?.map((row) => {
+                if (Array.isArray(row.preferredLanguage)) {
+                  return {
+                    ...row,
+                    preferredLanguage: row.preferredLanguage.map((lang) => {
+                      return (
+                        languageOptions.find((option) => option.languageTypeName === lang)?.text ||
+                        lang
+                      )
+                    })
+                  }
+                }
+                return {
+                  ...row,
+                  preferredLanguage:
+                    languageOptions.find(
+                      (option) => option.languageTypeName === row.preferredLanguage
+                    )?.text || row.preferredLanguage
+                }
+              }) || []
+          })
+          .then(() => {
+            const isCallingPreferred =
+              this.isPhishing && parseInt(this.sendUserPreferredLanguage) === 1
+            const method = isCallingPreferred
+              ? getTargetGroupCountDetailExt
+              : getTargetGroupCountDetail
+            const payload = isCallingPreferred
+              ? {
+                  targetGroupResourceIds: [this.resourceId],
+                  scenarioResourceIds: this.scenarioResourceIds || [],
+                  sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+                }
+              : [this.resourceId]
+            if (
+              this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY &&
+              isCallingPreferred
+            ) {
+              payload.categoryFilter = {
+                Condition: this.categoryFilter.filter.Condition,
+                FilterGroups: this.categoryFilter.filter.FilterGroups
               }
-            : [this.resourceId]
-          if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY && isCallingPreferred) {
-            payload.categoryFilter = {
-              Condition: this.categoryFilter.filter.Condition,
-              FilterGroups: this.categoryFilter.filter.FilterGroups
             }
-          }
-          method(payload)
-            .then((response) => {
-              if (!Object.keys(response).length) return
-              const {
-                data: { data }
-              } = response
-              this.userCountDetailResponse = data
-              const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
-              const activeUsersWithPhoneNumberCount =
-                data
-                  .find((row) => row.status === 'Active')
-                  ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
-              const activeUsersWithoutPhoneNumberCount =
-                data
-                  .find((row) => row.status === 'Active')
-                  ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
-              const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
-              const usersFromUnverifiedDomainsCount =
-                data
-                  .find((row) => row.status === 'Active')
-                  ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
-              this.totalUserCount = activeUserCount + inactiveUserCount
-              this.activeUserCount = activeUserCount
-              this.inactiveUserCount = inactiveUserCount
-              this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
-              this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
-              this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
-              const activeData = data.find((row) => row.status === 'Active')
-              const yesCompanyPrefYesItem = activeData?.hasCompanyPreferredLanguage?.find(
-                (row) => row.status === 'Yes'
-              )
-              this.userFromCompanyLanguage = yesCompanyPrefYesItem?.count || 0
-              const yesUserPrefYesItem = activeData?.hasPreferredLanguage?.find(
-                (row) => row.status === 'Yes'
-              )
-              this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
-              const preferredLanguages = new Set()
-              const randomLanguages = new Set()
-              let isNoPreferredLanguage = false
-              let isYesRandomLanguage = false
-              data.map((row) => {
-                if (row.hasPreferredLanguage) {
-                  const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
-                  if (noPrefLanguages.length) {
-                    noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
-                      preferredLanguages.add(lang.status)
-                    })
-                  } else {
-                    isNoPreferredLanguage = true
+            method(payload)
+              .then((response) => {
+                if (!Object.keys(response).length) return
+                const {
+                  data: { data }
+                } = response
+                this.userCountDetailResponse = data
+                const activeUserCount = data.find((row) => row.status === 'Active')?.count || 0
+                const activeUsersWithPhoneNumberCount =
+                  data
+                    .find((row) => row.status === 'Active')
+                    ?.hasPhoneNumber?.find((row) => row.status === 'Yes')?.count || 0
+                const activeUsersWithoutPhoneNumberCount =
+                  data
+                    .find((row) => row.status === 'Active')
+                    ?.hasPhoneNumber?.find((row) => row.status === 'No')?.count || 0
+                const inactiveUserCount = data.find((row) => row.status === 'Passive')?.count || 0
+                const usersFromUnverifiedDomainsCount =
+                  data
+                    .find((row) => row.status === 'Active')
+                    ?.domainAllowList?.find((row) => row.status === 'Unverified')?.count || 0
+                this.totalUserCount = activeUserCount + inactiveUserCount
+                this.activeUserCount = activeUserCount
+                this.inactiveUserCount = inactiveUserCount
+                this.usersFromUnverifiedDomainsCount = usersFromUnverifiedDomainsCount
+                this.activeUsersWithPhoneNumberCount = activeUsersWithPhoneNumberCount
+                this.activeUsersWithoutPhoneNumberCount = activeUsersWithoutPhoneNumberCount
+                const activeData = data.find((row) => row.status === 'Active')
+                const yesCompanyPrefYesItem = activeData?.hasCompanyPreferredLanguage?.find(
+                  (row) => row.status === 'Yes'
+                )
+                this.userFromCompanyLanguage = yesCompanyPrefYesItem?.count || 0
+                const yesUserPrefYesItem = activeData?.hasPreferredLanguage?.find(
+                  (row) => row.status === 'Yes'
+                )
+                this.userFromPreferredLanguage = yesUserPrefYesItem?.count || 0
+                const preferredLanguages = new Set()
+                const randomLanguages = new Set()
+                let isNoPreferredLanguage = false
+                let isYesRandomLanguage = false
+                data.map((row) => {
+                  if (row.hasPreferredLanguage) {
+                    const noPrefLanguages = row.hasPreferredLanguage.filter(
+                      (r) => r.status === 'No'
+                    )
+                    if (noPrefLanguages.length) {
+                      noPrefLanguages[0]?.hasPreferredLanguage?.map((lang) => {
+                        preferredLanguages.add(lang.status)
+                      })
+                    } else {
+                      isNoPreferredLanguage = true
+                    }
                   }
-                }
-                if (row.hasRandomLanguage) {
-                  const noRandomLanguages = row.hasRandomLanguage.filter((r) => r.status === 'Yes')
-                  if (noRandomLanguages.length) {
-                    noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
-                      randomLanguages.add(lang.status)
-                    })
-                  } else {
-                    isYesRandomLanguage = true
+                  if (row.hasRandomLanguage) {
+                    const noRandomLanguages = row.hasRandomLanguage.filter(
+                      (r) => r.status === 'Yes'
+                    )
+                    if (noRandomLanguages.length) {
+                      noRandomLanguages[0]?.hasRandomLanguage?.map((lang) => {
+                        randomLanguages.add(lang.status)
+                      })
+                    } else {
+                      isYesRandomLanguage = true
+                    }
                   }
-                }
+                })
+                this.preferredLanguages = Array.from(preferredLanguages)
+                this.randomLanguages = Array.from(randomLanguages)
+                this.activeCompanyName = activeData?.companyPreferredLanguage
+                this.isRenderDefaultLanguageAlertBoxFormat =
+                  isNoPreferredLanguage && isYesRandomLanguage
+                this.setLoading(false)
               })
-              this.preferredLanguages = Array.from(preferredLanguages)
-              this.randomLanguages = Array.from(randomLanguages)
-              this.activeCompanyName = activeData?.companyPreferredLanguage
-              this.isRenderDefaultLanguageAlertBoxFormat =
-                isNoPreferredLanguage && isYesRandomLanguage
-              this.setLoading(false)
-            })
-            .catch(() => {
-              this.setLoading(false)
-            })
-        })
+              .catch(() => {
+                this.setLoading(false)
+              })
+          })
+      })
     },
     setLoading(flag = false) {
       this.isLoading = flag

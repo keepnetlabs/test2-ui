@@ -289,12 +289,18 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForData()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    callForLanguages() {
+      AwarenessEducatorService.getLanguages().then((res) => {
+        this.languages = res?.data?.data || []
+      })
+    },
     callForData() {
       this.setLoading(true)
       this.apiFunc(this.selectedRow.resourceId)
@@ -350,8 +356,13 @@ export default {
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
       if (this.isPhishing) {
+        const mainLanguage = this.languages.find(
+          (lang) => lang.name === phishingScenarioPreviewDto?.[templateKey]?.languageTypeName
+        )
         this.selectedTemplateLanguages.push({
-          text: phishingScenarioPreviewDto?.[templateKey]?.languageTypeName,
+          text:
+            mainLanguage?.isoFriendlyName ||
+            phishingScenarioPreviewDto?.[templateKey]?.languageTypeName,
           value: phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
         })
         this.languagePreview = this.selectedTemplateLanguages[0].value
@@ -370,8 +381,9 @@ export default {
               ccAddresses: item.ccAddresses,
               languageTypeResourceId: item.languageTypeResourceId
             })
+            const language = this.languages.find((lang) => lang.id === item.languageTypeResourceId)
             this.selectedTemplateLanguages.push({
-              text: item.languageTypeName,
+              text: language?.isoFriendlyName || item.languageTypeName,
               value: item.languageTypeResourceId
             })
           })
@@ -421,25 +433,24 @@ export default {
         })
     },
     callForTrainingLanguages(trainingContents = []) {
-      const languages = trainingContents.reduce((acc, item) => {
+      const languageIds = trainingContents.reduce((acc, item) => {
         acc.push(item.languageId)
         return acc
       }, [])
-      AwarenessEducatorService.getLanguages().then((res) => {
-        languages.forEach((lang) => {
-          const language = res?.data?.data?.find((item) => item.id === lang)
-          if (language) {
-            this.selectedLanguages.push({
-              text: language.name,
-              value: language.id
-            })
-            if (!this.trainingParams.languages) this.trainingParams.languages = [language.name]
-            else this.trainingParams.languages.push(language.name)
-          }
-        })
-        if (this.trainingParams.languages)
-          this.trainingParams.languages = this.trainingParams.languages.join(', ')
+      languageIds.forEach((lang) => {
+        const language = this.languages.find((item) => item.id === lang)
+        if (language) {
+          this.selectedLanguages.push({
+            text: language.isoFriendlyName || language.name,
+            value: language.id
+          })
+          if (!this.trainingParams.languages)
+            this.trainingParams.languages = [language.isoFriendlyName || language.name]
+          else this.trainingParams.languages.push(language.isoFriendlyName || language.name)
+        }
       })
+      if (this.trainingParams.languages)
+        this.trainingParams.languages = this.trainingParams.languages.join(', ')
     },
     handleEmailTemplatePreviewLanguageChange() {
       const findedTemplate = this.phishingEmailTemplates.find(

@@ -460,7 +460,7 @@ export default {
     getLanguageShortCode() {
       return typeof this.emailTemplateParams.languageShortCode === 'string'
         ? [this.emailTemplateParams.languageShortCode || '']
-        : this.emailTemplateParams.languageShortCode
+        : this.emailTemplateParams.languageShortCode || []
     },
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
@@ -934,7 +934,10 @@ export default {
           )?.text
           if (this.isPhishing) {
             this.selectedTemplateLanguages.push({
-              text: emailTemplate?.languageTypeName,
+              text:
+                this.languageOptions.find(
+                  (language) => language.value === emailTemplate?.languageTypeResourceId
+                )?.text || emailTemplate?.languageTypeName,
               value: emailTemplate?.languageTypeResourceId
             })
             this.languagePreview = this.selectedTemplateLanguages[0].value
@@ -944,16 +947,22 @@ export default {
               subject,
               template,
               languageTypeResourceId: languageOfEmailTemplate,
-              languageTypeName: emailTemplate?.languageTypeName,
+              languageTypeName:
+                this.languageOptions.find(
+                  (language) => language.value === emailTemplate?.languageTypeResourceId
+                )?.text || emailTemplate?.languageTypeName,
               ccAddresses: this.emailTemplateParams.cc,
               languageShortCode: this.languageOptions.find(
                 (language) => language.value === this.emailTemplateParams.languageTypeResourceId
-              )?.description
+              )?.text
             })
             if (emailTemplate?.languages?.length) {
               emailTemplate?.languages?.forEach((item) => {
                 this.selectedTemplateLanguages.push({
-                  text: item.languageTypeName,
+                  text:
+                    this.languageOptions.find(
+                      (language) => language.value === item.languageTypeResourceId
+                    )?.text || item.languageTypeName,
                   value: item.languageTypeResourceId
                 })
               })
@@ -966,16 +975,19 @@ export default {
                   subject: item.subject,
                   template: item.template,
                   languageTypeResourceId: item.languageTypeResourceId,
-                  languageTypeName: item.languageTypeName,
+                  languageTypeName:
+                    this.languageOptions.find(
+                      (language) => language.value === item.languageTypeResourceId
+                    )?.text || item.languageTypeName,
                   ccAddresses: item.ccAddresses.join(','),
                   languageShortCode: this.languageOptions.find(
                     (language) => language.value === item.languageTypeResourceId
-                  )?.description
+                  )?.text
                 }
               }) || [])
             )
             this.emailTemplateParams.languageShortCode = [
-              ...this.phishingEmailTemplates.map((item) => item.languageShortCode)
+              ...this.phishingEmailTemplates.map((item) => item.languageTypeName)
             ]
           }
           const {
@@ -1001,7 +1013,7 @@ export default {
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
-          )?.[this.isPhishing ? 'description' : 'text']
+          )?.text
           this.category = category
         })
         .finally(() => (this.isScenarioDetailLoading = false))

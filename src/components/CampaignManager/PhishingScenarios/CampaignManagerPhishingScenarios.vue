@@ -13,18 +13,7 @@
       :landing-page-templates="landingPageTemplates"
       @on-close="toggleTemplateDialog"
     />
-    <TrainingLibraryPreviewDialog
-      v-if="isShowTrainingDialog"
-      :status="isShowTrainingDialog"
-      :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      @on-close="toggleShowTrainingDialog"
-    />
-    <TrainingLibraryPreviewDialog
-      v-if="isShowCategoryTrainingDialog"
-      :status="isShowCategoryTrainingDialog"
-      :selected-row="trainingForCategory"
-      @on-close="toggleShowCategoryTrainingDialog"
-    />
+    <TrainingLibraryCommonComponents />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -419,6 +408,7 @@
                             :hint="getEmailTemplatePreviewLanguageHint"
                             :items="selectedTemplateLanguages"
                             :hide-details="false"
+                            :languages="languages"
                             @input="handleEmailTemplatePreviewLanguageChange"
                           />
                           <div class="mb-2">
@@ -587,7 +577,7 @@ import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/f
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
-import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
@@ -602,11 +592,12 @@ import {
 } from '@/components/CampaignManager/utils'
 import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
     InputLanguagePreview,
-    TrainingLibraryPreviewDialog,
+    TrainingLibraryCommonComponents,
     CampaignManagerPhishingScenariosPreviewDialog,
     CampaignManagerPhishingScenariosTrainingTab,
     TabsWithMfaSettings,
@@ -715,7 +706,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
     getLandingPageKey() {
       return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
@@ -837,7 +829,7 @@ export default {
     previewLandingHtml() {
       const html = this.getSingleTemplateDetails || ''
       if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
-        const logo = 
+        const logo =
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
@@ -1130,6 +1122,14 @@ export default {
       if (val) {
         this.resetFilters()
       }
+    },
+    'getTrainingPreviewDialog.status': {
+      handler(newVal) {
+        if (newVal === false) {
+          this.isShowTrainingDialog = false
+          this.isShowCategoryTrainingDialog = false
+        }
+      }
     }
   },
   created() {
@@ -1252,7 +1252,9 @@ export default {
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
-            languageTypeName,
+            languageTypeName:
+              this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+              languageTypeName,
             phishingFileName
           }
           if (this.isPhishing) {
@@ -1261,7 +1263,9 @@ export default {
 
             this.selectedTemplateLanguages.push({
               value: languageOfEmailTemplate,
-              text: languageTypeName
+              text:
+                this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+                languageTypeName
             })
             this.phishingEmailTemplates.push({
               fromName: fromName,
@@ -1269,7 +1273,9 @@ export default {
               subject: subject,
               template: template,
               ccAddresses: ccAddresses,
-              languageTypeName: languageTypeName,
+              languageTypeName:
+                this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+                languageTypeName,
               languageTypeResourceId: languageOfEmailTemplate
             })
             this.languagePreview = languageOfEmailTemplate
@@ -1277,7 +1283,9 @@ export default {
               emailTemplate?.languages?.forEach((item) => {
                 this.selectedTemplateLanguages.push({
                   value: item.languageTypeResourceId,
-                  text: item.languageTypeName
+                  text:
+                    this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                      ?.text || item.languageTypeName
                 })
               })
               this.phishingEmailTemplates.push(
@@ -1288,7 +1296,9 @@ export default {
                     subject: item.subject,
                     template: item.template,
                     ccAddresses: item.ccAddresses,
-                    languageTypeName: item.languageTypeName,
+                    languageTypeName:
+                      this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                        ?.text || item.languageTypeName,
                     languageTypeResourceId: item.languageTypeResourceId
                   }
                 }) || [])
@@ -1362,7 +1372,25 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems =
+          data.results?.map((item) => {
+            if (Array.isArray(item.languageTypeName)) {
+              return {
+                ...item,
+                languageTypeName: item.languageTypeName.map(
+                  (language) =>
+                    this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                    language
+                )
+              }
+            }
+            return {
+              ...item,
+              languageTypeName:
+                this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                  ?.text || item.languageTypeName
+            }
+          }) || []
         this.totalPhishingScenariosCount = data?.totalNumberOfRecords || 0
         this.$emit('totalPhishingScenariosCountChange', this.totalPhishingScenariosCount)
         this.phishingScenarioItems.forEach((item) => {
@@ -1429,9 +1457,59 @@ export default {
       this.toggleShowCategoryTrainingDialog()
     },
     toggleShowTrainingDialog() {
+      if (this.isShowTrainingDialog) {
+        // Kapatma
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: false
+        })
+      } else {
+        // Açma
+        const selectedTraining = this.trainingTabModel[this.selectedTemplateResourceId]
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: {
+            ...selectedTraining,
+            trainingId: selectedTraining.trainingId,
+            name: selectedTraining.trainingName,
+            languages: selectedTraining.trainingLanguageIds?.filter((id) => id !== labels.All) || []
+          },
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: true
+        })
+      }
       this.isShowTrainingDialog = !this.isShowTrainingDialog
     },
     toggleShowCategoryTrainingDialog() {
+      if (this.isShowCategoryTrainingDialog) {
+        // Kapatma
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: false
+        })
+      } else {
+        // Açma
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: true,
+          selectedRow: {
+            ...this.trainingForCategory,
+            trainingId: this.trainingForCategory.trainingId,
+            name: this.trainingForCategory.trainingName,
+            languages:
+              this.trainingForCategory.trainingLanguageIds?.filter((id) => id !== labels.All) || []
+          },
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: true
+        })
+      }
       this.isShowCategoryTrainingDialog = !this.isShowCategoryTrainingDialog
     },
     handleEmailTemplatePreviewLanguageChange(val) {

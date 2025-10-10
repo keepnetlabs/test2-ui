@@ -78,7 +78,7 @@ export default {
     languages() {
       return (
         this?.getLanguages?.map((language) => ({
-          text: language.name,
+          text: language.isoFriendlyName,
           value: language.id,
           isDisabled: this.formData.contentByLanguage.some(
             (content) => content.languageId === language.id

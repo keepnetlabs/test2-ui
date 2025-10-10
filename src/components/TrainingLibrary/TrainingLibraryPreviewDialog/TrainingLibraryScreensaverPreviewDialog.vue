@@ -405,7 +405,7 @@ export default {
         .then((response) => {
           if (this.isPdf) {
             this.pdfSrc = window.URL.createObjectURL(response.data)
-            return
+            return this.downloadPDFObject(this.pdfSrc)
           }
           this.downloadPDFObject(window.URL.createObjectURL(response.data))
         })

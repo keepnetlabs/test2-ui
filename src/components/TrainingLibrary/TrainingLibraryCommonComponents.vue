@@ -1,26 +1,57 @@
 <template>
   <div>
     <TrainingLibraryDeleteDialog v-bind="getDeleteDialog" />
-    <TrainingLibraryTrainingPreviewDialog
-      v-if="getTrainingPreviewDialog.status"
-      v-bind="getTrainingPreviewDialog"
+
+    <!-- Unified Drawer for Training, Poster, Infographic, Screensaver -->
+    <TrainingLibraryDrawer
+      v-if="currentDrawer.status"
+      :value="currentDrawer.status"
+      :type="currentDrawer.type"
+      :training-data="currentDrawer.selectedRow"
+      :only-preview="currentDrawer.onlyPreview"
+      :should-control-body-scroll="shouldControlBodyScroll"
+      @input="handleDrawerClose"
+      @delete-success="handleDeleteSuccess"
+      @duplicate-success="handleDuplicateSuccess"
     />
-    <TrainingLibraryLearningPathPreviewDialog
-      v-if="getLearningPathPreviewDialog.status"
-      v-bind="getLearningPathPreviewDialog"
+
+    <!-- Nested Drawer (Related Preview) -->
+    <TrainingLibraryDrawer
+      v-if="getNestedDrawer.status"
+      :value="getNestedDrawer.status"
+      :type="getNestedDrawer.type"
+      :training-data="getNestedDrawer.selectedRow"
+      :is-nested="true"
+      :only-preview="getNestedDrawer.onlyPreview || false"
+      :should-control-body-scroll="shouldControlBodyScroll"
+      width="calc(100% - 144px)"
+      @input="handleNestedDrawerClose"
+      @close-parent="handleCloseParentDrawer"
     />
-    <TrainingLibraryPosterPreviewDialog
-      v-if="getPosterPreviewDialog.status"
-      v-bind="getPosterPreviewDialog"
+
+    <!-- Deep Nested Drawer (Related Preview in Nested) -->
+    <TrainingLibraryDrawer
+      v-if="getDeepNestedDrawer.status"
+      :value="getDeepNestedDrawer.status"
+      :type="getDeepNestedDrawer.type"
+      :training-data="getDeepNestedDrawer.selectedRow"
+      :is-deep-nested="true"
+      :only-preview="getDeepNestedDrawer.onlyPreview || false"
+      :should-control-body-scroll="shouldControlBodyScroll"
+      width="calc(100% - 216px)"
+      @input="handleDeepNestedDrawerClose"
+      @close-parent="handleCloseAllDrawers"
     />
-    <TrainingLibraryInfographicPreviewDialog
-      v-if="getInfographicPreviewDialog.status"
-      v-bind="getInfographicPreviewDialog"
-    />
-    <TrainingLibraryScreensaverPreviewDialog
-      v-if="getScreensaverPreviewDialog.status"
-      v-bind="getScreensaverPreviewDialog"
-    />
+
+    <!-- Lightbox for Preview -->
+    <TrainingLibraryLightbox :value="getLightbox.status" @input="handleLightboxClose">
+      <TrainingLibraryLightboxContent
+        :preview-data="getLightbox.previewData"
+        :is-loading="getLightbox.isLoading"
+        :type="getLightbox.type"
+      />
+    </TrainingLibraryLightbox>
+
     <TrainingLibraryNewTrainingModal
       v-if="getNewTrainingModal.status"
       v-bind="getNewTrainingModal"
@@ -57,21 +88,14 @@
     />
     <TrainingLibraryNewSurveyModal v-if="getNewSurveyModal.status" v-bind="getNewSurveyModal" />
     <TrainingLibrarySurveySendModal v-if="getSurveySendModal.status" v-bind="getSurveySendModal" />
-    <TrainingLibrarySurveyPreviewDialog
-      v-if="getSurveyPreviewDialog.status"
-      v-bind="getSurveyPreviewDialog"
-    />
   </div>
 </template>
 
 <script>
 import TrainingLibraryDeleteDialog from '@/components/TrainingLibrary/TrainingLibraryDeleteDialog/TrainingLibraryDeleteDialog.vue'
 import { mapGetters } from 'vuex'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
-import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
-import TrainingLibraryInfographicPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
-import TrainingLibraryScreensaverPreviewDialog from './TrainingLibraryPreviewDialog/TrainingLibraryScreensaverPreviewDialog.vue'
-import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
+import TrainingLibraryDrawer from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue'
+import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingModal.vue'
 import TrainingLibraryNewLearningPathModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathModal.vue'
 import TrainingLibraryNewPosterModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterModal.vue'
@@ -84,12 +108,23 @@ import TrainingLibraryInfographicSendModal from '@/components/TrainingLibrary/Tr
 import TrainingLibraryScreensaverSendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibraryScreensaverSendModal/TrainingLibraryScreensaverSendModal.vue'
 import TrainingLibraryLearningPathSendModal from './TrainingLibrarySendModal/TrainingLibraryLearningPathSendModal/TrainingLibraryLearningPathSendModal.vue'
 import TrainingLibrarySurveySendModal from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySurveySendModal.vue'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
+import TrainingLibraryLightbox from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightbox.vue'
+import TrainingLibraryLightboxContent from '@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightboxContent.vue'
 
 export default {
   name: 'TrainingLibraryCommonComponents',
+  props: {
+    shouldControlBodyScroll: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      TRAINING_LIBRARY_TYPES
+    }
+  },
   components: {
-    TrainingLibrarySurveyPreviewDialog,
     TrainingLibrarySurveySendModal,
     TrainingLibraryLearningPathSendModal,
     TrainingLibraryScreensaverSendModal,
@@ -102,14 +137,243 @@ export default {
     TrainingLibraryNewPosterModal,
     TrainingLibraryNewLearningPathModal,
     TrainingLibraryNewTrainingModal,
-    TrainingLibraryLearningPathPreviewDialog,
-    TrainingLibraryScreensaverPreviewDialog,
-    TrainingLibraryInfographicPreviewDialog,
-    TrainingLibraryPosterPreviewDialog,
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibraryDeleteDialog
+    TrainingLibraryDeleteDialog,
+    TrainingLibraryDrawer,
+    TrainingLibraryLightbox,
+    TrainingLibraryLightboxContent
+  },
+  methods: {
+    handleDrawerClose(value) {
+      if (!value) {
+        // Hangi dialog açıksa onu kapat
+        if (this.currentDrawer.dialogType === 'training') {
+          this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null,
+            showSendButton: true,
+            type: TRAINING_LIBRARY_TYPES.TRAINING
+          })
+        } else if (this.currentDrawer.dialogType === 'poster') {
+          this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'infographic') {
+          this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'screensaver') {
+          this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'survey') {
+          this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        } else if (this.currentDrawer.dialogType === 'learningPath') {
+          this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
+            status: false,
+            selectedRow: null
+          })
+        }
+      }
+    },
+    handleDeleteSuccess() {
+      this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
+    },
+    handleDuplicateSuccess() {
+      this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
+    },
+    handleLightboxClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+          status: false,
+          previewData: null,
+          isLoading: false,
+          type: null
+        })
+      }
+    },
+    handleNestedDrawerClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+          status: false,
+          selectedRow: null,
+          type: null
+        })
+      }
+    },
+    handleCloseParentDrawer() {
+      // Animasyon zaten 250ms içinde bitmiş, direkt reset et
+      // Nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Parent drawer'ı da kapat
+      if (this.currentDrawer.dialogType === 'training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      } else if (this.currentDrawer.dialogType === 'poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'screensaver') {
+        this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'learningPath') {
+        this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      }
+    },
+    handleDeepNestedDrawerClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
+          status: false,
+          selectedRow: null,
+          type: null
+        })
+      }
+    },
+    handleCloseAllDrawers() {
+      // Deep nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Nested drawer'ı kapat
+      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+        status: false,
+        selectedRow: null,
+        type: null
+      })
+
+      // Parent drawer'ı da kapat
+      if (this.currentDrawer.dialogType === 'training') {
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null,
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      } else if (this.currentDrawer.dialogType === 'poster') {
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'infographic') {
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'screensaver') {
+        this.$store.commit('trainingLibrary/SET_SCREENSAVER_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'survey') {
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      } else if (this.currentDrawer.dialogType === 'learningPath') {
+        this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
+          status: false,
+          selectedRow: null
+        })
+      }
+    }
   },
   computed: {
+    currentDrawer() {
+      // Priority: Training > Poster > Infographic > Screensaver > Survey
+      if (this.getTrainingPreviewDialog.status) {
+        return {
+          status: this.getTrainingPreviewDialog.status,
+          type: this.getTrainingPreviewDialog.type,
+          selectedRow: this.getTrainingPreviewDialog.selectedRow,
+          onlyPreview: this.getTrainingPreviewDialog.onlyPreview || false,
+          dialogType: 'training'
+        }
+      }
+      if (this.getPosterPreviewDialog.status) {
+        return {
+          status: this.getPosterPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.POSTER,
+          selectedRow: this.getPosterPreviewDialog.selectedRow,
+          onlyPreview: this.getPosterPreviewDialog.onlyPreview || false,
+          dialogType: 'poster'
+        }
+      }
+      if (this.getInfographicPreviewDialog.status) {
+        return {
+          status: this.getInfographicPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
+          selectedRow: this.getInfographicPreviewDialog.selectedRow,
+          onlyPreview: this.getInfographicPreviewDialog.onlyPreview || false,
+          dialogType: 'infographic'
+        }
+      }
+      if (this.getScreensaverPreviewDialog.status) {
+        return {
+          status: this.getScreensaverPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
+          selectedRow: this.getScreensaverPreviewDialog.selectedRow,
+          onlyPreview: this.getScreensaverPreviewDialog.onlyPreview || false,
+          dialogType: 'screensaver'
+        }
+      }
+      if (this.getSurveyPreviewDialog.status) {
+        return {
+          status: this.getSurveyPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.SURVEY,
+          selectedRow: this.getSurveyPreviewDialog.selectedRow,
+          onlyPreview: this.getSurveyPreviewDialog.onlyPreview || false,
+          dialogType: 'survey'
+        }
+      }
+      if (this.getLearningPathPreviewDialog.status) {
+        return {
+          status: this.getLearningPathPreviewDialog.status,
+          type: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+          selectedRow: this.getLearningPathPreviewDialog.selectedRow,
+          onlyPreview: this.getLearningPathPreviewDialog.onlyPreview || false,
+          dialogType: 'learningPath'
+        }
+      }
+      return {
+        status: false,
+        type: null,
+        selectedRow: null,
+        dialogType: null
+      }
+    },
     ...mapGetters({
       getDeleteDialog: 'trainingLibrary/getDeleteDialog',
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
@@ -129,7 +393,10 @@ export default {
       getLearningPathSendModal: 'trainingLibrary/getLearningPathSendModal',
       getNewSurveyModal: 'trainingLibrary/getNewSurveyModal',
       getSurveySendModal: 'trainingLibrary/getSurveySendModal',
-      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog',
+      getLightbox: 'trainingLibrary/getLightbox',
+      getNestedDrawer: 'trainingLibrary/getNestedDrawer',
+      getDeepNestedDrawer: 'trainingLibrary/getDeepNestedDrawer'
     })
   }
 }

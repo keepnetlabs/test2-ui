@@ -1,0 +1,96 @@
+.training-library-drawer-content-steps {
+  margin-top: 24px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #212121;
+    margin: 0;
+  }
+
+  &__total {
+    font-size: 14px;
+    color: #383b41;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+  }
+
+  &__item-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #f2f2f2;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #383b41;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(56, 59, 65, 0.72);
+
+    span {
+      line-height: 1;
+    }
+  }
+
+  &__item-icon {
+    color: #757575;
+    flex-shrink: 0;
+  }
+
+  &__show-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
