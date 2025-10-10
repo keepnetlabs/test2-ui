@@ -250,7 +250,6 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           const { results = [] } = data
-          console.log('this.languageFilter  Options', this.languageFilterOptions)
           this.tableData =
             results.map((item) => ({
               ...item,

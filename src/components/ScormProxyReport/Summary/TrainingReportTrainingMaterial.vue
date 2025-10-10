@@ -6,43 +6,12 @@
     detailable-button-id="btn--preview-training-report-training-material"
     :isLoading="isFetchingSummary"
     :show-body-detail="false"
-    :title="isSurvey ? labels.SurveyMaterial : labels.TrainingMaterial"
+    is-training
+    :title="getCardTitle"
     @previewClicked="handlePreviewClick"
   >
     <template #body>
-      <div v-if="isFormData" class="training-report-training-material__body pb-4">
-        <TrainingLibraryCommonComponents :should-control-body-scroll="true" />
-        <div class="training-report-training-material__body-header">
-          <div class="training-report-training-material__template-name">
-            {{ formData.name }}
-          </div>
-          <div class="training-report-training-material__body-header-right">
-            <v-btn style="display: none;"></v-btn>
-            <Badge v-if="!isSurvey" size="mini" color="#2196F3" text="Scorm" :outline="false" />
-            <Badge
-              class-name="training-report-training-material__body-header-right-badge-language"
-              size="mini"
-              color="#757575"
-              :outline="false"
-            >
-              <template #content>
-                <v-icon size="small">mdi-web</v-icon>
-                <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }}
-                  {{ formData.languages.length - 1 > index ? '|' : '' }}
-                </span>
-              </template>
-            </Badge>
-          </div>
-        </div>
-        <div class="training-report-training-material__created-by">
-          {{ formData.category }} • <span style="font-weight: 400;">by</span>
-          {{ formData.createdBy }}
-        </div>
-        <div class="training-report-training-material__description">
-          {{ formData.description }}
-        </div>
-      </div>
+      <TrainingLibraryCommonComponents v-if="isFormData" :should-control-body-scroll="true" />
     </template>
   </CampaignManagerSummaryCard>
 </template>
@@ -50,7 +19,6 @@
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
-import Badge from '@/components/Badge'
 import { useLoading } from '@/hooks/useLoading'
 import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import { mapGetters } from 'vuex'
@@ -60,7 +28,6 @@ export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
     TrainingLibraryCommonComponents,
-    Badge,
     CampaignManagerSummaryCard
   },
   mixins: [useLoading],
@@ -94,6 +61,10 @@ export default {
     }),
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    getCardTitle() {
+      if (this.isSurvey) return `Survey: ${this.formData.name}`
+      return `Training: ${this.formData.name}`
     }
   },
   methods: {

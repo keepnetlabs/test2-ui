@@ -559,7 +559,6 @@ const trainingLibrary = {
             pageNumber = 1
           } = data
           const languages = rootGetters['trainingLibraryHelpers/getLanguages'] || []
-          console.log('languages', languages)
           const enrichedResults = results.map((item) => {
             return {
               ...item,
@@ -570,7 +569,6 @@ const trainingLibrary = {
               })
             }
           })
-          console.log('enrichedResults', enrichedResults)
           commit('SET_TABLE_DATA', enrichedResults)
           commit('SET_SERVER_SIDE_PROPS', {
             totalNumberOfRecords,

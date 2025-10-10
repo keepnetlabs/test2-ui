@@ -382,7 +382,6 @@ export default {
     },
     getDefaultValuesDeliverySettings() {
       const keys = Object.keys(this.selectedRowFormData)
-      console.log('this', this.selectedRowFormData)
       if (!keys.length) return {}
       let {
         distributionDelayEvery,

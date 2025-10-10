@@ -42,7 +42,7 @@
       </div>
     </slot>
     <slot name="body" :items="items">
-      <div class="campaign-manager-summary-card__body">
+      <div v-if="!isTraining" class="campaign-manager-summary-card__body">
         <div class="campaign-manager-summary-card__body-container">
           <div
             v-for="(val, key) in items"

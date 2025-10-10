@@ -108,11 +108,11 @@
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
-        :title="`Learning Path: ${formData.learningPathData.name}`"
+        :title="getCardTitle"
         icon="mdi-school"
+        is-training
         :show-body-detail.sync="isShowTrainingEmail"
-      >
-      </CampaignManagerSummaryCard>
+      />
     </div>
     <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
@@ -232,6 +232,9 @@ export default {
     }
   },
   computed: {
+    getCardTitle() {
+      return `Learning Path: ${this.formData?.trainingData?.name}`
+    },
     getTargetGroupItems() {
       const activeItems =
         this.formData?.userCountDetailResponse?.data?.data?.filter?.(
@@ -310,7 +313,8 @@ export default {
         this.setLearningPathPreviewDialog({
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          showSendButton: false,
+          onlyPreview: true
         })
         this.isShowTrainingEmail = false
       }

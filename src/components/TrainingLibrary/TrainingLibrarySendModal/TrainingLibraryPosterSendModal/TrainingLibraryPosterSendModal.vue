@@ -68,6 +68,7 @@
               :total-phone-number-user-count="totalPhoneNumberUserCount"
               :phone-number-items="phoneNumberItems"
               :phone-numbers="phoneNumbers"
+              :language-options="languages"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">

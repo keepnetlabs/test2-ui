@@ -58,6 +58,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import TrainingReportScormEnrollmentInfo from '@/components/ScormProxyReport/Summary/TrainingReportScormEnrollmentInfo.vue'
 import TrainingReportTrainingDelivery from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportTrainingDelivery'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingReportSummary',
   components: {
@@ -93,12 +94,14 @@ export default {
       isAudienceModalVisible: false,
       targetGroups: [],
       interval: null,
-      languages: [],
       enrollmentEmailData: {},
       certificateEmailData: {}
     }
   },
   computed: {
+    ...mapGetters({
+      languages: 'trainingLibraryHelpers/getLanguages'
+    }),
     isScormProxy() {
       return this.trainingSummary?.isScormProxy || false
     },
@@ -144,6 +147,15 @@ export default {
       const proxyPackageDownloadDateKey = this.isSurvey
         ? 'Survey Proxy Package Download Date'
         : 'Training Proxy Package Download Date'
+
+      // Map language codes to friendly names
+      const languageNames = languages.map((langCode) => {
+        const lang = this.languages.find(
+          (l) => l.code === langCode || l.shortCode === langCode || l.languageShortCode === langCode
+        )
+        return lang?.isoFriendlyName || lang?.name || langCode
+      })
+
       return {
         'Target Users': {
           show: true,
@@ -155,7 +167,7 @@ export default {
         },
         Languages: {
           show: true,
-          value: languages?.join(', ')
+          value: languageNames?.join(', ')
         },
         targetGroupCount: {
           show: false,

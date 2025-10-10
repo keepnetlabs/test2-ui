@@ -144,15 +144,7 @@ export default {
   },
   methods: {
     handleDrawerClose(value) {
-      console.log(
-        '📦 handleDrawerClose called with value:',
-        value,
-        'dialogType:',
-        this.currentDrawer.dialogType
-      )
       if (!value) {
-        console.log('🔄 Resetting store for:', this.currentDrawer.dialogType)
-
         // Hangi dialog açıksa onu kapat
         if (this.currentDrawer.dialogType === 'training') {
           this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
@@ -190,15 +182,12 @@ export default {
       }
     },
     handleDeleteSuccess() {
-      console.log('✅ Delete success - refreshing list')
       this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
     },
     handleDuplicateSuccess() {
-      console.log('✅ Duplicate success - refreshing list')
       this.$store.dispatch('trainingLibrary/callForTrainingLibrary')
     },
     handleLightboxClose(value) {
-      console.log('📦 handleLightboxClose called with value:', value)
       if (!value) {
         this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
           status: false,
@@ -209,7 +198,6 @@ export default {
       }
     },
     handleNestedDrawerClose(value) {
-      console.log('📦 handleNestedDrawerClose called with value:', value)
       if (!value) {
         this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
           status: false,
@@ -219,8 +207,6 @@ export default {
       }
     },
     handleCloseParentDrawer() {
-      console.log('📦 handleCloseParentDrawer called - closing both drawers')
-
       // Animasyon zaten 250ms içinde bitmiş, direkt reset et
       // Nested drawer'ı kapat
       this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
@@ -265,7 +251,6 @@ export default {
       }
     },
     handleDeepNestedDrawerClose(value) {
-      console.log('📦 handleDeepNestedDrawerClose called with value:', value)
       if (!value) {
         this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
           status: false,
@@ -275,8 +260,6 @@ export default {
       }
     },
     handleCloseAllDrawers() {
-      console.log('📦 handleCloseAllDrawers called - closing all three drawers')
-
       // Deep nested drawer'ı kapat
       this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
         status: false,

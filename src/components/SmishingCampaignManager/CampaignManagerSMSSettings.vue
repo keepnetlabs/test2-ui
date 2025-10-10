@@ -286,7 +286,6 @@ export default {
             this.formData[key] = val[key]
           }
         }
-        console.log('val', val)
       }
     },
     'inputScheduleFormData.scheduledDateTimeZoneId': {

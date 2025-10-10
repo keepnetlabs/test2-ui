@@ -67,6 +67,7 @@
               :distribution-delay-time-types="distributionDelayTimeTypes"
               :total-phone-number-user-count="totalPhoneNumberUserCount"
               :phone-number-items="phoneNumberItems"
+              :language-options="languages"
               :phone-numbers="phoneNumbers"
             />
           </v-stepper-content>

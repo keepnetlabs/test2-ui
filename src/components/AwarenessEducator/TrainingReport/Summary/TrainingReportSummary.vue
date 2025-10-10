@@ -271,6 +271,15 @@ export default {
         languages: ['EN'],
         targetGroupNames: []
       }
+
+      // Map language codes to friendly names
+      const languageNames = languages.map((langCode) => {
+        const lang = this.languages.find(
+          (l) => l.code === langCode || l.shortCode === langCode || l.languageShortCode === langCode
+        )
+        return lang?.isoFriendlyName || lang?.name || langCode
+      })
+
       return {
         'Target Groups': {
           show: true,
@@ -290,7 +299,7 @@ export default {
         },
         Languages: {
           show: true,
-          value: languages?.join(', ')
+          value: languageNames?.join(', ')
         }
       }
     },

@@ -1146,7 +1146,6 @@ export default {
             this.listData = []
             this.templateHTML = null
           } else {
-            console.log('data.data.results', data.data.results)
             data.data.results = data.data.results.map((item) => {
               let languageTypeName = item.languageTypeName
               if (Array.isArray(item.languageTypeName)) {
