@@ -542,7 +542,8 @@ export default {
     activeFileName() {
       // Get first attachment file name from either attachmentFiles or importedEmailAttachments
       if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length > 0) {
-        return this.formValues.attachmentFiles[0]?.fileName || ''
+        const firstFile = this.formValues.attachmentFiles[0]
+        return firstFile?.fileName || firstFile?.name || ''
       }
       if (
         this.formValues.importedEmailAttachments &&
@@ -554,6 +555,15 @@ export default {
     }
   },
   watch: {
+    activeFileName(newVal, oldVal) {
+      // Attachment değiştiğinde mevcut red flag gösterimini kapat, stilleri kaldır ve cache'i temizle
+      if (newVal !== oldVal) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
+        this.lastRedFlags = {}
+      }
+    },
     selectedLanguages(val) {
       if (!val.length) {
         this.activeLanguage = ''
@@ -911,6 +921,14 @@ export default {
         this.isShowRedFlags = false
         this.isFlaggedStylesEnabled = false
         this.updateTemplateWithFlaggedStyles()
+        // Remove red flag classes and attributes before submit
+        this.languagesPayload.forEach((languagePayload) => {
+          if (this._isValidLanguagePayload(languagePayload)) {
+            languagePayload.template = this._removeRedFlagClassesAndAttributes(
+              languagePayload.template
+            )
+          }
+        })
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       let payload = {
@@ -1536,6 +1554,19 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
+      const cssToRemove = this.flaggedAreaCss.trim()
+      const scriptToRemove = this._getPreventClickScript().trim()
+
+      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replace(
+        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        ''
+      )
+
+      return cleanedTemplate
+    },
+
+    _removeRedFlagClassesAndAttributes(template) {
       let cleanedTemplate = template
 
       // Remove <style> tags containing flagged-area CSS
@@ -1549,7 +1580,6 @@ export default {
         /\s*class=["']([^"']*)?["']/gi,
         (match, classContent) => {
           if (!classContent) return match
-          // Remove flagged-area and flagged-area-img but keep other classes
           const cleanedClasses = classContent
             .split(/\s+/)
             .filter((cls) => cls !== 'flagged-area' && cls !== 'flagged-area-img')
