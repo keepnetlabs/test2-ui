@@ -75,12 +75,12 @@
           </div>
           <div class="training-library-drawer-content-related__card-langs">
             <VIcon small class="mr-1">mdi-web</VIcon>
-            <span v-if="card.languages.length <= 3">{{ card.languagesFormatted }}</span>
+            <span v-if="card.languages.length <= 2">{{ card.languagesFormatted }}</span>
             <span v-else>
-              {{ getFirstThreeLanguages(card.languages) }}
+              {{ getFirstTwoLanguages(card.languages) }}
               <VTooltip bottom>
                 <template #activator="{ on }">
-                  <span v-on="on" style="cursor: pointer;">, +{{ card.languages.length - 3 }}</span>
+                  <span v-on="on" style="cursor: pointer;">, +{{ card.languages.length - 2 }}</span>
                 </template>
                 <span>{{ getRemainingLanguages(card.languages) }}</span>
               </VTooltip>
@@ -204,8 +204,8 @@ export default {
           this.type === TRAINING_LIBRARY_TYPES.TRAINING
             ? 'SCORM'
             : this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-              ? 'LearningPath'
-              : this.type
+            ? 'LearningPath'
+            : this.type
       }
 
       AwarenessEducatorService.searchTraining(payload)
@@ -231,8 +231,9 @@ export default {
               title: item.name || item.trainingName,
               targetAudienceDisplay: item.targetAudience || 'All Users',
               category: item.categoryName || item.category,
-              languagesFormatted: this.formatLanguages(item.languages),
-              languages: item.languages, // Keep original array for nested drawer
+              languagesFormatted: this.formatLanguages(item.languageCodes || item.languages),
+              languages: item.languageCodes || item.languages, // Keep original codes for nested drawer
+              languageCodes: item.languageCodes || item.languages, // Ensure languageCodes is available
               coverImage: this.getCoverImage(item.coverImage)
             }))
         })
@@ -250,7 +251,7 @@ export default {
         const lang = this.allLanguages.find(
           (item) => item.shortCode === code || item.code === code || item.id === code
         )
-        return lang ? lang.name : code
+        return lang ? lang.isoFriendlyName || lang.name : code
       })
     },
     formatLanguages(languageCodes) {
@@ -260,16 +261,15 @@ export default {
 
       if (languageNames.length === 1) return languageNames[0]
       if (languageNames.length === 2) return languageNames.join(', ')
-      if (languageNames.length === 3) return languageNames.join(', ')
-      return `${languageNames.slice(0, 3).join(', ')}, +${languageNames.length - 3}`
+      return `${languageNames.slice(0, 2).join(', ')}, +${languageNames.length - 2}`
     },
-    getFirstThreeLanguages(languageCodes) {
+    getFirstTwoLanguages(languageCodes) {
       const languageNames = this.getLanguageNames(languageCodes)
-      return languageNames.slice(0, 3).join(', ')
+      return languageNames.slice(0, 2).join(', ')
     },
     getRemainingLanguages(languageCodes) {
       const languageNames = this.getLanguageNames(languageCodes)
-      return languageNames.slice(3).join(', ')
+      return languageNames.slice(2).join(', ')
     },
     isTitleOverflowing(title) {
       // Title'ın belirli bir karakter sayısını aşıp aşmadığını kontrol et

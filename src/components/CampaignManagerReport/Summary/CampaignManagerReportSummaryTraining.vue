@@ -88,24 +88,27 @@ export default {
         })
       } else {
         // Açma
-        // selectedTrainingLanguages varsa onu kullan, yoksa trainingParams'ten al
-        let languages = this.selectedTrainingLanguages
+        // languageList varsa ondan language ID'leri al
+        let languages = []
 
-        if (!languages || languages.length === 0) {
-          // trainingParams.languages string ise split et, array ise direkt kullan
-          if (typeof this.trainingParams.languages === 'string') {
-            languages = this.trainingParams.languages.split('|').map((l) => l.trim())
-          } else if (Array.isArray(this.trainingParams.languages)) {
-            languages = this.trainingParams.languages
-          }
-        } else {
+        if (this.trainingParams.languageList && Array.isArray(this.trainingParams.languageList)) {
+          languages = this.trainingParams.languageList.map((lang) => lang.languageId)
+        } else if (this.selectedTrainingLanguages && this.selectedTrainingLanguages.length > 0) {
           // selectedTrainingLanguages varsa map et
-          languages = languages.map((lang) => {
+          languages = this.selectedTrainingLanguages.map((lang) => {
+            if (typeof lang === 'object' && lang.languageId) {
+              return lang.languageId
+            }
             if (typeof lang === 'object' && lang.code) {
               return lang.code
             }
             return lang
           })
+        } else if (typeof this.trainingParams.languages === 'string') {
+          // trainingParams.languages string ise split et
+          languages = this.trainingParams.languages.split('|').map((l) => l.trim())
+        } else if (Array.isArray(this.trainingParams.languages)) {
+          languages = this.trainingParams.languages
         }
 
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {

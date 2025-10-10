@@ -120,8 +120,6 @@ export default {
     callForContentLanguageItems() {
       if (!this.trainingId) return
       AwarenessEducatorService.getContentLanguageItems(this?.trainingId).then((response) => {
-        console.log('response', response)
-        console.log('this.languageOptions', this.languageOptions)
         this.contentLanguageItems =
           response?.data?.data?.map((lang) => ({
             text:

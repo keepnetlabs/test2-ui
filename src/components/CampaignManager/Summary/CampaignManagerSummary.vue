@@ -929,7 +929,6 @@ export default {
             isAssistedByAI,
             cc: emailTemplate?.ccAddresses.join(',')
           }
-          console.log(this.languageOptions)
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
           )?.text
@@ -990,7 +989,6 @@ export default {
             this.emailTemplateParams.languageShortCode = [
               ...this.phishingEmailTemplates.map((item) => item.languageTypeName)
             ]
-            console.log(this.emailTemplateParams.languageShortCode)
           }
           const {
             name: landingPageName = '',

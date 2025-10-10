@@ -1075,13 +1075,20 @@ export default {
               this.templateHTML = null
             } else {
               this.listData = data.data.results.map((item) => {
-                return {
-                  ...item,
-                  languageTypeName: item.languageTypeName.map(
+                let languageTypeName = item.languageTypeName
+                if (Array.isArray(item.languageTypeName)) {
+                  languageTypeName = item.languageTypeName.map(
                     (language) =>
                       this.languages.find((lang) => lang.languageTypeName === language)?.text ||
                       language
-                  ),
+                  )
+                } else if (typeof item.languageTypeName === 'string') {
+                  const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                  languageTypeName = language?.text || item.languageTypeName
+                }
+                return {
+                  ...item,
+                  languageTypeName,
                   selected: item.resourceId === this.emailTemplateResourceId
                 }
               })
@@ -1141,13 +1148,20 @@ export default {
           } else {
             console.log('data.data.results', data.data.results)
             data.data.results = data.data.results.map((item) => {
-              return {
-                ...item,
-                languageTypeName: item.languageTypeName.map(
+              let languageTypeName = item.languageTypeName
+              if (Array.isArray(item.languageTypeName)) {
+                languageTypeName = item.languageTypeName.map(
                   (language) =>
                     this.languages.find((lang) => lang.languageTypeName === language)?.text ||
                     language
-                ),
+                )
+              } else if (typeof item.languageTypeName === 'string') {
+                const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                languageTypeName = language?.text || item.languageTypeName
+              }
+              return {
+                ...item,
+                languageTypeName,
                 selected: false
               }
             })

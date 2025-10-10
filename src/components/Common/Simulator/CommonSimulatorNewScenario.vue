@@ -201,6 +201,7 @@
                     v-if="step === 2"
                     ref="refEmailTemplateListPreview"
                     show-language-field
+                    select-language-width="250px"
                     :show-email-template-edit-button="isPhishing"
                     :type="type"
                     :scenarioDetailsLookup="scenarioDetailsLookup"
@@ -1306,7 +1307,6 @@ export default {
             value: language.resourceId,
             description: language.description
           })) || []
-        console.log('languageOptions', this.languageOptions)
       })
     },
     setAttachmentFile(file) {
@@ -1367,7 +1367,6 @@ export default {
                   (language) => language.value === response?.data?.data?.languageTypeResourceId
                 )?.text
               }
-              console.log('emailTemplateData', emailTemplateData)
               if (this.selectedEmailTemplate) {
                 this.generalDifficultyTypeId =
                   this.scenarioDetailsLookup['difficultyTypes']
@@ -1382,7 +1381,6 @@ export default {
               this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
-              console.log('this.summaryData', this.summaryData)
               this.setPhishingEmailTemplates(this.summaryData)
               this.step += 1
             })
@@ -1432,11 +1430,6 @@ export default {
                 this.selectedEmailTemplate?.difficultyName || ''
               )
               this.summaryData = data
-              console.log('this.summaryData2', this.summaryData)
-              console.log(
-                'summaryData landing page languageShortCode:',
-                this.summaryData.landingPageTemplate.languageShortCode
-              )
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
@@ -1556,7 +1549,23 @@ export default {
       this.emailTemplateResourceId = null
     },
     setPhishingEmailTemplates(data) {
-      if (!this.isPhishing) return
+      if (!this.isPhishing) {
+        if (this.isQuishing) {
+          // Array'i temizle, tekrar dolduracağız
+          this.selectedTemplateLanguages = []
+          this.languagePreview = data.emailTemplate.languageTypeResourceId
+          this.selectedTemplateLanguages.push({
+            text:
+              this.languageOptions.find(
+                (language) => language.value === data.emailTemplate.languageTypeResourceId
+              )?.text || data.emailTemplate.languageTypeName,
+            value: data.emailTemplate.languageTypeResourceId
+          })
+          console.log('this.languagePreview', this.languagePreview)
+          console.log('this.selectedTemplateLanguages', this.selectedTemplateLanguages)
+        }
+        return
+      }
       this.selectedTemplateLanguages.push({
         text:
           this.languageOptions.find(

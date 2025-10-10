@@ -385,7 +385,6 @@ export default {
       return this.languageItems?.map((language) => language.language)
     },
     getVoiceItems() {
-      console.log('this.languageItems', this.languageItems)
       if (this.getSelectedLanguageShortCode) {
         return this.languageItems
           .filter((language) =>

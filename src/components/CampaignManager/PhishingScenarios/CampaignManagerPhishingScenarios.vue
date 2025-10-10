@@ -1468,9 +1468,7 @@ export default {
         })
       } else {
         // Açma
-        console.log('this.trainingTabModel', this.trainingTabModel)
         const selectedTraining = this.trainingTabModel[this.selectedTemplateResourceId]
-        console.log('selectedTraining', selectedTraining)
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
           status: true,
           selectedRow: {
@@ -1487,7 +1485,6 @@ export default {
       this.isShowTrainingDialog = !this.isShowTrainingDialog
     },
     toggleShowCategoryTrainingDialog() {
-      console.log('this.trainingForCategory', this.trainingForCategory)
       if (this.isShowCategoryTrainingDialog) {
         // Kapatma
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {

@@ -642,7 +642,13 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems =
+          data.results?.map((item) => ({
+            ...item,
+            languageTypeName:
+              this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                ?.text || item.languageTypeName
+          })) || []
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return

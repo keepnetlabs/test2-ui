@@ -65,13 +65,10 @@ export default {
     },
     isPdf() {
       if (!this.previewUrl) return false
-      // URL .pdf ile bitiyorsa veya blob URL ise PDF olarak kabul et
       const isPdf = this.previewUrl.toLowerCase().includes('.pdf') || this.previewUrl.startsWith('blob:')
-      console.log('🔍 LightboxContent isPdf:', isPdf, 'URL:', this.previewUrl)
       return isPdf
     },
     pdfSrc() {
-      console.log('🔍 LightboxContent pdfSrc:', this.previewUrl)
       return this.previewUrl
     },
     previewUrl() {

@@ -107,6 +107,7 @@ import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerRe
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
 import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
 import CampaignManagerReportSummaryPhishingEmail from './CampaignManagerReportSummaryPhishingEmail.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -158,7 +159,8 @@ export default {
       ],
       customKeys: [],
       difficulties,
-      methods
+      methods,
+      languageOptions: []
     }
   },
   computed: {
@@ -245,7 +247,11 @@ export default {
       const { smartGroupInfo, campaignInfo = {} } = this?.campaignSummary || {}
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
-        languages.add(scenario.scenarioInfo.languageShortCode)
+        const languageCode = scenario.scenarioInfo.languageShortCode
+        const language = this.languageOptions.find(
+          (lang) => lang.languageShortCode === languageCode
+        )
+        languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || {
         duration: '0'
@@ -305,10 +311,18 @@ export default {
         scenarios.forEach((item) => {
           if (item.emailTemplateInfos?.length) {
             item.emailTemplateInfos.forEach((emailTemplateInfo) => {
-              languageShortCodesEmailTemplateInfos.add(emailTemplateInfo.languageShortCode)
+              const languageCode = emailTemplateInfo.languageShortCode
+              const language = this.languageOptions.find(
+                (lang) => lang.languageShortCode === languageCode
+              )
+              languageShortCodesEmailTemplateInfos.add(language?.text || languageCode)
             })
           } else {
-            languageShortCodesEmailTemplateInfos.add(item.emailTemplateInfo.languageShortCode)
+            const languageCode = item.emailTemplateInfo.languageShortCode
+            const language = this.languageOptions.find(
+              (lang) => lang.languageShortCode === languageCode
+            )
+            languageShortCodesEmailTemplateInfos.add(language?.text || languageCode)
           }
         })
       }
@@ -327,12 +341,17 @@ export default {
             ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
             ?.map((item) => item.text)
             ?.join(',') || ''
+        const mappedLanguageShortCodes =
+          languageShortCodes?.map((code) => {
+            const language = this.languageOptions.find((lang) => lang.languageShortCode === code)
+            return language?.text || code
+          }) || []
         return {
           NumberOfCategories: categories.length,
           Method: methodText,
           Languages: languageShortCodesEmailTemplateInfos.size
             ? [...languageShortCodesEmailTemplateInfos].join(', ')
-            : languageShortCodes.join(','),
+            : mappedLanguageShortCodes.join(','),
           Difficulty: difficultyText
         }
       }
@@ -518,9 +537,15 @@ export default {
       }
       const { resourceId, phishingFileName } = emailTemplateInfo || {}
       if (Object.keys(emailTemplateInfos)?.length) {
+        const mappedLanguageCodes = emailTemplateInfos?.map((item) => {
+          const language = this.languageOptions.find(
+            (lang) => lang.languageShortCode === item.languageShortCode
+          )
+          return language?.text || item.languageShortCode
+        })
         return {
           resourceId,
-          languageShortCode: emailTemplateInfos?.map((item) => item.languageShortCode),
+          languageShortCode: mappedLanguageCodes,
           attachment: phishingFileName
             ? {
                 name: phishingFileName
@@ -528,21 +553,28 @@ export default {
             : null,
           campaignResourceId: this.id,
           instanceGroup: this.instanceGroup,
-          languages: emailTemplateInfos?.map((item) => ({
-            languageTypeResourceId: item.languageTypeResourceId,
-            languageShortCode: item.languageShortCode,
-            fromName: item.fromName,
-            fromAddress: item.fromAddress,
-            subject: item.subject,
-            ccAddresses: item.ccAddresses,
-            template: item.template
-          }))
+          languages: emailTemplateInfos?.map((item) => {
+            const language = this.languageOptions.find(
+              (lang) => lang.languageShortCode === item.languageShortCode
+            )
+            return {
+              languageTypeResourceId: item.languageTypeResourceId,
+              languageShortCode: language?.text || item.languageShortCode,
+              fromName: item.fromName,
+              fromAddress: item.fromAddress,
+              subject: item.subject,
+              ccAddresses: item.ccAddresses,
+              template: item.template
+            }
+          })
         }
       }
+      const languageCode = scenarioInfo?.languageShortCode
+      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,
-            languageShortCode: scenarioInfo?.languageShortCode,
+            languageShortCode: language?.text || languageCode,
             attachment: phishingFileName
               ? {
                   name: phishingFileName
@@ -556,9 +588,11 @@ export default {
     getLandingPageTemplateData() {
       const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
       const { resourceId } = landingPageTemplateInfo
+      const languageCode = scenarioInfo?.languageShortCode
+      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(landingPageTemplateInfo).length
         ? {
-            languageShortCode: scenarioInfo?.languageShortCode,
+            languageShortCode: language?.text || languageCode,
             resourceId,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup
@@ -575,12 +609,24 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForData()
   },
   beforeDestroy() {
     clearInterval(this.interval)
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            languageShortCode: language.description,
+            value: language.resourceId
+          })) || []
+      })
+    },
     callForData() {
       if (Object.keys(this.apiResponse)?.length) this.callApis(true)
       else {
@@ -625,7 +671,12 @@ export default {
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
-              .map((lang) => lang.languageShortCode)
+              .map((lang) => {
+                const language = this.languageOptions.find(
+                  (opt) => opt.languageShortCode === lang.languageShortCode
+                )
+                return language?.text || lang.languageShortCode
+              })
               .join(' | ')
           }
         })

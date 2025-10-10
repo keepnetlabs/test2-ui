@@ -503,7 +503,6 @@ export default {
       return ''
     },
     getComplianceText(data) {
-      console.log('data', data)
       if (data.complianceNames && Array.isArray(data.complianceNames)) {
         const filtered = data.complianceNames.filter(
           (c) => c && typeof c === 'string' && c.trim() !== ''
@@ -523,7 +522,8 @@ export default {
       this.isLoadingLanguages = true
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          const languageCodes = this.trainingData.languages || []
+          // languageCodes varsa onu kullan (orijinal kodlar), yoksa languages'i dene
+          const languageCodes = this.trainingData.languageCodes || this.trainingData.languages || []
           this.availableLanguages = []
           // Array kontrolü
           if (!Array.isArray(languageCodes)) {
@@ -605,18 +605,11 @@ export default {
           const previewData = response?.data?.data || response?.data
           const previewUrl = previewData?.trainingUrl || previewData
 
-          console.log('📥 Preview URL:', previewUrl)
-
           // Filename'i al
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
-
-          console.log('📄 File name:', fileName)
-          console.log('📄 Is PDF:', isPdf)
-
           if (isPdf) {
-            console.log('📥 Downloading PDF as blob...')
             // Store'da lightbox'ı aç ve loading göster
             this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
               status: true,
@@ -628,10 +621,7 @@ export default {
             // PDF ise blob olarak indir
             AwarenessEducatorService.downloadPoster({ trainingId, languageId })
               .then((blobResponse) => {
-                console.log('✅ Blob response:', blobResponse)
                 const blobUrl = window.URL.createObjectURL(blobResponse.data)
-                console.log('✅ Blob URL created:', blobUrl)
-
                 // Download tamamlandı, şimdi lightbox'ı aç
                 this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
                   status: true,
@@ -639,7 +629,6 @@ export default {
                   isLoading: false,
                   type: this.type
                 })
-                console.log('✅ Lightbox updated with blob URL')
               })
               .catch((error) => {
                 console.error('❌ Error downloading PDF:', error)

@@ -480,7 +480,8 @@ export default {
         console.log('response', response)
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId
           })) || []
       })

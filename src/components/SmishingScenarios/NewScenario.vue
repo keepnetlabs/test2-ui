@@ -294,7 +294,7 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ textMessageTemplate && textMessageTemplate.languageShortCode }}
+                            >{{ getTextMessageLanguageDisplay }}
                           </v-chip>
                         </div>
                       </div>
@@ -401,7 +401,7 @@
                                 "
                               >
                                 <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                                >{{ landingPageTemplate && landingPageTemplate.languageShortCode }}
+                                >{{ getLandingPageLanguageDisplay }}
                               </v-chip>
                             </div>
                           </div>
@@ -463,7 +463,7 @@
                             "
                           >
                             <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ landingPageTemplate && landingPageTemplate.languageShortCode }}
+                            >{{ getLandingPageLanguageDisplay }}
                           </v-chip>
                         </div>
                       </div>
@@ -671,7 +671,9 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
+            languageShortCode: language.description,
             value: language.resourceId,
             description: language.description
           })) || []
@@ -796,6 +798,20 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    getTextMessageLanguageDisplay() {
+      if (!this.textMessageTemplate) return ''
+      const language = this.languageOptions.find(
+        (lang) => lang.value === this.textMessageTemplate.languageTypeResourceId
+      )
+      return language?.text || this.textMessageTemplate.languageShortCode || ''
+    },
+    getLandingPageLanguageDisplay() {
+      if (!this.landingPageTemplate) return ''
+      const language = this.languageOptions.find(
+        (lang) => lang.value === this.landingPageTemplate.languageTypeResourceId
+      )
+      return language?.text || this.landingPageTemplate.languageShortCode || ''
+    },
     getSummaryContainerStyle() {
       return this.isMethodMfa
         ? {
