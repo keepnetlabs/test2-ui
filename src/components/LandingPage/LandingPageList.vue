@@ -414,7 +414,6 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            console.log('results', results)
             const enrichedResults = results?.map((item) => {
               const language = this.languageFilterOptions.find(
                 (lang) => lang.languageName === item.languageTypeName

@@ -661,14 +661,9 @@ export default {
             phishingFileName,
             template
           }
-          console.log('sas', this.languageOptions)
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
           )?.text
-          console.log(
-            'this.emailTemplateParams.languageShortCode',
-            this.emailTemplateParams.languageShortCode
-          )
           const {
             name: landingPageName = '',
             description,

@@ -56,7 +56,8 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="padding-right: 4px !important; padding-left: 4px !important; min-width: 250px;
+                    "
                     :items="languages"
                     @change="isShowSelectedScenarios = false"
                   />
@@ -381,7 +382,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -430,6 +432,13 @@ export default {
     }
   },
   watch: {
+    'getTrainingPreviewDialog.status': {
+      handler(newVal) {
+        if (newVal === false) {
+          this.isShowTrainingDialog = false
+        }
+      }
+    },
     defaultPhishingScenariosValuesMapped(val) {
       const setCheckbox = (resourceId = '') => {
         this.checkboxModel[resourceId] = true
@@ -693,7 +702,25 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        const enrichedResults = (data.results || []).map((item) => {
+          let languageTypeName = item.languageTypeName
+          if (Array.isArray(item.languageTypeName)) {
+            languageTypeName = item.languageTypeName.map((language) => {
+              const lang = this.languages.find((lang) => lang.languageTypeName === language)
+              return lang?.text || language
+            })
+          } else if (typeof item.languageTypeName === 'string') {
+            const lang = this.languages.find(
+              (lang) => lang.languageTypeName === item.languageTypeName
+            )
+            languageTypeName = lang?.text || item.languageTypeName
+          }
+          return {
+            ...item,
+            languageTypeName
+          }
+        })
+        this.phishingScenarioItems = enrichedResults
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return

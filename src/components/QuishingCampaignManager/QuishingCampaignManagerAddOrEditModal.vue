@@ -477,7 +477,6 @@ export default {
   methods: {
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
-        console.log('response', response)
         this.languageOptions =
           response?.map((language) => ({
             text: language.isoFriendlyName || language.name,

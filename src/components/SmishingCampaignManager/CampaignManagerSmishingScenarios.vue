@@ -66,7 +66,11 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      min-width: 250px;
+                    "
                     :items="languages"
                     @change="isShowSelectedScenarios = false"
                   />
@@ -364,7 +368,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
+      getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
@@ -541,6 +546,13 @@ export default {
     isShowSelectedScenarios(val = false) {
       if (val) {
         this.resetFilters()
+      }
+    },
+    'getTrainingPreviewDialog.status': {
+      handler(newVal) {
+        if (newVal === false) {
+          this.isShowTrainingDialog = false
+        }
       }
     }
   },

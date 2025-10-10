@@ -369,7 +369,6 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            console.log('this.languageFilterOptions', this.languageFilterOptions)
             const enrichedResults = results?.map((item) => {
               if (Array.isArray(item.languageTypeName)) {
                 return {
@@ -391,7 +390,6 @@ export default {
                 }
               }
             })
-            console.log('enrichedResults', enrichedResults)
             this.tableData = enrichedResults
           })
           .catch(() => {

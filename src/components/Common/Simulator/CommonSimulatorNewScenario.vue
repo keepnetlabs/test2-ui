@@ -1561,8 +1561,6 @@ export default {
               )?.text || data.emailTemplate.languageTypeName,
             value: data.emailTemplate.languageTypeResourceId
           })
-          console.log('this.languagePreview', this.languagePreview)
-          console.log('this.selectedTemplateLanguages', this.selectedTemplateLanguages)
         }
         return
       }
