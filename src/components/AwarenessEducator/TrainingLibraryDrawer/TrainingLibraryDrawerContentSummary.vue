@@ -555,7 +555,7 @@ export default {
             )
             if (language) {
               this.availableLanguages.push({
-                text: language.name,
+                text: language.isoFriendlyName || language.name,
                 value: language.id
               })
             }

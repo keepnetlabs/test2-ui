@@ -89,10 +89,10 @@
                     class="filter-field-scenarios filter-field-scenarios__language"
                     custom-menu-class="filter-field-scenarios__language-menu"
                     :min-width-type="isPhishing ? 'medium' : ''"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                      min-width: 150px;
+                    :style="{                     
+                      'padding-right': '4px !important',
+                      'padding-left': '4px !important',
+                      'min-width': selectLanguageWidth}
                     "
                     :type="isPhishing ? 'autocomplete' : 'select'"
                     :multiple="isPhishing"
@@ -556,6 +556,10 @@ export default {
     showEmailTemplateEditButton: {
       type: Boolean,
       default: false
+    },
+    selectLanguageWidth: {
+      type: String,
+      default: '150px'
     }
   },
   directives: {
@@ -1073,6 +1077,11 @@ export default {
               this.listData = data.data.results.map((item) => {
                 return {
                   ...item,
+                  languageTypeName: item.languageTypeName.map(
+                    (language) =>
+                      this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                      language
+                  ),
                   selected: item.resourceId === this.emailTemplateResourceId
                 }
               })
@@ -1130,9 +1139,19 @@ export default {
             this.listData = []
             this.templateHTML = null
           } else {
+            console.log('data.data.results', data.data.results)
             data.data.results = data.data.results.map((item) => {
-              return { ...item, selected: false }
+              return {
+                ...item,
+                languageTypeName: item.languageTypeName.map(
+                  (language) =>
+                    this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                    language
+                ),
+                selected: false
+              }
             })
+
             if (isSearch) {
               this.listData = data.data.results
             } else {

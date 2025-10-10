@@ -439,7 +439,11 @@ export default {
       const languages = this.languages || []
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
-        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
+        languages.find(
+          (lang) =>
+            lang.isoFriendlyName === this.selectedRow.languages[0] ||
+            lang.code === this.selectedRow.languages[0]
+        ).id
       ).then((response) => {
         const {
           data: { data }

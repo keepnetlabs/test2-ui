@@ -599,7 +599,10 @@ export default {
     formData: {
       handler(val) {
         this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
-        this.callForScenarioDetail({ name: this.selectedScenarioResourceId, index: 0 })
+        this.callForScenarioDetail({
+          name: this.selectedScenarioResourceId,
+          index: 0
+        })
       },
       deep: true,
       immediate: true
@@ -658,9 +661,14 @@ export default {
             phishingFileName,
             template
           }
+          console.log('sas', this.languageOptions)
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
           )?.text
+          console.log(
+            'this.emailTemplateParams.languageShortCode',
+            this.emailTemplateParams.languageShortCode
+          )
           const {
             name: landingPageName = '',
             description,

@@ -536,7 +536,7 @@ export default {
         availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
           this.availableForRequests
         ),
-        languages:[]
+        languages: []
       }
       delete payload.attachments
       if (this.isEdit && !this.isDuplicate) {
@@ -568,7 +568,7 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
             value: language.resourceId
           })) || []
       })

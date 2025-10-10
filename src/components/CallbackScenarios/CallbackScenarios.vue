@@ -170,7 +170,6 @@ export default {
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
-      languageFilterOptions: [],
       scenarioDetailsLookup: {
         difficultyTypes: callbackScenariosDifficultyTypes
       },
@@ -467,7 +466,15 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((item) => {
+              const language = this.languageFilterOptions.find(
+                (lang) => lang.languageName === item.languageTypeName
+              )
+              return {
+                ...item,
+                languageTypeName: language?.text || item.languageTypeName
+              }
+            })
           })
           .catch(() => {
             this.tableData = []

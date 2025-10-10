@@ -313,9 +313,15 @@ export default {
       )
       //get template
       const languages = this.getLanguages() || []
+      console.log('languages', languages)
+      console.log('this.selectedRow.languages', this.selectedRow.languages)
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
-        languages.find((lang) => lang.code === this.selectedRow.languages[0]).id
+        languages.find(
+          (lang) =>
+            lang.code === this.selectedRow.languages[0] ||
+            lang.isoFriendlyName === this.selectedRow.languages[0]
+        ).id
       ).then((response) => {
         const {
           data: { data }

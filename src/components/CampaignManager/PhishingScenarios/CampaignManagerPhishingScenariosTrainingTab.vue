@@ -57,6 +57,7 @@
           class="ml-3 mt-6"
           :is-add-default-value="false"
           :training-id="getTrainingId"
+          :language-options="languages"
           :disabled="isInputLanguageDisabled || isEdit"
           @on-api-call-finished="handleApiCallFinished"
         />
@@ -405,6 +406,10 @@ export default {
     isAttachmentBasedScenario: {
       type: Boolean,
       default: false
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

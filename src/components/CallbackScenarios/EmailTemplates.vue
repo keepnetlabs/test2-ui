@@ -193,7 +193,6 @@ export default {
     return {
       attachmentName: '',
       isRenameAttachmentModalVisible: false,
-      languageFilterOptions: [],
       editableFormValues: {},
       timeoutId: '',
       emailTemplateParams: {},
@@ -531,7 +530,27 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((item) => {
+              if (Array.isArray(item.languageTypeName)) {
+                return {
+                  ...item,
+                  languageTypeName: item.languageTypeName?.map((code) => {
+                    const language = this.languageFilterOptions.find(
+                      (lang) => lang.languageName === code
+                    )
+                    return language?.text || code
+                  })
+                }
+              } else {
+                const language = this.languageFilterOptions.find(
+                  (lang) => lang.languageName === item.languageTypeName
+                )
+                return {
+                  ...item,
+                  languageTypeName: language?.text || item.languageTypeName
+                }
+              }
+            })
           })
           .catch(() => {
             this.tableData = []

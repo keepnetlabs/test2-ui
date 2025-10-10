@@ -539,7 +539,7 @@ const trainingLibrary = {
     }
   },
   actions: {
-    callForTableData({ commit, state }) {
+    callForTableData({ commit, state, rootGetters }) {
       commit('SET_IS_LOADING', true)
       let isAborted = false
       cancellableDataRequest(state.axiosPayload)
@@ -558,8 +558,19 @@ const trainingLibrary = {
             totalNumberOfPages = 0,
             pageNumber = 1
           } = data
-          console.log('results', results)
-          commit('SET_TABLE_DATA', results)
+          const languages = rootGetters['trainingLibraryHelpers/getLanguages'] || []
+          console.log('languages', languages)
+          const enrichedResults = results.map((item) => {
+            return {
+              ...item,
+              languages: item.languages.map((code) => {
+                const language = languages.find((lang) => lang.code === code)
+                return language?.isoFriendlyName || code
+              })
+            }
+          })
+          console.log('enrichedResults', enrichedResults)
+          commit('SET_TABLE_DATA', enrichedResults)
           commit('SET_SERVER_SIDE_PROPS', {
             totalNumberOfRecords,
             totalNumberOfPages,

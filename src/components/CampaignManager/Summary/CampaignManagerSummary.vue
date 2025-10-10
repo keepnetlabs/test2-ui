@@ -1003,7 +1003,7 @@ export default {
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
-          )?.[this.isPhishing ? 'description' : 'text']
+          )?.text
           this.category = category
         })
         .finally(() => (this.isScenarioDetailLoading = false))

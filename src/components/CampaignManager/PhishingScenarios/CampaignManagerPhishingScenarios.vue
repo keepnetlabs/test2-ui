@@ -828,7 +828,7 @@ export default {
     previewLandingHtml() {
       const html = this.getSingleTemplateDetails || ''
       if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
-        const logo = 
+        const logo =
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
@@ -1251,7 +1251,9 @@ export default {
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
-            languageTypeName,
+            languageTypeName:
+              this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+              languageTypeName,
             phishingFileName
           }
           if (this.isPhishing) {
@@ -1260,7 +1262,9 @@ export default {
 
             this.selectedTemplateLanguages.push({
               value: languageOfEmailTemplate,
-              text: languageTypeName
+              text:
+                this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+                languageTypeName
             })
             this.phishingEmailTemplates.push({
               fromName: fromName,
@@ -1268,7 +1272,9 @@ export default {
               subject: subject,
               template: template,
               ccAddresses: ccAddresses,
-              languageTypeName: languageTypeName,
+              languageTypeName:
+                this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
+                languageTypeName,
               languageTypeResourceId: languageOfEmailTemplate
             })
             this.languagePreview = languageOfEmailTemplate
@@ -1276,7 +1282,9 @@ export default {
               emailTemplate?.languages?.forEach((item) => {
                 this.selectedTemplateLanguages.push({
                   value: item.languageTypeResourceId,
-                  text: item.languageTypeName
+                  text:
+                    this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                      ?.text || item.languageTypeName
                 })
               })
               this.phishingEmailTemplates.push(
@@ -1287,7 +1295,9 @@ export default {
                     subject: item.subject,
                     template: item.template,
                     ccAddresses: item.ccAddresses,
-                    languageTypeName: item.languageTypeName,
+                    languageTypeName:
+                      this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                        ?.text || item.languageTypeName,
                     languageTypeResourceId: item.languageTypeResourceId
                   }
                 }) || [])
@@ -1361,7 +1371,25 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems =
+          data.results?.map((item) => {
+            if (Array.isArray(item.languageTypeName)) {
+              return {
+                ...item,
+                languageTypeName: item.languageTypeName.map(
+                  (language) =>
+                    this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                    language
+                )
+              }
+            }
+            return {
+              ...item,
+              languageTypeName:
+                this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                  ?.text || item.languageTypeName
+            }
+          }) || []
         this.totalPhishingScenariosCount = data?.totalNumberOfRecords || 0
         this.$emit('totalPhishingScenariosCountChange', this.totalPhishingScenariosCount)
         this.phishingScenarioItems.forEach((item) => {
@@ -1439,14 +1467,16 @@ export default {
         })
       } else {
         // Açma
+        console.log('this.trainingTabModel', this.trainingTabModel)
         const selectedTraining = this.trainingTabModel[this.selectedTemplateResourceId]
+        console.log('selectedTraining', selectedTraining)
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
           status: true,
           selectedRow: {
             ...selectedTraining,
             trainingId: selectedTraining.trainingId,
             name: selectedTraining.trainingName,
-            languages: selectedTraining.trainingLanguageIds || []
+            languages: selectedTraining.trainingLanguageIds?.filter((id) => id !== labels.All) || []
           },
           showSendButton: true,
           type: TRAINING_LIBRARY_TYPES.TRAINING,
@@ -1456,6 +1486,7 @@ export default {
       this.isShowTrainingDialog = !this.isShowTrainingDialog
     },
     toggleShowCategoryTrainingDialog() {
+      console.log('this.trainingForCategory', this.trainingForCategory)
       if (this.isShowCategoryTrainingDialog) {
         // Kapatma
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
@@ -1473,7 +1504,8 @@ export default {
             ...this.trainingForCategory,
             trainingId: this.trainingForCategory.trainingId,
             name: this.trainingForCategory.trainingName,
-            languages: this.trainingForCategory.trainingLanguageIds || []
+            languages:
+              this.trainingForCategory.trainingLanguageIds?.filter((id) => id !== labels.All) || []
           },
           showSendButton: true,
           type: TRAINING_LIBRARY_TYPES.TRAINING,

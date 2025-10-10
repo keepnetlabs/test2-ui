@@ -414,7 +414,17 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            console.log('results', results)
+            const enrichedResults = results?.map((item) => {
+              const language = this.languageFilterOptions.find(
+                (lang) => lang.languageName === item.languageTypeName
+              )
+              return {
+                ...item,
+                languageTypeName: language?.text || item.languageTypeName
+              }
+            })
+            this.tableData = enrichedResults
           })
           .catch(() => {
             this.tableData = []
@@ -529,7 +539,10 @@ export default {
             text: item.domain,
             value: item.id.toString(),
             extraDatas: [
-              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              {
+                text: item.urlSchemaType,
+                value: item.urlSchemaTypeId.toString()
+              },
               { text: item.isStopBotActivity, value: item.isStopBotActivity }
             ]
           }

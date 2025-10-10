@@ -103,7 +103,12 @@ export default {
       default: false
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi,useEnrollmentTableFilters],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi,
+    useEnrollmentTableFilters
+  ],
   data() {
     return {
       CONSTANTS: {
@@ -220,7 +225,16 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          const enrichedResults = results?.map((item) => {
+            return {
+              ...item,
+              languages: item.languages?.map((code) => {
+                const language = this.languages.find((lang) => lang.code === code)
+                return language?.isoFriendlyName || code
+              })
+            }
+          })
+          this.tableData = enrichedResults || []
         })
         .finally(this.setLoading)
     },

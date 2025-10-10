@@ -1301,10 +1301,12 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId,
             description: language.description
           })) || []
+        console.log('languageOptions', this.languageOptions)
       })
     },
     setAttachmentFile(file) {
@@ -1425,10 +1427,7 @@ export default {
               data.landingPageTemplate.languageShortCode = this.languageOptions.find(
                 (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
               )?.text
-              console.log(
-                'Landing page languageShortCode set to:',
-                data.landingPageTemplate.languageShortCode
-              )
+
               this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate?.difficultyName || ''
               )

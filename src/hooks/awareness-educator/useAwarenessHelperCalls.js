@@ -40,7 +40,7 @@ export default {
         this.languages = response?.data?.data
         this.tableLanguageFilter =
           response?.data?.data?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName,
             value: language.code
           })) || []
       })

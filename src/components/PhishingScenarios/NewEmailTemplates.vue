@@ -734,6 +734,7 @@ export default {
         )
       })
       this.languageItems = languageItems
+      console.log('languageItems', languageItems)
       if (this.isEdit) return
       const findedLanguage = languageTypes?.find(
         (item) => item.value === companyLanguageTypeResourceId
