@@ -119,17 +119,12 @@ export default {
       }
     },
     getTitle() {
-      console.log('🔍 trainingData?.hasQuiz:', this.trainingData?.hasQuiz)
       if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return labels.LearningPathPreview
       if (this.type === TRAINING_LIBRARY_TYPES.POSTER) return labels.PosterPreview
       if (this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC) return labels.InfographicPreview
       if (this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER) return labels.ScreensaverPreview
       if (this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz)
         return labels.SurveyPreview
-      console.log(
-        'this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz:',
-        this.type === TRAINING_LIBRARY_TYPES.SURVEY || this.trainingData?.hasQuiz
-      )
       return labels.TrainingPreview
     }
   },

@@ -313,8 +313,6 @@ export default {
       )
       //get template
       const languages = this.getLanguages() || []
-      console.log('languages', languages)
-      console.log('this.selectedRow.languages', this.selectedRow.languages)
       AwarenessEducatorService.getTrainingUrlForPreview(
         this.selectedRow.trainingId,
         languages.find(

@@ -261,9 +261,6 @@ export default {
     if (this.trainingData.trainingId || this.trainingData.resourceId) {
       this.callForLanguages()
     }
-    console.log('isLearningPath', this.isLearningPath)
-    console.log('trainingData.trainingGroups', this.trainingData.trainingGroups)
-    // Learning Path ise steps'i al
     if (this.isLearningPath && this.trainingData.trainingGroups) {
       this.processLearningPathSteps()
     }
@@ -377,8 +374,6 @@ export default {
       const trainingGroups =
         this.trainingDetails?.trainingGroups || this.trainingData.trainingGroups
 
-      console.log('processLearningPathSteps', trainingGroups)
-
       if (!trainingGroups || !Array.isArray(trainingGroups)) {
         this.learningPathSteps = []
         return
@@ -394,20 +389,8 @@ export default {
           languages: step.languages,
           coverImage: step.coverImage
         }))
-      console.log('learningPathSteps', this.learningPathSteps)
     },
     handlePreviewStep(step) {
-      console.log(
-        '🔍 Preview step:',
-        step,
-        'isNested:',
-        this.isNested,
-        'isDeepNested:',
-        this.isDeepNested,
-        'onlyPreview:',
-        this.onlyPreview
-      )
-
       // Eğer zaten nested içindeysek, deep nested drawer açmalıyız
       if (this.isNested) {
         this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {

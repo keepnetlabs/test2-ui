@@ -89,11 +89,11 @@
                     class="filter-field-scenarios filter-field-scenarios__language"
                     custom-menu-class="filter-field-scenarios__language-menu"
                     :min-width-type="isPhishing ? 'medium' : ''"
-                    :style="{                     
+                    :style="{
                       'padding-right': '4px !important',
                       'padding-left': '4px !important',
-                      'min-width': selectLanguageWidth}
-                    "
+                      'min-width': selectLanguageWidth
+                    }"
                     :type="isPhishing ? 'autocomplete' : 'select'"
                     :multiple="isPhishing"
                     :slots="isPhishing ? { selection: true } : {}"
@@ -1261,12 +1261,16 @@ export default {
             : []
           if (!this.isPhishing) return
           this.selectedTemplateLanguages.push({
-            text: data?.languageTypeName,
+            text:
+              this.languages.find((language) => language.value === data?.languageTypeResourceId)
+                ?.text || data?.languageTypeName,
             value: data?.languageTypeResourceId
           })
           this.phishingEmailTemplates.push({
             template: data?.template,
-            language: data?.languageTypeName,
+            language:
+              this.languages.find((language) => language.value === data?.languageTypeResourceId)
+                ?.text || data?.languageTypeName,
             languageType: data?.languageTypeResourceId,
             fromName: data?.fromName,
             subject: data?.subject,
@@ -1287,7 +1291,9 @@ export default {
               resourceId: item?.resourceId
             })
             this.selectedTemplateLanguages.push({
-              text: item?.languageTypeName,
+              text:
+                this.languages.find((language) => language.value === item?.languageTypeResourceId)
+                  ?.text || item?.languageTypeName,
               value: item?.languageTypeResourceId
             })
           })

@@ -1558,7 +1558,10 @@ export default {
     setPhishingEmailTemplates(data) {
       if (!this.isPhishing) return
       this.selectedTemplateLanguages.push({
-        text: data.emailTemplate.languageTypeName,
+        text:
+          this.languageOptions.find(
+            (language) => language.value === data.emailTemplate.languageTypeResourceId
+          )?.text || data.emailTemplate.languageTypeName,
         value: data.emailTemplate.languageTypeResourceId
       })
       this.languagePreview = this.selectedTemplateLanguages[0].value
@@ -1569,27 +1572,32 @@ export default {
         fromEmailAddress: data.emailTemplate.fromAddress,
         cc: data.emailTemplate.ccAddresses,
         template: data.emailTemplate.template,
-        language: data.emailTemplate.languageTypeName,
+        language:
+          this.languageOptions.find(
+            (language) => language.value === data.emailTemplate.languageTypeResourceId
+          )?.text || data.emailTemplate.languageTypeName,
         languageType: data.emailTemplate.languageTypeResourceId,
         languageShortCode: data.emailTemplate.languageShortCode
       })
       data.emailTemplate.languages.forEach((item) => {
-        console.log('item', item)
-        console.log('data', data)
         this.phishingEmailTemplates.push({
           fromName: item.fromName,
           subject: item.subject,
           fromEmailAddress: item.fromAddress,
           cc: item.ccAddresses,
           template: item.template,
-          language: item.languageTypeName,
+          language:
+            this.languageOptions.find((language) => language.value === item.languageTypeResourceId)
+              ?.text || item.languageTypeName,
           languageType: item.languageTypeResourceId,
           languageShortCode: this.languageOptions.find(
             (language) => language.value === item.languageTypeResourceId
           )?.text
         })
         this.selectedTemplateLanguages.push({
-          text: item.languageTypeName,
+          text:
+            this.languageOptions.find((language) => language.value === item.languageTypeResourceId)
+              ?.text || item.languageTypeName,
           value: item.languageTypeResourceId
         })
       })

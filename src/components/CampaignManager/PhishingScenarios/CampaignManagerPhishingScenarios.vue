@@ -408,6 +408,7 @@
                             :hint="getEmailTemplatePreviewLanguageHint"
                             :items="selectedTemplateLanguages"
                             :hide-details="false"
+                            :languages="languages"
                             @input="handleEmailTemplatePreviewLanguageChange"
                           />
                           <div class="mb-2">

@@ -157,7 +157,9 @@
                     <div class="d-flex align-center">
                       <div class="template-list--item__narrator mr-2">
                         <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                        <span class="template-list--item__language">{{ item.languageCode }}</span>
+                        <span class="template-list--item__language">{{
+                          item.languageTypeName
+                        }}</span>
                       </div>
                       <div class="template-list--item__narrator">
                         <v-icon :size="16" color="#757575" class="mr-1"
@@ -383,6 +385,7 @@ export default {
       return this.languageItems?.map((language) => language.language)
     },
     getVoiceItems() {
+      console.log('this.languageItems', this.languageItems)
       if (this.getSelectedLanguageShortCode) {
         return this.languageItems
           .filter((language) =>
@@ -650,7 +653,16 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems =
+          data.results.map((item) => {
+            return {
+              ...item,
+              languageTypeName:
+                this.languages.find(
+                  (language) => language.languageTypeName === item.languageTypeName
+                )?.text || item.languageTypeName
+            }
+          }) || []
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return

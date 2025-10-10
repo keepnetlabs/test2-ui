@@ -43,6 +43,7 @@
       :status="isShowPreviewDialog"
       :selected-row="selectedPhishingScenario"
       :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
+      :languages="languageFilterOptions"
       @on-close="toggleShowPreviewDialog"
     />
     <data-table

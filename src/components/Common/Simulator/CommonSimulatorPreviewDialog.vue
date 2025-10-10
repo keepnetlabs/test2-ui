@@ -33,6 +33,7 @@
                   class="max-w-554 campaign-manager-phishing-scenario-input-language"
                   :hint="getEmailTemplatePreviewLanguageHint"
                   :items="selectedTemplateLanguages"
+                  :languages="languages"
                   :hide-details="false"
                   @input="handleEmailTemplatePreviewLanguageChange"
                 />
@@ -178,6 +179,10 @@ export default {
     type: {
       type: String,
       default: PREVIEW_DIALOG_TYPES.PHISHING
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -310,12 +315,16 @@ export default {
               subject,
               template,
               languageTypeResourceId,
-              languageTypeName,
+              languageTypeName:
+                this.languages.find((item) => item.value === languageTypeResourceId)?.text ||
+                languageTypeName,
               ccAddresses
             })
             this.selectedTemplateLanguages.push({
               value: languageTypeResourceId,
-              text: languageTypeName
+              text:
+                this.languages.find((item) => item.value === languageTypeResourceId)?.text ||
+                languageTypeName
             })
             this.languagePreview = languageTypeResourceId
             if (emailTemplate?.languages?.length) {
@@ -327,11 +336,15 @@ export default {
                   subject: item.subject,
                   template: item.template,
                   languageTypeResourceId: item.languageTypeResourceId,
-                  languageTypeName: item.languageTypeName
+                  languageTypeName:
+                    this.languages.find((lang) => lang.value === item.languageTypeResourceId)
+                      ?.text || item.languageTypeName
                 })
                 this.selectedTemplateLanguages.push({
                   value: item.languageTypeResourceId,
-                  text: item.languageTypeName
+                  text:
+                    this.languages.find((lang) => lang.value === item.languageTypeResourceId)
+                      ?.text || item.languageTypeName
                 })
               })
             }
