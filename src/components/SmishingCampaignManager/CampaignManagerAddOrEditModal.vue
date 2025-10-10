@@ -398,7 +398,8 @@ export default {
         distributionStartTime,
         distributionEndTime,
         distributionStartTypeId,
-        frequency
+        frequency,
+        smsNumbers
       } = this.selectedRowFormData
       distributionTypeId = 3
       return {
@@ -417,7 +418,8 @@ export default {
         distributionEndTime: distributionEndTime || '17:00',
         distributionStartTypeId,
         sendCallsOnDays: getSendCallOnDays(distributionDays),
-        frequency
+        frequency,
+        smsProviderNumberResourceIds: smsNumbers?.map((sms) => sms.value)
       }
     },
     getUserTargetAudienceData() {
@@ -469,7 +471,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.description,
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
             value: language.resourceId
           })) || []
       })

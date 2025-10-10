@@ -1,5 +1,5 @@
 <template>
-  <div class="callback-template-select-list">
+  <div class="callback-template-select-list mt-6">
     <div class="callback-template-select-list__container" ref="topOfTheTemplate">
       <div class="callback-template-select-list__container-main">
         <div class="callback-template-select-list-content">
@@ -74,8 +74,8 @@
             <div
               class="pane"
               :style="{
-                width: '25% !important',
-                minWidth: '360px',
+                maxWidth: '25% !important',
+                minWidth: '25% !important',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"

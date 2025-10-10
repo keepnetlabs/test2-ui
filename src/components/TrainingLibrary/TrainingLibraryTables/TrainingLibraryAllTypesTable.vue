@@ -283,7 +283,7 @@ export default {
       this.$set(
         languageColumn,
         'filterableItems',
-        val?.map((l) => ({ text: l.name, value: l.code }))
+        val?.map((l) => ({ text: l.isoFriendlyName, value: l.code }))
       )
       this.$refs.refTable.reRenderFilters()
     },

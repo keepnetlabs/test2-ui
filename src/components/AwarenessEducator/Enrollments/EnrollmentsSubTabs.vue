@@ -1,25 +1,6 @@
 <template>
   <div>
-    <TrainingLibraryTrainingPreviewDialog
-      v-if="getTrainingPreviewDialog.status"
-      v-bind="getTrainingPreviewDialog"
-    />
-    <TrainingLibraryLearningPathPreviewDialog
-      v-if="getLearningPathPreviewDialog.status"
-      v-bind="getLearningPathPreviewDialog"
-    />
-    <TrainingLibraryPosterPreviewDialog
-      v-if="getPosterPreviewDialog.status"
-      v-bind="getPosterPreviewDialog"
-    />
-    <TrainingLibraryInfographicPreviewDialog
-      v-if="getInfographicPreviewDialog.status"
-      v-bind="getInfographicPreviewDialog"
-    />
-    <TrainingLibrarySurveyPreviewDialog
-      v-if="getSurveyPreviewDialog.status"
-      v-bind="getSurveyPreviewDialog"
-    />
+    <TrainingLibraryCommonComponents :should-control-body-scroll="true" />
     <EditEnrollmentsModal
       v-if="isShowEditEnrollmentModal"
       :status="isShowEditEnrollmentModal"
@@ -228,11 +209,7 @@ import StopEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/Sto
 import DeleteEnrollmentDialog from '@/components/AwarenessEducator/Enrollments/DeleteEnrollmentDialog.vue'
 import StopReminderDialog from '@/components/AwarenessEducator/Enrollments/StopReminderDialog.vue'
 import StopAutoEnrollDialog from '@/components/AwarenessEducator/Enrollments/StopAutoEnrollDialog.vue'
-import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
-import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
-import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import { mapActions, mapGetters } from 'vuex'
 import labels from '@/model/constants/labels'
 import TrashDeletePermanentlyDialog from '@/components/AwarenessEducator/Enrollments/TrashDeletePermanentlyDialog.vue'
@@ -240,11 +217,7 @@ export default {
   name: 'EnrollmentsSubTabs',
   components: {
     TrashDeletePermanentlyDialog,
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibraryPosterPreviewDialog,
-    TrainingLibraryLearningPathPreviewDialog,
-    TrainingLibraryInfographicPreviewDialog,
-    TrainingLibrarySurveyPreviewDialog,
+    TrainingLibraryCommonComponents,
     EnrollmentsSurveyTable,
     EnrollmentsInfographicTable,
     EnrollmentsPosterTable,
@@ -312,8 +285,12 @@ export default {
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog',
       getPosterPreviewDialog: 'trainingLibrary/getPosterPreviewDialog',
       getInfographicPreviewDialog: 'trainingLibrary/getInfographicPreviewDialog',
+      getScreensaverPreviewDialog: 'trainingLibrary/getScreensaverPreviewDialog',
       getLearningPathPreviewDialog: 'trainingLibrary/getLearningPathPreviewDialog',
-      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
+      getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog',
+      getLightbox: 'trainingLibrary/getLightbox',
+      getNestedDrawer: 'trainingLibrary/getNestedDrawer',
+      getDeepNestedDrawer: 'trainingLibrary/getDeepNestedDrawer'
     }),
     getApiFunc() {
       return this.isTrash
@@ -344,6 +321,16 @@ export default {
       setSurveyPreviewDialog: 'trainingLibrary/setSurveyPreviewDialog',
       resetAllModals: 'trainingLibrary/resetAllModals'
     }),
+    handleDeleteSuccess() {
+      if (this.$refs && this.$refs[`refTable${this.tab}`] && this.$refs[`refTable${this.tab}`][0]) {
+        this.$refs[`refTable${this.tab}`][0].callForData()
+      }
+    },
+    handleDuplicateSuccess() {
+      if (this.$refs && this.$refs[`refTable${this.tab}`] && this.$refs[`refTable${this.tab}`][0]) {
+        this.$refs[`refTable${this.tab}`][0].callForData()
+      }
+    },
     handleRestoreRowClick(row) {
       AwarenessEducatorService.restoreEnrollment(row.enrollmentId).then(() => {
         this.$refs[`refTable${this.tab}`][0].callForData()
@@ -405,13 +392,15 @@ export default {
           this.setSurveyPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
-            showSendButton: false
+            showSendButton: false,
+            onlyPreview: true
           })
         } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING) {
           this.setTrainingPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
-            showSendButton: false
+            showSendButton: false,
+            onlyPreview: true
           })
         } else if (
           row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
@@ -420,7 +409,8 @@ export default {
           this.setLearningPathPreviewDialog({
             status: true,
             selectedRow: this.selectedRow,
-            showSendButton: false
+            showSendButton: false,
+            onlyPreview: true
           })
         } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
           this.setPosterPreviewDialog({
@@ -434,7 +424,8 @@ export default {
             showPosterName: true,
             showFavoriteButton: true,
             showSendButton: false,
-            icon: 'mdi-eye'
+            icon: 'mdi-eye',
+            onlyPreview: true
           })
         } else if (row.type === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
           this.setInfographicPreviewDialog({
@@ -448,7 +439,8 @@ export default {
             showPosterName: true,
             showFavoriteButton: true,
             showSendButton: false,
-            icon: 'mdi-eye'
+            icon: 'mdi-eye',
+            onlyPreview: true
           })
         }
       })

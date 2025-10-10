@@ -2,6 +2,7 @@
   <CampaignManagerSummaryCard
     class="mt-4"
     detailable
+    is-training
     detailable-button-id="btn--preview-training-report-training-material"
     :icon="getCardIcon"
     :is-loading="isFetchingSummary"
@@ -10,63 +11,8 @@
     @previewClicked="handlePreviewClick"
   >
     <template #body>
-      <div v-if="isFormData" class="training-report-training-material__body pb-4">
-        <TrainingLibraryTrainingPreviewDialog
-          v-if="getTrainingPreviewDialog.status"
-          v-bind="getTrainingPreviewDialog"
-        />
-        <TrainingLibraryPosterPreviewDialog
-          v-if="getPosterPreviewDialog.status"
-          v-bind="getPosterPreviewDialog"
-        />
-        <TrainingLibraryInfographicPreviewDialog
-          v-if="getInfographicPreviewDialog.status"
-          v-bind="getInfographicPreviewDialog"
-        />
-        <TrainingLibraryLearningPathPreviewDialog
-          v-if="getLearningPathPreviewDialog.status"
-          v-bind="getLearningPathPreviewDialog"
-        />
-        <TrainingLibrarySurveyPreviewDialog
-          v-if="getSurveyPreviewDialog.status"
-          v-bind="getSurveyPreviewDialog"
-        />
-        <div class="training-report-training-material__body-header">
-          <div class="training-report-training-material__template-name">
-            {{ formData.name }}
-          </div>
-          <div class="training-report-training-material__body-header-right">
-            <v-btn style="display: none;"></v-btn>
-            <Badge
-              v-if="isTrainingTypeTraining && !isSurvey"
-              size="mini"
-              color="#2196F3"
-              text="Scorm"
-              :outline="false"
-            />
-            <Badge
-              class-name="training-report-training-material__body-header-right-badge-language"
-              size="mini"
-              color="#757575"
-              :outline="false"
-            >
-              <template #content>
-                <v-icon size="small">mdi-web</v-icon>
-                <span v-for="(language, index) in formData.languages" :key="language"
-                  >{{ language }}
-                  {{ formData.languages.length - 1 > index ? '|' : '' }}
-                </span>
-              </template>
-            </Badge>
-          </div>
-        </div>
-        <div class="training-report-training-material__created-by">
-          {{ formData.category }} • <span style="font-weight: 400;">by</span>
-          {{ formData.createdBy }}
-        </div>
-        <div class="training-report-training-material__description">
-          {{ formData.description }}
-        </div>
+      <div v-if="isFormData">
+        <TrainingLibraryCommonComponents :should-control-body-scroll="true" />
       </div>
     </template>
   </CampaignManagerSummaryCard>
@@ -75,26 +21,16 @@
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
-import Badge from '@/components/Badge'
 import { useLoading } from '@/hooks/useLoading'
-import TrainingLibraryTrainingPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryTrainingPreviewDialog.vue'
-import TrainingLibraryPosterPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryPosterPreviewDialog.vue'
-import TrainingLibraryInfographicPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryInfographicPreviewDialog.vue'
-import TrainingLibrarySurveyPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreviewDialog.vue'
+import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '../../../TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
 
 export default {
   name: 'TrainingReportTrainingMaterial',
   components: {
-    TrainingLibraryLearningPathPreviewDialog,
-    TrainingLibraryTrainingPreviewDialog,
-    TrainingLibraryPosterPreviewDialog,
-    TrainingLibraryInfographicPreviewDialog,
-    TrainingLibrarySurveyPreviewDialog,
-    Badge,
+    TrainingLibraryCommonComponents,
     CampaignManagerSummaryCard
   },
   mixins: [useLoading],
@@ -133,26 +69,20 @@ export default {
       getSurveyPreviewDialog: 'trainingLibrary/getSurveyPreviewDialog'
     }),
     getCardTitle() {
-      if (this.isSurvey) return labels.SurveyMaterial
-      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterMaterial
+      if (this.isSurvey) return `Survey: ${this.formData.name}`
+      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+        return `Poster: ${this.formData.name}`
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
-        return labels.InfographicMaterial
+        return `Infographic: ${this.formData.name}`
       else if (
         this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
         this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
-        return labels.LearningPathThatUsersWillBeRedirectTo
-      return labels.TrainingMaterial
+        return `Learning Path: ${this.formData.name}`
+      return `Training: ${this.formData.name}`
     },
     getCardIcon() {
-      if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return 'mdi-post'
-      else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) return 'mdi-post'
-      else if (
-        this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-      )
-        return 'mdi-school'
-      return 'mdi-application'
+      return 'mdi-book-education'
     },
     isFormData() {
       return Object.keys(this.formData).length
@@ -172,54 +102,39 @@ export default {
     }),
     handlePreviewClick() {
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) {
-        this.setPosterPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          type: 'poster',
-          title: labels.PosterPreview,
-          subtitle: '',
-          showDetails: true,
-          showTabs: true,
-          showPosterName: true,
-          showFavoriteButton: true,
-          sendButton: false,
-          showSendButton: false,
-          icon: 'mdi-eye'
+          onlyPreview: true
         })
       } else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) {
-        this.setInfographicPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          type: 'infographic',
-          title: labels.InfographicPreview,
-          subtitle: '',
-          showDetails: true,
-          showTabs: true,
-          showPosterName: true,
-          showFavoriteButton: true,
-          showSendButton: false,
-          icon: 'mdi-eye'
+          onlyPreview: true
         })
       } else if (
         this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
         this.trainingType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       ) {
-        this.setLearningPathPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_LEARNING_PATH_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          onlyPreview: true
         })
       } else if (this.isSurvey) {
-        this.setSurveyPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          onlyPreview: true
         })
       } else {
-        this.setTrainingPreviewDialog({
+        this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          showSendButton: true,
+          type: TRAINING_LIBRARY_TYPES.TRAINING,
+          onlyPreview: true
         })
       }
     },

@@ -578,7 +578,7 @@
                     hint="*Required"
                     persistent-hint
                     placeholder="Select an option"
-                    item-text="name"
+                    item-text="isoFriendlyName"
                     item-value="resourceId"
                   >
                   </k-select>

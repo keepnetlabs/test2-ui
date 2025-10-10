@@ -129,8 +129,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Languages,
     sortable: true,
     show: true,
-    width: 160,
-    type: 'smallBadge',
+    width: 175,
+    type: 'multiText',
     filterableType: 'select',
     filterableItems: [],
     hasTooltip: true
@@ -256,7 +256,8 @@ export const emptyLearningPathModalTrainingPreviewDialogObj = {
 export const emptyTrainingPreviewDialogObj = {
   status: false,
   selectedRow: null,
-  showSendButton: true
+  showSendButton: true,
+  type: TRAINING_LIBRARY_TYPES.TRAINING
 }
 export const emptySurveyPreviewDialogObj = {
   status: false,

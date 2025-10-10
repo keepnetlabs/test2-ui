@@ -191,7 +191,8 @@ export default {
             disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
           }
         ]
-      }
+      },
+      languageOptions: []
     }
   },
   watch: {
@@ -219,13 +220,16 @@ export default {
   methods: {
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId
+          })) || []
         this.$set(
           this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
           'filterableItems',
-          response?.map((language) => ({
-            text: language.name,
-            value: language.resourceId
-          })) || []
+          this.languageOptions || []
         )
         this?.$refs?.refTable?.reRenderFilters()
       })
@@ -257,7 +261,14 @@ export default {
             row.customFieldValues.forEach((field) => {
               customFields[`${field.name}`] = field?.value
             })
-            return { ...row, ...customFields }
+            return {
+              ...row,
+              ...customFields,
+              preferredLanguage:
+                this.languageOptions.find(
+                  (option) => option.languageTypeName === row.preferredLanguage
+                )?.text || row.preferredLanguage
+            }
           })
           this.botActivityCount = totalSandBoxActivityCount || 0
         })

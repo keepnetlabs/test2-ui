@@ -89,11 +89,11 @@
                     class="filter-field-scenarios filter-field-scenarios__language"
                     custom-menu-class="filter-field-scenarios__language-menu"
                     :min-width-type="isPhishing ? 'medium' : ''"
-                    style="
-                      padding-right: 4px !important;
-                      padding-left: 4px !important;
-                      min-width: 150px;
-                    "
+                    :style="{
+                      'padding-right': '4px !important',
+                      'padding-left': '4px !important',
+                      'min-width': selectLanguageWidth
+                    }"
                     :type="isPhishing ? 'autocomplete' : 'select'"
                     :multiple="isPhishing"
                     :slots="isPhishing ? { selection: true } : {}"
@@ -556,6 +556,10 @@ export default {
     showEmailTemplateEditButton: {
       type: Boolean,
       default: false
+    },
+    selectLanguageWidth: {
+      type: String,
+      default: '150px'
     }
   },
   directives: {
@@ -1071,8 +1075,20 @@ export default {
               this.templateHTML = null
             } else {
               this.listData = data.data.results.map((item) => {
+                let languageTypeName = item.languageTypeName
+                if (Array.isArray(item.languageTypeName)) {
+                  languageTypeName = item.languageTypeName.map(
+                    (language) =>
+                      this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                      language
+                  )
+                } else if (typeof item.languageTypeName === 'string') {
+                  const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                  languageTypeName = language?.text || item.languageTypeName
+                }
                 return {
                   ...item,
+                  languageTypeName,
                   selected: item.resourceId === this.emailTemplateResourceId
                 }
               })
@@ -1131,8 +1147,24 @@ export default {
             this.templateHTML = null
           } else {
             data.data.results = data.data.results.map((item) => {
-              return { ...item, selected: false }
+              let languageTypeName = item.languageTypeName
+              if (Array.isArray(item.languageTypeName)) {
+                languageTypeName = item.languageTypeName.map(
+                  (language) =>
+                    this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                    language
+                )
+              } else if (typeof item.languageTypeName === 'string') {
+                const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                languageTypeName = language?.text || item.languageTypeName
+              }
+              return {
+                ...item,
+                languageTypeName,
+                selected: false
+              }
             })
+
             if (isSearch) {
               this.listData = data.data.results
             } else {
@@ -1242,12 +1274,16 @@ export default {
             : []
           if (!this.isPhishing) return
           this.selectedTemplateLanguages.push({
-            text: data?.languageTypeName,
+            text:
+              this.languages.find((language) => language.value === data?.languageTypeResourceId)
+                ?.text || data?.languageTypeName,
             value: data?.languageTypeResourceId
           })
           this.phishingEmailTemplates.push({
             template: data?.template,
-            language: data?.languageTypeName,
+            language:
+              this.languages.find((language) => language.value === data?.languageTypeResourceId)
+                ?.text || data?.languageTypeName,
             languageType: data?.languageTypeResourceId,
             fromName: data?.fromName,
             subject: data?.subject,
@@ -1268,7 +1304,9 @@ export default {
               resourceId: item?.resourceId
             })
             this.selectedTemplateLanguages.push({
-              text: item?.languageTypeName,
+              text:
+                this.languages.find((language) => language.value === item?.languageTypeResourceId)
+                  ?.text || item?.languageTypeName,
               value: item?.languageTypeResourceId
             })
           })

@@ -156,8 +156,8 @@
               <div
                 style="display: flex;"
                 :style="
-                  setting.languageName === 'English'
-                    ? { width: '48px' }
+                  setting.languageName === 'English (United Kingdom)'
+                    ? { width: '180px' }
                     : { width: getLabelWidth(setting.languageName) }
                 "
               >
@@ -165,7 +165,7 @@
                   {{ setting.languageName }}
                 </span>
                 <v-menu
-                  v-if="setting.languageName !== 'English'"
+                  v-if="setting.languageName !== 'English (United Kingdom)'"
                   :min-width="128"
                   :offset-y="true"
                   nudge-left="50"
@@ -753,6 +753,13 @@ export default {
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
       this.formValues.dialogBoxSettings = [...dialogBoxSettings]
+      // Map languageName to isoFriendlyName
+      this.formValues.dialogBoxSettings.forEach((setting) => {
+        const language = this.languageOptions.find((lang) => lang.name === setting.languageName)
+        if (language) {
+          setting.languageName = language.text
+        }
+      })
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
       })
@@ -786,28 +793,38 @@ export default {
   },
   created() {
     //If has a report
-    this.callForLanguages()
-    if (this.formData) {
-      const { addInName, brandName, warningLabel, dialogBoxSettings } = this.formData
-      this.formValues.addInName = addInName
-      this.formValues.brandName = brandName
-      this.formValues.warningLabel = warningLabel
-      this.formValues.dialogBoxSettings = dialogBoxSettings
-      this.formValues.dialogBoxSettings.sort((x) => {
-        return x.languageName === 'English' ? -1 : 1
-      })
-      const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
-      if (defaultSettingIndex !== -1) {
-        this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
-        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
-        Object.keys(this.commonSettings).forEach((key) => {
-          this.commonSettings[key] = dialogBoxSettings[defaultSettingIndex][key]
+    this.callForLanguages().then(() => {
+      if (this.formData) {
+        const { addInName, brandName, warningLabel, dialogBoxSettings } = this.formData
+
+        this.formValues.addInName = addInName
+        this.formValues.brandName = brandName
+        this.formValues.warningLabel = warningLabel
+        this.formValues.dialogBoxSettings = dialogBoxSettings
+        // Map languageName to isoFriendlyName
+        this.formValues.dialogBoxSettings.forEach((setting) => {
+          const language = this.languageOptions.find((lang) => lang.name === setting.languageName)
+          if (language) {
+            setting.languageName = language.text
+          }
+        })
+        this.formValues.dialogBoxSettings.sort((x) => {
+          return x.languageName === 'English (United Kingdom)' ? -1 : 1
+        })
+        const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
+        if (defaultSettingIndex !== -1) {
+          this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
+          this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+          Object.keys(this.commonSettings).forEach((key) => {
+            this.commonSettings[key] = dialogBoxSettings[defaultSettingIndex][key]
+          })
+        }
+        getPhishingReporterImg().then((response) => {
+          this.formValues.file = response.data
         })
       }
-      getPhishingReporterImg().then((response) => {
-        this.formValues.file = response.data
-      })
-    } else {
+    })
+    if (!this.formData) {
       this.formValues.brandName = this.whiteLabelBrandName
         ? this.whiteLabelBrandName
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
@@ -824,16 +841,17 @@ export default {
   },
   methods: {
     callForLanguages() {
-      LookupLocalStorage.getSingle(21).then((response) => {
+      return LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName,
+            name: language.name,
             value: language.resourceId
           })) || []
       })
     },
     getLabelWidth(language) {
-      return `${language.length * 10}px`
+      return `${language.length * 8}px`
     },
     handleAddNewLanguageMenuClick() {
       this.isAddNewLanguageMenuVisible = true
@@ -901,9 +919,9 @@ export default {
       )
       if (languageItemIndex === -1) return
       this.formValues.dialogBoxSettings.splice(languageItemIndex, 1)
-      this.tab = 'English'
+      this.tab = 'English (United Kingdom)'
       if (this.defaultLanguage === this.selectedLanguageToDelete) {
-        this.defaultLanguage = 'English'
+        this.defaultLanguage = 'English (United Kingdom)'
       }
       this.selectedLanguageToDelete = ''
       this.isLanguageDeletionDialogVisible = false
@@ -992,7 +1010,7 @@ export default {
           }))
         }
         this.formValues.dialogBoxSettings.sort((x) => {
-          return x.languageName === 'English' ? -1 : 1
+          return x.languageName === 'English (United Kingdom)' ? -1 : 1
         })
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues

@@ -18,12 +18,6 @@
         <AppDialogFooterWithClose @on-close="toggleTemplateDialog" />
       </template>
     </AppDialog>
-    <TrainingLibraryPreviewDialog
-      v-if="isShowTrainingDialog"
-      :status="isShowTrainingDialog"
-      :selected-row="trainingTabModel[selectedTemplateResourceId]"
-      @on-close="toggleShowTrainingDialog"
-    />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
         <div class="emailTemplatePreview-content">
@@ -163,7 +157,9 @@
                     <div class="d-flex align-center">
                       <div class="template-list--item__narrator mr-2">
                         <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                        <span class="template-list--item__language">{{ item.languageCode }}</span>
+                        <span class="template-list--item__language">{{
+                          item.languageTypeName
+                        }}</span>
                       </div>
                       <div class="template-list--item__narrator">
                         <v-icon :size="16" color="#757575" class="mr-1"
@@ -271,13 +267,11 @@ import useDebounce from '@/hooks/useDebounce'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
-import TrainingLibraryPreviewDialog from '@/components/AwarenessEducator/TrainingLibraryPreviewDialog.vue'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 export default {
   name: 'CampaignManagerCallbackScenarios',
   components: {
-    TrainingLibraryPreviewDialog,
     AppDialogFooterWithClose,
     ShowMoreTags,
     KEmailPreview,
@@ -377,7 +371,6 @@ export default {
       callbackTemplate: null,
       phishingScenarioItems: [],
       isMethodMfa: false,
-      isShowTrainingDialog: false,
       isTextToSpeechCompatible: false
     }
   },
@@ -659,7 +652,16 @@ export default {
         const {
           data: { data }
         } = response
-        this.phishingScenarioItems = data.results || []
+        this.phishingScenarioItems =
+          data.results.map((item) => {
+            return {
+              ...item,
+              languageTypeName:
+                this.languages.find(
+                  (language) => language.languageTypeName === item.languageTypeName
+                )?.text || item.languageTypeName
+            }
+          }) || []
         this.phishingScenarioItems.forEach((item) => {
           if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
             return
@@ -749,12 +751,6 @@ export default {
         }
       }
       this.callForPhishingScenarios(false)
-    },
-    handleTrainingPreviewButtonClick() {
-      this.toggleShowTrainingDialog()
-    },
-    toggleShowTrainingDialog() {
-      this.isShowTrainingDialog = !this.isShowTrainingDialog
     }
   }
 }

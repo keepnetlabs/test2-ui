@@ -1,0 +1,57 @@
+.training-library-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: #e0e0e0;
+
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #e0e0e0;
+    z-index: 9999;
+  }
+
+  &__container {
+    position: fixed;
+    top: 64px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    border-radius: 8px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  &__close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10001;
+    background-color: transparent !important;
+    box-shadow: none !important;
+
+    .v-icon {
+      color: #000 !important;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+  }
+}

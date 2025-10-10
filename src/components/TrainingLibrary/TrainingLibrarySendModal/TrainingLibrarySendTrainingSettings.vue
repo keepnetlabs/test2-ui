@@ -12,6 +12,7 @@
       v-model="formData.languageIds"
       ref="refInputContentLanguage"
       :training-id="selectedRow.trainingId"
+      :language-options="languageOptions"
     />
     <DeliveryMethod
       v-model="formData.deliveryMethod"
@@ -370,6 +371,10 @@ export default {
     showCertificate: {
       type: Boolean,
       default: true
+    },
+    languageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

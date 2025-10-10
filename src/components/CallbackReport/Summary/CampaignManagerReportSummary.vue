@@ -73,6 +73,7 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -121,7 +122,8 @@ export default {
       isFetchingCallbackTemplate: false,
       isFetchingEmailTemplate: false,
       difficulties,
-      methods
+      methods,
+      languageOptions: []
     }
   },
   computed: {
@@ -151,7 +153,9 @@ export default {
       }
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
-        languages.add(scenario.languageShortCode)
+        const languageCode = scenario.languageShortCode
+        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
@@ -347,9 +351,12 @@ export default {
         return null
       }
 
+      const languageCode = this.getActiveScenario.languageShortCode
+      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+
       return {
         resourceId: this.getActiveScenario.emailTemplateResourceId,
-        languageShortCode: this.getActiveScenario.languageShortCode,
+        languageShortCode: language?.text || languageCode,
         callbackNumber: this.getActiveScenario.callbackNumber,
         campaignResourceId: this.id,
         instanceGroup: this.instanceGroup
@@ -395,9 +402,21 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForData()
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            languageShortCode: language.description,
+            value: language.resourceId
+          })) || []
+      })
+    },
     callForData() {
       if (Object.keys(this.apiResponse)?.length) this.callApis(true)
       else {
@@ -439,7 +458,10 @@ export default {
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
-              .map((lang) => lang.languageShortCode)
+              .map((lang) => {
+                const language = this.languageOptions.find((opt) => opt.languageShortCode === lang.languageShortCode)
+                return language?.text || lang.languageShortCode
+              })
               .join(' | ')
           }
         })

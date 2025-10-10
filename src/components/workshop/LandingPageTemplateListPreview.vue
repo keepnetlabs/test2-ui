@@ -1332,8 +1332,12 @@ export default {
               this.listData = []
             } else {
               data.data.results = data.data.results.map((item) => {
+                const language = this.languages.find(
+                  (lang) => lang.languageTypeName === item.languageTypeName
+                )
                 return {
                   ...item,
+                  languageTypeName: language?.text || item.languageTypeName,
                   selected: item.resourceId === this.landingPageTemplateResourceId
                 }
               })
@@ -1383,7 +1387,14 @@ export default {
             this.templateHTML = null
           } else {
             data.data.results = data.data.results.map((item) => {
-              return { ...item, selected: false }
+              const language = this.languages.find(
+                (lang) => lang.languageTypeName === item.languageTypeName
+              )
+              return {
+                ...item,
+                languageTypeName: language?.text || item.languageTypeName,
+                selected: false
+              }
             })
             if (isSearch) {
               this.listData = data.data.results

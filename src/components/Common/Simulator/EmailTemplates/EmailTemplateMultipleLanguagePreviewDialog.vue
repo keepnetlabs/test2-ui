@@ -222,6 +222,10 @@ export default {
     isIndividualPrintoutTemplate: {
       type: Boolean,
       default: false
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -357,7 +361,9 @@ export default {
             languageTypeResourceId
           } = data
           this.selectedLanguages.push({
-            text: languageTypeName,
+            text:
+              this.languages.find((item) => item.value === languageTypeResourceId)?.text ||
+              languageTypeName,
             value: languageTypeResourceId
           })
           this.activeLanguage = languageTypeResourceId
@@ -373,7 +379,9 @@ export default {
           if (languages.length) {
             this.selectedLanguages.push(
               ...languages.map((item) => ({
-                text: item.languageTypeName,
+                text:
+                  this.languages.find((lang) => lang.value === item.languageTypeResourceId)?.text ||
+                  item.languageTypeName,
                 value: item.languageTypeResourceId
               }))
             )
@@ -385,7 +393,10 @@ export default {
                 ccAddresses: item.ccAddresses,
                 subject: item.subject,
                 template: item.template,
-                isAssistedByAI: item.isAssistedByAI
+                isAssistedByAI: item.isAssistedByAI,
+                languageTypeName:
+                  this.languages.find((lang) => lang.value === item.languageTypeResourceId)?.text ||
+                  item.languageTypeName
               }))
             )
           }

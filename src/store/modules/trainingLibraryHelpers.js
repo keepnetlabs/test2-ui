@@ -211,7 +211,7 @@ const trainingLibraryHelpers = {
           {
             key: PROPERTY_STORE.LANGUAGES,
             items: response?.data?.data.map((l) => ({
-              text: l.name,
+              text: l.isoFriendlyName,
               value: l.code
             }))
           },
@@ -222,7 +222,7 @@ const trainingLibraryHelpers = {
           {
             key: PROPERTY_STORE.LANGUAGES,
             items: response?.data?.data.map((l) => ({
-              text: l.name,
+              text: l.isoFriendlyName,
               value: l.code
             }))
           },

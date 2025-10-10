@@ -45,7 +45,7 @@
       :subtitle="'Landing Page Template Preview'"
       :size="'ultraMaximum'"
     >
-      <template v-slot:app-dialog-body>
+      <template #app-dialog-body>
         <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
         <LandingPageTemplateModalPreview
           v-show="!isPreviewLoading"
@@ -54,7 +54,7 @@
           :phishingUrl="landingPageParams.urlTemplate"
         />
       </template>
-      <template v-slot:app-dialog-footer>
+      <template #app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             id="btn-close--landing-page-preview-popup"
@@ -430,7 +430,15 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((item) => {
+              const language = this.languageFilterOptions.find(
+                (lang) => lang.languageName === item.languageTypeName
+              )
+              return {
+                ...item,
+                languageTypeName: language?.text || item.languageTypeName
+              }
+            })
           })
           .catch(() => {
             this.tableData = []
@@ -564,7 +572,10 @@ export default {
             text: item.domain,
             value: item.id.toString(),
             extraDatas: [
-              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
+              {
+                text: item.urlSchemaType,
+                value: item.urlSchemaTypeId.toString()
+              },
               { text: item.isStopBotActivity, value: item.isStopBotActivity }
             ]
           }

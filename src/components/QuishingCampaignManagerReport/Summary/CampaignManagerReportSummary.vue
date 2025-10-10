@@ -112,6 +112,7 @@ import { TrainingReportDialogModel } from '@/components/QuishingCampaignManagerR
 import QuishingService from '@/api/quishing'
 import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -159,7 +160,8 @@ export default {
       ],
       customKeys: [],
       difficulties,
-      methods
+      methods,
+      languageOptions: []
     }
   },
   computed: {
@@ -234,7 +236,9 @@ export default {
       }
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
-        languages.add(scenario.scenarioInfo.languageShortCode)
+        const languageCode = scenario.scenarioInfo.languageShortCode
+        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
@@ -445,11 +449,13 @@ export default {
         return {}
       }
       const { resourceId, phishingFileName } = emailTemplateInfo || {}
+      const languageCode = scenarioInfo?.languageShortCode
+      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
 
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,
-            languageShortCode: scenarioInfo?.languageShortCode,
+            languageShortCode: language?.text || languageCode,
             attachment: phishingFileName
               ? {
                   name: phishingFileName
@@ -463,9 +469,11 @@ export default {
     getLandingPageTemplateData() {
       const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
       const { resourceId } = landingPageTemplateInfo
+      const languageCode = scenarioInfo?.languageShortCode
+      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(landingPageTemplateInfo).length
         ? {
-            languageShortCode: scenarioInfo?.languageShortCode,
+            languageShortCode: language?.text || languageCode,
             resourceId,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup
@@ -482,12 +490,24 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     this.callForData()
   },
   beforeDestroy() {
     clearInterval(this.interval)
   },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            languageShortCode: language.description,
+            value: language.resourceId
+          })) || []
+      })
+    },
     callForData() {
       if (Object.keys(this.apiResponse)?.length) this.callApis(true)
       else {
@@ -532,7 +552,10 @@ export default {
           }
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
-              .map((lang) => lang.languageShortCode)
+              .map((lang) => {
+                const language = this.languageOptions.find((opt) => opt.languageShortCode === lang.languageShortCode)
+                return language?.text || lang.languageShortCode
+              })
               .join(' | ')
           }
         })

@@ -36,6 +36,7 @@
       v-if="isShowPreviewDialog"
       :status="isShowPreviewDialog"
       :selected-row="selectedEmailTemplate"
+      :languages="languageFilterOptions"
       @on-close="togglePreviewDialog"
     />
     <data-table
@@ -389,7 +390,7 @@ export default {
       isShowPreviewDialog: false,
       selectedTemplateHeader: null,
       templateHTML: null,
-      attachmentName:''
+      attachmentName: ''
     }
   },
   computed: {
@@ -408,7 +409,9 @@ export default {
     deleteEmailTemplate,
     bulkDeleteEmailTemplates,
     onShowRenameAttachmentModal() {
-      this.attachmentName = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split('.')[0]
+      this.attachmentName = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
+        '.'
+      )[0]
       this.isShowRenameAttachmentDialog = true
     },
     onCloseRenameAttachmentModal() {
@@ -522,7 +525,18 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            const enrichedResults = results?.map((item) => {
+              return {
+                ...item,
+                languageTypeName: item.languageTypeName?.map((code) => {
+                  const language = this.languageFilterOptions.find(
+                    (lang) => lang.languageName === code
+                  )
+                  return language?.text || code
+                })
+              }
+            })
+            this.tableData = enrichedResults
           })
           .catch(() => {
             this.tableData = []

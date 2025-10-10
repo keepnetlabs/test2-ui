@@ -664,7 +664,10 @@ export default {
         ]
       },
       addUsersItems: [
-        { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
+        {
+          text: 'Add users manually',
+          id: 'btn-add-users-manually--target-users-people'
+        },
         {
           text: 'Import from a file',
           id: 'btn-add-users-import-from-file--target-users-people'
@@ -743,7 +746,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageFilterOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName,
+            name: language.name,
             value: language.resourceId
           })) || []
         this.$set(
@@ -793,7 +797,9 @@ export default {
         )
         if (repeatedOffendersIndex !== -1) {
           this.repeatedOffendersCount = res.data.data.results[repeatedOffendersIndex].userCount
-          this.repeatedOffendersGroup = { ...res.data.data.results[repeatedOffendersIndex] }
+          this.repeatedOffendersGroup = {
+            ...res.data.data.results[repeatedOffendersIndex]
+          }
         }
       })
     },
@@ -836,7 +842,10 @@ export default {
         })
         .finally(() => {
           if (this.isLDAPDisabled) {
-            this.addUsersItems.splice(2, 1, { ...this.addUsersItems[2], disabled: true })
+            this.addUsersItems.splice(2, 1, {
+              ...this.addUsersItems[2],
+              disabled: true
+            })
           }
         })
     },
@@ -1068,11 +1077,19 @@ export default {
       this.loading = true
       getTargetUsers(this.payload)
         .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber, results } =
+            response?.data?.data || {}
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = response.data.data.results
+          this.tableData = results?.map((item) => {
+            return {
+              ...item,
+              preferredLanguage: this.languageFilterOptions.find(
+                (language) => language.name === item.preferredLanguage
+              )?.text
+            }
+          })
         })
         .catch(() => {
           this.tableData = []

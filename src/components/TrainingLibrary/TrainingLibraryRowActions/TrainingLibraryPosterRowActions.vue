@@ -18,46 +18,46 @@
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
       />
-      <DefaultMenuRowAction
+      <!-- <DefaultMenuRowAction
         :id="rowActions[2].id"
         :scope="scope"
         :disabled="rowActions[2].disabled"
         :icon="rowActions[2].icon"
         :text="rowActions[2].name"
         @on-click="handleDownloadPoster(scope.row)"
+      /> -->
+      <DefaultMenuRowAction
+        :id="rowActions[2].id"
+        :scope="scope"
+        :check-is-owner-property="false"
+        :disabled="rowActions[2].disabled"
+        :icon="rowActions[2].icon"
+        :text="rowActions[2].name"
+        :checkIsOwnerProperty="false"
+        @on-click="handleAddFavorite(scope.row)"
       />
       <DefaultMenuRowAction
         :id="rowActions[3].id"
         :scope="scope"
         :check-is-owner-property="false"
-        :disabled="rowActions[3].disabled"
+        :disabled="rowActions[3].disabled || !scope.row.isEditable"
         :icon="rowActions[3].icon"
         :text="rowActions[3].name"
-        :checkIsOwnerProperty="false"
-        @on-click="handleAddFavorite(scope.row)"
+        @on-click="handleEdit(scope.row)"
       />
       <DefaultMenuRowAction
         :id="rowActions[4].id"
         :scope="scope"
-        :check-is-owner-property="false"
-        :disabled="rowActions[4].disabled || !scope.row.isEditable"
         :icon="rowActions[4].icon"
         :text="rowActions[4].name"
-        @on-click="handleEdit(scope.row)"
+        @on-click="handleDuplicate(scope.row)"
       />
       <DefaultMenuRowAction
         :id="rowActions[5].id"
         :scope="scope"
+        :disabled="rowActions[5].disabled || !scope.row.isEditable"
         :icon="rowActions[5].icon"
         :text="rowActions[5].name"
-        @on-click="handleDuplicate(scope.row)"
-      />
-      <DefaultMenuRowAction
-        :id="rowActions[6].id"
-        :scope="scope"
-        :disabled="rowActions[6].disabled || !scope.row.isEditable"
-        :icon="rowActions[6].icon"
-        :text="rowActions[6].name"
         @on-click="handleActionDelete(scope.row)"
       />
     </RowActionsMenu>
@@ -93,11 +93,11 @@ export default {
           name: labels.SendPoster,
           icon: 'mdi-send'
         },
-        {
-          id: 'btn-download--row-actions-poster',
-          name: labels.DownloadPoster,
-          icon: 'mdi-download'
-        },
+        // {
+        //   id: 'btn-download--row-actions-poster',
+        //   name: labels.DownloadPoster,
+        //   icon: 'mdi-download'
+        // },
         {
           id: 'btn-favorite--row-actions-poster',
           name: this.scope.row.isFavourite ? labels.RemoveFromFavorites : labels.AddToFavorites,
@@ -151,21 +151,21 @@ export default {
         status: true
       })
     },
-    handleDownloadPoster(row) {
-      this.setPosterPreviewDialog({
-        status: true,
-        selectedRow: row,
-        type: 'downloadPoster',
-        title: labels.DownloadPoster,
-        subtitle: '',
-        showDetails: false,
-        showTabs: false,
-        showSendButton: false,
-        showPosterName: true,
-        showFavoriteButton: false,
-        icon: 'mdi-download'
-      })
-    },
+    // handleDownloadPoster(row) {
+    //   this.setPosterPreviewDialog({
+    //     status: true,
+    //     selectedRow: row,
+    //     type: 'downloadPoster',
+    //     title: labels.DownloadPoster,
+    //     subtitle: '',
+    //     showDetails: false,
+    //     showTabs: false,
+    //     showSendButton: false,
+    //     showPosterName: true,
+    //     showFavoriteButton: false,
+    //     icon: 'mdi-download'
+    //   })
+    // },
     handleAddFavorite(row) {
       if (row.isFavourite) {
         AwarenessEducatorService.removeFromFavorite(row.trainingId).then(() => {

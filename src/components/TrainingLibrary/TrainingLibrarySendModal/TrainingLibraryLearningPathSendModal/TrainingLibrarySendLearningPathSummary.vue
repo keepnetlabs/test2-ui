@@ -13,7 +13,9 @@
         :items="getSettingItems"
       >
         <template #SMSNotification="{ props: { key, val } }">
-          <div class="campaign-manager-summary-card__body-item-key">{{ key }}</div>
+          <div class="campaign-manager-summary-card__body-item-key">
+            {{ key }}
+          </div>
           <div v-if="val === 'Off'" class="campaign-manager-summary-card__body-item-value">
             {{ val }}
           </div>
@@ -106,36 +108,11 @@
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
-        title="Learning path that users will be directed to"
+        :title="getCardTitle"
         icon="mdi-school"
+        is-training
         :show-body-detail.sync="isShowTrainingEmail"
-      >
-        <template #body>
-          <div v-if="isTrainingData" class="campaign-manager-last-step__email-template-body pb-4">
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.trainingData.name }}
-              </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              {{ formData.trainingData.category }} &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.trainingData.createdBy }}
-            </div>
-            <div
-              style="
-                font-weight: 400;
-                font-size: 12px;
-                line-height: 19px;
-                color: #383b41;
-                margin-top: 8px;
-              "
-            >
-              {{ formData.trainingData.description }}
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+      />
     </div>
     <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
@@ -255,6 +232,9 @@ export default {
     }
   },
   computed: {
+    getCardTitle() {
+      return `Learning Path: ${this.formData?.trainingData?.name}`
+    },
     getTargetGroupItems() {
       const activeItems =
         this.formData?.userCountDetailResponse?.data?.data?.filter?.(
@@ -333,7 +313,8 @@ export default {
         this.setLearningPathPreviewDialog({
           status: true,
           selectedRow: this.selectedRow,
-          showSendButton: false
+          showSendButton: false,
+          onlyPreview: true
         })
         this.isShowTrainingEmail = false
       }
@@ -353,7 +334,9 @@ export default {
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
+        type: 'region'
+      })
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
     }
   }

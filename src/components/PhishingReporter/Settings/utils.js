@@ -1,5 +1,5 @@
 export const defaultDialogBoxSettings = {
-  languageName: 'English',
+  languageName: 'English (United Kingdom)',
   languageResourceId: '862249c19aad',
   msgBoxTitle: 'Phishing Reporter',
   msgBoxBtnCancelText: 'Cancel',
