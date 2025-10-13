@@ -1,6 +1,5 @@
 <template>
   <Fragment>
-    <TrainingLibraryCommonComponents />
     <TrainingLibraryNewLearningPathCannotSaveModal
       v-if="isCannotSaveModalActive"
       :status="isCannotSaveModalActive"
@@ -99,7 +98,6 @@ import TrainingLibraryNewLearningPathContent from '@/components/TrainingLibrary/
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import TrainingLibraryNewLearningPathCannotSaveModal from './TrainingLibraryNewLearningPathCannotSaveModal'
-import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import { Fragment } from 'vue-frag'
 export default {
   name: 'TrainingLibraryNewLearningPathModal',
@@ -107,7 +105,6 @@ export default {
     TrainingLibraryNewLearningPathContent,
     TrainingLibraryNewLearningPathInformation,
     TrainingLibraryNewLearningPathCannotSaveModal,
-    TrainingLibraryCommonComponents,
     StepperFooter,
     ConfigureCompanyStepHeader,
     AppModal,
@@ -182,7 +179,10 @@ export default {
                 if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
                   return null
                 }
-                return { resourceId: af.targetResourceId, typeName: af.typeName }
+                return {
+                  resourceId: af.targetResourceId,
+                  typeName: af.typeName
+                }
               })
               .filter(Boolean)
           }
