@@ -639,13 +639,18 @@ export default {
           isTranslated: true
         })
         this.selectedLanguages.push({
-          text: this.formValues.languageTypeName,
+          text:
+            this.languageOptions.find(
+              (item) => item.value === this.formValues.languageTypeResourceId
+            )?.text || this.formValues.languageTypeName,
           value: this.formValues.languageTypeResourceId
         })
         if (response?.data?.data?.languages.length) {
           response?.data?.data?.languages.forEach((item) => {
             this.selectedLanguages.push({
-              text: item.languageTypeName,
+              text:
+                this.languageOptions.find((item) => item.value === item.languageTypeResourceId)
+                  ?.text || item.languageTypeName,
               value: item.languageTypeResourceId
             })
             this.languagesPayload.push({

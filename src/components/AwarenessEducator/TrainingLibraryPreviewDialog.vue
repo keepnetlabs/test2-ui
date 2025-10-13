@@ -95,7 +95,7 @@ export default {
             const language = res?.data?.data?.find((item) => item.id === lang)
             if (language)
               this.selectedLanguages.push({
-                text: language.isoFriendlyName,
+                text: language.isoFriendlyName || language.name,
                 value: language.id
               })
           })
