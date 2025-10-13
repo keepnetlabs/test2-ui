@@ -604,13 +604,10 @@ export default {
         .then((response) => {
           const previewData = response?.data?.data || response?.data
           let previewUrl = previewData?.scormPlayerUrl || previewData
-
-          // Filename'i al
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
           if (isPdf) {
-            // Store'da lightbox'ı aç ve loading göster
             this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
               status: true,
               previewData: null,
@@ -618,11 +615,9 @@ export default {
               type: this.type
             })
 
-            // PDF ise blob olarak indir
             AwarenessEducatorService.downloadPoster({ trainingId, languageId })
               .then((blobResponse) => {
                 const blobUrl = window.URL.createObjectURL(blobResponse.data)
-                // Download tamamlandı, şimdi lightbox'ı aç
                 this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
                   status: true,
                   previewData: blobUrl,
@@ -639,10 +634,8 @@ export default {
                 })
               })
           } else {
-            if (typeof previewUrl === 'string' && previewData.trainingUrl) {
-              // URL'de zaten query parametresi var mı kontrol et
+            if (typeof previewUrl === 'string') {
               const separator = previewUrl.includes('?') ? '&' : '?'
-              // trainingUrl'i encode et
               const encodedTrainingUrl = encodeURIComponent(previewData.trainingUrl)
               previewUrl = `${previewUrl}${separator}isPreview=true&scoAddress=${encodedTrainingUrl}`
             }
