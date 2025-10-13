@@ -188,7 +188,7 @@ export default {
           if (lang.code === langCode) {
             return lang
           }
-        })?.name || langCode
+        })?.isoFriendlyName || langCode
       )
     },
     getComplianceFilterValue(compliance = '') {

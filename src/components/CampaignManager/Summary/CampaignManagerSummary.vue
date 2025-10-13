@@ -532,7 +532,10 @@ export default {
       )
       if (!activeData?.length) return ''
 
-      const companyLanguage = activeData[0]?.companyPreferredLanguage || ''
+      let companyLanguage = activeData[0]?.companyPreferredLanguage || ''
+      companyLanguage =
+        this.languageOptions.find((option) => option.languageTypeName === companyLanguage)?.text ||
+        companyLanguage
       const fallbackCount = this.getFallbackUsersCount || 0
 
       // Get language counts for matched users from both "Yes" and "No" status items
@@ -544,7 +547,11 @@ export default {
           if (yesStatusItem && yesStatusItem.hasPreferredLanguage) {
             yesStatusItem.hasPreferredLanguage.forEach((lang) => {
               if (lang.count > 0) {
-                languageCounts.set(lang.status, (languageCounts.get(lang.status) || 0) + lang.count)
+                languageCounts.set(
+                  this.languageOptions.find((option) => option.languageTypeName === lang.status)
+                    ?.text || lang.status,
+                  (languageCounts.get(lang.status) || 0) + lang.count
+                )
               }
             })
           }
