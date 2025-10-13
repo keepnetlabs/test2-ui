@@ -184,6 +184,7 @@ import QuishingService from '@/api/quishing'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
@@ -218,6 +219,7 @@ export default {
       isAttachmentBasedScenario: false,
       languages: [],
       emailTemplate: null,
+      globalLanguages: [],
       landingPageTemplates: [],
       emailTemplateParams: {},
       landingPageParams: {},
@@ -300,6 +302,15 @@ export default {
       AwarenessEducatorService.getLanguages().then((res) => {
         this.languages = res?.data?.data || []
       })
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.globalLanguages =
+          response?.map((language) => ({
+            text: language.isoFriendlyName || language.name,
+            isoFriendlyName: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId
+          })) || []
+      })
     },
     callForData() {
       this.setLoading(true)
@@ -356,8 +367,8 @@ export default {
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
       if (this.isPhishing) {
-        const mainLanguage = this.languages.find(
-          (lang) => lang.name === phishingScenarioPreviewDto?.[templateKey]?.languageTypeName
+        const mainLanguage = this.globalLanguages.find(
+          (lang) => lang.value === phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
         )
         this.selectedTemplateLanguages.push({
           text:
@@ -381,7 +392,9 @@ export default {
               ccAddresses: item.ccAddresses,
               languageTypeResourceId: item.languageTypeResourceId
             })
-            const language = this.languages.find((lang) => lang.name === item.languageTypeName)
+            const language = this.globalLanguages.find(
+              (lang) => lang.value === item.languageTypeResourceId
+            )
             this.selectedTemplateLanguages.push({
               text: language?.isoFriendlyName || item.languageTypeName,
               value: item.languageTypeResourceId
