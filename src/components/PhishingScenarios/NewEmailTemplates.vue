@@ -649,7 +649,7 @@ export default {
           response?.data?.data?.languages.forEach((item) => {
             this.selectedLanguages.push({
               text:
-                this.languageOptions.find((item) => item.value === item.languageTypeResourceId)
+                this.languageOptions.find((lang) => lang.value === item.languageTypeResourceId)
                   ?.text || item.languageTypeName,
               value: item.languageTypeResourceId
             })
