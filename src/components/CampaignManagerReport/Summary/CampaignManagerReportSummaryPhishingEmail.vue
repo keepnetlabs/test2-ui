@@ -225,7 +225,7 @@ export default {
             if (this?.formData?.languages?.length) {
               this.formData.languages.forEach((item) => {
                 const findedLanguage = this.languageOptions.find(
-                  (lItem) => lItem.code === item.languageShortCode
+                  (lItem) => lItem.text === item.languageShortCode
                 )
                 this.selectedTemplateLanguages.push({
                   value: findedLanguage?.value,
@@ -246,8 +246,9 @@ export default {
             }
             this.selectedTemplateLanguages.push({
               value: data.languageTypeResourceId,
-              text: this.languageOptions.find((item) => item.value === data.languageTypeResourceId)
-                ?.text
+              text:
+                this.languageOptions.find((item) => item.value === data.languageTypeResourceId)
+                  ?.text || data.languageTypeName
             })
             this.phishingEmailTemplates.push({
               fromName: this.fromName,
@@ -255,7 +256,9 @@ export default {
               subject: this.subject,
               template: this.emailTemplate,
               ccAddresses: this.ccAddresses,
-              languageTypeName: data.languageTypeName,
+              languageTypeName:
+                this.languageOptions.find((item) => item.value === data.languageTypeResourceId)
+                  ?.text || data.languageTypeName,
               languageTypeResourceId: data.languageTypeResourceId
             })
             this.languagePreview = data.languageTypeResourceId
@@ -285,7 +288,8 @@ export default {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({
-            text: language.name,
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
             value: language.resourceId,
             code: language.description
           })) || []
