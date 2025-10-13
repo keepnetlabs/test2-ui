@@ -3,6 +3,7 @@
     <CampaignManagerScenarioStatisticsModal
       v-if="isShowScenarioStatistics"
       :navigation-drawer-value="isShowScenarioStatistics"
+      :languages="languageFilterOptions"
       @navigation-drawer-change="handleStatisticsModalStatusChange"
     />
     <CommonSimulatorFastLaunch

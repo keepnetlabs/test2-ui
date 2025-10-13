@@ -92,6 +92,10 @@ export default {
     navigationDrawerValue: {
       type: Boolean,
       default: false
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -285,7 +289,14 @@ export default {
             industry: this.transformStatisticData(industry),
             region: this.transformStatisticData(region),
             emotion: this.transformStatisticData(emotion),
-            language: this.transformStatisticData(language),
+            language: this.transformStatisticData(
+              language.map((item) => ({
+                ...item,
+                name:
+                  this?.languages?.find((lang) => lang.languageName === item.name)?.text ||
+                  item.name
+              }))
+            ),
             attackType: this.transformStatisticData(attackType)
           }
         })
@@ -314,7 +325,11 @@ export default {
       const otherData = data.slice(5)
       const firstDataTotal = firstData.reduce(
         (a, b) => {
-          return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
+          return {
+            ...a,
+            count: a.count + b.count,
+            percentage: a.percentage + b.percentage
+          }
         },
         {
           count: 0,
@@ -324,7 +339,11 @@ export default {
       )
       const totalOtherData = otherData.reduce(
         (a, b) => {
-          return { ...a, count: a.count + b.count, percentage: a.percentage + b.percentage }
+          return {
+            ...a,
+            count: a.count + b.count,
+            percentage: a.percentage + b.percentage
+          }
         },
         {
           count: totalExcludedData.count || 0,
