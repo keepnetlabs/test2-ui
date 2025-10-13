@@ -219,7 +219,8 @@ export default {
     LookupLocalStorage.getSingle(21).then((response) => {
       this.languageOptions =
         response?.map((language) => ({
-          text: language.description,
+          text: language.isoFriendlyName,
+          languageTypeName: language.name,
           description: language.description,
           value: language.resourceId
         })) || []
