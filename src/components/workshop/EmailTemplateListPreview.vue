@@ -811,9 +811,25 @@ export default {
       delete payload.resourceId
       createPhishingEmailTemplate(payload, this.emailTemplateData.resourceId)
         .then((response) => {
+          const searchPsEmailTemplate = response?.data?.data?.searchPsEmailTemplate
+          if (searchPsEmailTemplate) {
+            if (Array.isArray(searchPsEmailTemplate?.languageTypeName)) {
+              searchPsEmailTemplate.languageTypeName = searchPsEmailTemplate.languageTypeName.map(
+                (item) =>
+                  this.languages.find((lang) => lang.languageTypeName === item)?.text || item
+              )
+            } else {
+              searchPsEmailTemplate.languageTypeName =
+                this.languages.find(
+                  (lang) => lang.languageTypeName === searchPsEmailTemplate.languageTypeName
+                )?.text || searchPsEmailTemplate.languageTypeName
+            }
+          }
+          console.log('searchPsEmailTemplate', searchPsEmailTemplate)
+          console.log('payload', payload)
           this.insertTemplate(response?.data?.data?.resourceId, {
             ...payload,
-            ...response?.data?.data?.searchPsEmailTemplate
+            ...searchPsEmailTemplate
           })
         })
         .finally(() => {
@@ -1083,7 +1099,9 @@ export default {
                       language
                   )
                 } else if (typeof item.languageTypeName === 'string') {
-                  const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                  const language = this.languages.find(
+                    (lang) => lang.languageTypeName === item.languageTypeName
+                  )
                   languageTypeName = language?.text || item.languageTypeName
                 }
                 return {
@@ -1155,7 +1173,9 @@ export default {
                     language
                 )
               } else if (typeof item.languageTypeName === 'string') {
-                const language = this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
+                const language = this.languages.find(
+                  (lang) => lang.languageTypeName === item.languageTypeName
+                )
                 languageTypeName = language?.text || item.languageTypeName
               }
               return {

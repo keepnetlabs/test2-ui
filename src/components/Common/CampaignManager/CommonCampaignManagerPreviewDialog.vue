@@ -381,7 +381,7 @@ export default {
               ccAddresses: item.ccAddresses,
               languageTypeResourceId: item.languageTypeResourceId
             })
-            const language = this.languages.find((lang) => lang.id === item.languageTypeResourceId)
+            const language = this.languages.find((lang) => lang.name === item.languageTypeName)
             this.selectedTemplateLanguages.push({
               text: language?.isoFriendlyName || item.languageTypeName,
               value: item.languageTypeResourceId

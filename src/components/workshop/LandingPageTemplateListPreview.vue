@@ -1228,6 +1228,13 @@ export default {
       delete payload.phishingLink
       createLandingPage(payload)
         .then((response) => {
+          const landingPageTemplate = response.data.data.landingPageTemplate
+          if (landingPageTemplate) {
+            landingPageTemplate.languageTypeName =
+              this.languages.find(
+                (lang) => lang.languageTypeName === landingPageTemplate.languageTypeName
+              )?.text || landingPageTemplate.languageTypeName
+          }
           this.insertTemplate({
             ...payload,
             ...response.data.data.landingPageTemplate,
