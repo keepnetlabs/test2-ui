@@ -557,6 +557,9 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { data: { data: { results = [] } } = {} } = response
             this.tableData = results.map((item) => {
+              item.preferredLanguage = this.languageFilterOptions.find(
+                (language) => language.name === item.preferredLanguage
+              )?.text
               const { customFieldValues } = item
               for (let { name, value, dataType, timestampValue } of customFieldValues) {
                 if (dataType === 'Boolean') {
@@ -593,6 +596,11 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { data: { data: { results = [] } } = {} } = response
+            results.forEach((item) => {
+              item.preferredLanguage = this.languageFilterOptions.find(
+                (language) => language.name === item.preferredLanguage
+              )?.text
+            })
             this.tableData = results.map((item) => {
               const { customFieldValues } = item
               for (let { name, value, dataType, timestampValue } of customFieldValues) {
