@@ -57,6 +57,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
+    width: 180,
     type: 'text',
     isEditable: false,
     filterableType: 'text'
