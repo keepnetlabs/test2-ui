@@ -11,11 +11,34 @@
           class="training-library-lightbox-content__image"
           alt="Preview"
         />
-        <pdf
-          v-else-if="isPdf"
-          :src="pdfSrc"
-          class="training-library-lightbox-content__pdf"
-        />
+        <div
+          v-else-if="isPdf && pdfSrc && pdfReady"
+          class="training-library-lightbox-content__pdf-wrapper"
+        >
+          <template v-if="numPages > 0">
+            <pdf
+              v-for="page in numPages"
+              :key="`${pdfSrc}-page-${page}`"
+              :src="pdfSrc"
+              :page="page"
+              :resize="false"
+              class="training-library-lightbox-content__pdf"
+              :style="{ width: pdfWidth + 'px' }"
+              @error="handlePdfError"
+            />
+          </template>
+          <pdf
+            v-else
+            :key="pdfSrc"
+            :src="pdfSrc"
+            :page="1"
+            :resize="false"
+            class="training-library-lightbox-content__pdf"
+            :style="{ width: pdfWidth + 'px' }"
+            @error="handlePdfError"
+            @num-pages="handlePdfLoaded"
+          />
+        </div>
         <iframe
           v-else
           :src="previewUrl"
@@ -41,6 +64,16 @@ export default {
   components: {
     pdf: () => import('vue-pdf')
   },
+  errorCaptured(err) {
+    // Suppress vue-pdf resize sensor errors
+    if (
+      err.message &&
+      err.message.includes("Cannot read properties of undefined (reading 'catch')")
+    ) {
+      return false
+    }
+    return true
+  },
   props: {
     previewData: {
       type: [Object, String],
@@ -55,6 +88,17 @@ export default {
       default: null
     }
   },
+  data() {
+    return {
+      currentPage: 1,
+      numPages: 0,
+      pdfReady: false,
+      pdfWidth: 800
+    }
+  },
+  mounted() {
+    this.pdfWidth = Math.floor(window.innerWidth * 0.3)
+  },
   computed: {
     isImageType() {
       return (
@@ -65,10 +109,14 @@ export default {
     },
     isPdf() {
       if (!this.previewUrl) return false
-      const isPdf = this.previewUrl.toLowerCase().includes('.pdf') || this.previewUrl.startsWith('blob:')
+      const isPdf =
+        this.previewUrl.toLowerCase().includes('.pdf') || this.previewUrl.startsWith('blob:')
       return isPdf
     },
     pdfSrc() {
+      if (!this.previewUrl) return null
+
+      // Return URL string directly - vue-pdf will handle the loading task internally
       return this.previewUrl
     },
     previewUrl() {
@@ -90,6 +138,35 @@ export default {
       }
 
       return null
+    }
+  },
+  watch: {
+    pdfSrc: {
+      handler(newVal) {
+        // Reset state when PDF source changes
+        if (newVal && this.isPdf) {
+          this.pdfReady = false
+          this.currentPage = 1
+          this.numPages = 0
+          // Use nextTick to ensure DOM is ready before setting pdfReady
+          this.$nextTick(() => {
+            this.pdfReady = true
+          })
+        } else {
+          this.pdfReady = false
+        }
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    handlePdfError(error) {
+      this.pdfReady = false
+      // Optionally emit error to parent component
+      this.$emit('pdf-error', error)
+    },
+    handlePdfLoaded(numPages) {
+      this.numPages = numPages
     }
   }
 }

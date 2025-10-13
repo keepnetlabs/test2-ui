@@ -132,7 +132,7 @@
               <div class="email-template__ai-assistant__selects">
                 <InputSelectLanguage
                   v-bind="selectLanguageRules"
-                  style="max-width: 160px;"
+                  style="max-width: 220px;"
                   :value="languageTypeResourceId"
                   class="email-template__ai-assistant-footer-left-select"
                   required
