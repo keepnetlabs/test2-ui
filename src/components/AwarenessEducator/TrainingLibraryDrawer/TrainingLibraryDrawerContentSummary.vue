@@ -510,7 +510,7 @@ export default {
 
         if (filtered.length === 0) return 'No compliance'
         if (filtered.length === 1) return filtered[0]
-        return `${filtered.length} compliances`
+        return `${filtered.length} compliance`
       }
       // compliance string ise
       if (data.compliance) {
