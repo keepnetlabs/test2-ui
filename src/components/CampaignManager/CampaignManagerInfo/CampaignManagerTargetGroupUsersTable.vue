@@ -252,7 +252,12 @@ export default {
           if (yesStatusItem && yesStatusItem.hasPreferredLanguage) {
             yesStatusItem.hasPreferredLanguage.forEach((lang) => {
               if (lang.count > 0) {
-                languageCounts.push(`${lang.status} (${lang.count})`)
+                languageCounts.push(
+                  `${
+                    this.languageOptions.find((option) => option.languageTypeName === lang.status)
+                      ?.text || lang.status
+                  } (${lang.count})`
+                )
               }
             })
           }
@@ -439,7 +444,7 @@ export default {
       if (!this.resourceId) return
       this.setLoading(true)
       LookupLocalStorage.getSingle(21).then((response) => {
-        const languageOptions =
+        this.languageOptions =
           response?.map((language) => ({
             text: language.isoFriendlyName,
             languageTypeName: language.name,
@@ -458,8 +463,8 @@ export default {
                     ...row,
                     preferredLanguage: row.preferredLanguage.map((lang) => {
                       return (
-                        languageOptions.find((option) => option.languageTypeName === lang)?.text ||
-                        lang
+                        this.languageOptions.find((option) => option.languageTypeName === lang)
+                          ?.text || lang
                       )
                     })
                   }
@@ -467,7 +472,7 @@ export default {
                 return {
                   ...row,
                   preferredLanguage:
-                    languageOptions.find(
+                    this.languageOptions.find(
                       (option) => option.languageTypeName === row.preferredLanguage
                     )?.text || row.preferredLanguage
                 }
@@ -563,7 +568,10 @@ export default {
                 })
                 this.preferredLanguages = Array.from(preferredLanguages)
                 this.randomLanguages = Array.from(randomLanguages)
-                this.activeCompanyName = activeData?.companyPreferredLanguage
+                this.activeCompanyName =
+                  this.languageOptions.find(
+                    (lang) => lang.languageTypeName === activeData?.companyPreferredLanguage
+                  )?.text || activeData?.companyPreferredLanguage
                 this.isRenderDefaultLanguageAlertBoxFormat =
                   isNoPreferredLanguage && isYesRandomLanguage
                 this.setLoading(false)

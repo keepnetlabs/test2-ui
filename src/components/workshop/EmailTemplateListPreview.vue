@@ -825,8 +825,6 @@ export default {
                 )?.text || searchPsEmailTemplate.languageTypeName
             }
           }
-          console.log('searchPsEmailTemplate', searchPsEmailTemplate)
-          console.log('payload', payload)
           this.insertTemplate(response?.data?.data?.resourceId, {
             ...payload,
             ...searchPsEmailTemplate
