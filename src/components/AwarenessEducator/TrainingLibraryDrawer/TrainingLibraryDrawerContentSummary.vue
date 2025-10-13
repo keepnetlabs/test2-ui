@@ -603,7 +603,7 @@ export default {
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data
-          const previewUrl = previewData?.trainingUrl || previewData
+          let previewUrl = previewData?.scormPlayerUrl || previewData
 
           // Filename'i al
           const splittedUrl = previewUrl.split('/')
@@ -631,7 +631,6 @@ export default {
                 })
               })
               .catch((error) => {
-                console.error('❌ Error downloading PDF:', error)
                 this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
                   status: false,
                   previewData: null,
@@ -640,7 +639,13 @@ export default {
                 })
               })
           } else {
-            // Image ise direkt URL'i göster
+            if (typeof previewUrl === 'string' && previewData.trainingUrl) {
+              // URL'de zaten query parametresi var mı kontrol et
+              const separator = previewUrl.includes('?') ? '&' : '?'
+              // trainingUrl'i encode et
+              const encodedTrainingUrl = encodeURIComponent(previewData.trainingUrl)
+              previewUrl = `${previewUrl}${separator}isPreview=true&scoAddress=${encodedTrainingUrl}`
+            }
             this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
               status: true,
               previewData: previewUrl,
@@ -650,7 +655,6 @@ export default {
           }
         })
         .catch((error) => {
-          console.error('❌ Error fetching preview URL:', error)
           this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
             status: false,
             previewData: null,
@@ -711,7 +715,6 @@ export default {
     handleDuplicate() {
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       if (!trainingId) {
-        console.error('❌ No trainingId found for duplicate')
         return
       }
 
@@ -753,7 +756,6 @@ export default {
     handleFavoriteToggle() {
       const resourceId = this.trainingData.trainingId || this.trainingData.resourceId
       if (!resourceId) {
-        console.error('❌ No resourceId found for favorite toggle')
         return
       }
 
