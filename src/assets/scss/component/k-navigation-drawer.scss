@@ -10,9 +10,13 @@
     z-index: 3;
   }
 }
-.k-navigation-drawer--new-scenario .k-navigation-drawer--email-template {
-  z-index: 1001 !important;
+
+// Nested drawer - z-index attribute'taki değeri CSS'te de kullan
+.k-navigation-drawer--email-template[z-index="10012"],
+.k-navigation-drawer--landing-page[z-index="10012"] {
+  z-index: 10012 !important;
 }
+
 // Overlay z-index for temporary drawers
 .v-navigation-drawer--temporary ~ .v-overlay {
   z-index: 10 !important;

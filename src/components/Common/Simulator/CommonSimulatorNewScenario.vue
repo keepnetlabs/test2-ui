@@ -37,6 +37,7 @@
         v-if="isOpenEmailTemplateDrawer"
         ref="newEmailTemplate"
         is-a-i-ally-enabled
+        is-nested
         :status="isOpenEmailTemplateDrawer"
         :should-remove-overflow="false"
         :should-control-html-overflow="false"
@@ -49,6 +50,7 @@
       <NewLandingPage
         v-if="isOpenLandingPageDrawer"
         ref="newLandingPage"
+        is-nested
         :status="isOpenLandingPageDrawer"
         :is-a-i-ally-enabled="true"
         :should-remove-overflow="false"

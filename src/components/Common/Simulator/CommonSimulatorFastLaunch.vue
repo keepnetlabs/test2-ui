@@ -1,13 +1,36 @@
 <template>
-  <AppModal
-    :status="status"
-    icon-name="mdi-hook"
-    :title="getTitle"
-    class-name="add-in-configuration"
-    title-id="text--phishing-scenarios-fast-launch-modal-title"
-    @closeOverlay="closeOverlay"
+  <VNavigationDrawer
+    v-click-outside="handleClickOutside"
+    v-if="status"
+    :value="drawerModel"
+    class="k-navigation-drawer k-navigation-drawer--fast-launch"
+    temporary
+    fixed
+    stateless
+    overlay-color="rgba(0, 0, 0, 0.17)"
+    overlay-opacity="1"
+    right
+    width="calc(100% - 72px)"
+    height="100%"
+    @input="drawerModel = $event"
   >
-    <template #overlay-body>
+    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+        <div>
+          <VListItem>
+            <VListItemContent>
+              <VListItemTitle class="k-overlay__title">
+                {{ getTitle }}
+              </VListItemTitle>
+            </VListItemContent>
+          </VListItem>
+        </div>
+        <div>
+          <VIcon class="cursor-pointer" color="#757575" @click="closeOverlay">mdi-close</VIcon>
+        </div>
+      </div>
+    </div>
+    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -62,8 +85,8 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
-    </template>
-    <template #overlay-footer>
+    </div>
+    <div class="k-overlay__footer k-navigation-drawer__footer">
       <StepperFooter
         max-step="2"
         :ids="stepperIds"
@@ -78,12 +101,11 @@
         @on-next="handleSubmit"
         @on-submit="handleSubmit"
       />
-    </template>
-  </AppModal>
+    </div>
+  </VNavigationDrawer>
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CommonSimulatorFastLaunchStep1 from '@/components/Common/Simulator/CommonSimulatorFastLaunchStep1.vue'
@@ -112,8 +134,7 @@ export default {
     StepperFooter,
     CampaignManagerSummary,
     CommonSimulatorFastLaunchStep1,
-    ConfigureCompanyStepHeader,
-    AppModal
+    ConfigureCompanyStepHeader
   },
   props: {
     status: {
@@ -133,6 +154,7 @@ export default {
   },
   data() {
     return {
+      drawerModel: this.status,
       labels,
       step: 1,
       stepperIds: {
@@ -215,7 +237,27 @@ export default {
       return formData
     }
   },
+  watch: {
+    status(val) {
+      this.drawerModel = val
+    },
+    drawerModel(val) {
+      if (!val && this.status) {
+        // Animasyon bitene kadar bekle, sonra parent'a bildir
+        setTimeout(() => {
+          if (this.status) {
+            this.$emit('on-close')
+          }
+        }, 300)
+      }
+    }
+  },
   created() {
+    // HTML overflow kontrolü
+    if (document.querySelector('html')) {
+      document.querySelector('html').style.overflowY = 'hidden'
+    }
+
     LookupLocalStorage.getSingle(21).then((response) => {
       this.languageOptions =
         response?.map((language) => ({
@@ -233,7 +275,46 @@ export default {
     this.callForFormDetails()
     this.callForGetPhishingScenario()
   },
+  beforeDestroy() {
+    // HTML overflow'u eski haline getir
+    setTimeout(() => {
+      if (document.querySelector('html')) {
+        document.querySelector('html').style.overflowY = 'auto'
+      }
+    }, 250)
+  },
   methods: {
+    handleClickOutside(event) {
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // V-menu açıksa ignore et
+        const menuElement = event.target.closest('.v-menu__content, .v-list')
+        if (menuElement) {
+          return
+        }
+
+        // Leaving dialog açıksa ignore et
+        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"]')
+        if (leavingDialogElement) {
+          return
+        }
+      }
+
+      // Leaving dialog zaten açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // Drawer'ı kapat
+      this.closeOverlay()
+    },
     callForDefaultSmtpSetting() {
       const apiFunc =
         this.type === SCENARIO_TYPES.PHISHING
@@ -349,12 +430,15 @@ export default {
       }
       const isChanged = isDifferent(currentFormValues, initialFormValues)
       if (!isChanged) {
-        return this.$emit('on-close')
+        // Önce drawer'ı kapat (animasyon için)
+        this.drawerModel = false
+        return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit('on-close')
+          // Leaving dialog'dan "Quit Editing" denince drawer'ı kapat
+          this.drawerModel = false
         }
       })
     },

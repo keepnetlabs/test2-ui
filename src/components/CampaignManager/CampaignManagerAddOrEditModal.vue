@@ -24,27 +24,14 @@
           @on-close="toggleShowMissingLanguageSupportDialog"
           @on-confirm="onConfirmLanguageSupportDialog"
         />
-        <VNavigationDrawer
-          v-click-outside="handleClickOutsideSimulatorDrawer"
+        <CommonSimulatorNewScenario
           v-if="isOpenPhishingDrawer"
-          v-model="isOpenPhishingDrawer"
-          class="k-navigation-drawer k-navigation-drawer--phishing"
-          fixed
-          overlay-color="rgba(0, 0, 0, 0.17)"
-          overlay-opacity="1"
-          right
-          width="calc(100% - 72px)"
-          height="100%"
-        >
-          <CommonSimulatorNewScenario
-            v-if="isOpenPhishingDrawer"
-            ref="commonSimulatorNewScenario"
-            :status="isOpenPhishingDrawer"
-            :scenario-details-lookup="scenarioDetailsLookup"
-            @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
-            @on-new-item-created="handleNewScenarioCreated"
-          />
-        </VNavigationDrawer>
+          ref="commonSimulatorNewScenario"
+          :status="isOpenPhishingDrawer"
+          :scenario-details-lookup="scenarioDetailsLookup"
+          @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
+          @on-new-item-created="handleNewScenarioCreated"
+        />
         <v-stepper v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
             <v-stepper-step
@@ -1033,40 +1020,8 @@ export default {
     handleCreatePhishingScenario() {
       this.isOpenPhishingDrawer = true
     },
-    handleClickOutsideSimulatorDrawer(event) {
-      // SnackBar tıklanırsa ignore et
-      if (event && event.target) {
-        const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
-        )
-        if (snackbarElement) {
-          return
-        }
-      }
-
-      if (
-        this.$refs.commonSimulatorNewScenario?.isOpenEmailTemplateDrawer ||
-        this.$refs.commonSimulatorNewScenario?.isOpenLandingPageDrawer
-      ) {
-        return
-      }
-      if (
-        this.$refs.commonSimulatorNewScenario?.isEmailTemplateInEditMode ||
-        this.$refs.commonSimulatorNewScenario?.isLandingPageTemplateInEditMode
-      ) {
-        return
-      }
-      this.closeSimulatorDrawer()
-    },
     handleCloseSimulatorDrawer() {
-      this.closeSimulatorDrawer()
-    },
-    closeSimulatorDrawer(status) {
-      if (document.querySelector('.k-navigation-drawer--phishing'))
-        document.querySelector('.k-navigation-drawer--phishing').style.right = '-100%'
-      setTimeout(() => {
-        this.isOpenPhishingDrawer = false
-      }, 250)
+      this.isOpenPhishingDrawer = false
     },
     handleNewScenarioCreated(resourceId) {
       this.$refs.refCampaignManagerPhishingScenarios

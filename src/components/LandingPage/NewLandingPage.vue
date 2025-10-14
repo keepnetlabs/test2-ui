@@ -7,8 +7,10 @@
     temporary
     fixed
     stateless
-    overlay-color="rgba(0, 0, 0, 0.17)"
-    overlay-opacity="1"
+    :hide-overlay="isNested"
+    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
+    :overlay-opacity="!isNested ? 1 : undefined"
+    :z-index="isNested ? '10012' : undefined"
     right
     width="calc(100% - 72px)"
     height="100%"
@@ -430,6 +432,10 @@ export default {
     showLeavingDialog: {
       type: Boolean,
       default: true
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     },
     selectedMethodText: {
       type: String,
