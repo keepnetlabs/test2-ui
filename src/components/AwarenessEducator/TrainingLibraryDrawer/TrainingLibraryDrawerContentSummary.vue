@@ -603,7 +603,7 @@ export default {
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data
-          let previewUrl = previewData?.scormPlayerUrl || previewData
+          let previewUrl = previewData?.scormPlayerUrl || previewData?.trainingUrl
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
@@ -796,14 +796,7 @@ export default {
           selectedRow: this.trainingData
         })
       }
-      // Drawer store'unu temizle
-      this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
-        status: false,
-        selectedRow: null,
-        showSendButton: true,
-        type: TRAINING_LIBRARY_TYPES.TRAINING
-      })
-      // Modal açıldıktan sonra drawer'ı kapat
+      // Modal açıldıktan sonra drawer'ı kapat (parent component emit ile halleder)
       this.$emit('send-clicked')
     }
   }
