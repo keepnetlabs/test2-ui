@@ -81,20 +81,50 @@
             </VBtn>
           </template>
         </TrainingLibraryDrawerLanguageMenu>
-        <VBtn
-          v-else-if="!onlyPreview"
-          block
-          color="#2196F3"
-          class="training-library-drawer-content-summary__preview-btn"
-          dark
-          rounded
-          depressed
-          :ripple="false"
-          @click="handleSend"
+        <!-- Learning Path için send butonu ve yanında favorite/edit butonları -->
+        <div
+          v-if="!onlyPreview && isLearningPath"
+          class="training-library-drawer-content-summary__learning-path-send-wrapper"
         >
-          <VIcon left>mdi-send</VIcon>
-          {{ getPreviewButtonText }}
-        </VBtn>
+          <VBtn
+            color="#2196F3"
+            class="training-library-drawer-content-summary__learning-path-send-btn"
+            dark
+            rounded
+            depressed
+            :ripple="false"
+            @click="handleSend"
+          >
+            <VIcon left>mdi-send</VIcon>
+            {{ getPreviewButtonText }}
+          </VBtn>
+          <VBtn
+            icon
+            small
+            color="#fff"
+            :ripple="false"
+            class="training-library-drawer-content-summary__small-action-icon"
+            @click="handleFavoriteToggle"
+          >
+            <VIcon :color="isFavorite ? '#757575' : '#757575'" size="20">
+              {{ isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+            </VIcon>
+          </VBtn>
+          <VBtn
+            icon
+            small
+            color="#fff"
+            :ripple="false"
+            :disabled="trainingData && !trainingData.isEditable"
+            :style="{
+              opacity: trainingData && !trainingData.isEditable ? '0.5' : '1'
+            }"
+            class="training-library-drawer-content-summary__small-action-icon"
+            @click="handleEdit"
+          >
+            <VIcon color="#757575" size="20">mdi-pencil</VIcon>
+          </VBtn>
+        </div>
         <div
           v-if="!onlyPreview && !isLearningPath"
           class="training-library-drawer-content-summary__send-wrapper"
@@ -148,6 +178,7 @@
             v-if="!onlyPreview"
             :type="type"
             :is-deletable="isDeletable"
+            :is-editable="trainingData && trainingData.isEditable"
             :is-nested="isNested"
             :is-deep-nested="isDeepNested"
             :languages="availableLanguages"
@@ -384,7 +415,7 @@ export default {
         .sort((a, b) => (a.trainingOrder || 0) - (b.trainingOrder || 0))
         .map((step) => ({
           title: step.name,
-          type: step.type === 'SCORM' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'SCORM' ? 'Training' : step.type,
           detailTrainingId: step.detailTrainingId,
           languages: step.languages,
           coverImage: step.coverImage
@@ -403,7 +434,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.type === 'Training' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
           onlyPreview: this.onlyPreview
         })
       } else {
@@ -418,7 +449,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.type === 'Training' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
           onlyPreview: this.onlyPreview
         })
       }
@@ -609,39 +640,7 @@ export default {
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data
-          let previewUrl = previewData?.scormPlayerUrl || previewData
-
-          // Eğer poster/screensaver/infographic ise ve scormPlayerUrl boş ise direkt blob download
-          if (isPosterLikeType && !previewData?.scormPlayerUrl) {
-            this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
-              status: true,
-              previewData: null,
-              isLoading: true,
-              type: this.type
-            })
-
-            AwarenessEducatorService.downloadPoster({ trainingId, languageId })
-              .then((blobResponse) => {
-                const blobUrl = window.URL.createObjectURL(blobResponse.data)
-                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
-                  status: true,
-                  previewData: blobUrl,
-                  isLoading: false,
-                  type: this.type
-                })
-              })
-              .catch((error) => {
-                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
-                  status: false,
-                  previewData: null,
-                  isLoading: false,
-                  type: null
-                })
-              })
-            return
-          }
-
-          // Normal akış: URL varsa kontrol et
+          let previewUrl = previewData?.scormPlayerUrl || previewData?.trainingUrl
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
@@ -835,14 +834,7 @@ export default {
           selectedRow: this.trainingData
         })
       }
-      // Drawer store'unu temizle
-      this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
-        status: false,
-        selectedRow: null,
-        showSendButton: true,
-        type: TRAINING_LIBRARY_TYPES.TRAINING
-      })
-      // Modal açıldıktan sonra drawer'ı kapat
+      // Modal açıldıktan sonra drawer'ı kapat (parent component emit ile halleder)
       this.$emit('send-clicked')
     }
   }

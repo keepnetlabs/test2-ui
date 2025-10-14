@@ -113,7 +113,7 @@
       <CampaignManagerSummaryCard
         detailable
         :title="getCardTitle"
-        icon="mdi-application"
+        icon="mdi-book-education"
         is-training
         :show-body-detail.sync="isShowTrainingEmail"
       />

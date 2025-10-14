@@ -710,6 +710,7 @@ export default {
             link.download = `${row.trainingId}-${languageText}_Scorm.zip`
             link.click()
           })
+          this.handleClose()
           this.routeToEnrollments()
         })
         .finally(() => (this.isActionButtonDisabled = false))

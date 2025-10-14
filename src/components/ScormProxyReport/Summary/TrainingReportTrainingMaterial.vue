@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     class="mt-4"
     detailable
-    icon="mdi-application"
+    icon="mdi-book-education"
     detailable-button-id="btn--preview-training-report-training-material"
     :isLoading="isFetchingSummary"
     :show-body-detail="false"

@@ -85,6 +85,37 @@
     }
   }
 
+  &__learning-path-send-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  &__learning-path-send-btn {
+    flex: 1;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    height: 36px !important;
+    box-shadow: none !important;
+
+    &::before {
+      background-color: transparent !important;
+    }
+  }
+
+  &__small-action-icon {
+    border-radius: 50%;
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0;
+    border: 1px solid #757575 !important;
+    &::before {
+      background-color: #fff !important;
+    }
+  }
+
   &__details-section {
     flex: 1;
     min-width: 0;

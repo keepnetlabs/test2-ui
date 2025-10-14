@@ -206,6 +206,9 @@ export default {
     },
     onClickPreview(training) {
       const type = training.type
+      if (training.detailTrainingId && !training.trainingId) {
+        training.trainingId = training.detailTrainingId
+      }
       if (type === 'SCORM' || type === 'SCORM12' || type === 'Training') {
         this.$store.commit('trainingLibrary/SET_TRAINING_PREVIEW_DIALOG', {
           status: true,
@@ -217,17 +220,20 @@ export default {
       } else if (type === 'Survey') {
         this.$store.commit('trainingLibrary/SET_SURVEY_PREVIEW_DIALOG', {
           status: true,
-          selectedRow: training
+          selectedRow: training,
+          onlyPreview: true
         })
       } else if (type === 'Poster') {
         this.$store.commit('trainingLibrary/SET_POSTER_PREVIEW_DIALOG', {
           status: true,
-          selectedRow: training
+          selectedRow: training,
+          onlyPreview: true
         })
       } else if (type === 'Infographic') {
         this.$store.commit('trainingLibrary/SET_INFO_GRAPHIC_PREVIEW_DIALOG', {
           status: true,
-          selectedRow: training
+          selectedRow: training,
+          onlyPreview: true
         })
       }
     },

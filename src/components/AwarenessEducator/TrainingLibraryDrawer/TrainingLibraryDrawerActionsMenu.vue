@@ -61,6 +61,10 @@
           v-for="item in otherItems"
           :key="item.action"
           class="training-library-drawer-actions-menu__item"
+          :class="{
+            'training-library-drawer-actions-menu__item--disabled': item.disabled
+          }"
+          :disabled="item.disabled"
           @click="handleAction(item.action)"
         >
           <VListItemIcon>
@@ -84,6 +88,10 @@ export default {
       default: TRAINING_LIBRARY_TYPES.TRAINING
     },
     isDeletable: {
+      type: Boolean,
+      default: true
+    },
+    isEditable: {
       type: Boolean,
       default: true
     },
@@ -122,14 +130,27 @@ export default {
     },
     otherItems() {
       const items = []
-      items.push({ action: 'edit', icon: 'mdi-pencil', text: 'Edit' })
+      items.push({
+        action: 'edit',
+        icon: 'mdi-pencil',
+        text: 'Edit',
+        disabled: !this.isEditable
+      })
       if (!this.isNested && !this.isDeepNested) {
         items.push({
           action: 'duplicate',
           icon: 'mdi-content-copy',
-          text: 'Duplicate'
+          text: 'Duplicate',
+          disabled: false
         })
-        if (this.isDeletable) items.push({ action: 'delete', icon: 'mdi-delete', text: 'Delete' })
+        if (this.isDeletable) {
+          items.push({
+            action: 'delete',
+            icon: 'mdi-delete',
+            text: 'Delete',
+            disabled: !this.isEditable
+          })
+        }
       }
       return items
     },
@@ -157,3 +178,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.training-library-drawer-actions-menu__item--disabled {
+  opacity: 0.5;
+}
+</style>
