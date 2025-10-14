@@ -81,20 +81,46 @@
             </VBtn>
           </template>
         </TrainingLibraryDrawerLanguageMenu>
-        <VBtn
-          v-else-if="!onlyPreview"
-          block
-          color="#2196F3"
-          class="training-library-drawer-content-summary__preview-btn"
-          dark
-          rounded
-          depressed
-          :ripple="false"
-          @click="handleSend"
+        <!-- Learning Path için send butonu ve yanında favorite/edit butonları -->
+        <div
+          v-if="!onlyPreview && isLearningPath"
+          class="training-library-drawer-content-summary__learning-path-send-wrapper"
         >
-          <VIcon left>mdi-send</VIcon>
-          {{ getPreviewButtonText }}
-        </VBtn>
+          <VBtn
+            color="#2196F3"
+            class="training-library-drawer-content-summary__learning-path-send-btn"
+            dark
+            rounded
+            depressed
+            :ripple="false"
+            @click="handleSend"
+          >
+            <VIcon left>mdi-send</VIcon>
+            {{ getPreviewButtonText }}
+          </VBtn>
+          <VBtn
+            icon
+            small
+            color="#fff"
+            :ripple="false"
+            class="training-library-drawer-content-summary__small-action-icon"
+            @click="handleFavoriteToggle"
+          >
+            <VIcon :color="isFavorite ? '#757575' : '#757575'" size="20">
+              {{ isFavorite ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+            </VIcon>
+          </VBtn>
+          <VBtn
+            icon
+            small
+            color="#fff"
+            :ripple="false"
+            class="training-library-drawer-content-summary__small-action-icon"
+            @click="handleEdit"
+          >
+            <VIcon color="#757575" size="20">mdi-pencil</VIcon>
+          </VBtn>
+        </div>
         <div
           v-if="!onlyPreview && !isLearningPath"
           class="training-library-drawer-content-summary__send-wrapper"
@@ -384,7 +410,7 @@ export default {
         .sort((a, b) => (a.trainingOrder || 0) - (b.trainingOrder || 0))
         .map((step) => ({
           title: step.name,
-          type: step.type === 'SCORM' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'SCORM' ? 'Training' : step.type,
           detailTrainingId: step.detailTrainingId,
           languages: step.languages,
           coverImage: step.coverImage
@@ -403,7 +429,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.type === 'Training' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
           onlyPreview: this.onlyPreview
         })
       } else {
@@ -418,7 +444,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.type === 'Training' ? 'Training' : step.type,
+          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
           onlyPreview: this.onlyPreview
         })
       }
