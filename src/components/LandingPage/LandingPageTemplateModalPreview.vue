@@ -1,49 +1,86 @@
 <template>
   <div class="landing-page-template-preview" v-if="hasLandingPageTemplate">
-    <div class="landing-page-template-preview__text">
-      <div>
-        <div>
-          <span class="template-preview__text--title"
-            >{{ type === PREVIEW_DIALOG_TYPES.PHISHING ? labels.Phishing : labels.Quishing }}
-            URL:
-          </span>
-          <span class="template-preview__text--body">{{ phishingUrl }}</span>
+    <div class="landing-page-template-preview__title">
+      {{ templateName }}
+    </div>
+    <div class="landing-page-template-preview__container">
+      <!-- Language Selection and Actions Header -->
+      <div class="landing-page-template-preview__header">
+        <InputLanguagePreview
+          v-model="selectedLanguageId"
+          :items="languageItems"
+          :label="`Template Language (${languageItems.length})`"
+          class="landing-page-template-preview__language-select"
+          hide-details
+          @input="handleLanguageChange"
+        />
+        <div class="landing-page-template-preview__actions">
+          <v-btn icon outlined color="#2196F3" small @click="handleExternalLink">
+            <v-icon small>mdi-open-in-new</v-icon>
+          </v-btn>
+          <v-btn icon outlined color="#2196F3" small @click="handleEdit">
+            <v-icon small>mdi-pencil</v-icon>
+          </v-btn>
         </div>
       </div>
-      <div class="landing-page-template-preview__control-buttons">
-        <v-btn class="mr-2" icon :disabled="!hasPreviousTemplate" @click="handlePreviousTemplate">
-          <v-icon> mdi-chevron-left </v-icon>
-        </v-btn>
-        <v-btn icon :disabled="!hasNextTemplate" @click="handleNextTemplate">
-          <v-icon> mdi-chevron-right </v-icon>
-        </v-btn>
+      <hr class="mt-4 ml-n4 mr-n4" v-if="!!getCurrentLandingPageTemplate" />
+      <template v-if="landingPageTemplates.length > 1">
+        <v-tabs
+          v-model="selectedLandingPageIndex"
+          background-color="transparent"
+          color="#2196F3"
+          class="landing-page-template-preview__tabs k-sub-tab"
+        >
+          <v-tab v-for="(page, index) in landingPageTemplates" :key="index">
+            Page {{ index + 1 }}
+          </v-tab>
+        </v-tabs>
+        <hr class="ml-n4 mr-n4" />
+      </template>
+      <!-- Safari Browser Toolbar -->
+      <div v-if="!!getCurrentLandingPageTemplate" class="browser-toolbar">
+        <div class="browser-toolbar__controls">
+          <span class="browser-toolbar__dot browser-toolbar__dot--red"></span>
+          <span class="browser-toolbar__dot browser-toolbar__dot--yellow"></span>
+          <span class="browser-toolbar__dot browser-toolbar__dot--green"></span>
+        </div>
+        <div class="browser-toolbar__url-bar">
+          <span class="browser-toolbar__url-text">{{ phishingUrl }}</span>
+        </div>
       </div>
+
+      <KEmailPreview
+        v-if="!!getCurrentLandingPageTemplate"
+        ref="refPreview"
+        :html="previewHtml"
+        :is-landing-page="type === PREVIEW_DIALOG_TYPES.PHISHING"
+        :is-red-flagged-template="isRedFlaggedTemplate"
+      />
     </div>
-    <hr class="mt-6" v-if="!!getCurrentLandingPageTemplate" />
-    <KEmailPreview
-      v-if="!!getCurrentLandingPageTemplate"
-      ref="refPreview"
-      :html="previewHtml"
-      :is-landing-page="type === PREVIEW_DIALOG_TYPES.PHISHING"
-      :is-red-flagged-template="isRedFlaggedTemplate"
-    />
   </div>
 </template>
 
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import labels from '../../model/constants/labels'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
-  components: { KEmailPreview },
+  components: { KEmailPreview, InputLanguagePreview },
   props: {
     templateName: {
       type: String,
       default: ''
     },
     landingPageTemplates: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    languages: {
       type: Array,
       default() {
         return []
@@ -62,12 +99,19 @@ export default {
     return {
       labels,
       PREVIEW_DIALOG_TYPES,
-      selectedLandingPageIndex: 0
+      selectedLandingPageIndex: 0,
+      selectedLanguageId: null
     }
   },
   computed: {
     hasLandingPageTemplate() {
       return this?.landingPageTemplates?.length > 0
+    },
+    languageItems() {
+      return this.languages.map((lang) => ({
+        text: lang.text || lang.name || lang.languageName,
+        value: lang.value || lang.id || lang.languageTypeResourceId
+      }))
     },
     getCurrentLandingPageTemplate() {
       return this?.landingPageTemplates[this.selectedLandingPageIndex]?.content
@@ -86,20 +130,30 @@ export default {
     isRedFlaggedTemplate() {
       const html = this.getCurrentLandingPageTemplate || ''
       return typeof html === 'string' && html.includes('data-redflag')
-    },
-    hasNextTemplate() {
-      return this?.landingPageTemplates?.length - 1 > this.selectedLandingPageIndex
-    },
-    hasPreviousTemplate() {
-      return this.selectedLandingPageIndex > 0
+    }
+  },
+  watch: {
+    languages(newVal) {
+      if (newVal.length > 0) {
+        this.selectedLanguageId = newVal[0].value
+      }
     }
   },
   methods: {
-    handlePreviousTemplate() {
-      this.selectedLandingPageIndex--
+    handleLanguageChange(languageId) {
+      this.$emit('language-change', languageId)
     },
-    handleNextTemplate() {
-      this.selectedLandingPageIndex++
+    handleExternalLink() {
+      if (this.previewHtml) {
+        const blob = new Blob([this.previewHtml], { type: 'text/html' })
+        const url = window.URL.createObjectURL(blob)
+        window.open(url, '_blank')
+        setTimeout(() => window.URL.revokeObjectURL(url), 100)
+      }
+      //this.$emit('external-link')
+    },
+    handleEdit() {
+      this.$emit('edit')
     }
   }
 }

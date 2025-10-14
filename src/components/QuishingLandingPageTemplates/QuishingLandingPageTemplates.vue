@@ -21,6 +21,7 @@
       :type="PREVIEW_DIALOG_TYPES.QUISHING"
       :api-func="getLandingPageTemplate"
       @on-close="togglePreviewDialog"
+      @on-edit="handleEditFromPreview"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
       v-if="isShowDeleteDialog"
@@ -103,6 +104,12 @@ export default {
     togglePreviewDialog(selectedLandingPageTemplate = null) {
       this.selectedLandingPageTemplate = selectedLandingPageTemplate
       this.isShowPreviewDialog = !this.isShowPreviewDialog
+    },
+    handleEditFromPreview(row) {
+      this.isShowPreviewDialog = false
+      this.$nextTick(() => {
+        this.toggleNewLandingPageTemplateModal(row, false)
+      })
     },
     toggleDeleteDialog(row = null, forceUpdate = false) {
       this.isMultipleDelete = false

@@ -1,49 +1,68 @@
 <template>
-  <AppDialog
+  <VNavigationDrawer
+    v-click-outside="handleClickOutside"
     v-if="status"
-    custom-size="1600"
-    max-height
-    max-height-size="900"
-    icon="mdi-eye"
-    title="Landing Page Template Preview"
-    size="ultraMaximum"
-    :status="status"
-    :subtitle="getSubtitle"
-    @changeStatus="handleClose"
+    :value="drawerModel"
+    class="k-navigation-drawer k-navigation-drawer--landing-page-preview"
+    temporary
+    fixed
+    stateless
+    :hide-overlay="isNested"
+    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
+    :overlay-opacity="!isNested ? 1 : undefined"
+    :z-index="isNested ? '10012' : undefined"
+    right
+    width="calc(100% - 72px)"
+    height="100%"
+    @input="drawerModel = $event"
   >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+        <div>
+          <VListItem>
+            <VListItemContent>
+              <VListItemTitle class="k-overlay__title">
+                Landing Page Template Preview
+              </VListItemTitle>
+            </VListItemContent>
+          </VListItem>
+        </div>
+        <div>
+          <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+            mdi-close
+          </VIcon>
+        </div>
+      </div>
+    </div>
+    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+      <LandingPagePreviewSkeleton v-if="isLoading" />
       <LandingPageTemplateModalPreview
         v-show="!isLoading"
         :type="type"
         :template-name="landingPageParams.name"
         :landing-page-templates="landingPageTemplates"
+        :languages="landingPageParams.languages || []"
         :phishing-url="landingPageParams.urlTemplate"
+        @edit="handleEdit"
       />
-    </template>
-    <template #app-dialog-footer>
-      <AppDialogFooterWithClose @on-close="handleClose" />
-    </template>
-  </AppDialog>
+    </div>
+  </VNavigationDrawer>
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import LandingPagePreviewSkeleton from '@/components/SkeletonLoading/LandingPagePreviewSkeleton'
 import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
-import AppDialog from '@/components/AppDialog'
 import { useLoading } from '@/hooks/useLoading'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { getLandingPageTemplate } from '@/api/landingPage'
+import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 export default {
   name: 'CommonSimulatorLandingPageTemplatesPreviewDialog',
   components: {
-    AppDialog,
-    AppDialogFooterWithClose,
     LandingPageTemplateModalPreview,
-    DatatableLoading
+    LandingPagePreviewSkeleton
   },
-  mixins: [useLoading],
+  mixins: [useLoading, useHtmlOverflowControl],
   props: {
     status: {
       type: Boolean,
@@ -60,12 +79,23 @@ export default {
     apiFunc: {
       type: Function,
       default: getLandingPageTemplate
+    },
+    isNested: {
+      type: Boolean,
+      default: false
+    },
+    languages: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
+      drawerModel: this.status,
       landingPageTemplates: null,
-      landingPageParams: {}
+      landingPageParams: {
+        languages: []
+      }
     }
   },
   computed: {
@@ -73,10 +103,33 @@ export default {
       return this?.selectedRow?.name || ''
     }
   },
+  watch: {
+    status(newVal) {
+      this.drawerModel = newVal
+    },
+    drawerModel(newVal) {
+      if (!newVal) {
+        this.handleClose()
+      }
+    }
+  },
   created() {
     this.callForData()
   },
   methods: {
+    handleClickOutside(event) {
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+      }
+
+      this.drawerModel = false
+    },
     handleClose() {
       this.$emit('on-close')
     },
@@ -87,6 +140,12 @@ export default {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
           this.landingPageParams.name = data.name
+
+          this.landingPageParams.languages =
+            this.languages.filter((lang) => {
+              return lang.value === data.languageTypeResourceId
+            }) || []
+
           this.landingPageTemplates = data.landingPages
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages?.length
@@ -98,6 +157,9 @@ export default {
             this.setLoading()
           }, 500)
         })
+    },
+    handleEdit() {
+      this.$emit('on-edit', this.selectedRow)
     }
   }
 }

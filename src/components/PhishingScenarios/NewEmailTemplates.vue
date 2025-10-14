@@ -324,8 +324,10 @@ import { scrollToEmailTemplateContent } from '@/components/Company Settings/util
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { checkRedFlags } from '@/api/phishingsimulator'
+import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 export default {
   name: 'NewEmailTemplates',
+  mixins: [useHtmlOverflowControl, useSetAttachmentFile],
   components: {
     EditLanguagesLeavingDialog,
     InputLanguagePreview,
@@ -339,7 +341,6 @@ export default {
     InputEntityName,
     InputDescription
   },
-  mixins: [useSetAttachmentFile],
   props: {
     status: {
       type: Boolean,
@@ -624,13 +625,6 @@ export default {
     }
   },
   created() {
-    // HTML overflow kontrolü - eğer modal içinde değilse
-    if (this.shouldControlHtmlOverflow) {
-      if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'hidden'
-      }
-    }
-
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
@@ -728,15 +722,7 @@ export default {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
     }
-
-    // HTML overflow'u eski haline getir - eğer modal içinde değilse
-    if (this.shouldControlHtmlOverflow) {
-      setTimeout(() => {
-        if (document.querySelector('html')) {
-          document.querySelector('html').style.overflowY = 'auto'
-        }
-      }, 250)
-    }
+    // Mixin tarafından HTML overflow kontrolü yapılıyor
   },
   methods: {
     handleClickOutside(event) {

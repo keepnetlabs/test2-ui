@@ -13,7 +13,8 @@
 
 // Nested drawer - z-index attribute'taki değeri CSS'te de kullan
 .k-navigation-drawer--email-template[z-index="10012"],
-.k-navigation-drawer--landing-page[z-index="10012"] {
+.k-navigation-drawer--landing-page[z-index="10012"],
+.k-navigation-drawer--landing-page-preview[z-index="10012"] {
   z-index: 10012 !important;
 }
 

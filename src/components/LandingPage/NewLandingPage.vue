@@ -388,8 +388,10 @@ import { MERGED_TEXTS_MAP, processTemplateWithCustomScripts } from '@/components
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
+import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 export default {
   name: 'NewLandingPage',
+  mixins: [useHtmlOverflowControl],
   components: {
     InputPhishingMethod,
     InputPhishingLink,
@@ -810,13 +812,6 @@ export default {
     }
   },
   created() {
-    // HTML overflow kontrolü - eğer modal içinde değilse
-    if (this.shouldControlHtmlOverflow) {
-      if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'hidden'
-      }
-    }
-
     if (this.isDuplicate) {
       this.footerButtonsIds = {
         cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
@@ -912,14 +907,7 @@ export default {
     }
   },
   beforeDestroy() {
-    // HTML overflow'u eski haline getir - eğer modal içinde değilse
-    if (this.shouldControlHtmlOverflow) {
-      setTimeout(() => {
-        if (document.querySelector('html')) {
-          document.querySelector('html').style.overflowY = 'auto'
-        }
-      }, 250)
-    }
+    // Mixin tarafından HTML overflow kontrolü yapılıyor
   }
 }
 </script>

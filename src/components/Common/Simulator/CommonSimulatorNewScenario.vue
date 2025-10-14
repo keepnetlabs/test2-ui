@@ -747,8 +747,10 @@ import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
+import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 export default {
   name: 'CommonSimulatorNewScenario',
+  mixins: [useHtmlOverflowControl],
   components: {
     InputLanguagePreview,
     NewEmailTemplates,
@@ -1140,11 +1142,6 @@ export default {
     }
   },
   created() {
-    // HTML overflow kontrolü
-    if (document.querySelector('html')) {
-      document.querySelector('html').style.overflowY = 'hidden'
-    }
-
     getLandingPageFormDetails().then((response) => {
       const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
         return {
@@ -1174,12 +1171,7 @@ export default {
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
   beforeDestroy() {
-    // HTML overflow'u eski haline getir
-    setTimeout(() => {
-      if (document.querySelector('html')) {
-        document.querySelector('html').style.overflowY = 'auto'
-      }
-    }, 250)
+    // Mixin tarafından HTML overflow kontrolü yapılıyor
   },
   methods: {
     handleClickOutside(event) {

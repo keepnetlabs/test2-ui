@@ -600,13 +600,52 @@ export default {
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       const languageId = language.value
 
+      // Poster, Screensaver, Infographic için scormPlayerUrl boş gelirse direkt blob download yap
+      const isPosterLikeType =
+        this.type === TRAINING_LIBRARY_TYPES.POSTER ||
+        this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER ||
+        this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data
           let previewUrl = previewData?.scormPlayerUrl || previewData
+
+          // Eğer poster/screensaver/infographic ise ve scormPlayerUrl boş ise direkt blob download
+          if (isPosterLikeType && !previewData?.scormPlayerUrl) {
+            this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+              status: true,
+              previewData: null,
+              isLoading: true,
+              type: this.type
+            })
+
+            AwarenessEducatorService.downloadPoster({ trainingId, languageId })
+              .then((blobResponse) => {
+                const blobUrl = window.URL.createObjectURL(blobResponse.data)
+                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+                  status: true,
+                  previewData: blobUrl,
+                  isLoading: false,
+                  type: this.type
+                })
+              })
+              .catch((error) => {
+                this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+                  status: false,
+                  previewData: null,
+                  isLoading: false,
+                  type: null
+                })
+              })
+            return
+          }
+
+          // Normal akış: URL varsa kontrol et
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
+
           if (isPdf) {
             this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
               status: true,
