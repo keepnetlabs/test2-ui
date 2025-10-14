@@ -1,63 +1,64 @@
 <template>
-  <AppModal
-    :status="status"
-    :icon-name="getModalIcon"
-    :title="getModalTitle"
-    class="common-simulator-new-scenario"
-    footer-class="common-simulator-new-scenario__footer"
-    :showFooter="!isTemplateEditing"
+  <VNavigationDrawer
+    v-click-outside="handleClickOutside"
+    v-if="status"
+    :value="drawerModel"
+    class="k-navigation-drawer k-navigation-drawer--new-scenario"
+    temporary
+    fixed
+    stateless
+    overlay-color="rgba(0, 0, 0, 0.17)"
+    overlay-opacity="1"
+    right
+    width="calc(100% - 72px)"
+    height="100%"
+    @input="drawerModel = $event"
   >
-    <template #overlay-body>
-      <VNavigationDrawer
-        v-click-outside="handleClickOutsideNewEmailTemplateModal"
+    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+        <div>
+          <VListItem>
+            <VListItemContent>
+              <VListItemTitle class="k-overlay__title">
+                {{ getModalTitle }}
+              </VListItemTitle>
+            </VListItemContent>
+          </VListItem>
+        </div>
+        <div>
+          <VIcon class="cursor-pointer" color="#757575" @click="changeNewScenarioModalStatus"
+            >mdi-close</VIcon
+          >
+        </div>
+      </div>
+    </div>
+    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+      <NewEmailTemplates
         v-if="isOpenEmailTemplateDrawer"
-        v-model="isOpenEmailTemplateDrawer"
-        class="k-navigation-drawer k-navigation-drawer--email-template"
-        fixed
-        overlay-color="rgba(0, 0, 0, 0.17)"
-        overlay-opacity="1"
-        right
-        width="calc(100% - 72px)"
-        height="100%"
-      >
-        <NewEmailTemplates
-          v-if="isOpenEmailTemplateDrawer"
-          ref="newEmailTemplate"
-          is-a-i-ally-enabled
-          :status="isOpenEmailTemplateDrawer"
-          :should-remove-overflow="false"
-          :show-leaving-dialog="false"
-          :email-template-id="createdEmailTemplateResourceId"
-          :selected-method-text="getSelectedMethodText"
-          :scenario-details-lookup="scenarioDetailsLookup"
-          @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
-        />
-      </VNavigationDrawer>
-      <VNavigationDrawer
-        v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
+        ref="newEmailTemplate"
+        is-a-i-ally-enabled
+        :status="isOpenEmailTemplateDrawer"
+        :should-remove-overflow="false"
+        :should-control-html-overflow="false"
+        :show-leaving-dialog="false"
+        :email-template-id="createdEmailTemplateResourceId"
+        :selected-method-text="getSelectedMethodText"
+        :scenario-details-lookup="scenarioDetailsLookup"
+        @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+      />
+      <NewLandingPage
         v-if="isOpenLandingPageDrawer"
-        v-model="isOpenLandingPageDrawer"
-        class="k-navigation-drawer k-navigation-drawer--landing-page"
-        fixed
-        overlay-color="rgba(0, 0, 0, 0.17)"
-        overlay-opacity="1"
-        right
-        width="calc(100% - 72px)"
-        height="100%"
-      >
-        <NewLandingPage
-          v-if="isOpenLandingPageDrawer"
-          ref="newLandingPage"
-          :status="isOpenLandingPageDrawer"
-          :is-a-i-ally-enabled="true"
-          :should-remove-overflow="false"
-          :show-leaving-dialog="false"
-          :landing-page-data="landingPageData"
-          :email-template-id="createdLandingPageResourceId"
-          :selected-method-text="getSelectedMethodText"
-          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
-        />
-      </VNavigationDrawer>
+        ref="newLandingPage"
+        :status="isOpenLandingPageDrawer"
+        :is-a-i-ally-enabled="true"
+        :should-remove-overflow="false"
+        :should-control-html-overflow="false"
+        :show-leaving-dialog="false"
+        :landing-page-data="landingPageData"
+        :email-template-id="createdLandingPageResourceId"
+        :selected-method-text="getSelectedMethodText"
+        @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
+      />
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -673,8 +674,8 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
-    </template>
-    <template #overlay-footer>
+    </div>
+    <div class="k-overlay__footer k-navigation-drawer__footer">
       <StepperFooter
         :max-step="maxStep"
         :step.sync="step"
@@ -686,7 +687,7 @@
         }"
         :disabledNextButtonTooltipText="
           isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
-            ? 'You’re editing a template. Exit editing to continue.'
+            ? 'Please save or discard your changes to the template before proceeding.'
             : ''
         "
         :ids="footerButtonsIds"
@@ -695,8 +696,8 @@
         @on-next="nextStep(+1)"
         @on-submit="submit"
       />
-    </template>
-  </AppModal>
+    </div>
+  </VNavigationDrawer>
 </template>
 <script>
 import labels from '@/model/constants/labels'
@@ -729,7 +730,6 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import AppModal from '@/components/AppModal'
 import {
   getDifficultyColor,
   quishingTypeItems,
@@ -757,7 +757,6 @@ export default {
     CampaignManagerSummaryCard,
     StepperFooter,
     KEmailPreview,
-    AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplateListPreview,
@@ -798,6 +797,7 @@ export default {
   },
   data() {
     return {
+      drawerModel: this.status,
       languagePreview: '',
       landingPageData: null,
       isOpenLandingPageDrawer: false,
@@ -1119,6 +1119,14 @@ export default {
     }
   },
   watch: {
+    status(val) {
+      this.drawerModel = val
+    },
+    drawerModel(val) {
+      if (!val && this.status) {
+        this.changeNewScenarioModalStatus()
+      }
+    },
     landingPageTemplateResourceId() {
       this.selectedTab = '1'
     },
@@ -1130,6 +1138,11 @@ export default {
     }
   },
   created() {
+    // HTML overflow kontrolü
+    if (document.querySelector('html')) {
+      document.querySelector('html').style.overflowY = 'hidden'
+    }
+
     getLandingPageFormDetails().then((response) => {
       const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
         return {
@@ -1158,7 +1171,56 @@ export default {
       this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
+  beforeDestroy() {
+    // HTML overflow'u eski haline getir
+    setTimeout(() => {
+      if (document.querySelector('html')) {
+        document.querySelector('html').style.overflowY = 'auto'
+      }
+    }, 250)
+  },
   methods: {
+    handleClickOutside(event) {
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // V-menu açıksa ignore et
+        const menuElement = event.target.closest('.v-menu__content, .v-list')
+        if (menuElement) {
+          return
+        }
+
+        // Leaving dialog açıksa ignore et
+        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"]')
+        if (leavingDialogElement) {
+          return
+        }
+      }
+
+      // Leaving dialog zaten açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // Email template drawer açıksa ignore et
+      if (this.isOpenEmailTemplateDrawer) {
+        return
+      }
+
+      // Landing page drawer açıksa ignore et
+      if (this.isOpenLandingPageDrawer) {
+        return
+      }
+
+      // Drawer'ı kapat
+      this.changeNewScenarioModalStatus()
+    },
     checkIsRedFlaggedTemplate(html) {
       if (typeof html !== 'string') return false
       return html.includes('data-redflag')
@@ -1181,47 +1243,21 @@ export default {
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdEmailTemplateResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer--email-template'))
-        document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
         this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
           this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
         })
-      setTimeout(() => {
-        this.toggleEmailTemplateDrawer()
-      }, 250)
-    },
-    handleClickOutsideNewEmailTemplateModal() {
-      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
-        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
-        return
-      }
-      this.handleCloseNewEmailTemplateModal()
-    },
-    handleClickOutsideNewLandingPageTemplateModal() {
-      if (
-        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
-        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
-      ) {
-        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
-        return
-      }
-      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
-      this.handleCloseNewLandingPageTemplateModal()
+      this.toggleEmailTemplateDrawer()
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer--landing-page'))
-        document.querySelector('.k-navigation-drawer--landing-page').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)
           .then(() => {
             this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
           })
-      setTimeout(() => {
-        this.toggleLandingPageDrawer()
-      }, 250)
+      this.toggleLandingPageDrawer()
     },
     toggleLandingPageDrawer() {
       this.isOpenLandingPageDrawer = !this.isOpenLandingPageDrawer

@@ -2,12 +2,39 @@
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   background: #fff;
-  box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1) !important;
   animation: drawerRight 0.25s ease-in-out;
   transition: right 0.25s ease-in-out !important;
+  z-index: 11 !important;
   & + .k-stepper + .k-overlay__footer {
     z-index: 3;
   }
+}
+.k-navigation-drawer--new-scenario .k-navigation-drawer--email-template {
+  z-index: 1001 !important;
+}
+// Overlay z-index for temporary drawers
+.v-navigation-drawer--temporary ~ .v-overlay {
+  z-index: 10 !important;
+}
+.k-navigation-drawer__header {
+  padding: 16px 48px !important;
+  max-height: 64px;
+}
+.k-navigation-drawer__body {
+  margin: 0 48px 96px 48px !important;
+  .email-template-info .v-list-item__content {
+    padding: 0 !important;
+  }
+  .v-list-item {
+    border-left: 0 !important;
+  }
+  .k-stepper__content {
+    padding-top: 24px !important;
+  }
+}
+.k-navigation-drawer__footer {
+  padding: 16px 48px !important;
 }
 @keyframes drawerRight {
   from {
