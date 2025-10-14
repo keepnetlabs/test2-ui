@@ -4,6 +4,7 @@
 
     <!-- Unified Drawer for Training, Poster, Infographic, Screensaver -->
     <TrainingLibraryDrawer
+      ref="mainDrawer"
       v-if="currentDrawer.status"
       :value="currentDrawer.status"
       :type="currentDrawer.type"
@@ -17,6 +18,7 @@
 
     <!-- Nested Drawer (Related Preview) -->
     <TrainingLibraryDrawer
+      ref="nestedDrawer"
       v-if="getNestedDrawer.status"
       :value="getNestedDrawer.status"
       :type="getNestedDrawer.type"
@@ -206,7 +208,12 @@ export default {
         })
       }
     },
-    handleCloseParentDrawer() {
+    handleCloseParentDrawer(payload) {
+      // Nested drawer'dan send/edit yapılıyorsa ana drawer'ın body scroll'unu etkilememesi için flag set et
+      if (payload && payload.skipBodyScroll && this.$refs.mainDrawer) {
+        this.$refs.mainDrawer.skipBodyScrollOnClose = true
+      }
+
       // Animasyon zaten 250ms içinde bitmiş, direkt reset et
       // Nested drawer'ı kapat
       this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
@@ -259,7 +266,17 @@ export default {
         })
       }
     },
-    handleCloseAllDrawers() {
+    handleCloseAllDrawers(payload) {
+      // Deep nested drawer'dan send/edit yapılıyorsa nested ve ana drawer'ların body scroll'unu etkilememesi için flag set et
+      if (payload && payload.skipBodyScroll) {
+        if (this.$refs.nestedDrawer) {
+          this.$refs.nestedDrawer.skipBodyScrollOnClose = true
+        }
+        if (this.$refs.mainDrawer) {
+          this.$refs.mainDrawer.skipBodyScrollOnClose = true
+        }
+      }
+
       // Deep nested drawer'ı kapat
       this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
         status: false,
