@@ -75,7 +75,7 @@
       <CampaignManagerSummaryCard
         detailable
         title="Training that users will be directed to"
-        icon="mdi-application"
+        icon="mdi-book-education"
         :show-body-detail.sync="isShowTrainingEmail"
       >
         <template #body>

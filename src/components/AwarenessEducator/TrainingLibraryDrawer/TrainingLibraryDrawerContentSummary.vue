@@ -115,6 +115,10 @@
             small
             color="#fff"
             :ripple="false"
+            :disabled="trainingData && !trainingData.isEditable"
+            :style="{
+              opacity: trainingData && !trainingData.isEditable ? '0.5' : '1'
+            }"
             class="training-library-drawer-content-summary__small-action-icon"
             @click="handleEdit"
           >
@@ -174,6 +178,7 @@
             v-if="!onlyPreview"
             :type="type"
             :is-deletable="isDeletable"
+            :is-editable="trainingData && trainingData.isEditable"
             :is-nested="isNested"
             :is-deep-nested="isDeepNested"
             :languages="availableLanguages"
