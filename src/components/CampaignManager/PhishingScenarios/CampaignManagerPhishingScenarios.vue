@@ -829,10 +829,11 @@ export default {
     previewLandingHtml() {
       const html = this.getSingleTemplateDetails || ''
       if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
-        const logo =
+        let logo =
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
+        if(!logo) logo = this?.$store?.state?.whitelabel?.mainLogoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html
