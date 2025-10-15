@@ -1141,6 +1141,7 @@ export default {
             localStorage.getItem('isSelectCompany') === 'true'
               ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
               : this.$store.state.auth.logoUrl || ''
+          if(!url) url = this?.$store?.state?.whitelabel.mainLogoUrl || ''
         }
         this.previewTemplate = val?.replace(/{COMPANYLOGO}/g, url) || ''
       },

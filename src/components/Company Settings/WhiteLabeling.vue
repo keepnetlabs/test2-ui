@@ -273,6 +273,18 @@
       >
         <div class="white-labeling__release-information-item">
           <v-checkbox
+            v-model="formValues.isDocumentationLinkEnabled"
+            id="input--whitelabeling-is-documentation-link-enabled"
+            color="#2196f3"
+          >
+            <template #label>
+              <div>Show documentation link</div>
+              <div class="white-labeling__release-information-span">
+                Show documentation link at the bottom of navigation menu
+              </div>
+            </template>
+          </v-checkbox>
+          <v-checkbox
             v-model="formValues.isShowReleaseVersionNumber"
             id="input--whitelabeling-is-show-relase-version-number"
             color="#2196f3"
@@ -369,6 +381,7 @@ const formValues = {
   footerCookiePolicyUrl: '',
   releaseNotesUrl: '',
   pointingUrl: '',
+  isDocumentationLinkEnabled: true,
   isShowReleaseVersionNumber: true,
   isShowReleaseNotes: true,
   emailTemplateLogoUrl: null,
