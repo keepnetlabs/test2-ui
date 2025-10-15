@@ -23,6 +23,7 @@ const initialState = {
   footerCookiePolicyUrl: '',
   isShowReleaseVersionNumber: false,
   isShowReleaseNotes: false,
+  isDocumentationLinkEnabled: false,
   releaseNotesUrl: '',
   systemVersion: null,
   companyLicense: null,
@@ -63,16 +64,9 @@ const whitelabel = {
       isShowReleaseVersionNumber,
       isShowReleaseNotes,
       releaseNotesUrl,
-      systemVersion
+      systemVersion,
+      isDocumentationLinkEnabled
     }) {
-      let isShowDocumentation = true
-      const companies = ['Phishack', 'EMA Security', 'Newex Security', 'OneCloud']
-      if (companies.includes(localStorage.getItem('companyName'))) {
-        isShowDocumentation = false
-      }
-      if (isShowDocumentation && companies.includes(localStorage.getItem('selectedCompanyName'))) {
-        isShowDocumentation = false
-      }
       return {
         mainLogoUrl,
         minimizedMenuLogoUrl,
@@ -80,7 +74,7 @@ const whitelabel = {
         isShowReleaseNotes,
         releaseNotesUrl,
         systemVersion,
-        isShowDocumentation
+        isDocumentationLinkEnabled
       }
     },
     getSupportEmailAddress({ supportEmailAddress }) {
