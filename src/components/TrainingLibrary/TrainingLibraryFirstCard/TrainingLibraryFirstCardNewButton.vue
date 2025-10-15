@@ -19,10 +19,9 @@
     </template>
     <VList>
       <VListItem
-        v-for="item in addTrainingItems"
+        v-for="item in getFilteredTrainingItems"
         :key="item.id"
         :id="item.id"
-        :disabled="item.disabled"
         @click="handleAddTrainingLibraryContent(item.text)"
       >
         <VListItemTitle class="add-users__title">{{ item.text }}</VListItemTitle>
@@ -41,6 +40,17 @@ export default {
   data() {
     return {
       addTrainingItems
+    }
+  },
+  computed: {
+    isRootUser() {
+      return this.$store.getters['auth/userGetter']?.role?.name === 'Root'
+    },
+    getFilteredTrainingItems() {
+      if (this.isRootUser) {
+        return this.addTrainingItems
+      }
+      return this.addTrainingItems.filter((item) => item.text !== 'Survey')
     }
   }
 }

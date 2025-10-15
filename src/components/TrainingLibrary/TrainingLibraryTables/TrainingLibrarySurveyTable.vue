@@ -84,7 +84,7 @@ export default {
           TRAINING_LIBRARY_COLUMNS.DATE_CREATED
         ],
         iEmpty: {
-          btn: labels.CreateNewSurvey,
+          btn: null,
           message: labels.EmptySurvey,
           icon: 'mdi-plus',
           id: 'btn-empty--training-library-survey-table'
@@ -110,7 +110,10 @@ export default {
       renderedColumns: 'trainingLibrary/getRenderedColumns',
       firstColFixed: 'trainingLibrary/getFirstColFixed',
       lastColFixed: 'trainingLibrary/getLastColFixed'
-    })
+    }),
+    isRootUser() {
+      return this.$store.getters['auth/userGetter']?.role?.name === 'Root'
+    }
   },
   watch: {
     renderedColumns: {
@@ -138,7 +141,7 @@ export default {
           this.$set(this.tableOptions, 'iEmpty', {
             ...this.tableOptions.iEmpty,
             message: labels.EmptySurvey,
-            btn: labels.CreateNewSurvey
+            btn: this.isRootUser ? labels.CreateNewSurvey : null
           })
         }
       }
@@ -153,6 +156,9 @@ export default {
     }
   },
   mounted() {
+    if (this.isRootUser) {
+      this.tableOptions.iEmpty.btn = labels.CreateNewSurvey
+    }
     this.$refs.refTable.firstColFixed = this.firstColFixed
     this.$refs.refTable.lastColFixed = this.lastColFixed
     this.$refs.refTable.$refs.elTableRef.sort(
