@@ -29,6 +29,7 @@
           placeholder="Select an option"
           item-text="text"
           item-value="value"
+          nudge-width="20"
           :items="getHyperPersonalizationItems"
           :return-object="false"
           :slots="{ item: true, selection: false }"
@@ -37,7 +38,7 @@
           <template #item="{ item }">
             <v-list-item-content>
               <v-list-item-title> {{ item.text }}</v-list-item-title>
-              <v-list-item-subtitle class="tlp_subtitle">{{
+              <v-list-item-subtitle class="tlp_subtitle ml-0">{{
                 item.description
               }}</v-list-item-subtitle>
             </v-list-item-content>
