@@ -82,7 +82,7 @@
           style="border-radius: 8px; background: rgba(230, 162, 60, 0.2);"
         >
           <div
-            class="info-card-header d-flex align-center justify-space-between pa-3"
+            class="info-card-header d-flex align-center justify-space-between pa-4"
             @click="isAccordionOpen = !isAccordionOpen"
             style="cursor: pointer;"
           >
