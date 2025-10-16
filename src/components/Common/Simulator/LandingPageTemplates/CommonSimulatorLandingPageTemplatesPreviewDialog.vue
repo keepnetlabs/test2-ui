@@ -159,6 +159,7 @@ export default {
         })
     },
     handleEdit() {
+      this.isHtmlOverflowControlManuallyDisabled = true
       this.$emit('on-edit', this.selectedRow)
     }
   }

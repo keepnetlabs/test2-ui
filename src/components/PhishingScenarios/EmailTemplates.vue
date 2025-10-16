@@ -38,6 +38,7 @@
       :selected-row="selectedEmailTemplate"
       :languages="languageFilterOptions"
       @on-close="togglePreviewDialog"
+      @on-edit="handleEditFromPreview"
     />
     <data-table
       v-if="getEmailTemplatesSearchPermissions"
@@ -466,6 +467,12 @@ export default {
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.emailTemplateId = row.resourceId
+    },
+    handleEditFromPreview(row) {
+      this.togglePreviewDialog()
+      this.$nextTick(() => {
+        this.handleEdit(row, false)
+      })
     },
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newEmailTemplate) {

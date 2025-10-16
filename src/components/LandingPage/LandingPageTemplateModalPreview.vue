@@ -15,12 +15,22 @@
           @input="handleLanguageChange"
         />
         <div class="landing-page-template-preview__actions">
-          <v-btn icon outlined color="#2196F3" small @click="handleExternalLink">
-            <v-icon small>mdi-open-in-new</v-icon>
-          </v-btn>
-          <v-btn icon outlined color="#2196F3" small @click="handleEdit">
-            <v-icon small>mdi-pencil</v-icon>
-          </v-btn>
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleExternalLink">
+                <v-icon small>mdi-open-in-new</v-icon>
+              </v-btn>
+            </template>
+            <span>Open in New Tab</span>
+          </VTooltip>
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
+                <v-icon small>mdi-pencil</v-icon>
+              </v-btn>
+            </template>
+            <span>Edit Template</span>
+          </VTooltip>
         </div>
       </div>
       <hr class="mt-4 ml-n4 mr-n4" v-if="!!getCurrentLandingPageTemplate" />
@@ -65,6 +75,7 @@ import KEmailPreview from '@/components/KEmailPreview'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import labels from '../../model/constants/labels'
+import { getPreventClickScript } from '@/utils/preventClickScript'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
@@ -145,12 +156,46 @@ export default {
     },
     handleExternalLink() {
       if (this.previewHtml) {
-        const blob = new Blob([this.previewHtml], { type: 'text/html' })
+        let htmlContent = this.previewHtml
+        // HTML'e title ekle veya varsa güncelle
+        if (!htmlContent.includes('<title>')) {
+          // <head> tag'i varsa title'ı oraya ekle
+          if (htmlContent.includes('<head>')) {
+            htmlContent = htmlContent.replace(
+              '<head>',
+              '<head><title>Landing Page Template Preview</title>'
+            )
+          } else if (htmlContent.includes('<html>')) {
+            // <head> yoksa ama <html> varsa <head> oluştur
+            htmlContent = htmlContent.replace(
+              '<html>',
+              '<html><head><title>Landing Page Template Preview</title></head>'
+            )
+          } else {
+            // Hiçbiri yoksa başa ekle
+            htmlContent = `<head><title>Landing Page Template Preview</title></head>${htmlContent}`
+          }
+        } else {
+          // Title varsa güncelle
+          htmlContent = htmlContent.replace(
+            /<title>.*?<\/title>/i,
+            '<title>Landing Page Template Preview</title>'
+          )
+        }
+
+        // Prevent click script'i ekle
+        const preventScript = getPreventClickScript()
+        if (htmlContent.includes('</body>')) {
+          htmlContent = htmlContent.replace('</body>', `${preventScript}</body>`)
+        } else {
+          htmlContent += preventScript
+        }
+
+        const blob = new Blob([htmlContent], { type: 'text/html' })
         const url = window.URL.createObjectURL(blob)
         window.open(url, '_blank')
         setTimeout(() => window.URL.revokeObjectURL(url), 100)
       }
-      //this.$emit('external-link')
     },
     handleEdit() {
       this.$emit('edit')

@@ -10,13 +10,18 @@ export default {
       default: true
     }
   },
+  data() {
+    return {
+      isHtmlOverflowControlManuallyDisabled: false
+    }
+  },
   created() {
     if (this.shouldControlHtmlOverflow) {
       this._setHtmlOverflow('hidden')
     }
   },
   beforeDestroy() {
-    if (this.shouldControlHtmlOverflow) {
+    if (this.shouldControlHtmlOverflow && !this.isHtmlOverflowControlManuallyDisabled) {
       // Animasyon için bekle
       setTimeout(() => {
         this._setHtmlOverflow('auto')
