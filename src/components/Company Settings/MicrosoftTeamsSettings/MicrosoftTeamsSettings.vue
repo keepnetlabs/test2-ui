@@ -96,45 +96,43 @@
               {{ isAccordionOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </VIcon>
           </div>
-          <v-expand-transition>
-            <div v-show="isAccordionOpen" class="info-card-content pt-0 px-4 pb-4">
-              <div
-                class="mb-2"
-                style="
-                  color: #383b41;
-                  font-family: 'Open Sans';
-                  font-size: 12px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: 19px;
-                "
-              >
-                After installing and authorizing the app, you need to ensure it's added to your
-                Microsoft Teams App Setup Policy.
-              </div>
-              <div
-                style="
-                  color: #383b41;
-                  font-family: 'Open Sans';
-                  font-size: 12px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: 19px;
-                "
-              >
-                Go to
-                <a
-                  href="https://admin.teams.microsoft.com/policies/app-setup"
-                  target="_blank"
-                  style="color: #2196f3; font-weight: 600; text-decoration: underline;"
-                >
-                  Teams Admin Center
-                </a>
-                → Teams Apps → Setup Policies → [Global (Org-wide default) or your custom policy] →
-                Add Apps → [Search for "Keepnet Security Awareness"] → Add → Save
-              </div>
+          <div v-show="isAccordionOpen" class="info-card-content pt-0 px-4 pb-4">
+            <div
+              class="mb-2"
+              style="
+                color: #383b41;
+                font-family: 'Open Sans';
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+              "
+            >
+              After installing and authorizing the app, you need to ensure it's added to your
+              Microsoft Teams App Setup Policy.
             </div>
-          </v-expand-transition>
+            <div
+              style="
+                color: #383b41;
+                font-family: 'Open Sans';
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+              "
+            >
+              Go to
+              <a
+                href="https://admin.teams.microsoft.com/policies/app-setup"
+                target="_blank"
+                style="color: #2196f3; font-weight: 600; text-decoration: underline;"
+              >
+                Teams Admin Center
+              </a>
+              → Teams Apps → Setup Policies → [Global (Org-wide default) or your custom policy] →
+              Add Apps → [Search for "Keepnet Security Awareness"] → Add → Save
+            </div>
+          </div>
         </div>
         <VBtn
           v-if="isStep2 || isMicrosoftTeamsActive"
