@@ -1326,6 +1326,20 @@ export default {
                 }
               })
               .catch((e) => {
+                if (!e?.response || e?.response?.status === 0) {
+                  this.$store.dispatch('common/createSnackBar', {
+                    message:`Network error while reaching https://r-flg.keepnetlabs.com. Status Code: 0`,
+                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                    icon: 'mdi-alert-circle'
+                  })
+                  return
+                }
+                this.$store.dispatch('common/createSnackBar', {
+                  message: e?.response?.data?.detail || e?.response?.data?.message || 
+                  `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${e?.response?.status || e?.response?.data?.status || 0}`,
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  icon: 'mdi-alert-circle'
+                })
                 this.$store.dispatch('common/createSnackBar', {
                   message: e?.response?.data?.detail || e?.response?.data?.message,
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
