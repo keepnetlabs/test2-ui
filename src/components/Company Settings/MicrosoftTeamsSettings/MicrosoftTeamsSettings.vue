@@ -76,14 +76,64 @@
             <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
           </div>
         </div>
-        <AlertBox
+        <div
           v-if="isMicrosoftTeamsActive"
-          class="bg-green-light mt-2"
-          icon-color="#43a047"
-          icon-name="mdi-check-circle"
-          text="Access complete. You can now send trainings via Teams"
-          :slots="{ primaryAction: false, secondaryAction: false }"
-        />
+          class="info-card-wrapper mt-2"
+          style="border-radius: 8px; background: rgba(230, 162, 60, 0.2);"
+        >
+          <div
+            class="info-card-header d-flex align-center justify-space-between pa-4"
+            @click="isAccordionOpen = !isAccordionOpen"
+            style="cursor: pointer;"
+          >
+            <div class="d-flex align-center">
+              <VIcon color="#B6791D" class="mr-2" size="20">mdi-information</VIcon>
+              <span style="color: #383b41; font-size: 14px; font-weight: 600;">
+                Add the App to a Microsoft Teams Policy
+              </span>
+            </div>
+            <VIcon color="#757575">
+              {{ isAccordionOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </VIcon>
+          </div>
+          <div v-show="isAccordionOpen" class="info-card-content pt-0 px-4 pb-4">
+            <div
+              class="mb-2"
+              style="
+                color: #383b41;
+                font-family: 'Open Sans';
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+              "
+            >
+              After installing and authorizing the app, you need to ensure it's added to your
+              Microsoft Teams App Setup Policy.
+            </div>
+            <div
+              style="
+                color: #383b41;
+                font-family: 'Open Sans';
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+              "
+            >
+              Go to
+              <a
+                href="https://admin.teams.microsoft.com/policies/app-setup"
+                target="_blank"
+                style="color: #2196f3; font-weight: 600; text-decoration: underline;"
+              >
+                Teams Admin Center
+              </a>
+              → Teams Apps → Setup Policies → [Global (Org-wide default) or your custom policy] →
+              Add Apps → [Search for "Keepnet Security Awareness"] → Add → Save
+            </div>
+          </div>
+        </div>
         <VBtn
           v-if="isStep2 || isMicrosoftTeamsActive"
           class="fw-600 mt-2"
@@ -153,7 +203,6 @@ import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import AlertBox from '@/components/AlertBox'
 export default {
   name: 'MicrosoftTeamsSettings',
   components: {
@@ -161,8 +210,7 @@ export default {
     FormGroup,
     TeamsIntegrationModal,
     DisableMicrosoftTeamsModal,
-    DatatableLoading,
-    AlertBox
+    DatatableLoading
   },
   data() {
     return {
@@ -174,7 +222,8 @@ export default {
       botName: '',
       loading: false,
       isStep2: false,
-      isLastVersion: false
+      isLastVersion: false,
+      isAccordionOpen: false
     }
   },
   computed: {
@@ -372,6 +421,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
+          this.isAccordionOpen = true
           this.handleSubmit()
         })
         .catch(() => {
