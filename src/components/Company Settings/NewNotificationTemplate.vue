@@ -389,10 +389,6 @@ export default {
       (vm) => [vm.formValues, vm.emailDeliveryItems],
       ([formValues, emailDeliveryItems]) => {
         if (!formValues || !emailDeliveryItems.length || !this.selectedItem) return
-        console.log('formValues', formValues)
-        console.log('emailDeliveryItems', emailDeliveryItems)
-        console.log('this.selectedItem', this.selectedItem)
-        console.log('formValues.emailDeliverySettingType', formValues.emailDeliverySettingType)
         if (formValues.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
           const selectedSMTPSettingIndex = emailDeliveryItems.findIndex(
             (item) => item.resourceId === formValues.smtpSettingResourceId
