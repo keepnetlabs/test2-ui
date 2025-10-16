@@ -280,6 +280,8 @@ export default {
         )?.text || ''
       return [
         'Training Enrollment',
+        'Survey Enrollment',
+        'Survey Reminder',
         'Learning Path Enrollment Reminder',
         'Poster Enrollment',
         'Learning Path Enrollment',
@@ -387,6 +389,10 @@ export default {
       (vm) => [vm.formValues, vm.emailDeliveryItems],
       ([formValues, emailDeliveryItems]) => {
         if (!formValues || !emailDeliveryItems.length || !this.selectedItem) return
+        console.log('formValues', formValues)
+        console.log('emailDeliveryItems', emailDeliveryItems)
+        console.log('this.selectedItem', this.selectedItem)
+        console.log('formValues.emailDeliverySettingType', formValues.emailDeliverySettingType)
         if (formValues.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
           const selectedSMTPSettingIndex = emailDeliveryItems.findIndex(
             (item) => item.resourceId === formValues.smtpSettingResourceId
@@ -475,6 +481,7 @@ export default {
             }
             this.formValues[key] = value
           }
+
           this.formValues.emailDeliverySettingType =
             response?.data?.data?.emailDeliveryType ||
             response?.data?.data?.emailDeliverySettingType ||
