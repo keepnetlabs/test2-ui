@@ -92,6 +92,17 @@ export function bulkDeletePhishingUsers(payload = {}) {
 export function createGraphAccount(payload) {
   return testRequest.post('/phishing-reporter/link-graph-account', payload)
 }
+export function updateApplicationLevelAccount(isGranted) {
+  return testRequest.put(
+    `/phishing-reporter/app-permission-access/${isGranted}`,
+    {
+      isGranted
+    },
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
 export function deleteGraphAccount() {
   return testRequest.delete('/phishing-reporter/unlink-graph-account', {
     snackbar: COMMON_SNACKBAR
@@ -100,6 +111,7 @@ export function deleteGraphAccount() {
 export function connectGraphAccount(payload) {
   return testRequest.get('/phishing-reporter/o365-spam-reporting/settings', payload)
 }
+
 export function downloadSpamReport(payload) {
   return testRequest.get('/phishing-reporter/generate/microsoft365-spam-reporting-addin', {
     responseType: 'blob'
