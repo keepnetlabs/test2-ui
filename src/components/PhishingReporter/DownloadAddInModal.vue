@@ -1,9 +1,26 @@
 <template>
   <v-overlay :value="status" :z-index="99" fixed class="download-add-in">
-    <UnlinkMicrosoftAccessDialog
-      v-if="isShowUnlinkDialog"
-      :status="isShowUnlinkDialog"
-      @close="toggleUnlinkDialog"
+    <DelegatedLevelAuthorizationDialog
+      v-if="showDelegatedLevelAuthorizationDialog"
+      :status="showDelegatedLevelAuthorizationDialog"
+      :is-authorizing="isDelegatedLevelAuthorizing"
+      :is-authorized="isAccountConnected"
+      @close="closeDelegatedLevelAuthorizationDialog"
+      @cancel="closeDelegatedLevelAuthorizationDialog"
+      @copy-link="handleCopyDelegatedLevelAuthorizationLink"
+      @authorize-now="handleAuthorizeDelegatedLevelNow"
+      @revoke-authorization="handleRevokeDelegatedLevelAuthorization"
+    />
+    <ApplicationLevelAuthorizationDialog
+      v-if="showApplicationLevelDialog"
+      :status="showApplicationLevelDialog"
+      :is-authorizing="isApplicationLevelAuthorizing"
+      :is-authorized="isApplicationLevelAuthorized"
+      @close="closeApplicationLevelDialog"
+      @cancel="closeApplicationLevelDialog"
+      @copy-link="handleCopyApplicationLevelLink"
+      @authorize-now="handleAuthorizeApplicationLevel"
+      @revoke-authorization="handleRevokeApplicationLevelAuthorization"
     />
     <v-card
       light
@@ -11,8 +28,8 @@
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 820px !important;
-        max-width: 820px !important;
+        width: 930px !important;
+        max-width: 930px !important;
       "
     >
       <v-list-item
@@ -37,75 +54,158 @@
       </v-list-item>
       <div class="mt-4">
         <DownloadAddInListItem
-          :src="require('../../assets/img/google-workspace.svg')"
-          :is-loading="googleWorkSpaceSpinnerStatus"
-          description="JSON add-in for web-based Google Workspace emails"
-          @button-click="callForGenerateGoogleWorkSpaceAddIn"
-        />
-        <DownloadAddInListItem
-          :src="require('../../assets/img/outlook.svg')"
-          :is-loading="outlookSpinnerStatus"
-          description="MSI add-in for Windows Outlook Desktop"
-          @button-click="callForGenerateOutlookAddIn"
-        />
-        <DownloadAddInListItem
           :src="require('../../assets/img/microsoft-365-logo.svg')"
           :is-loading="o365SpinnerStatus"
           class="flex-nowrap align-start"
           title-class="download-add-in__list-item-margin-title"
           hide-border
-          title="Ribbon View"
-          description="Requires Microsoft Graph API access to report suspicious emails from the Outlook ribbon."
+          title="Authorize GRAPH APIs (Delegated Access)"
+          description="Enables phishing email reporting from Outlook Ribbon and Page Views using delegated permissions."
+        >
+          <template #buttons>
+            <div class="d-flex justify-end align-self-center mt-8 flex-column gap-6">
+              <VBtn
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                class="btn-util btn-download-add-in"
+                :class="{ 'white--text': !isAccountConnected }"
+                style="
+                  margin-left: 5px !important;
+                  text-transform: capitalize;
+                  box-shadow: none !important;
+                "
+                :color="isAccountConnected ? '#F56C6C' : '#2196f3'"
+                rounded
+                :outlined="isAccountConnected"
+                @click="handleDelegatedGraphAPIAccess"
+              >
+                <v-icon left>mdi-check-circle</v-icon>
+                {{ isAccountConnected ? 'Revoke Authorization' : 'Authorize' }}
+              </VBtn>
+            </div>
+          </template>
+        </DownloadAddInListItem>
+        <AlertBox
+          class="w-100"
+          :style="{
+            backgroundColor: isAccountConnected ? 'rgba(67, 160, 71, 0.15)' : '#f2f2f2',
+            padding: '8px !important',
+            paddingLeft: '12px !important'
+          }"
+          :icon-name="isAccountConnected ? 'mdi-lock-check' : 'mdi-lock'"
+          :icon-color="isAccountConnected ? '#43A047' : '#757575'"
+          :icon-props="{ size: 16 }"
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        >
+          <template #text>
+            <div class="ml-2" style="font-size: 12px; color: #383b41;">
+              <div class="text-primary-color">
+                {{
+                  isAccountConnected
+                    ? 'Delegated access successfully authorized.'
+                    : 'Required for all user-based Outlook reporting.'
+                }}
+              </div>
+            </div>
+          </template>
+        </AlertBox>
+        <DownloadAddInListItem
+          class="flex-nowrap align-start mt-0"
+          hide-border
+          title="Authorize GRAPH APIs (Application-Level Access)"
+          description="Provides organization-wide authentication and identity mapping, powered by Microsoft Graph."
         >
           <template #buttons>
             <div class="d-flex justify-end align-end flex-column gap-6">
-              <VTooltip v-if="!isAccountConnected" bottom>
-                <template #activator="{ on }">
-                  <VBtn
-                    v-on="on"
-                    class="white--text btn-util btn-download-add-in text-capitalize"
-                    color="#2196f3"
-                    rounded
-                    @click="handleConnectAccount"
-                  >
-                    Connect Account
-                  </VBtn>
-                </template>
-                <span>
-                  Connect your account to enable download.
-                </span>
-              </VTooltip>
               <VBtn
-                v-else
-                text
-                rounded
-                color="#F56C6C"
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                class="btn-util btn-download-add-in"
+                :class="{ 'white--text': !isApplicationLevelAuthorized }"
                 style="
+                  margin-left: 5px !important;
                   text-transform: capitalize;
-                  font-weight: 600;
-                  font-size: 12px;
-                  border: 1px solid #f56c6c;
+                  box-shadow: none !important;
+                  margin-top: 4px;
                 "
-                @click="toggleUnlinkDialog(false)"
+                :color="isApplicationLevelAuthorized ? '#F56C6C' : '#2196f3'"
+                rounded
+                :outlined="isApplicationLevelAuthorized"
+                @click="handleApplicationLevelGraphAPIAccess"
               >
-                <v-icon left>mdi-link-off</v-icon>
-                <span>Unlink</span>
+                <v-icon left>mdi-check-circle</v-icon>
+                {{ isApplicationLevelAuthorized ? 'Revoke Authorization' : 'Authorize' }}
               </VBtn>
-              <VTooltip bottom>
+            </div>
+          </template>
+        </DownloadAddInListItem>
+        <AlertBox
+          class="w-100"
+          :style="{
+            backgroundColor: isApplicationLevelAuthorized ? 'rgba(67, 160, 71, 0.15)' : '#f2f2f2',
+            padding: '8px !important',
+            paddingLeft: '12px !important'
+          }"
+          :icon-name="isApplicationLevelAuthorized ? 'mdi-lock-check' : 'mdi-lock'"
+          :icon-color="isApplicationLevelAuthorized ? '#43A047' : '#757575'"
+          :icon-props="{ size: 16 }"
+          :slots="{ primaryAction: false, secondaryAction: false }"
+        >
+          <template #text>
+            <div class="ml-2" style="font-size: 12px; color: #383b41;">
+              <div class="text-primary-color">
+                {{
+                  isApplicationLevelAuthorized
+                    ? 'Application-level access successfully authorized.'
+                    : 'Recommended for organizations using Conditional Access or advanced identity policies.'
+                }}
+              </div>
+            </div>
+          </template>
+        </AlertBox>
+
+        <!-- Ribbon View and Page View -->
+        <v-row class="mt-2">
+          <v-col cols="6">
+            <div
+              style="
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 16px;
+                border: 1px solid var(--Gray-Gray, #e0e0e0);
+              "
+            >
+              <h4
+                class="mb-2"
+                style="
+                  color: #383b41;
+                  font-size: 14px;
+                  font-style: normal;
+                  font-weight: 600;
+                  line-height: 21px;
+                "
+              >
+                Ribbon View
+              </h4>
+              <p class="mb-3" style="color: rgba(56, 59, 65, 0.72); font-size: 14px;">
+                Requires Microsoft Graph API access to report suspicious emails from the Outlook
+                ribbon.
+              </p>
+              <VTooltip bottom max-width="200" :disabled="isAccountConnected">
                 <template #activator="{ on }">
-                  <div v-on="on">
+                  <span v-on="on">
                     <VBtn
-                      v-on="on"
-                      id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                      id="btn-download-ribbon-view--phishing-reporter-settings-add-in-modal"
                       class="white--text btn-util btn-download-add-in"
                       style="margin-left: 5px !important; text-transform: capitalize;"
                       color="#2196f3"
                       rounded
-                      :style="!isAccountConnected ? { opacity: 0.5, pointerEvents: 'none' } : ''"
+                      :style="{
+                        opacity: !isAccountConnected ? 0.5 : 1,
+                        pointerEvents: !isAccountConnected ? 'none' : 'auto'
+                      }"
                       :loading="o365SpinnerStatus"
                       @click="callForGenerateO365SpamAddIn"
                     >
-                      <v-icon left>mdi-download</v-icon>
+                      <v-icon left small>mdi-download</v-icon>
                       Download
                       <template #loader>
                         <img
@@ -118,59 +218,76 @@
                         </span>
                       </template>
                     </VBtn>
-                  </div>
+                  </span>
                 </template>
                 <span>
-                  Connect your account to enable download.
+                  Ribbon View is disabled because delegated access has not been granted.
                 </span>
               </VTooltip>
             </div>
-          </template>
-        </DownloadAddInListItem>
+          </v-col>
+          <v-col cols="6">
+            <div
+              style="
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 16px;
+                border: 1px solid #e0e0e0;
+              "
+            >
+              <h4
+                class="mb-2"
+                style="
+                  color: #383b41;
+                  font-size: 14px;
+                  font-style: normal;
+                  font-weight: 600;
+                  line-height: 21px;
+                "
+              >
+                Page View
+              </h4>
+              <p class="mb-3" style="color: rgba(56, 59, 65, 0.72); font-size: 14px;">
+                Allows users to report suspicious emails from the Outlook side panel.
+              </p>
+              <VBtn
+                id="btn-download-page-view--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in"
+                style="margin-left: 5px !important; text-transform: capitalize;"
+                color="#2196f3"
+                rounded
+                :loading="gmailSpinnerStatus"
+                @click="callForGenerateO365AddIn"
+              >
+                <v-icon left small>mdi-download</v-icon>
+                Download
+                <template #loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </VBtn>
+            </div>
+          </v-col>
+        </v-row>
+
         <DownloadAddInListItem
-          :is-loading="gmailSpinnerStatus"
-          class="mt-n4 microsoft-365-add-in-list-item"
-          title="Page View"
-          :description="`Allows users to report suspicious emails from the Outlook side panel.`"
-          @button-click="callForGenerateO365AddIn"
-        >
-          <AlertBox
-            v-if="isAccountConnected"
-            class="mt-4 w-100"
-            style="background-color: rgba(67, 160, 71, 0.15);"
-            icon-name="mdi-lock-check"
-            icon-color="#43A047"
-            :slots="{ primaryAction: false, secondaryAction: false }"
-          >
-            <template #text>
-              <div class="ml-2" style="font-size: 14px; color: #383b41;">
-                <div class="fw-600">GRAPH Authorization Successful</div>
-                <div class="text-primary-color">
-                  Ribbon and Page View are now authorized. Page View still works on Exchange without
-                  GRAPH authorization.
-                </div>
-              </div>
-            </template>
-          </AlertBox>
-          <AlertBox
-            v-else
-            class="mt-4 w-100"
-            style="background-color: #f2f2f2;"
-            icon-name="mdi-lock"
-            icon-color="#757575"
-            :slots="{ primaryAction: false, secondaryAction: false }"
-          >
-            <template #text>
-              <div class="ml-2" style="font-size: 14px; color: #383b41;">
-                <div class="fw-600">GRAPH Authorization Required</div>
-                <div class="text-primary-color">
-                  Ribbon and Page View require GRAPH authorization. Page View works on Exchange
-                  without it.
-                </div>
-              </div>
-            </template>
-          </AlertBox>
-        </DownloadAddInListItem>
+          :src="require('../../assets/img/google-workspace.svg')"
+          :is-loading="googleWorkSpaceSpinnerStatus"
+          description="JSON add-in for web-based Google Workspace emails"
+          @button-click="callForGenerateGoogleWorkSpaceAddIn"
+        />
+        <DownloadAddInListItem
+          :src="require('../../assets/img/outlook.svg')"
+          :is-loading="outlookSpinnerStatus"
+          description="MSI add-in for Windows Outlook Desktop"
+          @button-click="callForGenerateOutlookAddIn"
+        />
         <DownloadAddInListItem
           :is-loading="diagnosticToolSpinnerStatus"
           hide-border
@@ -197,17 +314,22 @@
 <script>
 import {
   connectGraphAccount,
+  deleteGraphAccount,
   downloadDiagnosticTool,
   downloadOutlookAddIn,
   downloadSpamReport,
   generateDiagnosticTool,
   generateGoogleWorkSpaceAddIn,
   generateO365AddIn,
-  generateOutlookAddIn
+  generateOutlookAddIn,
+  updateApplicationLevelAccount
 } from '@/api/phishingReporter'
 import DownloadAddInListItem from '@/components/PhishingReporter/DownloadAddInListItem.vue'
 import AlertBox from '@/components/AlertBox.vue'
-import UnlinkMicrosoftAccessDialog from '@/components/PhishingReporter/UnlinkMicrosoftAccessDialog.vue'
+import DelegatedLevelAuthorizationDialog from '@/components/PhishingReporter/DelegatedLevelAuthorizationDialog.vue'
+import ApplicationLevelAuthorizationDialog from '@/components/PhishingReporter/ApplicationLevelAuthorizationDialog.vue'
+import labels from '@/model/constants/labels'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'DownloadAddInModal',
   props: {
@@ -219,24 +341,67 @@ export default {
     }
   },
   components: {
-    UnlinkMicrosoftAccessDialog,
     AlertBox,
-    DownloadAddInListItem
+    DownloadAddInListItem,
+    DelegatedLevelAuthorizationDialog,
+    ApplicationLevelAuthorizationDialog
   },
   data() {
     return {
       outlookSpinnerStatus: false,
       isAccountConnected: this.formData ? this.formData.isGraphAccountConnected : false,
-      isShowUnlinkDialog: false,
       diagnosticToolSpinnerStatus: false,
       downloadOutlookAddInTimeout: null,
       diagnosticToolAddInTimeout: null,
       gmailSpinnerStatus: false,
       o365SpinnerStatus: false,
-      googleWorkSpaceSpinnerStatus: false
+      googleWorkSpaceSpinnerStatus: false,
+      showDelegatedLevelAuthorizationDialog: false,
+      showApplicationLevelDialog: false,
+      isApplicationLevelAuthorizing: false,
+      isDelegatedLevelAuthorizing: false,
+      isApplicationLevelAuthorized: this.formData
+        ? this.formData.isAppPermissionAccessGranted || false
+        : false
     }
   },
   methods: {
+    handleDelegatedGraphAPIAccess() {
+      this.showDelegatedLevelAuthorizationDialog = true
+    },
+    handleApplicationLevelGraphAPIAccess() {
+      this.showApplicationLevelDialog = true
+    },
+    closeDelegatedLevelAuthorizationDialog() {
+      this.showDelegatedLevelAuthorizationDialog = false
+    },
+    handleCopyDelegatedLevelAuthorizationLink() {
+      this.isDelegatedLevelAuthorizing = true
+      this.handleConnectAccount()
+        .then((link) => {
+          navigator.clipboard.writeText(link)
+          this.$store.dispatch('common/createSnackBar', {
+            message: labels.CopiedToClipboard,
+            icon: 'mdi-checkbox-marked-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+        })
+        .finally(() => {
+          this.closeDelegatedLevelAuthorizationDialog()
+          this.isDelegatedLevelAuthorizing = false
+        })
+    },
+    handleAuthorizeDelegatedLevelNow() {
+      this.isDelegatedLevelAuthorizing = true
+      this.handleConnectAccount()
+        .then((link) => {
+          window.location.href = link
+        })
+        .finally(() => {
+          this.closeDelegatedLevelAuthorizationDialog()
+          this.isDelegatedLevelAuthorizing = false
+        })
+    },
     callForGenerateGoogleWorkSpaceAddIn() {
       this.googleWorkSpaceSpinnerStatus = true
       generateGoogleWorkSpaceAddIn()
@@ -354,22 +519,78 @@ export default {
         this.downloadOutlookAddInTimeout = null
       }
     },
-    toggleUnlinkDialog(forceUpdate = false) {
-      if (forceUpdate) {
-        this.formData.isGraphAccountConnected = false
-        this.isAccountConnected = false
-      }
-      this.isShowUnlinkDialog = !this.isShowUnlinkDialog
-    },
     handleConnectAccount() {
-      connectGraphAccount().then((response) => {
+      return connectGraphAccount().then((response) => {
         const {
           data: { data }
         } = response
-        window.location.href = `https://login.microsoftonline.com/common/adminconsent?client_id=${
+        return `https://login.microsoftonline.com/common/adminconsent?client_id=${
           data.applicationId
         }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
       })
+    },
+    handleConnectApplicationLevelAccount() {
+      return connectGraphAccount().then((response) => {
+        const {
+          data: { data }
+        } = response
+        return data.appPermissionAuthorizationUrl
+      })
+    },
+    closeApplicationLevelDialog() {
+      this.showApplicationLevelDialog = false
+      this.isAuthorizing = false
+    },
+    handleCopyApplicationLevelLink() {
+      this.isApplicationLevelAuthorizing = true
+      this.handleConnectApplicationLevelAccount()
+        .then((link) => {
+          navigator.clipboard.writeText(link)
+          this.$store.dispatch('common/createSnackBar', {
+            message: labels.CopiedToClipboard,
+            icon: 'mdi-checkbox-marked-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+        })
+        .finally(() => {
+          this.closeApplicationLevelDialog()
+          this.isApplicationLevelAuthorizing = false
+        })
+    },
+    handleAuthorizeApplicationLevel() {
+      this.isApplicationLevelAuthorizing = true
+      this.handleConnectApplicationLevelAccount()
+        .then((link) => {
+          window.location.href = link
+        })
+        .finally(() => {
+          this.closeApplicationLevelDialog()
+          this.isApplicationLevelAuthorizing = false
+        })
+    },
+    handleRevokeDelegatedLevelAuthorization() {
+      this.isDelegatedLevelAuthorizing = true
+      deleteGraphAccount()
+        .then(() => {
+          this.isAccountConnected = false
+          this.formData.isGraphAccountConnected = false
+          this.closeDelegatedLevelAuthorizationDialog()
+        })
+        .finally(() => {
+          this.isDelegatedLevelAuthorizing = false
+        })
+    },
+    handleRevokeApplicationLevelAuthorization() {
+      this.isApplicationLevelAuthorizing = true
+      updateApplicationLevelAccount(false)
+        .then(() => {
+          this.isApplicationLevelAuthorized = false
+          this.formData.isAppPermissionAccessGranted = false
+          this.closeApplicationLevelDialog()
+        })
+        .finally(() => {
+          this.isApplicationLevelAuthorizing = false
+        })
     }
   }
 }
