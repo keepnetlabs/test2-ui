@@ -17,32 +17,26 @@
         </slot>
       </div>
     </div>
-    <div>
-      <slot name="buttons">
-        <v-btn
-          id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-          class="white--text btn-util btn-download-add-in"
-          :style="getButtonStyle"
-          color="#2196f3"
-          rounded
-          :loading="isLoading"
-          @click="handleClickButton"
-        >
-          <v-icon left>mdi-download</v-icon>
-          Download
-          <template #loader>
-            <img
-              src="../../assets/img/spinner.svg"
-              class="add-in-settings__spinner"
-              alt="spinner"
-            />
-            <span style="font-size: 14px; text-transform: capitalize;">
-              Generating...
-            </span>
-          </template>
-        </v-btn>
-      </slot>
-    </div>
+    <slot name="buttons">
+      <v-btn
+        id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+        class="white--text btn-util btn-download-add-in"
+        :style="getButtonStyle"
+        color="#2196f3"
+        rounded
+        :loading="isLoading"
+        @click="handleClickButton"
+      >
+        <v-icon left>mdi-download</v-icon>
+        Download
+        <template #loader>
+          <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" alt="spinner" />
+          <span style="font-size: 14px; text-transform: capitalize;">
+            Generating...
+          </span>
+        </template>
+      </v-btn>
+    </slot>
     <slot></slot>
   </div>
 </template>
