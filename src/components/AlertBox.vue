@@ -2,7 +2,7 @@
   <div class="alert-box">
     <slot>
       <div class="alert-box__default-content">
-        <v-icon :color="iconColor">{{ iconName }}</v-icon>
+        <v-icon v-bind="iconProps" :color="iconColor">{{ iconName }}</v-icon>
         <slot name="text">
           <p>
             {{ text }}
@@ -37,6 +37,10 @@ export default {
     iconName: {
       type: String,
       default: 'mdi-alert-circle'
+    },
+    iconProps: {
+      type: Object,
+      default: () => ({})
     },
     slots: {
       type: Object,
