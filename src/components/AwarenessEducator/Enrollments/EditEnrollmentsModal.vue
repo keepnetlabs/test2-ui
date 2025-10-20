@@ -423,7 +423,7 @@ export default {
         }
       },
       periodTypeItems,
-      endTypeItems,
+      endTypeItems: JSON.parse(JSON.stringify(endTypeItems)),
       enrollmentAutoEnrollTypeItems,
       enrollmentAutoEnrollDayOfWeekItems,
       datePickerOptions: {
@@ -488,8 +488,13 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const { enrollmentReminder, enrollmentAutoEnroll, enrollmentScheduler } =
-            response?.data?.data || {}
+          const {
+            enrollmentReminder,
+            enrollmentAutoEnroll,
+            enrollmentScheduler,
+            trainingTypeId,
+            hasQuiz
+          } = response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
           if (this.selectedRow?.status === 'Scheduled') {
             if (enrollmentScheduler && typeof enrollmentScheduler === 'object') {
@@ -501,6 +506,11 @@ export default {
                 useOwnTimeZone: false
               }
             }
+          }
+          if (hasQuiz || trainingTypeId === 'Survey') {
+            this.endTypeItems = this.endTypeItems.filter(
+              (item) => item.value !== 'QuizSuccessfullyCompleted' && item.value !== 'QuizCompleted'
+            )
           }
           if (this.isLearningPath && !!response.data.data.distributionDays) {
             this.isDistributionEnabled = true

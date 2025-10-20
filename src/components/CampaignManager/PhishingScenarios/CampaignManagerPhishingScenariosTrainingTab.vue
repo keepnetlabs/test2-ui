@@ -435,7 +435,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       periodTypeItems,
-      endTypeItems,
+      endTypeItems: JSON.parse(JSON.stringify(endTypeItems)),
       totalNumberOfPagesOfTrainings: 1,
       trainingPayload: {
         pageNumber: 1,
@@ -624,6 +624,13 @@ export default {
       this.$set(this.value, 'trainingId', item?.value ?? '')
       this.$set(this.value, 'trainingName', item?.text ?? '')
       this.$set(this.value, 'trainingLanguageIds', [])
+      if (this.value.trainingTypeId === 'Survey' || this.value.hasQuiz) {
+        this.endTypeItems = endTypeItems.filter(
+          (item) => item.value !== 'QuizSuccessfullyCompleted' && item.value !== 'QuizCompleted'
+        )
+      } else {
+        this.endTypeItems = endTypeItems
+      }
       this.$nextTick(() => {
         this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
       })
