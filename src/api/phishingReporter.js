@@ -90,7 +90,9 @@ export function bulkDeletePhishingUsers(payload = {}) {
   })
 }
 export function createGraphAccount(payload) {
-  return testRequest.post('/phishing-reporter/link-graph-account', payload)
+  return testRequest.post('/phishing-reporter/link-graph-account', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function updateApplicationLevelAccount(isGranted) {
   return testRequest.put(
