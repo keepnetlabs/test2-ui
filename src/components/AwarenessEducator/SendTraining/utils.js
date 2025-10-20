@@ -31,14 +31,6 @@ export const endTypeItemsSurvey = [
     value: 'TrainingCompleted'
   },
   {
-    text: 'when user completes the quiz',
-    value: 'QuizCompleted'
-  },
-  {
-    text: 'when user successfully passes the quiz',
-    value: 'QuizSuccessfullyCompleted'
-  },
-  {
     text: 'after occurences',
     value: 'AfterOccurrences'
   },
