@@ -391,7 +391,7 @@ export default {
     }
   },
   created() {
-    if (this.type === SCENARIO_TYPES.CALLBACK || this.type === SCENARIO_TYPES.QUISHING) {
+    if (this.type === SCENARIO_TYPES.CALLBACK) {
       this.callForDefaultSmtpSetting()
     } else {
       this.callForDefaultEmailDeliverySetting()
