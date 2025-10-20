@@ -982,6 +982,9 @@
       </v-container>
       <app-footer :brand-name="getBreadCrumbBaseName" />
     </v-content>
+
+    <!-- Chat Panel -->
+    <ChatPanel />
   </v-app>
 </template>
 <script>
@@ -1022,6 +1025,7 @@ import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
 import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
 import AppDialog from '@/components/AppDialog.vue'
+import ChatPanel from '@/components/layout/ChatPanel.vue'
 
 export default {
   name: 'Main',
@@ -1042,7 +1046,8 @@ export default {
     AppSnackbar,
     Breadcrumb,
     TargetUsersCheckLicenseDialog,
-    MainListItemLoading
+    MainListItemLoading,
+    ChatPanel
   },
   data() {
     return {
