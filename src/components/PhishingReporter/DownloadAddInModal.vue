@@ -111,6 +111,7 @@
         <DownloadAddInListItem
           class="flex-nowrap align-start mt-0"
           hide-border
+          is-optional
           title="Authorize GRAPH APIs (Application-Level Access)"
           description="Provides organization-wide authentication and identity mapping, powered by Microsoft Graph."
         >
@@ -119,7 +120,6 @@
               <VBtn
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="btn-util btn-download-add-in"
-                :class="{ 'white--text': !isApplicationLevelAuthorized }"
                 style="
                   margin-left: 5px !important;
                   text-transform: capitalize;
@@ -128,7 +128,7 @@
                 "
                 :color="isApplicationLevelAuthorized ? '#F56C6C' : '#2196f3'"
                 rounded
-                :outlined="isApplicationLevelAuthorized"
+                outlined
                 @click="handleApplicationLevelGraphAPIAccess"
               >
                 <v-icon left>mdi-check-circle</v-icon>

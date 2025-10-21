@@ -10,6 +10,7 @@
       <slot name="logo-bottom-content"></slot>
       <div v-if="title" :class="['download-add-in__list-item-title', titleClass]">
         {{ title }}
+        <span v-if="isOptional" class="download-add-in__list-item-optional">Optional</span>
       </div>
       <div class="download-add-in__list-item-desc">
         <slot name="description">
@@ -74,6 +75,10 @@ export default {
     titleClass: {
       type: String,
       default: ''
+    },
+    isOptional: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
