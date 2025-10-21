@@ -117,7 +117,11 @@
         >
           <template #buttons>
             <div class="d-flex justify-end align-end flex-column gap-6">
-              <VTooltip v-if="!isAccountConnected" bottom max-width="200">
+              <VTooltip
+                v-if="!isAccountConnected && !isApplicationLevelAuthorized"
+                bottom
+                max-width="200"
+              >
                 <template #activator="{ on }">
                   <div v-on="on">
                     <VBtn
