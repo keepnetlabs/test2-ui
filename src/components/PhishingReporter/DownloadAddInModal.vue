@@ -111,15 +111,45 @@
         <DownloadAddInListItem
           class="flex-nowrap align-start mt-0"
           hide-border
+          is-optional
           title="Authorize GRAPH APIs (Application-Level Access)"
           description="Provides organization-wide authentication and identity mapping, powered by Microsoft Graph."
         >
           <template #buttons>
             <div class="d-flex justify-end align-end flex-column gap-6">
+              <VTooltip
+                v-if="!isAccountConnected && !isApplicationLevelAuthorized"
+                bottom
+                max-width="200"
+              >
+                <template #activator="{ on }">
+                  <div v-on="on">
+                    <VBtn
+                      id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                      class="btn-util btn-download-add-in"
+                      style="
+                        margin-left: 5px !important;
+                        text-transform: capitalize;
+                        box-shadow: none !important;
+                        margin-top: 4px;
+                      "
+                      :style="{ opacity: 0.5, pointerEvents: 'none' }"
+                      :color="isApplicationLevelAuthorized ? '#F56C6C' : '#2196f3'"
+                      rounded
+                      outlined
+                      @click="handleApplicationLevelGraphAPIAccess"
+                    >
+                      <v-icon left>mdi-check-circle</v-icon>
+                      {{ isApplicationLevelAuthorized ? 'Revoke Authorization' : 'Authorize' }}
+                    </VBtn>
+                  </div>
+                </template>
+                <span>Delegated Access authorization is required to enable this option.</span>
+              </VTooltip>
               <VBtn
+                v-else
                 id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
                 class="btn-util btn-download-add-in"
-                :class="{ 'white--text': !isApplicationLevelAuthorized }"
                 style="
                   margin-left: 5px !important;
                   text-transform: capitalize;
@@ -128,7 +158,7 @@
                 "
                 :color="isApplicationLevelAuthorized ? '#F56C6C' : '#2196f3'"
                 rounded
-                :outlined="isApplicationLevelAuthorized"
+                outlined
                 @click="handleApplicationLevelGraphAPIAccess"
               >
                 <v-icon left>mdi-check-circle</v-icon>
@@ -155,7 +185,7 @@
                 {{
                   isApplicationLevelAuthorized
                     ? 'Application-level access successfully authorized.'
-                    : 'Recommended for organizations using Conditional Access or advanced identity policies.'
+                    : 'Recommended for organizations using Conditional Access or Advanced Identity Policies.'
                 }}
               </div>
             </div>
