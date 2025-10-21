@@ -171,7 +171,7 @@
                 hide-details
                 placeholder="Select a item"
                 style="max-width: 282px; min-width: 282px;"
-                :items="endTypeItems"
+                :items="filteredEndTypeItems"
                 disabled
               />
               <v-text-field
@@ -345,6 +345,7 @@ import AlertBox from '@/components/AlertBox'
 import {
   periodTypeItems,
   endTypeItems,
+  endTypeItemsSurvey,
   enrollmentAutoEnrollTypeItems,
   enrollmentAutoEnrollDayOfWeekItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
@@ -435,6 +436,12 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone'
     }),
+    filteredEndTypeItems() {
+      if (this.selectedRow?.trainingTypeId === 'Survey' || this.selectedRow?.hasQuiz) {
+        return JSON.parse(JSON.stringify(endTypeItemsSurvey))
+      }
+      return endTypeItems
+    },
     isLearningPath() {
       return this.selectedRow?.type === 'Learning Path'
     },
@@ -506,11 +513,6 @@ export default {
                 useOwnTimeZone: false
               }
             }
-          }
-          if (hasQuiz || trainingTypeId === 'Survey') {
-            this.endTypeItems = this.endTypeItems.filter(
-              (item) => item.value !== 'QuizSuccessfullyCompleted' && item.value !== 'QuizCompleted'
-            )
           }
           if (this.isLearningPath && !!response.data.data.distributionDays) {
             this.isDistributionEnabled = true

@@ -1285,7 +1285,18 @@ export default {
           })
           this.isEmailGenerating = false
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error?.response?.status === 500) {
+            if (this.timeoutId) clearTimeout(this.timeoutId)
+            this.isEmailGenerating = false
+            this.$nextTick(() => {
+              const element = document.querySelector('.email-template__ai-assistant-footer-right')
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            })
+            return
+          }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
         })
     },
@@ -1302,7 +1313,18 @@ export default {
           this.$emit('update:template', template)
           this.isEmailGenerating = false
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error?.response?.status === 500) {
+            if (this.timeoutId) clearTimeout(this.timeoutId)
+            this.isEmailGenerating = false
+            this.$nextTick(() => {
+              const element = document.querySelector('.email-template__ai-assistant-footer-right')
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            })
+            return
+          }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
         })
     },
