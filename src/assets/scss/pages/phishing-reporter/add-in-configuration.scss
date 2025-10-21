@@ -346,6 +346,19 @@
       font-size: 18px;
       font-weight: 600;
     }
+    &-optional {
+      background-color: #e0e0e0;
+      color: #383b41;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.71;
+      height: 24px;
+      vertical-align: middle;
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
     &-margin-title {
       margin-top: 12px;
     }
