@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-    <ChatPanel />
+  <ChatPanel />
   </v-app>
 </template>
 <script>
