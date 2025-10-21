@@ -137,7 +137,7 @@ import TrainingLibrarySendSurveySummary from '@/components/TrainingLibrary/Train
 import TrainingLibrarySendSurveySettings from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySurveySendModal/TrainingLibrarySendSurveySettings.vue'
 import { emptySurveySendModalObj, getAutoEnrollText } from '@/components/TrainingLibrary/utils'
 import {
-  endTypeItems,
+  endTypeItemsSurvey,
   awardCertificateTypes,
   enrollmentAutoEnrollTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
@@ -321,7 +321,7 @@ export default {
       if (refSendTrainingSettings?.formData?.deliveryMethod !== DELIVERY_METHODS.LMS) {
         if (sendReminderEvery) {
           const reminderEndType =
-            endTypeItems.find((item) => item.value === enrollmentReminder.endType)?.text || ''
+            endTypeItemsSurvey.find((item) => item.value === enrollmentReminder.endType)?.text || ''
           let endText = reminderEndType
           if (enrollmentReminder.endType === 'OnDate') {
             endText = 'on ' + enrollmentReminder.stopTime

@@ -674,8 +674,8 @@ export default {
       selectedLanguageToDelete: '',
       isAddNewLanguageMenuVisible: false,
       languageFilter: '',
-      tab: 'English',
-      defaultLanguage: 'English',
+      tab: 'English (United Kingdom)',
+      defaultLanguage: 'English (United Kingdom)',
       languageOptions: [],
       formValues: {
         addInName: 'Suspicious email reporter',
