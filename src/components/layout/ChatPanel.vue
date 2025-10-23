@@ -81,7 +81,8 @@ export default {
       chatUrl: process.env.VUE_APP_CHAT_URL || 'https://agentic-ui.pages.dev/',
       iframeLoaded: false,
       isFullWidth: false,
-      isInitialHidden: true
+      isInitialHidden: true,
+      chatPopupInterval: null
     }
   },
   computed: {
@@ -184,16 +185,24 @@ export default {
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
-    // Diğer chat-popup elemanını kapat
-    setTimeout(() => {
+    // Interval ile diğer chat-popup elemanını kapat
+    this.chatPopupInterval = setInterval(() => {
       const otherChatPopup = document.querySelector('.chat-popup')
       if (otherChatPopup) {
         otherChatPopup.style.display = 'none'
+        // Kapatıldıktan sonra interval'ı kaldır
+        clearInterval(this.chatPopupInterval)
+        this.chatPopupInterval = null
       }
-    }, 2000)
+    }, 500)
   },
 
   beforeDestroy() {
+    // Interval'ı kaldır
+    if (this.chatPopupInterval) {
+      clearInterval(this.chatPopupInterval)
+      this.chatPopupInterval = null
+    }
     // Diğer chat-popup elemanını aç
     const otherChatPopup = document.querySelector('.chat-popup')
     if (otherChatPopup) {
