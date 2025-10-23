@@ -184,11 +184,21 @@ export default {
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
+    // Diğer chat-popup elemanını kapat
+    const otherChatPopup = document.querySelector('.chat-popup')
+    if (otherChatPopup) {
+      otherChatPopup.style.display = 'none'
+    }
     // İframe mesajlarını dinle
     window.addEventListener('message', this.handleIframeMessage)
   },
 
   beforeDestroy() {
+    // Diğer chat-popup elemanını aç
+    const otherChatPopup = document.querySelector('.chat-popup')
+    if (otherChatPopup) {
+      otherChatPopup.style.display = ''
+    }
     // Event listener'ı temizle
     window.removeEventListener('message', this.handleIframeMessage)
   }
