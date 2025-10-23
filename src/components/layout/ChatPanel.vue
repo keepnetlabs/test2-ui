@@ -185,12 +185,12 @@ export default {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
     // Diğer chat-popup elemanını kapat
-    const otherChatPopup = document.querySelector('.chat-popup')
-    if (otherChatPopup) {
-      otherChatPopup.style.display = 'none'
-    }
-    // İframe mesajlarını dinle
-    window.addEventListener('message', this.handleIframeMessage)
+    setTimeout(() => {
+      const otherChatPopup = document.querySelector('.chat-popup')
+      if (otherChatPopup) {
+        otherChatPopup.style.display = 'none'
+      }
+    }, 2000)
   },
 
   beforeDestroy() {
@@ -199,8 +199,6 @@ export default {
     if (otherChatPopup) {
       otherChatPopup.style.display = ''
     }
-    // Event listener'ı temizle
-    window.removeEventListener('message', this.handleIframeMessage)
   }
 }
 </script>
