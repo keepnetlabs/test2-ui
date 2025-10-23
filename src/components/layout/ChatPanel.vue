@@ -66,6 +66,16 @@
           @load="onIframeLoad"
           frameborder="0"
           allowfullscreen
+          allow="accelerometer; 
+         autoplay; 
+         clipboard-write; 
+         encrypted-media; 
+         fullscreen; 
+         geolocation; 
+         gyroscope; 
+         magnetometer; 
+         microphone; 
+         picture-in-picture;"
         ></iframe>
       </div>
     </div>
@@ -195,6 +205,9 @@ export default {
         this.chatPopupInterval = null
       }
     }, 500)
+
+    // İframe'den gelen mesajları dinle
+    window.addEventListener('message', this.handleIframeMessage)
   },
 
   beforeDestroy() {
@@ -203,6 +216,8 @@ export default {
       clearInterval(this.chatPopupInterval)
       this.chatPopupInterval = null
     }
+    // Event listener'ı kaldır
+    window.removeEventListener('message', this.handleIframeMessage)
     // Diğer chat-popup elemanını aç
     const otherChatPopup = document.querySelector('.chat-popup')
     if (otherChatPopup) {
