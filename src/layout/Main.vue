@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-  <ChatPanel />
+  <ChatPanel v-if="isAwarenessEducator" />
   </v-app>
 </template>
 <script>
@@ -1486,6 +1486,9 @@ export default {
     },
     isSelectedCompanyNameDisabled() {
       return this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
+    },
+    isAwarenessEducator() {
+      return this.$route.path.includes('/awareness-educator')
     }
   },
   watch: {

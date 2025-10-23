@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-panel">
+  <div v-if="!isInitialHidden" class="chat-panel">
     <!-- Chat Toggle Button -->
     <v-btn v-if="!isExpanded" class="chat-toggle-btn" fab small color="primary" @click="toggleChat">
       <v-icon>mdi-robot</v-icon>
@@ -18,7 +18,7 @@
             <v-icon small color="white">mdi-robot</v-icon>
           </v-avatar>
         </div>
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-2">
           <v-btn icon small @click="toggleFullWidth" color="white">
             <v-icon>{{ isFullWidth ? 'mdi-window-restore' : 'mdi-window-maximize' }}</v-icon>
           </v-btn>
@@ -42,7 +42,12 @@
 
           <!-- Messages Skeleton -->
           <div class="skeleton-messages">
-            <v-skeleton-loader v-for="i in 4" :key="i" type="text" class="skeleton-message"></v-skeleton-loader>
+            <v-skeleton-loader
+              v-for="i in 4"
+              :key="i"
+              type="text"
+              class="skeleton-message"
+            ></v-skeleton-loader>
           </div>
 
           <!-- Input Skeleton Card -->
@@ -73,9 +78,10 @@ export default {
   data() {
     return {
       isExpanded: false,
-      chatUrl: process.env.VUE_APP_CHAT_URL || 'http://localhost:3001',
+      chatUrl: process.env.VUE_APP_CHAT_URL || 'https://agentic-ui.pages.dev/',
       iframeLoaded: false,
-      isFullWidth: false
+      isFullWidth: false,
+      isInitialHidden: true
     }
   },
   computed: {
@@ -176,6 +182,8 @@ export default {
   },
 
   mounted() {
+    // Chat panel'i başlangıçtan sonra göster
+    this.isInitialHidden = false
     // İframe mesajlarını dinle
     window.addEventListener('message', this.handleIframeMessage)
   },
@@ -293,7 +301,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 12px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   flex-shrink: 0;
