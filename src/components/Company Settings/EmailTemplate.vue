@@ -1004,9 +1004,6 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
     editorHtml() {
-      if (this.templateType !== 'landing') {
-        return this.template
-      }
       return this.injectLogo(this.template)
     },
     getEmailTemplateCCSelectClasses() {
@@ -1141,7 +1138,7 @@ export default {
             localStorage.getItem('isSelectCompany') === 'true'
               ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
               : this.$store.state.auth.logoUrl || ''
-          if(!url) url = this?.$store?.state?.whitelabel.mainLogoUrl || ''
+          if (!url) url = this?.$store?.state?.whitelabel.mainLogoUrl || ''
         }
         this.previewTemplate = val?.replace(/{COMPANYLOGO}/g, url) || ''
       },
@@ -1166,27 +1163,17 @@ export default {
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     injectLogo(html = '') {
-      let logo = ''
-      if (this.templateType !== 'landing') {
-        logo = this.emailTemplateLogo || ''
-      } else {
-        logo =
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl || ''
-      }
+      let logo =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl || ''
       return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
     },
     restoreLogo(html = '') {
-      let logo = ''
-      if (this.templateType !== 'landing') {
-        logo = this.emailTemplateLogo || ''
-      } else {
-        logo =
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl || ''
-      }
+      let logo =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl || ''
       if (!logo) return html || ''
       const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
