@@ -309,10 +309,10 @@
                 class="mb-2"
                 icon-color="#B6791D"
                 icon-name="mdi-information"
-                text="Following groups assigned to the users will be created."
+                text="Users and groups under the selected organizational units will be created."
                 :slots="{ primaryAction: false, secondaryAction: false }"
               />
-              <div class="google-user-provisioning__matching-groups mb-6">
+              <div v-if="false" class="google-user-provisioning__matching-groups mb-6">
                 <div
                   v-for="(group, index) in getMatchingGroupOptions"
                   :key="index"
