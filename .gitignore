@@ -16,7 +16,7 @@ debug.log
 pnpm-debug.log*
 yarn.lock
 *.stackdump
-
+.claude
 # Editor directories and files
 .idea
 .vscode
