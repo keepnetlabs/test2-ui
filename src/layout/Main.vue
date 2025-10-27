@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-  <ChatPanel v-if="isAwarenessEducator" />
+  <ChatPanel v-if="isAwarenessEducator && isTestEnvironment" />
   </v-app>
 </template>
 <script>
@@ -1489,6 +1489,9 @@ export default {
     },
     isAwarenessEducator() {
       return this.$route.path.includes('/awareness-educator')
+    },
+    isTestEnvironment() {
+      return window.location.hostname.includes('test-ui.devkeepnet.com')
     }
   },
   watch: {
