@@ -1167,6 +1167,7 @@ export default {
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl || ''
+      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
       return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
     },
     restoreLogo(html = '') {
@@ -1174,7 +1175,7 @@ export default {
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl || ''
-      if (!logo) return html || ''
+      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
       const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
     },
