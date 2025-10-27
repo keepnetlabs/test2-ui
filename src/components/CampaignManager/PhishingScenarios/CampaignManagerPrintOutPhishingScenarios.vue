@@ -56,7 +56,10 @@
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
-                    style="padding-right: 4px !important; padding-left: 4px !important; min-width: 250px;
+                    style="
+                      padding-right: 4px !important;
+                      padding-left: 4px !important;
+                      min-width: 250px;
                     "
                     :items="languages"
                     @change="isShowSelectedScenarios = false"
@@ -298,7 +301,7 @@ import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignMa
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
 import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
-import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import { QuishingTrainingTabModel } from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
@@ -447,7 +450,7 @@ export default {
         this.$set(
           this.trainingTabModel,
           val.value,
-          new TrainingTabModel(
+          new QuishingTrainingTabModel(
             val.trainingId,
             val.trainingName,
             val.trainingLanguageIds,
@@ -461,6 +464,9 @@ export default {
               occurrenceCount: 1,
               stopTime: '',
               sendReminderEvery: val.isEnrollmentReminderActive || false
+            },
+            {
+              ...val.trainingRedirectPage
             }
           )
         )
@@ -678,7 +684,7 @@ export default {
     adjustTrainingModel(resourceId = '') {
       if (!resourceId) return
       if (!this.trainingTabModel[resourceId]) {
-        this.$set(this.trainingTabModel, resourceId, new TrainingTabModel())
+        this.$set(this.trainingTabModel, resourceId, new QuishingTrainingTabModel())
       } else if (
         this.trainingTabModel?.[resourceId].trainingId &&
         !this.trainingTabModel?.[resourceId]?.trainingLanguageIds?.length
@@ -754,7 +760,11 @@ export default {
       if (this.trainingTabModel[item.resourceId]) {
         this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
       } else {
-        this.$set(this.trainingTabModel, item.resourceId, new TrainingTabModel('', '', [], value))
+        this.$set(
+          this.trainingTabModel,
+          item.resourceId,
+          new QuishingTrainingTabModel('', '', [], value)
+        )
       }
       this.$emit('input', [item])
     },
