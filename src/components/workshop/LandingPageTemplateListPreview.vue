@@ -1470,7 +1470,7 @@ export default {
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
-        if(!logo) logo = this?.$store?.state?.whitelabel?.mainLogoUrl || ''    
+        if (!logo) logo = this?.$store?.state?.whitelabel?.mainLogoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html

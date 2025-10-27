@@ -1429,6 +1429,18 @@ export default {
               this.emailDifficultyChipColor = this.getDifficultyColor(
                 this.selectedEmailTemplate?.difficultyName || ''
               )
+              if (data?.landingPageTemplate?.landingPages?.length) {
+                data.landingPageTemplate.landingPages.forEach((item) => {
+                  if (item.content) {
+                    let logo =
+                      localStorage.getItem('isSelectCompany') === 'true'
+                        ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+                        : this.$store.state.auth.logoUrl || ''
+                    if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
+                    item.content = item.content.replace(/\{COMPANYLOGO\}/g, logo)
+                  }
+                })
+              }
               this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
