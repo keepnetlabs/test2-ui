@@ -53,7 +53,7 @@ export default [
   },
   {
     country: 'Australia',
-    language: 'English'
+    language: 'English (Australia)'
   },
   {
     country: 'Austria',
@@ -145,7 +145,7 @@ export default [
   },
   {
     country: 'Canada',
-    language: 'English'
+    language: 'English (Canada)'
   },
   {
     country: 'Central African Republic',
@@ -297,7 +297,7 @@ export default [
   },
   {
     country: 'Ireland',
-    language: 'English'
+    language: 'English (Ireland)'
   },
   {
     country: 'Israel',
@@ -481,7 +481,7 @@ export default [
   },
   {
     country: 'New Zealand',
-    language: 'English'
+    language: 'English (New Zealand)'
   },
   {
     country: 'Nicaragua',
@@ -629,7 +629,7 @@ export default [
   },
   {
     country: 'South Africa',
-    language: 'English'
+    language: 'English (South Africa)'
   },
   {
     country: 'South Sudan',
@@ -729,7 +729,7 @@ export default [
   },
   {
     country: 'United States of America',
-    language: 'English'
+    language: 'English (United States)'
   },
   {
     country: 'Uruguay',
