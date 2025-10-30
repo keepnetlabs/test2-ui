@@ -950,7 +950,8 @@ export default {
       if (templateIndex !== -1) {
         this.listData[templateIndex] = {
           ...this.listData[templateIndex],
-          ...newTemplate
+          ...newTemplate,
+          languageTypeName: this.listData[templateIndex].languageTypeName
         }
         let languageIndex = this.listData[templateIndex].languages.findIndex(
           (item) => item.languageTypeResourceId === this.languagePreview

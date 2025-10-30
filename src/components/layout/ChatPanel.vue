@@ -1,7 +1,17 @@
 <template>
   <div v-if="!isInitialHidden" class="chat-panel">
-    <!-- Chat Toggle Button -->
-    <v-btn v-if="!isExpanded" class="chat-toggle-btn" fab small color="primary" @click="toggleChat">
+    <!-- Chat Toggle Button - Draggable -->
+    <v-btn
+      v-if="!isExpanded"
+      ref="chatToggleBtn"
+      class="chat-toggle-btn"
+      fab
+      color="primary"
+      @click="handleBtnClick"
+      @mousedown="startDrag"
+      draggable="false"
+      :style="{ right: buttonPosition.right + 'px', bottom: buttonPosition.bottom + 'px' }"
+    >
       <v-icon>mdi-robot</v-icon>
     </v-btn>
 
@@ -92,7 +102,12 @@ export default {
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
-      chatPopupInterval: null
+      chatPopupInterval: null,
+      isDragging: false,
+      hasDragged: false,
+      dragStart: { x: 0, y: 0 },
+      buttonPosition: { right: 76, bottom: 20 },
+      dragThreshold: 5 // Minimum pixels to consider as drag
     }
   },
   computed: {
@@ -189,12 +204,87 @@ export default {
         console.log('Chat message received:', event.data)
         // Burada ana uygulama state'ini güncelleyebilir veya toast gösterebilirsin
       }
+    },
+
+    handleBtnClick() {
+      if (this.hasDragged) {
+        this.hasDragged = false
+        return
+      }
+      this.toggleChat()
+    },
+
+    startDrag(event) {
+      this.isDragging = true
+      this.hasDragged = false
+      this.dragStart = {
+        x: event.clientX,
+        y: event.clientY
+      }
+      document.addEventListener('mousemove', this.handleMouseMove)
+      document.addEventListener('mouseup', this.handleMouseUp)
+      event.preventDefault()
+    },
+
+    handleMouseMove(event) {
+      if (!this.isDragging) return
+
+      const deltaX = event.clientX - this.dragStart.x
+      const deltaY = event.clientY - this.dragStart.y
+
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+      if (distance > this.dragThreshold) {
+        this.hasDragged = true
+      }
+
+      if (!this.hasDragged) return
+
+      // Butonun yeni konumunu hesapla
+      const newRight = this.buttonPosition.right - deltaX
+      const newBottom = this.buttonPosition.bottom - deltaY
+
+      // Sınırları kontrol et (ekran içinde kalması için)
+      const maxRight = window.innerWidth - 48
+      const maxBottom = window.innerHeight - 48
+
+      this.buttonPosition.right = Math.max(0, Math.min(newRight, maxRight))
+      this.buttonPosition.bottom = Math.max(0, Math.min(newBottom, maxBottom))
+
+      // Drag start pozisyonunu güncelle
+      this.dragStart = {
+        x: event.clientX,
+        y: event.clientY
+      }
+    },
+
+    handleMouseUp() {
+      if (!this.isDragging) return
+      this.isDragging = false
+
+      // Yeni konumu localStorage'a kaydet (sadece drag yapıldıysa)
+      if (this.hasDragged) {
+        localStorage.setItem('chatButtonPosition', JSON.stringify(this.buttonPosition))
+      }
+
+      document.removeEventListener('mousemove', this.handleMouseMove)
+      document.removeEventListener('mouseup', this.handleMouseUp)
     }
   },
 
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
+
+    // localStorage'dan önceki konum bilgisini yükle
+    const savedPosition = localStorage.getItem('chatButtonPosition')
+    if (savedPosition) {
+      try {
+        this.buttonPosition = JSON.parse(savedPosition)
+      } catch (e) {
+        console.error('Failed to parse saved button position:', e)
+      }
+    }
+
     // Interval ile diğer chat-popup elemanını kapat
     this.chatPopupInterval = setInterval(() => {
       const otherChatPopup = document.querySelector('.chat-popup')
@@ -239,11 +329,17 @@ export default {
 
 .chat-toggle-btn {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  width: 48px !important;
+  height: 48px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: auto;
   z-index: 1001;
+  cursor: grab;
+  transition: none;
+}
+
+.chat-toggle-btn:active {
+  cursor: grabbing;
 }
 
 .chat-sidebar {
