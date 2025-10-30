@@ -1,7 +1,7 @@
 <template>
   <div v-if="!isInitialHidden" class="chat-panel">
     <!-- Chat Toggle Button -->
-    <v-btn v-if="!isExpanded" class="chat-toggle-btn" fab small color="primary" @click="toggleChat">
+    <v-btn v-if="!isExpanded" class="chat-toggle-btn" fab color="primary" @click="toggleChat">
       <v-icon>mdi-robot</v-icon>
     </v-btn>
 
@@ -239,7 +239,9 @@ export default {
 
 .chat-toggle-btn {
   position: fixed;
-  right: 64px;
+  right: 76px;
+  width: 48px !important;
+  height: 48px !important;
   bottom: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: auto;
