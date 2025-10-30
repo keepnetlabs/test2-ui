@@ -76,61 +76,176 @@
             <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
           </div>
         </div>
-        <div
-          v-if="isMicrosoftTeamsActive"
-          class="info-card-wrapper mt-2"
-          style="border-radius: 8px; background: rgba(230, 162, 60, 0.2);"
-        >
-          <div
-            class="info-card-header d-flex align-center justify-space-between pa-4"
-            @click="isAccordionOpen = !isAccordionOpen"
-            style="cursor: pointer;"
-          >
-            <div class="d-flex align-center">
-              <VIcon color="#B6791D" class="mr-2" size="20">mdi-information</VIcon>
-              <span style="color: #383b41; font-size: 14px; font-weight: 600;">
-                Add the App to a Microsoft Teams Policy
-              </span>
-            </div>
-            <VIcon color="#757575">
-              {{ isAccordionOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-            </VIcon>
+        <div class="mt-2" style="border-radius: 8px; background-color: #fafafa; padding: 16px;">
+          <div class="d-flex flex-column gap-1 mb-4">
+            <span class="fw-600" style="font-size: 14px;"
+              >Required Setup: Add the App to a Microsoft Teams Policy</span
+            >
           </div>
-          <div v-show="isAccordionOpen" class="info-card-content pt-0 px-4 pb-4">
+          <div
+            v-if="isMicrosoftTeamsActive && !isPublishedAndFound"
+            class="info-card-wrapper mt-2"
+            :style="getRequiredSetupCardStyle"
+          >
             <div
-              class="mb-2"
-              style="
-                color: #383b41;
-                font-family: 'Open Sans';
-                font-size: 12px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 19px;
-              "
+              class="info-card-header d-flex align-center justify-space-between pa-4"
+              style="cursor: pointer;"
             >
-              After installing and authorizing the app, you need to ensure it's added to your
-              Microsoft Teams App Setup Policy.
+              <div class="d-flex align-center">
+                <VIcon v-if="!isTestError" color="#B6791D" class="mr-2" size="20"
+                  >mdi-information</VIcon
+                >
+                <VIcon v-else color="#B83A3A" class="mr-2" size="20">mdi-alert</VIcon>
+                <span style="color: #383b41; font-size: 12px; font-weight: 600;">
+                  {{ getRequiredSetupTitleText }}
+                </span>
+              </div>
             </div>
-            <div
-              style="
-                color: #383b41;
-                font-family: 'Open Sans';
-                font-size: 12px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 19px;
-              "
-            >
-              Go to
-              <a
-                href="https://admin.teams.microsoft.com/policies/app-setup"
-                target="_blank"
-                style="color: #2196f3; font-weight: 600; text-decoration: underline;"
+            <div class="info-card-content pt-0 px-4 pb-4">
+              <div
+                class="mb-2"
+                style="
+                  color: #383b41;
+                  font-family: 'Open Sans';
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 400;
+                  line-height: 19px;
+                "
               >
-                Teams Admin Center
-              </a>
-              → Teams Apps → Setup Policies → [Global (Org-wide default) or your custom policy] →
-              Add Apps → [Search for "Keepnet Security Awareness"] → Add → Save
+                {{ getRequiredSetupContentText }}
+              </div>
+              <div
+                style="
+                  color: #383b41;
+                  font-family: 'Open Sans';
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 600;
+                  line-height: 19px;
+                "
+              >
+                {{ getRequiredSetupInstructionsText }}
+              </div>
+              <div
+                style="
+                  color: #383b41;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 400;
+                  line-height: 19px;
+                "
+              >
+                1.
+                <a
+                  href="https://admin.teams.microsoft.com/policies/app-setup"
+                  target="_blank"
+                  style="color: #2196f3; font-weight: 600; text-decoration: underline;"
+                >
+                  Teams Admin Center
+                </a>
+                → Teams Apps → Setup Policies
+                <div class="ml-3">
+                  a. Add "Keepnet Security Awareness" → Save
+                </div>
+              </div>
+              <div
+                style="
+                  color: #383b41;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 400;
+                  line-height: 19px;
+                "
+              >
+                {{ getSecondRequiredSetupInstructionsText }}
+              </div>
+              <div
+                class="mt-4"
+                style="
+                  color: #383b41;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 600;
+                  line-height: 19px;
+                "
+              >
+                Test Setup:
+                <div
+                  style="
+                    color: #383b41;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 19px;
+                  "
+                >
+                  {{ getTestSetupText }}
+                </div>
+              </div>
+              <div class="mt-2 mb-n3">
+                <VForm
+                  class="d-flex gap-2"
+                  ref="refFormTestMessage"
+                  @submit.prevent="handleSendTestMessage"
+                >
+                  <VTextField
+                    v-model="testEmail"
+                    placeholder="company.admin@domain.com"
+                    hint="*Required"
+                    outlined
+                    dense
+                    persistent-hint
+                    style="max-width: 324px;"
+                    :rules="[Validations.required(testEmail), Validations.email(testEmail)]"
+                  />
+                  <div v-if="isTestError" class="d-flex gap-4">
+                    <VBtn
+                      class="fw-600 white--text"
+                      color="#2196f3"
+                      rounded
+                      :style="getRetryButtonStyle"
+                      @click="handleSendTestMessage"
+                    >
+                      <VIcon left>mdi-cached</VIcon>
+                      RETRY
+                    </VBtn>
+                    <VBtn
+                      class="fw-600"
+                      color="#2196f3"
+                      rounded
+                      outlined
+                      icon
+                      :style="{ boxShadow: 'none', marginTop: '2px' }"
+                      @click="handleCopyErrorMessage"
+                    >
+                      <VIcon small color="#2196f3">mdi-content-copy</VIcon>
+                    </VBtn>
+                  </div>
+                  <VBtn
+                    v-else
+                    class="fw-600 white--text"
+                    color="#2196f3"
+                    rounded
+                    :style="getSendTestMessageButtonStyle"
+                    @click="handleSendTestMessage"
+                  >
+                    <VIcon left small>mdi-send</VIcon>
+                    SEND TEST MESSAGE
+                  </VBtn>
+                </VForm>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="isMicrosoftTeamsActive && isPublishedAndFound">
+            <div
+              class="d-flex gap-2 align-center"
+              style="border-radius: 8px; background-color: rgba(67, 160, 71, 0.2); padding: 16px;"
+            >
+              <VIcon color="#43a047" size="20">mdi-check-circle</VIcon>
+              <span class="fw-600 ml-1" style="font-size: 12px; color: #383b41;"
+                >Status: Verification Passed. Teams policy setup is complete.</span
+              >
             </div>
           </div>
         </div>
@@ -157,7 +272,6 @@
           placeholder="Enter bot name"
           hint="*Required"
           outlined
-          rounded
           disabled
           persistent-hint
         />
@@ -203,6 +317,8 @@ import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import * as Validations from '@/utils/validations'
+import { copyToClipboard } from '@/utils/functions'
 export default {
   name: 'MicrosoftTeamsSettings',
   components: {
@@ -214,6 +330,7 @@ export default {
   },
   data() {
     return {
+      Validations,
       isMicrosoftTeamsActive: false,
       isModalVisible: false,
       isDisableModalVisible: false,
@@ -223,7 +340,11 @@ export default {
       loading: false,
       isStep2: false,
       isLastVersion: false,
-      isAccordionOpen: false
+      isTestError: false,
+      testEmail: '',
+      isTestMessageLoading: false,
+      testErrorMessage: '',
+      isPublishedAndFound: false
     }
   },
   computed: {
@@ -260,6 +381,55 @@ export default {
         style.opacity = 0.5
         style.cursor = 'auto'
         style.pointerEvents = 'none'
+      }
+      return style
+    },
+    getRequiredSetupCardStyle() {
+      const style = {
+        borderRadius: '8px',
+        background: 'rgba(230, 162, 60, 0.2)'
+      }
+      if (this.isTestError) {
+        style.background = 'rgba(245, 108, 108, 0.20)'
+      }
+      return style
+    },
+    getRequiredSetupTitleText() {
+      return this.isTestError
+        ? 'Status: Verification Failed. The app could not send a message.'
+        : 'Status: Setup Required for Microsoft Teams Policy'
+    },
+    getRequiredSetupContentText() {
+      return this.isTestError
+        ? 'This app is not authorized to send Teams notifications to the selected recipient/scope. Make sure the Keepnet app is installed for this user / team / chat and included in the Teams App Policy.'
+        : 'After installing and authorizing the app, ensure it’s added to your Microsoft Teams App Setup Policy.'
+    },
+    getRequiredSetupInstructionsText() {
+      return this.isTestError ? 'Suggested Fixes:' : 'Setup Instructions:'
+    },
+    getSecondRequiredSetupInstructionsText() {
+      return this.isTestError
+        ? '2. Wait a few minutes, then click Send Test Message to verify the setup'
+        : '2. Wait a few minutes, then click Retry to test again'
+    },
+    getTestSetupText() {
+      return this.isTestError
+        ? 'This test will verify if your Teams policy setup allows message delivery. Copy the error to share with the administrator if needed.'
+        : 'This test will verify if your Teams policy setup allows message delivery'
+    },
+    getSendTestMessageButtonStyle() {
+      const style = { boxShadow: 'none' }
+      if (this.isTestMessageLoading) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
+      }
+      return style
+    },
+    getRetryButtonStyle() {
+      const style = { boxShadow: 'none', marginTop: '2px' }
+      if (this.isTestMessageLoading) {
+        style.opacity = 0.5
+        style.cursor = 'auto'
       }
       return style
     }
@@ -312,6 +482,10 @@ export default {
           this.isLastVersion = data?.installedVersion === data?.latestAvailableVersion
           if (isCallback) {
             this.isModalVisible = true
+          }
+          //published and found state
+          if (data?.publishingState?.toLowerCase() === 'published' && data?.isFound) {
+            this.isPublishedAndFound = true
           }
         })
         .finally(() => {
@@ -421,7 +595,6 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
-          this.isAccordionOpen = true
           this.handleSubmit()
         })
         .catch(() => {
@@ -447,6 +620,29 @@ export default {
         MicrosoftTeamsSettingsService.installMicrosoftTeamsAppToUsers()
         this.isSaveDisabled = false
       })
+    },
+    handleSendTestMessage() {
+      if (!this.$refs.refFormTestMessage.validate()) {
+        return
+      }
+      this.isTestMessageLoading = true
+      MicrosoftTeamsSettingsService.sendTestMessage(this.testEmail)
+        .then(() => {
+          this.isTestError = false
+          this.isPublishedAndFound = true
+        })
+        .catch((error) => {
+          this.isTestError = true
+          this.testErrorMessage = error?.response?.data?.message || 'An error occurred'
+        })
+        .finally(() => {
+          this.isTestMessageLoading = false
+        })
+    },
+    handleCopyErrorMessage() {
+      if (this.testErrorMessage) {
+        copyToClipboard(this.testErrorMessage)
+      }
     }
   }
 }
