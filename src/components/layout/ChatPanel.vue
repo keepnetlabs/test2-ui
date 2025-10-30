@@ -239,7 +239,7 @@ export default {
 
 .chat-toggle-btn {
   position: fixed;
-  right: 20px;
+  right: 64px;
   bottom: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: auto;

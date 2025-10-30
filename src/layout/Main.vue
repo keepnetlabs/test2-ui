@@ -1435,12 +1435,17 @@ export default {
     getMini: {
       get() {
         if (this.mini == null) {
+          const savedMini = localStorage.getItem('navigationMiniState')
+          if (savedMini !== null) {
+            return JSON.parse(savedMini)
+          }
           return false
         }
         return this.mini
       },
       set(newValue) {
         this.mini = newValue
+        localStorage.setItem('navigationMiniState', JSON.stringify(newValue))
       }
     },
     feedbackDialog: {
@@ -1512,6 +1517,11 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
+    // Restore mini state from localStorage
+    const savedMini = localStorage.getItem('navigationMiniState')
+    if (savedMini !== null) {
+      this.mini = JSON.parse(savedMini)
+    }
     this.getNavigationDrawerClasses()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
