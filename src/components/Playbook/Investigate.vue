@@ -455,7 +455,8 @@ export default {
       userGroupsItems: [],
       specificUserItems: [],
       isUserGroupsLoading: false,
-      searchUser: ''
+      searchUser: '',
+      isTargetUsersInitialized: false
     }
   },
   computed: {
@@ -548,7 +549,22 @@ export default {
     },
     setTargetUsers(response) {
       const { data: { data = [] } = [] } = response
-      this.specificUserItems = [...this.specificUserItems, ...data.results]
+      if (
+        !this.isTargetUsersInitialized &&
+        this.investigateData.targetUsersForAutocomplete?.length
+      ) {
+        const mappedTargetUsers = this.investigateData.targetUsersForAutocomplete.map((user) => ({
+          ...user,
+          email: user.name
+        }))
+        this.specificUserItems = [...mappedTargetUsers, ...this.specificUserItems, ...data.results]
+        this.isTargetUsersInitialized = true
+      } else if (!this.isTargetUsersInitialized) {
+        this.specificUserItems = [...this.specificUserItems, ...data.results]
+        this.isTargetUsersInitialized = true
+      } else {
+        this.specificUserItems = [...this.specificUserItems, ...data.results]
+      }
     },
     handleAutoDetectFiltersChange(value) {
       if (value) {
