@@ -1,21 +1,21 @@
 <template>
-  <VNavigationDrawer
-    v-click-outside="handleClickOutside"
-    v-if="status"
-    :value="drawerModel"
-    class="k-navigation-drawer k-navigation-drawer--landing-page-preview"
-    temporary
-    fixed
-    stateless
-    :hide-overlay="isNested"
-    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
-    :overlay-opacity="!isNested ? 1 : undefined"
-    :z-index="isNested ? '10012' : undefined"
-    right
-    width="calc(100% - 72px)"
-    height="100%"
-    @input="drawerModel = $event"
-  >
+  <div v-if="isVisible">
+    <div
+      class="landing-page-preview-overlay"
+      :class="{ 'nested-overlay': isNested }"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
     <div class="campaign-manager-scenario-statistics-modal__header--sticky">
       <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
         <div>
@@ -46,13 +46,15 @@
         @edit="handleEdit"
       />
     </div>
-  </VNavigationDrawer>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
 import LandingPagePreviewSkeleton from '@/components/SkeletonLoading/LandingPagePreviewSkeleton'
 import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
 import { useLoading } from '@/hooks/useLoading'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { getLandingPageTemplate } from '@/api/landingPage'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
@@ -62,7 +64,7 @@ export default {
     LandingPageTemplateModalPreview,
     LandingPagePreviewSkeleton
   },
-  mixins: [useLoading, useHtmlOverflowControl],
+  mixins: [useLoading, useDrawerAnimation, useHtmlOverflowControl],
   props: {
     status: {
       type: Boolean,
@@ -91,7 +93,6 @@ export default {
   },
   data() {
     return {
-      drawerModel: this.status,
       landingPageTemplates: null,
       landingPageParams: {
         languages: []
@@ -99,17 +100,10 @@ export default {
     }
   },
   computed: {
-    getSubtitle() {
-      return this?.selectedRow?.name || ''
-    }
-  },
-  watch: {
-    status(newVal) {
-      this.drawerModel = newVal
-    },
-    drawerModel(newVal) {
-      if (!newVal) {
-        this.handleClose()
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--landing-page-preview': true,
+        'nested-drawer': this.isNested
       }
     }
   },
@@ -117,21 +111,8 @@ export default {
     this.callForData()
   },
   methods: {
-    handleClickOutside(event) {
-      // SnackBar tıklanırsa ignore et
-      if (event && event.target) {
-        const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
-        )
-        if (snackbarElement) {
-          return
-        }
-      }
-
-      this.drawerModel = false
-    },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
     },
     callForData() {
       this.setLoading(true)
@@ -165,3 +146,4 @@ export default {
   }
 }
 </script>
+

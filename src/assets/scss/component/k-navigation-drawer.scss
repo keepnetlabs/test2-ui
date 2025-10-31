@@ -35,8 +35,12 @@
   .email-template-info .v-list-item__content {
     padding: 0 !important;
   }
+  .email-settings .v-list-item__content {
+    padding: 0 !important;
+  }
   .v-list-item {
     border-left: 0 !important;
+    padding-left: 0 !important;
   }
   .k-stepper__content {
     padding-top: 24px !important;

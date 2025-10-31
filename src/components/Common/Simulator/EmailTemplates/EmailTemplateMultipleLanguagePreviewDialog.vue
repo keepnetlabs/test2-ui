@@ -1,21 +1,21 @@
 <template>
-  <VNavigationDrawer
-    v-click-outside="handleClickOutside"
-    v-if="status"
-    :value="drawerModel"
-    class="k-navigation-drawer k-navigation-drawer--email-template-preview"
-    temporary
-    fixed
-    stateless
-    :hide-overlay="isNested"
-    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
-    :overlay-opacity="!isNested ? 1 : undefined"
-    :z-index="isNested ? '10012' : undefined"
-    right
-    width="calc(100% - 72px)"
-    height="100%"
-    @input="drawerModel = $event"
-  >
+  <div v-if="isVisible">
+    <div
+      class="email-template-preview-overlay"
+      :class="{ 'nested-overlay': isNested }"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
     <div class="campaign-manager-scenario-statistics-modal__header--sticky">
       <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
         <div>
@@ -203,7 +203,8 @@
         </div>
       </div>
     </div>
-  </VNavigationDrawer>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
@@ -219,6 +220,7 @@ import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 export default {
   name: 'EmailTemplateMultipleLanguagePreviewDialog',
@@ -230,7 +232,7 @@ export default {
     RedFlagTooltip,
     EmailTemplatesAILoader
   },
-  mixins: [useHtmlOverflowControl],
+  mixins: [useDrawerAnimation, useHtmlOverflowControl],
   props: {
     status: {
       type: Boolean,
@@ -267,7 +269,6 @@ export default {
   },
   data() {
     return {
-      drawerModel: this.status,
       labels,
       isPreviewLoading: false,
       emailTemplateParams: {},
@@ -334,6 +335,12 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--email-template-preview': true,
+        'nested-drawer': this.isNested
+      }
+    },
     redFlagsText() {
       return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     },
@@ -377,32 +384,12 @@ export default {
       return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
     }
   },
-  watch: {
-    status(newVal) {
-      this.drawerModel = newVal
-    },
-    drawerModel(newVal) {
-      if (!newVal) {
-        this.handleClose()
-      }
-    }
-  },
   created() {
     this.callForData()
   },
   methods: {
-    handleClickOutside(event) {
-      // SnackBar tıklanırsa ignore et
-      if (event && event.target) {
-        const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
-        )
-        if (snackbarElement) {
-          return
-        }
-      }
-
-      this.drawerModel = false
+    handleClose() {
+      this.closeDrawer()
     },
     callForData() {
       this.isPreviewLoading = true
@@ -479,9 +466,6 @@ export default {
             this.isPreviewLoading = false
           }, 500)
         })
-    },
-    handleClose() {
-      this.$emit('on-close')
     },
     handleEdit() {
       this.isHtmlOverflowControlManuallyDisabled = true
