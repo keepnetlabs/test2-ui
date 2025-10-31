@@ -41,7 +41,7 @@ export default [
   },
   {
     country: 'Argentina',
-    language: 'Spanish'
+    language: 'Spanish (Argentina)'
   },
   {
     country: 'Armenia',
@@ -85,7 +85,7 @@ export default [
   },
   {
     country: 'Belgium',
-    language: 'Dutch'
+    language: 'Dutch (Belgium)'
   },
   {
     country: 'Belize',
@@ -109,7 +109,7 @@ export default [
   },
   {
     country: 'Bosnia and Herzegovina',
-    language: 'Bosnian'
+    language: 'Bosnian (Bosnia and Herzegovina)'
   },
   {
     country: 'Botswana',
@@ -117,7 +117,7 @@ export default [
   },
   {
     country: 'Brazil',
-    language: 'Portuguese'
+    language: 'Portuguese (Brazil)'
   },
   {
     country: 'Brunei Darussalam',
@@ -125,7 +125,7 @@ export default [
   },
   {
     country: 'Bulgaria',
-    language: 'Bulgarian'
+    language: 'Bulgarian (Bulgaria)'
   },
   {
     country: 'Burkina Faso',
@@ -157,15 +157,15 @@ export default [
   },
   {
     country: 'Chile',
-    language: 'Spanish'
+    language: 'Spanish (Chile)'
   },
   {
     country: 'China',
-    language: 'Mandarin'
+    language: 'Chinese'
   },
   {
     country: 'Colombia',
-    language: 'Spanish'
+    language: 'Spanish (Colombia)'
   },
   {
     country: 'Comoros',
@@ -221,7 +221,7 @@ export default [
   },
   {
     country: 'Estonia',
-    language: 'Estonian'
+    language: 'Estonian (Estonia)'
   },
   {
     country: 'Ethiopia',
@@ -277,11 +277,11 @@ export default [
   },
   {
     country: 'Iceland',
-    language: 'Icelandic'
+    language: 'Icelandic (Iceland)'
   },
   {
     country: 'India',
-    language: 'Hindi'
+    language: 'Hindi (India)'
   },
   {
     country: 'Indonesia',
@@ -353,7 +353,7 @@ export default [
   },
   {
     country: 'Latvia',
-    language: 'Latvian'
+    language: 'Latvian (Latvia)'
   },
   {
     country: 'Lebanon',
@@ -377,11 +377,11 @@ export default [
   },
   {
     country: 'Lithuania',
-    language: 'Lithuanian'
+    language: 'Lithuanian (Lithuania)'
   },
   {
     country: 'Luxembourg',
-    language: 'Luxembourgish'
+    language: 'Luxembourgish (Luxembourg)'
   },
   {
     country: 'Macao',
@@ -409,7 +409,7 @@ export default [
   },
   {
     country: 'Malta',
-    language: 'Maltese'
+    language: 'Maltese (Malta)'
   },
   {
     country: 'Marshall Islands',
@@ -429,7 +429,7 @@ export default [
   },
   {
     country: 'Mexico',
-    language: 'Spanish'
+    language: 'Spanish (Mexico)'
   },
   {
     country: 'Micronesia',
@@ -497,7 +497,7 @@ export default [
   },
   {
     country: 'North Macedonia',
-    language: 'Albanian'
+    language: 'Macedonian (North Macedonia)'
   },
   {
     country: 'Norway',
@@ -537,7 +537,7 @@ export default [
   },
   {
     country: 'Philippines',
-    language: 'Filipino'
+    language: 'Tagalog'
   },
   {
     country: 'Poland',
@@ -597,7 +597,7 @@ export default [
   },
   {
     country: 'Serbia',
-    language: 'Serbian'
+    language: 'Serbian (Serbia)'
   },
   {
     country: 'Seychelles',
