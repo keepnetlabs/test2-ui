@@ -218,6 +218,7 @@ export default {
     }
   },
   created() {
+    this.serverSideProps.pageSize = 5
     this.callForData()
   },
   methods: {

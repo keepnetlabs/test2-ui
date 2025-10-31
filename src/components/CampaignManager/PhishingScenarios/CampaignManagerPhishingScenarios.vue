@@ -578,7 +578,7 @@ import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
 import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
-import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import TrainingTabModel, { QuishingTrainingTabModel } from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
@@ -674,7 +674,10 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
       trainingTabModel: {},
-      trainingForCategory: new TrainingTabModel(),
+      trainingForCategory:
+        this.type === SCENARIO_TYPES.QUISHING
+          ? new QuishingTrainingTabModel()
+          : new TrainingTabModel(),
       labels,
       quishingMethods,
       difficulties,
@@ -829,10 +832,11 @@ export default {
     previewLandingHtml() {
       const html = this.getSingleTemplateDetails || ''
       if (this.isSelectedLandingTemplateRedFlagged && typeof html === 'string') {
-        const logo =
+        let logo =
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
+        if (!logo) logo = this?.$store?.state?.whitelabel?.mainLogoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html
@@ -847,7 +851,10 @@ export default {
       immediate: true,
       handler(val) {
         if (!val) return
-        this.trainingForCategory = { ...new TrainingTabModel(), ...val }
+        this.trainingForCategory =
+          this.type === SCENARIO_TYPES.QUISHING
+            ? { ...new QuishingTrainingTabModel(), ...val }
+            : { ...new TrainingTabModel(), ...val }
       }
     },
     initialCategoryFilter: {

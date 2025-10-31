@@ -236,7 +236,7 @@
           />
         </div>
       </FormGroup>
-      <FormGroup v-if="isPhishing" class="ml-3 mt-6 mb-6" style="overflow: visible;">
+      <FormGroup v-if="isPhishing || isQuishing" class="ml-3 mt-6 mb-6" style="overflow: visible;">
         <template #title>
           <div class="d-flex flex-row justify-content-between align-items-center">
             <div class="d-flex flex-column mr-10">
@@ -272,7 +272,9 @@
           <InputDescription
             v-model.trim="value.trainingRedirectPage.informationMessage"
             id="informationMessage"
-            initialPlaceholder="Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin"
+            :initialPlaceholder="`Because you failed the ${
+              isQuishing ? 'quishing' : 'phishing'
+            } simulation test, you have been assigned to a training selected by the company admin`"
             rows="4"
             :disabled="isInputLanguageDisabled"
             :max-length="300"
@@ -435,7 +437,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       periodTypeItems,
-      endTypeItems,
+      endTypeItems: JSON.parse(JSON.stringify(endTypeItems)),
       totalNumberOfPagesOfTrainings: 1,
       trainingPayload: {
         pageNumber: 1,
@@ -496,6 +498,9 @@ export default {
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
+    },
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
     },
     isMultipleLanguagesSelected() {
       const languages =
@@ -624,6 +629,13 @@ export default {
       this.$set(this.value, 'trainingId', item?.value ?? '')
       this.$set(this.value, 'trainingName', item?.text ?? '')
       this.$set(this.value, 'trainingLanguageIds', [])
+      if (this.value.trainingTypeId === 'Survey' || this.value.hasQuiz) {
+        this.endTypeItems = endTypeItems.filter(
+          (item) => item.value !== 'QuizSuccessfullyCompleted' && item.value !== 'QuizCompleted'
+        )
+      } else {
+        this.endTypeItems = endTypeItems
+      }
       this.$nextTick(() => {
         this.$refs.inputContentLanguage.$refs.refSelect.$refs.refComponent.resetValidation()
       })

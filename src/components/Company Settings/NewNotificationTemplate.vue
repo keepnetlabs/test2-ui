@@ -280,6 +280,8 @@ export default {
         )?.text || ''
       return [
         'Training Enrollment',
+        'Survey Enrollment',
+        'Survey Reminder',
         'Learning Path Enrollment Reminder',
         'Poster Enrollment',
         'Learning Path Enrollment',
@@ -475,6 +477,7 @@ export default {
             }
             this.formValues[key] = value
           }
+
           this.formValues.emailDeliverySettingType =
             response?.data?.data?.emailDeliveryType ||
             response?.data?.data?.emailDeliverySettingType ||

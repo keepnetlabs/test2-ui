@@ -171,7 +171,7 @@
                 hide-details
                 placeholder="Select a item"
                 style="max-width: 282px; min-width: 282px;"
-                :items="endTypeItems"
+                :items="filteredEndTypeItems"
                 disabled
               />
               <v-text-field
@@ -345,6 +345,7 @@ import AlertBox from '@/components/AlertBox'
 import {
   periodTypeItems,
   endTypeItems,
+  endTypeItemsSurvey,
   enrollmentAutoEnrollTypeItems,
   enrollmentAutoEnrollDayOfWeekItems
 } from '@/components/AwarenessEducator/SendTraining/utils'
@@ -423,7 +424,7 @@ export default {
         }
       },
       periodTypeItems,
-      endTypeItems,
+      endTypeItems: JSON.parse(JSON.stringify(endTypeItems)),
       enrollmentAutoEnrollTypeItems,
       enrollmentAutoEnrollDayOfWeekItems,
       datePickerOptions: {
@@ -435,6 +436,12 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone'
     }),
+    filteredEndTypeItems() {
+      if (this.selectedRow?.trainingTypeId === 'Survey' || this.selectedRow?.hasQuiz) {
+        return JSON.parse(JSON.stringify(endTypeItemsSurvey))
+      }
+      return endTypeItems
+    },
     isLearningPath() {
       return this.selectedRow?.type === 'Learning Path'
     },
@@ -488,8 +495,13 @@ export default {
     callForData() {
       if (this?.selectedRow?.enrollmentId) {
         AwarenessEducatorService.getEnrollment(this.selectedRow.enrollmentId).then((response) => {
-          const { enrollmentReminder, enrollmentAutoEnroll, enrollmentScheduler } =
-            response?.data?.data || {}
+          const {
+            enrollmentReminder,
+            enrollmentAutoEnroll,
+            enrollmentScheduler,
+            trainingTypeId,
+            hasQuiz
+          } = response?.data?.data || {}
           if (enrollmentReminder) this.sendReminderEvery = true
           if (this.selectedRow?.status === 'Scheduled') {
             if (enrollmentScheduler && typeof enrollmentScheduler === 'object') {

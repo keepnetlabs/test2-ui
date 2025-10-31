@@ -55,6 +55,18 @@ export function installMicrosoftTeamsAppToUsers() {
     }
   )
 }
+export function sendTestMessage(userEmail) {
+  return testRequest.post(
+    '/companies/teams-app/send-test-activity',
+    {
+      companyResourceId,
+      userEmail
+    },
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
 
 export default {
   getMicrosoftTeamsSettings,
@@ -64,5 +76,6 @@ export default {
   disableMicrosoftTeamsIntegration,
   uploadMicrosoftTeamsSettings,
   getMicrosoftTeamsAppAuthorizeLink,
-  installMicrosoftTeamsAppToUsers
+  installMicrosoftTeamsAppToUsers,
+  sendTestMessage
 }

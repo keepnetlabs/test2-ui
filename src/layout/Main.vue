@@ -982,6 +982,9 @@
       </v-container>
       <app-footer :brand-name="getBreadCrumbBaseName" />
     </v-content>
+
+    <!-- Chat Panel -->
+  <ChatPanel v-if="isAwarenessEducator && isTestEnvironment" />
   </v-app>
 </template>
 <script>
@@ -1022,6 +1025,7 @@ import LeavingDialog from '@/components/LeavingDialog'
 import AppRouterLink from '@/layout/AppRouterLink'
 import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
 import AppDialog from '@/components/AppDialog.vue'
+import ChatPanel from '@/components/layout/ChatPanel.vue'
 
 export default {
   name: 'Main',
@@ -1042,7 +1046,8 @@ export default {
     AppSnackbar,
     Breadcrumb,
     TargetUsersCheckLicenseDialog,
-    MainListItemLoading
+    MainListItemLoading,
+    ChatPanel
   },
   data() {
     return {
@@ -1430,12 +1435,17 @@ export default {
     getMini: {
       get() {
         if (this.mini == null) {
+          const savedMini = localStorage.getItem('navigationMiniState')
+          if (savedMini !== null) {
+            return JSON.parse(savedMini)
+          }
           return false
         }
         return this.mini
       },
       set(newValue) {
         this.mini = newValue
+        localStorage.setItem('navigationMiniState', JSON.stringify(newValue))
       }
     },
     feedbackDialog: {
@@ -1481,6 +1491,12 @@ export default {
     },
     isSelectedCompanyNameDisabled() {
       return this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
+    },
+    isAwarenessEducator() {
+      return this.$route.path.includes('/awareness-educator')
+    },
+    isTestEnvironment() {
+      return window.location.hostname.includes('test-ui.devkeepnet.com')
     }
   },
   watch: {
@@ -1501,6 +1517,11 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
+    // Restore mini state from localStorage
+    const savedMini = localStorage.getItem('navigationMiniState')
+    if (savedMini !== null) {
+      this.mini = JSON.parse(savedMini)
+    }
     this.getNavigationDrawerClasses()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {

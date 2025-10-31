@@ -117,7 +117,11 @@ import AddinSettings from './AddinSettings'
 import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
-import { createGraphAccount, createPhishingReporter } from '@/api/phishingReporter'
+import {
+  createGraphAccount,
+  createPhishingReporter,
+  updateApplicationLevelAccount
+} from '@/api/phishingReporter'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DownloadAddInModal from '../DownloadAddInModal'
 import labels from '@/model/constants/labels'
@@ -187,7 +191,14 @@ export default {
   },
   created() {
     const { query = {} } = this.$route
-    const { tenant = '', error = '', error_description = '', error_subcode = '' } = query
+    const {
+      tenant = '',
+      error = '',
+      error_description = '',
+      error_subcode = '',
+      admin_consent,
+      scope
+    } = query
     this.isMicrosoftEmailCreationInitial = !tenant
     const errorSubCodeMessage =
       error_subcode === 'cancel' ? labels.ErrorMicrosoftCreationMessage : ''
@@ -201,11 +212,18 @@ export default {
         })
         this.downloadAddInModalStatus = true
       } else {
-        this.tenantId = tenant
-        createGraphAccount({ tenantId: this.tenantId }).then(() => {
-          this.formData.isGraphAccountConnected = true
-          this.downloadAddInModalStatus = true
-        })
+        if (admin_consent && scope && tenant) {
+          updateApplicationLevelAccount(true).then(() => {
+            this.formData.isAppPermissionAccessGranted = true
+            this.downloadAddInModalStatus = true
+          })
+        } else {
+          this.tenantId = tenant
+          createGraphAccount({ tenantId: this.tenantId }).then(() => {
+            this.formData.isGraphAccountConnected = true
+            this.downloadAddInModalStatus = true
+          })
+        }
         this.$router.replace('/phishing-reporter')
       }
     }

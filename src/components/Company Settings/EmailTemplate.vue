@@ -1004,9 +1004,6 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened'
     }),
     editorHtml() {
-      if (this.templateType !== 'landing') {
-        return this.template
-      }
       return this.injectLogo(this.template)
     },
     getEmailTemplateCCSelectClasses() {
@@ -1141,6 +1138,7 @@ export default {
             localStorage.getItem('isSelectCompany') === 'true'
               ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
               : this.$store.state.auth.logoUrl || ''
+          if (!url) url = this?.$store?.state?.whitelabel.mainLogoUrl || ''
         }
         this.previewTemplate = val?.replace(/{COMPANYLOGO}/g, url) || ''
       },
@@ -1165,28 +1163,19 @@ export default {
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
     injectLogo(html = '') {
-      let logo = ''
-      if (this.templateType !== 'landing') {
-        logo = this.emailTemplateLogo || ''
-      } else {
-        logo =
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl || ''
-      }
+      let logo =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl || ''
+      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
       return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
     },
     restoreLogo(html = '') {
-      let logo = ''
-      if (this.templateType !== 'landing') {
-        logo = this.emailTemplateLogo || ''
-      } else {
-        logo =
-          localStorage.getItem('isSelectCompany') === 'true'
-            ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-            : this.$store.state.auth.logoUrl || ''
-      }
-      if (!logo) return html || ''
+      let logo =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl || ''
+      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
       const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
     },
@@ -1284,7 +1273,18 @@ export default {
           })
           this.isEmailGenerating = false
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error?.response?.status === 500) {
+            if (this.timeoutId) clearTimeout(this.timeoutId)
+            this.isEmailGenerating = false
+            this.$nextTick(() => {
+              const element = document.querySelector('.email-template__ai-assistant-footer-right')
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            })
+            return
+          }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAIEmailTemplate(), 5000)
         })
     },
@@ -1301,7 +1301,18 @@ export default {
           this.$emit('update:template', template)
           this.isEmailGenerating = false
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error?.response?.status === 500) {
+            if (this.timeoutId) clearTimeout(this.timeoutId)
+            this.isEmailGenerating = false
+            this.$nextTick(() => {
+              const element = document.querySelector('.email-template__ai-assistant-footer-right')
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            })
+            return
+          }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
         })
     },

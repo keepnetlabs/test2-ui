@@ -7,7 +7,7 @@
     }
   }
 
-  .v-list-item__content>*:not(:last-child) {
+  .v-list-item__content > *:not(:last-child) {
     margin-bottom: 0;
   }
 
@@ -54,7 +54,7 @@
       border: 1px solid #f56c6c !important;
 
       box-shadow: none !important;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -68,7 +68,7 @@
 
     &-btn-next {
       color: #ffffff !important;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -88,7 +88,7 @@
       height: 36px !important;
       border-radius: 18px;
       border: solid 1px #00bcd4;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -127,7 +127,7 @@
 }
 
 .v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 20px;
   font-weight: 600;
   font-stretch: normal;
@@ -148,7 +148,7 @@
 }
 
 .btn-util {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 14px;
   font-weight: 600;
   font-stretch: normal;
@@ -200,7 +200,7 @@
   }
 
   &__text {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -211,7 +211,7 @@
   }
 
   &__header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -222,7 +222,7 @@
   }
 
   &__sub-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -254,7 +254,7 @@
   &__container {
     border-radius: 12px;
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
-    0 9px 46px 8px rgba(80, 80, 80, 0.12);
+      0 9px 46px 8px rgba(80, 80, 80, 0.12);
     overflow-y: auto;
     height: 100%;
     max-height: 430px !important;
@@ -266,7 +266,7 @@
 }
 
 .v-card-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
 
   font-size: 16px;
   font-weight: normal;
@@ -312,12 +312,11 @@
     height: 100%;
   }
 
-
   .overlay__container {
     max-height: 636px !important;
   }
-  .overlay__container-account.overlay__container{
-    max-height: 700px !important;
+  .overlay__container-account.overlay__container {
+    max-height: 864px !important;
   }
 
   &__title {
@@ -335,34 +334,56 @@
     letter-spacing: normal;
     color: #2196f3 !important;
   }
-  &__list-item{
+  &__list-item {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    padding:16px 0;
-    border-bottom:1px solid #D9D9D9;
-    &-title{
-      color:#383B41;
+    padding: 16px 0;
+    border-bottom: 1px solid #d9d9d9;
+    &-title {
+      color: #383b41;
       font-size: 18px;
       font-weight: 600;
     }
-    &-margin-title{
-      margin-top:12px;
+    &-optional {
+      background-color: #e0e0e0;
+      color: #383b41;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.71;
+      height: 24px;
+      vertical-align: middle;
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 4px;
     }
-    &-desc{
-      color:rgba(56, 59, 65, 0.72);
+    &-margin-title {
+      margin-top: 12px;
+    }
+    &-desc {
+      color: rgba(56, 59, 65, 0.72);
       font-size: 14px;
       font-weight: 400;
-      line-height: 21px
+      line-height: 21px;
     }
-    &--hide-border{
+    &--hide-border {
       border-bottom: none !important;
+    }
+    &-info-card {
+      background-color: #f2f2f2;
+      border-radius: 8px;
+      padding: 8px;
+      margin-top: 8px;
+      &--success {
+        background-color: rgba(67, 160, 71, 0.15);
+      }
     }
   }
 }
-.microsoft-365-add-in-list-item{
-  .alert-box__default-content{
+.microsoft-365-add-in-list-item {
+  .alert-box__default-content {
     align-items: center;
   }
 }

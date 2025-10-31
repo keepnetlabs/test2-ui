@@ -2,7 +2,7 @@
   <div class="navigation-drawer-footer">
     <v-list dense>
       <v-list-item
-        v-if="isShowDocumentation"
+        v-if="isDocumentationLinkEnabled"
         id="btn--navigation-drawer-documentation"
         class="navigation-drawer-footer__item"
         @click="handleDocumentationClick"
@@ -95,9 +95,9 @@ export default {
       const { releaseNotesUrl = '' } = this.navigatorMenuProps
       return releaseNotesUrl
     },
-    isShowDocumentation() {
-      const { isShowDocumentation = true } = this.navigatorMenuProps
-      return isShowDocumentation
+    isDocumentationLinkEnabled() {
+      const { isDocumentationLinkEnabled = true } = this.navigatorMenuProps
+      return isDocumentationLinkEnabled
     }
   },
   methods: {
