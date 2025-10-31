@@ -57,7 +57,7 @@ export default [
   },
   {
     country: 'Austria',
-    language: 'German'
+    language: 'German (Austria)'
   },
   {
     country: 'Azerbaijan',
@@ -657,7 +657,7 @@ export default [
   },
   {
     country: 'Switzerland',
-    language: 'German'
+    language: 'German (Switzerland)'
   },
   {
     country: 'Syrian Arab Republic',
@@ -665,7 +665,11 @@ export default [
   },
   {
     country: 'Taiwan',
-    language: 'Mandarin'
+    language: 'Chinese (Taiwan)'
+  },
+  {
+    country: 'Hong Kong',
+    language: 'Chinese (Hong Kong)'
   },
   {
     country: 'Tajikistan',
