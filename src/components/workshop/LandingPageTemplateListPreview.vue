@@ -1533,7 +1533,7 @@ export default {
         })
         return false
       } else {
-        this.selectedLandingPageTab = 'mfaSettings'
+        this.selectedTab = 'mfaSettings'
       }
       return false
     }
