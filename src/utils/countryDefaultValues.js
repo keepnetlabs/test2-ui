@@ -147,6 +147,13 @@ export default [
     phoneNumberCode: '+975'
   },
   {
+    name: 'Bosnia & Herzegovina',
+    timeFormat: '24h',
+    dateFormat: 'dd/MM/yyyy',
+    timezone: 'Central Europe Standard Time',
+    phoneNumberCode: '+387'
+  },
+  {
     name: 'Brazil',
     timeFormat: '24h',
     dateFormat: 'dd/MM/yyyy',

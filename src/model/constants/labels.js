@@ -254,6 +254,8 @@ export const labels = {
   SelectLandingPageTemplate: 'Select Landing Page Template',
   MultiFactorAuthentication: 'Multi-Factor Authentication',
   MultiFactorAuthenticationSub: 'Phishing scenarios become more realistic with MFA settings',
+  MultiFactorAuthenticationSubQuishing:
+    'Quishing scenarios become more realistic with MFA settings',
   Scenarios: 'Scenarios',
   SMS: 'SMS',
   SMSInfo: 'SMS Info',
