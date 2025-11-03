@@ -3,6 +3,7 @@
     v-click-outside="handleClickOutside"
     v-if="status"
     :value="drawerModel"
+    :data-drawer-id="drawerId"
     class="k-navigation-drawer k-navigation-drawer--landing-page"
     temporary
     fixed
@@ -34,7 +35,7 @@
         </div>
       </div>
     </div>
-    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body mt-0">
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -167,7 +168,7 @@
                   >Enter basic information about this email template</v-list-item-subtitle
                 >
               </v-list-item-content>
-              <v-list-item class="p-0">
+              <v-list-item class="p-0 mt-4">
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <InputPhishingLink
@@ -389,9 +390,10 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'NewLandingPage',
-  mixins: [useHtmlOverflowControl],
+  mixins: [useHtmlOverflowControl, useDrawerAnimation],
   components: {
     InputPhishingMethod,
     InputPhishingLink,
@@ -645,16 +647,35 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
+    closeWithAnimation(callback) {
+      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
+      if (drawerElement) {
+        drawerElement.style.right = '-100%'
+      }
+      setTimeout(() => {
+        callback && callback()
+      }, 250)
+    },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit('changeNewEmailTemplateModalStatus', false)
+        this.closeWithAnimation(() => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        })
+        return
       }
-      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
+      if (!this.showLeavingDialog) {
+        this.closeWithAnimation(() => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        })
+        return
+      }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
+          this.closeWithAnimation(() => {
+            this.$emit('changeNewEmailTemplateModalStatus', false)
+          })
         }
       })
     },
@@ -702,7 +723,9 @@ export default {
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
             .then(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+              this.closeWithAnimation(() => {
+                this.$emit('changeNewEmailTemplateModalStatus', false, true)
+              })
             })
             .finally(() => {
               this.isSubmitDisabled = false
@@ -710,12 +733,14 @@ export default {
         } else {
           createLandingPage(payload)
             .then((response) => {
-              this.$emit(
-                'changeNewEmailTemplateModalStatus',
-                false,
-                true,
-                response?.data?.data?.resourceId
-              )
+              this.closeWithAnimation(() => {
+                this.$emit(
+                  'changeNewEmailTemplateModalStatus',
+                  false,
+                  true,
+                  response?.data?.data?.resourceId
+                )
+              })
             })
             .finally(() => {
               this.isSubmitDisabled = false
@@ -820,7 +845,7 @@ export default {
         saveButton: 'btn-duplicate-save--landing-page-templates-modal'
       }
     }
-    if (!this.isEdit)
+    if (!this.isEdit && this.landingPageData?.methodTypes)
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     if (this.landingPageData && this.selectedMethodText)
       this.formValues.methodTypeId = this.selectedMethodText.startsWith('Click') ? '1' : '2'

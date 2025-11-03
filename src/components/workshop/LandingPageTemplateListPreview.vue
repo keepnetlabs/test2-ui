@@ -1,36 +1,19 @@
 <template>
-  <div :class="`landingPagePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
-    <AppDialog
-      style="overflow: hidden;"
-      subtitle="Landing Page Template Preview"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
+  <div
+    :class="`landingPagePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`"
+  >
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="isTemplateDetails"
+      ref="landingPagePreviewDialog"
       :status="isTemplateDetails"
-      :title="templateName"
-      @changeStatus="isTemplateDetails = false"
-    >
-      <template #app-dialog-body>
-        <KEmailPreview
-          v-if="!!getSelectedTemplateDetails"
-          :html="getPreviewLandingHtml(getSelectedTemplateDetails)"
-          :is-red-flagged-template="checkIsRedFlaggedTemplate(getSelectedTemplateDetails)"
-          :key="getSelectedTemplateDetails"
-        />
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </AppDialog>
+      :selected-row="landingPagePreviewSelectedRow"
+      :type="type"
+      :languages="languages"
+      :api-func="apiFuncs.content"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isTemplateDetails = false"
+    />
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
@@ -871,7 +854,6 @@
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import InfiniteScroll from '@/directives/infinite-scroll'
-import AppDialog from '../AppDialog'
 import {
   getLandingPageList,
   getLandingPageTemplatePreviewContent,
@@ -902,10 +884,12 @@ import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { isDifferent } from '@/utils/functions'
 import { handleIsSafari } from '@/utils/functions'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'LandingPageListPreview',
   mixins: [useDebounce],
   components: {
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     FormGroup,
     InputCallerPhoneNumber,
     ConfigureCompanyStepHeader,
@@ -914,7 +898,6 @@ export default {
     KEmailPreview,
     Multipane,
     MultipaneResizer,
-    AppDialog,
     InputPhishingLink,
     InputEntityName,
     EmailTemplate
@@ -1045,6 +1028,14 @@ export default {
             cursor: 'default !important'
           }
         : {}
+    },
+    landingPagePreviewSelectedRow() {
+      const selectedTemplate = this.listData.find((item) => item.selected)
+      if (!selectedTemplate) return {}
+      return {
+        ...selectedTemplate,
+        resourceId: selectedTemplate.resourceId
+      }
     }
   },
   watch: {

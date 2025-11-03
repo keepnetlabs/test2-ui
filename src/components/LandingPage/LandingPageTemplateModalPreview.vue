@@ -23,7 +23,7 @@
             </template>
             <span>Open in New Tab</span>
           </VTooltip>
-          <VTooltip bottom>
+          <VTooltip v-if="!isNested" bottom>
             <template #activator="{ on }">
               <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
                 <v-icon small>mdi-pencil</v-icon>
@@ -104,6 +104,10 @@ export default {
     type: {
       type: String,
       default: PREVIEW_DIALOG_TYPES.PHISHING
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

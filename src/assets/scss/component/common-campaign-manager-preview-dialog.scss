@@ -1,0 +1,15 @@
+.common-campaign-manager-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.17);
+  z-index: 250;
+  cursor: pointer;
+}
+
+.k-navigation-drawer.k-navigation-drawer--campaign-manager-preview {
+  transition: right 0.25s ease-in-out;
+  z-index: 251 !important;
+}

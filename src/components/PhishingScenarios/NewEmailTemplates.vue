@@ -3,6 +3,7 @@
     v-click-outside="handleClickOutside"
     v-if="status"
     :value="drawerModel"
+    :data-drawer-id="drawerId"
     class="k-navigation-drawer k-navigation-drawer--email-template"
     temporary
     fixed
@@ -325,9 +326,10 @@ import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { checkRedFlags } from '@/api/phishingsimulator'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'NewEmailTemplates',
-  mixins: [useHtmlOverflowControl, useSetAttachmentFile],
+  mixins: [useHtmlOverflowControl, useSetAttachmentFile, useDrawerAnimation],
   components: {
     EditLanguagesLeavingDialog,
     InputLanguagePreview,
@@ -954,16 +956,35 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
+    closeWithAnimation(callback) {
+      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
+      if (drawerElement) {
+        drawerElement.style.right = '-100%'
+      }
+      setTimeout(() => {
+        callback && callback()
+      }, 250)
+    },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit('changeNewEmailTemplateModalStatus', false)
+        this.closeWithAnimation(() => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        })
+        return
       }
-      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
+      if (!this.showLeavingDialog) {
+        this.closeWithAnimation(() => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        })
+        return
+      }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
+          this.closeWithAnimation(() => {
+            this.$emit('changeNewEmailTemplateModalStatus', false)
+          })
         }
       })
     },
@@ -1060,7 +1081,9 @@ export default {
         payload.languages = this.setEmptyLanguagesPayload()
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            this.closeWithAnimation(() => {
+              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            })
           })
           .finally(() => {
             this.isSubmitDisabled = false
@@ -1069,12 +1092,14 @@ export default {
         payload.languages = this.setEmptyLanguagesPayload()
         createPhishingEmailTemplate(payload)
           .then((response) => {
-            this.$emit(
-              'changeNewEmailTemplateModalStatus',
-              false,
-              true,
-              response?.data?.data?.resourceId
-            )
+            this.closeWithAnimation(() => {
+              this.$emit(
+                'changeNewEmailTemplateModalStatus',
+                false,
+                true,
+                response?.data?.data?.resourceId
+              )
+            })
           })
           .finally(() => {
             this.isSubmitDisabled = false

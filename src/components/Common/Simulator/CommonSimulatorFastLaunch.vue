@@ -3,6 +3,7 @@
     v-click-outside="handleClickOutside"
     v-if="status"
     :value="drawerModel"
+    :data-drawer-id="drawerId"
     class="k-navigation-drawer k-navigation-drawer--fast-launch"
     temporary
     fixed
@@ -127,8 +128,10 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'CommonSimulatorFastLaunch',
+  mixins: [useDrawerAnimation],
   components: {
     CampaignManagerPrintoutSummary,
     StepperFooter,
@@ -421,6 +424,15 @@ export default {
     changeStep(flag = 1) {
       this.step += flag
     },
+    closeWithAnimation(callback) {
+      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
+      if (drawerElement) {
+        drawerElement.style.right = '-100%'
+      }
+      setTimeout(() => {
+        callback && callback()
+      }, 250)
+    },
     closeOverlay() {
       const initialFormValues = {
         ...this.$refs.refFastLaunch.initialFormValues
@@ -431,14 +443,18 @@ export default {
       const isChanged = isDifferent(currentFormValues, initialFormValues)
       if (!isChanged) {
         // Önce drawer'ı kapat (animasyon için)
-        this.drawerModel = false
+        this.closeWithAnimation(() => {
+          this.drawerModel = false
+        })
         return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
           // Leaving dialog'dan "Quit Editing" denince drawer'ı kapat
-          this.drawerModel = false
+          this.closeWithAnimation(() => {
+            this.drawerModel = false
+          })
         }
       })
     },

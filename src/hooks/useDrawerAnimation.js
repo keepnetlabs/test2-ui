@@ -43,6 +43,10 @@ export default {
       this.closeDrawer()
     },
     openDrawer() {
+      // Nested drawer'lar HTML overflow'u kontrol etmemeli (parent drawer zaten kontrol ediyor)
+      if (!this.isNested) {
+        document.querySelector('html').style.overflowY = 'hidden'
+      }
       const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
       if (drawerElement) {
         drawerElement.style.right = '-100%'
@@ -59,6 +63,10 @@ export default {
 
       setTimeout(() => {
         this.isVisible = false
+        // Nested drawer'lar HTML overflow'u restore etmemeli
+        if (!this.isNested) {
+          document.querySelector('html').style.overflowY = ''
+        }
         this.$emit('on-close')
       }, 250)
     }

@@ -13,196 +13,196 @@
       :overlay-color="null"
       right
       stateless
-      width="calc(100% - 72px)"
+      :width="drawerWidth"
       height="100%"
     >
-    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
-        <div>
-          <VListItem>
-            <VListItemContent>
-              <VListItemTitle class="k-overlay__title">
-                {{ getTitle }}
-              </VListItemTitle>
-            </VListItemContent>
-          </VListItem>
-        </div>
-        <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
-            mdi-close
-          </VIcon>
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
-      <EmailTemplatePreviewSkeleton v-if="isPreviewLoading" />
-      <EmailTemplatesAILoader
-        v-if="isRedFlagsLoading"
-        :title="getLoaderTitle"
-        :description="getLoaderDescription"
-        :loaderTime="20"
-      />
-      <div v-if="!isPreviewLoading && !isRedFlagsLoading" class="email-template-preview">
-        <div class="email-template-preview__title">
-          {{ emailTemplateParams.name }}
-        </div>
-        <div class="email-template-preview__container">
-          <!-- Language Selection and Actions Header -->
-          <div class="email-template-preview__header mb-4">
-            <InputLanguagePreview
-              :value="activeLanguage"
-              :items="selectedLanguages"
-              :label="`Template Language (${selectedLanguages.length})`"
-              class="email-template-preview__language-select"
-              hide-details
-              @input="handleLanguageChange"
-            />
-            <div class="email-template-preview__actions">
-              <VTooltip bottom>
-                <template #activator="{ on }">
-                  <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleExternalLink">
-                    <VIcon small>mdi-open-in-new</VIcon>
-                  </VBtn>
-                </template>
-                <span>Open in New Tab</span>
-              </VTooltip>
-              <VTooltip bottom>
-                <template #activator="{ on }">
-                  <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
-                    <VIcon small>mdi-pencil</VIcon>
-                  </VBtn>
-                </template>
-                <span>Edit Template</span>
-              </VTooltip>
-            </div>
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <EmailTemplatePreviewSkeleton v-if="isPreviewLoading" />
+        <EmailTemplatesAILoader
+          v-if="isRedFlagsLoading"
+          :title="getLoaderTitle"
+          :description="getLoaderDescription"
+          :loaderTime="20"
+        />
+        <div v-if="!isPreviewLoading && !isRedFlagsLoading" class="email-template-preview">
+          <div class="email-template-preview__title">
+            {{ emailTemplateParams.name }}
           </div>
-          <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
-          <div
-            class="email-template-preview__text mt-4"
-            v-if="!!templateHTML && !isRedFlagsLoading"
-          >
-            <!-- 1. Subject with Show Red Flags Button -->
-            <div class="d-flex align-center justify-space-between" style="max-height: 22px;">
+          <div class="email-template-preview__container">
+            <!-- Language Selection and Actions Header -->
+            <div class="email-template-preview__header mb-4">
+              <InputLanguagePreview
+                :value="activeLanguage"
+                :items="selectedLanguages"
+                :label="`Template Language (${selectedLanguages.length})`"
+                class="email-template-preview__language-select"
+                hide-details
+                @input="handleLanguageChange"
+              />
+              <div class="email-template-preview__actions">
+                <VTooltip bottom>
+                  <template #activator="{ on }">
+                    <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleExternalLink">
+                      <VIcon small>mdi-open-in-new</VIcon>
+                    </VBtn>
+                  </template>
+                  <span>Open in New Tab</span>
+                </VTooltip>
+                <VTooltip v-if="!isNested" bottom>
+                  <template #activator="{ on }">
+                    <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
+                      <VIcon small>mdi-pencil</VIcon>
+                    </VBtn>
+                  </template>
+                  <span>Edit Template</span>
+                </VTooltip>
+              </div>
+            </div>
+            <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
+            <div
+              class="email-template-preview__text mt-4"
+              v-if="!!templateHTML && !isRedFlagsLoading"
+            >
+              <!-- 1. Subject with Show Red Flags Button -->
+              <div class="d-flex align-center justify-space-between" style="max-height: 22px;">
+                <div
+                  :class="
+                    redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                      ? 'red-flag-preview-active'
+                      : ''
+                  "
+                  style="width: calc(100% - 200px);"
+                >
+                  <VIcon
+                    v-if="redFlags && redFlags.subject && redFlags.subject.isRedFlagged"
+                    color="#f56c6c"
+                    style="font-size: 16px;"
+                    >mdi-flag</VIcon
+                  >
+                  <span class="email-template-preview__text--title">Subject: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.subject
+                  }}</span>
+                  <RedFlagTooltip
+                    v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
+                    :tooltipContent="redFlags.subject.tooltipMessage"
+                  />
+                </div>
+                <VBtn
+                  :ripple="false"
+                  rounded
+                  outlined
+                  color="#2196f3"
+                  class="mt-2"
+                  @click="handleShowRedFlagsClick"
+                >
+                  <VIcon>mdi-flag</VIcon>
+                  <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                    redFlagsText
+                  }}</span>
+                </VBtn>
+              </div>
+
+              <!-- 2. From Name -->
               <div
                 :class="
-                  redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                  redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
                     ? 'red-flag-preview-active'
                     : ''
                 "
-                style="width: calc(100% - 200px);"
               >
                 <VIcon
-                  v-if="redFlags && redFlags.subject && redFlags.subject.isRedFlagged"
+                  v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
                   color="#f56c6c"
                   style="font-size: 16px;"
                   >mdi-flag</VIcon
                 >
-                <span class="email-template-preview__text--title">Subject: </span>
+                <span class="email-template-preview__text--title">From Name: </span>
                 <span class="email-template-preview__text--body">{{
-                  emailTemplateParams.subject
+                  emailTemplateParams.fromName
                 }}</span>
                 <RedFlagTooltip
-                  v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
-                  :tooltipContent="redFlags.subject.tooltipMessage"
+                  v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
+                  :tooltipContent="redFlags.fromName.tooltipMessage"
                 />
               </div>
-              <VBtn
-                :ripple="false"
-                rounded
-                outlined
-                color="#2196f3"
-                class="mt-2"
-                @click="handleShowRedFlagsClick"
+
+              <!-- 3. From Email -->
+              <div
+                :class="
+                  redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
+                    ? 'red-flag-preview-active'
+                    : ''
+                "
               >
-                <VIcon>mdi-flag</VIcon>
-                <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
-                  redFlagsText
+                <VIcon
+                  v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
+                  color="#f56c6c"
+                  style="font-size: 16px;"
+                  >mdi-flag</VIcon
+                >
+                <span class="email-template-preview__text--title">From Email: </span>
+                <span class="email-template-preview__text--body">{{
+                  emailTemplateParams.fromAddress
                 }}</span>
-              </VBtn>
-            </div>
-
-            <!-- 2. From Name -->
-            <div
-              :class="
-                redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
-                  ? 'red-flag-preview-active'
-                  : ''
-              "
-            >
-              <VIcon
-                v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
-                color="#f56c6c"
-                style="font-size: 16px;"
-                >mdi-flag</VIcon
-              >
-              <span class="email-template-preview__text--title">From Name: </span>
-              <span class="email-template-preview__text--body">{{
-                emailTemplateParams.fromName
-              }}</span>
-              <RedFlagTooltip
-                v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
-                :tooltipContent="redFlags.fromName.tooltipMessage"
-              />
-            </div>
-
-            <!-- 3. From Email -->
-            <div
-              :class="
-                redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
-                  ? 'red-flag-preview-active'
-                  : ''
-              "
-            >
-              <VIcon
-                v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
-                color="#f56c6c"
-                style="font-size: 16px;"
-                >mdi-flag</VIcon
-              >
-              <span class="email-template-preview__text--title">From Email: </span>
-              <span class="email-template-preview__text--body">{{
-                emailTemplateParams.fromAddress
-              }}</span>
-              <RedFlagTooltip
-                v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
-                :tooltipContent="redFlags.fromAddress.tooltipMessage"
-              />
-            </div>
-
-            <!-- 4. CC -->
-            <div
-              v-if="emailTemplateParams.ccAddresses && emailTemplateParams.ccAddresses.length > 0"
-            >
-              <span class="email-template-preview__text--title">CC: </span>
-              <span class="email-template-preview__text--body">{{
-                emailTemplateParams.ccAddresses.join(', ')
-              }}</span>
-              <RedFlagTooltip
-                v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.tooltipMessage"
-                :tooltipContent="redFlags.ccAddresses.tooltipMessage"
-              />
-            </div>
-            <div
-              v-if="emailTemplateParams.attachment"
-              class="attachment-wrapper position-relative mt-2"
-            >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="emailTemplateParams.attachment"
-                  :redFlags="redFlags"
-                  :isEmailTemplate="true"
+                <RedFlagTooltip
+                  v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+                  :tooltipContent="redFlags.fromAddress.tooltipMessage"
                 />
               </div>
+
+              <!-- 4. CC -->
+              <div
+                v-if="emailTemplateParams.ccAddresses && emailTemplateParams.ccAddresses.length > 0"
+              >
+                <span class="email-template-preview__text--title">CC: </span>
+                <span class="email-template-preview__text--body">{{
+                  emailTemplateParams.ccAddresses.join(', ')
+                }}</span>
+                <RedFlagTooltip
+                  v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.tooltipMessage"
+                  :tooltipContent="redFlags.ccAddresses.tooltipMessage"
+                />
+              </div>
+              <div
+                v-if="emailTemplateParams.attachment"
+                class="attachment-wrapper position-relative mt-2"
+              >
+                <div class="attachment blue-attach mb-0">
+                  <AttachmentsPreview
+                    :deletable="false"
+                    :att="emailTemplateParams.attachment"
+                    :redFlags="redFlags"
+                    :isEmailTemplate="true"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
-          <div :class="isShowRedFlags ? 'email-template-preview-phishing mt-2' : ' mt-2'">
-            <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+            <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
+            <div :class="isShowRedFlags ? 'email-template-preview-phishing mt-2' : ' mt-2'">
+              <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </VNavigationDrawer>
   </div>
 </template>
@@ -265,6 +265,10 @@ export default {
     isNested: {
       type: Boolean,
       default: false
+    },
+    drawerWidth: {
+      type: String,
+      default: 'calc(100% - 72px)'
     }
   },
   data() {
@@ -388,6 +392,11 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOverlayClick(event) {
+      event.stopPropagation()
+      event.preventDefault()
+      this.closeDrawer()
+    },
     handleClose() {
       this.closeDrawer()
     },
@@ -565,15 +574,19 @@ export default {
           .catch((e) => {
             if (!e?.response || e?.response?.status === 0) {
               this.$store.dispatch('common/createSnackBar', {
-                message:`Network error while reaching https://r-flg.keepnetlabs.com. Status Code: 0`,
+                message: `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: 0`,
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 icon: 'mdi-alert-circle'
               })
               return
-             }
+            }
             this.$store.dispatch('common/createSnackBar', {
-              message: e?.response?.data?.detail || e?.response?.data?.message || 
-              `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${e?.response?.status || e?.response?.data?.status || 0}`,
+              message:
+                e?.response?.data?.detail ||
+                e?.response?.data?.message ||
+                `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${
+                  e?.response?.status || e?.response?.data?.status || 0
+                }`,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })

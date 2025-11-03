@@ -13,7 +13,7 @@
       :overlay-color="null"
       right
       stateless
-      width="calc(100% - 72px)"
+      :width="drawerWidth"
       height="100%"
     >
     <div class="campaign-manager-scenario-statistics-modal__header--sticky">
@@ -43,6 +43,7 @@
         :landing-page-templates="landingPageTemplates"
         :languages="landingPageParams.languages || []"
         :phishing-url="landingPageParams.urlTemplate"
+        :is-nested="isNested"
         @edit="handleEdit"
       />
     </div>
@@ -89,6 +90,10 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    drawerWidth: {
+      type: String,
+      default: 'calc(100% - 72px)'
     }
   },
   data() {
@@ -111,6 +116,11 @@ export default {
     this.callForData()
   },
   methods: {
+    handleOverlayClick(event) {
+      event.stopPropagation()
+      event.preventDefault()
+      this.closeDrawer()
+    },
     handleClose() {
       this.closeDrawer()
     },

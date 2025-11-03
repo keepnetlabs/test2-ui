@@ -1,17 +1,40 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="1600"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="campaign-manager-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+  <div v-if="isVisible">
+    <div
+      class="common-simulator-preview-overlay"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+      <EmailTemplatePreviewSkeleton v-if="isLoading" />
       <div v-if="isPhishing && !isLoading && !isRedFlagsLoading" class="mb-6">
         <span class="template-preview__text--title">Category: </span>
         <span class="template-preview__text--body">{{ category }}</span>
@@ -235,22 +258,19 @@
           />
         </ElTabPane>
       </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <AppDialogFooterWithClose id="btn-close--scenario-preview" @on-close="handleClose" />
-    </template>
-  </AppDialog>
+      </div>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
-import AppDialog from '@/components/AppDialog.vue'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
@@ -266,15 +286,14 @@ export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
     InputLanguagePreview,
-    AppDialogFooterWithClose,
-    AppDialog,
     AttachmentsPreview,
     KEmailPreview,
     TabsWithMfaSettings,
-    DatatableLoading,
+    EmailTemplatePreviewSkeleton,
     RedFlagTooltip,
     EmailTemplatesAILoader
   },
+  mixins: [useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -370,6 +389,11 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true
+      }
+    },
     redFlagsText() {
       return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     },
@@ -561,8 +585,11 @@ export default {
     setLoading(flag = false) {
       this.isLoading = flag
     },
+    handleOverlayClick() {
+      this.closeDrawer()
+    },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
     },
     handlePreviewIndividualPrintout() {
       this.isIndividualPrintoutButtonDisabled = true
