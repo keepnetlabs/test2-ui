@@ -14,116 +14,150 @@
       </v-list-item-content>
     </v-list-item>
     <v-form class="email-settings__form" ref="refForm" lazy-validation>
-      <v-list-item class="px-0 email-settings__list-item email-settings__checkbox-container">
-        <v-list-item-content>
-          <v-checkbox
-            v-model="formValues.isSendInformationEmail"
-            id="input--phishing-reporter-is-send-email"
-            class="other-settings__checkbox k-checkbox"
-            color="#2196f3"
-            label="Send information email for reported incidents"
-            :readonly="!showForm"
-            hide-details
-          ></v-checkbox>
-        </v-list-item-content>
-      </v-list-item>
+      <FormGroup
+        class="mt-6"
+        title="Send Us a Copy"
+        sub-title="Controls whether reported emails, excluding those sent by the platform, are also sent to the platform for review."
+      >
+        <div class="email-settings__information mb-0">
+          <div>
+            <v-switch
+              v-model="formValues.sendUsACopy"
+              id="input--phishing-reporter-is-send-copy"
+              color="#2196f3"
+              :readonly="!showForm"
+            ></v-switch>
+          </div>
+          <div class="email-settings__information-text">
+            <div v-if="!formValues.sendUsACopy">
+              <div class="text-primary-color fw-600 fs-3-4">
+                The platform will not receive copies of reported emails.
+              </div>
+              <div class="text-primary-color fw-400 fs-3">
+                Copies of emails sent by the platform will still be shared.
+              </div>
+            </div>
+            <div v-else>
+              <div class="text-primary-color fw-600 fs-3-4">
+                The platform will receive copies of reported emails.
+              </div>
+              <div class="text-primary-color fw-400 fs-3">
+                Copies of emails sent by the platform will always be shared.
+              </div>
+            </div>
+          </div>
+        </div>
+      </FormGroup>
+      <FormGroup class="mt-6" title="Information Email">
+        <v-checkbox
+          v-model="formValues.isSendInformationEmail"
+          id="input--phishing-reporter-is-send-email"
+          class="other-settings__checkbox k-checkbox my-2"
+          color="#2196f3"
+          label="Send information email for reported incidents"
+          :readonly="!showForm"
+          hide-details
+        ></v-checkbox>
+      </FormGroup>
       <div class="email-settings__information">
         <div>
           <VIcon color="#2196f3">mdi-alert-circle</VIcon>
         </div>
         <div class="email-settings__information-text">
-          System users will always receive an information email for reported incidents. Using the
-          checkbox above, you can send an information email to third parties.
+          System users will always receive an information email for reported incidents, and using
+          the checkbox above, you can send an information email to third parties.
         </div>
       </div>
-      <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
-        <InputEmail
-          v-model.trim="formValues.to"
-          id="input--phishing-reporter-recipient-email-address"
-          :required="isRecipientEmailRequired"
-          :persistent-hint="isRecipientEmailRequired"
-          :hint="recipientEmailHint"
-          :rules="recipientEmailRules"
-          :readonly="!showForm"
-        />
-      </FormGroup>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label
-            for="input--phishing-reporter-cc-email-address"
-            class="email-settings__list-item--header"
-            >CC</label
-          >
+      <div v-if="formValues.isSendInformationEmail">
+        <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
           <InputEmail
-            v-model.trim="formValues.cc"
-            id="input--phishing-reporter-cc-email-address"
-            class="k-textfield mt-2"
-            :persistent-hint="false"
-            :required="false"
-            :hint="null"
-            :rules="ccEmailRules"
-            :readonly="!showForm"
-          />
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label
-            for="input--phishing-reporter-bcc-email-address"
-            class="email-settings__list-item--header"
-            >BCC</label
-          >
-          <InputEmail
-            v-model.trim="formValues.bcc"
-            id="input--phishing-reporter-bcc-email-address"
-            class="k-textfield mt-2"
-            :readonly="!showForm"
-            :persistent-hint="false"
-            :required="false"
-            :hint="null"
-            :rules="ccEmailRules"
-          />
-        </v-list-item-content>
-      </v-list-item>
-      <FormGroup
-        title="Email Subject"
-        sub-title="Define a subject for reported email notifications. Use {SUBJECT} merge tag as a variable for reported emails' subject"
-        :has-hint="isRecipientEmailRequired"
-      >
-        <InputEmail
-          v-model.trim="formValues.subject"
-          id="input--phishing-reporter-email-subject"
-          placeholder="Suspicious Email: {SUBJECT}"
-          :required="isRecipientEmailRequired"
-          :persistent-hint="isRecipientEmailRequired"
-          :hint="recipientEmailHint"
-          :rules="emailSubjectRules"
-          :readonly="!showForm"
-        />
-      </FormGroup>
-      <v-list-item class="px-0 email-settings__list-item">
-        <v-list-item-content>
-          <label
-            for="input--phishing-reporter-recipient-email-message"
-            class="email-settings__list-item--header"
-            >Email Message</label
-          >
-          <v-textarea
-            v-model.trim="formValues.content"
-            placeholder="Please investigate the attached email"
-            id="input--phishing-reporter-recipient-email-message"
-            outlined
-            dense
-            no-resize
-            class="mt-2"
+            v-model.trim="formValues.to"
+            id="input--phishing-reporter-recipient-email-address"
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
             :hint="recipientEmailHint"
-            :rules="emailMessageRules"
+            :rules="recipientEmailRules"
             :readonly="!showForm"
-          ></v-textarea>
-        </v-list-item-content>
-      </v-list-item>
+          />
+        </FormGroup>
+        <v-list-item class="px-0 email-settings__list-item">
+          <v-list-item-content>
+            <label
+              for="input--phishing-reporter-cc-email-address"
+              class="email-settings__list-item--header"
+              >CC</label
+            >
+            <InputEmail
+              v-model.trim="formValues.cc"
+              id="input--phishing-reporter-cc-email-address"
+              class="k-textfield mt-2"
+              :persistent-hint="false"
+              :required="false"
+              :hint="null"
+              :rules="ccEmailRules"
+              :readonly="!showForm"
+            />
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="px-0 email-settings__list-item">
+          <v-list-item-content>
+            <label
+              for="input--phishing-reporter-bcc-email-address"
+              class="email-settings__list-item--header"
+              >BCC</label
+            >
+            <InputEmail
+              v-model.trim="formValues.bcc"
+              id="input--phishing-reporter-bcc-email-address"
+              class="k-textfield mt-2"
+              :readonly="!showForm"
+              :persistent-hint="false"
+              :required="false"
+              :hint="null"
+              :rules="ccEmailRules"
+            />
+          </v-list-item-content>
+        </v-list-item>
+        <FormGroup
+          title="Email Subject"
+          sub-title="Define a subject for reported email notifications. Use {SUBJECT} merge tag as a variable for reported emails' subject"
+          :has-hint="isRecipientEmailRequired"
+        >
+          <InputEmail
+            v-model.trim="formValues.subject"
+            id="input--phishing-reporter-email-subject"
+            placeholder="Suspicious Email: {SUBJECT}"
+            :required="isRecipientEmailRequired"
+            :persistent-hint="isRecipientEmailRequired"
+            :hint="recipientEmailHint"
+            :rules="emailSubjectRules"
+            :readonly="!showForm"
+          />
+        </FormGroup>
+        <v-list-item class="px-0 email-settings__list-item">
+          <v-list-item-content>
+            <label
+              for="input--phishing-reporter-recipient-email-message"
+              class="email-settings__list-item--header"
+              >Email Message</label
+            >
+            <v-textarea
+              v-model.trim="formValues.content"
+              placeholder="Please investigate the attached email"
+              id="input--phishing-reporter-recipient-email-message"
+              outlined
+              dense
+              no-resize
+              class="mt-2"
+              :required="isRecipientEmailRequired"
+              :persistent-hint="isRecipientEmailRequired"
+              :hint="recipientEmailHint"
+              :rules="emailMessageRules"
+              :readonly="!showForm"
+            ></v-textarea>
+          </v-list-item-content>
+        </v-list-item>
+      </div>
       <phishing-settings-footer
         v-if="showFooter"
         class-name="mt-3"
@@ -190,7 +224,8 @@ export default {
         bcc: '',
         subject: '',
         content: '',
-        isSendInformationEmail: null
+        isSendInformationEmail: null,
+        sendUsACopy: null
       },
       initialFormValues: {
         to: '',
@@ -198,7 +233,8 @@ export default {
         bcc: '',
         subject: '',
         content: '',
-        isSendInformationEmail: null
+        isSendInformationEmail: null,
+        sendUsACopy: null
       }
     }
   },
@@ -282,13 +318,14 @@ export default {
   },
   created() {
     if (this.formData) {
-      const { to, cc, bcc, subject, content, isSendInformationEmail } = this.formData
+      const { to, cc, bcc, subject, content, isSendInformationEmail, sendUsACopy } = this.formData
       this.formValues.to = to || ''
       this.formValues.cc = cc || ''
       this.formValues.bcc = bcc || ''
       this.formValues.subject = subject || ''
       this.formValues.content = content || ''
       this.formValues.isSendInformationEmail = isSendInformationEmail
+      this.formValues.sendUsACopy = sendUsACopy
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
