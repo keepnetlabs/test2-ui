@@ -99,7 +99,6 @@
 export default {
   name: 'ChatPanel',
   data() {
-    console.log('this.$store.state.auth?.user?.id:', this.$store.state)
     const hostId = localStorage.getItem('hostId')
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
