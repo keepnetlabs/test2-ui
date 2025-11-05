@@ -284,7 +284,7 @@ export default {
       if (provider === ENUMS.SEND_GRID) {
         return 'Activity details will be available in a few minutes...'
       }
-      return `Event history is only available for SMTP`
+      return `Event history is only available when using the platform’s default SMTP.`
     }
   },
   watch: {
