@@ -61,7 +61,7 @@
                 </div>
                 <!-- Red Flags Button -->
                 <VBtn
-                  v-if="isPhishing"
+                  v-if="false"
                   :ripple="false"
                   class="fw-600"
                   rounded
