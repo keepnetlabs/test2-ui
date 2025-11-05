@@ -42,6 +42,7 @@ import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
+import useCachableDialog from '@/mixins/useCachableDialog'
 export default {
   components: {
     KContainer,
@@ -49,6 +50,7 @@ export default {
     People,
     Groups
   },
+  mixins: [useCachableDialog],
   provide() {
     return {
       companyLicense: this.companyLicense
@@ -66,7 +68,8 @@ export default {
   computed: {
     ...mapGetters({
       getTargetUsersSearchPermissions: 'permissions/getTargetUsersSearchPermissions',
-      getTargetGroupsSearchPermissions: 'permissions/getTargetGroupsSearchPermissions'
+      getTargetGroupsSearchPermissions: 'permissions/getTargetGroupsSearchPermissions',
+      getCurrentCompany: 'login/getCurrentCompany'
     }),
     getDialogBody() {
       return this.companyLicense
@@ -150,7 +153,12 @@ export default {
         const { isLimited, isLicenseExceeded } = data
         this.companyLicense = data
         if (isLimited && isLicenseExceeded && showMainModal) {
-          this.toggleShowLicenseExceededDialog()
+          const companyId = this.getCurrentCompany?.resourceId
+          const storageKey = `licenseExceededDialog_${companyId}`
+          if (this.canShowCachableDialog(storageKey)) {
+            this.showLicenseExceededDialog = true
+            this.saveCachableDialogTimestamp(storageKey)
+          }
         }
       })
     },
