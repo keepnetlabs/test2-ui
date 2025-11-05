@@ -137,6 +137,7 @@ export default {
           COLUMNS.DEPARTMENT,
           COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
           COLUMNS.LAST_REPORTED,
           COLUMNS.TIMES_REPORTED
         ],
@@ -200,6 +201,11 @@ export default {
           this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
           'filterableItems',
           this.languageOptions || []
+        )
+        this.$set(
+          this.tableOptions.columns.find((col) => col.property === 'emailTemplateLanguage'),
+          'filterableItems',
+          this.languageOptions.map((option) => ({ text: option.text, value: option.text })) || []
         )
         this?.$refs?.refTable?.reRenderFilters()
       })
