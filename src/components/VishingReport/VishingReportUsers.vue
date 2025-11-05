@@ -43,7 +43,7 @@
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="vishing-report-users__status-column">
-          <v-tooltip bottom :disabled="scope.row.status !== 'CallingError'">
+          <v-tooltip bottom :disabled="scope.row.status !== 'CallingError' && scope.row.status !== 'Busy'">
             <template v-slot:activator="{ on }">
               <v-btn style="display: none;" />
               <Badge
@@ -212,6 +212,7 @@ export default {
               { text: 'Not Responded', value: 'NotResponded' },
               'Answered',
               'Vished',
+              'Busy',
               { text: 'In Queue', value: 'InQueue' },
               { text: 'Calling Error', value: 'CallingError' },
               'Cancelled'
@@ -277,7 +278,7 @@ export default {
         .finally(this.setLoading)
     },
     getErrorMessage(row = {}) {
-      if (row.status === 'CallingError') {
+      if (row.status === 'CallingError' || row.status === 'Busy') {
         return row?.errorMessage || ''
       }
       return ''

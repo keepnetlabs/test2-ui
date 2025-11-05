@@ -5,6 +5,18 @@ export function getStatusBadgeProps(status) {
       text: 'Not Responded'
     }
   }
+  if (status === 'Not Delivered' || status === 'NotDelivered') {
+    return {
+      color: '#757575',
+      text: 'Not Delivered'
+    }
+  }
+  if (status === 'Busy') {
+    return {
+      color: '#757575',
+      text: 'Busy'
+    }
+  }
 
   if (status === 'Answered') {
     return {
