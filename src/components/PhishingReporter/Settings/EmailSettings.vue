@@ -34,7 +34,7 @@
                 The platform will not receive copies of reported emails.
               </div>
               <div class="text-primary-color fw-400 fs-3">
-                Copies of emails sent by the platform will still be shared.
+                Copies of emails sent by the platform will always be shared.
               </div>
             </div>
             <div v-else>
