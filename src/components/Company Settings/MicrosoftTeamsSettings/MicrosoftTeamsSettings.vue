@@ -76,14 +76,14 @@
             <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
           </div>
         </div>
-        <div class="mt-2" style="border-radius: 8px; background-color: #fafafa; padding: 16px;">
+        <div  v-if="isMicrosoftTeamsActive" class="mt-2" style="border-radius: 8px; background-color: #fafafa; padding: 16px;">
           <div class="d-flex flex-column gap-1 mb-4">
             <span class="fw-600" style="font-size: 14px;"
               >Required Setup: Add the App to a Microsoft Teams Policy</span
             >
           </div>
           <div
-            v-if="isMicrosoftTeamsActive && !isPublishedAndFound"
+            v-if="!isTestEmailSent"
             class="info-card-wrapper mt-2"
             :style="getRequiredSetupCardStyle"
           >
@@ -92,7 +92,7 @@
               style="cursor: pointer;"
             >
               <div class="d-flex align-center">
-                <VIcon v-if="!isTestError" color="#B6791D" class="mr-2" size="20"
+                <VIcon v-if="!isTestError" color="#2196F3" class="mr-2" size="20"
                   >mdi-information</VIcon
                 >
                 <VIcon v-else color="#B83A3A" class="mr-2" size="20">mdi-alert</VIcon>
@@ -205,10 +205,21 @@
                       color="#2196f3"
                       rounded
                       :style="getRetryButtonStyle"
+                      :loading="isTestMessageLoading"
                       @click="handleSendTestMessage"
                     >
                       <VIcon left>mdi-cached</VIcon>
                       RETRY
+                      <template #loader>
+                        <img
+                          src="../../../assets/img/spinner.svg"
+                          class="add-in-settings__spinner"
+                          alt="spinner"
+                        />
+                        <span style="font-size: 14px; text-transform: capitalize;">
+                          RETRYING...
+                        </span>
+                      </template>
                     </VBtn>
                     <VBtn
                       class="fw-600"
@@ -227,17 +238,28 @@
                     class="fw-600 white--text"
                     color="#2196f3"
                     rounded
+                    :loading="isTestMessageLoading"
                     :style="getSendTestMessageButtonStyle"
                     @click="handleSendTestMessage"
                   >
                     <VIcon left small>mdi-send</VIcon>
                     SEND TEST MESSAGE
+                    <template #loader>
+                        <img
+                          src="../../../assets/img/spinner.svg"
+                          class="add-in-settings__spinner"
+                          alt="spinner"
+                        />
+                        <span style="font-size: 14px; text-transform: capitalize;">
+                          SENDING...
+                        </span>
+                      </template>
                   </VBtn>
                 </VForm>
               </div>
             </div>
           </div>
-          <div v-else-if="isMicrosoftTeamsActive && isPublishedAndFound">
+          <div v-else>
             <div
               class="d-flex gap-2 align-center"
               style="border-radius: 8px; background-color: rgba(67, 160, 71, 0.2); padding: 16px;"
@@ -344,7 +366,7 @@ export default {
       testEmail: '',
       isTestMessageLoading: false,
       testErrorMessage: '',
-      isPublishedAndFound: false
+      isTestEmailSent: false
     }
   },
   computed: {
@@ -387,7 +409,7 @@ export default {
     getRequiredSetupCardStyle() {
       const style = {
         borderRadius: '8px',
-        background: 'rgba(230, 162, 60, 0.2)'
+        background: '#F1F8FE'
       }
       if (this.isTestError) {
         style.background = 'rgba(245, 108, 108, 0.20)'
@@ -397,7 +419,7 @@ export default {
     getRequiredSetupTitleText() {
       return this.isTestError
         ? 'Status: Verification Failed. The app could not send a message.'
-        : 'Status: Setup Required for Microsoft Teams Policy'
+        : 'Teams Policy Test Verification'
     },
     getRequiredSetupContentText() {
       return this.isTestError
@@ -422,6 +444,7 @@ export default {
       if (this.isTestMessageLoading) {
         style.opacity = 0.5
         style.cursor = 'auto'
+        style.maxWidth = '120px'
       }
       return style
     },
@@ -430,6 +453,7 @@ export default {
       if (this.isTestMessageLoading) {
         style.opacity = 0.5
         style.cursor = 'auto'
+        style.minWidth = '140px'
       }
       return style
     }
@@ -482,10 +506,6 @@ export default {
           this.isLastVersion = data?.installedVersion === data?.latestAvailableVersion
           if (isCallback) {
             this.isModalVisible = true
-          }
-          //published and found state
-          if (data?.publishingState?.toLowerCase() === 'published' && data?.isFound) {
-            this.isPublishedAndFound = true
           }
         })
         .finally(() => {
@@ -629,7 +649,7 @@ export default {
       MicrosoftTeamsSettingsService.sendTestMessage(this.testEmail)
         .then(() => {
           this.isTestError = false
-          this.isPublishedAndFound = true
+          this.isTestEmailSent = true
         })
         .catch((error) => {
           this.isTestError = true
