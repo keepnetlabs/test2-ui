@@ -212,6 +212,7 @@ export default {
               { text: 'Not Responded', value: 'NotResponded' },
               'Answered',
               'Vished',
+              'Busy',
               { text: 'In Queue', value: 'InQueue' },
               { text: 'Calling Error', value: 'CallingError' },
               'Cancelled'
