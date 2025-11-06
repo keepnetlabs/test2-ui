@@ -61,7 +61,7 @@
                 </div>
                 <!-- Red Flags Button -->
                 <VBtn
-                  v-if="false"
+                  v-if="true"
                   :ripple="false"
                   class="fw-600"
                   rounded
@@ -210,6 +210,7 @@
                 <AttachmentsPreview
                   :deletable="false"
                   :att="emailTemplateParams.attachment"
+                  :redFlags="redFlags"
                   :isEmailTemplate="true"
                 />
               </div>
