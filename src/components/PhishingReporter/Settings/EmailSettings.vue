@@ -15,7 +15,6 @@
     </v-list-item>
     <v-form class="email-settings__form" ref="refForm" lazy-validation>
       <FormGroup
-        v-if="false"
         class="mt-6"
         title="Send Us a Copy"
         sub-title="Controls whether reported emails, excluding those sent by the platform, are also sent to the platform for review."
