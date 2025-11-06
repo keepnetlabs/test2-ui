@@ -609,7 +609,9 @@ export const generateEmailTemplateTranslation = (payload) => {
 export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
 }
-const workerUrl = 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
+const workerUrl = window.location.origin.includes('test-ui.devkeepnet.com')
+  ? 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
+  : 'https://r-flg.keepnetlabs.com'
 export const checkRedFlags = (payload) => {
   return axios.post(`${workerUrl}?method=flag`, payload, {
     headers: {
