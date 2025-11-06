@@ -147,7 +147,7 @@ export default [
     phoneNumberCode: '+975'
   },
   {
-    name: 'Bosnia & Herzegovina',
+    name: 'Bosnia and Herzegovina',
     timeFormat: '24h',
     dateFormat: 'dd/MM/yyyy',
     timezone: 'Central Europe Standard Time',
