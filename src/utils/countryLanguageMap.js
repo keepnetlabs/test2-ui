@@ -108,7 +108,7 @@ export default [
     language: 'Spanish'
   },
   {
-    country: 'Bosnia & Herzegovina',
+    country: 'Bosnia and Herzegovina',
     language: 'Bosnian (Bosnia and Herzegovina)'
   },
   {

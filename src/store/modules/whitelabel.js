@@ -121,8 +121,9 @@ const whitelabel = {
     SET_COMPANY_LICENSE(state, payload) {
       state.companyLicense = payload
     },
-    SET_SHOW_EXCEED_DIALOG(state) {
-      state.showLicenseExceededDialog = !state.showLicenseExceededDialog
+    SET_SHOW_EXCEED_DIALOG(state, payload) {
+      state.showLicenseExceededDialog =
+        typeof payload === 'boolean' ? payload : !state.showLicenseExceededDialog
     },
     SET_COUNTRY_NAME(state, payload) {
       state.countryName = payload
@@ -176,7 +177,7 @@ const whitelabel = {
           const { isLicenseExceeded, isLimited } = companyLicense.data
           context.commit('SET_COMPANY_LICENSE', companyLicense?.data || '')
           if (isLimited && isLicenseExceeded) {
-            context.commit('SET_SHOW_EXCEED_DIALOG')
+            context.dispatch('toggleShowExceedDialog')
           }
         }
         if (summary?.data?.countryCode) {
@@ -196,7 +197,39 @@ const whitelabel = {
       context.commit('SET_DATA', payload)
     },
     toggleShowExceedDialog(context) {
-      context.commit('SET_SHOW_EXCEED_DIALOG')
+      const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000
+      const currentState = context.state.showLicenseExceededDialog
+
+      // Dialog'u kapatmak istiyorsak (açıksa false yap)
+      if (currentState) {
+        context.commit('SET_SHOW_EXCEED_DIALOG', false)
+        return
+      }
+
+      // Company-specific storage key
+      const rootGetters = context.rootGetters
+      const companyId = rootGetters['login/getCurrentCompany']?.resourceId
+      if (!companyId) return
+
+      const STORAGE_KEY = `lastLicenseExceededDialogShown_${companyId}`
+      const lastShownTime = localStorage.getItem(STORAGE_KEY)
+
+      if (!lastShownTime) {
+        // İlk kez gösteriliyorsa
+        context.commit('SET_SHOW_EXCEED_DIALOG', true)
+        localStorage.setItem(STORAGE_KEY, new Date().getTime().toString())
+      } else {
+        const currentTime = new Date().getTime()
+        const lastShownTimeMs = parseInt(lastShownTime)
+        const timeDifference = currentTime - lastShownTimeMs
+
+        if (timeDifference > TWENTY_FOUR_HOURS_MS) {
+          // 24 saat geçmişse göster
+          context.commit('SET_SHOW_EXCEED_DIALOG', true)
+          localStorage.setItem(STORAGE_KEY, new Date().getTime().toString())
+        }
+        // 24 saat geçmemişse dialog'u açma
+      }
     }
   }
 }
