@@ -159,6 +159,14 @@
                   :subtitle="getInputPhishingMethodSubtitle"
                   :items="getMethodTypes"
                 />
+
+                <InputSelectRoles
+                  v-if="isPhishing"
+                  v-model="formValues.roleResourceIds"
+                  :items="availableRoleOptions"
+                  :loading="rolesLoading"
+                />
+
                 <FormGroup
                   v-if="!isPhishing"
                   has-hint
@@ -267,7 +275,41 @@
                   :class="!isMethodMfa ? 'common-simulator-new-scenario-campaign-info' : ''"
                   :title="labels.ScenarioInfo"
                   :items="getScenarioInfoItems"
-                />
+                >
+                  <template v-if="isPhishing" #Roles="{ props }">
+                    <div class="campaign-manager-summary-card__body-item-key">
+                      {{ props.key.slice(0, 1).toUpperCase() + props.key.slice(1) }}
+                    </div>
+                    <div class="campaign-manager-summary-card__body-item-value roles-summary">
+                      <span
+                        v-if="!displayRoleSummary.visible.length && !displayRoleSummary.hasExtra"
+                        class="roles-summary__empty"
+                      >
+                        {{ props.val }}
+                      </span>
+                      <template v-else>
+                        <span class="roles-summary__text">
+                          {{ displayRoleSummary.visible.join(', ') }}
+                        </span>
+                        <span
+                          v-if="displayRoleSummary.hasExtra && displayRoleSummary.visible.length"
+                        >
+                          ,
+                        </span>
+                        <VTooltip bottom v-if="displayRoleSummary.hasExtra">
+                          <template #activator="{ on, attrs }">
+                            <span class="roles-summary__more" v-bind="attrs" v-on="on">
+                              +{{ displayRoleSummary.remainingCount }}
+                            </span>
+                          </template>
+                          <span class="roles-summary__tooltip">
+                            {{ displayRoleSummary.extra.join(', ') }}
+                          </span>
+                        </VTooltip>
+                      </template>
+                    </div>
+                  </template>
+                </CampaignManagerSummaryCard>
                 <CampaignManagerSummaryCard
                   v-if="isMethodMfa && step === 4"
                   icon="mdi-cog"
@@ -704,7 +746,11 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
-import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import {
+  getEmailTemplatePreviewContent,
+  getEmailTemplatesList,
+  getPhishingScenarioRoles
+} from '@/api/phishingsimulator'
 import {
   getLandingPageFormDetails,
   getLandingPageList,
@@ -745,6 +791,7 @@ import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
+import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
@@ -767,7 +814,8 @@ export default {
     InputEntityName,
     InputDescription,
     AttachmentsPreview,
-    EmailTemplateListPreviewLanguages
+    EmailTemplateListPreviewLanguages,
+    InputSelectRoles
   },
   props: {
     status: {
@@ -790,6 +838,10 @@ export default {
     },
     scenarioDetailsLookup: {
       required: true
+    },
+    roleItems: {
+      type: Array,
+      default: () => []
     },
     type: {
       type: String,
@@ -833,6 +885,9 @@ export default {
       quishingType: '',
       selectedTemplateLanguages: [],
       categoryText: '',
+      availableRoleOptions: [],
+      rolesLoading: false,
+      selectedRolesDetails: [],
       formValues: {
         name: '',
         description: '',
@@ -842,7 +897,8 @@ export default {
         emailTemplateId: null,
         landingPageTemplateId: null,
         languageTypeResourceId: '862249c19aad',
-        tags: []
+        tags: [],
+        roleResourceIds: []
       },
       commonRules: {
         hint: '*Required',
@@ -995,7 +1051,43 @@ export default {
         obj['Quishing Type'] = this.quishingType
         delete obj['Category']
       }
+      if (this.isPhishing) {
+        obj.Roles = this.getSelectedRolesText
+      }
       return obj
+    },
+    selectedRoleNames() {
+      if (!this.isPhishing) return []
+      const names = (this.selectedRolesDetails || [])
+        .map((role) => role?.name || role?.text || role?.roleName)
+        .filter(Boolean)
+      return [...new Set(names)]
+    },
+    displayRoleSummary() {
+      const names = this.selectedRoleNames
+      const visible = names.slice(0, 3)
+      const extra = names.length > 3 ? names.slice(3) : []
+      return {
+        visible,
+        extra,
+        hasExtra: extra.length > 0,
+        remainingCount: extra.length
+      }
+    },
+    getSelectedRolesText() {
+      if (!this.isPhishing) return ''
+      const names = this.selectedRoleNames
+      if (names.length) {
+        return names.join(', ')
+      }
+      if (
+        Array.isArray(this.formValues.roleResourceIds) &&
+        this.formValues.roleResourceIds.length
+      ) {
+        const count = this.formValues.roleResourceIds.length
+        return `${count} role${count > 1 ? 's' : ''}`
+      }
+      return 'Not selected'
     },
     getMfaSettingsItems() {
       return {
@@ -1125,11 +1217,32 @@ export default {
     'formValues.methodTypeId'(val, oldVal) {
       if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
     },
+    'formValues.roleResourceIds'(val) {
+      if (!this.availableRoleOptions.length) return
+      this.selectedRolesDetails = this.getRoleDetailsFromIds(val)
+    },
+    roleItems: {
+      handler(newItems) {
+        if (!this.isPhishing) return
+        if (!Array.isArray(newItems)) return
+        if (newItems.length) {
+          this.availableRoleOptions = [...newItems]
+          const currentIds = this.formValues.roleResourceIds
+          this.selectedRolesDetails = this.getRoleDetailsFromIds(currentIds)
+          this.rolesLoading = false
+        } else {
+          this.availableRoleOptions = []
+          if (!this.rolesLoading) this.selectedRolesDetails = []
+        }
+      },
+      deep: true
+    },
     quishingType(val, oldVal) {
       if (val !== oldVal && !this.isInitial) this.resetLandingPageAndEmailTemplateSelection()
     }
   },
   created() {
+    this.initializeRoleOptions()
     getLandingPageFormDetails().then((response) => {
       const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
         return {
@@ -1159,6 +1272,47 @@ export default {
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
   methods: {
+    initializeRoleOptions() {
+      if (!this.isPhishing) return
+      if (Array.isArray(this.roleItems) && this.roleItems.length) {
+        this.availableRoleOptions = [...this.roleItems]
+        const currentIds = this.formValues.roleResourceIds
+        this.selectedRolesDetails = this.getRoleDetailsFromIds(currentIds)
+        this.rolesLoading = false
+      } else {
+        this.fetchRoleOptions()
+      }
+    },
+    async fetchRoleOptions() {
+      if (!this.isPhishing) return
+      this.rolesLoading = true
+      try {
+        const response = await getPhishingScenarioRoles()
+        this.availableRoleOptions = response?.data?.data || []
+      } catch (error) {
+        this.availableRoleOptions = []
+        // eslint-disable-next-line no-console
+        console.error('Error fetching scenario roles:', error)
+      } finally {
+        const currentIds = this.formValues.roleResourceIds
+        if (Array.isArray(currentIds) && currentIds.length && this.availableRoleOptions.length) {
+          const mappedRoles = this.getRoleDetailsFromIds(currentIds)
+          if (mappedRoles.length) {
+            this.selectedRolesDetails = mappedRoles
+          }
+        } else if (!Array.isArray(currentIds) || !currentIds.length) {
+          this.selectedRolesDetails = []
+        }
+        this.rolesLoading = false
+      }
+    },
+    getRoleDetailsFromIds(ids = []) {
+      if (!Array.isArray(ids) || !ids.length) return []
+      if (!Array.isArray(this.availableRoleOptions) || !this.availableRoleOptions.length) return []
+      return ids
+        .map((id) => this.availableRoleOptions.find((role) => role.resourceId === id))
+        .filter(Boolean)
+    },
     checkIsRedFlaggedTemplate(html) {
       if (typeof html !== 'string') return false
       return html.includes('data-redflag')
@@ -1264,6 +1418,12 @@ export default {
           this.emailTemplateResourceId = emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
+          this.formValues.roleResourceIds =
+            response.data.data.roles?.map((role) => role.resourceId) || []
+          delete this.formValues.roles
+          this.selectedRolesDetails = this.availableRoleOptions.length
+            ? this.getRoleDetailsFromIds(this.formValues.roleResourceIds)
+            : response.data.data.roles || []
           this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
           this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
           this.mfaData.mfaTextTemplate = response.data.data.mfaTextTemplate

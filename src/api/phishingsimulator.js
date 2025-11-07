@@ -628,3 +628,7 @@ export const translateRedFlagsTexts = (payload) => {
     }
   })
 }
+
+export function getPhishingScenarioRoles() {
+  return testRequest.get('/lookups/phishing-scenario-roles')
+}

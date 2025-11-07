@@ -205,6 +205,7 @@ export const PROPERTY_STORE = {
   TARGET_AUDIENCE: 'targetAudience',
   METHOD: 'method',
   TAGS: 'tags',
+  ROLES: 'roles',
   COUNT: 'count',
   ENROLLED_BY: 'enrolledBy',
   TOEMAIL: 'toEmail',
