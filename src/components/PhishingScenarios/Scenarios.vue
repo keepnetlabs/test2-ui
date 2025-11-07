@@ -24,6 +24,7 @@
       :editableFormValues="editableFormValues"
       :scenarioDetailsLookup="scenarioDetailsLookup"
       :isAttachmentBased="isAttachmentBasedScenario"
+      :role-items="scenarioRoles"
       @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
     />
     <CommonSimulatorDeleteScenario
@@ -188,7 +189,10 @@ import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowAct
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog'
-import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
+import {
+  getPhishingScenarioLandingPageAndEmailTemplate,
+  getPhishingScenarioRoles
+} from '@/api/phishingsimulator'
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
@@ -232,6 +236,8 @@ export default {
       labels,
       selectedScenarioURL: '',
       tableData: [],
+      roleFilterOptions: [],
+      scenarioRoles: [],
       showDeleteModal: false,
       selectedScenario: {},
       tableOptions: {
@@ -242,6 +248,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGES,
+          COMMON_SIMULATOR_COLUMNS.ROLES,
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,
@@ -338,7 +345,7 @@ export default {
           })
         )
         this.$set(
-          this.tableOptions.columns[4],
+          this.tableOptions.columns[6],
           'filterableItems',
           this?.scenarioDetailsLookup?.difficultyTypes?.map((item) => {
             return { text: item.text, value: item.text }
@@ -351,12 +358,46 @@ export default {
   },
   mounted() {
     this.callForLanguages('refScenariosList')
+    this.callForRoles()
     this.callForData()
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
     bulkDeleteScenarios,
+    callForRoles() {
+      getPhishingScenarioRoles()
+        .then((response) => {
+          const roles = response?.data?.data || []
+          this.scenarioRoles = roles
+          this.roleFilterOptions =
+            roles.map((role) => ({
+              text: role.name,
+              value: role.resourceId
+            })) || []
+
+          // Find ROLES column index dynamically
+          const rolesColumnIndex = this.tableOptions.columns.findIndex(
+            (col) => col.property === 'roles'
+          )
+
+          if (rolesColumnIndex !== -1) {
+            this.$set(
+              this.tableOptions.columns[rolesColumnIndex],
+              'filterableItems',
+              this.roleFilterOptions
+            )
+            this.$nextTick(() => {
+              this?.$refs?.refScenariosList?.reRenderFilters()
+            })
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching roles:', error)
+          this.roleFilterOptions = []
+          this.scenarioRoles = []
+        })
+    },
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
@@ -371,26 +412,33 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             const enrichedResults = results?.map((item) => {
+              const transformedItem = { ...item }
+
+              // Transform languages
               if (Array.isArray(item.languageTypeName)) {
-                return {
-                  ...item,
-                  languageTypeName: item.languageTypeName?.map((code) => {
-                    const language = this.languageFilterOptions.find(
-                      (lang) => lang.languageName === code
-                    )
-                    return language?.text || code
-                  })
-                }
+                transformedItem.languageTypeName = item.languageTypeName?.map((code) => {
+                  const language = this.languageFilterOptions.find(
+                    (lang) => lang.languageName === code
+                  )
+                  return language?.text || code
+                })
               } else {
                 const language = this.languageFilterOptions.find(
                   (lang) => lang.languageName === item.languageTypeName
                 )
-                return {
-                  ...item,
-                  languageTypeName: language?.text || item.languageTypeName
-                }
+                transformedItem.languageTypeName = language?.text || item.languageTypeName
               }
+
+              // Transform roles array of objects to array of names
+              if (item.roles && Array.isArray(item.roles) && item.roles.length > 0) {
+                transformedItem.roles = item.roles.map((role) => role.name || role)
+              } else {
+                transformedItem.roles = []
+              }
+
+              return transformedItem
             })
+
             this.tableData = enrichedResults
           })
           .catch(() => {
