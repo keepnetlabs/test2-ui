@@ -156,13 +156,13 @@ export const COMMON_SIMULATOR_COLUMNS = {
     label: 'Roles',
     fixed: false,
     sortable: false,
+    hideSort: true,
     show: true,
     type: 'smallBadge',
     width: 180,
     hasTooltip: true,
     filterableType: 'select',
-    filterableItems: [],
-    filterableCustomFieldName: 'RoleResourceIds'
+    filterableItems: []
   },
   DIFFICULTY: {
     property: PROPERTY_STORE.JUSTDIFFICULTY,
