@@ -188,6 +188,10 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import {
+  columnFilterChanged as columnFilterChangedHelper,
+  columnFilterCleared as columnFilterClearedHelper
+} from '@/utils/helperFunctions'
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog'
 import {
   getPhishingScenarioLandingPageAndEmailTemplate,
@@ -365,6 +369,43 @@ export default {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
     bulkDeleteScenarios,
+    columnFilterChanged(filter) {
+      // Update filter items using helper function
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChangedHelper(
+        filter,
+        this.axiosPayload
+      )
+
+      // Handle role filter specifically
+      if (Array.isArray(filter)) {
+        const roleFilter = filter.find((f) => f.FieldName === 'roles')
+        if (roleFilter) {
+          this.axiosPayload.RoleResourceIds = Array.isArray(roleFilter.Value)
+            ? roleFilter.Value
+            : [roleFilter.Value]
+        }
+      } else if (filter.FieldName === 'roles') {
+        this.axiosPayload.RoleResourceIds = Array.isArray(filter.Value)
+          ? filter.Value
+          : [filter.Value]
+      }
+
+      this.callForData()
+    },
+    columnFilterCleared(fieldName) {
+      // Update filter items using helper function
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterClearedHelper(
+        fieldName,
+        this.axiosPayload
+      )
+
+      // Clear role filter specifically
+      if (fieldName === 'roles') {
+        this.axiosPayload.RoleResourceIds = []
+      }
+
+      this.callForData()
+    },
     callForRoles() {
       getPhishingScenarioRoles()
         .then((response) => {
@@ -401,7 +442,11 @@ export default {
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
-        getScenariosList(this.axiosPayload)
+        const copyOfAxiosPayload = JSON.parse(JSON.stringify(this.axiosPayload))
+        copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = copyOfAxiosPayload.filter.FilterGroups[0].FilterItems.filter(
+          (item) => item.FieldName !== 'roles'
+        )
+        getScenariosList(copyOfAxiosPayload)
           .then((response) => {
             const {
               data: { data }
