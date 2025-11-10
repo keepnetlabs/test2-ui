@@ -376,18 +376,10 @@ export default {
         this.axiosPayload
       )
 
-      // Handle role filter specifically
-      if (Array.isArray(filter)) {
-        const roleFilter = filter.find((f) => f.FieldName === 'roles')
-        if (roleFilter) {
-          this.axiosPayload.RoleResourceIds = Array.isArray(roleFilter.Value)
-            ? roleFilter.Value
-            : [roleFilter.Value]
-        }
-      } else if (filter.FieldName === 'roles') {
+      if (filter.FieldName === 'roles') {
         this.axiosPayload.RoleResourceIds = Array.isArray(filter.Value)
           ? filter.Value
-          : [filter.Value]
+          : filter.Value?.split(',')
       }
 
       this.callForData()
