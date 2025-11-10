@@ -3,6 +3,7 @@
     :id="CONSTANTS.id"
     ref="refTable"
     selectable
+    is-server-side-selection
     is-server-side
     row-key="trainingId"
     :options="false"
