@@ -86,6 +86,8 @@
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
       @on-show-scenario-statistics="isShowScenarioStatistics = true"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -596,6 +598,38 @@ export default {
     },
     toggleShowScenarioStatistics() {
       this.isShowScenarioStatistics = !this.isShowScenarioStatistics
+    },
+    handleSetDefaultSearch(search, filterValues) {
+      // Extract and set roleResourceIds from current filter
+      const rolesFilter = this.axiosPayload.filter?.FilterGroups?.[0]?.FilterItems?.find(
+        (item) => item.FieldName === 'roles'
+      )
+      if (rolesFilter) {
+        this.axiosPayload.RoleResourceIds = Array.isArray(rolesFilter.Value)
+          ? rolesFilter.Value
+          : [rolesFilter.Value]
+      }
+    },
+    handleRestoreDefaultSearch() {
+      // Load saved filters from localStorage
+      const savedFilter = JSON.parse(
+        localStorage.getItem(this.tableOptions.savedFiltersLocalStorageKey)
+      )
+      if (savedFilter?.filter) {
+        // Extract roles filter from saved filter
+        const rolesFilter = savedFilter.filter?.FilterGroups?.[0]?.FilterItems?.find(
+          (item) => item.FieldName === 'roles'
+        )
+        if (rolesFilter) {
+          this.axiosPayload.RoleResourceIds = Array.isArray(rolesFilter.Value)
+            ? rolesFilter.Value
+            : [rolesFilter.Value]
+        } else {
+          this.axiosPayload.RoleResourceIds = []
+        }
+      } else {
+        this.axiosPayload.RoleResourceIds = []
+      }
     }
   }
 }
