@@ -1,41 +1,11 @@
 <template>
-  <VNavigationDrawer
-    v-click-outside="handleClickOutside"
-    v-if="status"
-    :value="drawerModel"
-    :data-drawer-id="drawerId"
-    class="k-navigation-drawer k-navigation-drawer--email-template"
-    temporary
-    fixed
-    stateless
-    :hide-overlay="isNested"
-    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
-    :overlay-opacity="!isNested ? 1 : undefined"
-    :z-index="isNested ? '10012' : undefined"
-    right
-    width="calc(100% - 72px)"
-    height="100%"
-    @input="drawerModel = $event"
+  <app-modal
+    :status="status"
+    icon-name="mdi-email"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
   >
-    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
-        <div>
-          <VListItem>
-            <VListItemContent>
-              <VListItemTitle class="k-overlay__title">
-                {{ getTitle }}
-              </VListItemTitle>
-            </VListItemContent>
-          </VListItem>
-        </div>
-        <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="changeNewEmailTemplateModalStatus"
-            >mdi-close</VIcon
-          >
-        </div>
-      </div>
-    </div>
-    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+    <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -49,14 +19,16 @@
         <v-stepper-items class="k-stepper__items">
           <v-stepper-content class="k-stepper__content" :step="1">
             <div class="email-template-info">
-              <v-list-item-content>
-                <v-list-item-title class="new-email-template__title">
-                  Email Template Info</v-list-item-title
-                >
-                <v-list-item-subtitle class="new-email-template__sub-title"
-                  >Enter basic information about this email template</v-list-item-subtitle
-                >
-              </v-list-item-content>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-email-template__title">
+                    Email Template Info</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-email-template__sub-title"
+                    >Enter basic information about this email template</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
 
               <v-form ref="refFormStep1" lazy-validation>
                 <FormGroup title="Template Name" has-hint class-name="mt-8">
@@ -132,19 +104,25 @@
                 @on-discard="handleDiscardEditLanguagesLeavingDialog"
                 @on-confirm="handleConfirmEditLanguagesLeavingDialog"
               />
-              <v-list-item-content class="p-0">
-                <v-list-item-title class="new-email-template__title">
-                  Email Settings</v-list-item-title
-                >
-                <v-list-item-subtitle class="new-email-template__sub-title"
-                  >Create, edit, design, and localize your email templates across multiple languages
-                  with ease.</v-list-item-subtitle
-                >
-              </v-list-item-content>
-              <v-list-item class="pl-0">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-email-template__title">
+                    Email Settings</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-email-template__sub-title"
+                    >Create, edit, design, and localize your email templates across multiple
+                    languages with ease.</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
-                    <FormGroup title="" class-name="email-template p-4" onsubmit="return false">
+                    <FormGroup
+                      title=""
+                      class-name="email-template mt-6 p-4"
+                      onsubmit="return false"
+                    >
                       <div>
                         <div v-show="false" class="mb-3">
                           <div>
@@ -271,8 +249,8 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
-    </div>
-    <div class="k-overlay__footer k-navigation-drawer__footer">
+    </template>
+    <template #overlay-footer>
       <StepperFooter
         max-step="2"
         :step.sync="step"
@@ -283,11 +261,12 @@
         @on-next="nextStep(+1)"
         @on-submit="submit"
       />
-    </div>
-  </VNavigationDrawer>
+    </template>
+  </app-modal>
 </template>
 
 <script>
+import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -325,17 +304,15 @@ import { scrollToEmailTemplateContent } from '@/components/Company Settings/util
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { checkRedFlags } from '@/api/phishingsimulator'
-import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
-import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'NewEmailTemplates',
-  mixins: [useHtmlOverflowControl, useSetAttachmentFile, useDrawerAnimation],
   components: {
     EditLanguagesLeavingDialog,
     InputLanguagePreview,
     InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
+    AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
@@ -343,6 +320,7 @@ export default {
     InputEntityName,
     InputDescription
   },
+  mixins: [useSetAttachmentFile],
   props: {
     status: {
       type: Boolean,
@@ -365,17 +343,9 @@ export default {
       type: Boolean,
       default: true
     },
-    shouldControlHtmlOverflow: {
-      type: Boolean,
-      default: true
-    },
     showLeavingDialog: {
       type: Boolean,
       default: true
-    },
-    isNested: {
-      type: Boolean,
-      default: false
     },
     selectedMethodText: {
       type: String,
@@ -398,7 +368,6 @@ export default {
       }
     }
     return {
-      drawerModel: this.status,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-email-templates-modal',
         backButton: 'btn-back--add-or-edit-email-templates-modal',
@@ -586,14 +555,6 @@ export default {
     }
   },
   watch: {
-    status(val) {
-      this.drawerModel = val
-    },
-    drawerModel(val) {
-      if (!val && this.status) {
-        this.changeNewEmailTemplateModalStatus()
-      }
-    },
     activeFileName(newVal, oldVal) {
       // Attachment değiştiğinde mevcut red flag gösterimini kapat, stilleri kaldır ve cache'i temizle
       if (newVal !== oldVal) {
@@ -724,51 +685,8 @@ export default {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
     }
-    // Mixin tarafından HTML overflow kontrolü yapılıyor
   },
   methods: {
-    handleClickOutside(event) {
-      // SnackBar tıklanırsa ignore et
-      if (event && event.target) {
-        const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
-        )
-        if (snackbarElement) {
-          return
-        }
-
-        // V-menu açıksa ignore et
-        const menuElement = event.target.closest('.v-menu__content, .v-list')
-        if (menuElement) {
-          return
-        }
-
-        // Leaving dialog açıksa ignore et (v-overlay kaldırıldı - drawer overlay'i ile çakışıyordu)
-        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"]')
-        if (leavingDialogElement) {
-          return
-        }
-      }
-
-      // Leaving dialog zaten açıksa ignore et
-      if (this.$store.state.common?.isShowLeavingDialog) {
-        return
-      }
-
-      // Edit languages leaving dialog açıksa ignore et
-      if (this.showEditLanguagesLeavingDialog) {
-        return
-      }
-
-      // GrapesJS modal açıksa sadece onu kapat
-      if (this?.$refs?.refEmailTemplate?.showGrapesModal) {
-        this.$refs.refEmailTemplate.showGrapesModal = false
-        return
-      }
-
-      // Drawer'ı kapat
-      this.changeNewEmailTemplateModalStatus()
-    },
     handleSaveTemplate(template) {
       if (template.trim() !== this.getSelectedLanguagePayload.template.trim()) {
         delete this.lastRedFlags[this.activeLanguage]
@@ -956,35 +874,16 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
-    closeWithAnimation(callback) {
-      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
-      if (drawerElement) {
-        drawerElement.style.right = '-100%'
-      }
-      setTimeout(() => {
-        callback && callback()
-      }, 250)
-    },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        this.closeWithAnimation(() => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
-        })
-        return
+        return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
-      if (!this.showLeavingDialog) {
-        this.closeWithAnimation(() => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
-        })
-        return
-      }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.closeWithAnimation(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false)
-          })
+          this.$emit('changeNewEmailTemplateModalStatus', false)
         }
       })
     },
@@ -1081,9 +980,7 @@ export default {
         payload.languages = this.setEmptyLanguagesPayload()
         updatePhishingEmailTemplate(payload, this.emailTemplateId)
           .then(() => {
-            this.closeWithAnimation(() => {
-              this.$emit('changeNewEmailTemplateModalStatus', false, true)
-            })
+            this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
           .finally(() => {
             this.isSubmitDisabled = false
@@ -1092,14 +989,12 @@ export default {
         payload.languages = this.setEmptyLanguagesPayload()
         createPhishingEmailTemplate(payload)
           .then((response) => {
-            this.closeWithAnimation(() => {
-              this.$emit(
-                'changeNewEmailTemplateModalStatus',
-                false,
-                true,
-                response?.data?.data?.resourceId
-              )
-            })
+            this.$emit(
+              'changeNewEmailTemplateModalStatus',
+              false,
+              true,
+              response?.data?.data?.resourceId
+            )
           })
           .finally(() => {
             this.isSubmitDisabled = false
