@@ -1,41 +1,12 @@
 <template>
-  <VNavigationDrawer
-    v-click-outside="handleClickOutside"
+  <app-modal
     v-if="status"
-    :value="drawerModel"
-    :data-drawer-id="drawerId"
-    class="k-navigation-drawer k-navigation-drawer--landing-page"
-    temporary
-    fixed
-    stateless
-    :hide-overlay="isNested"
-    :overlay-color="!isNested ? 'rgba(0, 0, 0, 0.17)' : undefined"
-    :overlay-opacity="!isNested ? 1 : undefined"
-    :z-index="isNested ? '10012' : undefined"
-    right
-    width="calc(100% - 72px)"
-    height="100%"
-    @input="drawerModel = $event"
+    icon-name="mdi-file"
+    :status="status"
+    :title="getTitle"
+    :should-remove-overflow="shouldRemoveOverflow"
   >
-    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
-        <div>
-          <VListItem>
-            <VListItemContent>
-              <VListItemTitle class="k-overlay__title">
-                {{ getTitle }}
-              </VListItemTitle>
-            </VListItemContent>
-          </VListItem>
-        </div>
-        <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="changeNewEmailTemplateModalStatus"
-            >mdi-close</VIcon
-          >
-        </div>
-      </div>
-    </div>
-    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body mt-0">
+    <template #overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -49,14 +20,16 @@
         <v-stepper-items class="k-stepper__items">
           <v-stepper-content class="k-stepper__content" :step="1">
             <div class="email-template-info">
-              <v-list-item-content>
-                <v-list-item-title class="new-email-template__title">
-                  Landing Page Template Info</v-list-item-title
-                >
-                <v-list-item-subtitle class="new-email-template__sub-title"
-                  >Enter basic information about this landing page template</v-list-item-subtitle
-                >
-              </v-list-item-content>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-email-template__title">
+                    Landing Page Template Info</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-email-template__sub-title"
+                    >Enter basic information about this landing page template</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
 
               <v-form ref="refFormStep1" lazy-validation>
                 <form-group title="Template Name" has-hint class-name="mt-8">
@@ -160,15 +133,17 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <div class="email-settings">
-              <v-list-item-content class="p-0">
-                <v-list-item-title class="new-email-template__title">
-                  Page Settings</v-list-item-title
-                >
-                <v-list-item-subtitle class="new-email-template__sub-title"
-                  >Enter basic information about this email template</v-list-item-subtitle
-                >
-              </v-list-item-content>
-              <v-list-item class="p-0 mt-4">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-email-template__title">
+                    Page Settings</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-email-template__sub-title"
+                    >Enter basic information about this email template</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item class="mt-4">
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <InputPhishingLink
@@ -188,7 +163,7 @@
                       color="#2196f3"
                       hide-details
                       :class="[
-                        'mb-6',
+                        'mb-10',
                         isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
                       ]"
                       :ripple="false"
@@ -351,8 +326,8 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
-    </div>
-    <div class="k-overlay__footer k-navigation-drawer__footer">
+    </template>
+    <template #overlay-footer>
       <StepperFooter
         max-step="2"
         :step.sync="step"
@@ -366,12 +341,13 @@
         @on-next="nextStep(+1)"
         @on-submit="submit"
       />
-    </div>
-  </VNavigationDrawer>
+    </template>
+  </app-modal>
 </template>
 
 <script>
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import AppModal from '../AppModal'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -389,15 +365,13 @@ import { MERGED_TEXTS_MAP, processTemplateWithCustomScripts } from '@/components
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
-import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'NewLandingPage',
-  mixins: [useHtmlOverflowControl, useDrawerAnimation],
   components: {
     InputPhishingMethod,
     InputPhishingLink,
     StepperFooter,
+    AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
@@ -413,10 +387,6 @@ export default {
       type: Boolean
     },
     shouldRemoveOverflow: {
-      type: Boolean,
-      default: true
-    },
-    shouldControlHtmlOverflow: {
       type: Boolean,
       default: true
     },
@@ -437,10 +407,6 @@ export default {
       type: Boolean,
       default: true
     },
-    isNested: {
-      type: Boolean,
-      default: false
-    },
     selectedMethodText: {
       type: String,
       default: ''
@@ -448,7 +414,6 @@ export default {
   },
   data() {
     return {
-      drawerModel: this.status,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-landing-page-templates-modal',
         backButton: 'btn-back--add-or-edit-landing-page-templates-modal',
@@ -504,52 +469,6 @@ export default {
     }
   },
   methods: {
-    handleClickOutside(event) {
-      // SnackBar tıklanırsa ignore et
-      if (event && event.target) {
-        const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
-        )
-        if (snackbarElement) {
-          return
-        }
-
-        // V-menu açıksa ignore et
-        const menuElement = event.target.closest('.v-menu__content, .v-list')
-        if (menuElement) {
-          return
-        }
-
-        // Leaving dialog açıksa ignore et (v-overlay kaldırıldı - drawer overlay'i ile çakışıyordu)
-        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"]')
-        if (leavingDialogElement) {
-          return
-        }
-      }
-
-      // Leaving dialog zaten açıksa ignore et
-      if (this.$store.state.common?.isShowLeavingDialog) {
-        return
-      }
-
-      // GrapesJS modal açıksa sadece onu kapat
-      if (
-        this?.$refs?.refEmailTemplate &&
-        Array.isArray(this.$refs.refEmailTemplate) &&
-        this.$refs.refEmailTemplate[0]?.showGrapesModal
-      ) {
-        this.$refs.refEmailTemplate[0].showGrapesModal = false
-        return
-      }
-
-      // Page add menu açıksa ignore et
-      if (this?.isPageAddMenuOpen?.some(Boolean)) {
-        return
-      }
-
-      // Drawer'ı kapat
-      this.changeNewEmailTemplateModalStatus()
-    },
     handleAddBlankPage() {
       let newPageText
       if (this.isEdit) newPageText = this.getNewIndexForPageText()
@@ -647,35 +566,16 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
-    closeWithAnimation(callback) {
-      const drawerElement = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
-      if (drawerElement) {
-        drawerElement.style.right = '-100%'
-      }
-      setTimeout(() => {
-        callback && callback()
-      }, 250)
-    },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        this.closeWithAnimation(() => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
-        })
-        return
+        return this.$emit('changeNewEmailTemplateModalStatus', false)
       }
-      if (!this.showLeavingDialog) {
-        this.closeWithAnimation(() => {
-          this.$emit('changeNewEmailTemplateModalStatus', false)
-        })
-        return
-      }
+      if (!this.showLeavingDialog) return this.$emit('changeNewEmailTemplateModalStatus', false)
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.closeWithAnimation(() => {
-            this.$emit('changeNewEmailTemplateModalStatus', false)
-          })
+          this.$emit('changeNewEmailTemplateModalStatus', false)
         }
       })
     },
@@ -723,9 +623,7 @@ export default {
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
             .then(() => {
-              this.closeWithAnimation(() => {
-                this.$emit('changeNewEmailTemplateModalStatus', false, true)
-              })
+              this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
               this.isSubmitDisabled = false
@@ -733,14 +631,12 @@ export default {
         } else {
           createLandingPage(payload)
             .then((response) => {
-              this.closeWithAnimation(() => {
-                this.$emit(
-                  'changeNewEmailTemplateModalStatus',
-                  false,
-                  true,
-                  response?.data?.data?.resourceId
-                )
-              })
+              this.$emit(
+                'changeNewEmailTemplateModalStatus',
+                false,
+                true,
+                response?.data?.data?.resourceId
+              )
             })
             .finally(() => {
               this.isSubmitDisabled = false
@@ -826,16 +722,6 @@ export default {
       )?.text
     }
   },
-  watch: {
-    status(val) {
-      this.drawerModel = val
-    },
-    drawerModel(val) {
-      if (!val && this.status) {
-        this.changeNewEmailTemplateModalStatus()
-      }
-    }
-  },
   created() {
     if (this.isDuplicate) {
       this.footerButtonsIds = {
@@ -845,7 +731,7 @@ export default {
         saveButton: 'btn-duplicate-save--landing-page-templates-modal'
       }
     }
-    if (!this.isEdit && this.landingPageData?.methodTypes)
+    if (!this.isEdit)
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     if (this.landingPageData && this.selectedMethodText)
       this.formValues.methodTypeId = this.selectedMethodText.startsWith('Click') ? '1' : '2'
@@ -930,9 +816,6 @@ export default {
       this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
     }
-  },
-  beforeDestroy() {
-    // Mixin tarafından HTML overflow kontrolü yapılıyor
   }
 }
 </script>
