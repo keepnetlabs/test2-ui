@@ -34,34 +34,56 @@
           :should-control-html-overflow="false"
           @on-close="showLandingPagePreviewDialog = false"
         />
-        <NewEmailTemplates
-          v-if="isOpenEmailTemplateDrawer"
-          ref="newEmailTemplate"
-          is-a-i-ally-enabled
-          is-nested
-          :status="isOpenEmailTemplateDrawer"
-          :should-remove-overflow="false"
-          :should-control-html-overflow="false"
-          :show-leaving-dialog="false"
-          :email-template-id="createdEmailTemplateResourceId"
-          :selected-method-text="getSelectedMethodText"
-          :scenario-details-lookup="scenarioDetailsLookup"
-          @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
-        />
-        <NewLandingPage
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
           v-if="isOpenLandingPageDrawer"
-          ref="newLandingPage"
-          is-nested
-          :status="isOpenLandingPageDrawer"
-          :is-a-i-ally-enabled="true"
-          :should-remove-overflow="false"
-          :should-control-html-overflow="false"
-          :show-leaving-dialog="false"
-          :landing-page-data="landingPageData"
-          :email-template-id="createdLandingPageResourceId"
-          :selected-method-text="getSelectedMethodText"
-          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
-        />
+          v-model="isOpenLandingPageDrawer"
+          class="k-navigation-drawer k-navigation-drawer--landing-page"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <NewLandingPage
+            v-if="isOpenLandingPageDrawer"
+            ref="newLandingPage"
+            :status="isOpenLandingPageDrawer"
+            :is-a-i-ally-enabled="true"
+            :should-remove-overflow="false"
+            :show-leaving-dialog="false"
+            :landing-page-data="landingPageData"
+            :email-template-id="createdLandingPageResourceId"
+            :selected-method-text="getSelectedMethodText"
+            @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
+          />
+        </VNavigationDrawer>
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsideNewEmailTemplateModal"
+          v-if="isOpenEmailTemplateDrawer"
+          v-model="isOpenEmailTemplateDrawer"
+          class="k-navigation-drawer k-navigation-drawer--email-template"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <NewEmailTemplates
+            v-if="isOpenEmailTemplateDrawer"
+            ref="newEmailTemplate"
+            is-a-i-ally-enabled
+            :status="isOpenEmailTemplateDrawer"
+            :should-remove-overflow="false"
+            :show-leaving-dialog="false"
+            :email-template-id="createdEmailTemplateResourceId"
+            :selected-method-text="getSelectedMethodText"
+            :scenario-details-lookup="scenarioDetailsLookup"
+            @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+          />
+        </VNavigationDrawer>
         <v-stepper light v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
             <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -1101,27 +1123,53 @@ export default {
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdEmailTemplateResourceId = createdResourceId
+      if (document.querySelector('.k-navigation-drawer--email-template'))
+        document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
         this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
           this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
         })
-      this.toggleEmailTemplateDrawer()
+      setTimeout(() => {
+        this.toggleEmailTemplateDrawer()
+      }, 250)
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
+      if (document.querySelector('.k-navigation-drawer--landing-page'))
+        document.querySelector('.k-navigation-drawer--landing-page').style.right = '-100%'
       if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)
           .then(() => {
             this.$refs.refLandingPageTemplateListPreview.setItemToFirstIndex(createdResourceId)
           })
-      this.toggleLandingPageDrawer()
+      setTimeout(() => {
+        this.toggleLandingPageDrawer()
+      }, 250)
     },
     toggleLandingPageDrawer() {
       this.isOpenLandingPageDrawer = !this.isOpenLandingPageDrawer
     },
     toggleEmailTemplateDrawer() {
       this.isOpenEmailTemplateDrawer = !this.isOpenEmailTemplateDrawer
+    },
+    handleClickOutsideNewEmailTemplateModal() {
+      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
+        return
+      }
+      this.handleCloseNewEmailTemplateModal()
+    },
+    handleClickOutsideNewLandingPageTemplateModal() {
+      if (
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
+      ) {
+        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
+        return
+      }
+      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
+      this.handleCloseNewLandingPageTemplateModal()
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
