@@ -24,6 +24,7 @@
       :editableFormValues="editableFormValues"
       :scenarioDetailsLookup="scenarioDetailsLookup"
       :isAttachmentBased="isAttachmentBasedScenario"
+      :role-items="scenarioRoles"
       @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
     />
     <CommonSimulatorDeleteScenario
@@ -85,6 +86,8 @@
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
       @on-show-scenario-statistics="isShowScenarioStatistics = true"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -187,8 +190,15 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import {
+  columnFilterChanged as columnFilterChangedHelper,
+  columnFilterCleared as columnFilterClearedHelper
+} from '@/utils/helperFunctions'
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog'
-import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
+import {
+  getPhishingScenarioLandingPageAndEmailTemplate,
+  getPhishingScenarioRoles
+} from '@/api/phishingsimulator'
 import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimulatorNewScenario'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
@@ -232,6 +242,8 @@ export default {
       labels,
       selectedScenarioURL: '',
       tableData: [],
+      roleFilterOptions: [],
+      scenarioRoles: [],
       showDeleteModal: false,
       selectedScenario: {},
       tableOptions: {
@@ -242,6 +254,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
           COMMON_SIMULATOR_COLUMNS.LANGUAGES,
+          COMMON_SIMULATOR_COLUMNS.ROLES,
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATED_BY,
@@ -338,7 +351,7 @@ export default {
           })
         )
         this.$set(
-          this.tableOptions.columns[4],
+          this.tableOptions.columns[6],
           'filterableItems',
           this?.scenarioDetailsLookup?.difficultyTypes?.map((item) => {
             return { text: item.text, value: item.text }
@@ -350,17 +363,109 @@ export default {
     }
   },
   mounted() {
+    // Initialize roleResourceIds from savedFilter if exists
+    this.initRoleResourceIds()
     this.callForLanguages('refScenariosList')
+    this.callForRoles()
     this.callForData()
   },
   methods: {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
     bulkDeleteScenarios,
+    columnFilterChanged(filter) {
+      // Update filter items using helper function
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChangedHelper(
+        filter,
+        this.axiosPayload
+      )
+
+      if (filter.FieldName === 'roles') {
+        // Handle both array and comma-separated string formats
+        if (Array.isArray(filter.Value)) {
+          this.axiosPayload.RoleResourceIds = filter.Value.flatMap((v) =>
+            typeof v === 'string' ? v.split(',') : v
+          )
+        } else {
+          this.axiosPayload.RoleResourceIds = (filter.Value || '').split(',').filter((v) => v)
+        }
+      }
+
+      this.callForData()
+    },
+    columnFilterCleared(fieldName) {
+      // Update filter items using helper function
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterClearedHelper(
+        fieldName,
+        this.axiosPayload
+      )
+
+      // Clear role filter specifically
+      if (fieldName === 'roles') {
+        this.axiosPayload.RoleResourceIds = []
+      }
+
+      this.callForData()
+    },
+    callForRoles() {
+      getPhishingScenarioRoles()
+        .then((response) => {
+          const roles = response?.data?.data || []
+          this.scenarioRoles = roles
+          this.roleFilterOptions =
+            roles.map((role) => ({
+              text: role.name,
+              value: role.resourceId
+            })) || []
+
+          // Find ROLES column index dynamically
+          const rolesColumnIndex = this.tableOptions.columns.findIndex(
+            (col) => col.property === 'roles'
+          )
+
+          if (rolesColumnIndex !== -1) {
+            this.$set(
+              this.tableOptions.columns[rolesColumnIndex],
+              'filterableItems',
+              this.roleFilterOptions
+            )
+            this.$nextTick(() => {
+              this?.$refs?.refScenariosList?.reRenderFilters()
+            })
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching roles:', error)
+          this.roleFilterOptions = []
+          this.scenarioRoles = []
+        })
+    },
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
-        getScenariosList(this.axiosPayload)
+        const copyOfAxiosPayload = JSON.parse(JSON.stringify(this.axiosPayload))
+
+        // Extract roleResourceIds from filter if exists (for initial load with savedFilter)
+        const rolesFilter = copyOfAxiosPayload.filter.FilterGroups[0].FilterItems.find(
+          (item) => item.FieldName === 'roles'
+        )
+        if (rolesFilter) {
+          // Handle both array and comma-separated string formats
+          if (Array.isArray(rolesFilter.Value)) {
+            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
+              typeof v === 'string' ? v.split(',') : v
+            )
+          } else {
+            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
+              .split(',')
+              .filter((v) => v)
+          }
+        }
+
+        copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = copyOfAxiosPayload.filter.FilterGroups[0].FilterItems.filter(
+          (item) => item.FieldName !== 'roles'
+        )
+        getScenariosList(copyOfAxiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -371,26 +476,33 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             const enrichedResults = results?.map((item) => {
+              const transformedItem = { ...item }
+
+              // Transform languages
               if (Array.isArray(item.languageTypeName)) {
-                return {
-                  ...item,
-                  languageTypeName: item.languageTypeName?.map((code) => {
-                    const language = this.languageFilterOptions.find(
-                      (lang) => lang.languageName === code
-                    )
-                    return language?.text || code
-                  })
-                }
+                transformedItem.languageTypeName = item.languageTypeName?.map((code) => {
+                  const language = this.languageFilterOptions.find(
+                    (lang) => lang.languageName === code
+                  )
+                  return language?.text || code
+                })
               } else {
                 const language = this.languageFilterOptions.find(
                   (lang) => lang.languageName === item.languageTypeName
                 )
-                return {
-                  ...item,
-                  languageTypeName: language?.text || item.languageTypeName
-                }
+                transformedItem.languageTypeName = language?.text || item.languageTypeName
               }
+
+              // Transform roles array of objects to array of names
+              if (item.roles && Array.isArray(item.roles) && item.roles.length > 0) {
+                transformedItem.roles = item.roles.map((role) => role.name || role)
+              } else {
+                transformedItem.roles = []
+              }
+
+              return transformedItem
             })
+
             this.tableData = enrichedResults
           })
           .catch(() => {
@@ -511,6 +623,77 @@ export default {
     },
     toggleShowScenarioStatistics() {
       this.isShowScenarioStatistics = !this.isShowScenarioStatistics
+    },
+    initRoleResourceIds() {
+      // Initialize roleResourceIds from savedFilter on page load
+      const savedFilter = JSON.parse(
+        localStorage.getItem(this.tableOptions.savedFiltersLocalStorageKey)
+      )
+      if (savedFilter?.filter) {
+        const rolesFilter = savedFilter.filter?.FilterGroups?.[0]?.FilterItems?.find(
+          (item) => item.FieldName === 'roles'
+        )
+        if (rolesFilter) {
+          // Handle both array and comma-separated string formats
+          if (Array.isArray(rolesFilter.Value)) {
+            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
+              typeof v === 'string' ? v.split(',') : v
+            )
+          } else {
+            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
+              .split(',')
+              .filter((v) => v)
+          }
+        } else {
+          this.axiosPayload.RoleResourceIds = []
+        }
+      } else {
+        this.axiosPayload.RoleResourceIds = []
+      }
+    },
+    handleSetDefaultSearch() {
+      // Extract and set roleResourceIds from current filter
+      const rolesFilter = this.axiosPayload.filter?.FilterGroups?.[0]?.FilterItems?.find(
+        (item) => item.FieldName === 'roles'
+      )
+      if (rolesFilter) {
+        // Handle both array and comma-separated string formats
+        if (Array.isArray(rolesFilter.Value)) {
+          this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
+            typeof v === 'string' ? v.split(',') : v
+          )
+        } else {
+          this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '').split(',').filter((v) => v)
+        }
+      }
+    },
+    handleRestoreDefaultSearch() {
+      // Load saved filters from localStorage
+      const savedFilter = JSON.parse(
+        localStorage.getItem(this.tableOptions.savedFiltersLocalStorageKey)
+      )
+      if (savedFilter?.filter) {
+        // Extract roles filter from saved filter
+        const rolesFilter = savedFilter.filter?.FilterGroups?.[0]?.FilterItems?.find(
+          (item) => item.FieldName === 'roles'
+        )
+        if (rolesFilter) {
+          // Handle both array and comma-separated string formats
+          if (Array.isArray(rolesFilter.Value)) {
+            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
+              typeof v === 'string' ? v.split(',') : v
+            )
+          } else {
+            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
+              .split(',')
+              .filter((v) => v)
+          }
+        } else {
+          this.axiosPayload.RoleResourceIds = []
+        }
+      } else {
+        this.axiosPayload.RoleResourceIds = []
+      }
     }
   }
 }

@@ -66,6 +66,19 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  EMAIL_TEMPLATE_LANGUAGE: {
+    property: PROPERTY_STORE.EMAIL_TEMPLATE_LANGUAGE,
+    align: 'left',
+    label: labels.ScenarioLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [],
+  },
   REPLY_TYPE: {
     property: PROPERTY_STORE.REPLY_TYPE,
     align: 'left',

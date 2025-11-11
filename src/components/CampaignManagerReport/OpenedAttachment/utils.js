@@ -399,5 +399,18 @@ export const COLUMNS = {
       { text: 'Human Activity', value: '0' },
       { text: 'Bot Activity', value: '1' }
     ]
+  },
+  EMAIL_TEMPLATE_LANGUAGE: {
+    property: PROPERTY_STORE.EMAIL_TEMPLATE_LANGUAGE,
+    align: 'left',
+    label: labels.ScenarioLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [],
   }
 }

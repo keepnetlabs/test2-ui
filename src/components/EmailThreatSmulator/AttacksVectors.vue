@@ -207,6 +207,17 @@ export default {
             filterableType: 'text'
           },
           {
+            property: 'sha256',
+            align: 'left',
+            editable: false,
+            label: 'SHA256',
+            sortable: false,
+            show: true,
+            type: 'text',
+            width: 250,
+            filterableType: 'text'
+          },
+          {
             property: 'riskFactor',
             align: 'center',
             editable: false,

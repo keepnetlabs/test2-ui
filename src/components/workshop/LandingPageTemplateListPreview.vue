@@ -500,7 +500,11 @@
                       <ConfigureCompanyStepHeader
                         class="mb-6"
                         :title="labels.MultiFactorAuthentication"
-                        :subtitle="labels.MultiFactorAuthenticationSub"
+                        :subtitle="
+                          type === SCENARIO_TYPES.PHISHING
+                            ? labels.MultiFactorAuthenticationSub
+                            : labels.MultiFactorAuthenticationSubQuishing
+                        "
                       />
                       <VForm ref="refMfaForm">
                         <InputCallerPhoneNumber
@@ -1519,6 +1523,8 @@ export default {
           icon: 'mdi-information'
         })
         return false
+      } else {
+        this.selectedTab = 'mfaSettings'
       }
       return false
     }

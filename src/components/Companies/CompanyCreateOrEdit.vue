@@ -864,9 +864,11 @@ export default {
   watch: {
     getSelectedCountry(val) {
       if (this.edit || !val) return
+      
       const countryDefaultValuesIndex = countryDefaultValues.findIndex(
         (country) => country.name === val
       )
+
       const englishResourceId = this.languageItems.find((item) => item.name === 'English')
         ?.resourceId
       if (countryDefaultValuesIndex !== -1) {

@@ -609,7 +609,11 @@ export const generateEmailTemplateTranslation = (payload) => {
 export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
 }
-const workerUrl = 'https://r-flg.keepnetlabs.com'
+const workerUrl =
+  window.location.origin.includes('test-ui.devkeepnet.com') ||
+  window.location.origin.includes('localhost')
+    ? 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
+    : 'https://r-flg.keepnetlabs.com'
 export const checkRedFlags = (payload) => {
   return axios.post(`${workerUrl}?method=flag`, payload, {
     headers: {
@@ -623,4 +627,8 @@ export const translateRedFlagsTexts = (payload) => {
       'Content-Type': 'application/json'
     }
   })
+}
+
+export function getPhishingScenarioRoles() {
+  return testRequest.get('/lookups/phishing-scenario-roles')
 }

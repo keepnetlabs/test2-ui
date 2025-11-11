@@ -170,6 +170,7 @@ export const LABEL_STORE = {
 export const PROPERTY_STORE = {
   AUDIT_DESCRIPTION: 'auditDescription',
   TIME_ZONE: 'timeZone',
+  EMAIL_TEMPLATE_LANGUAGE: 'emailTemplateLanguage',
   RECIPIENT_TYPE: 'recipientType',
   INFOGRAPHIC_NAME: 'trainingName',
   MATERIAL_NAME: 'trainingName',
@@ -204,6 +205,7 @@ export const PROPERTY_STORE = {
   TARGET_AUDIENCE: 'targetAudience',
   METHOD: 'method',
   TAGS: 'tags',
+  ROLES: 'roles',
   COUNT: 'count',
   ENROLLED_BY: 'enrolledBy',
   TOEMAIL: 'toEmail',

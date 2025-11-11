@@ -57,7 +57,7 @@
               </div>
               <div v-if="isPhishing">
                 <InputLanguagePreview
-                  v-model="languagePreview"
+                  :value="languagePreview"
                   persistent-hint
                   class="max-w-554 campaign-manager-phishing-scenario-input-language"
                   :hint="getEmailTemplatePreviewLanguageHint"
@@ -84,7 +84,7 @@
                 </div>
                 <!-- Red Flags Button -->
                 <VBtn
-                  v-if="isPhishing"
+                  v-if="true"
                   :ripple="false"
                   class="fw-600"
                   rounded
@@ -102,6 +102,7 @@
 
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <div
+                  style="width: calc(100% - 200px);"
                   :class="
                     redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
                       ? 'red-flag-preview-active'
@@ -127,6 +128,7 @@
 
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <div
+                  style="width: calc(100% - 200px);"
                   :class="
                     redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
                       ? 'red-flag-preview-active'
@@ -153,6 +155,7 @@
               </div>
               <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
                 <div
+                  style="width: calc(100% - 200px);"
                   :class="
                     redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged
                       ? 'red-flag-preview-active'
@@ -177,6 +180,7 @@
               </div>
               <div v-if="!isQuishingTypeIndividualPrintOut">
                 <div
+                  style="width: calc(100% - 200px);"
                   :class="
                     redFlags && redFlags.subject && redFlags.subject.isRedFlagged
                       ? 'red-flag-preview-active'
@@ -189,7 +193,7 @@
                     style="font-size: 16px;"
                     >mdi-flag</VIcon
                   >
-                  <span class="template-preview__text--title mt-n2 text-primary-color fw-600"
+                  <span class="template-preview__text--title text-primary-color fw-600"
                     >Subject:
                   </span>
                   <span class="template-preview__text--body fw-400 text-primary-color">{{
@@ -229,6 +233,7 @@
                 <AttachmentsPreview
                   :deletable="false"
                   :att="emailTemplateParams.attachment"
+                  :redFlags="redFlags"
                   :isEmailTemplate="true"
                 />
               </div>
@@ -610,9 +615,9 @@ export default {
           this.isIndividualPrintoutButtonDisabled = false
         })
     },
-    handleEmailTemplatePreviewLanguageChange() {
-      // Eski languagePreview için red flags'leri kaydet (isShowRedFlags fark etmeksizin)
-      if (this.languagePreview) {
+    handleEmailTemplatePreviewLanguageChange(newLanguageId) {
+      // Eski languagePreview için red flags'leri kaydet (sadece red flags aktif ise)
+      if (this.languagePreview && this.isShowRedFlags) {
         // Eğer red flags cached varsa, template'i güncelle
         if (this.lastRedFlags[this.languagePreview]) {
           this.lastRedFlags[this.languagePreview].flags = JSON.parse(JSON.stringify(this.redFlags))
@@ -625,8 +630,11 @@ export default {
         }
       }
 
+      // Yeni dili set et
+      this.languagePreview = newLanguageId
+
       const findedTemplate = this.phishingEmailTemplates.find(
-        (item) => item.languageTypeResourceId === this.languagePreview
+        (item) => item.languageTypeResourceId === newLanguageId
       )
       if (!findedTemplate) return
       this.emailTemplateParams = {
@@ -640,20 +648,32 @@ export default {
       this.emailTemplate = findedTemplate.template
 
       // Yeni dil için red flags durumunu kontrol et
-      if (this.lastRedFlags[this.languagePreview] && this.lastRedFlags[this.languagePreview].flags) {
-        // Yeni dilde red flags cached varsa restore et ama hide et
-        this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.languagePreview].flags))
+      if (this.lastRedFlags[newLanguageId] && this.lastRedFlags[newLanguageId].flags) {
+        // Yeni dilde red flags cached varsa template'i restore et ama form alanlarındaki flags'leri reset et
         // Cached template'i restore et
-        if (this.lastRedFlags[this.languagePreview].templates && this.lastRedFlags[this.languagePreview].templates[0]) {
-          this.emailTemplate = this.lastRedFlags[this.languagePreview].templates[0]
+        if (
+          this.lastRedFlags[newLanguageId].templates &&
+          this.lastRedFlags[newLanguageId].templates[0]
+        ) {
+          this.emailTemplate = this.lastRedFlags[newLanguageId].templates[0]
         }
+        // Form alanlarında gösterilmemesi için flags'leri reset et
+        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
         this.isFlaggedStylesEnabled = false
         this.isShowRedFlags = false
+        // Cached template'den highlighting'leri kaldır
+        this.$nextTick(() => {
+          this.updateTemplateWithFlaggedStyles()
+        })
       } else {
         // Yeni dilde red flags yok, default state
         this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
         this.isFlaggedStylesEnabled = false
         this.isShowRedFlags = false
+        // Template'den highlighting'leri kaldır
+        this.$nextTick(() => {
+          this.updateTemplateWithFlaggedStyles()
+        })
       }
     },
 
@@ -669,7 +689,10 @@ export default {
           // Var olan red flags'leri restore et
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.languagePreview].flags))
           // Cached template'i restore et
-          if (this.lastRedFlags[this.languagePreview].templates && this.lastRedFlags[this.languagePreview].templates[0]) {
+          if (
+            this.lastRedFlags[this.languagePreview].templates &&
+            this.lastRedFlags[this.languagePreview].templates[0]
+          ) {
             this.emailTemplate = this.lastRedFlags[this.languagePreview].templates[0]
           }
           this.updateTemplateWithFlaggedStyles()
@@ -728,8 +751,12 @@ export default {
               return
             }
             this.$store.dispatch('common/createSnackBar', {
-              message: e?.response?.data?.detail || e?.response?.data?.message ||
-              `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${e?.response?.status || e?.response?.data?.status || 0}`,
+              message:
+                e?.response?.data?.detail ||
+                e?.response?.data?.message ||
+                `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${
+                  e?.response?.status || e?.response?.data?.status || 0
+                }`,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
@@ -787,7 +814,8 @@ export default {
       } else {
         this.emailTemplate = this._removeFlaggedStylesFromTemplate(this.emailTemplate)
         if (this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview].templates = this.lastRedFlags[this.languagePreview].templates || []
+          this.lastRedFlags[this.languagePreview].templates =
+            this.lastRedFlags[this.languagePreview].templates || []
         }
       }
     },

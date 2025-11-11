@@ -227,6 +227,7 @@ export const labels = {
   QuishingScenarios: 'Quishing Scenarios',
   PhishingScenarioPreview: 'Phishing Scenario Preview',
   QuishingScenarioPreview: 'Quishing Scenario Preview',
+  ScenarioLanguage: 'Scenario Language',
   CampaignManagerQuishingScenariosSub:
     'Select multiple quishing scenarios for your campaign to distribute randomly.',
   All: 'All',
@@ -254,6 +255,8 @@ export const labels = {
   SelectLandingPageTemplate: 'Select Landing Page Template',
   MultiFactorAuthentication: 'Multi-Factor Authentication',
   MultiFactorAuthenticationSub: 'Phishing scenarios become more realistic with MFA settings',
+  MultiFactorAuthenticationSubQuishing:
+    'Quishing scenarios become more realistic with MFA settings',
   Scenarios: 'Scenarios',
   SMS: 'SMS',
   SMSInfo: 'SMS Info',

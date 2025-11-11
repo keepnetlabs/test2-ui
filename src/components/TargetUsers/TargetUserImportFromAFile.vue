@@ -574,6 +574,7 @@ import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroup
 import { Fragment } from 'vue-frag'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import useCachableDialog from '@/mixins/useCachableDialog'
 export default {
   name: 'TargetUserImportFromAFile',
   components: {
@@ -592,6 +593,7 @@ export default {
     TargetUsersCheckLicenseDialog,
     KSelect
   },
+  mixins: [useCachableDialog],
   props: {
     status: {
       type: Boolean
@@ -611,7 +613,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTimezones: 'common/getTimezones'
+      getTimezones: 'common/getTimezones',
+      getCurrentCompany: 'login/getCurrentCompany'
     }),
     getDialogBodyForExceed() {
       return this.companyLicense
@@ -1090,7 +1093,14 @@ export default {
         isLimited &&
         (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount)
       ) {
-        this.showLicenseExceededDialog = true
+        const companyId = this.getCurrentCompany?.resourceId
+        const storageKey = `licenseExceededDialog_${companyId}`
+        if (!this.canShowCachableDialog(storageKey)) {
+          this.save(actionName)
+        } else {
+          this.showLicenseExceededDialog = true
+          this.saveCachableDialogTimestamp(storageKey)
+        }
       } else {
         this.save(actionName)
       }

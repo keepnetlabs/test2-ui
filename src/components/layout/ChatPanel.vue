@@ -10,7 +10,10 @@
       @click="handleBtnClick"
       @mousedown="startDrag"
       draggable="false"
-      :style="{ right: buttonPosition.right + 'px', bottom: buttonPosition.bottom + 'px' }"
+      :style="{
+        right: buttonPosition.right + 'px',
+        bottom: buttonPosition.bottom + 'px'
+      }"
     >
       <v-icon>mdi-robot</v-icon>
     </v-btn>
@@ -96,9 +99,12 @@
 export default {
   name: 'ChatPanel',
   data() {
+    const hostId = localStorage.getItem('hostId')
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+    const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
     return {
       isExpanded: false,
-      chatUrl: process.env.VUE_APP_CHAT_URL || 'https://agentic-ui.pages.dev/',
+      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}`,
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,

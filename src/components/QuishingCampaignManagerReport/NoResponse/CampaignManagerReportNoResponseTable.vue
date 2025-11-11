@@ -103,7 +103,7 @@ export default {
       })
       columns.push(COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.EMAIL_SEND_DATE)
     } else {
-      columns.push({ ...COLUMNS.PHISHING_SCENARIO_NAME, fixed: 'right' })
+      columns.push({ ...COLUMNS.PHISHING_SCENARIO_NAME, fixed: 'right',width:'auto',minWidth:'auto' })
     }
     return {
       CONSTANTS: {

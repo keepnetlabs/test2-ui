@@ -303,6 +303,7 @@ import { Fragment } from 'vue-frag'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import { mapGetters } from 'vuex'
+import useCachableDialog from '@/mixins/useCachableDialog'
 export default {
   name: 'AddUserModal',
   components: {
@@ -343,6 +344,7 @@ export default {
     'infinite-scroll': InfiniteScroll,
     'select-search-handler': SelectSearchHandler
   },
+  mixins: [useCachableDialog],
   data() {
     return {
       isTargetGroupModalVisible: false,
@@ -574,7 +576,14 @@ export default {
           isLimited &&
           (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
         ) {
-          this.toggleShowLicenseExceededDialog()
+          const companyId = this.getCurrentCompany?.resourceId
+          const storageKey = `licenseExceededDialog_${companyId}`
+          if (!this.canShowCachableDialog(storageKey)) {
+            this.callForCreateTargetUser()
+          } else {
+            this.showLicenseExceededDialog = true
+            this.saveCachableDialogTimestamp(storageKey)
+          }
         } else {
           this.callForCreateTargetUser()
         }

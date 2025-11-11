@@ -149,6 +149,21 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableType: 'text',
     filterableCustomFieldName: PROPERTY_STORE.TAGS
   },
+  ROLES: {
+    property: PROPERTY_STORE.ROLES,
+    align: 'left',
+    editable: false,
+    label: 'Roles',
+    fixed: false,
+    sortable: false,
+    hideSort: true,
+    show: true,
+    type: 'smallBadge',
+    width: 180,
+    hasTooltip: true,
+    filterableType: 'select',
+    filterableItems: []
+  },
   DIFFICULTY: {
     property: PROPERTY_STORE.JUSTDIFFICULTY,
     align: 'center',
