@@ -1,63 +1,39 @@
 <template>
   <div>
-    <VNavigationDrawer
-      v-click-outside="handleClickOutside"
-      v-if="status"
-      :value="drawerModel"
-      class="k-navigation-drawer k-navigation-drawer--new-scenario"
-      temporary
-      fixed
-      stateless
-      overlay-color="rgba(0, 0, 0, 0.17)"
-      overlay-opacity="1"
-      right
-      width="calc(100% - 72px)"
-      height="100%"
-      @input="drawerModel = $event"
+    <AppModal
+      :status="status"
+      :icon-name="getModalIcon"
+      :title="getModalTitle"
+      class="common-simulator-new-scenario"
+      footer-class="common-simulator-new-scenario__footer"
+      :showFooter="!isTemplateEditing"
+      @closeOverlay="changeNewScenarioModalStatus"
     >
-      <EmailTemplateMultipleLanguagePreviewDialog
-        v-if="showEmailTemplatePreviewDialog"
-        ref="emailTemplatePreviewDialog"
-        :status="showEmailTemplatePreviewDialog"
-        :selected-row="emailTemplatePreviewSelectedRow"
-        :type="type"
-        :languages="languageOptions"
-        :api-func="getEmailTemplateApiFuncs.content"
-        is-nested
-        :should-control-html-overflow="false"
-        @on-close="showEmailTemplatePreviewDialog = false"
-      />
-      <CommonSimulatorLandingPageTemplatesPreviewDialog
-        v-if="showLandingPagePreviewDialog"
-        ref="landingPagePreviewDialog"
-        :status="showLandingPagePreviewDialog"
-        :selected-row="landingPagePreviewSelectedRow"
-        :type="type"
-        :languages="languageOptions"
-        :api-func="getLandingPageApiFuncs.content"
-        is-nested
-        :should-control-html-overflow="false"
-        @on-close="showLandingPagePreviewDialog = false"
-      />
-      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
-          <div>
-            <VListItem>
-              <VListItemContent>
-                <VListItemTitle class="k-overlay__title">
-                  {{ getModalTitle }}
-                </VListItemTitle>
-              </VListItemContent>
-            </VListItem>
-          </div>
-          <div>
-            <VIcon class="cursor-pointer" color="#757575" @click="changeNewScenarioModalStatus"
-              >mdi-close</VIcon
-            >
-          </div>
-        </div>
-      </div>
-      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+      <template #overlay-body>
+        <EmailTemplateMultipleLanguagePreviewDialog
+          v-if="showEmailTemplatePreviewDialog"
+          ref="emailTemplatePreviewDialog"
+          :status="showEmailTemplatePreviewDialog"
+          :selected-row="emailTemplatePreviewSelectedRow"
+          :type="type"
+          :languages="languageOptions"
+          :api-func="getEmailTemplateApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showEmailTemplatePreviewDialog = false"
+        />
+        <CommonSimulatorLandingPageTemplatesPreviewDialog
+          v-if="showLandingPagePreviewDialog"
+          ref="landingPagePreviewDialog"
+          :status="showLandingPagePreviewDialog"
+          :selected-row="landingPagePreviewSelectedRow"
+          :type="type"
+          :languages="languageOptions"
+          :api-func="getLandingPageApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showLandingPagePreviewDialog = false"
+        />
         <NewEmailTemplates
           v-if="isOpenEmailTemplateDrawer"
           ref="newEmailTemplate"
@@ -187,15 +163,15 @@
                     :subtitle="getInputPhishingMethodSubtitle"
                     :items="getMethodTypes"
                   />
-  
-                <InputSelectRoles
-                  v-if="isPhishing"
-                  v-model="formValues.roleResourceIds"
-                  :items="availableRoleOptions"
-                  :loading="rolesLoading"
-                />
 
-                <FormGroup
+                  <InputSelectRoles
+                    v-if="isPhishing"
+                    v-model="formValues.roleResourceIds"
+                    :items="availableRoleOptions"
+                    :loading="rolesLoading"
+                  />
+
+                  <FormGroup
                     v-if="!isPhishing"
                     has-hint
                     title="Language"
@@ -307,40 +283,40 @@
                     :title="labels.ScenarioInfo"
                     :items="getScenarioInfoItems"
                   >
-                  <template v-if="isPhishing" #Roles="{ props }">
-                    <div class="campaign-manager-summary-card__body-item-key">
-                      {{ props.key.slice(0, 1).toUpperCase() + props.key.slice(1) }}
-                    </div>
-                    <div class="campaign-manager-summary-card__body-item-value roles-summary">
-                      <span
-                        v-if="!displayRoleSummary.visible.length && !displayRoleSummary.hasExtra"
-                        class="roles-summary__empty"
-                      >
-                        {{ props.val }}
-                      </span>
-                      <template v-else>
-                        <span class="roles-summary__text">
-                          {{ displayRoleSummary.visible.join(', ') }}
-                        </span>
+                    <template v-if="isPhishing" #Roles="{ props }">
+                      <div class="campaign-manager-summary-card__body-item-key">
+                        {{ props.key.slice(0, 1).toUpperCase() + props.key.slice(1) }}
+                      </div>
+                      <div class="campaign-manager-summary-card__body-item-value roles-summary">
                         <span
-                          v-if="displayRoleSummary.hasExtra && displayRoleSummary.visible.length"
+                          v-if="!displayRoleSummary.visible.length && !displayRoleSummary.hasExtra"
+                          class="roles-summary__empty"
                         >
-                          ,
+                          {{ props.val }}
                         </span>
-                        <VTooltip bottom v-if="displayRoleSummary.hasExtra">
-                          <template #activator="{ on, attrs }">
-                            <span class="roles-summary__more" v-bind="attrs" v-on="on">
-                              +{{ displayRoleSummary.remainingCount }}
-                            </span>
-                          </template>
-                          <span class="roles-summary__tooltip">
-                            {{ displayRoleSummary.extra.join(', ') }}
+                        <template v-else>
+                          <span class="roles-summary__text">
+                            {{ displayRoleSummary.visible.join(', ') }}
                           </span>
-                        </VTooltip>
-                      </template>
-                    </div>
-                  </template>
-                </CampaignManagerSummaryCard>
+                          <span
+                            v-if="displayRoleSummary.hasExtra && displayRoleSummary.visible.length"
+                          >
+                            ,
+                          </span>
+                          <VTooltip bottom v-if="displayRoleSummary.hasExtra">
+                            <template #activator="{ on, attrs }">
+                              <span class="roles-summary__more" v-bind="attrs" v-on="on">
+                                +{{ displayRoleSummary.remainingCount }}
+                              </span>
+                            </template>
+                            <span class="roles-summary__tooltip">
+                              {{ displayRoleSummary.extra.join(', ') }}
+                            </span>
+                          </VTooltip>
+                        </template>
+                      </div>
+                    </template>
+                  </CampaignManagerSummaryCard>
                   <CampaignManagerSummaryCard
                     v-if="isMethodMfa && step === 4"
                     icon="mdi-cog"
@@ -416,34 +392,35 @@
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
-      </div>
-      <div class="k-overlay__footer k-navigation-drawer__footer">
-        <StepperFooter
-          :max-step="maxStep"
-          :step.sync="step"
-          :disabled-statuses="{
-            nextButton:
-              isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
-            submitButton:
-              isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
-          }"
-          :disabledNextButtonTooltipText="
-            isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
-              ? 'Please save or discard your changes to the template before proceeding.'
-              : ''
-          "
-          :ids="footerButtonsIds"
-          @on-cancel="changeNewScenarioModalStatus"
-          @on-back="backStep"
-          @on-next="nextStep(+1)"
-          @on-submit="submit"
-        />
-      </div>
-    </VNavigationDrawer>
+        <div class="k-overlay__footer k-navigation-drawer__footer">
+          <StepperFooter
+            :max-step="maxStep"
+            :step.sync="step"
+            :disabled-statuses="{
+              nextButton:
+                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
+              submitButton:
+                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+            }"
+            :disabledNextButtonTooltipText="
+              isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+                ? 'Please save or discard your changes to the template before proceeding.'
+                : ''
+            "
+            :ids="footerButtonsIds"
+            @on-cancel="changeNewScenarioModalStatus"
+            @on-back="backStep"
+            @on-next="nextStep(+1)"
+            @on-submit="submit"
+          />
+        </div>
+      </template>
+    </AppModal>
   </div>
 </template>
 <script>
 import labels from '@/model/constants/labels'
+import AppModal from '@/components/AppModal'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
@@ -496,6 +473,7 @@ export default {
   name: 'CommonSimulatorNewScenario',
   mixins: [useHtmlOverflowControl],
   components: {
+    AppModal,
     EmailTemplateMultipleLanguagePreviewDialog,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
     NewEmailTemplates,
