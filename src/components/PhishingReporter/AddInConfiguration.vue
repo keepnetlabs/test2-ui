@@ -306,7 +306,7 @@ export default {
       if (this.step === 2) {
         ret = this.$refs.refEmailSettings.submit()
         if (ret) {
-          this.emailSettings = ret
+          this.emailSettings = { ...ret, sendUsACopy: !ret.sendUsACopy }
           hasValidationError = false
         } else {
           hasValidationError = true
