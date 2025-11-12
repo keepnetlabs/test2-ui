@@ -31,7 +31,8 @@
             ></v-switch>
           </div>
           <div class="email-settings__information-text fw-600 fs-3-4 d-flex align-center">
-            The platform will not receive copies of reported emails.
+            The platform will
+            {{ formValues.sendUsACopy ? 'receive' : 'not receive' }} copies of reported emails.
           </div>
         </div>
         <div
@@ -228,7 +229,7 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: false
+        sendUsACopy: true
       },
       initialFormValues: {
         to: '',
@@ -237,7 +238,7 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: false
+        sendUsACopy: true
       }
     }
   },
@@ -248,8 +249,8 @@ export default {
     }),
     getImportantIncidentResponderNoticeText() {
       return this.formValues.sendUsACopy
-        ? 'This setting is disabled, preventing analysis and response to reported threats.'
-        : 'This setting is enabled, allowing analysis and response to reported threats.'
+        ? 'This setting is enabled, allowing analysis and response to reported threats.'
+        : 'This setting is disabled, preventing analysis and response to reported threats.'
     },
 
     isRecipientEmailRequired() {
@@ -338,7 +339,7 @@ export default {
       this.formValues.subject = subject || ''
       this.formValues.content = content || ''
       this.formValues.isSendInformationEmail = isSendInformationEmail
-      this.formValues.sendUsACopy = !sendUsACopy
+      this.formValues.sendUsACopy = sendUsACopy
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
@@ -347,11 +348,7 @@ export default {
   methods: {
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.$emit('updateForm', {
-          ...this.formValues,
-          sendUsACopy: !this.formValues.sendUsACopy,
-          isAddIn
-        })
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
         const el = this.$refs.refForm.$el.querySelector('.error--text')
