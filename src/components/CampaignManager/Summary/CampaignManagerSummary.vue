@@ -1,5 +1,27 @@
 <template>
   <div class="campaign-manager-last-step">
+    <EmailTemplateMultipleLanguagePreviewDialog
+      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow"
+      ref="emailTemplatePreviewDialog"
+      :status="showEmailTemplatePreviewDialog"
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :type="type"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="showEmailTemplatePreviewDialog = false"
+    />
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="showLandingPagePreviewDialog && landingPagePreviewSelectedRow"
+      ref="landingPagePreviewDialog"
+      :status="showLandingPagePreviewDialog"
+      :selected-row="landingPagePreviewSelectedRow"
+      :type="type"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="showLandingPagePreviewDialog = false"
+    />
     <CampaignManagerScheduleDialog
       v-if="showSchedule && isShowScheduleDialog"
       :status="isShowScheduleDialog"
@@ -163,167 +185,19 @@
         v-if="isDistributionManually"
         detailable
         icon="mdi-email"
-        :show-body-detail.sync="isShowEmailTemplate"
-        :title="labels.EmailThatWill"
-      >
-        <template #body>
-          <div
-            v-if="isFormData && emailTemplateParams && phishingScenarios.length"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                <span>{{ emailTemplateParams.name }}</span>
-                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
-                  <template #activator="{ on }">
-                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
-                      >mdi-creation</VIcon
-                    >
-                  </template>
-                  <span>This template was generated with AI</span>
-                </VTooltip>
-              </div>
-              <div class="campaign-manager-last-step__email-template-body-header-right">
-                <v-btn style="display: none;"></v-btn>
-                <Badge
-                  size="mini"
-                  :color="getBadgeColor(emailTemplateParams.difficulty)"
-                  :text="getBadgeText(emailTemplateParams.difficulty)"
-                  :outline="false"
-                />
-                <Badge
-                  v-if="landingPageParams.method || emailTemplateParams.method"
-                  size="mini"
-                  color="#E0E0E0"
-                  class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(landingPageParams.method || emailTemplateParams.method)"
-                  :outline="false"
-                />
-                <EmailTemplateListPreviewLanguages
-                  v-if="emailTemplateParams && isPhishing"
-                  :languageShortCode="getLanguageShortCode"
-                />
-                <Badge v-else size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-                  <template #content>
-                    <v-icon>mdi-web</v-icon>
-                    {{ emailTemplateParams.languageShortCode }}
-                  </template>
-                </Badge>
-              </div>
-            </div>
-            <div
-              v-if="!!getPhishingFile"
-              class="attachment-wrapper mt-2 mb-0"
-              style="position: relative;"
-            >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="getPhishingFile"
-                  :isEmailTemplate="true"
-                />
-              </div>
-            </div>
-            <div
-              v-if="getAttachments.length"
-              class="campaign-manager-last-step__email-template-body-attachments"
-              style="border: none;"
-            >
-              <div
-                v-for="(att, ind) of getAttachments"
-                :key="ind + att.name"
-                class="preview-attch-wrapper"
-              >
-                <div class="attachment-wrapper">
-                  <div class="attachment blue-attach" :id="'single-post-attachments-' + att.name">
-                    <v-tooltip bottom opacity="1" z-index="9999">
-                      <template #activator="{ on }">
-                        <div
-                          v-on="on"
-                          id="text--attachment-preview-no-flaged"
-                          class="attach-icon blue-icon"
-                        >
-                          <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                        </div>
-                        <div
-                          v-on="on"
-                          id="text--attachment-preview-name"
-                          class="file-name safari-hide-tooltip max-char pl-2"
-                        >
-                          {{ att.fileName }}
-                        </div>
-                      </template>
-                      <span id="text--attachment-preview-tooltip-email-template">{{
-                        att.fileName
-                      }}</span>
-                    </v-tooltip>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            v-if="isShowEmailTemplate"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-            style="background: #fafafa;"
-          >
-            <div class="mb-3">
-              <InputLanguagePreview
-                v-model="languagePreview"
-                persistent-hint
-                class="max-w-554"
-                :hint="getEmailTemplatePreviewLanguageHint"
-                :items="selectedTemplateLanguages"
-                @input="handleEmailTemplatePreviewLanguageChange"
-              />
-              <div class="mb-2">
-                <span class="fw-600 text-primary-color">Subject: </span>
-                <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.subject
-                }}</span>
-              </div>
-              <div class="mb-2">
-                <span class="fw-600 text-primary-color">From Name: </span>
-                <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.fromName
-                }}</span>
-              </div>
-              <div class="mb-2">
-                <span class="fw-600 text-primary-color">From Email Address:</span>
-                <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div>
-                <span class="fw-600 text-primary-color">CC:</span>
-                <span class="fw-400 text-primary-color">{{
-                  emailTemplateParams && emailTemplateParams.cc
-                }}</span>
-              </div>
-            </div>
-            <div
-              class="campaign-manager-last-step__email-template-body-preview"
-              style="background: #fafafa; padding: 0;"
-            >
-              <KEmailPreview
-                v-if="!!emailTemplateParams.template"
-                ref="refPreview"
-                :html="emailTemplateParams.template"
-                :key="emailTemplateParams.template"
-                is-extra-height
-              />
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+        is-training
+        :show-body-detail.sync="showEmailTemplatePreviewDialog"
+        :title="getEmailTemplateTitle"
+      />
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerReportSummaryLandingPage
+      <CampaignManagerSummaryCard
         v-if="!isAttachmentBasedScenario && isDistributionManually"
-        :type="type"
-        :difficulties="difficulties"
-        :methods="methods"
-        :form-data="landingPageParams"
+        detailable
+        is-training
+        icon="mdi-application"
+        :show-body-detail.sync="showLandingPagePreviewDialog"
+        :title="getLandingPageTitle"
       />
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
@@ -341,11 +215,6 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
-import Badge from '@/components/Badge'
-import KEmailPreview from '@/components/KEmailPreview'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLandingPage'
-import { getDifficultyBadgeColor } from '@/utils/functions'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import AlertBox from '@/components//AlertBox'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
@@ -364,24 +233,20 @@ import {
   SEND_RANDOMLY_USERS_CALCULATE_TYPES
 } from '@/components/CampaignManager/utils'
 import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
-import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
-import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'CampaignManagerSummary',
   components: {
-    InputLanguagePreview,
     CampaignManagerReportSummaryTraining,
     CampaignManagerSummaryScenarioInfoTable,
-    KEmailPreview,
-    Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
-    AttachmentsPreview,
-    CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryCategory,
     AlertBox,
     CampaignManagerScheduleDialog,
-    EmailTemplateListPreviewLanguages
+    EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorLandingPageTemplatesPreviewDialog
   },
   props: {
     formData: {
@@ -421,8 +286,6 @@ export default {
       languagePreview: '',
       selectedTemplateLanguages: [],
       isShowTargetUserDetail: false,
-      isShowEmailTemplate: false,
-      isShowLandingPageTemplate: false,
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
       selectedScenarioName: '',
@@ -434,7 +297,11 @@ export default {
       isShowScheduleDialog: false,
       trainingParams: null,
       selectedTraining: null,
-      phishingEmailTemplates: []
+      phishingEmailTemplates: [],
+      showEmailTemplatePreviewDialog: false,
+      emailTemplatePreviewSelectedRow: null,
+      showLandingPagePreviewDialog: false,
+      landingPagePreviewSelectedRow: null
     }
   },
   computed: {
@@ -442,6 +309,16 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getEmailTemplateTitle() {
+      const templateName = this.emailTemplateParams?.name || ''
+      const baseTitle =
+        this.type === SCENARIO_TYPES.PHISHING ? 'Email Template:' : 'Individual printout:'
+      return `${baseTitle} ${templateName}`
+    },
+    getLandingPageTitle() {
+      const templateName = this.landingPageParams?.name || ''
+      return `Landing Page: ${templateName}`
+    },
     getPreferredLanguageAlertBoxClass() {
       const classes = ['mt-4']
       if (this.getNonPreferredLanguageUsersCount === 0) {
@@ -917,7 +794,8 @@ export default {
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
             subject,
-            isAssistedByAI
+            isAssistedByAI,
+            resourceId: emailTemplateResourceId
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -934,7 +812,8 @@ export default {
             phishingFileName,
             template,
             isAssistedByAI,
-            cc: emailTemplate?.ccAddresses.join(',')
+            cc: emailTemplate?.ccAddresses.join(','),
+            resourceId: emailTemplateResourceId
           }
           this.emailTemplateParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.emailTemplateParams.languageTypeResourceId
@@ -1006,7 +885,8 @@ export default {
             languageTypeResourceId,
             methodTypeId,
             isAssistedByAI: isAssistedByAILandingPage,
-            isAssistedbyAI: isAssistedByAILower
+            isAssistedbyAI: isAssistedByAILower,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -1016,12 +896,22 @@ export default {
             method: methods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,
             landingPageTemplates: landingPages,
-            isAssistedByAI: isAssistedByAILandingPage || isAssistedByAILower
+            isAssistedByAI: isAssistedByAILandingPage || isAssistedByAILower,
+            resourceId: landingPageResourceId
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
           this.category = category
+          // Set preview dialog data
+          this.emailTemplatePreviewSelectedRow = {
+            resourceId: emailTemplateResourceId,
+            name: this.emailTemplateParams.name
+          }
+          this.landingPagePreviewSelectedRow = {
+            resourceId: landingPageResourceId,
+            name: this.landingPageParams.name
+          }
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },
@@ -1046,12 +936,6 @@ export default {
           .map((lang) => lang.code)
           .join(' | ')
       })
-    },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
-    },
-    getBadgeText(text = '') {
-      return text
     },
     handleSchedule() {
       this.toggleScheduleDialog()
