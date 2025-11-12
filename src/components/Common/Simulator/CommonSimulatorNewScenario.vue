@@ -1418,11 +1418,14 @@ export default {
           this.emailTemplateResourceId = emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
-          this.formValues.roleResourceIds =
+          this.$set(
+            this.formValues,
+            'roleResourceIds',
             response.data.data.roles?.map((role) => role.resourceId) || []
+          )
           delete this.formValues.roles
           this.selectedRolesDetails = this.availableRoleOptions.length
-            ? this.getRoleDetailsFromIds(this.formValues.roleResourceIds)
+            ? this.getRoleDetailsFromIds(this.formValues.roleResourceIds) || []
             : response.data.data.roles || []
           this.mfaData.mfaSenderNumberResourceId = response.data.data.mfaSmsSenderNumberResourceId
           this.mfaData.mfaCallerPhoneNumber = response.data.data.mfaSmsSenderNumber
