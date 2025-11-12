@@ -188,7 +188,7 @@
                 <Badge
                   size="mini"
                   :color="getBadgeColor(emailTemplateParams.difficulty)"
-                  :text="getBadgeText(emailTemplateParams.difficulty)"
+        e          :text="getBadgeText(emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
