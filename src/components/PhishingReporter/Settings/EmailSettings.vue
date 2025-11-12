@@ -25,25 +25,28 @@
               v-model="formValues.sendUsACopy"
               id="input--phishing-reporter-is-send-copy"
               color="#2196f3"
+              hide-details
+              style="margin-top: -2px;"
               :readonly="!showForm"
             ></v-switch>
           </div>
-          <div class="email-settings__information-text">
-            <div v-if="!formValues.sendUsACopy">
-              <div class="text-primary-color fw-600 fs-3-4">
-                The platform will not receive copies of reported emails.
-              </div>
-              <div class="text-primary-color fw-400 fs-3">
-                Copies of emails sent by the platform will always be shared.
-              </div>
-            </div>
-            <div v-else>
-              <div class="text-primary-color fw-600 fs-3-4">
-                The platform will receive copies of reported emails.
-              </div>
-              <div class="text-primary-color fw-400 fs-3">
-                Copies of emails sent by the platform will always be shared.
-              </div>
+          <div class="email-settings__information-text fw-600 fs-3-4 d-flex align-center">
+            The platform will
+            {{ formValues.sendUsACopy ? 'receive' : 'not receive' }} copies of reported emails.
+          </div>
+        </div>
+        <div
+          v-if="getIncidentResponderNotifiedEmailPermission"
+          class="email-settings__information mt-2 mb-0"
+          style="background-color: rgba(230, 162, 60, 0.2);"
+        >
+          <div>
+            <VIcon color="#B6791D">mdi-alert</VIcon>
+          </div>
+          <div class="email-settings__information-text flex-column align-start justify-start">
+            <div class="fw-600 fs-3-4">Important Incident Responder Notice</div>
+            <div>
+              {{ getImportantIncidentResponderNoticeText }}
             </div>
           </div>
         </div>
@@ -64,8 +67,8 @@
           <VIcon color="#2196f3">mdi-alert-circle</VIcon>
         </div>
         <div class="email-settings__information-text">
-          System users will always receive an information email for reported incidents, and using
-          the checkbox above, you can send an information email to third parties.
+          System users are notified automatically. Enable the checkbox to notify the addresses
+          below.
         </div>
       </div>
       <div v-if="formValues.isSendInformationEmail">
@@ -177,6 +180,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
+import { mapGetters } from 'vuex'
 export default {
   name: 'EmailSettings',
   components: {
@@ -225,7 +229,7 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: null
+        sendUsACopy: true
       },
       initialFormValues: {
         to: '',
@@ -234,11 +238,21 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: null
+        sendUsACopy: true
       }
     }
   },
   computed: {
+    ...mapGetters({
+      getIncidentResponderNotifiedEmailPermission:
+        'permissions/getIncidentResponderNotifiedEmailPermission'
+    }),
+    getImportantIncidentResponderNoticeText() {
+      return this.formValues.sendUsACopy
+        ? 'This setting is enabled, allowing analysis and response to reported threats.'
+        : 'This setting is disabled, preventing analysis and response to reported threats.'
+    },
+
     isRecipientEmailRequired() {
       return this.showForm ? !!this.formValues.isSendInformationEmail : false
     },
