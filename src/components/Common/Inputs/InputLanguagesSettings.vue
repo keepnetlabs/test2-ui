@@ -689,7 +689,12 @@ export default {
             const found = flat.find((c) => c.value === id)
             if (found && !existsSet.has(found.value)) effective.push(found)
           })
-          this.$emit('input', effective)
+          // disabled property'sini kaldır
+          const cleanedEffective = effective.map((item) => {
+            const { disabled, ...rest } = item
+            return rest
+          })
+          this.$emit('input', cleanedEffective)
           // Emit specific event for language removal
           if (isRemove) {
             this.$emit('on-language-removed', {
@@ -720,7 +725,12 @@ export default {
               const found = flat.find((c) => c.value === id)
               if (found && !existsSet.has(found.value)) effective.push(found)
             })
-            this.$emit('input', effective)
+            // disabled property'sini kaldır
+            const cleanedEffective = effective.map((item) => {
+              const { disabled, ...rest } = item
+              return rest
+            })
+            this.$emit('input', cleanedEffective)
             this.removeConfirmRowFor(item.value)
             return
           }
@@ -841,7 +851,12 @@ export default {
           if (!existsSet.has(pi.value)) effectiveSelected.push(pi)
         })
       }
-      this.$emit('input', effectiveSelected)
+      // disabled property'sini kaldır (InputLanguagePreview için gerekli değil)
+      const cleanedSelected = effectiveSelected.map((item) => {
+        const { disabled, ...rest } = item
+        return rest
+      })
+      this.$emit('input', cleanedSelected)
       this.changeMenuStatus('hidden')
       this.removeLanguageNodeEventListeners()
       this.handleGenerateWithAI()
