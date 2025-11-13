@@ -349,6 +349,10 @@ export default {
     canRemoveLanguages: {
       type: Boolean,
       default: true
+    },
+    initialDisabledLanguageIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -445,19 +449,15 @@ export default {
       }
     },
     computedItems() {
-      if (this.canRemoveLanguages === true) {
-        return this.items
-      }
-
       const cloned = JSON.parse(JSON.stringify(this.items))
-      const translatedSet = new Set(this.translatedLanguageResourceIds || [])
+      // SADECE prop'tan gelen initial disabled dilleri disable et (yeni localized diller değil)
+      const disabledSet = new Set(this.initialDisabledLanguageIds || [])
 
       cloned.forEach((group) => {
         if (Array.isArray(group.children)) {
           group.children = group.children.map((child) => ({
             ...child,
-            // Sadece zaten localized olan dilleri disable et
-            disabled: translatedSet.has(child.value)
+            disabled: disabledSet.has(child.value)
           }))
         }
       })
