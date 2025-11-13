@@ -222,6 +222,7 @@
                             v-model="selectedLanguages"
                             :active-language="activeLanguage"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                            :can-remove-languages="formValues.canRemoveLanguages"
                             :language-items="languageItems"
                             :translated-language-resource-ids="translatedLanguageResourceIds"
                             :from-address="getSelectedLanguagePayload.fromAddress"
@@ -400,6 +401,7 @@ export default {
       initialFormValues: {},
       formValues: {
         name: '',
+        canRemoveLanguages: true,
         description: '',
         categoryResourceId,
         tags: [],
