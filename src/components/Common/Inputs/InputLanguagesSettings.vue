@@ -2,6 +2,7 @@
   <div class="position-relative" v-click-outside="handleClickOutside">
     <DataTableTooltip
       v-if="showOverFlowTooltip"
+      class="input-languages-tooltip"
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
@@ -77,7 +78,7 @@
                   item-disabled="disabled"
                   :search="searchValue"
                   :hoverable="false"
-                  :items="items"
+                  :items="computedItems"
                   @input="handleTreeViewChange"
                 >
                   <template #label="{ item }">
@@ -344,6 +345,14 @@ export default {
     companyPreferredLanguageId: {
       type: String,
       default: ''
+    },
+    canRemoveLanguages: {
+      type: Boolean,
+      default: true
+    },
+    initialDisabledLanguageIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -439,6 +448,21 @@ export default {
         marginLeft: '-124px'
       }
     },
+    computedItems() {
+      const cloned = JSON.parse(JSON.stringify(this.items))
+      // SADECE prop'tan gelen initial disabled dilleri disable et (yeni localized diller değil)
+      const disabledSet = new Set(this.initialDisabledLanguageIds || [])
+
+      cloned.forEach((group) => {
+        if (Array.isArray(group.children)) {
+          group.children = group.children.map((child) => ({
+            ...child,
+            disabled: disabledSet.has(child.value)
+          }))
+        }
+      })
+      return cloned
+    },
     computedTreeItems() {
       const clone = JSON.parse(JSON.stringify(this.items))
       if (!this.relocalizeConfirmFor) return clone
@@ -487,9 +511,56 @@ export default {
       handler() {
         this.$nextTick(() => this.refreshAllConfirmRowsDisabledState())
       }
+    },
+    treeViewKey() {
+      this.$nextTick(() => {
+        this.setupDisabledTooltips()
+      })
+    },
+    canRemoveLanguages() {
+      this.$nextTick(() => {
+        this.setupDisabledTooltips()
+      })
     }
   },
+  mounted() {
+    this.setupDisabledTooltips()
+  },
   methods: {
+    setupDisabledTooltips() {
+      if (this.canRemoveLanguages === true) return
+
+      this.$nextTick(() => {
+        const disabledCheckboxes = this.$el.querySelectorAll(
+          '.v-treeview-node--disabled .mdi-checkbox-marked.v-treeview-node__checkbox'
+        )
+        disabledCheckboxes.forEach((button) => {
+          button.addEventListener('mouseenter', (e) => {
+            this.overFlowTooltipContent =
+              'Cannot be removed. This email template is active in one or more campaigns.'
+            const { top, left, height } = button.getBoundingClientRect()
+            this.overFlowTooltipStyle = {
+              top: `${top + height + 5}px`,
+              left: `${left - 100}px`,
+              zIndex: '100000000000',
+              maxWidth: '254px !important',
+              padding: '8px 12px'
+            }
+            this.showOverFlowTooltip = true
+          })
+
+          button.addEventListener('mouseleave', (e) => {
+            this.showOverFlowTooltip = false
+          })
+
+          // Click'i engelle
+          button.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          })
+        })
+      })
+    },
     isRemovingLastLocalized(languageId) {
       const translatedIds = new Set(
         (this.translatedLanguageResourceIds || []).map((id) => String(id))
@@ -570,8 +641,7 @@ export default {
         : 'Updating will replace the template.'
       const primaryLabel = isRemove ? 'Remove' : 'Replace'
       const primaryClass =
-        (isRemove ? 'js-remove' : 'js-replace') +
-        (isLastTranslated ? ' is-disabled' : '')
+        (isRemove ? 'js-remove' : 'js-replace') + (isLastTranslated ? ' is-disabled' : '')
       el.innerHTML = `
         <div class="relocalize-inline-confirm__left">
           <i class="v-icon notranslate v-icon--link mdi mdi-information" style="color:#2196f3"></i>
@@ -946,6 +1016,31 @@ export default {
 }
 </script>
 <style>
+/* Disabled treeview node - pointer events açık hover için */
+.input-languages-settings-treeview .v-treeview-node--disabled {
+  pointer-events: auto;
+}
+
+/* Checkbox button pointer-events açık override Vuetify */
+.input-languages-settings-treeview .v-treeview-node--disabled .v-treeview-node__checkbox {
+  pointer-events: auto !important;
+}
+
+/* Sadece checkbox button'u opacity ve renkle */
+.input-languages-settings-treeview
+  .v-treeview-node--disabled
+  .mdi-checkbox-marked.v-treeview-node__checkbox {
+  opacity: 0.5;
+  color: #2196f3 !important;
+  pointer-events: auto !important;
+  cursor: default;
+}
+
+/* Tooltip width override */
+.input-languages-tooltip {
+  max-width: 250px !important;
+}
+
 .relocalize-confirm {
   position: absolute;
   margin-left: -29px;
