@@ -448,6 +448,7 @@ const trainingLibrary = {
         f.isFilterActive = false
       })
       state.filterType = 'Or'
+      state.axiosPayload.filter.FilterGroups[0].Condition = 'OR'
       state.sortBy = 'Date Created - New to old'
       state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
       state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`

@@ -997,8 +997,8 @@ const store = {
       return state?.companyGroupsPermissions?.DELETE?.hasPermission
     },
     getCompaniesLeftMenuPermissions(state) {
-      const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions || {}
-      return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission
+      const { COMPANY = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions || {}
+      return COMPANY?.hasPermission || COMPANY_GROUPS?.hasPermission
     },
     getCompanySettingsLeftMenuPermissions(state, getters) {
       return (

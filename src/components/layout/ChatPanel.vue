@@ -102,9 +102,10 @@ export default {
     const hostId = localStorage.getItem('hostId')
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
+    const { token } = JSON.parse(localStorage.getItem('token'))
     return {
       isExpanded: false,
-      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}`,
+      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseURL=${window.location.origin}`,
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
