@@ -42,13 +42,17 @@
           :description="getLoaderDescription"
           :loaderTime="20"
         />
-        <ElTabs v-if="!isLoading && !isRedFlagsLoading" v-model="tab">
+        <ElTabs
+          v-if="!isLoading && !isRedFlagsLoading"
+          v-model="tab"
+          :class="{ 'mt-4': isQuishing || isQuishingTypeIndividualPrintOut }"
+        >
           <ElTabPane
             id="campaign-manager-info--email-content"
             name="email"
             :label="getFirstTabLabel"
           >
-            <div class="template-preview pt-4">
+            <div class="template-preview" :class="{ 'pt-4': isPhishing }">
               <div class="template-preview__text" v-if="!!emailTemplate && !isRedFlagsLoading">
                 <div v-if="isQuishing">
                   <span class="template-preview__text--title">Quishing Type: </span>
@@ -85,7 +89,7 @@
                   </div>
                   <!-- Red Flags Button -->
                   <VBtn
-                    v-if="true"
+                    v-if="isPhishing"
                     :ripple="false"
                     class="fw-600"
                     rounded

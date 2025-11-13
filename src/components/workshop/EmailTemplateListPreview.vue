@@ -1,14 +1,25 @@
 <template>
-  <div
-    :class="`emailTemplatePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
+  <div :class="`emailTemplatePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
     <EmailTemplateMultipleLanguagePreviewDialog
-      v-if="isTemplateDetails"
+      v-if="isTemplateDetails && !isQuishing"
       ref="emailTemplatePreviewDialog"
       :status="isTemplateDetails"
       :selected-row="emailTemplatePreviewSelectedRow"
       :type="type"
       :languages="languages"
       :api-func="apiFuncs.content"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isTemplateDetails = false"
+    />
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isTemplateDetails && isQuishing"
+      :status="isTemplateDetails"
+      :is-individual-printout-template="isQuishingTypeIndividualPrintOut"
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :api-func="apiFuncs.content"
+      :type="type"
+      :languages="languages"
       is-nested
       :should-control-html-overflow="false"
       @on-close="isTemplateDetails = false"
@@ -502,6 +513,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import { handleIsSafari } from '@/utils/functions'
 export default {
   name: 'EmailTemplateListPreview',
@@ -555,6 +567,7 @@ export default {
   },
   components: {
     EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
     InputLanguagePreview,
     KSelect,
     ShowMoreTags,

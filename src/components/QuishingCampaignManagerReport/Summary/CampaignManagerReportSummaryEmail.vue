@@ -1,94 +1,42 @@
 <template>
-  <CampaignManagerSummaryCard
-    class="mt-4"
-    detailable
-    detailable-button-id="btn-preview--campaign-report-email-template"
-    :icon="getIcon"
-    :isLoading="isFetchingSummary"
-    :show-body-detail.sync="isShowEmailTemplate"
-    :title="getTitle"
-  >
-    <template #body>
-      <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
-        <div class="campaign-manager-last-step__email-template-body-header">
-          <div class="campaign-manager-last-step__email-template-body-header-left">
-            {{ name }}
-          </div>
-          <div class="campaign-manager-last-step__email-template-body-header-right">
-            <v-btn style="display: none;"></v-btn>
-            <Badge
-              size="mini"
-              :color="getBadgeColor(difficulty)"
-              :text="getBadgeText(difficulty)"
-              :outline="false"
-            />
-            <Badge
-              size="mini"
-              color="#E0E0E0"
-              class-name="badge-middle px-2 py-2"
-              :text="getBadgeText(method)"
-              :outline="false"
-            />
-            <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-              <template #content>
-                <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
-              </template>
-            </Badge>
-          </div>
-        </div>
-        <div
-          v-if="!isQuishingPrintout"
-          class="campaign-manager-last-step__email-template-body-header-sub"
-        >
-          From: {{ fromName }}
-          <span>&#60;</span>
-          {{ fromAddress }} <span>&#62;</span>
-        </div>
-        <div v-if="formData.attachment" class="attachment-wrapper mt-2" style="position: relative;">
-          <div class="attachment blue-attach mb-0">
-            <AttachmentsPreview
-              :deletable="false"
-              :att="formData.attachment"
-              :isEmailTemplate="true"
-            />
-          </div>
-        </div>
-        <div></div>
-      </div>
-      <div
-        v-if="isShowEmailTemplate"
-        class="campaign-manager-last-step__email-template-body-preview-container"
-      >
-        <div class="campaign-manager-last-step__email-template-body-preview">
-          <DatatableLoading v-if="isLoading" :loading="isLoading" />
-          <KEmailPreview v-else :html="emailTemplate" is-extra-height />
-        </div>
-      </div>
-    </template>
-  </CampaignManagerSummaryCard>
+  <div>
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isShowPreviewDrawer && previewSelectedRow"
+      :status="isShowPreviewDrawer"
+      :selected-row="previewSelectedRow"
+      :type="type"
+      :is-individual-printout-template="isQuishingPrintout"
+      :api-func="getPreviewApiFunc"
+      :languages="languageOptions"
+      :should-control-html-overflow="true"
+      @on-close="isShowPreviewDrawer = false"
+    />
+    <CampaignManagerSummaryCard
+      class="mt-4"
+      detailable
+      is-training
+      detailable-button-id="btn-preview--campaign-report-email-template"
+      :icon="getIcon"
+      :isLoading="isFetchingSummary"
+      :show-body-detail.sync="isShowEmailTemplate"
+      :title="getTitle"
+    />
+  </div>
 </template>
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
-import Badge from '@/components/Badge'
-import KEmailPreview from '@/components/KEmailPreview'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { useLoading } from '@/hooks/useLoading'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import { getDifficultyBadgeColor } from '@/utils/functions'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
   components: {
-    AttachmentsPreview,
-    DatatableLoading,
-    KEmailPreview,
-    Badge,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
+    CommonSimulatorEmailTemplatePreviewDialog
   },
-  mixins: [useLoading],
   props: {
     formData: {
       type: Object
@@ -106,18 +54,19 @@ export default {
     },
     isQuishingPrintout: {
       type: Boolean
+    },
+    type: {
+      type: String,
+      default: SCENARIO_TYPES.QUISHING
     }
   },
   data() {
     return {
       isShowEmailTemplate: false,
+      isShowPreviewDrawer: false,
+      previewSelectedRow: null,
       labels,
-      emailTemplate: null,
-      difficulty: '',
-      method: '',
-      name: '',
-      fromName: '',
-      fromAddress: ''
+      languageOptions: []
     }
   },
   computed: {
@@ -129,59 +78,51 @@ export default {
         ? 'Individual printouts that will be given to users'
         : labels.EmailThatWill
     },
-    isFormData() {
-      return Object.keys(this.formData).length
+    getPreviewApiFunc() {
+      return (resourceId) => {
+        const { campaignResourceId, instanceGroup } = this.previewSelectedRow || {}
+        if (this.isQuishingPrintout) {
+          return QuishingService.getQuishingTemplatePreviewContent(resourceId)
+        }
+        return QuishingService.getCampaignManagerEmailTemplatePreviewContent(
+          resourceId,
+          campaignResourceId,
+          instanceGroup
+        )
+      }
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   watch: {
     isShowEmailTemplate(val = false) {
-      if (val && !this.emailTemplate) {
-        this.callForTemplate()
+      if (val && this.formData?.resourceId) {
+        this.previewSelectedRow = {
+          resourceId: this.formData.resourceId,
+          name: this.formData.name,
+          campaignResourceId: this.formData.campaignResourceId,
+          instanceGroup: this.formData.instanceGroup
+        }
+        this.$nextTick(() => {
+          this.isShowPreviewDrawer = true
+        })
+      } else {
+        this.isShowPreviewDrawer = false
       }
-    },
-    'formData.resourceId'() {
-      this.callForTemplate(false)
     }
   },
   methods: {
-    callForTemplate(showLoader = true) {
-      if (showLoader) this.setLoading(true)
-      if (
-        this.formData?.resourceId &&
-        this.formData?.campaignResourceId &&
-        this.formData?.instanceGroup
-      ) {
-        const apiFunc = this.isQuishingPrintout
-          ? QuishingService.getQuishingTemplatePreviewContent
-          : QuishingService.getCampaignManagerEmailTemplatePreviewContent
-        apiFunc(
-          this.formData.resourceId,
-          this.formData.campaignResourceId,
-          this.formData.instanceGroup
-        )
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.emailTemplate = data.template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-            this.difficulty =
-              this.difficulties.find((item) => item.value === data.difficultyResourceId)?.text || ''
-            this.method =
-              this.methods.find((item) => item.value === data.categoryResourceId)?.text || ''
-            this.fromName = data.fromName
-            this.fromAddress = data.fromAddress
-            this.name = data.name
-          })
-          .finally(() => {
-            if (showLoader) this.setLoading()
-          })
-      }
-    },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
-    },
-    getBadgeText(text = '') {
-      return text
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            code: language.description
+          })) || []
+      })
     }
   }
 }

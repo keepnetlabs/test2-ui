@@ -1,7 +1,7 @@
 <template>
   <div class="campaign-manager-last-step">
     <EmailTemplateMultipleLanguagePreviewDialog
-      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow"
+      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow && type !== SCENARIO_TYPES.QUISHING"
       ref="emailTemplatePreviewDialog"
       :status="showEmailTemplatePreviewDialog"
       :selected-row="emailTemplatePreviewSelectedRow"
@@ -9,6 +9,16 @@
       :languages="languageOptions"
       is-nested
       :should-control-html-overflow="false"
+      @on-close="showEmailTemplatePreviewDialog = false"
+    />
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow && type === SCENARIO_TYPES.QUISHING"
+      :status="showEmailTemplatePreviewDialog"
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :type="type"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="true"
       @on-close="showEmailTemplatePreviewDialog = false"
     />
     <CommonSimulatorLandingPageTemplatesPreviewDialog
@@ -235,6 +245,7 @@ import {
 import CampaignManagerSummaryScenarioInfoTable from '@/components/CampaignManager/Summary/CampaignManagerSummaryScenarioInfoTable'
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -246,7 +257,8 @@ export default {
     AlertBox,
     CampaignManagerScheduleDialog,
     EmailTemplateMultipleLanguagePreviewDialog,
-    CommonSimulatorLandingPageTemplatesPreviewDialog
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
+    CommonSimulatorEmailTemplatePreviewDialog
   },
   props: {
     formData: {

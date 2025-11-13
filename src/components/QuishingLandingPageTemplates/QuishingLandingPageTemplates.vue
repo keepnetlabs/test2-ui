@@ -20,6 +20,7 @@
       :selected-row="selectedLandingPageTemplate"
       :type="PREVIEW_DIALOG_TYPES.QUISHING"
       :api-func="getLandingPageTemplate"
+      :languages="languageOptions"
       @on-close="togglePreviewDialog"
       @on-edit="handleEditFromPreview"
     />
@@ -58,6 +59,7 @@ import {
 import QuishingService from '@/api/quishing'
 import QuishingNewLandingPageModal from '@/components/QuishingLandingPageTemplates/QuishingNewLandingPageModal.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'QuishingLandingPageTemplates',
   components: {
@@ -80,7 +82,8 @@ export default {
       isMultipleDelete: false,
       multipleDeletedScenariosCount: 0,
       multipleScenariosPayload: {},
-      isEdit: false
+      isEdit: false,
+      languageOptions: []
     }
   },
   created() {
@@ -136,6 +139,15 @@ export default {
       this.$refs?.refTable?.callForData()
     },
     callForLookups() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            code: language.description
+          })) || []
+      })
       QuishingService.getLandingPageFormDetails().then((response) => {
         const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
           return {

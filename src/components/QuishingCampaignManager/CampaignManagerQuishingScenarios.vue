@@ -1,13 +1,35 @@
 <template>
   <div class="emailTemplatePreview pt-0" style="min-height: auto !important;">
     <CampaignManagerPhishingScenariosPreviewDialog
-      v-if="isShowTemplate"
+      v-if="isShowTemplate && type !== SCENARIO_TYPES.QUISHING"
       :status="isShowTemplate"
       :landing-page-params="landingPageParams"
       :email-template="emailTemplate"
       :tab="tab"
       :landing-page-templates="landingPageTemplates"
       @on-close="toggleTemplateDialog"
+    />
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isShowEmailTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
+      :status="isShowEmailTemplateDrawer"
+      :selected-row="{ resourceId: emailTemplateParams?.resourceId, name: emailTemplateParams?.name }"
+      :api-func="QuishingService.getEmailTemplatePreviewContent"
+      :type="type"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowEmailTemplateDrawer = false"
+    />
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="isShowLandingPageTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
+      :status="isShowLandingPageTemplateDrawer"
+      :selected-row="{ resourceId: landingPageParams?.resourceId, name: landingPageParams?.name }"
+      :api-func="QuishingService.getLandingPageTemplate"
+      :type="type"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowLandingPageTemplateDrawer = false"
     />
     <TrainingLibraryCommonComponents />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
@@ -343,6 +365,9 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -355,7 +380,9 @@ export default {
     KSelect,
     Multipane,
     MultipaneResizer,
-    AttachmentsPreview
+    AttachmentsPreview,
+    CommonSimulatorEmailTemplatePreviewDialog,
+    CommonSimulatorLandingPageTemplatesPreviewDialog
   },
   mixins: [useDebounce],
   props: {
@@ -398,6 +425,8 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
+      QuishingService,
       tab: 'email',
       axiosPayload: getDefaultAxiosPayload(),
       checkboxModel: {},
@@ -421,7 +450,10 @@ export default {
       phishingScenarioItems: [],
       isMethodMfa: false,
       isShowTrainingDialog: false,
-      enumTypes: {}
+      enumTypes: {},
+      isShowEmailTemplateDrawer: false,
+      isShowLandingPageTemplateDrawer: false,
+      languageOptions: []
     }
   },
   computed: {
@@ -615,9 +647,21 @@ export default {
   created() {
     if (!this.isEdit) this.callForPhishingScenarios()
     if (this.getTrainingSearchPermission) this.callForEnrollmentFormDetails()
+    this.callForLanguages()
   },
   methods: {
     getItemDifficultyClass,
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            code: language.description
+          })) || []
+      })
+    },
     callForEnrollmentFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {
         const { enumNameValuePairs = {} } = response?.data?.data || {}
@@ -687,11 +731,13 @@ export default {
             attachments,
             languageTypeResourceId: languageOfEmailTemplate,
             phishingFileName,
-            subject
+            subject,
+            resourceId: emailTemplateResourceId
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.emailTemplateParams = {
+            resourceId: emailTemplateResourceId,
             fromName,
             fromAddress,
             name,
@@ -709,9 +755,11 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || {}
           this.landingPageParams = {
+            resourceId: landingPageResourceId,
             name: landingPageName,
             description,
             urlTemplate,
@@ -832,7 +880,15 @@ export default {
       }
     },
     handleClickPreview() {
-      this.toggleTemplateDialog()
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        if (this.tab === 'email') {
+          this.isShowEmailTemplateDrawer = true
+        } else if (this.tab === 'landing-page') {
+          this.isShowLandingPageTemplateDrawer = true
+        }
+      } else {
+        this.toggleTemplateDialog()
+      }
     },
     resetFilters() {
       this.search = ''

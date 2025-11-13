@@ -79,6 +79,7 @@
       :methods="methods"
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading"
+      :type="SCENARIO_TYPES.QUISHING"
     />
     <CampaignManagerReportSummaryLandingPage
       v-if="!isAttachment"
@@ -86,6 +87,7 @@
       :methods="methods"
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
+      :type="SCENARIO_TYPES.QUISHING"
     />
     <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
@@ -113,6 +115,7 @@ import QuishingService from '@/api/quishing'
 import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -145,6 +148,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       targetGroups: [],
       trainingReportDialogItems: [],
       selectedScenarioTab: '',
@@ -455,6 +459,7 @@ export default {
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,
+            name: emailTemplateInfo?.name,
             languageShortCode: language?.text || languageCode,
             attachment: phishingFileName
               ? {

@@ -11,11 +11,23 @@
     >
       <template #overlay-body>
         <EmailTemplateMultipleLanguagePreviewDialog
-          v-if="showEmailTemplatePreviewDialog"
+          v-if="showEmailTemplatePreviewDialog && !isQuishing"
           ref="emailTemplatePreviewDialog"
           :status="showEmailTemplatePreviewDialog"
           :selected-row="emailTemplatePreviewSelectedRow"
           :type="type"
+          :languages="languageOptions"
+          :api-func="getEmailTemplateApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showEmailTemplatePreviewDialog = false"
+        />
+        <CommonSimulatorEmailTemplatePreviewDialog
+          v-if="showEmailTemplatePreviewDialog && isQuishing"
+          :status="showEmailTemplatePreviewDialog"
+          :selected-row="emailTemplatePreviewSelectedRow"
+          :type="type"
+          :is-individual-printout-template="isQuishingTypeIndividualPrintOut"
           :languages="languageOptions"
           :api-func="getEmailTemplateApiFuncs.content"
           is-nested
@@ -489,6 +501,7 @@ import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
@@ -497,6 +510,7 @@ export default {
   components: {
     AppModal,
     EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
     NewEmailTemplates,
     NewLandingPage,
