@@ -222,6 +222,8 @@
                             v-model="selectedLanguages"
                             :active-language="activeLanguage"
                             :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                            :can-remove-languages="formValues.canRemoveLanguages"
+                            :initial-disabled-language-ids="initialDisabledLanguageIds"
                             :language-items="languageItems"
                             :translated-language-resource-ids="translatedLanguageResourceIds"
                             :from-address="getSelectedLanguagePayload.fromAddress"
@@ -400,6 +402,7 @@ export default {
       initialFormValues: {},
       formValues: {
         name: '',
+        canRemoveLanguages: true,
         description: '',
         categoryResourceId,
         tags: [],
@@ -410,6 +413,7 @@ export default {
         attachmentFilesFromApi: []
       },
       languagesPayload: [],
+      initialDisabledLanguageIds: [],
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
       commonRules: {
@@ -674,6 +678,10 @@ export default {
         this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
           JSON.stringify(this.getSelectedLanguagePayload)
         )
+        this.initialDisabledLanguageIds = [
+          this.formValues.languageTypeResourceId,
+          ...this.languagesPayload.map((item) => item.languageTypeResourceId)
+        ]
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
