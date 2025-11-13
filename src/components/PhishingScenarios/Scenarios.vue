@@ -86,8 +86,6 @@
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
       @on-show-scenario-statistics="isShowScenarioStatistics = true"
-      @set-default-search="handleSetDefaultSearch"
-      @restore-default-search="handleRestoreDefaultSearch"
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -363,8 +361,6 @@ export default {
     }
   },
   mounted() {
-    // Initialize roleResourceIds from savedFilter if exists
-    this.initRoleResourceIds()
     this.callForLanguages('refScenariosList')
     this.callForRoles()
     this.callForData()
@@ -373,40 +369,6 @@ export default {
     getPhishingScenarioLandingPageAndEmailTemplate,
     deleteScenario,
     bulkDeleteScenarios,
-    columnFilterChanged(filter) {
-      // Update filter items using helper function
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChangedHelper(
-        filter,
-        this.axiosPayload
-      )
-
-      if (filter.FieldName === 'roles') {
-        // Handle both array and comma-separated string formats
-        if (Array.isArray(filter.Value)) {
-          this.axiosPayload.RoleResourceIds = filter.Value.flatMap((v) =>
-            typeof v === 'string' ? v.split(',') : v
-          )
-        } else {
-          this.axiosPayload.RoleResourceIds = (filter.Value || '').split(',').filter((v) => v)
-        }
-      }
-
-      this.callForData()
-    },
-    columnFilterCleared(fieldName) {
-      // Update filter items using helper function
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterClearedHelper(
-        fieldName,
-        this.axiosPayload
-      )
-
-      // Clear role filter specifically
-      if (fieldName === 'roles') {
-        this.axiosPayload.RoleResourceIds = []
-      }
-
-      this.callForData()
-    },
     callForRoles() {
       getPhishingScenarioRoles()
         .then((response) => {
@@ -443,29 +405,7 @@ export default {
     callForData() {
       this.loading = true
       if (this.getPhishingScenariosSearchPermissions) {
-        const copyOfAxiosPayload = JSON.parse(JSON.stringify(this.axiosPayload))
-
-        // Extract roleResourceIds from filter if exists (for initial load with savedFilter)
-        const rolesFilter = copyOfAxiosPayload.filter.FilterGroups[0].FilterItems.find(
-          (item) => item.FieldName === 'roles'
-        )
-        if (rolesFilter) {
-          // Handle both array and comma-separated string formats
-          if (Array.isArray(rolesFilter.Value)) {
-            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
-              typeof v === 'string' ? v.split(',') : v
-            )
-          } else {
-            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
-              .split(',')
-              .filter((v) => v)
-          }
-        }
-
-        copyOfAxiosPayload.filter.FilterGroups[0].FilterItems = copyOfAxiosPayload.filter.FilterGroups[0].FilterItems.filter(
-          (item) => item.FieldName !== 'roles'
-        )
-        getScenariosList(copyOfAxiosPayload)
+        getScenariosList(this.axiosPayload)
           .then((response) => {
             const {
               data: { data }
@@ -623,77 +563,6 @@ export default {
     },
     toggleShowScenarioStatistics() {
       this.isShowScenarioStatistics = !this.isShowScenarioStatistics
-    },
-    initRoleResourceIds() {
-      // Initialize roleResourceIds from savedFilter on page load
-      const savedFilter = JSON.parse(
-        localStorage.getItem(this.tableOptions.savedFiltersLocalStorageKey)
-      )
-      if (savedFilter?.filter) {
-        const rolesFilter = savedFilter.filter?.FilterGroups?.[0]?.FilterItems?.find(
-          (item) => item.FieldName === 'roles'
-        )
-        if (rolesFilter) {
-          // Handle both array and comma-separated string formats
-          if (Array.isArray(rolesFilter.Value)) {
-            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
-              typeof v === 'string' ? v.split(',') : v
-            )
-          } else {
-            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
-              .split(',')
-              .filter((v) => v)
-          }
-        } else {
-          this.axiosPayload.RoleResourceIds = []
-        }
-      } else {
-        this.axiosPayload.RoleResourceIds = []
-      }
-    },
-    handleSetDefaultSearch() {
-      // Extract and set roleResourceIds from current filter
-      const rolesFilter = this.axiosPayload.filter?.FilterGroups?.[0]?.FilterItems?.find(
-        (item) => item.FieldName === 'roles'
-      )
-      if (rolesFilter) {
-        // Handle both array and comma-separated string formats
-        if (Array.isArray(rolesFilter.Value)) {
-          this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
-            typeof v === 'string' ? v.split(',') : v
-          )
-        } else {
-          this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '').split(',').filter((v) => v)
-        }
-      }
-    },
-    handleRestoreDefaultSearch() {
-      // Load saved filters from localStorage
-      const savedFilter = JSON.parse(
-        localStorage.getItem(this.tableOptions.savedFiltersLocalStorageKey)
-      )
-      if (savedFilter?.filter) {
-        // Extract roles filter from saved filter
-        const rolesFilter = savedFilter.filter?.FilterGroups?.[0]?.FilterItems?.find(
-          (item) => item.FieldName === 'roles'
-        )
-        if (rolesFilter) {
-          // Handle both array and comma-separated string formats
-          if (Array.isArray(rolesFilter.Value)) {
-            this.axiosPayload.RoleResourceIds = rolesFilter.Value.flatMap((v) =>
-              typeof v === 'string' ? v.split(',') : v
-            )
-          } else {
-            this.axiosPayload.RoleResourceIds = (rolesFilter.Value || '')
-              .split(',')
-              .filter((v) => v)
-          }
-        } else {
-          this.axiosPayload.RoleResourceIds = []
-        }
-      } else {
-        this.axiosPayload.RoleResourceIds = []
-      }
     }
   }
 }
