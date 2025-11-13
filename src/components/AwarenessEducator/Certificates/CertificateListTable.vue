@@ -3,6 +3,7 @@
     :id="CONSTANTS.id"
     ref="refTable"
     selectable
+    is-server-side-selection
     filterable
     options
     is-server-side
