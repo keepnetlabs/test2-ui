@@ -1,5 +1,25 @@
 <template>
   <div>
+    <FormGroup
+      v-if="canSaveVendor"
+      has-hint
+      :title="labels.PosterVendor"
+      :sub-title="labels.PosterVendorSub"
+    >
+      <KSelect
+        v-model.trim="formData.vendorId"
+        persistent-hint
+        dense
+        outlined
+        autocomplete="off"
+        item-text="text"
+        item-value="value"
+        hint="*Required"
+        placeholder="Select poster vendor"
+        :rules="[(v) => Validations.required(v, labels.Required)]"
+        :items="getTrainingVendors"
+      />
+    </FormGroup>
     <FormGroup :title="labels.Content" :sub-title="labels.PosterContentStep2Sub">
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <NewPosterContentByLanguage
@@ -35,9 +55,10 @@ import * as Validations from '@/utils/validations'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import NewPosterContentByLanguage from '@/components/AwarenessEducator/NewPoster/NewPosterContentByLanguage.vue'
 import { mapGetters } from 'vuex'
+import KSelect from '@/components/Common/Inputs/KSelect.vue'
 export default {
   name: 'TrainingLibraryNewPosterContent',
-  components: { NewPosterContentByLanguage, FormGroup },
+  components: { NewPosterContentByLanguage, FormGroup, KSelect },
   props: {
     isActionButtonDisabled: {
       type: Boolean
@@ -59,7 +80,8 @@ export default {
       formData: {
         type: 'SCORM12',
         hasQuiz: false,
-        contentByLanguage: []
+        contentByLanguage: [],
+        vendorId: ''
       }
     }
   },
@@ -67,7 +89,8 @@ export default {
     ...mapGetters({
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getScormTypes: 'trainingLibraryHelpers/getScormTypes',
-      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
+      canSaveVendor: 'trainingLibraryHelpers/getCanSaveVendor'
     }),
     isRenderAddLanguage() {
       return this?.getLanguages?.length !== this?.formData?.contentByLanguage?.length
