@@ -105,7 +105,9 @@ export default {
     const { token } = JSON.parse(localStorage.getItem('token'))
     return {
       isExpanded: false,
-      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseURL=${window.location.origin}`,
+      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${
+        APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api'
+      }`,
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
