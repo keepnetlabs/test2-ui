@@ -254,6 +254,10 @@ export default {
       const isProxy = refSendTrainingSettings?.formData?.isProxy
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
+      const preferredLanguageLabel =
+        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
+          ? 'Company Language'
+          : 'Target Users Language'
       if (
         deliveryMethod === DELIVERY_METHODS.EMAIL ||
         deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
@@ -270,7 +274,8 @@ export default {
                 } ${this.getTimeZoneText(
                   refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
                 )}`,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Preferred Language': preferredLanguageLabel
         }
       } else {
         formData.settings = {
@@ -289,7 +294,8 @@ export default {
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           'SMS Text':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Preferred Language': preferredLanguageLabel
         }
       }
 

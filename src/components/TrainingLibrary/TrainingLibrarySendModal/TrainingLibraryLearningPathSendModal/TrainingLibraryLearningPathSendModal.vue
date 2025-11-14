@@ -251,6 +251,10 @@ export default {
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
       const isDeliveryMethodSMS = deliveryMethod === DELIVERY_METHODS.SMS
+      const preferredLanguageLabel =
+        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
+          ? 'Company Language'
+          : 'Target Users Language'
       if (isDeliveryMethodSMS) {
         formData.settings = {
           'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
@@ -272,7 +276,8 @@ export default {
                   refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
                 )}`,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Preferred Language': preferredLanguageLabel
         }
       } else {
         formData.settings = {
@@ -291,7 +296,8 @@ export default {
           Distribution: refSendTrainingSettings.isDistributionEnabled
             ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
             : 'No',
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
+          'Preferred Language': preferredLanguageLabel
         }
       }
       if (sendReminderEvery) {

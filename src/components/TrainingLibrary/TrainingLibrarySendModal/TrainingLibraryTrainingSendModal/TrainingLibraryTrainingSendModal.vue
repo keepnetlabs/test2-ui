@@ -252,12 +252,17 @@ export default {
       const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
+      const preferredLanguageLabel =
+        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
+          ? 'Company Language'
+          : 'Target Users Language'
       if (
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.EMAIL ||
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
       ) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Preferred Language': preferredLanguageLabel,
           Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
@@ -281,6 +286,7 @@ export default {
       } else if (refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.SMS) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Preferred Language': preferredLanguageLabel,
           Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
@@ -308,6 +314,7 @@ export default {
       } else {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Preferred Language': preferredLanguageLabel,
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
