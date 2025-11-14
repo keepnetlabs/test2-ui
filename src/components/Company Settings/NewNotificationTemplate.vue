@@ -84,9 +84,8 @@
             :items="smtpItems"
           />
         </form-group>
-        <FormGroup>
+        <FormGroup v-if="canRenderAlertBox">
           <AlertBox
-            v-if="canRenderAlertBox"
             style="margin-top: -20px;"
             class="bg-aqua-light mb-4"
             icon-color="#2196F3"
@@ -114,20 +113,59 @@
           <EmailTemplate
             v-else
             ref="refEmailTemplate"
+            class="email-template-languages-settings-template-preview-container"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
-            :from-address.sync="formValues.fromAddress"
-            :from-name.sync="formValues.fromName"
-            :subject.sync="formValues.subject"
-            :template.sync="formValues.template"
+            :from-address.sync="getSelectedLanguagePayload.fromAddress"
+            :from-name.sync="getSelectedLanguagePayload.fromName"
+            :subject.sync="getSelectedLanguagePayload.subject"
+            :template.sync="getSelectedLanguagePayload.template"
             :is-edit="!!selectedItem"
+            :is-phishing-template="true"
             :isEnrollmentCategorySelected="isEnrollmentCategorySelected"
             :isLearningPathEnrollmentSelected="isLearningPathEnrollmentSelected"
             :isNotificationTemplate="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
-            :cc-addresses.sync="formValues.ccAddresses"
+            :cc-addresses.sync="getSelectedLanguagePayload.ccAddresses"
             @handleEditHtmlTemplate="handleEditHtmlTemplate"
-          />
+          >
+            <!-- YENI: Language Preview (Seç) -->
+            <template #template-header-left>
+              <InputLanguagePreview
+                :value="activeLanguage"
+                ref="refInputLanguagePreview"
+                style="max-width: 240px;"
+                hide-details
+                label="View/Edit Template"
+                :items="selectedLanguages"
+                :disabled="selectedLanguages.length === 0"
+                @input="handleActiveLanguageChange"
+              />
+            </template>
+
+            <!-- YENI: Language Settings (Ekle/Kaldır) -->
+            <template #template-header-right>
+              <InputLanguagesSettings
+                v-model="selectedLanguages"
+                :active-language="activeLanguage"
+                :can-remove-languages="formValues.canRemoveLanguages"
+                :initial-disabled-language-ids="initialDisabledLanguageIds"
+                :language-items="languageItems"
+                :translated-language-resource-ids="translatedLanguageResourceIds"
+                :from-address="getSelectedLanguagePayload.fromAddress"
+                :from-name="getSelectedLanguagePayload.fromName"
+                :subject="getSelectedLanguagePayload.subject"
+                :is-from-address-valid="isFromAddressFieldValid"
+                :company-preferred-language-id="getCompanyPreferredLanguageId"
+                :is-notification-template="true"
+                @input="handleSelectedLanguagesChange"
+                @on-active-language-change="handleActiveLanguageChange"
+                @on-relocalize-replace="handleRelocalizeReplace"
+                @on-language-removed="handleLanguageRemoved"
+                @on-edit-mode-click="handleEditModeClick"
+              />
+            </template>
+          </EmailTemplate>
         </form-group>
       </v-form>
     </template>
@@ -141,6 +179,8 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import { mail } from '@/utils/validations'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import {
   createEmailTemplate,
   getEmailTemplate,
@@ -170,6 +210,8 @@ export default {
     InputTag,
     MakeAvailableFor,
     KSelect,
+    InputLanguagesSettings,
+    InputLanguagePreview,
     EmailTemplate,
     AppModal,
     AppModalBodyHeader,
@@ -231,8 +273,15 @@ export default {
         fromName: '',
         subject: '',
         template: undefined,
-        ccAddresses: []
+        ccAddresses: [],
+        canRemoveLanguages: true
       },
+      // YENI: Language Management
+      languagesPayload: [],
+      selectedLanguages: [],
+      activeLanguage: '',
+      initialDisabledLanguageIds: [],
+      languageItems: [],
       categoryItems: [],
       smtpItems: [],
       defaultDECSettingResourceId: null,
@@ -367,11 +416,42 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    // YENI: Language Management Computed
+    translatedLanguageResourceIds() {
+      return this.languagesPayload
+        .filter((item) => item && item.isTranslated)
+        .map((item) => item.languageTypeResourceId)
+    },
+    getSelectedLanguagePayload() {
+      return (
+        this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) ||
+        {}
+      )
+    },
+    isFromAddressFieldValid() {
+      const v = (this.getSelectedLanguagePayload.fromAddress || '').trim()
+      return this.Validations.email(v, '') === true
+    },
+    getCompanyPreferredLanguageId() {
+      return this.formValues.languageTypeResourceId || ''
     }
   },
   watch: {
     'formValues.emailTemplateCategoryResourceId'(resourceId) {
       this.handleCategoryChange(resourceId)
+    },
+    selectedLanguages(val) {
+      if (!val.length) {
+        this.activeLanguage = ''
+      } else if (this.activeLanguage) {
+        const isInSelected = val.find((item) => item.value === this.activeLanguage)
+        if (!isInSelected) {
+          this.activeLanguage = val[0].value
+        }
+      } else {
+        this.activeLanguage = val[0].value
+      }
     }
   },
   created() {
@@ -487,6 +567,42 @@ export default {
           this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
             .toLowerCase()
             .includes('enrollment')
+
+          // YENI: Initialize languages for edit mode
+          this.languagesPayload.push({
+            languageTypeResourceId: this.formValues.languageTypeResourceId,
+            subject: this.formValues.subject,
+            fromAddress: this.formValues.fromAddress,
+            template: this.formValues.template,
+            isTranslated: true
+          })
+          this.selectedLanguages.push({
+            text: this.formValues.languageTypeName || '',
+            value: this.formValues.languageTypeResourceId
+          })
+          if (response?.data?.data?.languages && response?.data?.data?.languages.length) {
+            response?.data?.data?.languages.forEach((item) => {
+              this.selectedLanguages.push({
+                text: item.languageTypeName || '',
+                value: item.languageTypeResourceId
+              })
+              this.languagesPayload.push({
+                languageTypeResourceId: item.languageTypeResourceId,
+                subject: item.subject,
+                fromAddress: item.fromAddress,
+                template: item.template,
+                resourceId: item.resourceId,
+                isTranslated: true
+              })
+            })
+          }
+          this.activeLanguage = this.formValues.languageTypeResourceId
+          this.initialDisabledLanguageIds = [
+            this.formValues.languageTypeResourceId,
+            ...this.languagesPayload
+              .filter((item) => item.isTranslated)
+              .map((item) => item.languageTypeResourceId)
+          ]
         })
         .finally(() => {
           this.loading = false
@@ -604,6 +720,41 @@ export default {
     },
     handleEditHtmlTemplate(template = '') {
       this.formValues.template = template
+    },
+    // YENI: Language Management Methods
+    handleSelectedLanguagesChange(languages) {
+      this.languagesPayload = languages.map((language) => {
+        const item = this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === language.value
+        )
+        if (item) return item
+        return {
+          languageTypeResourceId: language.value,
+          subject: this.getSelectedLanguagePayload.subject,
+          fromAddress: this.getSelectedLanguagePayload.fromAddress,
+          template: this.formValues.template,
+          isTranslated: false
+        }
+      })
+    },
+    handleActiveLanguageChange(value) {
+      this.activeLanguage = value
+    },
+    handleRelocalizeReplace({ language }) {
+      // Emit event for localization/re-localization of the language
+      this.$emit('relocalize-language', {
+        languageId: language.value,
+        languageName: language.text
+      })
+    },
+    handleLanguageRemoved({ languageName }) {
+      // Show notification that language was removed
+      this.$store.dispatch('common/showSuccessSnackBar', {
+        message: `${languageName} language has been removed.`
+      })
+    },
+    handleEditModeClick() {
+      this.$refs.refEmailTemplate.toggleShowGrapesModal()
     }
   }
 }

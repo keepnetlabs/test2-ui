@@ -180,7 +180,7 @@
           </div>
         </div>
       </div>
-      <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+      <VTooltip v-if="!isNotificationTemplate && !isLocalizeReady" bottom max-width="260">
         <template #activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on">
             <VBtn
@@ -203,7 +203,14 @@
           To see red flags, fill in all required fields.
         </span>
       </VTooltip>
-      <VBtn v-else lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
+      <VBtn
+        v-else-if="!isNotificationTemplate && isLocalizeReady"
+        lass="fw-600"
+        rounded
+        outlined
+        color="#2196f3"
+        @click="handleShowRedFlagsClick"
+      >
         <VIcon>mdi-flag</VIcon>
         <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
           redFlagsText
@@ -247,6 +254,7 @@
         >mdi-pencil</VIcon
       >
       <VMenu
+        v-if="!isNotificationTemplate"
         :key="showRedFlags ? 'red-flags' : 'normal'"
         bottom
         :offset="24"
@@ -353,6 +361,10 @@ export default {
     initialDisabledLanguageIds: {
       type: Array,
       default: () => []
+    },
+    isNotificationTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

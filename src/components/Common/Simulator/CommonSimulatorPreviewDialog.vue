@@ -393,6 +393,9 @@ export default {
             border-radius: 4px;
             z-index: 9999;
           }
+          .flagged-area:has(.flagged-area:hover)::after {
+            content: none;
+          }
           .email-container,.container,.email-container-wrapper{
             overflow:visible !important;
           }

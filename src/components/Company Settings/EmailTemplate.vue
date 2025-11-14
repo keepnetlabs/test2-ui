@@ -358,7 +358,7 @@
       </transition>
     </div>
     <div
-      style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;"
+      style="display: grid; grid-template-columns: 1fr 1fr;"
       :class="!isAiAssistant && !showEditButton ? 'pt-6' : ''"
     >
       <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
@@ -399,15 +399,28 @@
           />
         </FormGroup>
       </div>
-      <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-0']" v-if="!onlyGrapes">
+      <div
+        :class="[
+          'mx-6',
+          getSubjectSubtitle ? 'mt-4' : '',
+          isHorizontalFormGroups ? 'pt-2' : 'pt-0'
+        ]"
+        v-if="!onlyGrapes"
+      >
         <FormGroup
           title="Subject:"
-          :sub-title="getSubjectSubtitle"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-          <div class="position-relative">
+          <div :class="['position-relative']">
+            <div
+              v-if="getSubjectSubtitle"
+              class="text-primary-color"
+              style="position: absolute !important; top: -24px;"
+            >
+              {{ getSubjectSubtitle }}
+            </div>
             <InputEntityName
               ref="refInputEntityName"
               id="input--notification-template-subject"
