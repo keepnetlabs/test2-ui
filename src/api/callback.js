@@ -168,8 +168,9 @@ const exchangeCallbackNumbers = (oldProviderNumberId, newProviderNumberId) => {
   )
 }
 
-const getAvailableCallbackNumbers = () => {
-  return testRequest.get(`/callback-simulator/settings/available-numbers`)
+const getAvailableCallbackNumbers = (companyId = '') => {
+  const queryString = companyId ? `?companyResourceId=${encodeURIComponent(companyId)}` : ''
+  return testRequest.get(`/callback-simulator/settings/available-numbers${queryString}`)
 }
 
 const deselectPhoneNumber = (resourceId) => {
