@@ -217,7 +217,7 @@
         }}</span>
       </VBtn>
       <VIcon
-        v-if="isLandingPage"
+        v-if="isLandingPage && false"
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small
@@ -225,7 +225,7 @@
         >mdi-lightbulb-on-outline</VIcon
       >
       <VIcon
-        v-if="isLandingPage"
+        v-if="isLandingPage && false"
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small
@@ -991,7 +991,7 @@ export default {
       this.$emit('on-generate-with-ai')
     },
     handleEditModeClick() {
-      this.$emit('on-edit-mode-click')
+      this.$emit('on-edit-mode')
     },
     handleUploadEmailButtonClick() {
       this.$emit('on-upload-email-button-click')

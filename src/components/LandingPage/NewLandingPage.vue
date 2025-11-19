@@ -200,11 +200,17 @@
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-ai-ally="handleAIAlly"
+                          @on-edit-mode="handleEditMode"
                           @on-link-change="handleLinkChange"
                         />
                       </div>
                       <hr class="mt-4 ml-n4 mr-n4" />
-                      <el-tabs v-model="tab" :key="getLandingPageKey" id="landing-page-tab-content">
+                      <el-tabs
+                        v-model="tab"
+                        :key="getLandingPageKey"
+                        id="landing-page-tab-content"
+                        class="mt-2"
+                      >
                         <el-tab-pane
                           v-for="(page, index) in formValues.landingPages"
                           :key="`page-${index + 1}`"
@@ -520,6 +526,15 @@ export default {
   },
   methods: {
     handleActiveLanguageChange(languageId) {
+      // Yeni dilin sayfalarını yükle
+      const newLangPayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === languageId
+      )
+      if (newLangPayload?.landingPages) {
+        this.formValues.landingPages = JSON.parse(JSON.stringify(newLangPayload.landingPages))
+      }
+
+      this.tab = 'page1'
       this.activeLanguage = languageId
     },
     handleAIAlly() {
@@ -527,6 +542,10 @@ export default {
     },
     handleLinkChange() {
       // Linkleri değiştirme işlemi
+    },
+    handleEditMode() {
+      const index = parseInt(this.tab.replace('page', '')) - 1
+      this.$refs.refEmailTemplate?.[index]?.editHtmlTemplate()
     },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
@@ -719,7 +738,7 @@ export default {
         const payload = {
           ...formValues,
           isAssistedByAI: this.isAssistedByAI,
-          languages: this.languagesPayload,
+          landingPages: this.getSelectedLanguagePayload.landingPages,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )

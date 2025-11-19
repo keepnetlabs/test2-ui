@@ -48,16 +48,12 @@
         <hr class="ml-n4 mr-n4" />
       </template>
       <!-- Safari Browser Toolbar -->
-      <div v-if="!!getCurrentLandingPageTemplate" class="browser-toolbar">
-        <div class="browser-toolbar__controls">
-          <span class="browser-toolbar__dot browser-toolbar__dot--red"></span>
-          <span class="browser-toolbar__dot browser-toolbar__dot--yellow"></span>
-          <span class="browser-toolbar__dot browser-toolbar__dot--green"></span>
-        </div>
-        <div class="browser-toolbar__url-bar">
-          <span class="browser-toolbar__url-text">{{ phishingUrl }}</span>
-        </div>
-      </div>
+      <BrowserToolbar
+        v-if="!!getCurrentLandingPageTemplate"
+        :url="phishingUrl"
+        :page-index="selectedLandingPageIndex"
+        :show-toolbar="!!getCurrentLandingPageTemplate"
+      />
 
       <KEmailPreview
         v-if="!!getCurrentLandingPageTemplate"
@@ -73,13 +69,14 @@
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import labels from '../../model/constants/labels'
 import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
-  components: { KEmailPreview, InputLanguagePreview },
+  components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
   props: {
     templateName: {
       type: String,

@@ -31,6 +31,36 @@
         </div>
       </div>
       <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <div
+          class="d-flex align-center justify-space-between mt-4 mb-1"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+        >
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ selectedRow.name }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip v-if="!isQuishing" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleFastLaunch">
+                    <VIcon small>mdi-send</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Fast Launch</span>
+            </VTooltip>
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+          </div>
+        </div>
         <EmailTemplatePreviewSkeleton v-if="isLoading" />
         <EmailTemplatesAILoader
           v-if="isRedFlagsLoading"
@@ -38,7 +68,7 @@
           :description="getLoaderDescription"
           :loaderTime="20"
         />
-        <ElTabs v-if="!isLoading && !isRedFlagsLoading" v-model="tab" class="mt-4">
+        <ElTabs v-if="!isLoading && !isRedFlagsLoading" v-model="tab">
           <ElTabPane
             id="campaign-manager-info--email-content"
             name="email"
@@ -93,7 +123,7 @@
                       </template>
                       <span>Open in New Tab</span>
                     </VTooltip>
-                    <VTooltip bottom>
+                    <VTooltip v-if="false" bottom>
                       <template #activator="{ on }">
                         <div v-on="on">
                           <VBtn icon outlined color="#2196F3" small @click="handleEdit">
@@ -287,7 +317,8 @@
               :landing-page-params="landingPageParams"
               :landing-page-templates="landingPageTemplates"
               :languages="languages"
-              @edit-landing-page="handleEdit"
+              :phishing-url="landingPageParams.urlTemplate"
+              @on-edit="handleEdit"
             />
           </ElTabPane>
         </ElTabs>
@@ -319,6 +350,7 @@ import {
 } from '@/utils/functions'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
@@ -442,6 +474,9 @@ export default {
     }
   },
   created() {
+    if (!this.languages || this.languages.length === 0) {
+      this.callForLanguages()
+    }
     this.callForData()
   },
   beforeDestroy() {
@@ -452,7 +487,7 @@ export default {
       this.setLoading(true)
       const params = [this.selectedRow.resourceId]
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-        params.push(this.selectedRow.quishingType.toLowerCase())
+        params.push((this.selectedRow.quishingType || 'email').toLowerCase())
       this.apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
@@ -559,9 +594,10 @@ export default {
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
             mfaSmsSenderNumber: data.mfaSmsSenderNumber,
-            languages: this.languages.filter((lang) => {
-              return lang.value === landingPageTemplate?.languageTypeResourceId
-            }) || []
+            languages:
+              this.languages.filter((lang) => {
+                return lang.value === landingPageTemplate?.languageTypeResourceId
+              }) || []
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4
@@ -604,7 +640,10 @@ export default {
       openHtmlInNewWindow(this.emailTemplate)
     },
     handleEdit() {
-      this.$emit('edit-template')
+      this.$emit('on-edit-template')
+    },
+    handleFastLaunch() {
+      this.$emit('on-fast-launch', this.selectedRow)
     },
     handleEmailTemplatePreviewLanguageChange(newLanguageId) {
       // Eski languagePreview için red flags'leri kaydet (sadece red flags aktif ise)
@@ -945,6 +984,18 @@ export default {
       this.isShowRedFlags = false
       this.isFlaggedStylesEnabled = false
       this._removeFlaggedStylesFromTemplate()
+    },
+
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languages =
+          response?.map((language) => ({
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            description: language.description
+          })) || []
+      })
     }
   }
 }

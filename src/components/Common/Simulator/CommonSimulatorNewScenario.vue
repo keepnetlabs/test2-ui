@@ -715,10 +715,10 @@ export default {
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             columnGap: '16px',
-            maxWidth: 'calc(100% - 112px)'
+            maxWidth: 'calc(100% - 96px)'
           }
         : {
-            maxWidth: 'calc(100% - 112px)'
+            maxWidth: 'calc(100% - 96px)'
           }
     },
     getSummaryDifficulty() {

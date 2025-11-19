@@ -662,7 +662,7 @@
     <div v-else id="email-template-content" class="email-template-content">
       <div>
         <v-btn
-          v-if="!isPhishingTemplate || showEditButton"
+          v-if="(!isPhishingTemplate  && templateType !== 'landing') || showEditButton"
           id="btn-edit--notification-template-email-template"
           style="text-transform: none;"
           :disabled="editItemsDisabled"
