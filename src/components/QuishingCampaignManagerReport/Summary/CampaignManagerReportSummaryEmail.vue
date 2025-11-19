@@ -74,9 +74,10 @@ export default {
       return this.isQuishingPrintout ? '$pdf-file' : 'mdi-email'
     },
     getTitle() {
+      const name = this.formData?.name || ''
       return this.isQuishingPrintout
-        ? 'Individual printouts that will be given to users'
-        : labels.EmailThatWill
+        ? `Individual Printout Template: ${name}`
+        : `Email Template: ${name}`
     },
     getPreviewApiFunc() {
       return (resourceId) => {

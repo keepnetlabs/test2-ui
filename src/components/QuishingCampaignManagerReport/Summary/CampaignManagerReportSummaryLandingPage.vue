@@ -8,6 +8,7 @@
       :api-func="getPreviewApiFunc"
       :languages="languageOptions"
       :should-control-html-overflow="true"
+      :is-quishing="isQuishing"
       @on-close="isShowPreviewDrawer = false"
     />
     <CampaignManagerSummaryCard
@@ -18,7 +19,7 @@
       detailable-button-id="btn-preview--campaign-report-landing-page-template"
       :isLoading="isFetchingSummary"
       :show-body-detail.sync="isShowLandingPageTemplate"
-      :title="labels.LandingPageWhoQuishing"
+      :title="getTitle"
     />
   </div>
 </template>
@@ -69,6 +70,12 @@ export default {
     this.callForLanguages()
   },
   computed: {
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
+    getTitle() {
+      return `Landing Page: ${this.formData?.name || ''}`
+    },
     getPreviewApiFunc() {
       return (resourceId) => {
         const { jobResourceId, instanceGroup } = this.previewSelectedRow || {}

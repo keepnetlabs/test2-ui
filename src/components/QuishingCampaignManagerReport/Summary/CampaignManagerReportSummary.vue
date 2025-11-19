@@ -475,13 +475,14 @@ export default {
     },
     getLandingPageTemplateData() {
       const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
-      const { resourceId } = landingPageTemplateInfo
+      const { resourceId, name } = landingPageTemplateInfo
       const languageCode = scenarioInfo?.languageShortCode
       const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(landingPageTemplateInfo).length
         ? {
             languageShortCode: language?.text || languageCode,
             resourceId,
+            name,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup
           }

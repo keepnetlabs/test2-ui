@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-2">
+    <div class="mb-2 mt-n4">
       <span class="template-preview__text--body text-primary-color fs-4 fw-600"
         >{{ landingPageParams.name }}
         <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
@@ -13,8 +13,15 @@
     </div>
     <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;">
       <div v-if="isPhishingScenario">
-        <div class="email-template-preview__header d-flex align-center justify-space-between mb-4">
+        <div
+          class="email-template-preview__header d-flex align-center mb-4"
+          :class="{
+            'justify-end': isQuishing,
+            'justify-space-between': isPhishing
+          }"
+        >
           <InputLanguagePreview
+            v-if="!isQuishing"
             :value="languagePreview"
             :items="selectedLanguages"
             :label="`Template Language (${selectedLanguages.length})`"
@@ -198,6 +205,12 @@ export default {
     getTextOfScenariosPage() {
       if (this.isSmishing) return 'Smishing'
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing' : 'Quishing'
+    },
+    isQuishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+    },
+    isPhishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
     },
     selectedLanguages() {
       if (this.landingPageParams?.languages?.length) {

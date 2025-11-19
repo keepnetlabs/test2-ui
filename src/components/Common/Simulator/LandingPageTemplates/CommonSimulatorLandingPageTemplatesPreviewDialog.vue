@@ -44,6 +44,7 @@
           :languages="landingPageParams.languages || []"
           :phishing-url="landingPageParams.urlTemplate"
           :is-nested="isNested"
+          :is-quishing-prop="isQuishing"
           @edit="handleEdit"
         />
       </div>
@@ -94,6 +95,10 @@ export default {
     drawerWidth: {
       type: String,
       default: 'calc(100% - 72px)'
+    },
+    isQuishing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

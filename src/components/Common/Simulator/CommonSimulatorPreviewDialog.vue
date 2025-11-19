@@ -104,6 +104,7 @@
                   class="email-template-preview__header d-flex align-center justify-space-between mb-4"
                 >
                   <InputLanguagePreview
+                    v-if="isPhishing"
                     :value="languagePreview"
                     :items="selectedTemplateLanguages"
                     :label="`Template Language (${selectedTemplateLanguages.length})`"
@@ -309,7 +310,7 @@
             name="landing-page"
             id="campaign-manager-info--landing-content"
           >
-            <TabsWithMfaSettings
+            <TabsWithMfaSettingsMultipleLanguages
               :key="getLandingPageKey"
               class="mt-n4"
               :type="type"
@@ -329,7 +330,6 @@
 
 <script>
 import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
-import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
@@ -351,13 +351,14 @@ import {
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
     InputLanguagePreview,
     AttachmentsPreview,
     KEmailPreview,
-    TabsWithMfaSettings,
+    TabsWithMfaSettingsMultipleLanguages,
     EmailTemplatePreviewSkeleton,
     RedFlagTooltip,
     EmailTemplatesAILoader

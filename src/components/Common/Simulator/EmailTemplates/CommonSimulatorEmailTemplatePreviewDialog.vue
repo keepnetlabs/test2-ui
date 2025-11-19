@@ -35,76 +35,123 @@
         </div>
       </div>
       <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-if="!isPreviewLoading" class="pt-4">
-          <div class="template-preview__text" v-if="!!templateHTML">
+        <EmailTemplatePreviewSkeleton v-if="isPreviewLoading" />
+        <div v-if="!isPreviewLoading" class="email-template-preview">
+          <div class="email-template-preview__title">
+            {{ emailTemplateParams.name }}
+            <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+              <template #activator="{ on }">
+                <span v-on="on">
+                  <VIcon color="#2196F3" small>mdi-creation</VIcon>
+                </span>
+              </template>
+              <span>This template was generated with AI</span>
+            </VTooltip>
+          </div>
+          <div class="email-template-preview__container">
             <template v-if="!isIndividualPrintoutTemplate">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-                <VTooltip v-if="false" bottom>
-                  <template #activator="{ on }">
-                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
-                      >mdi-creation</VIcon
-                    >
-                  </template>
-                  <span>This template was generated with AI</span>
-                </VTooltip>
+              <!-- Actions Header -->
+              <div class="email-template-preview__header d-flex align-center justify-end mb-4">
+                <div class="email-template-preview__actions d-flex align-center gap-2">
+                  <VTooltip bottom>
+                    <template #activator="{ on }">
+                      <div v-on="on">
+                        <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                          <VIcon small>mdi-open-in-new</VIcon>
+                        </VBtn>
+                      </div>
+                    </template>
+                    <span>Open in New Tab</span>
+                  </VTooltip>
+                </div>
               </div>
-              <div>
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Email Address: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title">CC: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.ccAddresses.join(', ')
-                }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--subject">Subject: </span>
-                <span class="template-preview__text--subject">{{
-                  emailTemplateParams.subject
-                }}</span>
+              <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
+              <div class="email-template-preview__text mt-4" v-if="!!templateHTML">
+                <div v-if="isQuishing && emailTemplateParams.type">
+                  <span class="email-template-preview__text--title">Quishing Type: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.type || 'Email'
+                  }}</span>
+                </div>
+                <div>
+                  <span class="email-template-preview__text--title">Subject: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.subject
+                  }}</span>
+                </div>
+
+                <div style="margin-top: 2px;">
+                  <span class="email-template-preview__text--title">From Name: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.fromName
+                  }}</span>
+                </div>
+
+                <div style="margin-top: 2px;">
+                  <span class="email-template-preview__text--title">From Email: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.fromAddress
+                  }}</span>
+                </div>
+
+                <div
+                  v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0"
+                  style="margin-top: 2px;"
+                >
+                  <span class="email-template-preview__text--title">CC: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.ccAddresses.join(', ')
+                  }}</span>
+                </div>
+
+                <div
+                  v-if="emailTemplateParams.attachment"
+                  class="attachment-wrapper position-relative mt-2"
+                >
+                  <div class="attachment blue-attach mb-0">
+                    <AttachmentsPreview
+                      :deletable="false"
+                      :att="emailTemplateParams.attachment"
+                      :isEmailTemplate="true"
+                    />
+                  </div>
+                </div>
               </div>
             </template>
-            <div v-else class="d-flex justify-space-between align-center">
-              <div class="text-primary-color fs-4">
-                Example Individual Printout
-              </div>
-              <VBtn
-                id="btn-preview-indiviual-printout"
-                class="white--text btn-util btn-download-add-in"
-                color="#2196F3"
-                rounded
-                :style="getIndividualPrintoutStyle"
-                @click="handlePreviewIndividualPrintout"
+            <div v-else>
+              <div
+                class="email-template-preview__text"
+                v-if="isQuishing && emailTemplateParams.type"
               >
-                <v-icon left>mdi-file-eye</v-icon>
-                {{ labels.PrintPreview }}
-              </VBtn>
+                <div>
+                  <span class="email-template-preview__text--title">Quishing Type: </span>
+                  <span class="email-template-preview__text--body">{{
+                    emailTemplateParams.type || 'Email'
+                  }}</span>
+                </div>
+              </div>
+              <div class="d-flex justify-space-between align-center">
+                <div class="text-primary-color fs-4">
+                  Example Individual Printout
+                </div>
+                <VBtn
+                  id="btn-preview-indiviual-printout"
+                  class="white--text btn-util btn-download-add-in"
+                  color="#2196F3"
+                  rounded
+                  :style="getIndividualPrintoutStyle"
+                  @click="handlePreviewIndividualPrintout"
+                >
+                  <v-icon left>mdi-file-eye</v-icon>
+                  {{ labels.PrintPreview }}
+                </VBtn>
+              </div>
+            </div>
+            <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
+            <div class="mt-2">
+              <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
             </div>
           </div>
-          <div
-            v-if="emailTemplateParams.attachment"
-            class="attachment-wrapper position-relative mt-2"
-          >
-            <div class="attachment blue-attach mb-0">
-              <AttachmentsPreview
-                :deletable="false"
-                :att="emailTemplateParams.attachment"
-                :isEmailTemplate="true"
-              />
-            </div>
-          </div>
-          <hr class="mt-4" v-if="!!templateHTML" />
-          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
         </div>
       </div>
     </VNavigationDrawer>
@@ -112,7 +159,7 @@
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import labels from '@/model/constants/labels'
@@ -124,13 +171,14 @@ import QuishingService from '@/api/quishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
+import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
   components: {
     AttachmentsPreview,
     KEmailPreview,
-    DatatableLoading
+    EmailTemplatePreviewSkeleton
   },
   mixins: [useLoading, useDrawerAnimation, useHtmlOverflowControl],
   props: {
@@ -195,6 +243,9 @@ export default {
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
     },
+    isQuishing() {
+      return this.type === SCENARIO_TYPES.QUISHING
+    },
     getIndividualPrintoutStyle() {
       const style = {
         textTransform: 'capitalize'
@@ -245,7 +296,8 @@ export default {
             name,
             difficultyResourceId,
             phishingFileName,
-            subject
+            subject,
+            type
           } = data
           this.emailTemplateParams = {
             fromName,
@@ -253,6 +305,7 @@ export default {
             ccAddresses,
             name,
             subject,
+            type: type || this.selectedRow?.quishingType || '',
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {
@@ -273,6 +326,9 @@ export default {
     },
     handleClose() {
       this.closeDrawer()
+    },
+    handleExternalLink() {
+      openHtmlInNewWindow(this.templateHTML)
     },
     handlePreviewIndividualPrintout() {
       this.isIndividualPrintoutButtonDisabled = true
@@ -296,3 +352,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+@import '@/assets/scss/pages/phishing-scenarios/__all.scss';
+</style>

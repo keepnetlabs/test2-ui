@@ -32,10 +32,31 @@
       </div>
       <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
         <EmailTemplatePreviewSkeleton v-if="isLoading" />
+        <div
+          v-if="!isLoading"
+          class="d-flex align-center justify-space-between mt-4"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+        >
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ selectedRow?.name }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEditCampaign">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+          </div>
+        </div>
         <ElTabs
           v-if="!isLoading"
           v-model="selectedScenario"
-          class="campaign-manager-last-step__phishing-scenario-tab mb-6 mt-4"
+          class="campaign-manager-last-step__phishing-scenario-tab mb-4"
           @tab-click="callForScenarioDetail"
         >
           <ElTabPane
@@ -45,70 +66,86 @@
             :label="template.name"
           />
         </ElTabs>
-        <div v-if="isPhishing && !isLoading" class="my-6">
-          <span class="template-preview__text--title">Category: </span>
-          <span class="template-preview__text--body">{{ category }}</span>
-        </div>
         <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
           <ElTabPane
             id="campaign-manager-info--email-content"
             name="email"
             :label="getFirstSubTabLabel"
           >
-            <div class="template-preview pt-4">
-              <div v-if="isQuishing" class="mb-2">
-                <span class="template-preview__text--title">Quishing Type: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.type || 'Email'
-                }}</span>
-              </div>
-              <div v-if="isPhishing">
-                <InputLanguagePreview
-                  v-model="languagePreview"
-                  persistent-hint
-                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  :hint="getEmailTemplatePreviewLanguageHint"
-                  :items="selectedTemplateLanguages"
-                  :hide-details="false"
-                  @input="handleEmailTemplatePreviewLanguageChange"
-                />
-              </div>
-              <div v-if="!!emailTemplate" class="template-preview__text">
-                <div>
-                  <span class="template-preview__text--title">Template Name: </span>
-                  <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-                  <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
-                    <template #activator="{ on }">
-                      <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
-                        >mdi-creation</VIcon
-                      >
-                    </template>
-                    <span>This template was generated with AI</span>
-                  </VTooltip>
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ emailTemplateParams.name }}
+              <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                <template #activator="{ on }">
+                  <span v-on="on">
+                    <VIcon color="#2196F3" small>mdi-creation</VIcon>
+                  </span>
+                </template>
+                <span>This template was generated with AI</span>
+              </VTooltip>
+            </div>
+            <div
+              class="template-preview"
+              style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+            >
+              <div class="common-simulator-preview__text" v-if="!!emailTemplate">
+                <div v-if="isQuishing">
+                  <span class="template-preview__text--title">Quishing Type: </span>
+                  <span class="template-preview__text--body">{{
+                    emailTemplateParams.type || 'Email'
+                  }}</span>
                 </div>
+                <div
+                  v-if="isPhishing"
+                  class="email-template-preview__header d-flex align-center justify-space-between mb-4"
+                >
+                  <InputLanguagePreview
+                    :value="languagePreview"
+                    :items="selectedTemplateLanguages"
+                    :label="`Template Language (${selectedTemplateLanguages.length})`"
+                    class="email-template-preview__language-select"
+                    style="max-width: 320px;"
+                    hide-details
+                    @input="handleEmailTemplatePreviewLanguageChange"
+                  />
+                  <div class="email-template-preview__actions d-flex align-center gap-2">
+                    <VTooltip bottom>
+                      <template #activator="{ on }">
+                        <div v-on="on">
+                          <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                            <VIcon small>mdi-open-in-new</VIcon>
+                          </VBtn>
+                        </div>
+                      </template>
+                      <span>Open in New Tab</span>
+                    </VTooltip>
+                  </div>
+                </div>
+                <hr class="ml-n4 mb-3 mr-n4" v-if="!!emailTemplate && isPhishing" />
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <span class="template-preview__text--title text-primary-color">Subject: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.subject
+                  }}</span>
+                </div>
+
                 <div v-if="!isQuishingTypeIndividualPrintOut">
                   <span class="template-preview__text--title text-primary-color">From Name: </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  <span class="template-preview__text--body text-primary-color">{{
                     emailTemplateParams.fromName
                   }}</span>
                 </div>
+
                 <div v-if="!isQuishingTypeIndividualPrintOut">
-                  <span class="template-preview__text--title text-primary-color"
-                    >From Email Address:
-                  </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  <span class="template-preview__text--title text-primary-color">From Email: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
                     emailTemplateParams.fromAddress
                   }}</span>
                 </div>
                 <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
                   <span class="template-preview__text--title text-primary-color">CC: </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
+                  <span class="template-preview__text--body text-primary-color">{{
                     emailTemplateParams.ccAddresses.join(', ')
                   }}</span>
-                </div>
-                <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--title">
-                  <span class="fw-600 text-primary-color">Subject: </span>
-                  <span class="fw-400 text-primary-color">{{ emailTemplateParams.subject }}</span>
                 </div>
                 <div
                   v-if="isQuishingTypeIndividualPrintOut"
@@ -132,8 +169,7 @@
               </div>
               <div
                 v-if="emailTemplateParams.attachment"
-                class="attachment-wrapper mt-2"
-                style="position: relative;"
+                class="attachment-wrapper mt-2 position-relative"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
@@ -143,22 +179,25 @@
                   />
                 </div>
               </div>
-              <hr class="mt-4" v-if="!!emailTemplate" />
+              <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
               <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
             </div>
           </ElTabPane>
           <ElTabPane
             v-if="!isAttachmentBasedScenario"
-            :label="labels.LandingPage"
+            :label="labels.LandingPageTemplate"
             name="landing-page"
             id="campaign-manager-info--landing-content"
           >
-            <TabsWithMfaSettings
+            <TabsWithMfaSettingsMultipleLanguages
               :key="getLandingPageKey"
               :type="type"
               :is-method-mfa="isMethodMfa"
               :landing-page-params="landingPageParams"
               :landing-page-templates="landingPageTemplates"
+              :languages="globalLanguages"
+              :phishing-url="landingPageParams.urlTemplate"
+              :is-phishing-scenario="isPhishing"
             />
           </ElTabPane>
           <ElTabPane
@@ -191,7 +230,7 @@ import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
+import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
@@ -202,13 +241,14 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
+import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
   components: {
     InputLanguagePreview,
     TrainingLibraryPreview,
-    TabsWithMfaSettings,
+    TabsWithMfaSettingsMultipleLanguages,
     AttachmentsPreview,
     KEmailPreview,
     EmailTemplatePreviewSkeleton
@@ -268,7 +308,7 @@ export default {
       }.`
     },
     getFirstSubTabLabel() {
-      return this.isQuishing ? labels.QuishingTemplate : labels.JustEmail
+      return this.isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
     },
     getIndividualPrintoutStyle() {
       const style = {
@@ -370,6 +410,8 @@ export default {
       this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
       this.category = phishingScenarioPreviewDto?.category
+      // Reset training languages array before populating
+      this.selectedLanguages = []
       if (this.isTrainingScenario)
         this.callForTrainingLanguages(this.trainingParams.trainingContents)
       this.emailTemplateParams = {
@@ -387,6 +429,9 @@ export default {
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
+      // Reset arrays before populating with new scenario data
+      this.selectedTemplateLanguages = []
+      this.phishingEmailTemplates = []
       if (this.isPhishing) {
         const mainLanguage = this.globalLanguages.find(
           (lang) => lang.value === phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
@@ -425,6 +470,8 @@ export default {
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      const landingPageLanguageTypeResourceId =
+        phishingScenarioPreviewDto?.landingPageTemplate?.languageTypeResourceId
       this.landingPageParams = {
         mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
@@ -433,7 +480,15 @@ export default {
         urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
         isAssistedByAI:
           phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
-          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI,
+        languages: landingPageLanguageTypeResourceId
+          ? this.globalLanguages.filter((lang) => {
+              return (
+                lang.value === landingPageLanguageTypeResourceId ||
+                lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
+              )
+            }) || []
+          : []
       }
       this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId?.toString() === '4'
       this.tab = 'email'
@@ -474,6 +529,8 @@ export default {
         acc.push(item.languageId)
         return acc
       }, [])
+      // Reset trainingParams.languages array
+      this.trainingParams.languages = []
       languageIds.forEach((lang) => {
         const language = this.languages.find((item) => item.id === lang)
         if (language) {
@@ -481,17 +538,20 @@ export default {
             text: language.isoFriendlyName || language.name,
             value: language.id
           })
-          if (!this.trainingParams.languages)
-            this.trainingParams.languages = [language.isoFriendlyName || language.name]
-          else this.trainingParams.languages.push(language.isoFriendlyName || language.name)
+          this.trainingParams.languages.push(language.isoFriendlyName || language.name)
         }
       })
-      if (this.trainingParams.languages)
+      if (this.trainingParams.languages.length > 0)
         this.trainingParams.languages = this.trainingParams.languages.join(', ')
     },
-    handleEmailTemplatePreviewLanguageChange() {
+    handleEditCampaign() {
+      this.$emit('on-edit-campaign', this.selectedRow)
+    },
+    handleEmailTemplatePreviewLanguageChange(newLanguageId) {
+      this.languagePreview = newLanguageId
+
       const findedTemplate = this.phishingEmailTemplates.find(
-        (item) => item.languageTypeResourceId === this.languagePreview
+        (item) => item.languageTypeResourceId === newLanguageId
       )
       if (!findedTemplate) return
       this.emailTemplateParams = {
@@ -499,9 +559,13 @@ export default {
         ccAddresses: findedTemplate.ccAddresses,
         fromName: findedTemplate.fromName,
         fromAddress: findedTemplate.fromAddress,
-        subject: findedTemplate.subject
+        subject: findedTemplate.subject,
+        template: findedTemplate.template
       }
       this.emailTemplate = findedTemplate.template
+    },
+    handleExternalLink() {
+      openHtmlInNewWindow(this.emailTemplate)
     }
   }
 }

@@ -5,8 +5,9 @@
     </div>
     <div class="landing-page-template-preview__container">
       <!-- Language Selection and Actions Header -->
-      <div class="landing-page-template-preview__header">
+      <div class="landing-page-template-preview__header" :class="{ 'justify-end': isQuishing }">
         <InputLanguagePreview
+          v-if="!isQuishing"
           v-model="selectedLanguageId"
           :items="languageItems"
           :label="`Template Language (${languageItems.length})`"
@@ -105,6 +106,10 @@ export default {
     isNested: {
       type: Boolean,
       default: false
+    },
+    isQuishingProp: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -118,6 +123,12 @@ export default {
   computed: {
     hasLandingPageTemplate() {
       return this?.landingPageTemplates?.length > 0
+    },
+    isPhishing() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+    },
+    isQuishing() {
+      return this.isQuishingProp || this.type === PREVIEW_DIALOG_TYPES.QUISHING
     },
     languageItems() {
       return this.languages.map((lang) => ({

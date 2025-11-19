@@ -49,9 +49,9 @@
                 <span class="template-preview__text--title">Template Name: </span>
                 <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
               </div>
-              <div class="template-preview__text--subject">
+              <div class="template-preview__text--title">
                 <span>Subject: </span>
-                <span>{{ emailTemplateParams.subject }}</span>
+                <span class="template-preview__text--body">{{ emailTemplateParams.subject }}</span>
               </div>
             </div>
             <div

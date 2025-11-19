@@ -401,7 +401,7 @@
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
                             mdi-application
                           </v-icon>
-                          <span>Landing Page:</span>
+                          <span>Landing Page: </span>
                           <span>{{
                             summaryData.landingPageTemplate && summaryData.landingPageTemplate.name
                           }}</span>
@@ -697,11 +697,6 @@ export default {
       return this.type === SCENARIO_TYPES.PHISHING
         ? 'Select the phishing technique for this template'
         : 'Select the quishing technique for this template'
-    },
-    getLandingPageCardTitle() {
-      return this.type === SCENARIO_TYPES.PHISHING
-        ? 'Landing Page for users who clicked the phishing link'
-        : 'Landing Page for users who clicked the QR code link'
     },
     getLandingPageUrlLabel() {
       return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL

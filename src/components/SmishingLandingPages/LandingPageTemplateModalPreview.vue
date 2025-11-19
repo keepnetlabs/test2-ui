@@ -1,5 +1,5 @@
 <template>
-  <div class="landing-page-template-preview pt-4" v-if="hasLandingPageTemplate">
+  <div class="landing-page-template-preview" v-if="hasLandingPageTemplate">
     <div class="landing-page-template-preview__text">
       <div>
         <div class="mb-1">
