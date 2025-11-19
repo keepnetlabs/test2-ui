@@ -196,8 +196,11 @@
                           :translated-language-resource-ids="translatedLanguageResourceIds"
                           :language-options="languageOptions"
                           :is-notification-template="true"
+                          :is-landing-page="true"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
+                          @on-ai-ally="handleAIAlly"
+                          @on-link-change="handleLinkChange"
                         />
                       </div>
                       <hr class="mt-4 ml-n4 mr-n4" />
@@ -519,6 +522,12 @@ export default {
     handleActiveLanguageChange(languageId) {
       this.activeLanguage = languageId
     },
+    handleAIAlly() {
+      // AI Ally ile template generate etme işlemi
+    },
+    handleLinkChange() {
+      // Linkleri değiştirme işlemi
+    },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
         const item = this.languagesPayload.find(
@@ -743,6 +752,17 @@ export default {
         this.isSubmitDisabled = false
       }
     },
+    getLanguageObject(languageTypeResourceId) {
+      const langObj = this.languageItems.find((item) => item.value === languageTypeResourceId)
+      if (langObj) {
+        return langObj
+      }
+      // Fallback: eğer languageItems'de bulamazsa, manuel obje oluştur
+      return {
+        text: languageTypeResourceId,
+        value: languageTypeResourceId
+      }
+    },
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
@@ -818,7 +838,9 @@ export default {
     },
     getSelectedLanguagePayload() {
       return (
-        this.languagesPayload.find((item) => item.languageTypeResourceId === this.activeLanguage) || {
+        this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === this.activeLanguage
+        ) || {
           landingPages: this.formValues.landingPages || []
         }
       )
@@ -914,22 +936,13 @@ export default {
           landingPages: JSON.parse(JSON.stringify(data.landingPages)),
           isTranslated: true
         })
-        this.selectedLanguages.push({
-          text:
-            this.languageItems.find(
-              (item) => item.value === data.languageTypeResourceId
-            )?.label || data.languageTypeName,
-          value: data.languageTypeResourceId
-        })
+        const mainLanguageObj = this.getLanguageObject(data.languageTypeResourceId)
+        this.selectedLanguages.push(mainLanguageObj)
 
         if (response?.data?.data?.languages && response.data.data.languages.length) {
           response.data.data.languages.forEach((item) => {
-            this.selectedLanguages.push({
-              text:
-                this.languageItems.find((lang) => lang.value === item.languageTypeResourceId)
-                  ?.label || item.languageTypeName,
-              value: item.languageTypeResourceId
-            })
+            const langObj = this.getLanguageObject(item.languageTypeResourceId)
+            this.selectedLanguages.push(langObj)
             this.languagesPayload.push({
               languageTypeResourceId: item.languageTypeResourceId,
               landingPages: JSON.parse(JSON.stringify(item.landingPages)),

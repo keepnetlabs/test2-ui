@@ -402,7 +402,7 @@
       <div
         :class="[
           'mx-6',
-          getSubjectSubtitle ? 'mt-4' : '',
+          getSubjectSubtitle ? 'mt-6' : '',
           isHorizontalFormGroups ? 'pt-2' : 'pt-0'
         ]"
         v-if="!onlyGrapes"
@@ -416,8 +416,8 @@
           <div :class="['position-relative']">
             <div
               v-if="getSubjectSubtitle"
-              class="text-primary-color"
-              style="position: absolute !important; top: -24px;"
+              class="text-primary-color fs-3"
+              style="position: absolute !important; top: -40px; max-width: 554px;"
             >
               {{ getSubjectSubtitle }}
             </div>
@@ -445,7 +445,10 @@
           </div>
         </FormGroup>
       </div>
-      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
+      <div
+        v-if="!onlyGrapes"
+        :class="['mx-6', getSubjectSubtitle ? 'mt-6' : '', isHorizontalFormGroups ? 'pt-2' : '']"
+      >
         <FormGroup
           title="From Name:"
           style="max-width: unset;"

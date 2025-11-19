@@ -216,20 +216,22 @@
           redFlagsText
         }}</span>
       </VBtn>
-      <VTextField
-        v-if="false"
-        v-model.trim="getTextFieldValue"
-        ref="refSearchTextField"
-        id="input-language-settings"
-        outlined
-        hide-details
-        readonly
-        autocomplete="off"
-        placeholder="Search languages to manage"
-        :append-icon="appendIcon"
-        :disabled="isGenerateWithAIDisabled"
-        @focus="handleSearchInputFocus"
-      />
+      <VIcon
+        v-if="isLandingPage"
+        color="#2196f3"
+        class="executive-reports-card__right-btn"
+        small
+        @click="handleAIAlly"
+        >mdi-lightbulb-on-outline</VIcon
+      >
+      <VIcon
+        v-if="isLandingPage"
+        color="#2196f3"
+        class="executive-reports-card__right-btn"
+        small
+        @click="handleLinkChange"
+        >mdi-link-variant</VIcon
+      >
       <VTooltip v-if="showRedFlags" bottom max-width="142">
         <template #activator="{ on }">
           <div v-on="on">
@@ -363,6 +365,10 @@ export default {
       default: () => []
     },
     isNotificationTemplate: {
+      type: Boolean,
+      default: false
+    },
+    isLandingPage: {
       type: Boolean,
       default: false
     }
@@ -1038,6 +1044,12 @@ export default {
       })
       this.items = base
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
+    },
+    handleAIAlly() {
+      this.$emit('on-ai-ally')
+    },
+    handleLinkChange() {
+      this.$emit('on-link-change')
     }
   }
 }
