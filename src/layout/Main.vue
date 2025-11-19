@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-  <ChatPanel v-if="isAwarenessEducator && isTestEnvironment" />
+    <ChatPanel v-if="isAwarenessEducator && isTestEnvironment" />
   </v-app>
 </template>
 <script>

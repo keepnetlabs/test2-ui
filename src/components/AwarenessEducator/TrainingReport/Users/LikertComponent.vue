@@ -7,11 +7,7 @@
           <div v-if="userResponses.length === 0" class="likert-item">
             <div class="likert-response-text">No likert responses found</div>
           </div>
-          <div
-            v-for="(response, index) in userResponses"
-            :key="index"
-            class="likert-item"
-          >
+          <div v-for="(response, index) in userResponses" :key="index" class="likert-item">
             <div class="likert-question-number">{{ index + 1 }}</div>
             <div class="likert-response-text">{{ response }}</div>
           </div>
@@ -43,7 +39,7 @@ export default {
       }
 
       // Kullanıcının verdiği likert cevaplarını al (isUserAnswer: true)
-      const userAnswer = this.answerOptions.find(option => option.isUserAnswer)
+      const userAnswer = this.answerOptions.find((option) => option.isUserAnswer)
 
       if (userAnswer && userAnswer.option) {
         // "0_Strongly_Disagree, 1_Strongly_Disagree, ..." formatını parse et

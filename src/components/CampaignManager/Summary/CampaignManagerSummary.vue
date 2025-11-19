@@ -1,7 +1,11 @@
 <template>
   <div class="campaign-manager-last-step">
     <EmailTemplateMultipleLanguagePreviewDialog
-      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow && type !== SCENARIO_TYPES.QUISHING"
+      v-if="
+        showEmailTemplatePreviewDialog &&
+        emailTemplatePreviewSelectedRow &&
+        type !== SCENARIO_TYPES.QUISHING
+      "
       ref="emailTemplatePreviewDialog"
       :status="showEmailTemplatePreviewDialog"
       :selected-row="emailTemplatePreviewSelectedRow"
@@ -12,7 +16,11 @@
       @on-close="showEmailTemplatePreviewDialog = false"
     />
     <CommonSimulatorEmailTemplatePreviewDialog
-      v-if="showEmailTemplatePreviewDialog && emailTemplatePreviewSelectedRow && type === SCENARIO_TYPES.QUISHING"
+      v-if="
+        showEmailTemplatePreviewDialog &&
+        emailTemplatePreviewSelectedRow &&
+        type === SCENARIO_TYPES.QUISHING
+      "
       :status="showEmailTemplatePreviewDialog"
       :selected-row="emailTemplatePreviewSelectedRow"
       :type="type"

@@ -282,7 +282,7 @@ import {
   getEmailTemplateTranslation
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, FLAGGED_AREA_CSS } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import EditLanguagesLeavingDialog from '@/components/PhishingScenarios/EditLanguagesLeavingDialog.vue'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
@@ -435,60 +435,7 @@ export default {
       isRelocalizeOperation: false,
       relocalizeLanguageName: '',
       redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
-      isFlaggedStylesEnabled: false,
-      flaggedAreaCss: `
-        <style>
-          .flagged-area {
-            position: relative;
-            display: inline-block;
-            border: 1px solid #e00;
-            border-radius: 4px;
-            padding-left:2em !important;
-            margin: 0.5em 0.1em;
-          }
-           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 0.2em 2em;
-          }
-
-          .flagged-area::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0.5em;
-            transform: translateY(-50%);
-            width: 1em;
-            height: 1em;
-            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
-          }
-          .flagged-area:hover::after {
-            content: attr(data-flag-tooltip);
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, 0);
-            margin-top: 0.4em;
-            padding: 4px 8px;
-            background:#B83A3A;
-            color: #fff;
-            font-size: 12px;
-            line-height: 1.33;
-            font-family:"Open Sans", sans-serif;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 240px;
-            min-width: 240px;
-            border-radius: 4px;
-            z-index: 9999;
-          }
-            .flagged-area:has(.flagged-area:hover)::after {
-              content: none;
-            }
-          .email-container,.container,.email-container-wrapper{
-            overflow:visible !important;
-          }
-        </style>
-      `
+      isFlaggedStylesEnabled: false
     }
   },
   computed: {
@@ -1531,7 +1478,7 @@ export default {
     },
     _addFlaggedStylesToTemplate(template) {
       // Prevent duplicate CSS injection
-      if (template.includes(this.flaggedAreaCss.trim())) {
+      if (template.includes(FLAGGED_AREA_CSS.trim())) {
         return template
       }
 
@@ -1545,20 +1492,20 @@ export default {
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
         // CSS'i head'e ekle, script'i body'ye ekle
-        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
         return this._injectScriptIntoBody(templateWithCss)
       }
       // If no head tag, create one
       let templateWithCss = template.replace(
         /<html[\s\S]*?>/i,
-        `$&<head>${this.flaggedAreaCss}</head>`
+        `$&<head>${FLAGGED_AREA_CSS}</head>`
       )
       return this._injectScriptIntoBody(templateWithCss)
     },
 
     _prependCssToBodyContent(template) {
       // CSS'i başa ekle, script'i body'ye ekle
-      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
       return this._injectScriptIntoBody(templateWithCss)
     },
 
@@ -1586,7 +1533,7 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
-      const cssToRemove = this.flaggedAreaCss.trim()
+      const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
       let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')

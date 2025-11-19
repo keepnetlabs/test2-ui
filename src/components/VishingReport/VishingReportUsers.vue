@@ -43,7 +43,10 @@
     >
       <template v-slot:datatable-custom-column="{ scope, col }">
         <div class="vishing-report-users__status-column">
-          <v-tooltip bottom :disabled="scope.row.status !== 'CallingError' && scope.row.status !== 'Busy'">
+          <v-tooltip
+            bottom
+            :disabled="scope.row.status !== 'CallingError' && scope.row.status !== 'Busy'"
+          >
             <template v-slot:activator="{ on }">
               <v-btn style="display: none;" />
               <Badge

@@ -259,6 +259,7 @@ export const labels = {
     'Multi-factor authentication message to be sent to target users. Use {MFA_CODE} merge tag as a variable for the MFA message',
   SelectEmailTemplate: 'Select Email Template',
   SelectLandingPageTemplate: 'Select Landing Page Template',
+  LandingPageTemplate: 'Landing Page Template',
   MultiFactorAuthentication: 'Multi-Factor Authentication',
   MultiFactorAuthenticationSub: 'Phishing scenarios become more realistic with MFA settings',
   MultiFactorAuthenticationSubQuishing:
@@ -815,6 +816,7 @@ export const labels = {
   InvalidPhoneNumber: 'Invalid phone number',
   Email: 'Email Address',
   JustEmail: 'Email',
+
   FromName: 'From Name',
   EmptySamlTable: 'You do not have any SAML configuration',
   EmptyCampaignManager: 'You do not have any Campaign',

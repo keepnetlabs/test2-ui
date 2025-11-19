@@ -75,7 +75,7 @@ import KEmailPreview from '@/components/KEmailPreview'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import labels from '../../model/constants/labels'
-import { getPreventClickScript } from '@/utils/preventClickScript'
+import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
@@ -138,7 +138,7 @@ export default {
           localStorage.getItem('isSelectCompany') === 'true'
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
-         if(!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
+        if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
         return html.replace(/\{COMPANYLOGO\}/g, logo)
       }
       return html
@@ -160,47 +160,7 @@ export default {
       this.$emit('language-change', languageId)
     },
     handleExternalLink() {
-      if (this.previewHtml) {
-        let htmlContent = this.previewHtml
-        // HTML'e title ekle veya varsa güncelle
-        if (!htmlContent.includes('<title>')) {
-          // <head> tag'i varsa title'ı oraya ekle
-          if (htmlContent.includes('<head>')) {
-            htmlContent = htmlContent.replace(
-              '<head>',
-              '<head><title>Landing Page Template Preview</title>'
-            )
-          } else if (htmlContent.includes('<html>')) {
-            // <head> yoksa ama <html> varsa <head> oluştur
-            htmlContent = htmlContent.replace(
-              '<html>',
-              '<html><head><title>Landing Page Template Preview</title></head>'
-            )
-          } else {
-            // Hiçbiri yoksa başa ekle
-            htmlContent = `<head><title>Landing Page Template Preview</title></head>${htmlContent}`
-          }
-        } else {
-          // Title varsa güncelle
-          htmlContent = htmlContent.replace(
-            /<title>.*?<\/title>/i,
-            '<title>Landing Page Template Preview</title>'
-          )
-        }
-
-        // Prevent click script'i ekle
-        const preventScript = getPreventClickScript()
-        if (htmlContent.includes('</body>')) {
-          htmlContent = htmlContent.replace('</body>', `${preventScript}</body>`)
-        } else {
-          htmlContent += preventScript
-        }
-
-        const blob = new Blob([htmlContent], { type: 'text/html' })
-        const url = window.URL.createObjectURL(blob)
-        window.open(url, '_blank')
-        setTimeout(() => window.URL.revokeObjectURL(url), 100)
-      }
+      openHtmlInNewWindow(this.previewHtml)
     },
     handleEdit() {
       this.$emit('edit')

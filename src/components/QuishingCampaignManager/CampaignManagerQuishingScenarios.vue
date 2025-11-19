@@ -12,7 +12,10 @@
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowEmailTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
       :status="isShowEmailTemplateDrawer"
-      :selected-row="{ resourceId: emailTemplateParams?.resourceId, name: emailTemplateParams?.name }"
+      :selected-row="{
+        resourceId: emailTemplateParams?.resourceId,
+        name: emailTemplateParams?.name
+      }"
       :api-func="QuishingService.getEmailTemplatePreviewContent"
       :type="type"
       :languages="languageOptions"

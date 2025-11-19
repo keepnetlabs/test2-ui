@@ -1,7 +1,5 @@
 <template>
-  <div
-    :class="`landingPagePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`"
-  >
+  <div :class="`landingPagePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
     <CommonSimulatorLandingPageTemplatesPreviewDialog
       v-if="isTemplateDetails"
       ref="landingPagePreviewDialog"

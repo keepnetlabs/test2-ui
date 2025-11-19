@@ -45,6 +45,14 @@
         <div v-if="!isPreviewLoading && !isRedFlagsLoading" class="email-template-preview">
           <div class="email-template-preview__title">
             {{ emailTemplateParams.name }}
+            <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+              <template #activator="{ on }">
+                <span v-on="on">
+                  <VIcon color="#2196F3" small>mdi-creation</VIcon>
+                </span>
+              </template>
+              <span>This template was generated with AI</span>
+            </VTooltip>
           </div>
           <div class="email-template-preview__container">
             <!-- Language Selection and Actions Header -->
@@ -60,19 +68,34 @@
               <div class="email-template-preview__actions">
                 <VTooltip bottom>
                   <template #activator="{ on }">
-                    <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleExternalLink">
-                      <VIcon small>mdi-open-in-new</VIcon>
-                    </VBtn>
+                    <div v-on="on">
+                      <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                        <VIcon small>mdi-open-in-new</VIcon>
+                      </VBtn>
+                    </div>
                   </template>
                   <span>Open in New Tab</span>
                 </VTooltip>
                 <VTooltip v-if="!isNested" bottom>
                   <template #activator="{ on }">
-                    <VBtn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
-                      <VIcon small>mdi-pencil</VIcon>
-                    </VBtn>
+                    <div v-on="on">
+                      <VBtn
+                        icon
+                        outlined
+                        color="#2196F3"
+                        small
+                        :style="isShowRedFlags ? { opacity: 0.5, pointerEvents: 'none' } : {}"
+                        @click="handleEdit"
+                      >
+                        <VIcon small>mdi-pencil</VIcon>
+                      </VBtn>
+                    </div>
                   </template>
-                  <span>Edit Template</span>
+                  <span>{{
+                    isShowRedFlags
+                      ? 'Editing is disabled while the red flag is shown.'
+                      : 'Edit Template'
+                  }}</span>
                 </VTooltip>
               </div>
             </div>
@@ -128,6 +151,7 @@
                     ? 'red-flag-preview-active'
                     : ''
                 "
+                style="width: calc(100% - 200px); margin-top: 2px;"
               >
                 <VIcon
                   v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
@@ -152,6 +176,7 @@
                     ? 'red-flag-preview-active'
                     : ''
                 "
+                style="width: calc(100% - 200px); margin-top: 2px;"
               >
                 <VIcon
                   v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
@@ -172,6 +197,7 @@
               <!-- 4. CC -->
               <div
                 v-if="emailTemplateParams.ccAddresses && emailTemplateParams.ccAddresses.length > 0"
+                style="max-width: calc(100% - 200px); margin-top: 2px;"
               >
                 <span class="email-template-preview__text--title">CC: </span>
                 <span class="email-template-preview__text--body">{{
@@ -222,6 +248,7 @@ import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
+import { openHtmlInNewWindow, FLAGGED_AREA_CSS } from '@/utils/functions'
 export default {
   name: 'EmailTemplateMultipleLanguagePreviewDialog',
   components: {
@@ -285,60 +312,7 @@ export default {
       lastRedFlags: {},
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
-      isRedFlagsLoading: false,
-      flaggedAreaCss: `
-        <style>
-          .flagged-area {
-            position: relative;
-            display: inline-block;
-            border: 1px solid #e00;
-            border-radius: 4px;
-            padding-left:2em !important;
-            margin: 0.5em 0.1em;
-          }
-           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 0.2em 2em;
-          }
-
-          .flagged-area::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0.5em;
-            transform: translateY(-50%);
-            width: 1em;
-            height: 1em;
-            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
-          }
-          .flagged-area:hover::after {
-            content: attr(data-flag-tooltip);
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, 0);
-            margin-top: 0.4em;
-            padding: 4px 8px;
-            background:#B83A3A;
-            color: #fff;
-            font-size: 12px;
-            line-height: 1.33;
-            font-family:"Open Sans", sans-serif;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 240px;
-            min-width: 240px;
-            border-radius: 4px;
-            z-index: 9999;
-          }
-            .flagged-area:has(.flagged-area:hover)::after {
-            content: none;
-          }
-          .email-container,.container,.email-container-wrapper{
-            overflow:visible !important;
-          }
-        </style>
-      `
+      isRedFlagsLoading: false
     }
   },
   computed: {
@@ -484,35 +458,7 @@ export default {
       this.$emit('on-edit', this.selectedRow)
     },
     handleExternalLink() {
-      if (this.templateHTML) {
-        let htmlContent = this.templateHTML
-        // HTML'e title ekle veya varsa güncelle
-        if (!htmlContent.includes('<title>')) {
-          if (htmlContent.includes('<head>')) {
-            htmlContent = htmlContent.replace(
-              '<head>',
-              '<head><title>Email Template Preview</title>'
-            )
-          } else if (htmlContent.includes('<html>')) {
-            htmlContent = htmlContent.replace(
-              '<html>',
-              '<html><head><title>Email Template Preview</title></head>'
-            )
-          } else {
-            htmlContent = `<head><title>Email Template Preview</title></head>${htmlContent}`
-          }
-        } else {
-          htmlContent = htmlContent.replace(
-            /<title>.*?<\/title>/i,
-            '<title>Email Template Preview</title>'
-          )
-        }
-
-        const blob = new Blob([htmlContent], { type: 'text/html' })
-        const url = window.URL.createObjectURL(blob)
-        window.open(url, '_blank')
-        setTimeout(() => window.URL.revokeObjectURL(url), 100)
-      }
+      openHtmlInNewWindow(this.templateHTML)
     },
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
@@ -734,7 +680,7 @@ export default {
       return /<head[\s\S]*?>/i.test(template)
     },
     _addFlaggedStylesToTemplate(template) {
-      if (template.includes(this.flaggedAreaCss.trim())) {
+      if (template.includes(FLAGGED_AREA_CSS.trim())) {
         return template
       }
 
@@ -746,17 +692,17 @@ export default {
     },
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
-        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
         return this._injectScriptIntoBody(templateWithCss)
       }
       let templateWithCss = template.replace(
         /<html[\s\S]*?>/i,
-        `$&<head>${this.flaggedAreaCss}</head>`
+        `$&<head>${FLAGGED_AREA_CSS}</head>`
       )
       return this._injectScriptIntoBody(templateWithCss)
     },
     _prependCssToBodyContent(template) {
-      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
       return this._injectScriptIntoBody(templateWithCss)
     },
     _injectScriptIntoBody(template) {
@@ -781,7 +727,7 @@ export default {
       }
     },
     _removeFlaggedStylesFromTemplate(template) {
-      const cssToRemove = this.flaggedAreaCss.trim()
+      const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
       let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')

@@ -13,3 +13,21 @@
   transition: right 0.25s ease-in-out;
   z-index: 251 !important;
 }
+
+// Common Simulator Email Preview Text Styles
+.common-simulator-preview__text {
+  .template-preview__text--title {
+    color: rgba(56, 59, 65, 0.72);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+  }
+
+  .template-preview__text--body {
+    color: #383b41;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 19px;
+  }
+}

@@ -34,7 +34,7 @@ export default {
       }
 
       // Kullanıcının seçtiği cevabı bul (isUserAnswer: true)
-      const userAnswer = this.answerOptions.find(option => option.isUserAnswer)
+      const userAnswer = this.answerOptions.find((option) => option.isUserAnswer)
 
       if (userAnswer) {
         return userAnswer.text || userAnswer.option || userAnswer.answer

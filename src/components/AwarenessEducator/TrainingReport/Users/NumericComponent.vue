@@ -34,7 +34,9 @@ export default {
 
       // Numeric tipi için genelde tek bir cevap vardır, ilk elemanı al
       const firstAnswer = this.answerOptions[0]
-      return firstAnswer ? (firstAnswer.text || firstAnswer.option || 'No answer provided') : 'No answer provided'
+      return firstAnswer
+        ? firstAnswer.text || firstAnswer.option || 'No answer provided'
+        : 'No answer provided'
     }
   }
 }

@@ -33,7 +33,7 @@ export default {
       }
 
       // Kullanıcının yazdığı essay cevabını al (isUserAnswer: true)
-      const userAnswer = this.answerOptions.find(option => option.isUserAnswer)
+      const userAnswer = this.answerOptions.find((option) => option.isUserAnswer)
 
       if (userAnswer) {
         return userAnswer.text || userAnswer.option || userAnswer.answer || 'No response provided'

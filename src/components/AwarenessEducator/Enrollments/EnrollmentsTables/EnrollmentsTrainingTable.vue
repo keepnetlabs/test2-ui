@@ -100,7 +100,12 @@ export default {
       type: Array
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi,useEnrollmentTableFilters],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi,
+    useEnrollmentTableFilters
+  ],
   data() {
     return {
       CONSTANTS: {

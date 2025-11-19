@@ -69,7 +69,7 @@ export default {
   computed: {
     getTitle() {
       return `Landing Page: ${this.formData?.name || ''}`
-    },
+    }
   },
   watch: {
     isShowLandingPageTemplate(val = false) {
@@ -80,7 +80,7 @@ export default {
         }
         this.isShowLandingPagePreview = true
       }
-    },
+    }
   },
   created() {
     this.callForLanguages()

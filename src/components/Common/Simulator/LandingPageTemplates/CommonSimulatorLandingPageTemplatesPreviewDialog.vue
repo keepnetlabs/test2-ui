@@ -16,37 +16,37 @@
       :width="drawerWidth"
       height="100%"
     >
-    <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-      <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
-        <div>
-          <VListItem>
-            <VListItemContent>
-              <VListItemTitle class="k-overlay__title">
-                Landing Page Template Preview
-              </VListItemTitle>
-            </VListItemContent>
-          </VListItem>
-        </div>
-        <div>
-          <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
-            mdi-close
-          </VIcon>
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  Landing Page Template Preview
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
-      <LandingPagePreviewSkeleton v-if="isLoading" />
-      <LandingPageTemplateModalPreview
-        v-show="!isLoading"
-        :type="type"
-        :template-name="landingPageParams.name"
-        :landing-page-templates="landingPageTemplates"
-        :languages="landingPageParams.languages || []"
-        :phishing-url="landingPageParams.urlTemplate"
-        :is-nested="isNested"
-        @edit="handleEdit"
-      />
-    </div>
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <LandingPagePreviewSkeleton v-if="isLoading" />
+        <LandingPageTemplateModalPreview
+          v-show="!isLoading"
+          :type="type"
+          :template-name="landingPageParams.name"
+          :landing-page-templates="landingPageTemplates"
+          :languages="landingPageParams.languages || []"
+          :phishing-url="landingPageParams.urlTemplate"
+          :is-nested="isNested"
+          @edit="handleEdit"
+        />
+      </div>
     </VNavigationDrawer>
   </div>
 </template>
@@ -156,4 +156,3 @@ export default {
   }
 }
 </script>
-

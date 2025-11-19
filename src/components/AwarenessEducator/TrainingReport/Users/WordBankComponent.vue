@@ -4,11 +4,7 @@
       <div class="word-bank-answer-field">
         <label class="word-bank-answer-label">User's Answer:</label>
         <div class="word-bank-answer-list">
-          <div
-            v-for="(word, index) in userWords"
-            :key="index"
-            class="word-bank-item"
-          >
+          <div v-for="(word, index) in userWords" :key="index" class="word-bank-item">
             <div class="word-bank-word">{{ word }}</div>
             <div class="word-bank-position">{{ getOrdinalNumber(index + 1) }}</div>
           </div>
@@ -40,9 +36,9 @@ export default {
       }
 
       // Kullanıcının yerleştirdiği kelimeleri al (isUserAnswer: true)
-      const userAnswers = this.answerOptions.filter(option => option.isUserAnswer)
+      const userAnswers = this.answerOptions.filter((option) => option.isUserAnswer)
 
-      return userAnswers.map(option => {
+      return userAnswers.map((option) => {
         return option.text || option.option || option.answer || ''
       })
     }
