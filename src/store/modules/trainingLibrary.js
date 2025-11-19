@@ -544,7 +544,6 @@ const trainingLibrary = {
     callForTableData({ commit, state, rootGetters }) {
       commit('SET_IS_LOADING', true)
       let isAborted = false
-      console.log('state.axiosPayload', state.axiosPayload)
       cancellableDataRequest(state.axiosPayload)
         .then((response) => {
           if (!Object.keys(response).length) {

@@ -402,7 +402,7 @@ export default {
       initialFormValues: {},
       formValues: {
         name: '',
-        canRemoveLanguages: true,
+        canRemoveLanguages: false,
         description: '',
         categoryResourceId,
         tags: [],
@@ -681,10 +681,12 @@ export default {
         this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
           JSON.stringify(this.getSelectedLanguagePayload)
         )
-        this.initialDisabledLanguageIds = [
-          this.formValues.languageTypeResourceId,
-          ...this.languagesPayload.map((item) => item.languageTypeResourceId)
-        ]
+        if (!this.formValues.canRemoveLanguages) {
+          this.initialDisabledLanguageIds = [
+            this.formValues.languageTypeResourceId,
+            ...this.languagesPayload.map((item) => item.languageTypeResourceId)
+          ]
+        }
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {

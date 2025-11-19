@@ -358,7 +358,7 @@ export default {
     },
     canRemoveLanguages: {
       type: Boolean,
-      default: true
+      default: false
     },
     initialDisabledLanguageIds: {
       type: Array,

@@ -864,7 +864,7 @@ export default {
   watch: {
     getSelectedCountry(val) {
       if (this.edit || !val) return
-      
+
       const countryDefaultValuesIndex = countryDefaultValues.findIndex(
         (country) => country.name === val
       )
@@ -1213,7 +1213,10 @@ export default {
         })
     },
     getAvailableCallbackNumbers() {
-      CallbackService.getAvailableCallbackNumbers().then((res) => {
+      const companyId = this.edit
+        ? this.selectedExtend?.resourceId || this.selectedRow?.companyResourceId || ''
+        : ''
+      CallbackService.getAvailableCallbackNumbers(companyId).then((res) => {
         if (res?.data?.data?.length > 12) {
           this.callbackNumberItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         }
