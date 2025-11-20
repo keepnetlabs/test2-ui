@@ -1,15 +1,16 @@
 <template>
   <div>
     <CommonSimulatorLandingPageTemplatesPreviewDialog
-      v-if="isShowPreviewDrawer && previewSelectedRow"
-      :status="isShowPreviewDrawer"
+      v-if="isShowLandingPageTemplate && previewSelectedRow"
+      :status="isShowLandingPageTemplate"
       :selected-row="previewSelectedRow"
       :type="type"
       :api-func="getPreviewApiFunc"
       :languages="languageOptions"
       :should-control-html-overflow="true"
       :is-quishing="isQuishing"
-      @on-close="isShowPreviewDrawer = false"
+      :disable-edit="true"
+      @on-close="isShowLandingPageTemplate = false"
     />
     <CampaignManagerSummaryCard
       class="mt-4"
@@ -61,7 +62,6 @@ export default {
     return {
       labels,
       isShowLandingPageTemplate: false,
-      isShowPreviewDrawer: false,
       previewSelectedRow: null,
       languageOptions: []
     }
@@ -96,11 +96,6 @@ export default {
           jobResourceId: this.formData.jobResourceId,
           instanceGroup: this.formData.instanceGroup
         }
-        this.$nextTick(() => {
-          this.isShowPreviewDrawer = true
-        })
-      } else {
-        this.isShowPreviewDrawer = false
       }
     }
   },

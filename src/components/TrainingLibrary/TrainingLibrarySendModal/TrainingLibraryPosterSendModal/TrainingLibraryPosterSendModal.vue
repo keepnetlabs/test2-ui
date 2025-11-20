@@ -12,8 +12,12 @@
           <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title class="k-overlay__title">Send Poster</v-list-item-title>
-          <v-list-item-subtitle>{{ selectedRow && selectedRow.trainingName }}</v-list-item-subtitle>
+          <v-list-item-title class="k-overlay__title"
+            >Send Poster</v-list-item-title
+          >
+          <v-list-item-subtitle>{{
+            selectedRow && selectedRow.trainingName
+          }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </template>
@@ -255,7 +259,7 @@ export default {
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
       const preferredLanguageLabel =
-        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
+        !refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
           ? 'Company Language'
           : 'Target Users Language'
       if (
@@ -265,6 +269,7 @@ export default {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
           'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          'Preferred Language': preferredLanguageLabel,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
@@ -274,12 +279,13 @@ export default {
                 } ${this.getTimeZoneText(
                   refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
                 )}`,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Preferred Language': preferredLanguageLabel
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
         }
       } else {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
+          'Preferred Language': preferredLanguageLabel,
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
@@ -288,14 +294,12 @@ export default {
                 } ${this.getTimeZoneText(
                   refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
                 )}`,
-          'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll ? 'Yes' : 'No',
           'SMS Text':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.smsTextTemplate,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Preferred Language': preferredLanguageLabel
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
         }
       }
 

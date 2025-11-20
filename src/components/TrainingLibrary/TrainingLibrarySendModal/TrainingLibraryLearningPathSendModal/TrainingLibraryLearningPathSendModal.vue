@@ -251,16 +251,17 @@ export default {
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
       const isDeliveryMethodSMS = deliveryMethod === DELIVERY_METHODS.SMS
-      const preferredLanguageLabel =
-        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
-          ? 'Company Language'
-          : 'Target Users Language'
+      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+        ?.sendTemplatesInPreferredLanguage
+        ? 'Company Language'
+        : 'Target Users Language'
       if (isDeliveryMethodSMS) {
         formData.settings = {
           'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
           Distribution: refSendTrainingSettings.isDistributionEnabled
             ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
             : 'No',
+          'Preferred Language': preferredLanguageLabel,
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           Reminder: sendReminderEvery,
@@ -276,13 +277,13 @@ export default {
                   refSendTrainingSettings.formData.enrollmentScheduler.scheduledTimeZoneId
                 )}`,
           'Auto-enroll': refSendTrainingSettings.isAutoEnroll,
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Preferred Language': preferredLanguageLabel
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
         }
       } else {
         formData.settings = {
           'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
           Reminder: sendReminderEvery,
+          'Preferred Language': preferredLanguageLabel,
           Schedule:
             refSendTrainingSettings.formData.scheduleTypeId === '1'
               ? 'Now'
@@ -296,8 +297,7 @@ export default {
           Distribution: refSendTrainingSettings.isDistributionEnabled
             ? `Every ${refSendTrainingSettings.formData.distributionDays} days`
             : 'No',
-          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
-          'Preferred Language': preferredLanguageLabel
+          'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No'
         }
       }
       if (sendReminderEvery) {

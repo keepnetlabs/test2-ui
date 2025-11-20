@@ -83,7 +83,7 @@
     />
     <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
-      class="mt-6"
+      class="mt-4"
       call-training-preview-api
       :training-params="getTrainingInfo"
       :selected-row="getSelectedRowTrainingInfo"

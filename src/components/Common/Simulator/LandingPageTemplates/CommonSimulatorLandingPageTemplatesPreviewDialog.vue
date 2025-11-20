@@ -45,6 +45,7 @@
           :phishing-url="landingPageParams.urlTemplate"
           :is-nested="isNested"
           :is-quishing-prop="isQuishing"
+          :disable-edit="disableEdit"
           @edit="handleEdit"
         />
       </div>
@@ -97,6 +98,10 @@ export default {
       default: 'calc(100% - 72px)'
     },
     isQuishing: {
+      type: Boolean,
+      default: false
+    },
+    disableEdit: {
       type: Boolean,
       default: false
     }

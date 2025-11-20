@@ -1,15 +1,15 @@
 <template>
   <div>
     <CommonSimulatorEmailTemplatePreviewDialog
-      v-if="isShowPreviewDrawer && previewSelectedRow"
-      :status="isShowPreviewDrawer"
+      v-if="isShowEmailTemplate && previewSelectedRow"
+      :status="isShowEmailTemplate"
       :selected-row="previewSelectedRow"
       :type="type"
       :is-individual-printout-template="isQuishingPrintout"
       :api-func="getPreviewApiFunc"
       :languages="languageOptions"
       :should-control-html-overflow="true"
-      @on-close="isShowPreviewDrawer = false"
+      @on-close="isShowEmailTemplate = false"
     />
     <CampaignManagerSummaryCard
       class="mt-4"
@@ -63,7 +63,6 @@ export default {
   data() {
     return {
       isShowEmailTemplate: false,
-      isShowPreviewDrawer: false,
       previewSelectedRow: null,
       labels,
       languageOptions: []
@@ -105,11 +104,6 @@ export default {
           campaignResourceId: this.formData.campaignResourceId,
           instanceGroup: this.formData.instanceGroup
         }
-        this.$nextTick(() => {
-          this.isShowPreviewDrawer = true
-        })
-      } else {
-        this.isShowPreviewDrawer = false
       }
     }
   },

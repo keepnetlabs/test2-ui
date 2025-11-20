@@ -1,13 +1,13 @@
 <template>
   <div>
     <CommonSimulatorLandingPageTemplatesPreviewDialog
-      v-if="isShowLandingPagePreview && landingPagePreviewSelectedRow"
-      :status="isShowLandingPagePreview"
+      v-if="isShowLandingPageTemplate && landingPagePreviewSelectedRow"
+      :status="isShowLandingPageTemplate"
       :selected-row="landingPagePreviewSelectedRow"
       :languages="languageOptions"
       is-nested
-      :should-control-html-overflow="false"
-      @on-close="isShowLandingPagePreview = false"
+      :should-control-html-overflow="true"
+      @on-close="isShowLandingPageTemplate = false"
     />
     <CampaignManagerSummaryCard
       class="mt-4"
@@ -61,7 +61,6 @@ export default {
     return {
       labels,
       isShowLandingPageTemplate: false,
-      isShowLandingPagePreview: false,
       landingPagePreviewSelectedRow: null,
       languageOptions: []
     }
@@ -78,7 +77,6 @@ export default {
           resourceId: this.formData.resourceId,
           name: this.formData?.name || ''
         }
-        this.isShowLandingPagePreview = true
       }
     }
   },

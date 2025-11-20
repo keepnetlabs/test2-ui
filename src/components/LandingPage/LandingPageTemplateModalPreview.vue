@@ -24,7 +24,7 @@
             </template>
             <span>Open in New Tab</span>
           </VTooltip>
-          <VTooltip v-if="!isNested" bottom>
+          <VTooltip v-if="!isNested && !disableEdit" bottom>
             <template #activator="{ on }">
               <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
                 <v-icon small>mdi-pencil</v-icon>
@@ -108,6 +108,10 @@ export default {
       default: false
     },
     isQuishingProp: {
+      type: Boolean,
+      default: false
+    },
+    disableEdit: {
       type: Boolean,
       default: false
     }

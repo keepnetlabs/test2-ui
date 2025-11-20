@@ -257,7 +257,7 @@ export default {
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const preferredLanguageLabel =
-        refSendTrainingSettings?.formData?.preferredLanguageId === 'company'
+        !refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
           ? 'Company Language'
           : 'Target Users Language'
       if (
@@ -266,11 +266,11 @@ export default {
       ) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          'Preferred Language': preferredLanguageLabel,
-          Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
           ),
+          'Preferred Language': preferredLanguageLabel,
+          Reminder: sendReminderEvery,
           'Award Certificate': refSendTrainingSettings.formData.awardCertificate
             ? awardCertificateTypes?.find?.(
                 (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
@@ -290,11 +290,11 @@ export default {
       } else if (refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.SMS) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          'Preferred Language': preferredLanguageLabel,
-          Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
           ),
+          'Preferred Language': preferredLanguageLabel,
+          Reminder: sendReminderEvery,
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           'SMS Text':

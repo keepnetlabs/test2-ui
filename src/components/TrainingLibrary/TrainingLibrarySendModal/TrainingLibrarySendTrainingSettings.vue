@@ -21,7 +21,7 @@
       @input="handleDeliveryMethodChange"
     />
     <InputPreferredLanguage
-      v-model="formData.preferredLanguageId"
+      v-model="formData.sendTemplatesInPreferredLanguage"
       title="Preferred Language"
       subtitle="Select how to send the notification template by language."
     />
@@ -402,7 +402,7 @@ export default {
         senderPhoneNumber: '',
         smsText: '',
         languageIds: [],
-        preferredLanguageId: 'company',
+        sendTemplatesInPreferredLanguage: false,
         markedAsTest: false,
         awardCertificate: false,
         certificateConfigSendType: 'SendOnFirstAttempt',

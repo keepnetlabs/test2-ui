@@ -8,7 +8,6 @@
       dense
       hint="*Required"
       persistent-hint
-      :rules="[(v) => v.length > 0 || 'Required']"
       :slots="{ item: true, selection: true }"
       @input="$emit('input', $event)"
     >
@@ -41,8 +40,8 @@ export default {
   },
   props: {
     value: {
-      type: [String, Number],
-      default: 'company'
+      type: Boolean,
+      default: false
     },
     items: {
       type: Array,
@@ -79,12 +78,12 @@ export default {
         return [
           {
             text: `Send in the company's language`,
-            value: 'company',
+            value: false,
             description: `Send the notification template to all users in the company's language.`
           },
           {
             text: `Send in the target users' preferred language`,
-            value: 'user',
+            value: true,
             description: `Send the notification template to each user in their preferred language. If not set, the company's language is used.`
           }
         ]

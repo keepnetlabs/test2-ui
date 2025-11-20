@@ -1,13 +1,13 @@
 <template>
   <div>
     <EmailTemplateMultipleLanguagePreviewDialog
-      v-if="isShowEmailTemplatePreview && emailTemplatePreviewSelectedRow"
-      :status="isShowEmailTemplatePreview"
+      v-if="isShowEmailTemplate && emailTemplatePreviewSelectedRow"
+      :status="isShowEmailTemplate"
       :selected-row="emailTemplatePreviewSelectedRow"
       :languages="languageOptions"
       is-nested
-      :should-control-html-overflow="false"
-      @on-close="isShowEmailTemplatePreview = false"
+      :should-control-html-overflow="true"
+      @on-close="isShowEmailTemplate = false"
     />
     <CampaignManagerSummaryCard
       class="mt-4"
@@ -55,7 +55,6 @@ export default {
   data() {
     return {
       isShowEmailTemplate: false,
-      isShowEmailTemplatePreview: false,
       emailTemplatePreviewSelectedRow: null,
       labels,
       languageOptions: []
@@ -74,7 +73,6 @@ export default {
           resourceId: this.formData.resourceId,
           name: this.formData?.name || ''
         }
-        this.isShowEmailTemplatePreview = true
       }
     }
   },
