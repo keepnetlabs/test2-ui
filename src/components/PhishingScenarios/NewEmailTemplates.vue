@@ -235,7 +235,7 @@
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
-                            @on-edit-mode-click="handleEditModeClick"
+                            @on-edit-mode="handleEditModeClick"
                             @on-upload-email-button-click="handleUploadEmailButtonClick"
                             @on-show-red-flags-click="handleShowRedFlagsClick"
                             @on-relocalize-replace="handleRelocalizeReplace"
@@ -259,10 +259,42 @@
         :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
-        @on-back="backStep(-1)"
-        @on-next="nextStep(+1)"
-        @on-submit="submit"
-      />
+      >
+        <template #right-side>
+          <BackButton
+            v-if="step > 1"
+            :id="footerButtonsIds.backButton"
+            class="mr-6"
+            @click="backStep(-1)"
+          />
+          <NextButton
+            v-if="step !== 2"
+            :id="footerButtonsIds.nextButton"
+            :disabled="getDisabledStatuses.nextButton"
+            @click="nextStep(+1)"
+          />
+          <VBtn
+            v-if="step === 2 && isEditFromPreview"
+            id="btn-save-as-new-email-template"
+            color="#2196F3"
+            outlined
+            rounded
+            class="mr-4"
+            style="font-weight: 600;"
+            :disabled="getDisabledStatuses.submitButton"
+            @click="handleSaveAsNew"
+          >
+            {{ labels.SaveAsNew }}
+          </VBtn>
+          <SaveButton
+            v-if="step === 2"
+            :id="footerButtonsIds.saveButton"
+            :disabled="getDisabledStatuses.submitButton"
+            :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
+            @click="submit"
+          />
+        </template>
+      </StepperFooter>
     </template>
   </app-modal>
 </template>
@@ -291,6 +323,9 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import BackButton from '@/components/Common/Buttons/BackButton'
+import NextButton from '@/components/Common/Buttons/NextButton'
+import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
 import { defaultRedFlags } from './utils'
@@ -314,6 +349,9 @@ export default {
     InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
+    BackButton,
+    NextButton,
+    SaveButton,
     AppModal,
     FormGroup,
     MakeAvailableFor,
@@ -330,6 +368,10 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    isEditFromPreview: {
+      type: Boolean,
+      default: false
     },
     isDuplicate: {
       type: Boolean,
@@ -960,6 +1002,74 @@ export default {
             this.isSubmitDisabled = false
           })
       }
+    },
+    handleSaveAsNew() {
+      if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
+        this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
+        return
+      }
+      this.isSubmitDisabled = true
+      let isMakeAvailableForValid = true
+      const { refMakeAvailableFor } = this.$refs
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        isMakeAvailableForValid = refMakeAvailableFor.isAvailableForValid
+      }
+      const isFormValid = this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
+      if (!isFormValid || !this.formValues.languageTypeResourceId) {
+        const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+        scrollToComponent(el)
+        this.isSubmitDisabled = false
+        return
+      }
+      if (this.isShowRedFlags) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
+      }
+      this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
+      const name =
+        this.formValues.name !== this.initialFormValues.name
+          ? this.formValues.name
+          : `${this.formValues.name} - Copy`
+      let payload = {
+        ...this.formValues,
+        name,
+        isDuplicated: true,
+        duplicatedTemplateResourceId: this.emailTemplateId,
+        description: this.formValues.description || '',
+        attachmentFiles: [
+          ...this.formValues.attachmentFiles,
+          ...this.formValues.importedEmailAttachments
+        ],
+        isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
+        isPhishingFileModified: this.isPhishingFileModified,
+        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+        phishingFileName:
+          !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
+            ? this.formValues.attachmentFiles[0]?.fileName
+            : null,
+        availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
+          this.availableForRequests
+        ),
+        isAssistedByAI: this.isAssistedByAI,
+        isPlainText: !this.isPlainText,
+        languages: this.languagesPayload
+      }
+      delete payload.attachments
+      payload.languages = this.setEmptyLanguagesPayload()
+      createPhishingEmailTemplate(payload)
+        .then((response) => {
+          this.$emit(
+            'changeNewEmailTemplateModalStatus',
+            false,
+            true,
+            response?.data?.data?.resourceId
+          )
+        })
+        .finally(() => {
+          this.isSubmitDisabled = false
+        })
     },
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {

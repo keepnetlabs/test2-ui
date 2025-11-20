@@ -761,17 +761,7 @@ export default {
       return MERGED_TEXTS[item]
     },
     handleEdit() {
-      this.initialEditData = {
-        name: this.selectedTemplateHeader,
-        fromAddress: this.templateFromEmail,
-        ccAddresses: this.templateCCAddresses,
-        fromName: this.templateFromName,
-        subject: this.templateSubject,
-        template: this.templateHTML,
-        phishingFile: this.phishingFile
-      }
-      this.editData = { ...this.initialEditData }
-      this.isEditMode = true
+      this.$emit('on-edit-email-template', this.emailTemplatePreviewSelectedRow)
     },
     handleSaveTemplate(template) {
       this.editData.template = template

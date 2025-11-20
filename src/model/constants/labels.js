@@ -988,6 +988,7 @@ export const labels = {
   SaveAndDownload: 'Save and Download',
   ManageAndDownload: 'Manage and Download',
   SaveChanges: 'Save Changes',
+  SaveAsNew: 'Save As New',
   NoInvestigationStarted: 'No investigation has been started, yet',
   NoInvestigation: 'You do not have any investigations',
   StartNewInvestigation: 'START A NEW INVESTIGATION',

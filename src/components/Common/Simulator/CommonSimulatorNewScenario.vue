@@ -91,6 +91,8 @@
             :should-remove-overflow="false"
             :show-leaving-dialog="false"
             :email-template-id="createdEmailTemplateResourceId"
+            :is-edit="!!createdEmailTemplateResourceId"
+            :is-edit-from-preview="!!createdEmailTemplateResourceId"
             :selected-method-text="getSelectedMethodText"
             :scenario-details-lookup="scenarioDetailsLookup"
             @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
@@ -264,6 +266,7 @@
                       @template-edit="handleTemplateEdit"
                       @edit-mode="handleEditModeChange"
                       @on-create-email-template="toggleEmailTemplateDrawer"
+                      @on-edit-email-template="handleEditEmailTemplate"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -1022,8 +1025,24 @@ export default {
           return
         }
 
-        // Leaving dialog açıksa ignore et
-        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"]')
+        // GrapesJS modal açıksa ignore et
+        const grapesModalElement = event.target.closest(
+          '.grapes-container-modal, #gjsNewsletterModal, #threat-sharing-post-incident-grapesjs-modal, .gjs-editor'
+        )
+        if (grapesModalElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+
+        // Leaving dialog açıksa ignore et (AppDialog içindeki tüm elementler)
+        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"], .app-dialog')
         if (leavingDialogElement) {
           return
         }
@@ -1058,11 +1077,19 @@ export default {
 
       // Email template drawer açıksa ignore et
       if (this.isOpenEmailTemplateDrawer) {
+        // GrapesJS modal açıksa ignore et
+        if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+          return
+        }
         return
       }
 
       // Landing page drawer açıksa ignore et
       if (this.isOpenLandingPageDrawer) {
+        // GrapesJS modal açıksa ignore et
+        if (this?.$refs?.newLandingPage?.$refs?.refEmailTemplate?.[0]?.showGrapesModal) {
+          return
+        }
         return
       }
 
@@ -1131,13 +1158,35 @@ export default {
         ''
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
-      this.createdEmailTemplateResourceId = createdResourceId
+      const isEditMode = !!this.createdEmailTemplateResourceId
+      const isSaveAsNew = isEditMode && !!createdResourceId
+      const resourceIdToUse = createdResourceId || this.createdEmailTemplateResourceId
+
+      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview) {
+        // Clear list to avoid duplicates
+        if (isEditMode && !isSaveAsNew) {
+          this.$refs.refEmailTemplateListPreview.listData = []
+          this.$refs.refEmailTemplateListPreview.defaultListData = []
+        }
+        this.$refs.refEmailTemplateListPreview.getTemplates(true, resourceIdToUse).then(() => {
+          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(resourceIdToUse)
+        })
+      }
+
+      if (isEditMode && !isSaveAsNew) {
+        // Edit mode: Close drawer and keep same template selected
+        this.createdEmailTemplateResourceId = null
+        if (document.querySelector('.k-navigation-drawer--email-template'))
+          document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+        setTimeout(() => {
+          this.toggleEmailTemplateDrawer()
+        }, 250)
+        return
+      }
+      // Save As New or Create mode: Close drawer and select new template
+      this.createdEmailTemplateResourceId = isSaveAsNew ? null : createdResourceId
       if (document.querySelector('.k-navigation-drawer--email-template'))
         document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
-      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
-        this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
-          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
-        })
       setTimeout(() => {
         this.toggleEmailTemplateDrawer()
       }, 250)
@@ -1161,15 +1210,54 @@ export default {
     },
     toggleEmailTemplateDrawer() {
       this.isOpenEmailTemplateDrawer = !this.isOpenEmailTemplateDrawer
+      if (!this.isOpenEmailTemplateDrawer) {
+        this.createdEmailTemplateResourceId = null
+      }
     },
-    handleClickOutsideNewEmailTemplateModal() {
+    handleEditEmailTemplate(selectedRow) {
+      this.createdEmailTemplateResourceId = selectedRow?.resourceId || null
+      if (!this.isOpenEmailTemplateDrawer) {
+        this.isOpenEmailTemplateDrawer = true
+      }
+    },
+    handleClickOutsideNewEmailTemplateModal(event) {
+      // Leaving dialog açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // Leaving dialog butonlarına tıklanırsa ignore et
+      if (event && event.target) {
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+      }
+
       if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
         this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
         return
       }
       this.handleCloseNewEmailTemplateModal()
     },
-    handleClickOutsideNewLandingPageTemplateModal() {
+    handleClickOutsideNewLandingPageTemplateModal(event) {
+      // Leaving dialog açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // Leaving dialog butonlarına tıklanırsa ignore et
+      if (event && event.target) {
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+      }
+
       if (
         this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
         this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal

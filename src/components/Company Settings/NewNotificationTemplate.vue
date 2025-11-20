@@ -143,14 +143,13 @@
               />
             </template>
 
-            <!-- YENI: Language Settings (Ekle/Kaldır) -->
             <template #template-header-right>
               <InputLanguagesSettings
                 v-model="selectedLanguages"
                 :active-language="activeLanguage"
                 :can-remove-languages="formValues.canRemoveLanguages"
                 :initial-disabled-language-ids="initialDisabledLanguageIds"
-                :language-items="languageItems"
+                :language-items="groupedLanguageItems"
                 :translated-language-resource-ids="translatedLanguageResourceIds"
                 :from-address="getSelectedLanguagePayload.fromAddress"
                 :from-name="getSelectedLanguagePayload.fromName"
@@ -162,7 +161,7 @@
                 @on-active-language-change="handleActiveLanguageChange"
                 @on-relocalize-replace="handleRelocalizeReplace"
                 @on-language-removed="handleLanguageRemoved"
-                @on-edit-mode-click="handleEditModeClick"
+                @on-edit-mode="handleEditModeClick"
               />
             </template>
           </EmailTemplate>
@@ -201,6 +200,7 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { MERGED_TEXTS_MAP } from '@/components/Company Settings/utils'
 import { getDefaultEmailDeliverySetting } from '@/api/phishingsimulator'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import { EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from '@/components/PhishingScenarios/utils'
 import { mapGetters } from 'vuex'
 import AlertBox from '@/components/AlertBox'
 export default {
@@ -234,6 +234,18 @@ export default {
     editItemsDisabled: {
       type: Boolean,
       default: false
+    },
+    languageItems: {
+      type: Array,
+      default: () => []
+    },
+    preferredLanguageTypes: {
+      type: Array,
+      default: () => []
+    },
+    companyLanguageTypeResourceId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -278,10 +290,11 @@ export default {
       },
       // YENI: Language Management
       languagesPayload: [],
+      editedLanguages: [],
       selectedLanguages: [],
       activeLanguage: '',
       initialDisabledLanguageIds: [],
-      languageItems: [],
+      groupedLanguageItems: [],
       categoryItems: [],
       smtpItems: [],
       defaultDECSettingResourceId: null,
@@ -438,6 +451,14 @@ export default {
     }
   },
   watch: {
+    languageItems: {
+      immediate: true,
+      handler(val) {
+        if (val && val.length > 0) {
+          this.setLanguageItems()
+        }
+      }
+    },
     'formValues.emailTemplateCategoryResourceId'(resourceId) {
       this.handleCategoryChange(resourceId)
     },
@@ -572,7 +593,9 @@ export default {
           this.languagesPayload.push({
             languageTypeResourceId: this.formValues.languageTypeResourceId,
             subject: this.formValues.subject,
+            fromName: this.formValues.fromName,
             fromAddress: this.formValues.fromAddress,
+            ccAddresses: this.formValues.ccAddresses || [],
             template: this.formValues.template,
             isTranslated: true
           })
@@ -589,7 +612,9 @@ export default {
               this.languagesPayload.push({
                 languageTypeResourceId: item.languageTypeResourceId,
                 subject: item.subject,
+                fromName: item.fromName,
                 fromAddress: item.fromAddress,
+                ccAddresses: item.ccAddresses || [],
                 template: item.template,
                 resourceId: item.resourceId,
                 isTranslated: true
@@ -597,6 +622,7 @@ export default {
             })
           }
           this.activeLanguage = this.formValues.languageTypeResourceId
+          this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
           this.initialDisabledLanguageIds = [
             this.formValues.languageTypeResourceId,
             ...this.languagesPayload
@@ -621,6 +647,26 @@ export default {
           }
         })
       })
+    },
+    setLanguageItems() {
+      const languageTypes = this.languageItems || []
+      const preferredLanguageTypes = this.preferredLanguageTypes || []
+      const companyLanguageTypeResourceId = this.companyLanguageTypeResourceId || ''
+
+      const grouped = []
+      grouped.push({
+        value: 1,
+        text: 'Preferred Languages',
+        children: preferredLanguageTypes
+      })
+      grouped.push({
+        value: 5,
+        text: 'All Languages',
+        children: languageTypes.filter(
+          (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+        )
+      })
+      this.groupedLanguageItems = grouped
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
@@ -675,12 +721,54 @@ export default {
 
       if (refForm.validate() && isValid) {
         this.saveDisable = true
+        // Active language'dan formValues'i güncelle
+        const activePayload = this.languagesPayload.find(
+          (item) => item.languageTypeResourceId === this.activeLanguage
+        )
+        if (activePayload) {
+          this.formValues.subject = activePayload.subject
+          this.formValues.fromName = activePayload.fromName
+          this.formValues.fromAddress = activePayload.fromAddress
+          this.formValues.ccAddresses = activePayload.ccAddresses || []
+          this.formValues.template = activePayload.template
+          this.formValues.languageTypeResourceId = activePayload.languageTypeResourceId
+        }
+
+        let languagesPayload = this.languagesPayload.filter(
+          (lang) => lang.languageTypeResourceId !== this.formValues.languageTypeResourceId
+        )
+
+        // Edit modundaysa detailActionType'ları set et
+        if (this.selectedItem && !this.isDuplicate) {
+          this.editedLanguages.forEach((item) => {
+            const payloadLanguage = languagesPayload.find(
+              (language) => language.languageTypeResourceId === item.languageTypeResourceId
+            )
+            if (payloadLanguage) {
+              const isEqual = JSON.stringify(item) === JSON.stringify(payloadLanguage)
+              payloadLanguage.detailActionType = isEqual
+                ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO_CHANGE
+                : EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
+            } else {
+              // Silinen diller
+              languagesPayload.push({
+                ...item,
+                detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE
+              })
+            }
+          })
+        }
+
+        // Boş alanları preferred language'dan doldur
+        languagesPayload = this.setEmptyLanguagesPayload(languagesPayload)
+
         const payload = {
           ...this.formValues,
           tags: this.formValues.tags.filter((item) => item.length > 0),
           availableForRequests: refMakeAvailableFor.getAvailableForValues(
             this.formValues.availableForRequests
-          )
+          ),
+          languages: languagesPayload
         }
 
         if (
@@ -731,8 +819,11 @@ export default {
         return {
           languageTypeResourceId: language.value,
           subject: this.getSelectedLanguagePayload.subject,
+          fromName: this.getSelectedLanguagePayload.fromName,
           fromAddress: this.getSelectedLanguagePayload.fromAddress,
+          ccAddresses: this.getSelectedLanguagePayload.ccAddresses || [],
           template: this.formValues.template,
+          detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD,
           isTranslated: false
         }
       })
@@ -755,6 +846,35 @@ export default {
     },
     handleEditModeClick() {
       this.$refs.refEmailTemplate.toggleShowGrapesModal()
+    },
+    setEmptyLanguagesPayload(languages) {
+      const preferredLanguagePayload = this.getPreferredLanguagePayload()
+      return languages.map((item) => {
+        return {
+          ...item,
+          fromName: item.fromName || preferredLanguagePayload.fromName,
+          fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
+          subject: item.subject || preferredLanguagePayload.subject,
+          template: item.template || preferredLanguagePayload.template,
+          ccAddresses: item.ccAddresses && item.ccAddresses.length
+            ? item.ccAddresses
+            : preferredLanguagePayload.ccAddresses
+        }
+      })
+    },
+    getPreferredLanguagePayload() {
+      // Önce company'nin preferred language'ını bul
+      let preferredLanguagePayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === this.companyLanguageTypeResourceId
+      )
+      if (preferredLanguagePayload?.fromName && preferredLanguagePayload?.fromAddress)
+        return preferredLanguagePayload
+
+      // Yoksa fromName ve fromAddress dolu olan ilk dili bul
+      preferredLanguagePayload = this.languagesPayload.find(
+        (item) => item?.fromName && item?.fromAddress
+      )
+      return preferredLanguagePayload || this.languagesPayload[0]
     }
   }
 }
