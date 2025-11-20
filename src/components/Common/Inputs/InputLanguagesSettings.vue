@@ -336,6 +336,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isTemplateTypeSelected: {
+      type: Boolean,
+      default: true
+    },
     languageItems: {
       type: Array,
       default: () => []
@@ -410,7 +414,8 @@ export default {
         Boolean(this.subject) &&
         Boolean(this.fromName) &&
         Boolean(this.fromAddress) &&
-        this.isFromAddressValid
+        this.isFromAddressValid &&
+        this.isTemplateTypeSelected
       )
     },
     getLocalizeButtonStyle() {

@@ -228,3 +228,9 @@ export function saveAIAllySettings(payload = {}) {
 export function getAIAllySettings() {
   return testRequest.get('/companies/ai')
 }
+export function generateNotificationTemplateTranslation(payload = {}) {
+  return testRequest.post('/companies/email-templates/translate', payload)
+}
+export function getNotificationTemplateTranslation() {
+  return testRequest.get('/companies/translated-email-templates')
+}

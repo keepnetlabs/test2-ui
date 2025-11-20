@@ -662,7 +662,7 @@
     <div v-else id="email-template-content" class="email-template-content">
       <div>
         <v-btn
-          v-if="(!isPhishingTemplate  && templateType !== 'landing') || showEditButton"
+          v-if="(!isPhishingTemplate && templateType !== 'landing') || showEditButton"
           id="btn-edit--notification-template-email-template"
           style="text-transform: none;"
           :disabled="editItemsDisabled"
@@ -1073,8 +1073,13 @@ export default {
     getLoaderTitle() {
       if (this.isRedFlagsLoading)
         return 'AI Ally is carefully scanning your email template for Red Flags'
-      if (this.isGenerateWithAi)
+      if (this.isGenerateWithAi) {
+        if (this.isNotificationTemplate)
+          return 'The notification template is being localized by AI Ally for the selected language.'
         return `The email template is being localized by AI Ally for the selected languages.`
+      }
+      if (this.isNotificationTemplate)
+        return 'AI Ally is carefully crafting your Notification template'
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
@@ -1082,8 +1087,13 @@ export default {
     getLoaderDescription() {
       if (this.isRedFlagsLoading)
         return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
-      if (this.isGenerateWithAi)
+      if (this.isGenerateWithAi) {
+        if (this.isNotificationTemplate)
+          return 'The process may take some time depending on the number of localizations. Please stay on the page.'
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
+      }
+      if (this.isNotificationTemplate)
+        return 'The process may take some time depending on the number of localizations. Please stay on the page.'
       return 'This process may take some time while the email is being crafted. Please stay on the page during this time.'
     },
     attachmentExtensions() {

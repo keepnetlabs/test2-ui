@@ -514,14 +514,23 @@ export default {
           this.templateTypeItems = templateTypesData.map((type) => {
             return { text: type.name, value: type.resourceId }
           })
-          this.languageItems = languages?.map((language) => ({
-            text: language.isoFriendlyName || language.name,
-            value: language.resourceId
-          })) || []
+          this.languageItems =
+            languages?.map((language) => ({
+              text: language.isoFriendlyName || language.name,
+              value: language.resourceId
+            })) || []
 
           // Form details for preferred languages
           const formDetailsData = formDetails?.data?.data || {}
-          this.preferredLanguageTypes = formDetailsData.preferredLanguageTypes || []
+          const preferredLanguageTypes = formDetailsData.preferredLanguageTypes || []
+
+          // Map preferred language resource IDs to full language objects from languageItems
+          this.preferredLanguageTypes = preferredLanguageTypes
+            .map(({ value }) => {
+              return this.languageItems.find((lang) => lang.value === value)
+            })
+            .filter(Boolean) // Remove undefined values if any resourceId doesn't match
+
           this.companyLanguageTypeResourceId = formDetailsData.companyLanguageTypeResourceId || ''
 
           this.$set(this.tableOptions.columns, 1, {
