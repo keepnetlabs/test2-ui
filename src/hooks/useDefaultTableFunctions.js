@@ -39,6 +39,9 @@ export default {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      if (searchFilter.filter.SearchInputTextValue) {
+        this.axiosPayload.filter.SearchInputTextValue = searchFilter.filter.SearchInputTextValue
+      }
       this.resetPageNumber()
       this.callForData()
     }

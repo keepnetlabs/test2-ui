@@ -630,6 +630,7 @@ export function getDefaultFilter() {
   return deepCopyArray({
     filter: {
       Condition: 'AND',
+      SearchInputTextValue: '',
       FilterGroups: [
         {
           Condition: 'AND',
