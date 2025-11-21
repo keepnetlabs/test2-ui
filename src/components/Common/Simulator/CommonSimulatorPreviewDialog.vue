@@ -107,7 +107,7 @@
                     v-if="isPhishing"
                     :value="languagePreview"
                     :items="selectedTemplateLanguages"
-                    :label="`Template Language (${selectedTemplateLanguages.length})`"
+                    :label="templateLanguageLabel"
                     class="email-template-preview__language-select"
                     style="max-width: 320px;"
                     hide-details
@@ -472,6 +472,10 @@ export default {
     },
     getLandingPageKey() {
       return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
+    },
+    templateLanguageLabel() {
+      const count = this.selectedTemplateLanguages.length
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
     }
   },
   created() {

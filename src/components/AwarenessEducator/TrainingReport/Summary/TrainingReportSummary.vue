@@ -484,24 +484,42 @@ export default {
     getEnrollmentTemplateData() {
       const { trainingDetails = {} } = this.trainingSummary || {}
       const { companyName = '', description: trainingDescription = '' } = trainingDetails
-      const { name = '', description = '', template = '' } = this.enrollmentEmailData || {}
+      const {
+        name = '',
+        description = '',
+        template = '',
+        languages = [],
+        selectedLanguageResourceId = '',
+        selectedLanguageName = ''
+      } = this.enrollmentEmailData || {}
       return {
         name,
         createdBy: companyName,
         description: description || trainingDescription,
-        template
+        template,
+        languages,
+        selectedLanguageResourceId,
+        selectedLanguageName
       }
     },
     getCertificateData() {
-      const { name = '', companyName = '', description = '', template = '' } =
-        this.certificateEmailData || {}
+      const {
+        name = '',
+        companyName = '',
+        description = '',
+        template = '',
+        languages = [],
+        selectedLanguageResourceId = '',
+        selectedLanguageName = ''
+      } = this.certificateEmailData || {}
       return {
         name,
         createdBy: companyName,
         description,
-        template:
-          template?.replace(/{COMPANYLOGO}/g, this?.$store?.state?.whitelabel.mainLogoUrl || '') ||
-          ''
+        template,
+        languages,
+        selectedLanguageResourceId,
+        selectedLanguageName
       }
     },
     getTrainingMaterialData() {
@@ -549,7 +567,32 @@ export default {
             const {
               data: { data }
             } = response
-            this.enrollmentEmailData = data?.template || {}
+            const emailTemplateData = data?.template || {}
+            const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+            const languages = emailTemplateData.languages || []
+            const mainTemplate = emailTemplateData.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+
+            if (emailTemplateData.languageTypeResourceId && emailTemplateData.languageTypeName) {
+              languages.unshift({
+                languageTypeResourceId: emailTemplateData.languageTypeResourceId,
+                languageTypeName: emailTemplateData.languageTypeName,
+                template: mainTemplate
+              })
+            }
+
+            languages.forEach((lang) => {
+              if (lang.template) {
+                lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              }
+            })
+
+            this.enrollmentEmailData = {
+              ...emailTemplateData,
+              template: mainTemplate,
+              languages,
+              selectedLanguageResourceId: emailTemplateData.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
+              selectedLanguageName: emailTemplateData.languageTypeName || (languages[0]?.languageTypeName || '')
+            }
           }
         )
       }
@@ -562,7 +605,31 @@ export default {
           const {
             data: { data }
           } = response
-          this.certificateEmailData = data
+          const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+          const languages = data.languages || []
+          const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+
+          if (data.languageTypeResourceId && data.languageTypeName) {
+            languages.unshift({
+              languageTypeResourceId: data.languageTypeResourceId,
+              languageTypeName: data.languageTypeName,
+              template: mainTemplate
+            })
+          }
+
+          languages.forEach((lang) => {
+            if (lang.template) {
+              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+            }
+          })
+
+          this.certificateEmailData = {
+            ...data,
+            template: mainTemplate,
+            languages,
+            selectedLanguageResourceId: data.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
+            selectedLanguageName: data.languageTypeName || (languages[0]?.languageTypeName || '')
+          }
         })
       }
     },

@@ -95,6 +95,19 @@
             </div>
           </div>
           <div
+            v-if="isShowEnrollmentEmail && formData.enrollmentData.languages?.length > 0"
+            style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
+          >
+            <InputLanguagePreview
+              :value="formData.enrollmentData.selectedLanguageResourceId"
+              style="max-width: 240px;"
+              hide-details
+              :label="enrollmentTemplateLanguageLabel"
+              :items="getEnrollmentLanguageItems"
+              @input="handleEnrollmentLanguageChange"
+            />
+          </div>
+          <div
             v-if="isShowEnrollmentEmail"
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
@@ -143,6 +156,19 @@
             </div>
           </div>
           <div
+            v-if="isShowCertificate && formData.certificateData.languages?.length > 0"
+            style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
+          >
+            <InputLanguagePreview
+              :value="formData.certificateData.selectedLanguageResourceId"
+              style="max-width: 240px;"
+              hide-details
+              :label="certificateTemplateLanguageLabel"
+              :items="getCertificateLanguageItems"
+              @input="handleCertificateLanguageChange"
+            />
+          </div>
+          <div
             v-if="isShowCertificate"
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
@@ -182,6 +208,19 @@
             </div>
           </div>
           <div
+            v-if="isShowReminderEmail && formData.reminderData.languages?.length > 0"
+            style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
+          >
+            <InputLanguagePreview
+              :value="formData.reminderData.selectedLanguageResourceId"
+              style="max-width: 240px;"
+              hide-details
+              :label="reminderTemplateLanguageLabel"
+              :items="getReminderLanguageItems"
+              @input="handleReminderLanguageChange"
+            />
+          </div>
+          <div
             v-if="isShowReminderEmail"
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
@@ -207,6 +246,7 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { mapActions } from 'vuex'
 import PhoneNumber from 'awesome-phonenumber'
 export default {
@@ -216,7 +256,8 @@ export default {
     CampaignManagerSummaryCard,
     CampaignManagerSummaryCardOneLine,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
-    AlertBox
+    AlertBox,
+    InputLanguagePreview
   },
   props: {
     formData: {
@@ -317,6 +358,36 @@ export default {
     },
     getTotalTargetUserByCampaign() {
       return `${this?.formData?.selectedCampaign?.total} active users from ${this?.formData?.selectedCampaign?.targetUsers?.targetGroupsCount} group(s)`
+    },
+    enrollmentTemplateLanguageLabel() {
+      const count = this.formData.enrollmentData?.languages?.length || 0
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    certificateTemplateLanguageLabel() {
+      const count = this.formData.certificateData?.languages?.length || 0
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    reminderTemplateLanguageLabel() {
+      const count = this.formData.reminderData?.languages?.length || 0
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    getEnrollmentLanguageItems() {
+      return this.formData?.enrollmentData?.languages?.map((lang) => ({
+        text: lang.languageTypeName,
+        value: lang.languageTypeResourceId
+      })) || []
+    },
+    getCertificateLanguageItems() {
+      return this.formData?.certificateData?.languages?.map((lang) => ({
+        text: lang.languageTypeName,
+        value: lang.languageTypeResourceId
+      })) || []
+    },
+    getReminderLanguageItems() {
+      return this.formData?.reminderData?.languages?.map((lang) => ({
+        text: lang.languageTypeName,
+        value: lang.languageTypeResourceId
+      })) || []
     }
   },
   watch: {
@@ -359,6 +430,36 @@ export default {
         type: 'region'
       })
       return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+    },
+    handleEnrollmentLanguageChange(languageResourceId) {
+      this.formData.enrollmentData.selectedLanguageResourceId = languageResourceId
+      const selectedLanguage = this.formData.enrollmentData.languages.find(
+        (lang) => lang.languageTypeResourceId === languageResourceId
+      )
+      if (selectedLanguage) {
+        this.formData.enrollmentData.selectedLanguageName = selectedLanguage.languageTypeName
+        this.formData.enrollmentData.template = selectedLanguage.template
+      }
+    },
+    handleCertificateLanguageChange(languageResourceId) {
+      this.formData.certificateData.selectedLanguageResourceId = languageResourceId
+      const selectedLanguage = this.formData.certificateData.languages.find(
+        (lang) => lang.languageTypeResourceId === languageResourceId
+      )
+      if (selectedLanguage) {
+        this.formData.certificateData.selectedLanguageName = selectedLanguage.languageTypeName
+        this.formData.certificateData.template = selectedLanguage.template
+      }
+    },
+    handleReminderLanguageChange(languageResourceId) {
+      this.formData.reminderData.selectedLanguageResourceId = languageResourceId
+      const selectedLanguage = this.formData.reminderData.languages.find(
+        (lang) => lang.languageTypeResourceId === languageResourceId
+      )
+      if (selectedLanguage) {
+        this.formData.reminderData.selectedLanguageName = selectedLanguage.languageTypeName
+        this.formData.reminderData.template = selectedLanguage.template
+      }
     }
   }
 }

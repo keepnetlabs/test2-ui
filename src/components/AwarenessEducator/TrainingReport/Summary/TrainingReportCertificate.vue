@@ -22,6 +22,19 @@
         </div>
       </div>
       <div
+        v-if="isShowEmailTemplate && formData.languages?.length > 0"
+        style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
+      >
+        <InputLanguagePreview
+          :value="formData.selectedLanguageResourceId"
+          style="max-width: 240px;"
+          hide-details
+          :label="templateLanguageLabel"
+          :items="getLanguageItems"
+          @input="handleLanguageChange"
+        />
+      </div>
+      <div
         v-if="isShowEmailTemplate"
         class="campaign-manager-last-step__email-template-body-preview-container"
         style="max-height: 800px !important;"
@@ -38,12 +51,14 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'TrainingReportCertificate',
   components: {
     KEmailPreview,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
+    InputLanguagePreview
   },
   mixins: [useLoading],
   props: {
@@ -67,6 +82,28 @@ export default {
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    templateLanguageLabel() {
+      const count = this.formData.languages?.length || 0
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    getLanguageItems() {
+      return this.formData?.languages?.map((lang) => ({
+        text: lang.languageTypeName,
+        value: lang.languageTypeResourceId
+      })) || []
+    }
+  },
+  methods: {
+    handleLanguageChange(languageResourceId) {
+      this.formData.selectedLanguageResourceId = languageResourceId
+      const selectedLanguage = this.formData.languages.find(
+        (lang) => lang.languageTypeResourceId === languageResourceId
+      )
+      if (selectedLanguage) {
+        this.formData.selectedLanguageName = selectedLanguage.languageTypeName
+        this.formData.template = selectedLanguage.template
+      }
     }
   }
 }

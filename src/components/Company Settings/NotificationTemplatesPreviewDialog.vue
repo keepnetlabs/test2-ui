@@ -71,7 +71,7 @@ export default {
       return this.selectedRow?.name || ''
     },
     languageLabel() {
-      return `Template Language (${this.selectedLanguages.length})`
+      return `Template Language${this.selectedLanguages.length > 1 ? 's' : ''} (${this.selectedLanguages.length})`
     }
   },
   created() {

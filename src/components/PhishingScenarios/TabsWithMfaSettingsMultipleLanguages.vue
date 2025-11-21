@@ -24,7 +24,7 @@
             v-if="!isQuishing"
             :value="languagePreview"
             :items="selectedLanguages"
-            :label="`Template Language (${selectedLanguages.length})`"
+            :label="templateLanguageLabel"
             class="email-template-preview__language-select"
             style="max-width: 320px;"
             hide-details
@@ -220,6 +220,10 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates[this.landingPageTab - 1]?.content
+    },
+    templateLanguageLabel() {
+      const count = this.selectedLanguages.length
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
     }
   },
   watch: {
