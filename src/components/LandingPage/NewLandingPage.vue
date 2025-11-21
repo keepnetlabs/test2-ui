@@ -353,11 +353,47 @@
           submitButton: isSubmitDisabled
         }"
         :ids="footerButtonsIds"
+        :save-button-text="isEditFromPreview ? labels.SaveChanges : labels.Save"
         @on-cancel="changeNewEmailTemplateModalStatus"
         @on-back="backStep(-1)"
         @on-next="nextStep(+1)"
         @on-submit="submit"
-      />
+      >
+        <template #right-side>
+          <BackButton
+            v-if="step > 1"
+            :id="footerButtonsIds.backButton"
+            class="mr-6"
+            @click="backStep(-1)"
+          />
+          <NextButton
+            v-if="step !== 2"
+            :id="footerButtonsIds.nextButton"
+            :disabled="isSubmitDisabled"
+            @click="nextStep(+1)"
+          />
+          <VBtn
+            v-if="step === 2 && isEditFromPreview"
+            id="btn-save-as-new-landing-page"
+            color="#2196F3"
+            outlined
+            rounded
+            class="mr-4"
+            style="font-weight: 600;"
+            :disabled="isSubmitDisabled"
+            @click="handleSaveAsNew"
+          >
+            {{ labels.SaveAsNew }}
+          </VBtn>
+          <SaveButton
+            v-if="step === 2"
+            :id="footerButtonsIds.saveButton"
+            :disabled="isSubmitDisabled"
+            :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
+            @click="submit"
+          />
+        </template>
+      </StepperFooter>
     </template>
   </app-modal>
 </template>
@@ -383,6 +419,9 @@ import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import NextButton from '@/components/Common/Buttons/NextButton'
+import BackButton from '@/components/Common/Buttons/BackButton'
+import SaveButton from '@/components/Common/Buttons/SaveButton'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -395,7 +434,10 @@ export default {
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputTag
+    InputTag,
+    NextButton,
+    BackButton,
+    SaveButton
   },
   props: {
     status: {
@@ -404,6 +446,10 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    isEditFromPreview: {
+      type: Boolean,
+      default: false
     },
     shouldRemoveOverflow: {
       type: Boolean,
@@ -713,6 +759,15 @@ export default {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
       }
+    },
+    handleSaveAsNew() {
+      this.isDuplicate = true
+      const name =
+        this.formValues.name !== this.initialFormValues.name
+          ? this.formValues.name
+          : `${this.formValues.name} - Copy`
+      this.formValues.name = name
+      this.submit()
     },
     backStep() {
       this.step -= 1

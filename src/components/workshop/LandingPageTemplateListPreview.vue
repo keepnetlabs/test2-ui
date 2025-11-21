@@ -1166,29 +1166,7 @@ export default {
       })
     },
     handleEdit() {
-      const phishingLink = {
-        subDomain: this.landingPageTemplateData?.subDomain,
-        urlSchemaTypeId: this.landingPageTemplateData?.urlSchemaTypeId?.toString(),
-        domainRecordId: this.landingPageTemplateData?.domainRecordId?.toString(),
-        pathTypeId: this.landingPageTemplateData?.pathTypeId?.toString(),
-        extensionTypeId: this.landingPageTemplateData?.extensionTypeId?.toString(),
-        parameterTypeId: this.landingPageTemplateData?.parameterTypeId?.toString()
-      }
-      const findedDomain = this.landingPageData?.domainRecords?.find(
-        (domain) => domain.value === this.landingPageTemplateData?.domainRecordId?.toString()
-      )
-      this.isInvisibleCaptchaDisabled = findedDomain ? !findedDomain?.extraDatas[1]?.value : false
-      this.editData = {
-        name: this.templateName,
-        phishingLink: phishingLink,
-        landingPages: this.landingPageTemplates,
-        isInvisibleCaptchaEnabled: this.landingPageTemplateData?.isInvisibleCaptchaEnabled || false
-      }
-      this?.$refs?.refInputPhishingLink?.checkSchemaTypes(
-        this.initialEditData.phishingLink.domainRecordId
-      )
-      this.initialEditData = { ...this.editData }
-      this.isEditMode = true
+      this.$emit('on-edit-landing-page-template', this.landingPagePreviewSelectedRow)
     },
     handleExitEditing() {
       const isChanged = isDifferent(this.editData, this.initialEditData)

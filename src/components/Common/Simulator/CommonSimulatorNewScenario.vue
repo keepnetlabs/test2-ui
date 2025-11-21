@@ -67,6 +67,8 @@
             :show-leaving-dialog="false"
             :landing-page-data="landingPageData"
             :email-template-id="createdLandingPageResourceId"
+            :is-edit="!!createdLandingPageResourceId"
+            :is-edit-from-preview="!!createdLandingPageResourceId"
             :selected-method-text="getSelectedMethodText"
             @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
           />
@@ -302,6 +304,7 @@
                       @template-edit="handleTemplateEdit"
                       @edit-mode="handleLandingPageEditModeChange"
                       @on-create-landing-page-template="toggleLandingPageDrawer"
+                      @on-edit-landing-page-template="handleEditLandingPageTemplate"
                   /></v-list-item-content>
                 </v-list-item>
               </div>
@@ -1013,7 +1016,7 @@ export default {
       // SnackBar tıklanırsa ignore et
       if (event && event.target) {
         const snackbarElement = event.target.closest(
-          '.v-snack__wrapper, .v-snackbar, [data-snackbar]'
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
         )
         if (snackbarElement) {
           return
@@ -1220,14 +1223,28 @@ export default {
         this.isOpenEmailTemplateDrawer = true
       }
     },
+    handleEditLandingPageTemplate(selectedRow) {
+      this.createdLandingPageResourceId = selectedRow?.resourceId || null
+      if (!this.isOpenLandingPageDrawer) {
+        this.isOpenLandingPageDrawer = true
+      }
+    },
     handleClickOutsideNewEmailTemplateModal(event) {
       // Leaving dialog açıksa ignore et
       if (this.$store.state.common?.isShowLeavingDialog) {
         return
       }
 
-      // Leaving dialog butonlarına tıklanırsa ignore et
+      // SnackBar tıklanırsa ignore et
       if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
         const leavingDialogButton = event.target.closest(
           '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
         )
@@ -1248,8 +1265,16 @@ export default {
         return
       }
 
-      // Leaving dialog butonlarına tıklanırsa ignore et
+      // SnackBar tıklanırsa ignore et
       if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
         const leavingDialogButton = event.target.closest(
           '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
         )
