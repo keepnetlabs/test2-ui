@@ -2672,6 +2672,7 @@ export default {
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
+              SearchInputTextValue: this.search || '',
               FilterGroups: [
                 {
                   Condition: 'AND',
